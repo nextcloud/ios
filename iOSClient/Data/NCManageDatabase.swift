@@ -37,14 +37,11 @@ class NCManageDatabase: NSObject {
         let instance = NCManageDatabase()
         return instance
     }()
-
     let utilityFileSystem = NCUtilityFileSystem()
 
     override init() {
-
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroups)
         let databaseFileUrlPath = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
-
         let bundleUrl: URL = Bundle.main.bundleURL
         let bundlePathExtension: String = bundleUrl.pathExtension
         let isAppex: Bool = bundlePathExtension == "appex"
@@ -69,7 +66,6 @@ class NCManageDatabase: NSObject {
         }
 
         if isAppex {
-
             Realm.Configuration.defaultConfiguration = Realm.Configuration(
                 fileURL: dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName),
                 schemaVersion: databaseSchemaVersion,
@@ -94,12 +90,9 @@ class NCManageDatabase: NSObject {
                               NCDBLayoutForView.self,
                               TableSecurityGuardDiagnostics.self]
             )
-
         } else {
-
             do {
                 _ = try Realm(configuration: Realm.Configuration(
-
                     fileURL: databaseFileUrlPath,
                     schemaVersion: databaseSchemaVersion,
 
@@ -131,10 +124,8 @@ class NCManageDatabase: NSObject {
                         }
 
                     }, shouldCompactOnLaunch: { totalBytes, usedBytes in
-
                         // totalBytes refers to the size of the file on disk in bytes (data + free space)
                         // usedBytes refers to the number of bytes used by data in the file
-
                         // Compact if the file is over 100MB in size and less than 50% 'used'
                         let oneHundredMB = 100 * 1024 * 1024
                         return (totalBytes > oneHundredMB) && (Double(usedBytes) / Double(totalBytes)) < 0.5
@@ -241,7 +232,6 @@ class NCManageDatabase: NSObject {
     }
 
     func clearTablesE2EE(account: String?) {
-
         self.clearTable(tableE2eEncryption.self, account: account)
         self.clearTable(tableE2eEncryptionLock.self, account: account)
         self.clearTable(tableE2eMetadata12.self, account: account)
@@ -251,7 +241,6 @@ class NCManageDatabase: NSObject {
     }
 
     @objc func removeDB() {
-
         let realmURL = Realm.Configuration.defaultConfiguration.fileURL!
         let realmURLs = [
             realmURL,
@@ -259,6 +248,7 @@ class NCManageDatabase: NSObject {
             realmURL.appendingPathExtension("note"),
             realmURL.appendingPathExtension("management")
         ]
+
         for URL in realmURLs {
             do {
                 try FileManager.default.removeItem(at: URL)
@@ -269,12 +259,10 @@ class NCManageDatabase: NSObject {
     }
 
     func getThreadConfined(_ object: Object) -> Any {
-
         return ThreadSafeReference(to: object)
     }
 
     func putThreadConfined(_ tableRef: ThreadSafeReference<Object>) -> Object? {
-
         do {
             let realm = try Realm()
             return realm.resolve(tableRef)

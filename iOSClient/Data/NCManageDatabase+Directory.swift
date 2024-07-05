@@ -26,7 +26,6 @@ import RealmSwift
 import NextcloudKit
 
 class tableDirectory: Object {
-
     @objc dynamic var account = ""
     @objc dynamic var colorFolder: String?
     @objc dynamic var e2eEncrypted: Bool = false
@@ -46,7 +45,6 @@ class tableDirectory: Object {
 }
 
 extension NCManageDatabase {
-
     func addDirectory(e2eEncrypted: Bool, favorite: Bool, ocId: String, fileId: String, etag: String? = nil, permissions: String? = nil, richWorkspace: String? = nil, serverUrl: String, account: String) {
         do {
             let realm = try Realm()
@@ -88,7 +86,6 @@ extension NCManageDatabase {
     }
 
     func deleteDirectoryAndSubDirectory(serverUrl: String, account: String) {
-
 #if !EXTENSION
         DispatchQueue.main.async {
             let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }

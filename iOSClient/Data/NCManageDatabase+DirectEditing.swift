@@ -26,7 +26,6 @@ import RealmSwift
 import NextcloudKit
 
 class tableDirectEditingCreators: Object {
-
     @objc dynamic var account = ""
     @objc dynamic var editor = ""
     @objc dynamic var ext = ""
@@ -37,7 +36,6 @@ class tableDirectEditingCreators: Object {
 }
 
 class tableDirectEditingEditors: Object {
-
     @objc dynamic var account = ""
     @objc dynamic var editor = ""
     let mimetypes = List<String>()
@@ -47,21 +45,16 @@ class tableDirectEditingEditors: Object {
 }
 
 extension NCManageDatabase {
-
     func addDirectEditing(account: String, editors: [NKEditorDetailsEditors], creators: [NKEditorDetailsCreators]) {
-
         do {
             let realm = try Realm()
             try realm.write {
-
                 let resultsCreators = realm.objects(tableDirectEditingCreators.self).filter("account == %@", account)
                 realm.delete(resultsCreators)
-
                 let resultsEditors = realm.objects(tableDirectEditingEditors.self).filter("account == %@", account)
                 realm.delete(resultsEditors)
 
                 for creator in creators {
-
                     let addObject = tableDirectEditingCreators()
 
                     addObject.account = account
@@ -76,7 +69,6 @@ extension NCManageDatabase {
                 }
 
                 for editor in editors {
-
                     let addObject = tableDirectEditingEditors()
 
                     addObject.account = account
@@ -103,7 +95,6 @@ extension NCManageDatabase {
     }
 
     func getDirectEditingCreators(account: String) -> [tableDirectEditingCreators]? {
-
         do {
             let realm = try Realm()
             realm.refresh()
@@ -121,7 +112,6 @@ extension NCManageDatabase {
     }
 
     func getDirectEditingCreators(predicate: NSPredicate) -> [tableDirectEditingCreators]? {
-
         do {
             let realm = try Realm()
             realm.refresh()
@@ -139,7 +129,6 @@ extension NCManageDatabase {
     }
 
     func getDirectEditingEditors(account: String) -> [tableDirectEditingEditors]? {
-
         do {
             let realm = try Realm()
             realm.refresh()

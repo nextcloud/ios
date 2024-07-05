@@ -26,7 +26,6 @@ import RealmSwift
 import NextcloudKit
 
 class tableDashboardWidget: Object {
-
     @Persisted(primaryKey: true) var index = ""
     @Persisted var account = ""
     @Persisted var id = ""
@@ -39,7 +38,6 @@ class tableDashboardWidget: Object {
 }
 
 class tableDashboardWidgetButton: Object {
-
     @Persisted(primaryKey: true) var index = ""
     @Persisted var account = ""
     @Persisted var id = ""
@@ -49,9 +47,7 @@ class tableDashboardWidgetButton: Object {
 }
 
 extension NCManageDatabase {
-
     func getDashboardWidget(account: String, id: String) -> (tableDashboardWidget?, [tableDashboardWidgetButton]?) {
-
         do {
             let realm = try Realm()
             realm.refresh()
@@ -66,7 +62,6 @@ extension NCManageDatabase {
     }
 
     func getDashboardWidgetApplications(account: String) -> [tableDashboardWidget] {
-
         do {
             let realm = try Realm()
             realm.refresh()
@@ -81,14 +76,11 @@ extension NCManageDatabase {
     }
 
     func addDashboardWidget(account: String, dashboardWidgets: [NCCDashboardWidget]) {
-
         do {
             let realm = try Realm()
             try realm.write {
-
                 let resultDashboard = realm.objects(tableDashboardWidget.self).filter("account == %@", account)
                 realm.delete(resultDashboard)
-
                 let resultDashboardButton = realm.objects(tableDashboardWidgetButton.self).filter("account == %@", account)
                 realm.delete(resultDashboardButton)
 

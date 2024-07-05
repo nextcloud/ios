@@ -26,7 +26,6 @@ import RealmSwift
 import NextcloudKit
 
 class NCDBLayoutForView: Object {
-
     @Persisted(primaryKey: true) var index = ""
     @Persisted var account = ""
     @Persisted var keyStore = ""
@@ -40,10 +39,8 @@ class NCDBLayoutForView: Object {
 }
 
 extension NCManageDatabase {
-
     @discardableResult
     func setLayoutForView(account: String, key: String, serverUrl: String, layout: String? = nil, sort: String? = nil, ascending: Bool? = nil, groupBy: String? = nil, directoryOnTop: Bool? = nil, titleButtonHeader: String? = nil, itemForLine: Int? = nil) -> NCDBLayoutForView? {
-
         var keyStore = key
         if !serverUrl.isEmpty { keyStore = serverUrl}
         let index = account + " " + keyStore
@@ -94,7 +91,6 @@ extension NCManageDatabase {
 
     @discardableResult
     func setLayoutForView(layoutForView: NCDBLayoutForView) -> NCDBLayoutForView? {
-
         let result = NCDBLayoutForView(value: layoutForView)
 
         do {
@@ -110,7 +106,6 @@ extension NCManageDatabase {
     }
 
     func getLayoutForView(account: String, key: String, serverUrl: String) -> NCDBLayoutForView? {
-
         var keyStore = key
         if !serverUrl.isEmpty { keyStore = serverUrl}
         let index = account + " " + keyStore

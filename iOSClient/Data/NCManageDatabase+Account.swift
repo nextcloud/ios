@@ -80,9 +80,7 @@ class tableAccount: Object, NCUserBaseUrl {
 }
 
 extension NCManageDatabase {
-
     func addAccount(_ account: String, urlBase: String, user: String, userId: String, password: String) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -103,8 +101,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func updateAccount(_ account: tableAccount) {
-
+    func updateAccount(_ account: tableAccount) {
         do {
             let realm = try Realm()
             try realm.write {
@@ -115,8 +112,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func deleteAccount(_ account: String) {
-
+    func deleteAccount(_ account: String) {
         do {
             let realm = try Realm()
             try realm.write {
@@ -128,8 +124,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func getActiveAccount() -> tableAccount? {
-
+    func getActiveAccount() -> tableAccount? {
         do {
             let realm = try Realm()
             guard let result = realm.objects(tableAccount.self).filter("active == true").first else { return nil }
@@ -141,8 +136,7 @@ extension NCManageDatabase {
         return nil
     }
 
-    @objc func getAccounts() -> [String]? {
-
+    func getAccounts() -> [String]? {
         do {
             let realm = try Realm()
             let results = realm.objects(tableAccount.self).sorted(byKeyPath: "account", ascending: true)
@@ -156,8 +150,7 @@ extension NCManageDatabase {
         return nil
     }
 
-    @objc func getAccount(predicate: NSPredicate) -> tableAccount? {
-
+    func getAccount(predicate: NSPredicate) -> tableAccount? {
         do {
             let realm = try Realm()
             guard let result = realm.objects(tableAccount.self).filter(predicate).first else { return nil }
@@ -169,8 +162,7 @@ extension NCManageDatabase {
         return nil
     }
 
-    @objc func getAllAccount() -> [tableAccount] {
-
+    func getAllAccount() -> [tableAccount] {
         do {
             let realm = try Realm()
             let sorted = [SortDescriptor(keyPath: "active", ascending: false), SortDescriptor(keyPath: "user", ascending: true)]
@@ -183,8 +175,7 @@ extension NCManageDatabase {
         return []
     }
 
-    @objc func getAllAccountOrderAlias() -> [tableAccount] {
-
+    func getAllAccountOrderAlias() -> [tableAccount] {
         do {
             let realm = try Realm()
             let sorted = [SortDescriptor(keyPath: "active", ascending: false), SortDescriptor(keyPath: "alias", ascending: true), SortDescriptor(keyPath: "user", ascending: true)]
@@ -197,8 +188,7 @@ extension NCManageDatabase {
         return []
     }
 
-    @objc func getAccountAutoUploadFileName() -> String {
-
+    func getAccountAutoUploadFileName() -> String {
         do {
             let realm = try Realm()
             guard let result = realm.objects(tableAccount.self).filter("active == true").first else { return "" }
@@ -214,8 +204,7 @@ extension NCManageDatabase {
         return ""
     }
 
-    @objc func getAccountAutoUploadDirectory(urlBase: String, userId: String, account: String) -> String {
-
+    func getAccountAutoUploadDirectory(urlBase: String, userId: String, account: String) -> String {
         do {
             let realm = try Realm()
             guard let result = realm.objects(tableAccount.self).filter("active == true").first else { return "" }
@@ -236,8 +225,7 @@ extension NCManageDatabase {
         return ""
     }
 
-    @objc func getAccountAutoUploadPath(urlBase: String, userId: String, account: String) -> String {
-
+    func getAccountAutoUploadPath(urlBase: String, userId: String, account: String) -> String {
         let cameraFileName = self.getAccountAutoUploadFileName()
         let cameraDirectory = self.getAccountAutoUploadDirectory(urlBase: urlBase, userId: userId, account: account)
         let folderPhotos = utilityFileSystem.stringAppendServerUrl(cameraDirectory, addFileName: cameraFileName)
@@ -245,8 +233,7 @@ extension NCManageDatabase {
         return folderPhotos
     }
 
-    @objc func getAccountAutoUploadSubfolderGranularity() -> Int {
-
+    func getAccountAutoUploadSubfolderGranularity() -> Int {
         do {
             let realm = try Realm()
             guard let result = realm.objects(tableAccount.self).filter("active == true").first else { return NCGlobal.shared.subfolderGranularityMonthly }
@@ -259,7 +246,6 @@ extension NCManageDatabase {
     }
 
     func setAccountActive(_ account: String) -> tableAccount? {
-
         var accountReturn = tableAccount()
 
         do {
@@ -283,8 +269,7 @@ extension NCManageDatabase {
         return tableAccount.init(value: accountReturn)
     }
 
-    @objc func removePasswordAccount(_ account: String) {
-
+    func removePasswordAccount(_ account: String) {
         do {
             let realm = try Realm()
             try realm.write {
@@ -297,8 +282,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func setAccountAutoUploadProperty(_ property: String, state: Bool) {
-
+    func setAccountAutoUploadProperty(_ property: String, state: Bool) {
         do {
             let realm = try Realm()
             try realm.write {
@@ -313,8 +297,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func setAccountAutoUploadGranularity(_ property: String, state: Int) {
-
+    func setAccountAutoUploadGranularity(_ property: String, state: Int) {
         do {
             let realm = try Realm()
             try realm.write {
@@ -327,8 +310,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func setAccountAutoUploadFileName(_ fileName: String) {
-
+    func setAccountAutoUploadFileName(_ fileName: String) {
         do {
             let realm = try Realm()
             try realm.write {
@@ -341,8 +323,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func setAccountAutoUploadDirectory(_ serverUrl: String?, urlBase: String, userId: String, account: String) {
-
+    func setAccountAutoUploadDirectory(_ serverUrl: String?, urlBase: String, userId: String, account: String) {
         do {
             let realm = try Realm()
             try realm.write {
@@ -359,8 +340,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func setAccountUserProfile(account: String, userProfile: NKUserProfile) {
-
+    func setAccountUserProfile(account: String, userProfile: NKUserProfile) {
         do {
             let realm = try Realm()
             try realm.write {
@@ -395,8 +375,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func setAccountMediaPath(_ path: String, account: String) {
-
+    func setAccountMediaPath(_ path: String, account: String) {
         do {
             let realm = try Realm()
             try realm.write {
@@ -409,8 +388,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func setAccountUserStatus(userStatusClearAt: Date?, userStatusIcon: String?, userStatusMessage: String?, userStatusMessageId: String?, userStatusMessageIsPredefined: Bool, userStatusStatus: String?, userStatusStatusIsUserDefined: Bool, account: String) {
-
+    func setAccountUserStatus(userStatusClearAt: Date?, userStatusIcon: String?, userStatusMessage: String?, userStatusMessageId: String?, userStatusMessageIsPredefined: Bool, userStatusStatus: String?, userStatusStatusIsUserDefined: Bool, account: String) {
         do {
             let realm = try Realm()
             try realm.write {
@@ -429,7 +407,7 @@ extension NCManageDatabase {
         }
     }
 
-    @objc func setAccountAlias(_ account: String, alias: String) {
+    func setAccountAlias(_ account: String, alias: String) {
         let alias = alias.trimmingCharacters(in: .whitespacesAndNewlines)
 
         do {

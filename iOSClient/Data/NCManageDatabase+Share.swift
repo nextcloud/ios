@@ -27,7 +27,6 @@ import NextcloudKit
 
 typealias tableShare = tableShareV2
 class tableShareV2: Object {
-
     @objc dynamic var account = ""
     @objc dynamic var canEdit: Bool = false
     @objc dynamic var canDelete: Bool = false
@@ -75,9 +74,7 @@ class tableShareV2: Object {
 }
 
 extension NCManageDatabase {
-
     func addShare(account: String, home: String, shares: [NKShare]) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -136,7 +133,6 @@ extension NCManageDatabase {
     }
 
     func getTableShares(account: String) -> [tableShare] {
-
         do {
             let realm = try Realm()
             realm.refresh()
@@ -151,7 +147,6 @@ extension NCManageDatabase {
     }
 
     func getTableShares(metadata: tableMetadata) -> (firstShareLink: tableShare?, share: [tableShare]?) {
-
         do {
             let realm = try Realm()
             realm.refresh()
@@ -172,7 +167,6 @@ extension NCManageDatabase {
     }
 
     func getTableShare(account: String, idShare: Int) -> tableShare? {
-
         do {
             let realm = try Realm()
             realm.refresh()
@@ -186,7 +180,6 @@ extension NCManageDatabase {
     }
 
     func getTableShares(account: String, serverUrl: String) -> [tableShare] {
-
         do {
             let realm = try Realm()
             realm.refresh()
@@ -201,7 +194,6 @@ extension NCManageDatabase {
     }
 
     func getTableShares(account: String, serverUrl: String, fileName: String) -> [tableShare] {
-
         do {
             let realm = try Realm()
             realm.refresh()
@@ -216,7 +208,6 @@ extension NCManageDatabase {
     }
 
     func deleteTableShare(account: String, idShare: Int) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -229,7 +220,6 @@ extension NCManageDatabase {
     }
 
     func deleteTableShare(account: String, path: String) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -242,7 +232,6 @@ extension NCManageDatabase {
     }
 
     func deleteTableShare(account: String) {
-
         do {
             let realm = try Realm()
             try realm.write {

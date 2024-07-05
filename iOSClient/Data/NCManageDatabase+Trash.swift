@@ -26,7 +26,6 @@ import RealmSwift
 import NextcloudKit
 
 class tableTrash: Object {
-
     @objc dynamic var account = ""
     @objc dynamic var classFile = ""
     @objc dynamic var contentType = ""
@@ -48,9 +47,7 @@ class tableTrash: Object {
 }
 
 extension NCManageDatabase {
-
     func addTrash(account: String, items: [NKTrash]) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -79,7 +76,6 @@ extension NCManageDatabase {
     }
 
     func deleteTrash(filePath: String?, account: String) {
-
         var predicate = NSPredicate()
 
         do {
@@ -99,7 +95,6 @@ extension NCManageDatabase {
     }
 
     func deleteTrash(fileId: String?, account: String) {
-
         var predicate = NSPredicate()
 
         do {
@@ -132,7 +127,6 @@ extension NCManageDatabase {
     }
 
     func getTrashItem(fileId: String, account: String) -> tableTrash? {
-
         do {
             let realm = try Realm()
             realm.refresh()

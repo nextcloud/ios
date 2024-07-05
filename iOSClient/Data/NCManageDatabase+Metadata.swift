@@ -132,7 +132,6 @@ class tableMetadata: Object, NCUserBaseUrl {
 }
 
 extension tableMetadata {
-
     var fileExtension: String {
         (fileNameView as NSString).pathExtension
     }
@@ -321,9 +320,7 @@ extension tableMetadata {
 }
 
 extension NCManageDatabase {
-
     func convertFileToMetadata(_ file: NKFile, isDirectoryE2EE: Bool) -> tableMetadata {
-
         let metadata = tableMetadata()
 
         metadata.account = file.account
@@ -415,16 +412,13 @@ extension NCManageDatabase {
     }
 
     func convertFilesToMetadatas(_ files: [NKFile], useFirstAsMetadataFolder: Bool, completion: @escaping (_ metadataFolder: tableMetadata, _ metadatas: [tableMetadata]) -> Void) {
-
         var counter: Int = 0
         var isDirectoryE2EE: Bool = false
         let listServerUrl = ThreadSafeDictionary<String, Bool>()
-
         var metadataFolder = tableMetadata()
         var metadatas: [tableMetadata] = []
 
         for file in files {
-
             if let key = listServerUrl[file.serverUrl] {
                 isDirectoryE2EE = key
             } else {
@@ -447,7 +441,6 @@ extension NCManageDatabase {
     }
 
     func convertFilesToMetadatas(_ files: [NKFile], useFirstAsMetadataFolder: Bool) async -> (metadataFolder: tableMetadata, metadatas: [tableMetadata]) {
-
         await withUnsafeContinuation({ continuation in
             convertFilesToMetadatas(files, useFirstAsMetadataFolder: useFirstAsMetadataFolder) { metadataFolder, metadatas in
                 continuation.resume(returning: (metadataFolder, metadatas))
@@ -456,8 +449,8 @@ extension NCManageDatabase {
     }
 
     func createMetadata(account: String, user: String, userId: String, fileName: String, fileNameView: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String, isUrl: Bool = false, name: String = NCGlobal.shared.appName, subline: String? = nil, iconName: String? = nil, iconUrl: String? = nil) -> tableMetadata {
-
         let metadata = tableMetadata()
+
         if isUrl {
             metadata.contentType = "text/uri-list"
             if let iconName = iconName {
@@ -719,7 +712,6 @@ extension NCManageDatabase {
     }
 
     func getMetadatas(predicate: NSPredicate) -> [tableMetadata] {
-
         do {
             let realm = try Realm()
             realm.refresh()
@@ -733,7 +725,6 @@ extension NCManageDatabase {
     }
 
     func getMetadatas(predicate: NSPredicate, sorted: String, ascending: Bool = false) -> [tableMetadata]? {
-
         do {
             let realm = try Realm()
             let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
@@ -761,7 +752,6 @@ extension NCManageDatabase {
     }
 
     func getResultsMetadatas(predicate: NSPredicate, sorted: [RealmSwift.SortDescriptor]) -> Results<tableMetadata>? {
-
         do {
             let realm = try Realm()
             return realm.objects(tableMetadata.self).filter(predicate).sorted(by: sorted)
@@ -773,7 +763,6 @@ extension NCManageDatabase {
     }
 
     func getResultMetadata(predicate: NSPredicate) -> tableMetadata? {
-
         do {
             let realm = try Realm()
             return realm.objects(tableMetadata.self).filter(predicate).first
@@ -804,7 +793,6 @@ extension NCManageDatabase {
     }
 
     func getMetadataAtIndex(predicate: NSPredicate, sorted: String, ascending: Bool, index: Int) -> tableMetadata? {
-
         do {
             let realm = try Realm()
             realm.refresh()
@@ -822,8 +810,8 @@ extension NCManageDatabase {
     }
 
     func getMetadataFromOcId(_ ocId: String?) -> tableMetadata? {
-
         guard let ocId else { return nil }
+
         do {
             let realm = try Realm()
             realm.refresh()
@@ -837,7 +825,6 @@ extension NCManageDatabase {
     }
 
     func getMetadataFromFileName(_ fileName: String, serverUrl: String) -> tableMetadata? {
-
         do {
             let realm = try Realm()
             realm.refresh()
@@ -851,8 +838,8 @@ extension NCManageDatabase {
     }
 
     func getMetadataFromFileNameLocalPath(_ fileNameLocalPath: String?) -> tableMetadata? {
-
         let components = fileNameLocalPath?.components(separatedBy: "/")
+
         if let count = components?.count,
            components?.count ?? 0 > 2,
            let ocId = components?[count - 2] {
@@ -870,8 +857,8 @@ extension NCManageDatabase {
     }
 
     func getTableMetadataFromOcId(_ ocId: String?) -> tableMetadata? {
-
         guard let ocId else { return nil }
+
         do {
             let realm = try Realm()
             realm.refresh()
@@ -883,7 +870,6 @@ extension NCManageDatabase {
     }
 
     func getMetadataFromFileId(_ fileId: String?) -> tableMetadata? {
-
         do {
             let realm = try Realm()
             realm.refresh()
@@ -898,11 +884,10 @@ extension NCManageDatabase {
     }
 
     func getMetadataFolder(account: String, urlBase: String, userId: String, serverUrl: String) -> tableMetadata? {
-
         var serverUrl = serverUrl
         var fileName = ""
-
         let serverUrlHome = utilityFileSystem.getHomeServer(urlBase: urlBase, userId: userId)
+
         if serverUrlHome == serverUrl {
             fileName = "."
             serverUrl = ".."
@@ -1021,12 +1006,9 @@ extension NCManageDatabase {
         var isMounted = false
 
         if metadataFolder != nil {
-
             isShare = metadata.permissions.contains(permissions.permissionShared) && !metadataFolder!.permissions.contains(permissions.permissionShared)
             isMounted = metadata.permissions.contains(permissions.permissionMounted) && !metadataFolder!.permissions.contains(permissions.permissionMounted)
-
         } else if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
-
             isShare = metadata.permissions.contains(permissions.permissionShared) && !directory.permissions.contains(permissions.permissionShared)
             isMounted = metadata.permissions.contains(permissions.permissionMounted) && !directory.permissions.contains(permissions.permissionMounted)
         }
@@ -1051,7 +1033,6 @@ extension NCManageDatabase {
     }
 
     func getNumMetadatasInUpload() -> Int {
-
         do {
             let realm = try Realm()
             realm.refresh()

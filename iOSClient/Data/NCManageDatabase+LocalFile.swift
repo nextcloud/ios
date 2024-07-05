@@ -26,7 +26,6 @@ import RealmSwift
 import NextcloudKit
 
 class tableLocalFile: Object {
-
     @objc dynamic var account = ""
     @objc dynamic var etag = ""
     @objc dynamic var exifDate: NSDate?
@@ -43,13 +42,11 @@ class tableLocalFile: Object {
         return "ocId"
     }
 }
-extension NCManageDatabase {
 
+extension NCManageDatabase {
     // MARK: -
     // MARK: Table LocalFile - return RESULT
-
     func getTableLocalFile(ocId: String) -> tableLocalFile? {
-
         do {
             let realm = try Realm()
             return realm.objects(tableLocalFile.self).filter("ocId == %@", ocId).first
@@ -63,7 +60,6 @@ extension NCManageDatabase {
     // MARK: Table LocalFile
 
     func addLocalFile(metadata: tableMetadata, offline: Bool? = nil) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -86,7 +82,6 @@ extension NCManageDatabase {
     }
 
     func addLocalFile(account: String, etag: String, ocId: String, fileName: String) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -106,7 +101,6 @@ extension NCManageDatabase {
     }
 
     func deleteLocalFile(predicate: NSPredicate) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -119,7 +113,6 @@ extension NCManageDatabase {
     }
 
     func setLocalFile(ocId: String, fileName: String?) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -134,7 +127,6 @@ extension NCManageDatabase {
     }
 
     @objc func setLocalFile(ocId: String, exifDate: NSDate?, exifLatitude: String, exifLongitude: String, exifLensModel: String?) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -153,7 +145,6 @@ extension NCManageDatabase {
     }
 
     func setOffLocalFile(ocId: String) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -166,7 +157,6 @@ extension NCManageDatabase {
     }
 
     func getTableLocalFile(account: String) -> [tableLocalFile] {
-
         do {
             let realm = try Realm()
             let results = realm.objects(tableLocalFile.self).filter("account == %@", account)
@@ -179,7 +169,6 @@ extension NCManageDatabase {
     }
 
     func getTableLocalFile(predicate: NSPredicate) -> tableLocalFile? {
-
         do {
             let realm = try Realm()
             guard let result = realm.objects(tableLocalFile.self).filter(predicate).first else { return nil }
@@ -192,7 +181,6 @@ extension NCManageDatabase {
     }
 
     func getResultsTableLocalFile(predicate: NSPredicate) -> Results<tableLocalFile>? {
-
         do {
             let realm = try Realm()
             return realm.objects(tableLocalFile.self).filter(predicate)
@@ -204,7 +192,6 @@ extension NCManageDatabase {
     }
 
     func getTableLocalFiles(predicate: NSPredicate, sorted: String, ascending: Bool) -> [tableLocalFile] {
-
         do {
             let realm = try Realm()
             let results = realm.objects(tableLocalFile.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
@@ -217,7 +204,6 @@ extension NCManageDatabase {
     }
 
     func getResultsTableLocalFile(predicate: NSPredicate, sorted: String, ascending: Bool) -> Results<tableLocalFile>? {
-
         do {
             let realm = try Realm()
             return realm.objects(tableLocalFile.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
@@ -229,7 +215,6 @@ extension NCManageDatabase {
     }
 
     func setLastOpeningDate(metadata: tableMetadata) {
-
         do {
             let realm = try Realm()
             try realm.write {

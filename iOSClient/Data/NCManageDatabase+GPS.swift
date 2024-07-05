@@ -33,9 +33,7 @@ class tableGPSV2: Object {
 }
 
 extension NCManageDatabase {
-
     @objc func addGeocoderLocation(_ location: String, latitude: Double, longitude: Double) {
-
         do {
             let realm = try Realm()
             realm.refresh()
