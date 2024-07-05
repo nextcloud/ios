@@ -46,7 +46,7 @@ class NCUtility: NSObject {
         return path.contains("CoreSimulator")
     }
 
-    func isRichDocument(_ metadata: tableMetadata) -> Bool {
+    func isTypeFileRichDocument(_ metadata: tableMetadata) -> Bool {
         guard metadata.fileNameView != "." else { return false }
         let fileExtension = (metadata.fileNameView as NSString).pathExtension
         guard !fileExtension.isEmpty else { return false }
@@ -66,7 +66,7 @@ class NCUtility: NSObject {
         return false
     }
 
-    func isDirectEditing(account: String, contentType: String) -> [String] {
+    func editorsDirectEditing(account: String, contentType: String) -> [String] {
         var editor: [String] = []
         guard let results = NCManageDatabase.shared.getDirectEditingEditors(account: account) else { return editor }
 

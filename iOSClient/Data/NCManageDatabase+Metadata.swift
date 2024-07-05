@@ -227,16 +227,6 @@ extension tableMetadata {
         return !isDirectoryE2EE && directory && size == 0 && e2eEncrypted && NCKeychain().isEndToEndEnabled(account: account)
     }
 
-    var canOpenExternalEditor: Bool {
-        if isDocumentViewableOnly {
-            return false
-        }
-        let utility = NCUtility()
-        let editors = utility.isDirectEditing(account: account, contentType: contentType)
-        let isRichDocument = utility.isRichDocument(self)
-        return classFile == NKCommon.TypeClassFile.document.rawValue && editors.contains(NCGlobal.shared.editorText) && ((editors.contains(NCGlobal.shared.editorOnlyoffice) || isRichDocument))
-    }
-
     var isWaitingTransfer: Bool {
         status == NCGlobal.shared.metadataStatusWaitDownload || status == NCGlobal.shared.metadataStatusWaitUpload || status == NCGlobal.shared.metadataStatusUploadError
     }
@@ -279,6 +269,41 @@ extension tableMetadata {
 
     var hasPreviewBorder: Bool {
         !isImage && !isAudioOrVideo && hasPreview && NCUtilityFileSystem().fileProviderStoragePreviewIconExists(ocId, etag: etag)
+    }
+
+    var isAvailableEditorView: Bool {
+        guard (classFile == NKCommon.TypeClassFile.document.rawValue) && NextcloudKit.shared.isNetworkReachable() else { return false }
+        let utility = NCUtility()
+        let directEditingEditors = utility.editorsDirectEditing(account: account, contentType: contentType)
+        let richDocumentEditor = utility.isTypeFileRichDocument(self)
+
+        if NCGlobal.shared.capabilityRichDocumentsEnabled && richDocumentEditor && directEditingEditors.isEmpty {
+            // RichDocument: Collabora
+            return true
+        } else if directEditingEditors.contains(NCGlobal.shared.editorText) || directEditingEditors.contains(NCGlobal.shared.editorOnlyoffice) {
+            // DirectEditing: Nextcloud Text - OnlyOffice
+           return true
+        }
+        return false
+    }
+
+    var isAvailableRichDocumentEditorView: Bool {
+        guard (classFile == NKCommon.TypeClassFile.document.rawValue) && NCGlobal.shared.capabilityRichDocumentsEnabled && NextcloudKit.shared.isNetworkReachable() else { return false }
+
+        if NCUtility().isTypeFileRichDocument(self) {
+            return true
+        }
+        return false
+    }
+
+    var isAvailableDirectEditingEditorView: Bool {
+        guard (classFile == NKCommon.TypeClassFile.document.rawValue) && NextcloudKit.shared.isNetworkReachable() else { return false }
+        let editors = NCUtility().editorsDirectEditing(account: account, contentType: contentType)
+
+        if editors.contains(NCGlobal.shared.editorText) || editors.contains(NCGlobal.shared.editorOnlyoffice) {
+            return true
+        }
+        return false
     }
 
     /// Returns false if the user is lokced out of the file. I.e. The file is locked but by somone else
