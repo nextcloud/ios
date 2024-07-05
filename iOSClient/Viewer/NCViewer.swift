@@ -26,7 +26,6 @@ import NextcloudKit
 import QuickLook
 
 class NCViewer: NSObject {
-
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()

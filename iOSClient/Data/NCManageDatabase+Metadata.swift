@@ -281,6 +281,22 @@ extension tableMetadata {
         !isImage && !isAudioOrVideo && hasPreview && NCUtilityFileSystem().fileProviderStoragePreviewIconExists(ocId, etag: etag)
     }
 
+    var isAvailableEditorView: Bool {
+        guard (classFile == NKCommon.TypeClassFile.document.rawValue) && NCGlobal.shared.capabilityRichDocumentsEnabled && NextcloudKit.shared.isNetworkReachable() else { return false }
+        let utility = NCUtility()
+        let editors = utility.isDirectEditing(account: account, contentType: contentType)
+        let availableRichDocument = utility.isRichDocument(self)
+
+        if availableRichDocument && editors.isEmpty {
+            // RichDocument: Collabora
+            return true
+        } else if editors.contains(NCGlobal.shared.editorText) || editors.contains(NCGlobal.shared.editorOnlyoffice) {
+            // DirectEditing: Nextcloud Text - OnlyOffice
+           return true
+        }
+        return false
+    }
+
     /// Returns false if the user is lokced out of the file. I.e. The file is locked but by somone else
     func canUnlock(as user: String) -> Bool {
         return !lock || (lockOwner == user && lockOwnerType == 0)
