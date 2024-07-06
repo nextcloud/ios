@@ -27,7 +27,6 @@ import NextcloudKit
 import RealmSwift
 
 class NCService: NSObject {
-
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
 
@@ -60,7 +59,6 @@ class NCService: NSObject {
     // MARK: -
 
     func addInternalTypeIdentifier() {
-
         // txt
         NextcloudKit.shared.nkCommonInstance.addInternalTypeIdentifier(typeIdentifier: "text/plain", classFile: NKCommon.TypeClassFile.document.rawValue, editor: NCGlobal.shared.editorText, iconName: NKCommon.TypeIconFile.document.rawValue, name: "markdown")
 
@@ -93,7 +91,6 @@ class NCService: NSObject {
     // MARK: -
 
     private func requestServerStatus() async -> Bool {
-
         switch await NCNetworking.shared.getServerStatus(serverUrl: appDelegate.urlBase, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) {
         case .success(let serverInfo):
             if serverInfo.maintenance {
@@ -132,7 +129,6 @@ class NCService: NSObject {
     }
 
     func synchronize() {
-
         NextcloudKit.shared.listingFavorites(showHiddenFiles: NCKeychain().showHiddenFiles,
                                              options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
 
@@ -146,7 +142,6 @@ class NCService: NSObject {
     }
 
     func getAvatar() {
-
         let fileName = appDelegate.userBaseUrl + "-" + self.appDelegate.user + ".png"
         let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
         let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
@@ -238,9 +233,7 @@ class NCService: NSObject {
     // MARK: -
 
     private func requestDashboardWidget() {
-
         @Sendable func convertDataToImage(data: Data?, size: CGSize, fileNameToWrite: String?) {
-
             guard let data = data else { return }
             var imageData: UIImage?
 
@@ -280,7 +273,6 @@ class NCService: NSObject {
     // MARK: -
 
     @objc func synchronizeOffline(account: String) {
-
         // Synchronize Directory
         Task {
             if let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "serverUrl", ascending: true) {
@@ -305,12 +297,10 @@ class NCService: NSObject {
     // MARK: -
 
     func sendClientDiagnosticsRemoteOperation(account: String) {
-
         guard NCGlobal.shared.capabilitySecurityGuardDiagnostics,
               NCManageDatabase.shared.existsDiagnostics(account: account) else { return }
 
         struct Issues: Codable {
-
             struct SyncConflicts: Codable {
                 var count: Int?
                 var oldest: TimeInterval?
