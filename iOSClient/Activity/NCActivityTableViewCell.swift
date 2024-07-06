@@ -44,7 +44,7 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
     @IBOutlet weak var avatar: UIImageView!
     @IBOutlet weak var subject: UILabel!
     @IBOutlet weak var subjectLeadingConstraint: NSLayoutConstraint!
-    
+
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private var user: String = ""
     private var index = IndexPath()
