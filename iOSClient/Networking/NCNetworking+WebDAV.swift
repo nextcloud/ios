@@ -95,18 +95,11 @@ extension NCNetworking {
 
     func fileExists(serverUrlFileName: String,
                     completion: @escaping (_ account: String, _ exists: Bool?, _ file: NKFile?, _ error: NKError) -> Void) {
-        let requestBody =
-        """
-        <?xml version=\"1.0\" encoding=\"UTF-8\"?>
-        <d:propfind xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">
-            <d:prop></d:prop>
-        </d:propfind>
-        """
+        let options = NKRequestOptions(timeout: 10, createProperties: [], queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName,
                                              depth: "0",
-                                             requestBody: requestBody.data(using: .utf8),
-                                             options: NKRequestOptions(timeout: 10, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
+                                             options: options) { account, files, _, error in
             if error == .success, let file = files.first {
                 completion(account, true, file, error)
             } else if error.errorCode == NCGlobal.shared.errorResourceNotFound {
