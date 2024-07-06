@@ -67,7 +67,6 @@ class NCAutoUpload: NSObject {
     }
 
     @objc func autoUploadFullPhotos(viewController: UIViewController?, log: String) {
-
         applicationState = UIApplication.shared.applicationState
 
         NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
@@ -84,7 +83,6 @@ class NCAutoUpload: NSObject {
     }
 
     private func uploadAssetsNewAndFull(viewController: UIViewController?, selector: String, log: String, completion: @escaping (_ items: Int) -> Void) {
-
         guard let account = NCManageDatabase.shared.getActiveAccount() else { return completion(0) }
         let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: account.urlBase, userId: account.userId, account: account.account)
         var metadatas: [tableMetadata] = []
@@ -109,7 +107,6 @@ class NCAutoUpload: NSObject {
             self.endForAssetToUpload = false
 
             for asset in assets {
-
                 var isLivePhoto = false
                 var session: String = ""
                 let assetDate = asset.creationDate ?? Date()
@@ -186,7 +183,6 @@ class NCAutoUpload: NSObject {
     // MARK: -
 
     @objc func alignPhotoLibrary(viewController: UIViewController?) {
-
         guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else { return }
 
         getCameraRollAssets(viewController: viewController, account: activeAccount, selector: NCGlobal.shared.selectorUploadAutoUploadAll, alignPhotoLibrary: true) { assets in
@@ -199,13 +195,10 @@ class NCAutoUpload: NSObject {
     }
 
     private func getCameraRollAssets(viewController: UIViewController?, account: tableAccount, selector: String, alignPhotoLibrary: Bool, completion: @escaping (_ assets: [PHAsset]?) -> Void) {
-
         NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
-
             guard hasPermission else { return completion(nil) }
             let assetCollection = PHAssetCollection.fetchAssetCollections(with: PHAssetCollectionType.smartAlbum, subtype: PHAssetCollectionSubtype.smartAlbumUserLibrary, options: nil)
             guard let assetCollection = assetCollection.firstObject else { return completion(nil) }
-
             let predicateImage = NSPredicate(format: "mediaType == %i", PHAssetMediaType.image.rawValue)
             let predicateVideo = NSPredicate(format: "mediaType == %i", PHAssetMediaType.video.rawValue)
             var predicate: NSPredicate?
