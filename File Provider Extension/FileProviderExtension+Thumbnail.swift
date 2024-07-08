@@ -26,14 +26,11 @@ import FileProvider
 import NextcloudKit
 
 extension FileProviderExtension {
-
     override func fetchThumbnails(for itemIdentifiers: [NSFileProviderItemIdentifier], requestedSize size: CGSize, perThumbnailCompletionHandler: @escaping (NSFileProviderItemIdentifier, Data?, Error?) -> Void, completionHandler: @escaping (Error?) -> Void) -> Progress {
-
         let progress = Progress(totalUnitCount: Int64(itemIdentifiers.count))
         var counterProgress: Int64 = 0
 
         for itemIdentifier in itemIdentifiers {
-
             guard let metadata = fpUtility.getTableMetadataFromItemIdentifier(itemIdentifier) else {
                 counterProgress += 1
                 if counterProgress == progress.totalUnitCount { completionHandler(nil) }
@@ -41,7 +38,6 @@ extension FileProviderExtension {
             }
 
             if metadata.hasPreview {
-
                 let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
                 let fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
 
@@ -64,7 +60,6 @@ extension FileProviderExtension {
                         }
                     }
                 }
-
             } else {
                 counterProgress += 1
                 if counterProgress == progress.totalUnitCount {
@@ -75,5 +70,4 @@ extension FileProviderExtension {
 
         return progress
     }
-
 }

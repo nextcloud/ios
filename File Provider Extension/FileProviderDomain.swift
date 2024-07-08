@@ -24,11 +24,8 @@
 import UIKit
 
 class FileProviderDomain: NSObject {
-
     func registerDomains() {
-
         NSFileProviderManager.getDomainsWithCompletionHandler { fileProviderDomain, error in
-
             var domains: [String] = []
             let pathRelativeToDocumentStorage = NSFileProviderManager.default.documentStorageURL.absoluteString
             let accounts = NCManageDatabase.shared.getAllAccount()
@@ -84,7 +81,6 @@ class FileProviderDomain: NSObject {
     }
 
     func removeAllDomains() {
-
         NSFileProviderManager.removeAllDomains { _ in }
     }
 }

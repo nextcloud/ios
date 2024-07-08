@@ -53,7 +53,6 @@ import Alamofire
    -------------------------------------------------------------------------------------------------------------------------------------------- */
 
 class FileProviderExtension: NSFileProviderExtension {
-
     var outstandingSessionTasks: [URL: URLSessionTask] = [:]
     var outstandingOcIdTemp: [String: String] = [:]
     var fpUtility = fileProviderUtility()
@@ -75,7 +74,6 @@ class FileProviderExtension: NSFileProviderExtension {
     // MARK: - Enumeration
 
     override func enumerator(for containerItemIdentifier: NSFileProviderItemIdentifier) throws -> NSFileProviderEnumerator {
-
         var maybeEnumerator: NSFileProviderEnumerator?
 
         if containerItemIdentifier != NSFileProviderItemIdentifier.workingSet {
@@ -114,9 +112,7 @@ class FileProviderExtension: NSFileProviderExtension {
     // MARK: - Item
 
     override func item(for identifier: NSFileProviderItemIdentifier) throws -> NSFileProviderItem {
-
         if identifier == .rootContainer {
-
             let metadata = tableMetadata()
 
             metadata.account = fileProviderData.shared.account
@@ -128,9 +124,7 @@ class FileProviderExtension: NSFileProviderExtension {
             metadata.classFile = NKCommon.TypeClassFile.directory.rawValue
 
             return FileProviderItem(metadata: metadata, parentItemIdentifier: NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue))
-
         } else {
-
             guard let metadata = fpUtility.getTableMetadataFromItemIdentifier(identifier) else {
                 throw NSFileProviderError(.noSuchItem)
             }
@@ -143,12 +137,10 @@ class FileProviderExtension: NSFileProviderExtension {
     }
 
     override func urlForItem(withPersistentIdentifier identifier: NSFileProviderItemIdentifier) -> URL? {
-
         // resolve the given identifier to a file on disk
         guard let item = try? item(for: identifier) else {
             return nil
         }
-
         var url = fileProviderData.shared.fileProviderManager.documentStorageURL.appendingPathComponent(identifier.rawValue, isDirectory: true)
 
         // (fix copy/paste directory -> isDirectory = false)
@@ -158,7 +150,6 @@ class FileProviderExtension: NSFileProviderExtension {
     }
 
     override func persistentIdentifierForItem(at url: URL) -> NSFileProviderItemIdentifier? {
-
         // resolve the given URL to a persistent identifier using a database
         let pathComponents = url.pathComponents
 
@@ -171,7 +162,6 @@ class FileProviderExtension: NSFileProviderExtension {
     }
 
     override func providePlaceholder(at url: URL, completionHandler: @escaping (Error?) -> Void) {
-
         guard let identifier = persistentIdentifierForItem(at: url) else {
             completionHandler(NSFileProviderError(.noSuchItem))
             return
@@ -188,7 +178,6 @@ class FileProviderExtension: NSFileProviderExtension {
     }
 
     override func startProvidingItem(at url: URL, completionHandler: @escaping ((_ error: Error?) -> Void)) {
-
         let pathComponents = url.pathComponents
         let identifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
 
@@ -218,16 +207,11 @@ class FileProviderExtension: NSFileProviderExtension {
         fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, update: true)
 
         NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { _ in
-
         }, taskHandler: { task in
-
             self.outstandingSessionTasks[url] = task
             fileProviderData.shared.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(identifier.rawValue)) { _ in }
-
         }, progressHandler: { _ in
-
         }) { _, etag, date, _, _, _, error in
-
             self.outstandingSessionTasks.removeValue(forKey: url)
             guard var metadata = self.fpUtility.getTableMetadataFromItemIdentifier(identifier) else {
                 completionHandler(NSFileProviderError(.noSuchItem))
@@ -245,28 +229,21 @@ class FileProviderExtension: NSFileProviderExtension {
                 NCManageDatabase.shared.addMetadata(metadata)
 
                 completionHandler(nil)
-
             } else if error.errorCode == 200 {
-
                 NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusNormal)
-
                 completionHandler(nil)
-
             } else {
-
                 metadata.status = NCGlobal.shared.metadataStatusDownloadError
                 metadata.sessionError = error.errorDescription
                 NCManageDatabase.shared.addMetadata(metadata)
 
                 completionHandler(NSFileProviderError(.noSuchItem))
             }
-
             fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, update: true)
         }
     }
 
     override func itemChanged(at url: URL) {
-
         let pathComponents = url.pathComponents
         assert(pathComponents.count > 2)
         let itemIdentifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
@@ -292,7 +269,6 @@ class FileProviderExtension: NSFileProviderExtension {
     }
 
     override func stopProvidingItem(at url: URL) {
-
         let fileHasLocalChanges = false
 
         if !fileHasLocalChanges {
@@ -317,14 +293,10 @@ class FileProviderExtension: NSFileProviderExtension {
     }
 
     override func importDocument(at fileURL: URL, toParentItemIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
-
         DispatchQueue.main.async {
-
             autoreleasepool {
-
                 var size = 0 as Int64
                 var error: NSError?
-
                 guard let tableDirectory = self.fpUtility.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: fileProviderData.shared.account, homeServerUrl: fileProviderData.shared.homeServerUrl) else {
                     completionHandler(nil, NSFileProviderError(.noSuchItem))
                     return
@@ -380,19 +352,17 @@ class FileProviderExtension: NSFileProviderExtension {
     }
 
     func uploadComplete(fileName: String, serverUrl: String, ocId: String?, etag: String?, date: NSDate?, size: Int64, fileNameLocalPath: String?, task: URLSessionTask, error: NKError) {
-
         guard let metadataTemp = NCManageDatabase.shared.getMetadataFromFileNameLocalPath(fileNameLocalPath) else { return }
         let ocIdTemp = metadataTemp.ocId
         let metadata = tableMetadata.init(value: metadataTemp)
-
         let url = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: fileName))
+
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             self.outstandingSessionTasks.removeValue(forKey: url)
         }
         outstandingOcIdTemp[ocIdTemp] = ocId
 
         if error == .success {
-
             // New file
             if ocId != ocIdTemp {
                 // Signal update
@@ -424,13 +394,9 @@ class FileProviderExtension: NSFileProviderExtension {
             }
 
             fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, update: true)
-
         } else {
-
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
-
             fileProviderData.shared.signalEnumerator(ocId: ocIdTemp, delete: true)
         }
     }
-
 }

@@ -26,39 +26,30 @@ import FileProvider
 import NextcloudKit
 
 class FileProviderItem: NSObject, NSFileProviderItem {
-
     var metadata: tableMetadata
     var parentItemIdentifier: NSFileProviderItemIdentifier
-
     var itemIdentifier: NSFileProviderItemIdentifier {
         return fileProviderUtility().getItemIdentifier(metadata: metadata)
     }
-
     var filename: String {
         return metadata.fileNameView
     }
-
     var documentSize: NSNumber? {
         return NSNumber(value: metadata.size)
     }
-
     var typeIdentifier: String {
         let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: metadata.fileNameView, mimeType: "", directory: metadata.directory)
         return results.typeIdentifier
     }
-
     var contentModificationDate: Date? {
         return metadata.date as Date
     }
-
     var creationDate: Date? {
         return metadata.creationDate as Date
     }
-
     var lastUsedDate: Date? {
         return metadata.date as Date
     }
-
     var capabilities: NSFileProviderItemCapabilities {
         guard !metadata.directory else {
             return [ .allowsAddingSubItems, .allowsContentEnumerating, .allowsReading, .allowsDeleting, .allowsRenaming ]
@@ -68,19 +59,15 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         }
         return [ .allowsWriting, .allowsReading, .allowsDeleting, .allowsRenaming, .allowsReparenting ]
     }
-
     var isTrashed: Bool {
         return false
     }
-
     var childItemCount: NSNumber? {
         return nil
     }
-
     var versionIdentifier: Data? {
         return metadata.etag.data(using: .utf8)
     }
-
     var tagData: Data? {
         if let tableTag = NCManageDatabase.shared.getTag(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
             return tableTag.tagIOS
@@ -88,7 +75,6 @@ class FileProviderItem: NSObject, NSFileProviderItem {
             return nil
         }
     }
-
     var favoriteRank: NSNumber? {
         if let rank = fileProviderData.shared.listFavoriteIdentifierRank[metadata.ocId] {
             return rank
@@ -96,11 +82,9 @@ class FileProviderItem: NSObject, NSFileProviderItem {
             return nil
         }
     }
-
     var isMostRecentVersionDownloaded: Bool {
         return true
     }
-
     var isDownloaded: Bool {
         if metadata.directory {
             return true
@@ -111,7 +95,6 @@ class FileProviderItem: NSObject, NSFileProviderItem {
             return false
         }
     }
-
     var isDownloading: Bool {
         if metadata.status == NCGlobal.shared.metadataStatusDownloading {
             return true
@@ -119,7 +102,6 @@ class FileProviderItem: NSObject, NSFileProviderItem {
             return false
         }
     }
-
     var downloadingError: Error? {
         if metadata.status == NCGlobal.shared.metadataStatusDownloadError {
             return fileProviderData.FileProviderError.downloadError
@@ -127,7 +109,6 @@ class FileProviderItem: NSObject, NSFileProviderItem {
             return nil
         }
     }
-
     var isUploaded: Bool {
         if NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) != nil {
             return true
@@ -135,7 +116,6 @@ class FileProviderItem: NSObject, NSFileProviderItem {
             return false
         }
     }
-
     var isUploading: Bool {
         if metadata.status == NCGlobal.shared.metadataStatusUploading {
             return true
@@ -143,7 +123,6 @@ class FileProviderItem: NSObject, NSFileProviderItem {
             return false
         }
     }
-
     var uploadingError: Error? {
         if metadata.status == NCGlobal.shared.metadataStatusUploadError {
             return fileProviderData.FileProviderError.uploadError
@@ -151,7 +130,6 @@ class FileProviderItem: NSObject, NSFileProviderItem {
             return nil
         }
     }
-
     init(metadata: tableMetadata, parentItemIdentifier: NSFileProviderItemIdentifier) {
         self.metadata = metadata
         self.parentItemIdentifier = parentItemIdentifier

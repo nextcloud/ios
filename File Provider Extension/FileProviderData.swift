@@ -64,7 +64,6 @@ class fileProviderData: NSObject {
     // MARK: - 
 
     func setupAccount(domain: NSFileProviderDomain?, providerExtension: NSFileProviderExtension) -> tableAccount? {
-
         self.domain = domain
         if domain != nil {
             if let fileProviderManager = NSFileProviderManager(for: domain!) {
@@ -81,7 +80,6 @@ class fileProviderData: NSObject {
 
         // NO DOMAIN -> Set default account
         if domain == nil {
-
             guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else { return nil }
 
             account = activeAccount.account
@@ -91,7 +89,6 @@ class fileProviderData: NSObject {
             homeServerUrl = utilityFileSystem.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId)
 
             NCManageDatabase.shared.setCapabilities(account: account)
-
             NextcloudKit.shared.setup(account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId, password: NCKeychain().getPassword(account: activeAccount.account), urlBase: activeAccount.urlBase, userAgent: userAgent, nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor, delegate: NCNetworking.shared)
 
             return tableAccount.init(value: activeAccount)
@@ -114,7 +111,6 @@ class fileProviderData: NSObject {
                 homeServerUrl = utilityFileSystem.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId)
 
                 NCManageDatabase.shared.setCapabilities(account: account)
-
                 NextcloudKit.shared.setup(account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId, password: NCKeychain().getPassword(account: activeAccount.account), urlBase: activeAccount.urlBase, userAgent: userAgent, nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor, delegate: NCNetworking.shared)
 
                 return tableAccount.init(value: activeAccount)
@@ -128,11 +124,8 @@ class fileProviderData: NSObject {
 
     @discardableResult
     func signalEnumerator(ocId: String, delete: Bool = false, update: Bool = false) -> FileProviderItem? {
-
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return nil }
-
         guard let parentItemIdentifier = fileProviderUtility().getParentItemIdentifier(metadata: metadata) else { return nil }
-
         let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
 
         if delete {
