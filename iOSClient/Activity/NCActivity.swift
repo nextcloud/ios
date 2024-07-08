@@ -27,15 +27,12 @@ import SwiftRichString
 import NextcloudKit
 
 class NCActivity: UIViewController, NCSharePagingContent {
-
+    @IBOutlet weak var viewContainerConstraint: NSLayoutConstraint!
     @IBOutlet weak var tableView: UITableView!
 
     var commentView: NCActivityCommentView?
     var textField: UIView? { commentView?.newCommentField }
-
-    @IBOutlet weak var viewContainerConstraint: NSLayoutConstraint!
     var height: CGFloat = 0
-
     var metadata: tableMetadata?
     var showComments: Bool = false
 
@@ -130,12 +127,8 @@ class NCActivity: UIViewController, NCSharePagingContent {
         label.textColor = NCBrandColor.shared.textColor2
         label.textAlignment = .center
         label.text = NSLocalizedString("_no_activity_footer_", comment: "")
-//        label.frame = CGRect(x: 0, y: 10, width: tableView.frame.width, height: 60)
-
         view.addSubview(label)
-
         label.translatesAutoresizingMaskIntoConstraints = false
-
         label.topAnchor.constraint(equalTo: view.topAnchor, constant: 20).isActive = true
         label.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         label.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
@@ -149,6 +142,10 @@ class NCActivity: UIViewController, NCSharePagingContent {
 extension NCActivity: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return 50
+    }
+
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 80
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -187,7 +184,6 @@ extension NCActivity: UITableViewDelegate {
 }
 
 extension NCActivity: UITableViewDataSource {
-
     func numberOfSections(in tableView: UITableView) -> Int {
         return sectionDates.count
     }
@@ -248,7 +244,6 @@ extension NCActivity: UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "tableCell", for: indexPath) as? NCActivityTableViewCell else {
             return UITableViewCell()
         }
-
         var orderKeysId: [String] = []
 
         cell.idActivity = activity.idActivity
@@ -261,7 +256,6 @@ extension NCActivity: UITableViewDataSource {
 
         // icon
         if !activity.icon.isEmpty {
-
             let fileNameIcon = (activity.icon as NSString).lastPathComponent
             let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileNameIcon
 
@@ -283,12 +277,9 @@ extension NCActivity: UITableViewDataSource {
 
         // avatar
         if !activity.user.isEmpty && activity.user != appDelegate.userId {
-
             cell.avatar.isHidden = false
             cell.fileUser = activity.user
-
             let fileName = appDelegate.userBaseUrl + "-" + activity.user + ".png"
-
             NCNetworking.shared.downloadAvatar(user: activity.user, dispalyName: nil, fileName: fileName, cell: cell, view: tableView)
             cell.subjectLeadingConstraint.constant = 15
         } else {
@@ -298,7 +289,6 @@ extension NCActivity: UITableViewDataSource {
         // subject
         cell.subject.text = activity.subject
         if !activity.subjectRich.isEmpty {
-
             var subject = activity.subjectRich
             var keys: [String] = []
 
@@ -348,12 +338,11 @@ extension NCActivity: UIScrollViewDelegate {
 // MARK: - NC API & Algorithm
 
 extension NCActivity {
-
     func fetchAll(isInitial: Bool) {
         guard !isFetchingActivity else { return }
         self.isFetchingActivity = true
-
         var bottom: CGFloat = 0
+
         if let mainTabBar = self.tabBarController?.tabBar as? NCMainTabBar {
             bottom = -mainTabBar.getHeight()
         }
@@ -380,8 +369,8 @@ extension NCActivity {
     }
 
     func loadDataSource() {
-
         var newItems = [DateCompareable]()
+
         if showComments, let metadata = metadata, let account = NCManageDatabase.shared.getActiveAccount() {
             let comments = NCManageDatabase.shared.getComments(account: account.account, objectId: metadata.fileId)
             newItems += comments
@@ -453,10 +442,9 @@ extension NCActivity {
 
     func loadActivity(idActivity: Int, limit: Int = 200, disptachGroup: DispatchGroup) {
         guard hasActivityToLoad else { return }
-
         var resultActivityId = 0
-        disptachGroup.enter()
 
+        disptachGroup.enter()
         NextcloudKit.shared.getActivity(
             since: idActivity,
             limit: min(limit, 200),

@@ -42,7 +42,7 @@ class NCActivityCommentView: UIView, UITextFieldDelegate {
             imageItem.image = NCUtility().loadImage(named: "person.crop.circle", colors: [NCBrandColor.shared.iconImageColor])
         }
     }
-//
+
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         completionHandler?(textField.text)
@@ -55,8 +55,6 @@ extension NCActivityCommentView: UISearchBarDelegate {
         searchBar.resignFirstResponder()
         completionHandler?(searchBar.text)
     }
-    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
 
-//        return true
-    }
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) { }
 }
