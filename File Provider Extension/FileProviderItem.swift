@@ -24,6 +24,7 @@
 import UIKit
 import FileProvider
 import NextcloudKit
+import UniformTypeIdentifiers
 
 class FileProviderItem: NSObject, NSFileProviderItem {
     var metadata: tableMetadata
@@ -47,10 +48,10 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
     /// Managing Content
     var childItemCount: NSNumber? {
-        return nil
+        return metadata.directory ? nil : nil
     }
     var documentSize: NSNumber? {
-        return NSNumber(value: metadata.size)
+        return metadata.directory ? nil : NSNumber(value: metadata.size)
     }
     /// Specifying Content Location
     var parentItemIdentifier: NSFileProviderItemIdentifier
@@ -75,6 +76,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         return metadata.etag.data(using: .utf8)
     }
     var isMostRecentVersionDownloaded: Bool {
+        if metadata.directory { return true }
         if NCManageDatabase.shared.getTableLocalFile(ocId: metadata.ocId) == nil {
             return false
         } else {
@@ -111,6 +113,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         }
     }
     var isDownloaded: Bool {
+        if metadata.directory { return true }
         if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
             return true
         } else {

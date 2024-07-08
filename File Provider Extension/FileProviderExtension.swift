@@ -114,7 +114,6 @@ class FileProviderExtension: NSFileProviderExtension {
     override func item(for identifier: NSFileProviderItemIdentifier) throws -> NSFileProviderItem {
         if identifier == .rootContainer {
             let metadata = tableMetadata()
-
             metadata.account = fileProviderData.shared.account
             metadata.directory = true
             metadata.ocId = NSFileProviderItemIdentifier.rootContainer.rawValue
@@ -122,7 +121,6 @@ class FileProviderExtension: NSFileProviderExtension {
             metadata.fileNameView = "root"
             metadata.serverUrl = fileProviderData.shared.homeServerUrl
             metadata.classFile = NKCommon.TypeClassFile.directory.rawValue
-
             return FileProviderItem(metadata: metadata, parentItemIdentifier: NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue))
         } else {
             guard let metadata = fpUtility.getTableMetadataFromItemIdentifier(identifier) else {

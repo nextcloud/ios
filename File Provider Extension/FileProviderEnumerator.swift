@@ -32,7 +32,6 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
 
     init(enumeratedItemIdentifier: NSFileProviderItemIdentifier) {
         self.enumeratedItemIdentifier = enumeratedItemIdentifier
-
         // Select ServerUrl
         if enumeratedItemIdentifier == .rootContainer {
             serverUrl = fileProviderData.shared.homeServerUrl
@@ -44,7 +43,6 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 }
             }
         }
-
         super.init()
     }
 
@@ -54,20 +52,16 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
 
     func enumerateItems(for observer: NSFileProviderEnumerationObserver, startingAt page: NSFileProviderPage) {
         var items: [NSFileProviderItemProtocol] = []
-
         /*** WorkingSet ***/
         if enumeratedItemIdentifier == .workingSet {
             var itemIdentifierMetadata: [NSFileProviderItemIdentifier: tableMetadata] = [:]
-
             // ***** Tags *****
             let tags = NCManageDatabase.shared.getTags(predicate: NSPredicate(format: "account == %@", fileProviderData.shared.account))
             for tag in tags {
-
                 guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(tag.ocId)  else { continue }
                 fpUtility.createocIdentifierOnFileSystem(metadata: metadata)
                 itemIdentifierMetadata[fpUtility.getItemIdentifier(metadata: metadata)] = metadata
             }
-
             // ***** Favorite *****
             fileProviderData.shared.listFavoriteIdentifierRank = NCManageDatabase.shared.getTableMetadatasDirectoryFavoriteIdentifierRank(account: fileProviderData.shared.account)
             for (identifier, _) in fileProviderData.shared.listFavoriteIdentifierRank {
@@ -75,7 +69,6 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(identifier) else { continue }
                 itemIdentifierMetadata[fpUtility.getItemIdentifier(metadata: metadata)] = metadata
             }
-
             // create items
             for (_, metadata) in itemIdentifierMetadata {
                 let parentItemIdentifier = fpUtility.getParentItemIdentifier(metadata: metadata)
@@ -84,19 +77,14 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     items.append(item)
                 }
             }
-
             observer.didEnumerate(items)
             observer.finishEnumerating(upTo: nil)
-
         } else {
-
         /*** ServerUrl ***/
-
             guard let serverUrl = serverUrl else {
                 observer.finishEnumerating(upTo: nil)
                 return
             }
-
             if page == NSFileProviderPage.initialPageSortedByDate as NSFileProviderPage || page == NSFileProviderPage.initialPageSortedByName as NSFileProviderPage {
                 self.readFileOrFolder(serverUrl: serverUrl) { metadatas in
                     self.completeObserver(observer, numPage: 1, metadatas: metadatas)
@@ -111,7 +99,6 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     func enumerateChanges(for observer: NSFileProviderChangeObserver, from anchor: NSFileProviderSyncAnchor) {
         var itemsDelete: [NSFileProviderItemIdentifier] = []
         var itemsUpdate: [FileProviderItem] = []
-
         // Report the deleted items
         //
         if self.enumeratedItemIdentifier == .workingSet {
@@ -125,7 +112,6 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             }
             fileProviderData.shared.fileProviderSignalDeleteContainerItemIdentifier.removeAll()
         }
-
         // Report the updated items
         //
         if self.enumeratedItemIdentifier == .workingSet {
