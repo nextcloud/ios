@@ -111,6 +111,7 @@ class fileProviderData: NSObject {
                 homeServerUrl = utilityFileSystem.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId)
 
                 NCManageDatabase.shared.setCapabilities(account: account)
+
                 NextcloudKit.shared.setup(account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId, password: NCKeychain().getPassword(account: activeAccount.account), urlBase: activeAccount.urlBase, userAgent: userAgent, nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor, delegate: NCNetworking.shared)
 
                 return tableAccount.init(value: activeAccount)
