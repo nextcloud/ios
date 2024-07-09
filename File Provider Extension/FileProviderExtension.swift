@@ -66,8 +66,8 @@ class FileProviderExtension: NSFileProviderExtension {
         // Configure URLSession
         _ = NCNetworking.shared.sessionManagerUploadBackgroundExtension
         // Domains
-        FileProviderDomain().removeAllDomains()
-        //FileProviderDomain().registerDomains()
+        //FileProviderDomain().removeAllDomains()
+        FileProviderDomain().registerDomains()
     }
 
     deinit {
@@ -170,6 +170,9 @@ class FileProviderExtension: NSFileProviderExtension {
     }
 
     override func startProvidingItem(at url: URL, completionHandler: @escaping ((_ error: Error?) -> Void)) {
+        guard outstandingSessionTasks[url] == nil else {
+            return completionHandler(nil)
+        }
         let pathComponents = url.pathComponents
         let itemIdentifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
         guard let metadata = fpUtility.getTableMetadataFromItemIdentifier(itemIdentifier) else {
