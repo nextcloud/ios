@@ -115,7 +115,6 @@ class fileProviderData: NSObject {
                 return tableAccount.init(value: activeAccount)
             }
         }
-
         return nil
     }
 

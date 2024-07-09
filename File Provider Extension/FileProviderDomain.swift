@@ -49,7 +49,7 @@ class FileProviderDomain: NSObject {
                 if !domainFound {
                     let fileProviderDomain = NSFileProviderDomain(identifier: NSFileProviderDomainIdentifier(rawValue: domain), displayName: domain, pathRelativeToDocumentStorage: pathRelativeToDocumentStorage)
                     NSFileProviderManager.remove(fileProviderDomain, completionHandler: { error in
-                        if error != nil {
+                        if let error {
                             print("Error  domain: \(fileProviderDomain) error: \(String(describing: error))")
                         }
                     })
@@ -71,7 +71,7 @@ class FileProviderDomain: NSObject {
                 if !domainFound {
                     let fileProviderDomain = NSFileProviderDomain(identifier: NSFileProviderDomainIdentifier(rawValue: accountDomain), displayName: accountDomain, pathRelativeToDocumentStorage: pathRelativeToDocumentStorage)
                     NSFileProviderManager.add(fileProviderDomain, completionHandler: { error in
-                        if error != nil {
+                        if let error {
                             print("Error  domain: \(fileProviderDomain) error: \(String(describing: error))")
                         }
                     })

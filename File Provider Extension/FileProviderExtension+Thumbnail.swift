@@ -46,9 +46,9 @@ extension FileProviderExtension {
                    let url = URL(string: "\(urlBase)/index.php/core/preview.png?file=\(fileNamePath)&x=\(size.width)&y=\(size.height)&a=1&mode=cover") {
 
                     NextcloudKit.shared.getPreview(url: url) { _, data, error in
-                        if error == .success && data != nil {
+                        if error == .success, let data {
                             do {
-                                try data!.write(to: URL(fileURLWithPath: fileNameIconLocalPath), options: .atomic)
+                                try data.write(to: URL(fileURLWithPath: fileNameIconLocalPath), options: .atomic)
                             } catch { }
                             perThumbnailCompletionHandler(itemIdentifier, data, nil)
                         } else {
