@@ -86,7 +86,6 @@ class fileProviderUtility: NSObject {
         } catch let error {
             errorResult = error
         }
-
         return errorResult
     }
 
@@ -106,7 +105,6 @@ class fileProviderUtility: NSObject {
         } catch let error {
             errorResult = error
         }
-
         return errorResult
     }
 
@@ -118,7 +116,6 @@ class fileProviderUtility: NSObject {
         } catch let error {
             errorResult = error
         }
-
         return errorResult
     }
 

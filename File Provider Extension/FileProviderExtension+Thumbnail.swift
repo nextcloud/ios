@@ -67,7 +67,6 @@ extension FileProviderExtension {
                 }
             }
         }
-
         return progress
     }
 }
