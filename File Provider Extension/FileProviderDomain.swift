@@ -47,10 +47,10 @@ class FileProviderDomain: NSObject {
                     }
                 }
                 if !domainFound {
-                    let domainRawValue = NSFileProviderDomain(identifier: NSFileProviderDomainIdentifier(rawValue: domain), displayName: domain, pathRelativeToDocumentStorage: pathRelativeToDocumentStorage)
-                    NSFileProviderManager.remove(domainRawValue, completionHandler: { error in
+                    let fileProviderDomain = NSFileProviderDomain(identifier: NSFileProviderDomainIdentifier(rawValue: domain), displayName: domain, pathRelativeToDocumentStorage: pathRelativeToDocumentStorage)
+                    NSFileProviderManager.remove(fileProviderDomain, completionHandler: { error in
                         if error != nil {
-                            print("Error  domain: \(domainRawValue) error: \(String(describing: error))")
+                            print("Error  domain: \(fileProviderDomain) error: \(String(describing: error))")
                         }
                     })
                 }
@@ -69,10 +69,10 @@ class FileProviderDomain: NSObject {
                     }
                 }
                 if !domainFound {
-                    let domainRawValue = NSFileProviderDomain(identifier: NSFileProviderDomainIdentifier(rawValue: accountDomain), displayName: accountDomain, pathRelativeToDocumentStorage: pathRelativeToDocumentStorage)
-                    NSFileProviderManager.add(domainRawValue, completionHandler: { error in
+                    let fileProviderDomain = NSFileProviderDomain(identifier: NSFileProviderDomainIdentifier(rawValue: accountDomain), displayName: accountDomain, pathRelativeToDocumentStorage: pathRelativeToDocumentStorage)
+                    NSFileProviderManager.add(fileProviderDomain, completionHandler: { error in
                         if error != nil {
-                            print("Error  domain: \(domainRawValue) error: \(String(describing: error))")
+                            print("Error  domain: \(fileProviderDomain) error: \(String(describing: error))")
                         }
                     })
                 }
