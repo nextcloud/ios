@@ -208,24 +208,25 @@ class FileProviderExtension: NSFileProviderExtension {
         }, taskHandler: { task in
             self.outstandingSessionTasks[url] = task
             fileProviderData.shared.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(identifier.rawValue)) { _ in }
-        }, progressHandler: { _ in
+        }, progressHandler: { progress in
+            fileProviderData.shared.downloadsInProgress[identifier] = progress
+            //DispatchQueue.main.async {
+            //    fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, update: true)
+            //}
         }) { _, etag, date, _, _, _, error in
             self.outstandingSessionTasks.removeValue(forKey: url)
+            fileProviderData.shared.downloadsInProgress[identifier] = nil
             guard var metadata = self.fpUtility.getTableMetadataFromItemIdentifier(identifier) else {
                 completionHandler(NSFileProviderError(.noSuchItem))
                 return
             }
             metadata = tableMetadata.init(value: metadata)
-
             if error == .success {
-
                 metadata.status = NCGlobal.shared.metadataStatusNormal
                 metadata.date = (date as? NSDate) ?? NSDate()
                 metadata.etag = etag ?? ""
-
                 NCManageDatabase.shared.addLocalFile(metadata: metadata)
                 NCManageDatabase.shared.addMetadata(metadata)
-
                 completionHandler(nil)
             } else if error.errorCode == 200 {
                 NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusNormal)
@@ -234,7 +235,6 @@ class FileProviderExtension: NSFileProviderExtension {
                 metadata.status = NCGlobal.shared.metadataStatusDownloadError
                 metadata.sessionError = error.errorDescription
                 NCManageDatabase.shared.addMetadata(metadata)
-
                 completionHandler(NSFileProviderError(.noSuchItem))
             }
             fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, update: true)
