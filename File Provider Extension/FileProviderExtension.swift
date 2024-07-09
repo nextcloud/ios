@@ -66,8 +66,7 @@ class FileProviderExtension: NSFileProviderExtension {
         // Configure URLSession
         _ = NCNetworking.shared.sessionManagerUploadBackgroundExtension
         // Domains
-        //FileProviderDomain().removeAllDomains()
-        FileProviderDomain().registerDomains()
+        // FileProviderDomain().registerDomains()
     }
 
     deinit {
