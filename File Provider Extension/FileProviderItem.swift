@@ -76,7 +76,6 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         return metadata.etag.data(using: .utf8)
     }
     var isMostRecentVersionDownloaded: Bool {
-        if metadata.directory { return true }
         if NCManageDatabase.shared.getTableLocalFile(ocId: metadata.ocId) == nil {
             return false
         } else {
@@ -113,7 +112,6 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         }
     }
     var isDownloaded: Bool {
-        if metadata.directory { return true }
         if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
             return true
         } else {
