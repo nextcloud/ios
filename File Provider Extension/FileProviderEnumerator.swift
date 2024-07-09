@@ -70,8 +70,9 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             }
             // create items
             for (_, metadata) in itemIdentifierMetadata {
-                if let parentItemIdentifier = fpUtility.getParentItemIdentifier(metadata: metadata) {
-                    let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
+                let parentItemIdentifier = fpUtility.getParentItemIdentifier(metadata: metadata)
+                if parentItemIdentifier != nil {
+                    let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!)
                     items.append(item)
                 }
             }
@@ -147,8 +148,9 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         if metadatas != nil {
             for metadata in metadatas! {
                 if metadata.e2eEncrypted || (!metadata.session.isEmpty && metadata.session != NCNetworking.shared.sessionUploadBackgroundExtension) { continue }
-                if let parentItemIdentifier = fpUtility.getParentItemIdentifier(metadata: metadata) {
-                    let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
+                let parentItemIdentifier = fpUtility.getParentItemIdentifier(metadata: metadata)
+                if parentItemIdentifier != nil {
+                    let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!)
                     items.append(item)
                 }
             }

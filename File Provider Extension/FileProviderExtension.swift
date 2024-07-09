@@ -180,9 +180,25 @@ class FileProviderExtension: NSFileProviderExtension {
     override func startProvidingItem(at url: URL, completionHandler: @escaping ((_ error: Error?) -> Void)) {
         let pathComponents = url.pathComponents
         let identifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
+
+        if outstandingSessionTasks[url] != nil {
+            return completionHandler(nil)
+        }
+
         guard let metadata = fpUtility.getTableMetadataFromItemIdentifier(identifier) else {
             return completionHandler(NSFileProviderError(.noSuchItem))
         }
+
+        // Document VIEW ONLY
+        if metadata.isDocumentViewableOnly {
+            return completionHandler(NSFileProviderError(.noSuchItem))
+        }
+
+        let tableLocalFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+        if tableLocalFile != nil && utilityFileSystem.fileProviderStorageExists(metadata) && tableLocalFile?.etag == metadata.etag {
+            return completionHandler(nil)
+        }
+
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
 
@@ -257,11 +273,13 @@ class FileProviderExtension: NSFileProviderExtension {
             } catch let error {
                 print("error: \(error)")
             }
+
             // write out a placeholder to facilitate future property lookups
             self.providePlaceholder(at: url, completionHandler: { _ in
                 // handle any error, do any necessary cleanup
             })
         }
+
         // Download task
         if let downloadTask = outstandingSessionTasks[url] {
             downloadTask.cancel()

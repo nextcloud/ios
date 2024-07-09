@@ -65,10 +65,8 @@ class fileProviderData: NSObject {
 
     func setupAccount(domain: NSFileProviderDomain?, providerExtension: NSFileProviderExtension) -> tableAccount? {
         self.domain = domain
-        if domain != nil {
-            if let fileProviderManager = NSFileProviderManager(for: domain!) {
-                self.fileProviderManager = fileProviderManager
-            }
+        if let domain, let fileProviderManager = NSFileProviderManager(for: domain) {
+            self.fileProviderManager = fileProviderManager
         }
 
         // LOG
