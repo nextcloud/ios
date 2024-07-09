@@ -208,14 +208,9 @@ class FileProviderExtension: NSFileProviderExtension {
         }, taskHandler: { task in
             self.outstandingSessionTasks[url] = task
             fileProviderData.shared.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(identifier.rawValue)) { _ in }
-        }, progressHandler: { progress in
-            fileProviderData.shared.downloadsInProgress[identifier] = progress
-            //DispatchQueue.main.async {
-            //    fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, update: true)
-            //}
+        }, progressHandler: { _ in
         }) { _, etag, date, _, _, _, error in
             self.outstandingSessionTasks.removeValue(forKey: url)
-            fileProviderData.shared.downloadsInProgress[identifier] = nil
             guard var metadata = self.fpUtility.getTableMetadataFromItemIdentifier(identifier) else {
                 completionHandler(NSFileProviderError(.noSuchItem))
                 return

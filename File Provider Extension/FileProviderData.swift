@@ -33,7 +33,6 @@ class fileProviderData: NSObject {
     var domain: NSFileProviderDomain?
     var fileProviderManager: NSFileProviderManager = NSFileProviderManager.default
     let utilityFileSystem = NCUtilityFileSystem()
-    var downloadsInProgress: [NSFileProviderItemIdentifier: Progress] = [:]
 
     var account = ""
     var user = ""
