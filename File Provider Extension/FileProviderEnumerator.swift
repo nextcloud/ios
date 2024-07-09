@@ -59,7 +59,6 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             let tags = NCManageDatabase.shared.getTags(predicate: NSPredicate(format: "account == %@", fileProviderData.shared.account))
             for tag in tags {
                 guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(tag.ocId)  else { continue }
-                fpUtility.createocIdentifierOnFileSystem(metadata: metadata)
                 itemIdentifierMetadata[fpUtility.getItemIdentifier(metadata: metadata)] = metadata
             }
             // ***** Favorite *****
@@ -149,7 +148,6 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         if metadatas != nil {
             for metadata in metadatas! {
                 if metadata.e2eEncrypted || (!metadata.session.isEmpty && metadata.session != NCNetworking.shared.sessionUploadBackgroundExtension) { continue }
-                fpUtility.createocIdentifierOnFileSystem(metadata: metadata)
                 let parentItemIdentifier = fpUtility.getParentItemIdentifier(metadata: metadata)
                 if parentItemIdentifier != nil {
                     let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!)

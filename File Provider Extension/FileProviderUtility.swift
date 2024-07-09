@@ -41,15 +41,6 @@ class fileProviderUtility: NSObject {
         return NSFileProviderItemIdentifier(metadata.ocId)
     }
 
-    func createocIdentifierOnFileSystem(metadata: tableMetadata) {
-        let itemIdentifier = getItemIdentifier(metadata: metadata)
-        if metadata.directory {
-            _ = utilityFileSystem.getDirectoryProviderStorageOcId(itemIdentifier.rawValue)
-        } else {
-            _ = utilityFileSystem.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: metadata.fileNameView)
-        }
-    }
-
     func getParentItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier? {
         let homeServerUrl = utilityFileSystem.getHomeServer(urlBase: metadata.urlBase, userId: metadata.userId)
         if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
