@@ -354,9 +354,7 @@ class FileProviderExtension: NSFileProviderExtension {
 
             // New file
             if let ocId, ocId != ocIdTemp {
-
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
-
                 // File system
                 let atPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTemp)
                 let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId)
