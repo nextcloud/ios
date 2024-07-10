@@ -89,15 +89,20 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             self.fetchItemsForPage(serverUrl: serverUrl, pageNumber: pageNumber) { metadatas in
                 if let metadatas {
                     for metadata in metadatas {
-                        if metadata.e2eEncrypted || (!metadata.session.isEmpty && metadata.session != NCNetworking.shared.sessionUploadBackgroundExtension) { continue }
+                        if metadata.e2eEncrypted || (!metadata.session.isEmpty && metadata.session != NCNetworking.shared.sessionUploadBackgroundExtension) {
+                            continue
+                        }
                         if let parentItemIdentifier = self.fpUtility.getParentItemIdentifier(metadata: metadata) {
                             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
                             items.append(item)
                         }
                     }
                 }
+
                 observer.didEnumerate(items)
-                if items.count == self.recordsPerPage {
+
+                if let metadatas,
+                    metadatas.count == self.recordsPerPage {
                     pageNumber += 1
                     let providerPage = NSFileProviderPage("\(pageNumber)".data(using: .utf8)!)
                     observer.finishEnumerating(upTo: providerPage)
@@ -156,23 +161,17 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         if pageNumber == 1 {
             NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: NCKeychain().showHiddenFiles) { account, files, _, error in
                 if error == .success {
-                    autoreleasepool {
-                        NCManageDatabase.shared.convertFilesToMetadatas(files, useFirstAsMetadataFolder: true) { metadataFolder, metadatas in
-                            /// FOLDER
-                            NCManageDatabase.shared.addMetadata(metadataFolder)
-                            NCManageDatabase.shared.addDirectory(e2eEncrypted: metadataFolder.e2eEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, fileId: metadataFolder.fileId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, richWorkspace: metadataFolder.richWorkspace, serverUrl: serverUrl, account: metadataFolder.account)
-                            /// FILES
-                            let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal)
-                            NCManageDatabase.shared.updateMetadatas(metadatas, predicate: predicate)
-
-                            let resultsMetadata = NCManageDatabase.shared.fetchPagedResults(ofType: tableMetadata.self, primaryKey: "ocId", recordsPerPage: self.recordsPerPage, pageNumber: pageNumber, filter: predicate, sortedByKeyPath: "fileName")
-                            completionHandler(resultsMetadata)
-                        }
+                    NCManageDatabase.shared.convertFilesToMetadatas(files, useFirstAsMetadataFolder: true) { metadataFolder, metadatas in
+                        /// FOLDER
+                        NCManageDatabase.shared.addMetadata(metadataFolder)
+                        NCManageDatabase.shared.addDirectory(e2eEncrypted: metadataFolder.e2eEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, fileId: metadataFolder.fileId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, richWorkspace: metadataFolder.richWorkspace, serverUrl: serverUrl, account: metadataFolder.account)
+                        /// FILES
+                        let updatePredicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal)
+                        NCManageDatabase.shared.updateMetadatas(metadatas, predicate: updatePredicate)
                     }
-                } else {
-                    let resultsMetadata = NCManageDatabase.shared.fetchPagedResults(ofType: tableMetadata.self, primaryKey: "ocId", recordsPerPage: self.recordsPerPage, pageNumber: pageNumber, filter: predicate, sortedByKeyPath: "fileName")
-                    completionHandler(resultsMetadata)
                 }
+                let resultsMetadata = NCManageDatabase.shared.fetchPagedResults(ofType: tableMetadata.self, primaryKey: "ocId", recordsPerPage: self.recordsPerPage, pageNumber: pageNumber, filter: predicate, sortedByKeyPath: "fileName")
+                completionHandler(resultsMetadata)
             }
         } else {
             let resultsMetadata = NCManageDatabase.shared.fetchPagedResults(ofType: tableMetadata.self, primaryKey: "ocId", recordsPerPage: recordsPerPage, pageNumber: pageNumber, filter: predicate, sortedByKeyPath: "fileName")
