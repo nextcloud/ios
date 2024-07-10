@@ -40,9 +40,6 @@ class fileProviderData: NSObject {
     var accountUrlBase = ""
     var homeServerUrl = ""
 
-    // Max item for page
-    let itemForPage = 20
-
     // Anchor
     var currentAnchor: UInt64 = 0
 

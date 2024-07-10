@@ -30,6 +30,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     var enumeratedItemIdentifier: NSFileProviderItemIdentifier
     var serverUrl: String?
     let fpUtility = fileProviderUtility()
+    var recordsPerPage: Int = 15
 
     init(enumeratedItemIdentifier: NSFileProviderItemIdentifier) {
         self.enumeratedItemIdentifier = enumeratedItemIdentifier
@@ -80,12 +81,12 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 return
             }
             if page == NSFileProviderPage.initialPageSortedByDate as NSFileProviderPage || page == NSFileProviderPage.initialPageSortedByName as NSFileProviderPage {
-                self.getPagination(serverUrl: serverUrl, recordsPerPage: fileProviderData.shared.itemForPage, pageNumber: 1) { metadatas in
+                self.getPagination(serverUrl: serverUrl, pageNumber: 1) { metadatas in
                     self.completeObserver(observer, pageNumber: 1, metadatas: metadatas)
                 }
             } else {
                 let pageNumber = Int(String(data: page.rawValue, encoding: .utf8)!)!
-                self.getPagination(serverUrl: serverUrl, recordsPerPage: fileProviderData.shared.itemForPage, pageNumber: pageNumber) { metadatas in
+                self.getPagination(serverUrl: serverUrl, pageNumber: pageNumber) { metadatas in
                     self.completeObserver(observer, pageNumber: pageNumber, metadatas: metadatas)
                 }
             }
@@ -153,7 +154,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             observer.didEnumerate(items)
         }
 
-        if items.count == fileProviderData.shared.itemForPage {
+        if items.count == self.recordsPerPage {
             pageNumber += 1
             let providerPage = NSFileProviderPage("\(pageNumber)".data(using: .utf8)!)
             observer.finishEnumerating(upTo: providerPage)
@@ -162,7 +163,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         }
     }
 
-    func getPagination(serverUrl: String, recordsPerPage: Int, pageNumber: Int, completionHandler: @escaping (_ metadatas: Results<tableMetadata>?) -> Void) {
+    func getPagination(serverUrl: String, pageNumber: Int, completionHandler: @escaping (_ metadatas: Results<tableMetadata>?) -> Void) {
         let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.account, serverUrl)
 
         if pageNumber == 1 {
@@ -177,12 +178,12 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                             let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal)
                             NCManageDatabase.shared.updateMetadatas(metadatas, predicate: predicate)
 
-                            let resultsMetadata = NCManageDatabase.shared.fetchPagedResults(ofType: tableMetadata.self, primaryKey: "ocId", recordsPerPage: recordsPerPage, pageNumber: pageNumber, filter: predicate, sortedByKeyPath: "fileName")
+                            let resultsMetadata = NCManageDatabase.shared.fetchPagedResults(ofType: tableMetadata.self, primaryKey: "ocId", recordsPerPage: self.recordsPerPage, pageNumber: pageNumber, filter: predicate, sortedByKeyPath: "fileName")
                             completionHandler(resultsMetadata)
                         }
                     }
                 } else {
-                    let resultsMetadata = NCManageDatabase.shared.fetchPagedResults(ofType: tableMetadata.self, primaryKey: "ocId", recordsPerPage: recordsPerPage, pageNumber: pageNumber, filter: predicate, sortedByKeyPath: "fileName")
+                    let resultsMetadata = NCManageDatabase.shared.fetchPagedResults(ofType: tableMetadata.self, primaryKey: "ocId", recordsPerPage: self.recordsPerPage, pageNumber: pageNumber, filter: predicate, sortedByKeyPath: "fileName")
                     completionHandler(resultsMetadata)
                 }
             }
