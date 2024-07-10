@@ -135,7 +135,6 @@ class fileProviderData: NSObject {
             fileProviderManager.signalEnumerator(for: parentItemIdentifier) { _ in }
         }
         fileProviderManager.signalEnumerator(for: .workingSet) { _ in }
-
         return item
     }
 }

@@ -125,10 +125,8 @@ class FileProviderExtension: NSFileProviderExtension {
             metadata.classFile = NKCommon.TypeClassFile.directory.rawValue
             return FileProviderItem(metadata: metadata, parentItemIdentifier: NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue))
         } else {
-            guard let metadata = fpUtility.getTableMetadataFromItemIdentifier(identifier) else {
-                throw NSFileProviderError(.noSuchItem)
-            }
-            guard let parentItemIdentifier = fpUtility.getParentItemIdentifier(metadata: metadata) else {
+            guard let metadata = fpUtility.getTableMetadataFromItemIdentifier(identifier),
+                  let parentItemIdentifier = fpUtility.getParentItemIdentifier(metadata: metadata) else {
                 throw NSFileProviderError(.noSuchItem)
             }
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
@@ -155,8 +153,7 @@ class FileProviderExtension: NSFileProviderExtension {
 
     override func providePlaceholder(at url: URL, completionHandler: @escaping (Error?) -> Void) {
         guard let identifier = persistentIdentifierForItem(at: url) else {
-            completionHandler(NSFileProviderError(.noSuchItem))
-            return
+            return completionHandler(NSFileProviderError(.noSuchItem))
         }
         do {
             let fileProviderItem = try item(for: identifier)
@@ -199,8 +196,7 @@ class FileProviderExtension: NSFileProviderExtension {
                 self.outstandingSessionTasks.removeValue(forKey: url)
             }
             guard let metadata = self.fpUtility.getTableMetadataFromItemIdentifier(itemIdentifier) else {
-                completionHandler(NSFileProviderError(.noSuchItem))
-                return
+                return completionHandler(NSFileProviderError(.noSuchItem))
             }
             if error == .success {
                 metadata.status = NCGlobal.shared.metadataStatusNormal
@@ -275,8 +271,7 @@ class FileProviderExtension: NSFileProviderExtension {
         DispatchQueue.main.async {
             autoreleasepool {
                 guard let tableDirectory = self.fpUtility.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: fileProviderData.shared.account, homeServerUrl: fileProviderData.shared.homeServerUrl) else {
-                    completionHandler(nil, NSFileProviderError(.noSuchItem))
-                    return
+                    return completionHandler(nil, NSFileProviderError(.noSuchItem))
                 }
                 var size = 0 as Int64
                 var error: NSError?
@@ -287,12 +282,10 @@ class FileProviderExtension: NSFileProviderExtension {
                     size = attributes[FileAttributeKey.size] as? Int64 ?? 0
                     let typeFile = attributes[FileAttributeKey.type] as? FileAttributeType
                     if typeFile == FileAttributeType.typeDirectory {
-                        completionHandler(nil, NSFileProviderError(.noSuchItem))
-                        return
+                        return completionHandler(nil, NSFileProviderError(.noSuchItem))
                     }
                 } catch {
-                    completionHandler(nil, NSFileProviderError(.noSuchItem))
-                    return
+                    return completionHandler(nil, NSFileProviderError(.noSuchItem))
                 }
 
                 let fileName = self.utilityFileSystem.createFileName(fileURL.lastPathComponent, serverUrl: tableDirectory.serverUrl, account: fileProviderData.shared.account)
@@ -366,7 +359,6 @@ class FileProviderExtension: NSFileProviderExtension {
                 let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId)
                 utilityFileSystem.copyFile(atPath: atPath, toPath: toPath)
             }
-
             fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, update: true)
         } else {
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
