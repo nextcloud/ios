@@ -29,6 +29,10 @@ class FileProviderItem: NSObject, NSFileProviderItem {
 
     var metadata: tableMetadata
     var parentItemIdentifier: NSFileProviderItemIdentifier
+    
+    var isShared: Bool {
+        return !metadata.shareType.isEmpty
+    }
 
     var itemIdentifier: NSFileProviderItemIdentifier {
         return fileProviderUtility().getItemIdentifier(metadata: metadata)
