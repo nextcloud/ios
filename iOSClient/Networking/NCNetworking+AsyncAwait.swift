@@ -63,18 +63,9 @@ extension NCNetworking {
         })
     }
 
-    func downloadPreview(fileId: String,
-                         widthPreview: Int = 512,
-                         heightPreview: Int = 512,
-                         etag: String? = nil,
-                         crop: Int = 1,
-                         cropMode: String = "cover",
-                         forceIcon: Int = 0,
-                         mimeFallback: Int = 0,
-                         options: NKRequestOptions = NKRequestOptions()) async -> (account: String, data: Data?, error: NKError) {
+    func downloadPreview(url: URL, options: NKRequestOptions = NKRequestOptions()) async -> (account: String, data: Data?, error: NKError) {
         await withUnsafeContinuation({ continuation in
-            NextcloudKit.shared.downloadPreview(fileId: fileId, widthPreview: widthPreview, heightPreview: heightPreview, etag: etag, crop: crop, cropMode: cropMode, forceIcon: forceIcon, mimeFallback: mimeFallback, options: options) { _ in
-            } completion: { account, data, error in
+            NextcloudKit.shared.downloadPreview(url: url, options: options) { account, data, error in
                 continuation.resume(returning: (account: account, data: data, error: error))
             }
         })

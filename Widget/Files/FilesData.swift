@@ -21,6 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+import UIKit
 import WidgetKit
 import Intents
 import NextcloudKit
@@ -60,7 +61,6 @@ let filesDatasTest: [FilesData] = [
 ]
 
 func getTitleFilesWidget(account: tableAccount?) -> String {
-
     let hour = Calendar.current.component(.hour, from: Date())
     var good = ""
 
@@ -85,7 +85,6 @@ func getFilesItems(displaySize: CGSize) -> Int {
 }
 
 func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: FilesDataEntry) -> Void) {
-
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
     let filesItems = getFilesItems(displaySize: displaySize)
