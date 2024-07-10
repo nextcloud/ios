@@ -21,6 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+import UIKit
 import WidgetKit
 import NextcloudKit
 
@@ -36,7 +37,6 @@ struct LockscreenData: TimelineEntry {
 }
 
 func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, family: WidgetFamily, completion: @escaping (_ entry: LockscreenData) -> Void) {
-
     let utilityFileSystem = NCUtilityFileSystem()
     var account: tableAccount?
     var quotaRelative: Float = 0

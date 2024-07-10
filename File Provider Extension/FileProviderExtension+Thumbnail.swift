@@ -26,54 +26,34 @@ import FileProvider
 import NextcloudKit
 
 extension FileProviderExtension {
-
     override func fetchThumbnails(for itemIdentifiers: [NSFileProviderItemIdentifier], requestedSize size: CGSize, perThumbnailCompletionHandler: @escaping (NSFileProviderItemIdentifier, Data?, Error?) -> Void, completionHandler: @escaping (Error?) -> Void) -> Progress {
-
         let progress = Progress(totalUnitCount: Int64(itemIdentifiers.count))
         var counterProgress: Int64 = 0
 
         for itemIdentifier in itemIdentifiers {
-
-            guard let metadata = fpUtility.getTableMetadataFromItemIdentifier(itemIdentifier) else {
+            guard let metadata = fpUtility.getTableMetadataFromItemIdentifier(itemIdentifier), metadata.hasPreview else {
                 counterProgress += 1
                 if counterProgress == progress.totalUnitCount { completionHandler(nil) }
                 continue
             }
+            let fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
 
-            if metadata.hasPreview {
-
-                let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
-                let fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
-
-                if let urlBase = metadata.urlBase.urlEncoded,
-                   let fileNamePath = fileNamePath.urlEncoded,
-                   let url = URL(string: "\(urlBase)/index.php/core/preview.png?file=\(fileNamePath)&x=\(size.width)&y=\(size.height)&a=1&mode=cover") {
-
-                    NextcloudKit.shared.getPreview(url: url) { _, data, error in
-                        if error == .success && data != nil {
-                            do {
-                                try data!.write(to: URL(fileURLWithPath: fileNameIconLocalPath), options: .atomic)
-                            } catch { }
-                            perThumbnailCompletionHandler(itemIdentifier, data, nil)
-                        } else {
-                            perThumbnailCompletionHandler(itemIdentifier, nil, NSFileProviderError(.serverUnreachable))
-                        }
-                        counterProgress += 1
-                        if counterProgress == progress.totalUnitCount {
-                            completionHandler(nil)
-                        }
-                    }
+            NextcloudKit.shared.downloadPreview(fileId: metadata.fileId, widthPreview: Int(size.width), heightPreview: Int(size.height), etag: metadata.etag) { _ in
+            } completion: { _, data, error in
+                if error == .success, let data {
+                    do {
+                        try data.write(to: URL(fileURLWithPath: fileNameIconLocalPath), options: .atomic)
+                    } catch { }
+                    perThumbnailCompletionHandler(itemIdentifier, data, nil)
+                } else {
+                    perThumbnailCompletionHandler(itemIdentifier, nil, NSFileProviderError(.serverUnreachable))
                 }
-
-            } else {
                 counterProgress += 1
                 if counterProgress == progress.totalUnitCount {
                     completionHandler(nil)
                 }
             }
         }
-
         return progress
     }
-
 }

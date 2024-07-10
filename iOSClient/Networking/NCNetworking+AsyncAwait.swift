@@ -63,9 +63,9 @@ extension NCNetworking {
         })
     }
 
-    func getPreview(url: URL, options: NKRequestOptions = NKRequestOptions()) async -> (account: String, data: Data?, error: NKError) {
+    func downloadPreview(url: URL, options: NKRequestOptions = NKRequestOptions()) async -> (account: String, data: Data?, error: NKError) {
         await withUnsafeContinuation({ continuation in
-            NextcloudKit.shared.getPreview(url: url, options: options) { account, data, error in
+            NextcloudKit.shared.downloadPreview(url: url, options: options) { account, data, error in
                 continuation.resume(returning: (account: account, data: data, error: error))
             }
         })

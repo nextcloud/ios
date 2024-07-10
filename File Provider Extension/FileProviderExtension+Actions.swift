@@ -26,25 +26,18 @@ import FileProvider
 import NextcloudKit
 
 extension FileProviderExtension {
-
     override func createDirectory(withName directoryName: String, inParentItemIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
-
         guard let tableDirectory = fpUtility.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: fileProviderData.shared.account, homeServerUrl: fileProviderData.shared.homeServerUrl) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
-
         let directoryName = utilityFileSystem.createFileName(directoryName, serverUrl: tableDirectory.serverUrl, account: fileProviderData.shared.account)
         let serverUrlFileName = tableDirectory.serverUrl + "/" + directoryName
 
         NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName) { _, ocId, _, error in
-
             if error == .success {
-
                 NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles) { _, files, _, error in
-
                     if error == .success, let file = files.first {
-
                         let isDirectoryEncrypted = self.utilityFileSystem.isDirectoryE2EE(file: file)
                         let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryEncrypted)
 
@@ -63,12 +56,10 @@ extension FileProviderExtension {
 
                         let item = FileProviderItem(metadata: metadataInsert, parentItemIdentifier: parentItemIdentifier)
                         completionHandler(item, nil)
-
                     } else {
                         completionHandler(nil, NSFileProviderError(.serverUnreachable))
                     }
                 }
-
             } else {
                 completionHandler(nil, NSFileProviderError(.serverUnreachable))
             }
@@ -76,12 +67,10 @@ extension FileProviderExtension {
     }
 
     override func deleteItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (Error?) -> Void) {
-
         guard let metadata = fpUtility.getTableMetadataFromItemIdentifier(itemIdentifier) else {
             completionHandler(NSFileProviderError(.noSuchItem))
             return
         }
-
         let ocId = metadata.ocId
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let isDirectory = metadata.directory
@@ -89,10 +78,9 @@ extension FileProviderExtension {
         let fileName = metadata.fileName
 
         NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName) { account, error in
-
             if error == .success { // || error == kOCErrorServerPathNotFound {
-
                 let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(itemIdentifier.rawValue)
+
                 do {
                     try self.fpUtility.fileManager.removeItem(atPath: fileNamePath)
                 } catch let error {
@@ -108,7 +96,6 @@ extension FileProviderExtension {
                 NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", ocId))
 
                 completionHandler(nil)
-
             } else {
                 completionHandler(NSFileProviderError(.serverUnreachable))
             }
@@ -116,21 +103,17 @@ extension FileProviderExtension {
     }
 
     override func reparentItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, toParentItemWithIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, newName: String?, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
-
         guard let itemFrom = try? item(for: itemIdentifier) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
-
         guard let metadataFrom = fpUtility.getTableMetadataFromItemIdentifier(itemIdentifier) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
-
         let ocIdFrom = metadataFrom.ocId
         let serverUrlFrom = metadataFrom.serverUrl
         let fileNameFrom = serverUrlFrom + "/" + itemFrom.filename
-
         guard let tableDirectoryTo = fpUtility.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: fileProviderData.shared.account, homeServerUrl: fileProviderData.shared.homeServerUrl) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
@@ -139,9 +122,7 @@ extension FileProviderExtension {
         let fileNameTo = serverUrlTo + "/" + itemFrom.filename
 
         NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: false) { account, error in
-
             if error == .success {
-
                 if metadataFrom.directory {
                     NCManageDatabase.shared.deleteDirectoryAndSubDirectory(serverUrl: serverUrlFrom, account: account)
                     NCManageDatabase.shared.renameDirectory(ocId: ocIdFrom, serverUrl: serverUrlTo)
@@ -156,7 +137,6 @@ extension FileProviderExtension {
 
                 let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
                 completionHandler(item, nil)
-
             } else {
                 completionHandler(nil, NSFileProviderError(.serverUnreachable))
             }
@@ -164,26 +144,21 @@ extension FileProviderExtension {
     }
 
     override func renameItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, toName itemName: String, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
-
         guard let metadata = fpUtility.getTableMetadataFromItemIdentifier(itemIdentifier) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
-
         guard let directoryTable = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
-
         let fileNameFrom = metadata.fileNameView
         let fileNamePathFrom = metadata.serverUrl + "/" + fileNameFrom
         let fileNamePathTo = metadata.serverUrl + "/" + itemName
         let ocId = metadata.ocId
 
         NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNamePathFrom, serverUrlFileNameDestination: fileNamePathTo, overwrite: false) { account, error in
-
             if error == .success {
-
                 // Rename metadata
                 NCManageDatabase.shared.renameMetadata(fileNameTo: itemName, ocId: ocId)
 
@@ -191,15 +166,10 @@ extension FileProviderExtension {
                     completionHandler(nil, NSFileProviderError(.noSuchItem))
                     return
                 }
-
                 if metadata.directory {
-
                     NCManageDatabase.shared.setDirectory(serverUrl: fileNamePathFrom, serverUrlTo: fileNamePathTo, encrypted: directoryTable.e2eEncrypted, account: account)
-
                 } else {
-
                     let itemIdentifier = self.fpUtility.getItemIdentifier(metadata: metadata)
-
                     // rename file
                     _ = self.fpUtility.moveFile(self.utilityFileSystem.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: fileNameFrom), toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: itemName))
 
@@ -217,7 +187,6 @@ extension FileProviderExtension {
 
                 let item = FileProviderItem(metadata: tableMetadata.init(value: metadata), parentItemIdentifier: parentItemIdentifier)
                 completionHandler(item, nil)
-
             } else {
                 completionHandler(nil, NSFileProviderError(.serverUnreachable))
             }
@@ -225,12 +194,10 @@ extension FileProviderExtension {
     }
 
     override func setFavoriteRank(_ favoriteRank: NSNumber?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
-
         guard let metadata = fpUtility.getTableMetadataFromItemIdentifier(itemIdentifier) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
-
         var favorite = false
         let ocId = metadata.ocId
 
@@ -246,11 +213,8 @@ extension FileProviderExtension {
 
         if (favorite == true && metadata.favorite == false) || (favorite == false && metadata.favorite == true) {
             let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
-
             NextcloudKit.shared.setFavorite(fileName: fileNamePath, favorite: favorite) { _, error in
-
                 if error == .success {
-
                     guard let metadataTemp = NCManageDatabase.shared.getMetadataFromOcId(ocId) else {
                         completionHandler(nil, NSFileProviderError(.noSuchItem))
                         return
@@ -263,9 +227,7 @@ extension FileProviderExtension {
 
                     let item = fileProviderData.shared.signalEnumerator(ocId: metadata.ocId)
                     completionHandler(item, nil)
-
                 } else {
-
                     guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else {
                         completionHandler(nil, NSFileProviderError(.noSuchItem))
                         return
@@ -282,7 +244,6 @@ extension FileProviderExtension {
     }
 
     override func setTagData(_ tagData: Data?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
-
         guard let metadataForTag = fpUtility.getTableMetadataFromItemIdentifier(itemIdentifier) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
@@ -298,18 +259,16 @@ extension FileProviderExtension {
     }
 
     override func setLastUsedDate(_ lastUsedDate: Date?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
-
         guard let metadata = fpUtility.getTableMetadataFromItemIdentifier(itemIdentifier) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
-
         guard let parentItemIdentifier = fpUtility.getParentItemIdentifier(metadata: metadata) else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
             return
         }
-
         let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
+
         completionHandler(item, nil)
     }
 }
