@@ -30,7 +30,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     var enumeratedItemIdentifier: NSFileProviderItemIdentifier
     var serverUrl: String?
     let fpUtility = fileProviderUtility()
-    var recordsPerPage: Int = 15
+    var recordsPerPage: Int = 20
 
     init(enumeratedItemIdentifier: NSFileProviderItemIdentifier) {
         self.enumeratedItemIdentifier = enumeratedItemIdentifier
@@ -80,14 +80,29 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 observer.finishEnumerating(upTo: nil)
                 return
             }
-            if page == NSFileProviderPage.initialPageSortedByDate as NSFileProviderPage || page == NSFileProviderPage.initialPageSortedByName as NSFileProviderPage {
-                self.getPagination(serverUrl: serverUrl, pageNumber: 1) { metadatas in
-                    self.completeObserver(observer, pageNumber: 1, metadatas: metadatas)
+            var pageNumber = 1
+            if let stringPage = String(data: page.rawValue, encoding: .utf8),
+               let intPage = Int(stringPage) {
+                pageNumber = intPage
+            }
+
+            self.fetchItemsForPage(serverUrl: serverUrl, pageNumber: pageNumber) { metadatas in
+                if let metadatas {
+                    for metadata in metadatas {
+                        if metadata.e2eEncrypted || (!metadata.session.isEmpty && metadata.session != NCNetworking.shared.sessionUploadBackgroundExtension) { continue }
+                        if let parentItemIdentifier = self.fpUtility.getParentItemIdentifier(metadata: metadata) {
+                            let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
+                            items.append(item)
+                        }
+                    }
                 }
-            } else {
-                let pageNumber = Int(String(data: page.rawValue, encoding: .utf8)!)!
-                self.getPagination(serverUrl: serverUrl, pageNumber: pageNumber) { metadatas in
-                    self.completeObserver(observer, pageNumber: pageNumber, metadatas: metadatas)
+                observer.didEnumerate(items)
+                if items.count == self.recordsPerPage {
+                    pageNumber += 1
+                    let providerPage = NSFileProviderPage("\(pageNumber)".data(using: .utf8)!)
+                    observer.finishEnumerating(upTo: providerPage)
+                } else {
+                    observer.finishEnumerating(upTo: nil)
                 }
             }
         }
@@ -135,35 +150,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         completionHandler(NSFileProviderSyncAnchor(data!))
     }
 
-    // --------------------------------------------------------------------------------------------
-    // MARK: - User Function + Network
-    // --------------------------------------------------------------------------------------------
-
-    func completeObserver(_ observer: NSFileProviderEnumerationObserver, pageNumber: Int, metadatas: Results<tableMetadata>?) {
-        var pageNumber = pageNumber
-        var items: [NSFileProviderItemProtocol] = []
-
-        if let metadatas {
-            for metadata in metadatas {
-                if metadata.e2eEncrypted || (!metadata.session.isEmpty && metadata.session != NCNetworking.shared.sessionUploadBackgroundExtension) { continue }
-                if let parentItemIdentifier = fpUtility.getParentItemIdentifier(metadata: metadata) {
-                    let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
-                    items.append(item)
-                }
-            }
-            observer.didEnumerate(items)
-        }
-
-        if items.count == self.recordsPerPage {
-            pageNumber += 1
-            let providerPage = NSFileProviderPage("\(pageNumber)".data(using: .utf8)!)
-            observer.finishEnumerating(upTo: providerPage)
-        } else {
-            observer.finishEnumerating(upTo: nil)
-        }
-    }
-
-    func getPagination(serverUrl: String, pageNumber: Int, completionHandler: @escaping (_ metadatas: Results<tableMetadata>?) -> Void) {
+    func fetchItemsForPage(serverUrl: String, pageNumber: Int, completionHandler: @escaping (_ metadatas: Results<tableMetadata>?) -> Void) {
         let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.account, serverUrl)
 
         if pageNumber == 1 {
