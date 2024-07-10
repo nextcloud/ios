@@ -44,7 +44,7 @@ extension FileProviderExtension {
                         NCManageDatabase.shared.addDirectory(e2eEncrypted: false, favorite: false, ocId: ocId!, fileId: metadata.fileId, etag: metadata.etag, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
                         NCManageDatabase.shared.addMetadata(metadata)
 
-                        guard let metadataInsert = NCManageDatabase.shared.getMetadataFromOcId(ocId!) else {
+                        guard let metadataInsert = NCManageDatabase.shared.getResultMetadataFromOcId(ocId!) else {
                             completionHandler(nil, NSFileProviderError(.noSuchItem))
                             return
                         }
@@ -215,12 +215,10 @@ extension FileProviderExtension {
             let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
             NextcloudKit.shared.setFavorite(fileName: fileNamePath, favorite: favorite) { _, error in
                 if error == .success {
-                    guard let metadataTemp = NCManageDatabase.shared.getMetadataFromOcId(ocId) else {
+                    guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else {
                         completionHandler(nil, NSFileProviderError(.noSuchItem))
                         return
                     }
-                    let metadata = tableMetadata.init(value: metadataTemp)
-
                     // Change DB
                     metadata.favorite = favorite
                     NCManageDatabase.shared.addMetadata(metadata)
@@ -228,7 +226,7 @@ extension FileProviderExtension {
                     let item = fileProviderData.shared.signalEnumerator(ocId: metadata.ocId)
                     completionHandler(item, nil)
                 } else {
-                    guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else {
+                    guard let metadata = NCManageDatabase.shared.getResultMetadataFromOcId(ocId) else {
                         completionHandler(nil, NSFileProviderError(.noSuchItem))
                         return
                     }

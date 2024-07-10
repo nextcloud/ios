@@ -41,7 +41,7 @@ class fileProviderData: NSObject {
     var homeServerUrl = ""
 
     // Max item for page
-    let itemForPage = 100
+    let itemForPage = 20
 
     // Anchor
     var currentAnchor: UInt64 = 0
@@ -122,7 +122,7 @@ class fileProviderData: NSObject {
 
     @discardableResult
     func signalEnumerator(ocId: String, delete: Bool = false, update: Bool = false) -> FileProviderItem? {
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return nil }
+        guard let metadata = NCManageDatabase.shared.getResultMetadataFromOcId(ocId) else { return nil }
         guard let parentItemIdentifier = fileProviderUtility().getParentItemIdentifier(metadata: metadata) else { return nil }
         let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
 
@@ -149,41 +149,4 @@ class fileProviderData: NSObject {
 
         return item
     }
-
-    /*
-     func updateFavoriteForWorkingSet() {
-         
-         var updateWorkingSet = false
-         let oldListFavoriteIdentifierRank = listFavoriteIdentifierRank
-         listFavoriteIdentifierRank = NCManageDatabase.shared.getTableMetadatasDirectoryFavoriteIdentifierRank(account: account)
-         
-         // (ADD)
-         for (identifier, _) in listFavoriteIdentifierRank {
-             
-             guard let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "ocId == %@", identifier)) else { continue }
-             guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: homeServerUrl) else { continue }
-             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
-                 
-             fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-             updateWorkingSet = true
-         }
-         
-         // (REMOVE)
-         for (identifier, _) in oldListFavoriteIdentifierRank {
-             
-             if !listFavoriteIdentifierRank.keys.contains(identifier) {
-                 
-                 guard let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "ocId == %@", identifier)) else { continue }
-                 let itemIdentifier = fileProviderUtility.sharedInstance.getItemIdentifier(metadata: metadata)
-                 
-                 fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
-                 updateWorkingSet = true
-             }
-         }
-         
-         if updateWorkingSet {
-             signalEnumerator(for: [.workingSet])
-         }
-     }
-     */
 }

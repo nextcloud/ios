@@ -66,6 +66,7 @@ class FileProviderExtension: NSFileProviderExtension {
         // Configure URLSession
         _ = NCNetworking.shared.sessionManagerUploadBackgroundExtension
         // Domains
+        // FileProviderDomain().removeAllDomains()
         // FileProviderDomain().registerDomains()
     }
 
@@ -190,12 +191,13 @@ class FileProviderExtension: NSFileProviderExtension {
             fileProviderData.shared.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(itemIdentifier.rawValue)) { _ in }
         }, progressHandler: { _ in
         }) { _, etag, date, _, _, _, error in
-            self.outstandingSessionTasks.removeValue(forKey: url)
-            guard var metadata = self.fpUtility.getTableMetadataFromItemIdentifier(itemIdentifier) else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                self.outstandingSessionTasks.removeValue(forKey: url)
+            }
+            guard let metadata = self.fpUtility.getTableMetadataFromItemIdentifier(itemIdentifier) else {
                 completionHandler(NSFileProviderError(.noSuchItem))
                 return
             }
-            metadata = tableMetadata.init(value: metadata)
             if error == .success {
                 metadata.status = NCGlobal.shared.metadataStatusNormal
                 metadata.date = (date as? NSDate) ?? NSDate()
@@ -230,7 +232,7 @@ class FileProviderExtension: NSFileProviderExtension {
             let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
             utilityFileSystem.copyFile(atPath: atPath, toPath: toPath)
         }
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
+        guard let metadata = NCManageDatabase.shared.getResultMetadataFromOcId(ocId) else { return }
 
         let serverUrlFileName = metadata.serverUrl + "/" + fileName
         let fileNameLocalPath = url.path
