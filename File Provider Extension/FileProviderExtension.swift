@@ -232,7 +232,7 @@ class FileProviderExtension: NSFileProviderExtension {
             let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
             utilityFileSystem.copyFile(atPath: atPath, toPath: toPath)
         }
-        guard let metadata = NCManageDatabase.shared.getResultMetadataFromOcId(ocId) else { return }
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
 
         let serverUrlFileName = metadata.serverUrl + "/" + fileName
         let fileNameLocalPath = url.path

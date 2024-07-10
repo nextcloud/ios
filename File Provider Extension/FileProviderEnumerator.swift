@@ -58,13 +58,13 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             /// Tags
             let tags = NCManageDatabase.shared.getTags(predicate: NSPredicate(format: "account == %@", fileProviderData.shared.account))
             for tag in tags {
-                guard let metadata = NCManageDatabase.shared.getResultMetadataFromOcId(tag.ocId)  else { continue }
+                guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(tag.ocId)  else { continue }
                 itemIdentifierMetadata[fpUtility.getItemIdentifier(metadata: metadata)] = metadata
             }
             /// Favorite
             fileProviderData.shared.listFavoriteIdentifierRank = NCManageDatabase.shared.getTableMetadatasDirectoryFavoriteIdentifierRank(account: fileProviderData.shared.account)
             for (identifier, _) in fileProviderData.shared.listFavoriteIdentifierRank {
-                guard let metadata = NCManageDatabase.shared.getResultMetadataFromOcId(identifier) else { continue }
+                guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(identifier) else { continue }
                 itemIdentifierMetadata[fpUtility.getItemIdentifier(metadata: metadata)] = metadata
             }
             /// Create items

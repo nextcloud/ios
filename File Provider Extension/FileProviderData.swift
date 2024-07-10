@@ -122,7 +122,7 @@ class fileProviderData: NSObject {
 
     @discardableResult
     func signalEnumerator(ocId: String, delete: Bool = false, update: Bool = false) -> FileProviderItem? {
-        guard let metadata = NCManageDatabase.shared.getResultMetadataFromOcId(ocId) else { return nil }
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return nil }
         guard let parentItemIdentifier = fileProviderUtility().getParentItemIdentifier(metadata: metadata) else { return nil }
         let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
 

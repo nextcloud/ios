@@ -143,7 +143,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
 
     init(metadata: tableMetadata, parentItemIdentifier: NSFileProviderItemIdentifier) {
-        self.metadata = metadata
+        self.metadata = tableMetadata(value: metadata)
         self.parentItemIdentifier = parentItemIdentifier
     }
 }
