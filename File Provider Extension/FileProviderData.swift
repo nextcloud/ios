@@ -40,9 +40,6 @@ class fileProviderData: NSObject {
     var accountUrlBase = ""
     var homeServerUrl = ""
 
-    // Anchor
-    var currentAnchor: UInt64 = 0
-
     // Rank favorite
     var listFavoriteIdentifierRank: [String: NSNumber] = [:]
 
@@ -127,21 +124,16 @@ class fileProviderData: NSObject {
             fileProviderData.shared.fileProviderSignalDeleteContainerItemIdentifier[item.itemIdentifier] = item.itemIdentifier
             fileProviderData.shared.fileProviderSignalDeleteWorkingSetItemIdentifier[item.itemIdentifier] = item.itemIdentifier
         }
-
         if update {
             fileProviderData.shared.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
             fileProviderData.shared.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
         }
-
         if !update && !delete {
             fileProviderData.shared.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
         }
-
         if update || delete {
-            currentAnchor += 1
             fileProviderManager.signalEnumerator(for: parentItemIdentifier) { _ in }
         }
-
         fileProviderManager.signalEnumerator(for: .workingSet) { _ in }
 
         return item

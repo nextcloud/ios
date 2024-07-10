@@ -31,6 +31,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     var serverUrl: String?
     let fpUtility = fileProviderUtility()
     var recordsPerPage: Int = 20
+    var anchor: UInt64 = 0
 
     init(enumeratedItemIdentifier: NSFileProviderItemIdentifier) {
         self.enumeratedItemIdentifier = enumeratedItemIdentifier
@@ -146,12 +147,12 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         observer.didDeleteItems(withIdentifiers: itemsDelete)
         observer.didUpdate(itemsUpdate)
 
-        let data = "\(fileProviderData.shared.currentAnchor)".data(using: .utf8)
+        let data = "\(self.anchor)".data(using: .utf8)
         observer.finishEnumeratingChanges(upTo: NSFileProviderSyncAnchor(data!), moreComing: false)
     }
 
     func currentSyncAnchor(completionHandler: @escaping (NSFileProviderSyncAnchor?) -> Void) {
-        let data = "\(fileProviderData.shared.currentAnchor)".data(using: .utf8)
+        let data = "\(self.anchor)".data(using: .utf8)
         completionHandler(NSFileProviderSyncAnchor(data!))
     }
 
