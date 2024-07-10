@@ -227,10 +227,12 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
                                     if FileManager().fileExists(atPath: fileNamePath), let image = UIImage(contentsOfFile: fileNamePath) {
                                         icon = image
                                     } else {
+                                        /*
                                         let (_, data, _) = await NCNetworking.shared.getPreview(url: url)
                                         if let image = convertDataToImage(data: data, size: CGSize(width: 256, height: 256), fileNameToWrite: fileName) {
                                             icon = image
                                         }
+                                        */
                                     }
                                 }
                             }

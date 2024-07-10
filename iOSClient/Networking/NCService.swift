@@ -48,7 +48,6 @@ class NCService: NSObject {
             if result {
                 requestServerCapabilities()
                 getAvatar()
-                requestDashboardWidget()
                 NCNetworkingE2EE().unlockAll(account: account)
                 sendClientDiagnosticsRemoteOperation(account: account)
                 synchronize()
@@ -225,46 +224,6 @@ class NCService: NSObject {
             if let directEditingCreators = NCManageDatabase.shared.getDirectEditingCreators(account: account) {
                 for directEditing in directEditingCreators {
                     NextcloudKit.shared.nkCommonInstance.addInternalTypeIdentifier(typeIdentifier: directEditing.mimetype, classFile: NKCommon.TypeClassFile.document.rawValue, editor: directEditing.editor, iconName: NKCommon.TypeIconFile.document.rawValue, name: "document")
-                }
-            }
-        }
-    }
-
-    // MARK: -
-
-    private func requestDashboardWidget() {
-        @Sendable func convertDataToImage(data: Data?, size: CGSize, fileNameToWrite: String?) {
-            guard let data = data else { return }
-            var imageData: UIImage?
-
-            if let image = UIImage(data: data), let image = image.resizeImage(size: size) {
-                imageData = image
-            } else if let image = SVGKImage(data: data) {
-                image.size = size
-                imageData = image.uiImage
-            } else {
-                print("error")
-            }
-            if let fileName = fileNameToWrite, let image = imageData {
-                do {
-                    let fileNamePath = utilityFileSystem.directoryUserData + "/" + fileName + ".png"
-                    try image.pngData()?.write(to: URL(fileURLWithPath: fileNamePath), options: .atomic)
-                } catch { }
-            }
-        }
-
-        NextcloudKit.shared.getDashboardWidget(options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, dashboardWidgets, data, error in
-            Task {
-                if error == .success, let dashboardWidgets = dashboardWidgets {
-                    NCManageDatabase.shared.addDashboardWidget(account: account, dashboardWidgets: dashboardWidgets)
-                    for widget in dashboardWidgets {
-                        if let url = URL(string: widget.iconUrl), let fileName = widget.iconClass {
-                            let (_, data, error) = await NCNetworking.shared.getPreview(url: url)
-                            if error == .success {
-                                convertDataToImage(data: data, size: CGSize(width: 256, height: 256), fileNameToWrite: fileName)
-                            }
-                        }
-                    }
                 }
             }
         }
