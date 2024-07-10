@@ -276,15 +276,15 @@ class NCManageDatabase: NSObject {
     // MARK: -
     // MARK: Func T
 
-    func fetchPagedResults<T: Object>(ofType type: T.Type, primaryKey: String, recordsPerPage: Int, pageNumber: Int, filter: NSPredicate? = nil) -> Results<T>? {
+    func fetchPagedResults<T: Object>(ofType type: T.Type, primaryKey: String, recordsPerPage: Int, pageNumber: Int, filter: NSPredicate? = nil, sortedByKeyPath: String? = nil, sortedAscending: Bool = true) -> Results<T>? {
         let startIndex = recordsPerPage * (pageNumber - 1)
 
         do {
             let realm = try Realm()
             var results = realm.objects(type)
 
-            if let filter = filter {
-                results = results.filter(filter)
+            if let filter, let sortedByKeyPath {
+                results = results.filter(filter).sorted(byKeyPath: sortedByKeyPath, ascending: sortedAscending)
             }
 
             guard startIndex < results.count else {

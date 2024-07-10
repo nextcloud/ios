@@ -33,7 +33,6 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
 
     init(enumeratedItemIdentifier: NSFileProviderItemIdentifier) {
         self.enumeratedItemIdentifier = enumeratedItemIdentifier
-        // Select ServerUrl
         if enumeratedItemIdentifier == .rootContainer {
             serverUrl = fileProviderData.shared.homeServerUrl
         } else {
@@ -46,9 +45,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         super.init()
     }
 
-    func invalidate() {
-
-    }
+    func invalidate() { }
 
     func enumerateItems(for observer: NSFileProviderEnumerationObserver, startingAt page: NSFileProviderPage) {
         var items: [NSFileProviderItemProtocol] = []
@@ -83,18 +80,13 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 return
             }
             if page == NSFileProviderPage.initialPageSortedByDate as NSFileProviderPage || page == NSFileProviderPage.initialPageSortedByName as NSFileProviderPage {
-                /*
-                self.readFileOrFolder(serverUrl: serverUrl) { metadatas in
-                    self.completeObserver(observer, numPage: 1, metadatas: metadatas)
-                }
-                */
-                self.getPagination(serverUrl: serverUrl, page: 1, limit: fileProviderData.shared.itemForPage) { metadatas in
-                    self.completeObserver(observer, numPage: 1, metadatas: metadatas)
+                self.getPagination(serverUrl: serverUrl, recordsPerPage: fileProviderData.shared.itemForPage, pageNumber: 1) { metadatas in
+                    self.completeObserver(observer, pageNumber: 1, metadatas: metadatas)
                 }
             } else {
-                let numPage = Int(String(data: page.rawValue, encoding: .utf8)!)!
-                self.getPagination(serverUrl: serverUrl, page: numPage, limit: fileProviderData.shared.itemForPage) { metadatas in
-                    self.completeObserver(observer, numPage: numPage, metadatas: metadatas)
+                let pageNumber = Int(String(data: page.rawValue, encoding: .utf8)!)!
+                self.getPagination(serverUrl: serverUrl, recordsPerPage: fileProviderData.shared.itemForPage, pageNumber: pageNumber) { metadatas in
+                    self.completeObserver(observer, pageNumber: pageNumber, metadatas: metadatas)
                 }
             }
         }
@@ -146,8 +138,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     // MARK: - User Function + Network
     // --------------------------------------------------------------------------------------------
 
-    func completeObserver(_ observer: NSFileProviderEnumerationObserver, numPage: Int, metadatas: Results<tableMetadata>?) {
-        var numPage = numPage
+    func completeObserver(_ observer: NSFileProviderEnumerationObserver, pageNumber: Int, metadatas: Results<tableMetadata>?) {
+        var pageNumber = pageNumber
         var items: [NSFileProviderItemProtocol] = []
 
         if let metadatas {
@@ -162,18 +154,18 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         }
 
         if items.count == fileProviderData.shared.itemForPage {
-            numPage += 1
-            let providerPage = NSFileProviderPage("\(numPage)".data(using: .utf8)!)
+            pageNumber += 1
+            let providerPage = NSFileProviderPage("\(pageNumber)".data(using: .utf8)!)
             observer.finishEnumerating(upTo: providerPage)
         } else {
             observer.finishEnumerating(upTo: nil)
         }
     }
 
-    func getPagination(serverUrl: String, page: Int, limit: Int, completionHandler: @escaping (_ metadatas: Results<tableMetadata>?) -> Void) {
+    func getPagination(serverUrl: String, recordsPerPage: Int, pageNumber: Int, completionHandler: @escaping (_ metadatas: Results<tableMetadata>?) -> Void) {
         let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.account, serverUrl)
 
-        if page == 1 {
+        if pageNumber == 1 {
             NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: NCKeychain().showHiddenFiles) { account, files, _, error in
                 if error == .success {
                     autoreleasepool {
@@ -185,17 +177,17 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                             let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal)
                             NCManageDatabase.shared.updateMetadatas(metadatas, predicate: predicate)
 
-                            let resultsMetadata = NCManageDatabase.shared.fetchPagedResults(ofType: tableMetadata.self, primaryKey: "ocId", recordsPerPage: limit, pageNumber: page, filter: predicate)
+                            let resultsMetadata = NCManageDatabase.shared.fetchPagedResults(ofType: tableMetadata.self, primaryKey: "ocId", recordsPerPage: recordsPerPage, pageNumber: pageNumber, filter: predicate, sortedByKeyPath: "fileName")
                             completionHandler(resultsMetadata)
                         }
                     }
                 } else {
-                    let resultsMetadata = NCManageDatabase.shared.fetchPagedResults(ofType: tableMetadata.self, primaryKey: "ocId", recordsPerPage: limit, pageNumber: page, filter: predicate)
+                    let resultsMetadata = NCManageDatabase.shared.fetchPagedResults(ofType: tableMetadata.self, primaryKey: "ocId", recordsPerPage: recordsPerPage, pageNumber: pageNumber, filter: predicate, sortedByKeyPath: "fileName")
                     completionHandler(resultsMetadata)
                 }
             }
         } else {
-            let resultsMetadata = NCManageDatabase.shared.fetchPagedResults(ofType: tableMetadata.self, primaryKey: "ocId", recordsPerPage: limit, pageNumber: page, filter: predicate)
+            let resultsMetadata = NCManageDatabase.shared.fetchPagedResults(ofType: tableMetadata.self, primaryKey: "ocId", recordsPerPage: recordsPerPage, pageNumber: pageNumber, filter: predicate, sortedByKeyPath: "fileName")
             completionHandler(resultsMetadata)
         }
     }
