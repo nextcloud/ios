@@ -79,8 +79,4 @@ class FileProviderDomain: NSObject {
             }
         }
     }
-
-    func removeAllDomains() {
-        NSFileProviderManager.removeAllDomains { _ in }
-    }
 }
