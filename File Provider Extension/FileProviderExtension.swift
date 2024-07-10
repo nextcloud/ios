@@ -180,7 +180,12 @@ class FileProviderExtension: NSFileProviderExtension {
         }
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
-
+        // Exists ? return
+        if let tableLocalFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)),
+           utilityFileSystem.fileProviderStorageExists(metadata),
+           tableLocalFile.etag == metadata.etag {
+            return completionHandler(nil)
+        }
         // Update status
         NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusDownloading)
         fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, update: true)
