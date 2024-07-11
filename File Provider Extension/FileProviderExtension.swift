@@ -53,10 +53,9 @@ import Alamofire
    -------------------------------------------------------------------------------------------------------------------------------------------- */
 
 class FileProviderExtension: NSFileProviderExtension {
-    var outstandingSessionTasks: [URL: URLSessionTask] = [:]
-    var outstandingOcIdTemp: [String: String] = [:]
-    var fpUtility = fileProviderUtility()
+    let providerUtility = fileProviderUtility()
     let utilityFileSystem = NCUtilityFileSystem()
+    var outstandingOcIdTemp: [String: String] = [:]
 
     override init() {
         super.init()
@@ -125,8 +124,8 @@ class FileProviderExtension: NSFileProviderExtension {
             metadata.classFile = NKCommon.TypeClassFile.directory.rawValue
             return FileProviderItem(metadata: metadata, parentItemIdentifier: NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue))
         } else {
-            guard let metadata = fpUtility.getTableMetadataFromItemIdentifier(identifier),
-                  let parentItemIdentifier = fpUtility.getParentItemIdentifier(metadata: metadata) else {
+            guard let metadata = providerUtility.getTableMetadataFromItemIdentifier(identifier),
+                  let parentItemIdentifier = providerUtility.getParentItemIdentifier(metadata: metadata) else {
                 throw NSFileProviderError(.noSuchItem)
             }
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
@@ -166,12 +165,10 @@ class FileProviderExtension: NSFileProviderExtension {
     }
 
     override func startProvidingItem(at url: URL, completionHandler: @escaping ((_ error: Error?) -> Void)) {
-        guard outstandingSessionTasks[url] == nil else {
-            return completionHandler(nil)
-        }
         let pathComponents = url.pathComponents
         let itemIdentifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
-        guard let metadata = fpUtility.getTableMetadataFromItemIdentifier(itemIdentifier) else {
+        guard let metadata = providerUtility.getTableMetadataFromItemIdentifier(itemIdentifier),
+              metadata.status == NCGlobal.shared.metadataStatusNormal else {
             return completionHandler(NSFileProviderError(.noSuchItem))
         }
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
@@ -183,19 +180,18 @@ class FileProviderExtension: NSFileProviderExtension {
             return completionHandler(nil)
         }
         // Update status
-        NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusDownloading)
+        NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId,
+                                                  status: NCGlobal.shared.metadataStatusDownloading)
         fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, update: true)
 
         NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { _ in
         }, taskHandler: { task in
-            self.outstandingSessionTasks[url] = task
+            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                       taskIdentifier: task.taskIdentifier)
             fileProviderData.shared.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(itemIdentifier.rawValue)) { _ in }
         }, progressHandler: { _ in
         }) { _, etag, date, _, _, _, error in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                self.outstandingSessionTasks.removeValue(forKey: url)
-            }
-            guard let metadata = self.fpUtility.getTableMetadataFromItemIdentifier(itemIdentifier) else {
+            guard let metadata = self.providerUtility.getTableMetadataFromItemIdentifier(itemIdentifier) else {
                 return completionHandler(NSFileProviderError(.noSuchItem))
             }
             if error == .success {
@@ -225,19 +221,22 @@ class FileProviderExtension: NSFileProviderExtension {
         let fileName = pathComponents[pathComponents.count - 1]
         var ocId = itemIdentifier.rawValue
 
-        // Temp ocId ?
         if outstandingOcIdTemp[ocId] != nil && outstandingOcIdTemp[ocId] != ocId {
             ocId = outstandingOcIdTemp[ocId]!
             let atPath = utilityFileSystem.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: fileName)
             let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
             utilityFileSystem.copyFile(atPath: atPath, toPath: toPath)
         }
+
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
 
         let serverUrlFileName = metadata.serverUrl + "/" + fileName
         let fileNameLocalPath = url.path
 
         if let task = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: nil, dateModificationFile: nil, session: NCNetworking.shared.sessionManagerUploadBackgroundExtension) {
+            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                       status: NCGlobal.shared.metadataStatusUploading,
+                                                       taskIdentifier: task.taskIdentifier)
             fileProviderData.shared.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(metadata.fileId)) { _ in }
         }
     }
@@ -248,7 +247,7 @@ class FileProviderExtension: NSFileProviderExtension {
         if !fileHasLocalChanges {
             // remove the existing file to free up space
             do {
-                _ = try fpUtility.fileManager.removeItem(at: url)
+                try providerUtility.fileManager.removeItem(at: url)
             } catch let error {
                 print("error: \(error)")
             }
@@ -259,17 +258,19 @@ class FileProviderExtension: NSFileProviderExtension {
             })
         }
 
+        /*
         // Download task
         if let downloadTask = outstandingSessionTasks[url] {
             downloadTask.cancel()
             outstandingSessionTasks.removeValue(forKey: url)
         }
+        */
     }
 
     override func importDocument(at fileURL: URL, toParentItemIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
         DispatchQueue.main.async {
             autoreleasepool {
-                guard let tableDirectory = self.fpUtility.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: fileProviderData.shared.account, homeServerUrl: fileProviderData.shared.homeServerUrl) else {
+                guard let tableDirectory = self.providerUtility.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: fileProviderData.shared.account, homeServerUrl: fileProviderData.shared.homeServerUrl) else {
                     return completionHandler(nil, NSFileProviderError(.noSuchItem))
                 }
                 var size = 0 as Int64
@@ -277,7 +278,7 @@ class FileProviderExtension: NSFileProviderExtension {
                 _ = fileURL.startAccessingSecurityScopedResource()
                 // typefile directory ? (NOT PERMITTED)
                 do {
-                    let attributes = try self.fpUtility.fileManager.attributesOfItem(atPath: fileURL.path)
+                    let attributes = try self.providerUtility.fileManager.attributesOfItem(atPath: fileURL.path)
                     size = attributes[FileAttributeKey.size] as? Int64 ?? 0
                     let typeFile = attributes[FileAttributeKey.type] as? FileAttributeType
                     if typeFile == FileAttributeType.typeDirectory {
@@ -291,7 +292,7 @@ class FileProviderExtension: NSFileProviderExtension {
                 let ocIdTemp = NSUUID().uuidString.lowercased()
 
                 NSFileCoordinator().coordinate(readingItemAt: fileURL, options: .withoutChanges, error: &error) { url in
-                    _ = self.fpUtility.copyFile(url.path, toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: fileName))
+                    self.providerUtility.copyFile(url.path, toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: fileName))
                 }
 
                 fileURL.stopAccessingSecurityScopedResource()
@@ -307,7 +308,9 @@ class FileProviderExtension: NSFileProviderExtension {
                 let fileNameLocalPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: fileName)
 
                 if let task = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: nil, dateModificationFile: nil, session: NCNetworking.shared.sessionManagerUploadBackgroundExtension) {
-                    self.outstandingSessionTasks[URL(fileURLWithPath: fileNameLocalPath)] = task as URLSessionTask
+                    NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                               status: NCGlobal.shared.metadataStatusUploading,
+                                                               taskIdentifier: task.taskIdentifier)
                     fileProviderData.shared.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(ocIdTemp)) { _ in }
                 }
 

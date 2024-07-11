@@ -38,6 +38,7 @@ extension FileProviderExtension: NCNetworkingDelegate {
               let metadataTemp = NCManageDatabase.shared.getMetadata(from: url, sessionTaskIdentifier: task.taskIdentifier) else { return }
         let ocIdTemp = metadataTemp.ocId
         let metadata = tableMetadata.init(value: metadataTemp)
+        outstandingOcIdTemp[ocIdTemp] = ocId
 
         if error == .success, let ocId, size == metadata.size {
             // New file
