@@ -35,18 +35,12 @@ extension FileProviderExtension: NCNetworkingDelegate {
 
     func uploadComplete(fileName: String, serverUrl: String, ocId: String?, etag: String?, date: Date?, size: Int64, task: URLSessionTask, error: NKError) {
         guard let url = task.currentRequest?.url,
-              let metadataTemp = NCManageDatabase.shared.getMetadata(from: url, sessionTaskIdentifier: task.taskIdentifier) else { return }
-        let ocIdTemp = metadataTemp.ocId
-        let metadata = tableMetadata.init(value: metadataTemp)
-        outstandingOcIdTemp[ocIdTemp] = ocId
+              let metadata = NCManageDatabase.shared.getMetadata(from: url, sessionTaskIdentifier: task.taskIdentifier) else { return }
+        let ocIdTemp = metadata.ocId
 
         if error == .success, let ocId, size == metadata.size {
-            // New file
-            if ocId != ocIdTemp {
-                // Signal update
-                fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, delete: true)
-            }
-
+            /// SIGNAL DELETE
+            fileProviderData.shared.signalEnumerator(ocId: ocIdTemp, delete: true)
             metadata.fileName = fileName
             metadata.serverUrl = serverUrl
             metadata.uploadDate = (date as? NSDate) ?? NSDate()
@@ -61,15 +55,13 @@ extension FileProviderExtension: NCNetworkingDelegate {
 
             NCManageDatabase.shared.addMetadata(metadata)
             NCManageDatabase.shared.addLocalFile(metadata: metadata)
+            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
 
-            // New file
-            if ocId != ocIdTemp {
-                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
-                // File system
-                let atPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTemp)
-                let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId)
-                utilityFileSystem.copyFile(atPath: atPath, toPath: toPath)
-            }
+            // File system
+            let atPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTemp)
+            let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId)
+            utilityFileSystem.copyFile(atPath: atPath, toPath: toPath)
+            /// SIGNAL UPDATE
             fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, update: true)
         } else {
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
