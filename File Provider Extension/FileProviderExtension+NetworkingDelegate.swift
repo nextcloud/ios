@@ -39,11 +39,6 @@ extension FileProviderExtension: NCNetworkingDelegate {
         let ocIdTemp = metadataTemp.ocId
         let metadata = tableMetadata.init(value: metadataTemp)
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            self.outstandingSessionTasks.removeValue(forKey: url)
-        }
-        outstandingOcIdTemp[ocIdTemp] = ocId
-
         if error == .success, let ocId, size == metadata.size {
             // New file
             if ocId != ocIdTemp {
