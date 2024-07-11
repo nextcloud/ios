@@ -41,10 +41,11 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
     var capabilities: NSFileProviderItemCapabilities {
         if metadata.directory {
-            return [.allowsAddingSubItems, .allowsContentEnumerating, .allowsReading, .allowsDeleting, .allowsRenaming, .allowsReparenting, .allowsTrashing]
-        } else {
-            return [.allowsDeleting, .allowsEvicting, .allowsReading, .allowsRenaming, .allowsReparenting, .allowsTrashing, .allowsWriting]
+            return [ .allowsAddingSubItems, .allowsContentEnumerating, .allowsReading, .allowsDeleting, .allowsRenaming ]
+        } else if metadata.lock {
+            return [ .allowsReading ]
         }
+        return [ .allowsWriting, .allowsReading, .allowsDeleting, .allowsRenaming, .allowsReparenting ]
     }
     /// Managing Content
     var childItemCount: NSNumber? {
@@ -143,7 +144,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     }
 
     init(metadata: tableMetadata, parentItemIdentifier: NSFileProviderItemIdentifier) {
-        self.metadata = metadata
+        self.metadata = tableMetadata(value: metadata)
         self.parentItemIdentifier = parentItemIdentifier
     }
 }

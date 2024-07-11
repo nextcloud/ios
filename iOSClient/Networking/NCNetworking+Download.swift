@@ -170,6 +170,10 @@ extension NCNetworking {
                           length: Int64,
                           task: URLSessionTask,
                           error: NKError) {
+        if let delegate {
+            return delegate.downloadComplete(fileName: fileName, serverUrl: serverUrl, etag: etag, date: date, dateLastModified: dateLastModified, length: length, task: task, error: error)
+        }
+
         DispatchQueue.global(qos: .userInteractive).async {
             guard let url = task.currentRequest?.url,
                   let metadata = NCManageDatabase.shared.getMetadata(from: url, sessionTaskIdentifier: task.taskIdentifier) else { return }
@@ -233,6 +237,10 @@ extension NCNetworking {
                           serverUrl: String,
                           session: URLSession,
                           task: URLSessionTask) {
+        if let delegate {
+            return delegate.downloadProgress(progress, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected, fileName: fileName, serverUrl: serverUrl, session: session, task: task)
+        }
+
         DispatchQueue.global(qos: .userInteractive).async {
             var metadata: tableMetadata?
 

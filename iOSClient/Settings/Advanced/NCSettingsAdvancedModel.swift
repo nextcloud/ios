@@ -102,6 +102,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
 
     /// Updates the value of `appIntegration` in the keychain.
     func updateAppIntegration() {
+        NSFileProviderManager.removeAllDomains { _ in }
         keychain.disableFilesApp = appIntegration
     }
 

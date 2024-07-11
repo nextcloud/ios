@@ -71,6 +71,7 @@ class fileProviderUtility: NSObject {
 
     // MARK: -
 
+    @discardableResult
     func copyFile(_ atPath: String, toPath: String) -> Error? {
         var errorResult: Error?
 
@@ -89,6 +90,7 @@ class fileProviderUtility: NSObject {
         return errorResult
     }
 
+    @discardableResult
     func moveFile(_ atPath: String, toPath: String) -> Error? {
         var errorResult: Error?
 
@@ -108,6 +110,7 @@ class fileProviderUtility: NSObject {
         return errorResult
     }
 
+    @discardableResult
     func deleteFile(_ atPath: String) -> Error? {
         var errorResult: Error?
 
@@ -119,6 +122,7 @@ class fileProviderUtility: NSObject {
         return errorResult
     }
 
+    @discardableResult
     func fileExists(atPath: String) -> Bool {
         return fileManager.fileExists(atPath: atPath)
     }

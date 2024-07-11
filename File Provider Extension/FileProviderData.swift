@@ -40,12 +40,6 @@ class fileProviderData: NSObject {
     var accountUrlBase = ""
     var homeServerUrl = ""
 
-    // Max item for page
-    let itemForPage = 100
-
-    // Anchor
-    var currentAnchor: UInt64 = 0
-
     // Rank favorite
     var listFavoriteIdentifierRank: [String: NSNumber] = [:]
 
@@ -88,6 +82,7 @@ class fileProviderData: NSObject {
 
             NCManageDatabase.shared.setCapabilities(account: account)
             NextcloudKit.shared.setup(account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId, password: NCKeychain().getPassword(account: activeAccount.account), urlBase: activeAccount.urlBase, userAgent: userAgent, nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor, delegate: NCNetworking.shared)
+            NCNetworking.shared.delegate = providerExtension as? NCNetworkingDelegate
 
             return tableAccount.init(value: activeAccount)
         }
@@ -111,6 +106,7 @@ class fileProviderData: NSObject {
                 NCManageDatabase.shared.setCapabilities(account: account)
 
                 NextcloudKit.shared.setup(account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId, password: NCKeychain().getPassword(account: activeAccount.account), urlBase: activeAccount.urlBase, userAgent: userAgent, nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor, delegate: NCNetworking.shared)
+                NCNetworking.shared.delegate = providerExtension as? NCNetworkingDelegate
 
                 return tableAccount.init(value: activeAccount)
             }
@@ -130,60 +126,17 @@ class fileProviderData: NSObject {
             fileProviderData.shared.fileProviderSignalDeleteContainerItemIdentifier[item.itemIdentifier] = item.itemIdentifier
             fileProviderData.shared.fileProviderSignalDeleteWorkingSetItemIdentifier[item.itemIdentifier] = item.itemIdentifier
         }
-
         if update {
             fileProviderData.shared.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
             fileProviderData.shared.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
         }
-
         if !update && !delete {
             fileProviderData.shared.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
         }
-
         if update || delete {
-            currentAnchor += 1
             fileProviderManager.signalEnumerator(for: parentItemIdentifier) { _ in }
         }
-
         fileProviderManager.signalEnumerator(for: .workingSet) { _ in }
-
         return item
     }
-
-    /*
-     func updateFavoriteForWorkingSet() {
-         
-         var updateWorkingSet = false
-         let oldListFavoriteIdentifierRank = listFavoriteIdentifierRank
-         listFavoriteIdentifierRank = NCManageDatabase.shared.getTableMetadatasDirectoryFavoriteIdentifierRank(account: account)
-         
-         // (ADD)
-         for (identifier, _) in listFavoriteIdentifierRank {
-             
-             guard let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "ocId == %@", identifier)) else { continue }
-             guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: homeServerUrl) else { continue }
-             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
-                 
-             fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-             updateWorkingSet = true
-         }
-         
-         // (REMOVE)
-         for (identifier, _) in oldListFavoriteIdentifierRank {
-             
-             if !listFavoriteIdentifierRank.keys.contains(identifier) {
-                 
-                 guard let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "ocId == %@", identifier)) else { continue }
-                 let itemIdentifier = fileProviderUtility.sharedInstance.getItemIdentifier(metadata: metadata)
-                 
-                 fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
-                 updateWorkingSet = true
-             }
-         }
-         
-         if updateWorkingSet {
-             signalEnumerator(for: [.workingSet])
-         }
-     }
-     */
 }

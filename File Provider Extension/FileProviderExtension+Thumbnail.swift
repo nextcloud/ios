@@ -31,7 +31,7 @@ extension FileProviderExtension {
         var counterProgress: Int64 = 0
 
         for itemIdentifier in itemIdentifiers {
-            guard let metadata = fpUtility.getTableMetadataFromItemIdentifier(itemIdentifier), metadata.hasPreview else {
+            guard let metadata = providerUtility.getTableMetadataFromItemIdentifier(itemIdentifier), metadata.hasPreview else {
                 counterProgress += 1
                 if counterProgress == progress.totalUnitCount { completionHandler(nil) }
                 continue

@@ -274,6 +274,33 @@ class NCManageDatabase: NSObject {
     }
 
     // MARK: -
+    // MARK: Func T
+
+    func fetchPagedResults<T: Object>(ofType type: T.Type, primaryKey: String, recordsPerPage: Int, pageNumber: Int, filter: NSPredicate? = nil, sortedByKeyPath: String? = nil, sortedAscending: Bool = true) -> Results<T>? {
+        let startIndex = recordsPerPage * (pageNumber - 1)
+
+        do {
+            let realm = try Realm()
+            var results = realm.objects(type)
+
+            if let filter, let sortedByKeyPath {
+                results = results.filter(filter).sorted(byKeyPath: sortedByKeyPath, ascending: sortedAscending)
+            }
+
+            guard startIndex < results.count else {
+                return nil
+            }
+            let pagedResults = results.dropFirst(startIndex).prefix(recordsPerPage)
+            let pagedResultsKeys = pagedResults.compactMap { $0.value(forKey: primaryKey) as? String }
+
+            return realm.objects(type).filter("\(primaryKey) IN %@", Array(pagedResultsKeys))
+        } catch {
+            print("Error opening Realm: \(error)")
+            return nil
+        }
+    }
+
+    // MARK: -
     // MARK: SWIFTUI PREVIEW
 
     func previewCreateDB() {
