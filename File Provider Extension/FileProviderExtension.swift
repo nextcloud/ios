@@ -238,7 +238,6 @@ class FileProviderExtension: NSFileProviderExtension {
         let fileNameLocalPath = url.path
 
         if let task = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: nil, dateModificationFile: nil, session: NCNetworking.shared.sessionManagerUploadBackgroundExtension) {
-
             fileProviderData.shared.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(metadata.fileId)) { _ in }
         }
     }
@@ -308,61 +307,13 @@ class FileProviderExtension: NSFileProviderExtension {
                 let fileNameLocalPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: fileName)
 
                 if let task = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: nil, dateModificationFile: nil, session: NCNetworking.shared.sessionManagerUploadBackgroundExtension) {
-
                     self.outstandingSessionTasks[URL(fileURLWithPath: fileNameLocalPath)] = task as URLSessionTask
-
                     fileProviderData.shared.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(ocIdTemp)) { _ in }
                 }
 
                 let item = FileProviderItem(metadata: tableMetadata.init(value: metadata), parentItemIdentifier: parentItemIdentifier)
                 completionHandler(item, nil)
             }
-        }
-    }
-
-    func uploadComplete(fileName: String, serverUrl: String, ocId: String?, etag: String?, date: NSDate?, size: Int64, fileNameLocalPath: String?, task: URLSessionTask, error: NKError) {
-        guard let metadataTemp = NCManageDatabase.shared.getMetadataFromFileNameLocalPath(fileNameLocalPath) else { return }
-        let ocIdTemp = metadataTemp.ocId
-        let metadata = tableMetadata.init(value: metadataTemp)
-        let url = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: fileName))
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            self.outstandingSessionTasks.removeValue(forKey: url)
-        }
-        outstandingOcIdTemp[ocIdTemp] = ocId
-
-        if error == .success {
-            // New file
-            if ocId != ocIdTemp {
-                // Signal update
-                fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, delete: true)
-            }
-
-            metadata.fileName = fileName
-            metadata.serverUrl = serverUrl
-            if let etag = etag { metadata.etag = etag }
-            if let ocId = ocId { metadata.ocId = ocId }
-            if let date = date { metadata.date = date }
-            metadata.permissions = "RGDNVW"
-            metadata.session = ""
-            metadata.size = size
-            metadata.status = NCGlobal.shared.metadataStatusNormal
-
-            NCManageDatabase.shared.addMetadata(metadata)
-            NCManageDatabase.shared.addLocalFile(metadata: metadata)
-
-            // New file
-            if let ocId, ocId != ocIdTemp {
-                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
-                // File system
-                let atPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTemp)
-                let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId)
-                utilityFileSystem.copyFile(atPath: atPath, toPath: toPath)
-            }
-            fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, update: true)
-        } else {
-            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
-            fileProviderData.shared.signalEnumerator(ocId: ocIdTemp, delete: true)
         }
     }
 }
