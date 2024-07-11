@@ -57,14 +57,15 @@ extension FileProviderExtension: NCNetworkingDelegate {
             NCManageDatabase.shared.addLocalFile(metadata: metadata)
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
 
-            // File system
             let atPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTemp)
             let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId)
             utilityFileSystem.copyFile(atPath: atPath, toPath: toPath)
+
             /// SIGNAL UPDATE
             fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, update: true)
         } else {
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
+            /// SIGNAL DELETE
             fileProviderData.shared.signalEnumerator(ocId: ocIdTemp, delete: true)
         }
     }
