@@ -230,6 +230,11 @@ class FileProviderExtension: NSFileProviderExtension {
         let serverUrlFileName = metadata.serverUrl + "/" + fileName
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: fileName)
         utilityFileSystem.copyFile(atPath: url.path, toPath: fileNameLocalPath)
+        NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                   session: NCNetworking.shared.sessionUploadBackgroundExtension,
+                                                   sessionError: "",
+                                                   selector: "",
+                                                   status: NCGlobal.shared.metadataStatusUploading)
         if let task = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: nil, dateModificationFile: nil, session: NCNetworking.shared.sessionManagerUploadBackgroundExtension) {
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                        status: NCGlobal.shared.metadataStatusUploading,
@@ -243,15 +248,6 @@ class FileProviderExtension: NSFileProviderExtension {
         assert(pathComponents.count > 2)
         let itemIdentifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcIdAndOcIdTemp(itemIdentifier.rawValue) else { return }
-        if metadata.session == NCNetworking.shared.sessionUploadBackgroundExtension {
-            NCNetworking.shared.sessionManagerUploadBackgroundExtension.getAllTasks { tasks in
-                tasks.forEach { task in
-                    if task.taskIdentifier == metadata.sessionTaskIdentifier {
-                        task.cancel()
-                    }
-                }
-            }
-        }
         if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload {
             NextcloudKit.shared.sessionManager.session.getTasksWithCompletionHandler { _, _, downloadTasks in
                 downloadTasks.forEach { task in
