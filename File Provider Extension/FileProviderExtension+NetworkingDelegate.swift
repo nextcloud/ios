@@ -36,7 +36,7 @@ extension FileProviderExtension: NCNetworkingDelegate {
     func uploadComplete(fileName: String, serverUrl: String, ocId: String?, etag: String?, date: Date?, size: Int64, task: URLSessionTask, error: NKError) {
         guard let url = task.currentRequest?.url,
               let metadata = NCManageDatabase.shared.getMetadata(from: url, sessionTaskIdentifier: task.taskIdentifier) else { return }
-        if error == .success, let ocId, size == metadata.size {
+        if error == .success, let ocId {
             /// SIGNAL DELETE
             fileProviderData.shared.signalEnumerator(ocId: metadata.ocIdTemp, delete: true)
             metadata.fileName = fileName
@@ -44,6 +44,7 @@ extension FileProviderExtension: NCNetworkingDelegate {
             metadata.uploadDate = (date as? NSDate) ?? NSDate()
             metadata.etag = etag ?? ""
             metadata.ocId = ocId
+            metadata.size = size
             if let fileId = NCUtility().ocIdToFileId(ocId: ocId) {
                 metadata.fileId = fileId
             }
