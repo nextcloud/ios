@@ -179,8 +179,9 @@ class FileProviderExtension: NSFileProviderExtension {
            utilityFileSystem.fileProviderStorageExists(metadata),
            tableLocalFile.etag == metadata.etag {
             return completionHandler(nil)
+        } else {
+            NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata], session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload, selector: "")
         }
-        // Update status
         NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId,
                                                   status: NCGlobal.shared.metadataStatusDownloading)
         /// SIGNAL UPDATE
@@ -236,19 +237,27 @@ class FileProviderExtension: NSFileProviderExtension {
     }
 
     override func stopProvidingItem(at url: URL) {
-        let fileHasLocalChanges = false
-        if !fileHasLocalChanges {
-            // remove the existing file to free up space
-            do {
-                try providerUtility.fileManager.removeItem(at: url)
-            } catch let error {
-                print("error: \(error)")
+        let pathComponents = url.pathComponents
+        assert(pathComponents.count > 2)
+        let itemIdentifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcIdAndOcIdTemp(itemIdentifier.rawValue) else { return }
+        if metadata.session == NCNetworking.shared.sessionUploadBackgroundExtension {
+            NCNetworking.shared.sessionManagerUploadBackgroundExtension.getAllTasks { tasks in
+                tasks.forEach { task in
+                    if task.taskIdentifier == metadata.sessionTaskIdentifier {
+                        task.cancel()
+                    }
+                }
             }
-
-            // write out a placeholder to facilitate future property lookups
-            self.providePlaceholder(at: url, completionHandler: { _ in
-                // handle any error, do any necessary cleanup
-            })
+        }
+        if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload {
+            NextcloudKit.shared.sessionManager.session.getTasksWithCompletionHandler { _, _, downloadTasks in
+                downloadTasks.forEach { task in
+                    if metadata.sessionTaskIdentifier == task.taskIdentifier {
+                        task.cancel()
+                    }
+                }
+            }
         }
     }
 
