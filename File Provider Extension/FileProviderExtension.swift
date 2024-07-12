@@ -180,10 +180,12 @@ class FileProviderExtension: NSFileProviderExtension {
            tableLocalFile.etag == metadata.etag {
             return completionHandler(nil)
         } else {
-            NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata], session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload, selector: "")
+            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                       session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                       sessionError: "",
+                                                       selector: "",
+                                                       status: NCGlobal.shared.metadataStatusDownloading)
         }
-        NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId,
-                                                  status: NCGlobal.shared.metadataStatusDownloading)
         /// SIGNAL UPDATE
         fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, update: true)
 
