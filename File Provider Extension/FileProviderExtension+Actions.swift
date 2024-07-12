@@ -181,11 +181,10 @@ extension FileProviderExtension {
         if favoriteRank == nil {
             fileProviderData.shared.listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
         } else {
-            if let rank = fileProviderData.shared.listFavoriteIdentifierRank[itemIdentifier.rawValue] {
-                favorite = true
-            } else {
+            if fileProviderData.shared.listFavoriteIdentifierRank[itemIdentifier.rawValue] == nil {
                 fileProviderData.shared.listFavoriteIdentifierRank[itemIdentifier.rawValue] = favoriteRank
             }
+            favorite = true
         }
 
         if (favorite == true && metadata.favorite == false) || (favorite == false && metadata.favorite == true) {
@@ -198,7 +197,7 @@ extension FileProviderExtension {
                     // Change DB
                     metadata.favorite = favorite
                     NCManageDatabase.shared.addMetadata(metadata)
-
+                    /// SIGNAL UPDATE
                     let item = fileProviderData.shared.signalEnumerator(ocId: metadata.ocId)
                     completionHandler(item, nil)
                 } else {
@@ -207,8 +206,8 @@ extension FileProviderExtension {
                     }
                     // Errore, remove from listFavoriteIdentifierRank
                     fileProviderData.shared.listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
-
-                    let item = fileProviderData.shared.signalEnumerator(ocId: metadata.ocId)
+                    /// SIGNAL WORKINGSET
+                    let item = fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, onlyWorkingSet: true)
                     completionHandler(item, NSFileProviderError(.serverUnreachable))
                 }
             }
@@ -222,10 +221,9 @@ extension FileProviderExtension {
         let ocId = metadataForTag.ocId
         let account = metadataForTag.account
 
-        // Add, Remove (nil)
         NCManageDatabase.shared.addTag(ocId, tagIOS: tagData, account: account)
-
-        let item = fileProviderData.shared.signalEnumerator(ocId: ocId)
+        /// SIGNAL WORKINGSET
+        let item = fileProviderData.shared.signalEnumerator(ocId: ocId, onlyWorkingSet: true)
         completionHandler(item, nil)
     }
 

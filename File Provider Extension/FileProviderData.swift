@@ -117,9 +117,9 @@ class fileProviderData: NSObject {
     // MARK: -
 
     @discardableResult
-    func signalEnumerator(ocId: String, delete: Bool = false, update: Bool = false) -> FileProviderItem? {
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return nil }
-        guard let parentItemIdentifier = fileProviderUtility().getParentItemIdentifier(metadata: metadata) else { return nil }
+    func signalEnumerator(ocId: String, delete: Bool = false, update: Bool = false, onlyWorkingSet: Bool = false) -> FileProviderItem? {
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId),
+              let parentItemIdentifier = fileProviderUtility().getParentItemIdentifier(metadata: metadata) else { return nil }
         let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
 
         if delete {
@@ -130,9 +130,10 @@ class fileProviderData: NSObject {
             fileProviderData.shared.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
             fileProviderData.shared.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
         }
-        if !update && !delete {
+        if onlyWorkingSet {
             fileProviderData.shared.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
         }
+        /// SIGNAL ENUMERATOR
         if update || delete {
             fileProviderManager.signalEnumerator(for: parentItemIdentifier) { _ in }
         }
