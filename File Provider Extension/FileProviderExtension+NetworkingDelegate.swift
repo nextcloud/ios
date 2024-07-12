@@ -39,6 +39,7 @@ extension FileProviderExtension: NCNetworkingDelegate {
         let ocIdTemp = metadata.ocId
 
         if error == .success, let ocId, size == metadata.size {
+            outstandingOcIdTemp[ocIdTemp] = ocId
             /// SIGNAL DELETE
             fileProviderData.shared.signalEnumerator(ocId: ocIdTemp, delete: true)
             metadata.fileName = fileName
@@ -55,12 +56,14 @@ extension FileProviderExtension: NCNetworkingDelegate {
 
             NCManageDatabase.shared.addMetadata(metadata)
             NCManageDatabase.shared.addLocalFile(metadata: metadata)
-            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
+            /// NEW File
+            if ocId != ocIdTemp {
+                let atPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTemp)
+                let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId)
 
-            let atPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTemp)
-            let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId)
-            utilityFileSystem.copyFile(atPath: atPath, toPath: toPath)
-
+                utilityFileSystem.copyFile(atPath: atPath, toPath: toPath)
+                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
+            }
             /// SIGNAL UPDATE
             fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, update: true)
         } else {

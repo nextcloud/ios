@@ -55,6 +55,7 @@ import Alamofire
 class FileProviderExtension: NSFileProviderExtension {
     let providerUtility = fileProviderUtility()
     let utilityFileSystem = NCUtilityFileSystem()
+    var outstandingOcIdTemp: [String: String] = [:]
 
     override init() {
         super.init()
@@ -166,9 +167,11 @@ class FileProviderExtension: NSFileProviderExtension {
     override func startProvidingItem(at url: URL, completionHandler: @escaping ((_ error: Error?) -> Void)) {
         let pathComponents = url.pathComponents
         let itemIdentifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
-        guard let metadata = providerUtility.getTableMetadataFromItemIdentifier(itemIdentifier),
-              metadata.status == NCGlobal.shared.metadataStatusNormal else {
+        guard let metadata = providerUtility.getTableMetadataFromItemIdentifier(itemIdentifier) else {
             return completionHandler(NSFileProviderError(.noSuchItem))
+        }
+        if metadata.session == NCNetworking.shared.sessionUploadBackgroundExtension {
+            return completionHandler(nil)
         }
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
@@ -215,27 +218,23 @@ class FileProviderExtension: NSFileProviderExtension {
         }
     }
 
+    /// Upload the changed file
     override func itemChanged(at url: URL) {
         let pathComponents = url.pathComponents
         assert(pathComponents.count > 2)
         let itemIdentifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
         let fileName = pathComponents[pathComponents.count - 1]
-        let ocId = itemIdentifier.rawValue
-
-        /*
+        var ocId = itemIdentifier.rawValue
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
+        let serverUrlFileName = metadata.serverUrl + "/" + fileName
+        let fileNameLocalPath = url.path
+        /// MODIFY
         if outstandingOcIdTemp[ocId] != nil && outstandingOcIdTemp[ocId] != ocId {
             ocId = outstandingOcIdTemp[ocId]!
             let atPath = utilityFileSystem.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: fileName)
             let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
             utilityFileSystem.copyFile(atPath: atPath, toPath: toPath)
         }
-        */
-
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
-
-        let serverUrlFileName = metadata.serverUrl + "/" + fileName
-        let fileNameLocalPath = url.path
-
         if let task = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: nil, dateModificationFile: nil, session: NCNetworking.shared.sessionManagerUploadBackgroundExtension) {
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                        status: NCGlobal.shared.metadataStatusUploading,
@@ -246,7 +245,6 @@ class FileProviderExtension: NSFileProviderExtension {
 
     override func stopProvidingItem(at url: URL) {
         let fileHasLocalChanges = false
-
         if !fileHasLocalChanges {
             // remove the existing file to free up space
             do {
@@ -260,14 +258,6 @@ class FileProviderExtension: NSFileProviderExtension {
                 // handle any error, do any necessary cleanup
             })
         }
-
-        /*
-        // Download task
-        if let downloadTask = outstandingSessionTasks[url] {
-            downloadTask.cancel()
-            outstandingSessionTasks.removeValue(forKey: url)
-        }
-        */
     }
 
     override func importDocument(at fileURL: URL, toParentItemIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
