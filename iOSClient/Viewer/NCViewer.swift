@@ -162,8 +162,8 @@ class NCViewer: NSObject {
                         navigationController.pushViewController(viewController, animated: true)
                     }
                 }
+                return
             }
-            return
         }
 
         // QLPreview
