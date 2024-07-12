@@ -55,7 +55,6 @@ import Alamofire
 class FileProviderExtension: NSFileProviderExtension {
     let providerUtility = fileProviderUtility()
     let utilityFileSystem = NCUtilityFileSystem()
-    var outstandingOcIdTemp: [String: String] = [:]
 
     override init() {
         super.init()
@@ -224,17 +223,10 @@ class FileProviderExtension: NSFileProviderExtension {
         assert(pathComponents.count > 2)
         let itemIdentifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
         let fileName = pathComponents[pathComponents.count - 1]
-        var ocId = itemIdentifier.rawValue
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcIdAndOcIdTemp(itemIdentifier.rawValue) else { return }
         let serverUrlFileName = metadata.serverUrl + "/" + fileName
-        let fileNameLocalPath = url.path
-        /// MODIFY
-        if outstandingOcIdTemp[ocId] != nil && outstandingOcIdTemp[ocId] != ocId {
-            ocId = outstandingOcIdTemp[ocId]!
-            let atPath = utilityFileSystem.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: fileName)
-            let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
-            utilityFileSystem.copyFile(atPath: atPath, toPath: toPath)
-        }
+        let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: fileName)
+        utilityFileSystem.copyFile(atPath: url.path, toPath: fileNameLocalPath)
         if let task = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: nil, dateModificationFile: nil, session: NCNetworking.shared.sessionManagerUploadBackgroundExtension) {
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                        status: NCGlobal.shared.metadataStatusUploading,

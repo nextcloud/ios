@@ -36,12 +36,9 @@ extension FileProviderExtension: NCNetworkingDelegate {
     func uploadComplete(fileName: String, serverUrl: String, ocId: String?, etag: String?, date: Date?, size: Int64, task: URLSessionTask, error: NKError) {
         guard let url = task.currentRequest?.url,
               let metadata = NCManageDatabase.shared.getMetadata(from: url, sessionTaskIdentifier: task.taskIdentifier) else { return }
-        let ocIdTemp = metadata.ocId
-
         if error == .success, let ocId, size == metadata.size {
-            outstandingOcIdTemp[ocIdTemp] = ocId
             /// SIGNAL DELETE
-            fileProviderData.shared.signalEnumerator(ocId: ocIdTemp, delete: true)
+            fileProviderData.shared.signalEnumerator(ocId: metadata.ocIdTemp, delete: true)
             metadata.fileName = fileName
             metadata.serverUrl = serverUrl
             metadata.uploadDate = (date as? NSDate) ?? NSDate()
@@ -57,19 +54,18 @@ extension FileProviderExtension: NCNetworkingDelegate {
             NCManageDatabase.shared.addMetadata(metadata)
             NCManageDatabase.shared.addLocalFile(metadata: metadata)
             /// NEW File
-            if ocId != ocIdTemp {
-                let atPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTemp)
+            if ocId != metadata.ocIdTemp {
+                let atPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTemp)
                 let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId)
-
                 utilityFileSystem.copyFile(atPath: atPath, toPath: toPath)
-                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
+                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocIdTemp))
             }
             /// SIGNAL UPDATE
             fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, update: true)
         } else {
-            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
+            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocIdTemp))
             /// SIGNAL DELETE
-            fileProviderData.shared.signalEnumerator(ocId: ocIdTemp, delete: true)
+            fileProviderData.shared.signalEnumerator(ocId: metadata.ocIdTemp, delete: true)
         }
     }
 }
