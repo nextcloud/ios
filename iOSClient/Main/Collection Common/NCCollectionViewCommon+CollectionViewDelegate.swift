@@ -94,6 +94,8 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             image = (cell as? NCListCell)?.imageItem.image
         } else if cell is NCGridCell {
             image = (cell as? NCGridCell)?.imageItem.image
+        } else if cell is NCPhotoCell {
+            image = (cell as? NCPhotoCell)?.imageItem.image
         }
 
         return UIContextMenuConfiguration(identifier: identifier, previewProvider: {

@@ -28,7 +28,7 @@ import NextcloudKit
 import EasyTipView
 import JGProgressHUD
 
-class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCSectionFooterDelegate, NCSectionHeaderEmptyDataDelegate, NCAccountSettingsModelDelegate, UIAdaptivePresentationControllerDelegate, UIContextMenuInteractionDelegate {
+class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCPhotoCellDelegate, NCSectionHeaderMenuDelegate, NCSectionFooterDelegate, NCSectionHeaderEmptyDataDelegate, NCAccountSettingsModelDelegate, UIAdaptivePresentationControllerDelegate, UIContextMenuInteractionDelegate {
 
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -57,6 +57,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var searchResults: [NKSearchResult]?
     var listLayout: NCListLayout!
     var gridLayout: NCGridLayout!
+    var photoLayout: NCPhotoLayout!
     var literalSearch: String?
     var tabBarSelect: NCCollectionViewCommonSelectTabBar!
     var timerNotificationCenter: Timer?
@@ -96,6 +97,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         collectionView.alwaysBounceVertical = true
         listLayout = NCListLayout()
         gridLayout = NCGridLayout()
+        photoLayout = NCPhotoLayout()
 
         // Color
         view.backgroundColor = .systemBackground
@@ -116,6 +118,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         // Cell
         collectionView.register(UINib(nibName: "NCListCell", bundle: nil), forCellWithReuseIdentifier: "listCell")
         collectionView.register(UINib(nibName: "NCGridCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
+        collectionView.register(UINib(nibName: "NCPhotoCell", bundle: nil), forCellWithReuseIdentifier: "photoCell")
         collectionView.register(UINib(nibName: "NCTransferCell", bundle: nil), forCellWithReuseIdentifier: "transferCell")
 
         // Header
@@ -168,8 +171,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         gridLayout.itemForLine = CGFloat(layoutForView?.itemForLine ?? 3)
         if layoutForView?.layout == NCGlobal.shared.layoutList {
             collectionView?.collectionViewLayout = listLayout
-        } else {
+        } else if layoutForView?.layout == NCGlobal.shared.layoutGrid {
             collectionView?.collectionViewLayout = gridLayout
+        } else if layoutForView?.layout == NCGlobal.shared.layoutPhoto {
+            collectionView?.collectionViewLayout = photoLayout
         }
 
         // FIXME: iPAD PDF landscape mode iOS 16
@@ -602,7 +607,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if !accounts.isEmpty, !NCBrandOptions.shared.disable_multiaccount {
             let accountActions: [UIAction] = accounts.map { account in
                 let image = utility.loadUserImage(for: account.user, displayName: account.displayName, userBaseUrl: account)
-
                 var name: String = ""
                 var url: String = ""
 
@@ -621,7 +625,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 }
 
                 action.subtitle = url
-
                 return action
             }
 
@@ -680,7 +683,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.setNavigationRightItems()
             }
 
-            let viewStyleSubmenu = UIMenu(title: "", options: .displayInline, children: [list, grid])
+            let photo = UIAction(title: NSLocalizedString("_photo_", comment: ""), image: utility.loadImage(named: "photo"), state: layoutForView.layout == NCGlobal.shared.layoutPhoto ? .on : .off) { _ in
+                self.onPhotoSelected()
+                self.setNavigationRightItems()
+            }
+
+            let viewStyleSubmenu = UIMenu(title: "", options: .displayInline, children: [list, grid, photo])
 
             let ascending = layoutForView.ascending
             let ascendingChevronImage = utility.loadImage(named: ascending ? "chevron.up" : "chevron.down")
@@ -960,8 +968,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         // get layout for view
         layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl)
 
-        // set GroupField for Grid
-        if !isSearchingMode && layoutForView?.layout == NCGlobal.shared.layoutGrid {
+        // set GroupField for Grid / Photo
+        if !isSearchingMode && (layoutForView?.layout == NCGlobal.shared.layoutGrid || layoutForView?.layout == NCGlobal.shared.layoutPhoto) {
             groupByField = "classFile"
         } else {
             groupByField = "name"
@@ -1039,7 +1047,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func unifiedSearchMore(metadataForSection: NCMetadataForSection?) {
-
         guard let metadataForSection = metadataForSection, let lastSearchResult = metadataForSection.lastSearchResult, let cursor = lastSearchResult.cursor, let term = literalSearch else { return }
 
         metadataForSection.unifiedSearchInProgress = true
@@ -1087,7 +1094,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 // MARK: - E2EE
 
 extension NCCollectionViewCommon: NCEndToEndInitializeDelegate {
-
     func endToEndInitializeSuccess(metadata: tableMetadata?) {
         if let metadata {
             pushMetadata(metadata)
@@ -1096,7 +1102,6 @@ extension NCCollectionViewCommon: NCEndToEndInitializeDelegate {
 }
 
 extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
-
     func isHeaderMenuTransferViewEnabled() -> Bool {
         if headerMenuTransferView, let metadata = NCManageDatabase.shared.getMetadataFromOcId(NCNetworking.shared.transferInForegorund?.ocId), metadata.isTransferInForeground {
             return true
@@ -1114,7 +1119,6 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
         } else {
             NCNetworking.shared.transferInForegorund = nil
         }
-
         return size
     }
 
@@ -1128,7 +1132,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
             }
         }
 
-        if isSearchingMode || layoutForView?.layout == NCGlobal.shared.layoutGrid || dataSource.numberOfSections() > 1 {
+        if isSearchingMode || layoutForView?.layout == NCGlobal.shared.layoutGrid || layoutForView?.layout == NCGlobal.shared.layoutPhoto || dataSource.numberOfSections() > 1 {
             if section == 0 {
                 return (getHeaderHeight(), headerRichWorkspace, NCGlobal.shared.heightSection)
             } else {
@@ -1168,7 +1172,6 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
         if isSearchingMode && isPaginated && metadatasCount > 0 {
             size.height += NCGlobal.shared.heightFooterButton
         }
-
         return size
     }
 }
@@ -1218,9 +1221,7 @@ extension NCCollectionViewCommon: EasyTipViewDelegate {
 }
 
 extension NCCollectionViewCommon {
-
     func getAvatarFromIconUrl(metadata: tableMetadata) -> String? {
-
         var ownerId: String?
         if metadata.iconUrl.contains("http") && metadata.iconUrl.contains("avatar") {
             let splitIconUrl = metadata.iconUrl.components(separatedBy: "/")

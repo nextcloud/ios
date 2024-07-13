@@ -27,7 +27,7 @@ import NextcloudKit
 
 extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
     func onListSelected() {
-        if layoutForView?.layout == NCGlobal.shared.layoutGrid {
+        if layoutForView?.layout != NCGlobal.shared.layoutList {
             layoutForView?.layout = NCGlobal.shared.layoutList
             NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
             self.groupByField = "name"
@@ -42,8 +42,27 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
     }
 
     func onGridSelected() {
-        if layoutForView?.layout == NCGlobal.shared.layoutList {
+        if layoutForView?.layout != NCGlobal.shared.layoutGrid {
             layoutForView?.layout = NCGlobal.shared.layoutGrid
+            NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
+            if isSearchingMode {
+                self.groupByField = "name"
+            } else {
+                self.groupByField = "classFile"
+            }
+            if self.dataSource.groupByField != self.groupByField {
+                self.dataSource.changeGroupByField(self.groupByField)
+            }
+
+            self.collectionView.reloadData()
+            self.collectionView.collectionViewLayout.invalidateLayout()
+            self.collectionView.setCollectionViewLayout(self.gridLayout, animated: true) {_ in self.isTransitioning = false }
+        }
+    }
+
+    func onPhotoSelected() {
+        if layoutForView?.layout != NCGlobal.shared.layoutPhoto {
+            layoutForView?.layout = NCGlobal.shared.layoutPhoto
             NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
             if isSearchingMode {
                 self.groupByField = "name"

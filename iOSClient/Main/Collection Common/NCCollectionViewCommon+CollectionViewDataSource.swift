@@ -138,11 +138,16 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             guard let listCell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell else { return NCListCell() }
             listCell.listCellDelegate = self
             cell = listCell
-        } else {
+        } else if layoutForView?.layout == NCGlobal.shared.layoutGrid {
         // LAYOUT GRID
             guard let gridCell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridCell else { return NCGridCell() }
             gridCell.gridCellDelegate = self
             cell = gridCell
+        } else {
+        // LAYOUT PHOTO
+            guard let photoCell = collectionView.dequeueReusableCell(withReuseIdentifier: "photoCell", for: indexPath) as? NCPhotoCell else { return NCPhotoCell() }
+            photoCell.photoCellDelegate = self
+            cell = photoCell
         }
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return cell }
 
