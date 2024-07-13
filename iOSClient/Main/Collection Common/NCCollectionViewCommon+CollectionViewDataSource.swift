@@ -352,15 +352,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         // Layout photo
-        if layoutForView?.layout == NCGlobal.shared.layoutPhoto {
-            if metadata.isImage || metadata.isVideo {
-                cell.fileTitleLabel?.text = ""
-            } else {
-                cell.fileTitleLabel?.text = metadata.fileName
-            }
+        if layoutForView?.layout == NCGlobal.shared.layoutPhoto && !metadata.directory {
+            cell.fileTitleLabel?.text = ""
         }
 
-        // Add TAGS
+        // TAGS
         cell.setTags(tags: Array(metadata.tags))
 
         // Hide buttons
