@@ -135,7 +135,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
         return session
     }()
 
-#if EXTENSION
     public lazy var sessionManagerUploadBackgroundExtension: URLSession = {
         let configuration = URLSessionConfiguration.background(withIdentifier: sessionUploadBackgroundExtension)
         configuration.allowsCellularAccess = true
@@ -147,7 +146,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
         let session = URLSession(configuration: configuration, delegate: nkBackground, delegateQueue: OperationQueue.main)
         return session
     }()
-#endif
 
     // REQUESTS
     var requestsUnifiedSearch: [DataRequest] = []

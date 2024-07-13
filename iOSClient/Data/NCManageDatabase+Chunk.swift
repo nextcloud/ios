@@ -44,7 +44,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access to database: \(error)")
         }
-
         return NSUUID().uuidString
     }
 
@@ -61,7 +60,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access to database: \(error)")
         }
-
         return filesChunk
     }
 

@@ -82,6 +82,7 @@ class tableMetadata: Object, NCUserBaseUrl {
     @objc dynamic var name = "" // for unifiedSearch is the provider.id
     @objc dynamic var note = ""
     @objc dynamic var ocId = ""
+    @objc dynamic var ocIdTemp = ""
     @objc dynamic var ownerId = ""
     @objc dynamic var ownerDisplayName = ""
     @objc public var lock = false
@@ -407,7 +408,6 @@ extension NCManageDatabase {
                 metadata.classFile = results.classFile
             }
         }
-
         return metadata
     }
 
@@ -436,7 +436,6 @@ extension NCManageDatabase {
 
             counter += 1
         }
-
         completion(metadataFolder, metadatas)
     }
 
@@ -485,6 +484,7 @@ extension NCManageDatabase {
         metadata.fileNameView = fileName
         metadata.name = name
         metadata.ocId = ocId
+        metadata.ocIdTemp = ocId
         metadata.permissions = "RGDNVW"
         metadata.serverUrl = serverUrl
         metadata.subline = subline
@@ -497,7 +497,6 @@ extension NCManageDatabase {
         if !metadata.urlBase.isEmpty, metadata.serverUrl.hasPrefix(metadata.urlBase) {
             metadata.path = String(metadata.serverUrl.dropFirst(metadata.urlBase.count)) + "/"
         }
-
         return metadata
     }
 
@@ -707,7 +706,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return nil
     }
 
@@ -720,7 +718,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return []
     }
 
@@ -732,7 +729,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return nil
     }
 
@@ -747,7 +743,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return nil
     }
 
@@ -758,7 +753,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return nil
     }
 
@@ -769,7 +763,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return nil
     }
 
@@ -788,7 +781,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return metadatas
     }
 
@@ -805,7 +797,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return nil
     }
 
@@ -820,7 +811,24 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
+        return nil
+    }
 
+    func getMetadataFromOcIdAndOcIdTemp(_ ocId: String?) -> tableMetadata? {
+        guard let ocId else { return nil }
+
+        do {
+            let realm = try Realm()
+            realm.refresh()
+            if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
+                return tableMetadata(value: result)
+            }
+            if let result = realm.objects(tableMetadata.self).filter("ocIdTemp == %@", ocId).first {
+                return tableMetadata(value: result)
+            }
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
+        }
         return nil
     }
 
@@ -833,7 +841,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return nil
     }
 
@@ -852,7 +859,6 @@ extension NCManageDatabase {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
             }
         }
-
         return nil
     }
 
@@ -879,7 +885,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return nil
     }
 
@@ -906,7 +911,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return nil
     }
 
@@ -925,7 +929,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return listIdentifierRank
     }
 
@@ -968,7 +971,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return nil
     }
 
@@ -996,7 +998,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return nil
     }
 
@@ -1040,7 +1041,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return 0
     }
 
@@ -1054,7 +1054,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return nil
     }
 
@@ -1077,7 +1076,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return metadatas
     }
 
@@ -1089,7 +1087,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return nil
     }
 
@@ -1120,7 +1117,6 @@ extension NCManageDatabase {
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
-
         return (metadatasDifferentCount, metadatasModified)
     }
 
@@ -1151,7 +1147,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return nil
     }
 }

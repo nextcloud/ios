@@ -25,10 +25,8 @@ import UIKit
 import NextcloudKit
 
 class NCDataSource: NSObject {
-
     var metadatas: [tableMetadata] = []
     var metadatasForSection: [NCMetadataForSection] = []
-
     var directory: tableDirectory?
     var groupByField: String = ""
 
@@ -67,7 +65,6 @@ class NCDataSource: NSObject {
     // MARK: -
 
     func clearDataSource() {
-
         self.metadatas.removeAll()
         self.metadatasForSection.removeAll()
         self.directory = nil
@@ -77,12 +74,10 @@ class NCDataSource: NSObject {
     }
 
     func clearDirectory() {
-
         self.directory = nil
     }
 
     func changeGroupByField(_ groupByField: String) {
-
         self.groupByField = groupByField
         print("DATASOURCE: set group by filed " + groupByField)
         self.metadatasForSection.removeAll()
@@ -93,7 +88,6 @@ class NCDataSource: NSObject {
     }
 
     func addSection(metadatas: [tableMetadata], searchResult: NKSearchResult?) {
-
         self.metadatas.append(contentsOf: metadatas)
 
         if let searchResult = searchResult {
@@ -104,7 +98,6 @@ class NCDataSource: NSObject {
     }
 
     internal func createSections() {
-
         // get all Section
         for metadata in self.metadatas {
             // skipped livePhoto VIDEO part
@@ -134,9 +127,7 @@ class NCDataSource: NSObject {
                     self.sectionsValue.append(section.key)
                 }
             }
-
         } else {
-
             // normal
             let directory = NSLocalizedString("directory", comment: "").lowercased().firstUppercased
             self.sectionsValue = self.sectionsValue.sorted {
@@ -162,7 +153,6 @@ class NCDataSource: NSObject {
     }
 
     internal func createMetadataForSection(sectionValue: String) {
-
         var searchResult: NKSearchResult?
         if let providers = self.providers, !providers.isEmpty, let searchResults = self.searchResults {
             searchResult = searchResults.filter({ $0.id == sectionValue}).first
@@ -179,20 +169,17 @@ class NCDataSource: NSObject {
     }
 
     func getMetadataSourceForAllSections() -> [tableMetadata] {
-
         var metadatas: [tableMetadata] = []
 
         for section in metadatasForSection {
             metadatas.append(contentsOf: section.metadatas)
         }
-
         return metadatas
     }
 
     // MARK: -
 
     func appendMetadatasToSection(_ metadatas: [tableMetadata], metadataForSection: NCMetadataForSection, lastSearchResult: NKSearchResult) {
-
         guard let sectionIndex = getSectionIndex(metadataForSection.sectionValue) else { return }
         var indexPaths: [IndexPath] = []
 
@@ -241,7 +228,6 @@ class NCDataSource: NSObject {
     }
 
     func getFooterInformationAllMetadatas() -> (directories: Int, files: Int, size: Int64) {
-
         var directories: Int = 0
         var files: Int = 0
         var size: Int64 = 0
@@ -251,7 +237,6 @@ class NCDataSource: NSObject {
             files += metadataForSection.numFile
             size += metadataForSection.totalSize
         }
-
         return (directories, files, size)
     }
 
@@ -263,7 +248,6 @@ class NCDataSource: NSObject {
     }
 
     internal func getSectionValue(metadata: tableMetadata) -> String {
-
         switch self.groupByField {
         case "name":
             return NSLocalizedString(metadata.name, comment: "")
@@ -300,7 +284,6 @@ class NCDataSource: NSObject {
 // MARK: -
 
 class NCMetadataForSection: NSObject {
-
     var sectionValue: String
     var metadatas: [tableMetadata]
     var lastSearchResult: NKSearchResult?
@@ -337,7 +320,6 @@ class NCMetadataForSection: NSObject {
     }
 
     func createMetadatas() {
-
         // Clear
         //
         metadatasSorted.removeAll()

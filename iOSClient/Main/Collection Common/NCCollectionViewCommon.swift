@@ -1246,7 +1246,6 @@ extension NCCollectionViewCommon {
     // sessionUploadBackgroundExtension: String = "com.nextcloud.session.upload.extension"
 
     func cancelSession(metadata: tableMetadata) async {
-
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
         utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
 
@@ -1321,6 +1320,8 @@ extension NCCollectionViewCommon {
             session = NCNetworking.shared.sessionManagerUploadBackground
         } else if metadata.session == NCNetworking.shared.sessionUploadBackgroundWWan {
             session = NCNetworking.shared.sessionManagerUploadBackgroundWWan
+        } else if metadata.session == NCNetworking.shared.sessionUploadBackgroundExtension {
+            session = NCNetworking.shared.sessionManagerUploadBackgroundExtension
         }
         if let tasks = await session?.tasks {
             for task in tasks.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])

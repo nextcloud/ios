@@ -269,7 +269,6 @@ class NCManageDatabase: NSObject {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
-
         return nil
     }
 

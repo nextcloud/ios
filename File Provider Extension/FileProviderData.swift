@@ -40,19 +40,22 @@ class fileProviderData: NSObject {
     var accountUrlBase = ""
     var homeServerUrl = ""
 
-    // Rank favorite
     var listFavoriteIdentifierRank: [String: NSNumber] = [:]
 
-    // Item for signalEnumerator
     var fileProviderSignalDeleteContainerItemIdentifier: [NSFileProviderItemIdentifier: NSFileProviderItemIdentifier] = [:]
     var fileProviderSignalUpdateContainerItem: [NSFileProviderItemIdentifier: FileProviderItem] = [:]
     var fileProviderSignalDeleteWorkingSetItemIdentifier: [NSFileProviderItemIdentifier: NSFileProviderItemIdentifier] = [:]
     var fileProviderSignalUpdateWorkingSetItem: [NSFileProviderItemIdentifier: FileProviderItem] = [:]
 
-    // Error
     enum FileProviderError: Error {
         case downloadError
         case uploadError
+    }
+
+    enum TypeSignal: String {
+        case delete
+        case update
+        case workingSet
     }
 
     // MARK: - 
@@ -117,23 +120,23 @@ class fileProviderData: NSObject {
     // MARK: -
 
     @discardableResult
-    func signalEnumerator(ocId: String, delete: Bool = false, update: Bool = false) -> FileProviderItem? {
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return nil }
-        guard let parentItemIdentifier = fileProviderUtility().getParentItemIdentifier(metadata: metadata) else { return nil }
+    func signalEnumerator(ocId: String, type: TypeSignal) -> FileProviderItem? {
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId),
+              let parentItemIdentifier = fileProviderUtility().getParentItemIdentifier(metadata: metadata) else { return nil }
         let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
 
-        if delete {
+        if type == .delete {
             fileProviderData.shared.fileProviderSignalDeleteContainerItemIdentifier[item.itemIdentifier] = item.itemIdentifier
             fileProviderData.shared.fileProviderSignalDeleteWorkingSetItemIdentifier[item.itemIdentifier] = item.itemIdentifier
         }
-        if update {
+        if type == .update {
             fileProviderData.shared.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
             fileProviderData.shared.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
         }
-        if !update && !delete {
+        if type == .workingSet {
             fileProviderData.shared.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
         }
-        if update || delete {
+        if type == .delete || type == .update {
             fileProviderManager.signalEnumerator(for: parentItemIdentifier) { _ in }
         }
         fileProviderManager.signalEnumerator(for: .workingSet) { _ in }

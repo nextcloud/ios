@@ -85,7 +85,6 @@ extension NCManageDatabase {
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
-
         return NCDBLayoutForView(value: addObject)
     }
 
@@ -121,7 +120,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return setLayoutForView(account: account, key: key, serverUrl: serverUrl)
     }
 }

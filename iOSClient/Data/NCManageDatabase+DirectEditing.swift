@@ -64,7 +64,6 @@ extension NCManageDatabase {
                     addObject.mimetype = creator.mimetype
                     addObject.name = creator.name
                     addObject.templates = creator.templates
-
                     realm.add(addObject)
                 }
 
@@ -85,7 +84,6 @@ extension NCManageDatabase {
                         addObject.optionalMimetypes.append(mimeType)
                     }
                     addObject.secure = editor.secure
-
                     realm.add(addObject)
                 }
             }
@@ -107,7 +105,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access to database: \(error)")
         }
-
         return nil
     }
 
@@ -124,7 +121,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access to database: \(error)")
         }
-
         return nil
     }
 
@@ -141,7 +137,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access to database: \(error)")
         }
-
         return nil
     }
 }
