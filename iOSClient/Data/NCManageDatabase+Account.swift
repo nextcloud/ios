@@ -132,7 +132,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return nil
     }
 
@@ -146,7 +145,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return nil
     }
 
@@ -158,7 +156,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return nil
     }
 
@@ -171,7 +168,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return []
     }
 
@@ -184,7 +180,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return []
     }
 
@@ -200,7 +195,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return ""
     }
 
@@ -221,7 +215,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return ""
     }
 
@@ -229,7 +222,6 @@ extension NCManageDatabase {
         let cameraFileName = self.getAccountAutoUploadFileName()
         let cameraDirectory = self.getAccountAutoUploadDirectory(urlBase: urlBase, userId: userId, account: account)
         let folderPhotos = utilityFileSystem.stringAppendServerUrl(cameraDirectory, addFileName: cameraFileName)
-
         return folderPhotos
     }
 
@@ -241,7 +233,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return NCGlobal.shared.subfolderGranularityMonthly
     }
 
@@ -265,7 +256,6 @@ extension NCManageDatabase {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
             return nil
         }
-
         return tableAccount.init(value: accountReturn)
     }
 

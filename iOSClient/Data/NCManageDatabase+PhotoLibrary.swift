@@ -43,7 +43,6 @@ class tablePhotoLibrary: Object {
 extension NCManageDatabase {
     @discardableResult
     func addPhotoLibrary(_ assets: [PHAsset], account: String) -> Bool {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -68,7 +67,6 @@ extension NCManageDatabase {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
             return false
         }
-
         return true
     }
 
@@ -92,7 +90,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access to database: \(error)")
         }
-
         return nil
     }
 }

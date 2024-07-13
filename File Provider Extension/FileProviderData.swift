@@ -40,16 +40,13 @@ class fileProviderData: NSObject {
     var accountUrlBase = ""
     var homeServerUrl = ""
 
-    // Rank favorite
     var listFavoriteIdentifierRank: [String: NSNumber] = [:]
 
-    // Item for signalEnumerator
     var fileProviderSignalDeleteContainerItemIdentifier: [NSFileProviderItemIdentifier: NSFileProviderItemIdentifier] = [:]
     var fileProviderSignalUpdateContainerItem: [NSFileProviderItemIdentifier: FileProviderItem] = [:]
     var fileProviderSignalDeleteWorkingSetItemIdentifier: [NSFileProviderItemIdentifier: NSFileProviderItemIdentifier] = [:]
     var fileProviderSignalUpdateWorkingSetItem: [NSFileProviderItemIdentifier: FileProviderItem] = [:]
 
-    // Error
     enum FileProviderError: Error {
         case downloadError
         case uploadError
