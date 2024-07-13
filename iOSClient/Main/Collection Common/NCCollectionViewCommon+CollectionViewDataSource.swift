@@ -49,7 +49,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
         /// CONTENT MODE
         cell.filePreviewImageView?.layer.borderWidth = 0
-        if existsIcon {
+        if existsIcon || layoutForView?.layout == NCGlobal.shared.layoutPhoto {
             cell.filePreviewImageView?.contentMode = .scaleAspectFill
         } else {
             cell.filePreviewImageView?.contentMode = .scaleAspectFit
@@ -133,21 +133,21 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         var isMounted = false
         var a11yValues: [String] = []
 
-        // LAYOUT LIST
-        if layoutForView?.layout == NCGlobal.shared.layoutList {
-            guard let listCell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell else { return NCListCell() }
-            listCell.listCellDelegate = self
-            cell = listCell
+        // LAYOUT PHOTO
+        if layoutForView?.layout == NCGlobal.shared.layoutPhoto {
+            guard let photoCell = collectionView.dequeueReusableCell(withReuseIdentifier: "photoCell", for: indexPath) as? NCPhotoCell else { return NCPhotoCell() }
+            photoCell.photoCellDelegate = self
+            cell = photoCell
         } else if layoutForView?.layout == NCGlobal.shared.layoutGrid {
         // LAYOUT GRID
             guard let gridCell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridCell else { return NCGridCell() }
             gridCell.gridCellDelegate = self
             cell = gridCell
         } else {
-        // LAYOUT PHOTO
-            guard let photoCell = collectionView.dequeueReusableCell(withReuseIdentifier: "photoCell", for: indexPath) as? NCPhotoCell else { return NCPhotoCell() }
-            photoCell.photoCellDelegate = self
-            cell = photoCell
+            // LAYOUT LIST
+            guard let listCell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell else { return NCListCell() }
+            listCell.listCellDelegate = self
+            cell = listCell
         }
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return cell }
 
@@ -349,6 +349,15 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             let attributedString = NSMutableAttributedString(string: title, attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 15)])
             attributedString.setAttributes([NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 15), NSAttributedString.Key.foregroundColor: UIColor.systemBlue], range: longestWordRange)
             cell.fileTitleLabel?.attributedText = attributedString
+        }
+
+        // LAYOUT PHOTO
+        if layoutForView?.layout == NCGlobal.shared.layoutPhoto {
+            if metadata.isImage || metadata.isVideo {
+                cell.fileTitleLabel?.text = ""
+            } else {
+                cell.fileTitleLabel?.text = metadata.fileName
+            }
         }
 
         // Add TAGS

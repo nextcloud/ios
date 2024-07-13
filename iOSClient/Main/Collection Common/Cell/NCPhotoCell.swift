@@ -29,6 +29,7 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
+    @IBOutlet weak var labelTitle: UILabel!
 
     var objectId = ""
     var indexPath = IndexPath()
@@ -49,16 +50,14 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
         get { return user }
         set { user = newValue ?? "" }
     }
-
     var fileTitleLabel: UILabel? {
-        get { return nil }
-        set { }
+        get { return labelTitle }
+        set { labelTitle = newValue }
     }
     var fileInfoLabel: UILabel? {
         get { return nil }
         set { }
     }
-
     var fileSubinfoLabel: UILabel? {
         get { return nil }
         set { }
@@ -88,9 +87,6 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
         accessibilityLabel = nil
         accessibilityValue = nil
         isAccessibilityElement = true
-
-        imageItem.layer.cornerRadius = 6
-        imageItem.layer.masksToBounds = true
 
         imageVisualEffect.layer.cornerRadius = 6
         imageVisualEffect.clipsToBounds = true
@@ -182,10 +178,8 @@ extension NCPhotoCellDelegate {
 
 class NCPhotoLayout: UICollectionViewFlowLayout {
 
-    var heightLabelPlusButton: CGFloat = 60
-    var marginLeftRight: CGFloat = 10
+    var marginLeftRight: CGFloat = 2
     var itemForLine: CGFloat = 3
-    var itemWidthDefault: CGFloat = 140
 
     // MARK: - View Life Cycle
 
@@ -193,12 +187,10 @@ class NCPhotoLayout: UICollectionViewFlowLayout {
         super.init()
 
         sectionHeadersPinToVisibleBounds = false
-
-        minimumInteritemSpacing = 1
+        minimumInteritemSpacing = 0
         minimumLineSpacing = marginLeftRight
-
         self.scrollDirection = .vertical
-        self.sectionInset = UIEdgeInsets(top: 10, left: marginLeftRight, bottom: 0, right: marginLeftRight)
+        self.sectionInset = UIEdgeInsets(top: 0, left: marginLeftRight, bottom: 0, right: marginLeftRight)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -208,28 +200,15 @@ class NCPhotoLayout: UICollectionViewFlowLayout {
     override var itemSize: CGSize {
         get {
             if let collectionView = collectionView {
-
-                if collectionView.frame.width < 400 {
-                    itemForLine = 3
-                } else {
-                    itemForLine = collectionView.frame.width / itemWidthDefault
-                }
-
                 let itemWidth: CGFloat = (collectionView.frame.width - marginLeftRight * 2 - marginLeftRight * (itemForLine - 1)) / itemForLine
-                let itemHeight: CGFloat = itemWidth + heightLabelPlusButton
-
+                let itemHeight: CGFloat = itemWidth
                 return CGSize(width: itemWidth, height: itemHeight)
             }
-
             // Default fallback
-            return CGSize(width: itemWidthDefault, height: itemWidthDefault)
+            return CGSize(width: 100, height: 100)
         }
         set {
             super.itemSize = newValue
         }
-    }
-
-    override func targetContentOffset(forProposedContentOffset proposedContentOffset: CGPoint) -> CGPoint {
-        return proposedContentOffset
     }
 }
