@@ -55,9 +55,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var groupByField = "name"
     var providers: [NKSearchProvider]?
     var searchResults: [NKSearchResult]?
-    var listLayout: NCListLayout!
-    var gridLayout: NCGridLayout!
-    var photoLayout: NCPhotoLayout!
+    var listLayout = NCListLayout()
+    var gridLayout = NCGridLayout()
+    var photoLayout = NCPhotoLayout()
     var literalSearch: String?
     var tabBarSelect: NCCollectionViewCommonSelectTabBar!
     var timerNotificationCenter: Timer?
@@ -93,11 +93,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         tabBarSelect = NCCollectionViewCommonSelectTabBar(controller: tabBarController as? NCMainTabBarController, delegate: self)
         self.navigationController?.presentationController?.delegate = self
 
-        // CollectionView & layout
         collectionView.alwaysBounceVertical = true
-        listLayout = NCListLayout()
-        gridLayout = NCGridLayout()
-        photoLayout = NCPhotoLayout()
 
         // Color
         view.backgroundColor = .systemBackground

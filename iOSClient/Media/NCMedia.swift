@@ -511,9 +511,9 @@ extension NCMedia: NCMediaLayoutDelegate {
         return .zero
     }
 
-    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath, columnCount: Int, mediaLayout: String) -> CGSize {
+    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath, columnCount: Int, typeLayout: String) -> CGSize {
         let size = CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
-        if mediaLayout == NCGlobal.shared.mediaLayoutRatio {
+        if typeLayout == NCGlobal.shared.mediaLayoutRatio {
             guard let metadatas = self.metadatas,
                   let metadata = metadatas[indexPath.row] else { return size }
 
