@@ -38,7 +38,7 @@ extension FileProviderExtension: NCNetworkingDelegate {
               let metadata = NCManageDatabase.shared.getMetadata(from: url, sessionTaskIdentifier: task.taskIdentifier) else { return }
         if error == .success, let ocId {
             /// SIGNAL DELETE
-            fileProviderData.shared.signalEnumerator(ocId: metadata.ocIdTemp, delete: true)
+            fileProviderData.shared.signalEnumerator(ocId: metadata.ocIdTemp, type: .delete)
             metadata.fileName = fileName
             metadata.serverUrl = serverUrl
             metadata.uploadDate = (date as? NSDate) ?? NSDate()
@@ -62,11 +62,11 @@ extension FileProviderExtension: NCNetworkingDelegate {
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocIdTemp))
             }
             /// SIGNAL UPDATE
-            fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, update: true)
+            fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
         } else {
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocIdTemp))
             /// SIGNAL DELETE
-            fileProviderData.shared.signalEnumerator(ocId: metadata.ocIdTemp, delete: true)
+            fileProviderData.shared.signalEnumerator(ocId: metadata.ocIdTemp, type: .delete)
         }
     }
 }

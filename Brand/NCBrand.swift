@@ -257,6 +257,7 @@ class NCBrandColor: NSObject {
 
     private func stepCalc(steps: Int, color1: CGColor, color2: CGColor) -> [CGFloat] {
         var step = [CGFloat](repeating: 0, count: 3)
+
         step[0] = (color2.components![0] - color1.components![0]) / CGFloat(steps)
         step[1] = (color2.components![1] - color1.components![1]) / CGFloat(steps)
         step[2] = (color2.components![2] - color1.components![2]) / CGFloat(steps)
@@ -266,8 +267,8 @@ class NCBrandColor: NSObject {
     private func mixPalette(steps: Int, color1: CGColor, color2: CGColor) -> [CGColor] {
         var palette = [color1]
         let step = stepCalc(steps: steps, color1: color1, color2: color2)
-
         let c1Components = color1.components!
+
         for i in 1 ..< steps {
             let r = c1Components[0] + step[0] * CGFloat(i)
             let g = c1Components[1] + step[1] * CGFloat(i)
@@ -292,6 +293,7 @@ class NCBrandColor: NSObject {
         let palette1 = mixPalette(steps: steps, color1: red, color2: yellow)
         let palette2 = mixPalette(steps: steps, color1: yellow, color2: blue)
         let palette3 = mixPalette(steps: steps, color1: blue, color2: red)
+
         return palette1 + palette2 + palette3
     }
 }

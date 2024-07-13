@@ -187,7 +187,7 @@ class FileProviderExtension: NSFileProviderExtension {
                                                        status: NCGlobal.shared.metadataStatusDownloading)
         }
         /// SIGNAL UPDATE
-        fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, update: true)
+        fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
 
         NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { _ in
         }, taskHandler: { task in
@@ -216,7 +216,7 @@ class FileProviderExtension: NSFileProviderExtension {
                 completionHandler(NSFileProviderError(.noSuchItem))
             }
             /// SIGNAL UPDATE
-            fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, update: true)
+            fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
         }
     }
 

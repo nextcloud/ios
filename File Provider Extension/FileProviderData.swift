@@ -55,6 +55,12 @@ class fileProviderData: NSObject {
         case uploadError
     }
 
+    enum TypeSignal: String {
+        case delete
+        case update
+        case workingSet
+    }
+
     // MARK: - 
 
     func setupAccount(domain: NSFileProviderDomain?, providerExtension: NSFileProviderExtension) -> tableAccount? {
@@ -117,24 +123,24 @@ class fileProviderData: NSObject {
     // MARK: -
 
     @discardableResult
-    func signalEnumerator(ocId: String, delete: Bool = false, update: Bool = false, onlyWorkingSet: Bool = false) -> FileProviderItem? {
+    func signalEnumerator(ocId: String, type: TypeSignal) -> FileProviderItem? {
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId),
               let parentItemIdentifier = fileProviderUtility().getParentItemIdentifier(metadata: metadata) else { return nil }
         let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
 
-        if delete {
+        if type == .delete {
             fileProviderData.shared.fileProviderSignalDeleteContainerItemIdentifier[item.itemIdentifier] = item.itemIdentifier
             fileProviderData.shared.fileProviderSignalDeleteWorkingSetItemIdentifier[item.itemIdentifier] = item.itemIdentifier
         }
-        if update {
+        if type == .update {
             fileProviderData.shared.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
             fileProviderData.shared.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
         }
-        if onlyWorkingSet {
+        if type == .workingSet {
             fileProviderData.shared.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
         }
         /// SIGNAL ENUMERATOR
-        if update || delete {
+        if type == .delete || type == .update {
             fileProviderManager.signalEnumerator(for: parentItemIdentifier) { _ in }
         }
         fileProviderManager.signalEnumerator(for: .workingSet) { _ in }
