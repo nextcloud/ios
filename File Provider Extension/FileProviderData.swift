@@ -139,7 +139,6 @@ class fileProviderData: NSObject {
         if type == .workingSet {
             fileProviderData.shared.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
         }
-        /// SIGNAL ENUMERATOR
         if type == .delete || type == .update {
             fileProviderManager.signalEnumerator(for: parentItemIdentifier) { _ in }
         }

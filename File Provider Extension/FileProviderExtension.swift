@@ -186,7 +186,7 @@ class FileProviderExtension: NSFileProviderExtension {
                                                        selector: "",
                                                        status: NCGlobal.shared.metadataStatusDownloading)
         }
-        /// SIGNAL UPDATE
+        /// SIGNAL
         fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
 
         NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { _ in
@@ -215,7 +215,7 @@ class FileProviderExtension: NSFileProviderExtension {
                 NCManageDatabase.shared.addMetadata(metadata)
                 completionHandler(NSFileProviderError(.noSuchItem))
             }
-            /// SIGNAL UPDATE
+            /// SIGNAL
             fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
         }
     }

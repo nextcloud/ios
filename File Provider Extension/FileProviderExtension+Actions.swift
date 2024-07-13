@@ -150,13 +150,9 @@ extension FileProviderExtension {
                     NCManageDatabase.shared.setDirectory(serverUrl: fileNamePathFrom, serverUrlTo: fileNamePathTo, encrypted: directoryTable.e2eEncrypted, account: account)
                 } else {
                     let itemIdentifier = self.providerUtility.getItemIdentifier(metadata: metadata)
-                    // rename file
                     self.providerUtility.moveFile(self.utilityFileSystem.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: fileNameFrom), toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: itemName))
-
                     self.providerUtility.moveFile(self.utilityFileSystem.getDirectoryProviderStoragePreviewOcId(itemIdentifier.rawValue, etag: metadata.etag), toPath: self.utilityFileSystem.getDirectoryProviderStoragePreviewOcId(itemIdentifier.rawValue, etag: metadata.etag))
-
                     self.providerUtility.moveFile(self.utilityFileSystem.getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, etag: metadata.etag), toPath: self.utilityFileSystem.getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, etag: metadata.etag))
-
                     NCManageDatabase.shared.setLocalFile(ocId: ocId, fileName: itemName)
                 }
 
@@ -197,7 +193,7 @@ extension FileProviderExtension {
                     // Change DB
                     metadata.favorite = favorite
                     NCManageDatabase.shared.addMetadata(metadata)
-                    /// SIGNAL UPDATE
+                    /// SIGNAL
                     let item = fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .workingSet)
                     completionHandler(item, nil)
                 } else {
@@ -206,7 +202,7 @@ extension FileProviderExtension {
                     }
                     // Errore, remove from listFavoriteIdentifierRank
                     fileProviderData.shared.listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
-                    /// SIGNAL WORKINGSET
+                    /// SIGNAL
                     let item = fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .workingSet)
                     completionHandler(item, NSFileProviderError(.serverUnreachable))
                 }

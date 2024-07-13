@@ -69,13 +69,8 @@ class fileProviderUtility: NSObject {
         return directory
     }
 
-    // MARK: -
-
-    @discardableResult
-    func copyFile(_ atPath: String, toPath: String) -> Error? {
-        var errorResult: Error?
-
-        if !fileManager.fileExists(atPath: atPath) { return NSError(domain: NSCocoaErrorDomain, code: NSFileNoSuchFileError, userInfo: [:]) }
+    func copyFile(_ atPath: String, toPath: String) {
+        if !fileManager.fileExists(atPath: atPath) { return }
 
         do {
             try fileManager.removeItem(atPath: toPath)
@@ -85,17 +80,12 @@ class fileProviderUtility: NSObject {
         do {
             try fileManager.copyItem(atPath: atPath, toPath: toPath)
         } catch let error {
-            errorResult = error
+            print("error: \(error)")
         }
-        return errorResult
     }
 
-    @discardableResult
-    func moveFile(_ atPath: String, toPath: String) -> Error? {
-        var errorResult: Error?
-
-        if atPath == toPath { return nil }
-        if !fileManager.fileExists(atPath: atPath) { return NSError(domain: NSCocoaErrorDomain, code: NSFileNoSuchFileError, userInfo: [:]) }
+    func moveFile(_ atPath: String, toPath: String) {
+        if !fileManager.fileExists(atPath: atPath) { return }
 
         do {
             try fileManager.removeItem(atPath: toPath)
@@ -105,25 +95,7 @@ class fileProviderUtility: NSObject {
         do {
             try fileManager.moveItem(atPath: atPath, toPath: toPath)
         } catch let error {
-            errorResult = error
+            print("error: \(error)")
         }
-        return errorResult
-    }
-
-    @discardableResult
-    func deleteFile(_ atPath: String) -> Error? {
-        var errorResult: Error?
-
-        do {
-            try fileManager.removeItem(atPath: atPath)
-        } catch let error {
-            errorResult = error
-        }
-        return errorResult
-    }
-
-    @discardableResult
-    func fileExists(atPath: String) -> Bool {
-        return fileManager.fileExists(atPath: atPath)
     }
 }
