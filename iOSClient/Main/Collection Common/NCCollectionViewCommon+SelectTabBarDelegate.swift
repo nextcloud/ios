@@ -64,18 +64,14 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
         if layoutForView?.layout != NCGlobal.shared.layoutPhoto {
             layoutForView?.layout = NCGlobal.shared.layoutPhoto
             NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
-            if isSearchingMode {
-                self.groupByField = "name"
-            } else {
-                self.groupByField = "classFile"
-            }
+            self.groupByField = "name"
             if self.dataSource.groupByField != self.groupByField {
                 self.dataSource.changeGroupByField(self.groupByField)
             }
 
             self.collectionView.reloadData()
             self.collectionView.collectionViewLayout.invalidateLayout()
-            self.collectionView.setCollectionViewLayout(self.gridLayout, animated: true) {_ in self.isTransitioning = false }
+            self.collectionView.setCollectionViewLayout(self.photoLayout, animated: true) {_ in self.isTransitioning = false }
         }
     }
 

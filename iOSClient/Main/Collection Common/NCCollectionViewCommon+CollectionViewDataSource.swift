@@ -49,7 +49,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
         /// CONTENT MODE
         cell.filePreviewImageView?.layer.borderWidth = 0
-        if existsIcon || layoutForView?.layout == NCGlobal.shared.layoutPhoto {
+        if existsIcon {
             cell.filePreviewImageView?.contentMode = .scaleAspectFill
         } else {
             cell.filePreviewImageView?.contentMode = .scaleAspectFit
@@ -351,7 +351,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.fileTitleLabel?.attributedText = attributedString
         }
 
-        // LAYOUT PHOTO
+        // Layout photo
         if layoutForView?.layout == NCGlobal.shared.layoutPhoto {
             if metadata.isImage || metadata.isVideo {
                 cell.fileTitleLabel?.text = ""

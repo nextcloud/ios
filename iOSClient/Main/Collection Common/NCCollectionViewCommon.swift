@@ -968,8 +968,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         // get layout for view
         layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl)
 
-        // set GroupField for Grid / Photo
-        if !isSearchingMode && (layoutForView?.layout == NCGlobal.shared.layoutGrid || layoutForView?.layout == NCGlobal.shared.layoutPhoto) {
+        // set GroupField for Grid
+        if !isSearchingMode && layoutForView?.layout == NCGlobal.shared.layoutGrid {
             groupByField = "classFile"
         } else {
             groupByField = "name"
@@ -1132,7 +1132,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
             }
         }
 
-        if isSearchingMode || layoutForView?.layout == NCGlobal.shared.layoutGrid || layoutForView?.layout == NCGlobal.shared.layoutPhoto || dataSource.numberOfSections() > 1 {
+        if isSearchingMode || layoutForView?.layout == NCGlobal.shared.layoutGrid || dataSource.numberOfSections() > 1 {
             if section == 0 {
                 return (getHeaderHeight(), headerRichWorkspace, NCGlobal.shared.heightSection)
             } else {
