@@ -14,7 +14,7 @@ extension NCCollectionViewCommon: NCMediaLayoutDelegate {
     func getColumnCount() -> Int {
         NCKeychain().photoColumnCount
     }
-    
+
     func getLayout() -> String? {
         return NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: NCGlobal.shared.layoutViewFiles, serverUrl: serverUrl)?.layout
     }

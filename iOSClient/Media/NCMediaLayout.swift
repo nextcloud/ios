@@ -48,22 +48,22 @@ public class NCMediaLayout: UICollectionViewLayout {
             invalidateIfNotEqual(oldValue, newValue: columnCount)
         }
     }
-    public var minimumColumnSpacing: Float = 2.0 {
+    public var minimumColumnSpacing: Float = .zero {
         didSet {
             invalidateIfNotEqual(oldValue, newValue: minimumColumnSpacing)
         }
     }
-    public var minimumInteritemSpacing: Float = 2.0 {
+    public var minimumInteritemSpacing: Float = .zero {
         didSet {
             invalidateIfNotEqual(oldValue, newValue: minimumInteritemSpacing)
         }
     }
-    public var headerHeight: Float = 0.0 {
+    public var headerHeight: Float = .zero {
         didSet {
             invalidateIfNotEqual(oldValue, newValue: headerHeight)
         }
     }
-    public var footerHeight: Float = 0.0 {
+    public var footerHeight: Float = .zero {
         didSet {
             invalidateIfNotEqual(oldValue, newValue: footerHeight)
         }
@@ -89,7 +89,7 @@ public class NCMediaLayout: UICollectionViewLayout {
             return CGSize.zero
         }
         var contentSize = collectionView?.bounds.size
-        
+
         contentSize?.height = CGFloat(columnHeights[0])
         return contentSize!
     }
