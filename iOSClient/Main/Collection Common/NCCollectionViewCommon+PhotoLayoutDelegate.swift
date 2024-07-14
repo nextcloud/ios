@@ -11,6 +11,10 @@ import UIKit
 import NextcloudKit
 
 extension NCCollectionViewCommon: NCPhotoLayoutDelegate {
+    func getLayout() -> String? {
+        return NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: NCGlobal.shared.layoutViewFiles, serverUrl: serverUrl)?.layout
+    }
+    
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, heightForHeaderInSection section: Int) -> Float {
         return .zero
     }

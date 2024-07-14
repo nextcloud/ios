@@ -227,7 +227,6 @@
 		F7145A231D12E3B700CAFEEC /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7E70DE91A24DE4100E1B66A /* Localizable.strings */; };
 		F714803B262EBE3900693E51 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F714803A262EBE3900693E51 /* MainInterface.storyboard */; };
 		F7148041262EBE4000693E51 /* NCShareExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7148040262EBE4000693E51 /* NCShareExtension.swift */; };
-		F714804F262ED4F900693E51 /* NCGridCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD4521903D010088454D /* NCGridCell.xib */; };
 		F7148054262ED51000693E51 /* NCListCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD4321903CF20088454D /* NCListCell.xib */; };
 		F714805E262ED52900693E51 /* NCSectionFooter.xib in Resources */ = {isa = PBXBuildFile; fileRef = F78ACD53219047D40088454D /* NCSectionFooter.xib */; };
 		F7160A7D2BE931DE0034DCB3 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F7160A7C2BE931DE0034DCB3 /* RealmSwift */; };
@@ -851,7 +850,6 @@
 		F7EDE4D1262D7B8400414FE6 /* NCDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7C1EEA425053A9C00866ACC /* NCDataSource.swift */; };
 		F7EDE4D6262D7B9600414FE6 /* NCListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78ACD4121903CE00088454D /* NCListCell.swift */; };
 		F7EDE4DB262D7BA200414FE6 /* NCCellProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370D26AE248A3D7A00121797 /* NCCellProtocol.swift */; };
-		F7EDE4E0262D7BAF00414FE6 /* NCGridCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78ACD3F21903CC20088454D /* NCGridCell.swift */; };
 		F7EDE4E5262D7BBE00414FE6 /* NCSectionHeaderMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F78ACD51219046DC0088454D /* NCSectionHeaderMenu.swift */; };
 		F7EDE509262DA9D600414FE6 /* NCSelectCommandViewSelect.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7EDE508262DA9D600414FE6 /* NCSelectCommandViewSelect.xib */; };
 		F7EDE514262DC2CD00414FE6 /* NCSelectCommandViewSelect+CreateFolder.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7EDE513262DC2CD00414FE6 /* NCSelectCommandViewSelect+CreateFolder.xib */; };
@@ -3648,7 +3646,6 @@
 				F746EC51273906C40052598D /* NCViewCertificateDetails.storyboard in Resources */,
 				F76C26A62850D3A500E42BDF /* Images.xcassets in Resources */,
 				F79EC784263161BA004E59D6 /* NCRenameFile.storyboard in Resources */,
-				F714804F262ED4F900693E51 /* NCGridCell.xib in Resources */,
 				F714805E262ED52900693E51 /* NCSectionFooter.xib in Resources */,
 				F700222D1EC479840080073F /* Custom.xcassets in Resources */,
 			);
@@ -4003,7 +4000,6 @@
 				F7327E232B73A42F00A462C7 /* NCNetworking+Download.swift in Sources */,
 				F749B64D297B0CBB00087535 /* NCManageDatabase+Share.swift in Sources */,
 				F72FD3B8297ED49A00075D28 /* NCManageDatabase+E2EE.swift in Sources */,
-				F7EDE4E0262D7BAF00414FE6 /* NCGridCell.swift in Sources */,
 				F7A76DC8256A71CD00119AB3 /* UIImage+Extension.swift in Sources */,
 				F711A4E52AF9310500095DD8 /* NCUtility+Image.swift in Sources */,
 				F73EF7AA2B0223900087E6E9 /* NCManageDatabase+Comments.swift in Sources */,

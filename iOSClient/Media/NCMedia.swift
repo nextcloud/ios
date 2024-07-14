@@ -87,7 +87,6 @@ class NCMedia: UIViewController {
         collectionView.dropDelegate = self
 
         layout.sectionInset = UIEdgeInsets(top: 0, left: 2, bottom: 0, right: 2)
-        layout.viewController = self
         collectionView.collectionViewLayout = layout
 
         tabBarSelect = NCMediaSelectTabBar(tabBarController: self.tabBarController, delegate: self)
@@ -483,6 +482,10 @@ extension NCMedia: UICollectionViewDataSource {
 // MARK: -
 
 extension NCMedia: NCMediaLayoutDelegate {
+    func getLayout() -> String? {
+         return NCKeychain().mediaTypeLayout
+    }
+
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, heightForHeaderInSection section: Int) -> Float {
         var height: Double = 0
         if metadatas?.count ?? 0 == 0 {

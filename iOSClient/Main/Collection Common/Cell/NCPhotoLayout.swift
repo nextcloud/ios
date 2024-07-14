@@ -32,6 +32,7 @@ protocol NCPhotoLayoutDelegate: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, insetForHeaderInSection section: Int) -> UIEdgeInsets
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, insetForFooterInSection section: Int) -> UIEdgeInsets
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, minimumInteritemSpacingForSection section: Int) -> Float
+    func getLayout() -> String?
 }
 
 public class NCPhotoLayout: UICollectionViewLayout {
@@ -81,9 +82,6 @@ public class NCPhotoLayout: UICollectionViewLayout {
             invalidateIfNotEqual(oldValue, newValue: sectionInset)
         }
     }
-    var photoLayout = ""
-    var viewController: NCCollectionViewCommon?
-
     public override var collectionViewContentSize: CGSize {
         let numberOfSections = collectionView?.numberOfSections
         if numberOfSections == 0 {
@@ -111,15 +109,11 @@ public class NCPhotoLayout: UICollectionViewLayout {
     public override func prepare() {
         super.prepare()
 
-        guard let appDelegate = (UIApplication.shared.delegate as? AppDelegate),
-              let numberOfSections = collectionView?.numberOfSections,
+        guard let numberOfSections = collectionView?.numberOfSections,
               let collectionView = collectionView,
-              let delegate = delegate,
-              let serverUrl = viewController?.serverUrl,
-              let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: NCGlobal.shared.layoutViewFiles, serverUrl: serverUrl)
+              let delegate = delegate
         else { return }
 
-        photoLayout = layoutForView.layout
         columnCount = NCKeychain().photoColumnCount
         if UIDevice.current.userInterfaceIdiom == .phone,
            (UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight) {
@@ -187,7 +181,8 @@ public class NCPhotoLayout: UICollectionViewLayout {
 
                 let xOffset = Float(sectionInset.left) + Float(itemWidth + minimumColumnSpacing) * Float(columnIndex)
                 let yOffset = columnHeights[columnIndex]
-                let itemSize = delegate.collectionView(collectionView, layout: self, sizeForItemAtIndexPath: indexPath, columnCount: self.columnCount, typeLayout: self.photoLayout)
+                let typeLayout = delegate.getLayout() ?? NCGlobal.shared.layoutPhotoRatio
+                let itemSize = delegate.collectionView(collectionView, layout: self, sizeForItemAtIndexPath: indexPath, columnCount: self.columnCount, typeLayout: typeLayout)
                 var itemHeight: Float = 0.0
                 if itemSize.height > 0 && itemSize.width > 0 {
                     itemHeight = Float(itemSize.height) * itemWidth / Float(itemSize.width)

@@ -32,6 +32,7 @@ protocol NCMediaLayoutDelegate: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, insetForHeaderInSection section: Int) -> UIEdgeInsets
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, insetForFooterInSection section: Int) -> UIEdgeInsets
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, minimumInteritemSpacingForSection section: Int) -> Float
+    func getLayout() -> String?
 }
 
 public class NCMediaLayout: UICollectionViewLayout {
@@ -81,9 +82,6 @@ public class NCMediaLayout: UICollectionViewLayout {
             invalidateIfNotEqual(oldValue, newValue: sectionInset)
         }
     }
-    var viewController: NCMedia?
-    var mediaLayout = ""
-
     public override var collectionViewContentSize: CGSize {
         let numberOfSections = collectionView?.numberOfSections
         if numberOfSections == 0 {
@@ -115,9 +113,8 @@ public class NCMediaLayout: UICollectionViewLayout {
               let collectionView = collectionView,
               let delegate = delegate else { return }
 
-        mediaLayout = NCKeychain().mediaTypeLayout
         columnCount = NCKeychain().mediaColumnCount
-        viewController?.buildMediaPhotoVideo(columnCount: columnCount)
+        (delegate as? NCMedia)?.buildMediaPhotoVideo(columnCount: columnCount)
         if UIDevice.current.userInterfaceIdiom == .phone,
            (UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight) {
             columnCount += 2
@@ -184,7 +181,8 @@ public class NCMediaLayout: UICollectionViewLayout {
 
                 let xOffset = Float(sectionInset.left) + Float(itemWidth + minimumColumnSpacing) * Float(columnIndex)
                 let yOffset = columnHeights[columnIndex]
-                let itemSize = delegate.collectionView(collectionView, layout: self, sizeForItemAtIndexPath: indexPath, columnCount: self.columnCount, typeLayout: self.mediaLayout)
+                let typeLayout = delegate.getLayout() ?? NCGlobal.shared.mediaLayoutRatio
+                let itemSize = delegate.collectionView(collectionView, layout: self, sizeForItemAtIndexPath: indexPath, columnCount: self.columnCount, typeLayout: typeLayout)
                 var itemHeight: Float = 0.0
                 if itemSize.height > 0 && itemSize.width > 0 {
                     itemHeight = Float(itemSize.height) * itemWidth / Float(itemSize.width)
