@@ -62,11 +62,20 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.filePreviewImageView?.layer.borderColor = UIColor.lightGray.cgColor
             }
             if metadata.name == NCGlobal.shared.appName {
-                if let image = NCImageCache.shared.getIconImage(ocId: metadata.ocId, etag: metadata.etag) {
-                    cell.filePreviewImageView?.image = image
-                } else if let image = utility.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: !metadata.hasPreview) {
-                    cell.filePreviewImageView?.image = image
+                if layoutForView?.layout == NCGlobal.shared.layoutPhotoRatio || layoutForView?.layout == NCGlobal.shared.layoutPhotoSquare {
+                    if let image = NCImageCache.shared.getMediaImage(ocId: metadata.ocId, etag: metadata.etag) {
+                        cell.filePreviewImageView?.image = image
+                    } else {
+                        cell.filePreviewImageView?.image = UIImage(contentsOfFile: self.utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag))
+                    }
                 } else {
+                    if let image = NCImageCache.shared.getIconImage(ocId: metadata.ocId, etag: metadata.etag) {
+                        cell.filePreviewImageView?.image = image
+                    } else if let image = utility.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: !metadata.hasPreview) {
+                        cell.filePreviewImageView?.image = image
+                    }
+                }
+                if cell.filePreviewImageView?.image == nil {
                     if metadata.iconName.isEmpty {
                         cell.filePreviewImageView?.image = NCImageCache.images.file
                     } else {
@@ -107,7 +116,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 }
             }
         }
-
         /// AVATAR
         if !metadata.ownerId.isEmpty,
            metadata.ownerId != appDelegate.userId,
