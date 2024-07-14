@@ -49,9 +49,13 @@ extension NCCollectionViewCommon: NCMediaLayoutDelegate {
             let metadata = self.dataSource.metadatas[indexPath.row]
             if metadata.imageSize != CGSize.zero {
                 return metadata.imageSize
-            } else if utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag),
-                   let image = utility.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: !metadata.hasPreview) {
+            } else {
+                let existsIcon = utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)
+                if let image = NCImageCache.shared.getMediaImage(ocId: metadata.ocId, etag: metadata.etag) {
                     size = image.size
+                } else if let image = UIImage(contentsOfFile: self.utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
+                    size = image.size
+                }
             }
         }
         return size
