@@ -485,7 +485,7 @@ extension NCMedia: NCMediaLayoutDelegate {
     func getColumnCount() -> Int {
         return NCKeychain().mediaColumnCount
     }
-    
+
     func getLayout() -> String? {
          return NCKeychain().mediaTypeLayout
     }
@@ -515,7 +515,7 @@ extension NCMedia: NCMediaLayoutDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, minimumInteritemSpacingForSection section: Int) -> Float {
-        return .zero
+        return 1.0
     }
 
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath, columnCount: Int, typeLayout: String) -> CGSize {

@@ -48,7 +48,7 @@ public class NCMediaLayout: UICollectionViewLayout {
             invalidateIfNotEqual(oldValue, newValue: columnCount)
         }
     }
-    public var minimumColumnSpacing: Float = .zero {
+    public var minimumColumnSpacing: Float = 1.0 {
         didSet {
             invalidateIfNotEqual(oldValue, newValue: minimumColumnSpacing)
         }
