@@ -353,7 +353,13 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         // Layout photo
         if layoutForView?.layout == NCGlobal.shared.layoutPhotoRatio || layoutForView?.layout == NCGlobal.shared.layoutPhotoSquare {
+            if metadata.directory {
+                cell.filePreviewImageBottom?.constant = 10
+                cell.fileTitleLabel?.text = metadata.fileNameView
+            } else {
+                cell.filePreviewImageBottom?.constant = 0
                 cell.fileTitleLabel?.text = ""
+            }
         }
 
         // TAGS

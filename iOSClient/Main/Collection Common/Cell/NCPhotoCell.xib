@@ -80,12 +80,13 @@
             </variation>
             <connections>
                 <outlet property="imageItem" destination="5Ci-V1-hf5" id="xky-Nw-NUb"/>
+                <outlet property="imageItemBottom" destination="eEC-eB-alE" id="FyV-lA-B3t"/>
                 <outlet property="imageSelect" destination="DHy-Up-3Bh" id="mo9-rP-P4I"/>
                 <outlet property="imageStatus" destination="a0p-rj-jnV" id="6Dg-tf-evd"/>
                 <outlet property="imageVisualEffect" destination="W0L-HY-al1" id="WDW-2d-Npa"/>
                 <outlet property="labelTitle" destination="AKw-Xc-akO" id="f1O-Qv-Riz"/>
             </connections>
-            <point key="canvasLocation" x="233.59999999999999" y="242.42878560719643"/>
+            <point key="canvasLocation" x="233.59999999999999" y="241.97901049475263"/>
         </collectionViewCell>
     </objects>
 </document>
