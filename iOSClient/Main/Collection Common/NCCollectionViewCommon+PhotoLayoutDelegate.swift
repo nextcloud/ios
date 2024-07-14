@@ -36,7 +36,16 @@ extension NCCollectionViewCommon: NCPhotoLayoutDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath, columnCount: Int, typeLayout: String) -> CGSize {
-        let size = CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
+        var size = CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
+        if typeLayout == NCGlobal.shared.layoutPhotoRatio {
+            let metadata = self.dataSource.metadatas[indexPath.row]
+            if metadata.imageSize != CGSize.zero {
+                return metadata.imageSize
+            } else if utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag),
+                   let image = utility.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: !metadata.hasPreview) {
+                    size = image.size
+            }
+        }
         return size
     }
 }

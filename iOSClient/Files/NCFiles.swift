@@ -63,7 +63,7 @@ class NCFiles: NCCollectionViewCommon {
                     self.collectionView?.collectionViewLayout = self.listLayout
                 } else if self.layoutForView?.layout == NCGlobal.shared.layoutGrid {
                     self.collectionView?.collectionViewLayout = self.gridLayout
-                } else if self.layoutForView?.layout == NCGlobal.shared.layoutPhoto {
+                } else if (self.layoutForView?.layout == NCGlobal.shared.layoutPhotoSquare ||  self.layoutForView?.layout == NCGlobal.shared.layoutPhotoRatio) {
                     self.collectionView?.collectionViewLayout = self.photoLayout
                 }
 

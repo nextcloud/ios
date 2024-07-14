@@ -167,7 +167,8 @@ class NCGlobal: NSObject {
     //
     let layoutList                                  = "typeLayoutList"
     let layoutGrid                                  = "typeLayoutGrid"
-    let layoutPhoto                                 = "typeLayoutPhoto"
+    let layoutPhotoRatio                            = "typeLayoutPhotoRatio"
+    let layoutPhotoSquare                           = "typeLayoutPhotoSquare"
 
     let layoutViewTrash                             = "LayoutTrash"
     let layoutViewOffline                           = "LayoutOffline"

@@ -92,8 +92,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         tabBarSelect = NCCollectionViewCommonSelectTabBar(controller: tabBarController as? NCMainTabBarController, delegate: self)
         self.navigationController?.presentationController?.delegate = self
-
         collectionView.alwaysBounceVertical = true
+        photoLayout.viewController = self
 
         // Color
         view.backgroundColor = .systemBackground
@@ -169,7 +169,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             collectionView?.collectionViewLayout = listLayout
         } else if layoutForView?.layout == NCGlobal.shared.layoutGrid {
             collectionView?.collectionViewLayout = gridLayout
-        } else if layoutForView?.layout == NCGlobal.shared.layoutPhoto {
+        } else if (layoutForView?.layout == NCGlobal.shared.layoutPhotoRatio ||  layoutForView?.layout == NCGlobal.shared.layoutPhotoSquare) {
             collectionView?.collectionViewLayout = photoLayout
         }
 
@@ -679,12 +679,18 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.setNavigationRightItems()
             }
 
-            let photo = UIAction(title: NSLocalizedString("_photo_", comment: ""), image: utility.loadImage(named: "photo"), state: layoutForView.layout == NCGlobal.shared.layoutPhoto ? .on : .off) { _ in
-                self.onPhotoSelected()
-                self.setNavigationRightItems()
-            }
+            let menuPhoto = UIMenu(title: "", options: .displayInline, children: [
+                UIAction(title: NSLocalizedString("_media_square_", comment: ""), image: utility.loadImage(named: "square.grid.3x3"), state: layoutForView.layout == NCGlobal.shared.layoutPhotoSquare ? .on : .off) { _ in
+                    self.onPhotoSelected(layout: NCGlobal.shared.layoutPhotoSquare)
+                    self.setNavigationRightItems()
+                },
+                UIAction(title: NSLocalizedString("_media_ratio_", comment: ""), image: utility.loadImage(named: "rectangle.grid.3x2"), state: layoutForView.layout == NCGlobal.shared.layoutPhotoRatio ? .on : .off) { _ in
+                    self.onPhotoSelected(layout: NCGlobal.shared.layoutPhotoRatio)
+                    self.setNavigationRightItems()
+                }
+            ])
 
-            let viewStyleSubmenu = UIMenu(title: "", options: .displayInline, children: [list, grid, photo])
+            let viewStyleSubmenu = UIMenu(title: "", options: .displayInline, children: [list, grid, UIMenu(title: NSLocalizedString("_photo_", comment: ""), children: [menuPhoto])])
 
             let ascending = layoutForView.ascending
             let ascendingChevronImage = utility.loadImage(named: ascending ? "chevron.up" : "chevron.down")

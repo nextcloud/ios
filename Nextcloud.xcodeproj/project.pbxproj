@@ -468,9 +468,7 @@
 		F7501C322212E57500FB1415 /* NCMedia.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7501C302212E57400FB1415 /* NCMedia.storyboard */; };
 		F7501C332212E57500FB1415 /* NCMedia.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7501C312212E57400FB1415 /* NCMedia.swift */; };
 		F751247C2C42919C00E63DB8 /* NCPhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F751247A2C42919C00E63DB8 /* NCPhotoCell.swift */; };
-		F751247D2C42919C00E63DB8 /* NCPhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F751247A2C42919C00E63DB8 /* NCPhotoCell.swift */; };
 		F751247E2C42919C00E63DB8 /* NCPhotoCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F751247B2C42919C00E63DB8 /* NCPhotoCell.xib */; };
-		F751247F2C42919C00E63DB8 /* NCPhotoCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F751247B2C42919C00E63DB8 /* NCPhotoCell.xib */; };
 		F75379202AE2AD9400C0250E /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F753791F2AE2AD9400C0250E /* JGProgressHUD */; };
 		F75379222AE2ADA100C0250E /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F75379212AE2ADA100C0250E /* JGProgressHUD */; };
 		F753BA93281FD8020015BFB6 /* EasyTipView in Frameworks */ = {isa = PBXBuildFile; productRef = F753BA92281FD8020015BFB6 /* EasyTipView */; };
@@ -601,7 +599,6 @@
 		F77444F622281649000D5EB0 /* NCGridMediaCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F77444F422281649000D5EB0 /* NCGridMediaCell.xib */; };
 		F77444F8222816D5000D5EB0 /* NCPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77444F7222816D5000D5EB0 /* NCPickerViewController.swift */; };
 		F778231B2C42BDEB001BB94F /* NCPhotoLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = F778231A2C42BDEB001BB94F /* NCPhotoLayout.swift */; };
-		F778231C2C42BDEB001BB94F /* NCPhotoLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = F778231A2C42BDEB001BB94F /* NCPhotoLayout.swift */; };
 		F778231E2C42C07C001BB94F /* NCCollectionViewCommon+PhotoLayoutDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F778231D2C42C07C001BB94F /* NCCollectionViewCommon+PhotoLayoutDelegate.swift */; };
 		F77A697D250A0FBC00FF1708 /* NCCollectionViewCommon+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F77A697C250A0FBC00FF1708 /* NCCollectionViewCommon+Menu.swift */; };
 		F77B0F631D118A16002130FE /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = F7E70DE91A24DE4100E1B66A /* Localizable.strings */; };
@@ -3650,7 +3647,6 @@
 				F7145A231D12E3B700CAFEEC /* Localizable.strings in Resources */,
 				F746EC51273906C40052598D /* NCViewCertificateDetails.storyboard in Resources */,
 				F76C26A62850D3A500E42BDF /* Images.xcassets in Resources */,
-				F751247F2C42919C00E63DB8 /* NCPhotoCell.xib in Resources */,
 				F79EC784263161BA004E59D6 /* NCRenameFile.storyboard in Resources */,
 				F714804F262ED4F900693E51 /* NCGridCell.xib in Resources */,
 				F714805E262ED52900693E51 /* NCSectionFooter.xib in Resources */,
@@ -3952,7 +3948,6 @@
 				F7BF9D852934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift in Sources */,
 				F79EC78926316AC4004E59D6 /* NCPopupViewController.swift in Sources */,
 				F7C30DFB291BCF790017149B /* NCNetworkingE2EECreateFolder.swift in Sources */,
-				F778231C2C42BDEB001BB94F /* NCPhotoLayout.swift in Sources */,
 				F73EF7DA2B0226080087E6E9 /* NCManageDatabase+Tip.swift in Sources */,
 				F7817CFB29801A3500FFBC65 /* Data+Extension.swift in Sources */,
 				F72429362AFE39860040AEF3 /* NCLivePhoto.swift in Sources */,
@@ -4008,7 +4003,6 @@
 				F7327E232B73A42F00A462C7 /* NCNetworking+Download.swift in Sources */,
 				F749B64D297B0CBB00087535 /* NCManageDatabase+Share.swift in Sources */,
 				F72FD3B8297ED49A00075D28 /* NCManageDatabase+E2EE.swift in Sources */,
-				F751247D2C42919C00E63DB8 /* NCPhotoCell.swift in Sources */,
 				F7EDE4E0262D7BAF00414FE6 /* NCGridCell.swift in Sources */,
 				F7A76DC8256A71CD00119AB3 /* UIImage+Extension.swift in Sources */,
 				F711A4E52AF9310500095DD8 /* NCUtility+Image.swift in Sources */,

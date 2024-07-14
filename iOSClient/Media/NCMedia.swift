@@ -87,7 +87,7 @@ class NCMedia: UIViewController {
         collectionView.dropDelegate = self
 
         layout.sectionInset = UIEdgeInsets(top: 0, left: 2, bottom: 0, right: 2)
-        layout.mediaViewController = self
+        layout.viewController = self
         collectionView.collectionViewLayout = layout
 
         tabBarSelect = NCMediaSelectTabBar(tabBarController: self.tabBarController, delegate: self)

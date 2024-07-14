@@ -82,6 +82,7 @@ public class NCPhotoLayout: UICollectionViewLayout {
         }
     }
     var photoLayout = ""
+    var viewController: NCCollectionViewCommon?
 
     public override var collectionViewContentSize: CGSize {
         let numberOfSections = collectionView?.numberOfSections
@@ -110,13 +111,16 @@ public class NCPhotoLayout: UICollectionViewLayout {
     public override func prepare() {
         super.prepare()
 
-        guard let numberOfSections = collectionView?.numberOfSections,
+        guard let appDelegate = (UIApplication.shared.delegate as? AppDelegate),
+              let numberOfSections = collectionView?.numberOfSections,
               let collectionView = collectionView,
-              let delegate = delegate else { return }
+              let delegate = delegate,
+              let serverUrl = viewController?.serverUrl,
+              let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: NCGlobal.shared.layoutViewFiles, serverUrl: serverUrl)
+        else { return }
 
-        //mediaLayout = NCKeychain().mediaTypeLayout
-        columnCount = NCKeychain().mediaColumnCount
-        //mediaViewController?.buildMediaPhotoVideo(columnCount: columnCount)
+        photoLayout = layoutForView.layout
+        columnCount = 3 //  NCKeychain().mediaColumnCount
         if UIDevice.current.userInterfaceIdiom == .phone,
            (UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight) {
             columnCount += 2

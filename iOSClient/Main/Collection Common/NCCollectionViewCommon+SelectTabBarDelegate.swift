@@ -60,9 +60,9 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
         }
     }
 
-    func onPhotoSelected() {
-        if layoutForView?.layout != NCGlobal.shared.layoutPhoto {
-            layoutForView?.layout = NCGlobal.shared.layoutPhoto
+    func onPhotoSelected(layout: String) {
+        if layoutForView?.layout != layout {
+            layoutForView?.layout = layout
             NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
             self.groupByField = "name"
             if self.dataSource.groupByField != self.groupByField {

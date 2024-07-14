@@ -81,7 +81,7 @@ public class NCMediaLayout: UICollectionViewLayout {
             invalidateIfNotEqual(oldValue, newValue: sectionInset)
         }
     }
-    var mediaViewController: NCMedia?
+    var viewController: NCMedia?
     var mediaLayout = ""
 
     public override var collectionViewContentSize: CGSize {
@@ -117,7 +117,7 @@ public class NCMediaLayout: UICollectionViewLayout {
 
         mediaLayout = NCKeychain().mediaTypeLayout
         columnCount = NCKeychain().mediaColumnCount
-        mediaViewController?.buildMediaPhotoVideo(columnCount: columnCount)
+        viewController?.buildMediaPhotoVideo(columnCount: columnCount)
         if UIDevice.current.userInterfaceIdiom == .phone,
            (UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight) {
             columnCount += 2
