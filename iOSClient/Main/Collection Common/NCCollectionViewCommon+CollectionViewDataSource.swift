@@ -134,7 +134,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         var a11yValues: [String] = []
 
         // LAYOUT PHOTO
-        if layoutForView?.layout == NCGlobal.shared.layoutPhotoRatio ||  layoutForView?.layout == NCGlobal.shared.layoutPhotoSquare {
+        if layoutForView?.layout == NCGlobal.shared.layoutPhotoRatio || layoutForView?.layout == NCGlobal.shared.layoutPhotoSquare {
             guard let photoCell = collectionView.dequeueReusableCell(withReuseIdentifier: "photoCell", for: indexPath) as? NCPhotoCell else { return NCPhotoCell() }
             photoCell.photoCellDelegate = self
             cell = photoCell
@@ -352,11 +352,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         // Layout photo
-        if (layoutForView?.layout == NCGlobal.shared.layoutPhotoRatio || layoutForView?.layout == NCGlobal.shared.layoutPhotoSquare),
-           let layout = collectionView.collectionViewLayout as? NCPhotoLayout {
-            //if !metadata.directory || layout.columnCount > 3 {
+        if layoutForView?.layout == NCGlobal.shared.layoutPhotoRatio || layoutForView?.layout == NCGlobal.shared.layoutPhotoSquare {
                 cell.fileTitleLabel?.text = ""
-            //}
         }
 
         // TAGS

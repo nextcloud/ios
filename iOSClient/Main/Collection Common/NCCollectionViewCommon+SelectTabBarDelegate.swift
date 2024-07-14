@@ -71,7 +71,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
 
             self.collectionView.reloadData()
             self.collectionView.collectionViewLayout.invalidateLayout()
-            self.collectionView.setCollectionViewLayout(self.photoLayout, animated: true) {_ in self.isTransitioning = false }
+            self.collectionView.setCollectionViewLayout(self.mediaLayout, animated: true) {_ in self.isTransitioning = false }
         }
     }
 

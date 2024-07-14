@@ -482,6 +482,10 @@ extension NCMedia: UICollectionViewDataSource {
 // MARK: -
 
 extension NCMedia: NCMediaLayoutDelegate {
+    func getColumnCount() -> Int {
+        return NCKeychain().mediaColumnCount
+    }
+    
     func getLayout() -> String? {
          return NCKeychain().mediaTypeLayout
     }

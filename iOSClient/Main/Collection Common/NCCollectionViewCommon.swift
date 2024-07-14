@@ -57,7 +57,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var searchResults: [NKSearchResult]?
     var listLayout = NCListLayout()
     var gridLayout = NCGridLayout()
-    var photoLayout = NCPhotoLayout()
+    var mediaLayout = NCMediaLayout()
     var literalSearch: String?
     var tabBarSelect: NCCollectionViewCommonSelectTabBar!
     var timerNotificationCenter: Timer?
@@ -171,8 +171,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             collectionView?.collectionViewLayout = listLayout
         } else if layoutForView?.layout == NCGlobal.shared.layoutGrid {
             collectionView?.collectionViewLayout = gridLayout
-        } else if (layoutForView?.layout == NCGlobal.shared.layoutPhotoRatio || layoutForView?.layout == NCGlobal.shared.layoutPhotoSquare) {
-            collectionView?.collectionViewLayout = photoLayout
+        } else if layoutForView?.layout == NCGlobal.shared.layoutPhotoRatio || layoutForView?.layout == NCGlobal.shared.layoutPhotoSquare {
+            collectionView?.collectionViewLayout = mediaLayout
         }
 
         // FIXME: iPAD PDF landscape mode iOS 16

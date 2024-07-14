@@ -33,6 +33,7 @@ protocol NCMediaLayoutDelegate: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, insetForFooterInSection section: Int) -> UIEdgeInsets
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, minimumInteritemSpacingForSection section: Int) -> Float
     func getLayout() -> String?
+    func getColumnCount() -> Int
 }
 
 public class NCMediaLayout: UICollectionViewLayout {
@@ -87,10 +88,9 @@ public class NCMediaLayout: UICollectionViewLayout {
         if numberOfSections == 0 {
             return CGSize.zero
         }
-
         var contentSize = collectionView?.bounds.size
+        
         contentSize?.height = CGFloat(columnHeights[0])
-
         return contentSize!
     }
 
@@ -113,7 +113,7 @@ public class NCMediaLayout: UICollectionViewLayout {
               let collectionView = collectionView,
               let delegate = delegate else { return }
 
-        columnCount = NCKeychain().mediaColumnCount
+        columnCount = delegate.getColumnCount()
         (delegate as? NCMedia)?.buildMediaPhotoVideo(columnCount: columnCount)
         if UIDevice.current.userInterfaceIdiom == .phone,
            (UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight) {
