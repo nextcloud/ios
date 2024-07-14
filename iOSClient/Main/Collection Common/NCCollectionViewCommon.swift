@@ -63,6 +63,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var timerNotificationCenter: Timer?
     var notificationReloadDataSource: Int = 0
     var notificationReloadDataSourceNetwork: Int = 0
+    var attributesZoomIn: UIMenuElement.Attributes = []
+    var attributesZoomOut: UIMenuElement.Attributes = []
+    let maxImageGrid: CGFloat = 7
 
     // DECLARE
     var layoutKey = ""
@@ -169,7 +172,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             collectionView?.collectionViewLayout = listLayout
         } else if layoutForView?.layout == NCGlobal.shared.layoutGrid {
             collectionView?.collectionViewLayout = gridLayout
-        } else if (layoutForView?.layout == NCGlobal.shared.layoutPhotoRatio ||  layoutForView?.layout == NCGlobal.shared.layoutPhotoSquare) {
+        } else if (layoutForView?.layout == NCGlobal.shared.layoutPhotoRatio || layoutForView?.layout == NCGlobal.shared.layoutPhotoSquare) {
             collectionView?.collectionViewLayout = photoLayout
         }
 
@@ -661,9 +664,21 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard layoutKey != NCGlobal.shared.layoutViewTransfers else { return }
         let isTabBarHidden = self.tabBarController?.tabBar.isHidden ?? true
         let isTabBarSelectHidden = tabBarSelect.isHidden()
+        let columnCount = NCKeychain().photoColumnCount
 
         func createMenuActions() -> [UIMenuElement] {
             guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl) else { return [] }
+
+            if CGFloat(columnCount) >= maxImageGrid - 1 {
+                self.attributesZoomIn = []
+                self.attributesZoomOut = .disabled
+            } else if columnCount <= 1 {
+                self.attributesZoomIn = .disabled
+                self.attributesZoomOut = []
+            } else {
+                self.attributesZoomIn = []
+                self.attributesZoomOut = []
+            }
 
             let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: utility.loadImage(named: "checkmark.circle"), attributes: self.dataSource.getMetadataSourceForAllSections().isEmpty ? .disabled : []) { _ in
                 self.setEditMode(true)
@@ -690,7 +705,24 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 }
             ])
 
-            let viewStyleSubmenu = UIMenu(title: "", options: .displayInline, children: [list, grid, UIMenu(title: NSLocalizedString("_photo_", comment: ""), children: [menuPhoto])])
+            let menuZoom = UIMenu(title: "", options: .displayInline, children: [
+                UIAction(title: NSLocalizedString("_zoom_out_", comment: ""), image: utility.loadImage(named: "minus.magnifyingglass"), attributes: self.attributesZoomOut) { _ in
+                    UIView.animate(withDuration: 0.0, animations: {
+                        NCKeychain().photoColumnCount = columnCount + 1
+                        self.collectionView.reloadData()
+                        self.setNavigationRightItems()
+                    })
+                },
+                UIAction(title: NSLocalizedString("_zoom_in_", comment: ""), image: utility.loadImage(named: "plus.magnifyingglass"), attributes: self.attributesZoomIn) { _ in
+                    UIView.animate(withDuration: 0.0, animations: {
+                        NCKeychain().photoColumnCount = columnCount - 1
+                        self.collectionView.reloadData()
+                        self.setNavigationRightItems()
+                    })
+                }
+            ])
+
+            let viewStyleSubmenu = UIMenu(title: "", options: .displayInline, children: [list, grid, UIMenu(title: NSLocalizedString("_photo_", comment: ""), children: [menuPhoto, menuZoom])])
 
             let ascending = layoutForView.ascending
             let ascendingChevronImage = utility.loadImage(named: ascending ? "chevron.up" : "chevron.down")

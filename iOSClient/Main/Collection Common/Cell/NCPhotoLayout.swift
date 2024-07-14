@@ -120,7 +120,7 @@ public class NCPhotoLayout: UICollectionViewLayout {
         else { return }
 
         photoLayout = layoutForView.layout
-        columnCount = 3 //  NCKeychain().mediaColumnCount
+        columnCount = NCKeychain().photoColumnCount
         if UIDevice.current.userInterfaceIdiom == .phone,
            (UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight) {
             columnCount += 2

@@ -353,8 +353,10 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         // Layout photo
         if (layoutForView?.layout == NCGlobal.shared.layoutPhotoRatio || layoutForView?.layout == NCGlobal.shared.layoutPhotoSquare),
-           !metadata.directory {
-            cell.fileTitleLabel?.text = ""
+           let layout = collectionView.collectionViewLayout as? NCPhotoLayout {
+            //if !metadata.directory || layout.columnCount > 3 {
+                cell.fileTitleLabel?.text = ""
+            //}
         }
 
         // TAGS
