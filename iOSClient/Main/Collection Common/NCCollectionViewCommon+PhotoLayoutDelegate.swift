@@ -45,7 +45,7 @@ extension NCCollectionViewCommon: NCMediaLayoutDelegate {
 
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath, columnCount: Int, typeLayout: String) -> CGSize {
         var size = CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
-        if typeLayout == NCGlobal.shared.layoutPhotoSquare {
+        if typeLayout == NCGlobal.shared.layoutPhotoRatio {
             let metadata = self.dataSource.metadatas[indexPath.row]
             if metadata.imageSize != CGSize.zero {
                 return metadata.imageSize
