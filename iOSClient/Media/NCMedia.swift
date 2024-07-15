@@ -284,7 +284,7 @@ class NCMedia: UIViewController {
     func getImage(metadata: tableMetadata) -> UIImage? {
         let fileNamePathPreview = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
 
-        if let image = imageCache.getMediaImage(ocId: metadata.ocId, etag: metadata.etag) {
+        if let image = imageCache.getPreviewImageCache(ocId: metadata.ocId, etag: metadata.etag) {
             return image
         } else if FileManager().fileExists(atPath: fileNamePathPreview), let image = UIImage(contentsOfFile: fileNamePathPreview) {
             return image
@@ -526,7 +526,7 @@ extension NCMedia: NCMediaLayoutDelegate {
 
             if metadata.imageSize != CGSize.zero {
                 return metadata.imageSize
-            } else if let size = imageCache.getMediaSize(ocId: metadata.ocId, etag: metadata.etag) {
+            } else if let size = imageCache.getPreviewSizeCache(ocId: metadata.ocId, etag: metadata.etag) {
                 return size
             }
         }
