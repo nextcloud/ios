@@ -257,7 +257,7 @@ extension NCUtility {
         let width = metadata.width == 0 ? NCGlobal.shared.sizePreview : metadata.width
         let height = metadata.height == 0 ? NCGlobal.shared.sizePreview : metadata.height
 
-        if FileManager().fileExists(atPath: filePath), metadata.status >= NCGlobal.shared.metadataStatusNormal {
+        if NCUtilityFileSystem().fileProviderStorageExists(metadata), metadata.status >= NCGlobal.shared.metadataStatusNormal {
             var image: UIImage?
             /// Create from IMAGE
             if metadata.classFile == NKCommon.TypeClassFile.image.rawValue {
