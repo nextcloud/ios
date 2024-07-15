@@ -207,7 +207,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         cell.labelPath.text = pathText
         cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCImageCache.images.buttonStop)
         cell.progressView.progress = 0.0
-        if let image = utility.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: true) {
+        if let image = utility.createImage(metadata: metadata).icon {
             cell.imageItem.image = image
         } else if !metadata.iconName.isEmpty {
             cell.imageItem.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true)

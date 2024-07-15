@@ -63,16 +63,17 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
             if metadata.name == NCGlobal.shared.appName {
                 if layoutForView?.layout == NCGlobal.shared.layoutPhotoRatio || layoutForView?.layout == NCGlobal.shared.layoutPhotoSquare {
-                    if let image = NCImageCache.shared.getMediaImage(ocId: metadata.ocId, etag: metadata.etag) {
+                    if let image = NCImageCache.shared.getPreviewImageCache(ocId: metadata.ocId, etag: metadata.etag) {
                         cell.filePreviewImageView?.image = image
-                    } else {
-                        cell.filePreviewImageView?.image = UIImage(contentsOfFile: self.utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag))
+                    } else if let image = UIImage(contentsOfFile: self.utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
+                        cell.filePreviewImageView?.image = image
+                        NCImageCache.shared.setPreviewImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, date: metadata.date as Date)
                     }
                 } else {
-                    if let image = NCImageCache.shared.getIconImage(ocId: metadata.ocId, etag: metadata.etag) {
+                    if let image = NCImageCache.shared.getIconImageCache(ocId: metadata.ocId, etag: metadata.etag) {
                         cell.filePreviewImageView?.image = image
-                    } else if let image = utility.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: !metadata.hasPreview) {
-                        cell.filePreviewImageView?.image = image
+                    } else if metadata.hasPreview {
+                        cell.filePreviewImageView?.image = utility.createImage(metadata: metadata).icon
                     }
                 }
                 if cell.filePreviewImageView?.image == nil {
