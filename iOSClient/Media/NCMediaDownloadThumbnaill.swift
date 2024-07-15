@@ -73,7 +73,7 @@ class NCMediaDownloadThumbnaill: ConcurrentOperation {
                         }
                     }
                 }
-                NCImageCache.shared.setPreviewSizeCache(ocId: self.metadata.ocId, etag: self.metadata.etag, size: imagePreview.size)
+                NCImageCache.shared.addPreviewSizeCache(ocId: self.metadata.ocId, etag: self.metadata.etag, size: imagePreview.size)
             }
             self.finish()
         }

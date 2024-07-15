@@ -67,7 +67,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                         cell.filePreviewImageView?.image = image
                     } else if let image = UIImage(contentsOfFile: self.utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
                         cell.filePreviewImageView?.image = image
-                        NCImageCache.shared.setPreviewImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, date: metadata.date as Date)
+                        NCImageCache.shared.addPreviewImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, date: metadata.date as Date)
                     }
                 } else {
                     if let image = NCImageCache.shared.getIconImageCache(ocId: metadata.ocId, etag: metadata.etag) {
