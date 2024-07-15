@@ -184,9 +184,9 @@ class NCImageCache: NSObject {
     ///
     /// PREVIEW CACHE
     ///
-    func addPreviewImageCache(ocId: String, etag: String, image: UIImage, date: Date) {
-        cacheImagePreview.setValue(imageInfo(image: image, size: image.size, date: date), forKey: ocId + etag)
-        cacheSizePreview.setValue(image.size, forKey: ocId + etag)
+    func addPreviewImageCache(metadata: tableMetadata, image: UIImage) {
+        cacheImagePreview.setValue(imageInfo(image: image, size: image.size, date: metadata.date as Date), forKey: metadata.ocId + metadata.etag)
+        cacheSizePreview.setValue(image.size, forKey: metadata.ocId + metadata.etag)
     }
 
     func getPreviewImageCache(ocId: String, etag: String) -> UIImage? {
@@ -199,9 +199,6 @@ class NCImageCache: NSObject {
     ///
     /// SIZE CACHE
     ///
-    func addPreviewSizeCache(ocId: String, etag: String, size: CGSize) {
-        cacheSizePreview.setValue(size, forKey: ocId + etag)
-    }
 
     func getPreviewSizeCache(ocId: String, etag: String) -> CGSize? {
         if let size = cacheSizePreview.value(forKey: ocId + etag) {
