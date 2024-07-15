@@ -94,7 +94,7 @@ class NCSectionHeaderEmptyData: UICollectionReusableView {
             var image: UIImage?
             if let ocId,
                let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                image = NCUtility().createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: true)?.darken()
+                image = NCUtility().getIcon(metadata: metadata)?.darken()
                 if image == nil {
                     image = NCUtility().loadImage(named: metadata.iconName, useTypeIconFile: true)
                     buttonTransfer.backgroundColor = .lightGray

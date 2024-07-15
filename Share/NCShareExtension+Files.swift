@@ -25,9 +25,7 @@ import Foundation
 import UniformTypeIdentifiers
 
 extension NCShareExtension {
-
     @objc func reloadDatasource(withLoadFolder: Bool) {
-
         var groupByField = "name"
 
         layoutForView = NCManageDatabase.shared.setLayoutForView(account: activeAccount.account, key: keyLayout, serverUrl: serverUrl)
@@ -52,12 +50,10 @@ extension NCShareExtension {
         } else {
             self.refreshControl.endRefreshing()
         }
-
         collectionView.reloadData()
     }
 
     @objc func didCreateFolder(_ notification: NSNotification) {
-
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
@@ -69,7 +65,6 @@ extension NCShareExtension {
     }
 
     func loadFolder() {
-
         NCNetworking.shared.readFolder(serverUrl: serverUrl, account: activeAccount.account) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()

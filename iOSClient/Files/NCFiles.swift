@@ -61,8 +61,10 @@ class NCFiles: NCCollectionViewCommon {
                 self.gridLayout.itemForLine = CGFloat(self.layoutForView?.itemForLine ?? 3)
                 if self.layoutForView?.layout == NCGlobal.shared.layoutList {
                     self.collectionView?.collectionViewLayout = self.listLayout
-                } else {
+                } else if self.layoutForView?.layout == NCGlobal.shared.layoutGrid {
                     self.collectionView?.collectionViewLayout = self.gridLayout
+                } else if self.layoutForView?.layout == NCGlobal.shared.layoutPhotoSquare || self.layoutForView?.layout == NCGlobal.shared.layoutPhotoRatio {
+                    self.collectionView?.collectionViewLayout = self.mediaLayout
                 }
 
                 self.titleCurrentFolder = self.getNavigationTitle()

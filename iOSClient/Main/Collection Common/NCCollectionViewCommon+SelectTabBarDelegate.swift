@@ -27,7 +27,7 @@ import NextcloudKit
 
 extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
     func onListSelected() {
-        if layoutForView?.layout == NCGlobal.shared.layoutGrid {
+        if layoutForView?.layout != NCGlobal.shared.layoutList {
             layoutForView?.layout = NCGlobal.shared.layoutList
             NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
             self.groupByField = "name"
@@ -42,7 +42,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
     }
 
     func onGridSelected() {
-        if layoutForView?.layout == NCGlobal.shared.layoutList {
+        if layoutForView?.layout != NCGlobal.shared.layoutGrid {
             layoutForView?.layout = NCGlobal.shared.layoutGrid
             NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
             if isSearchingMode {
@@ -57,6 +57,21 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
             self.collectionView.reloadData()
             self.collectionView.collectionViewLayout.invalidateLayout()
             self.collectionView.setCollectionViewLayout(self.gridLayout, animated: true) {_ in self.isTransitioning = false }
+        }
+    }
+
+    func onPhotoSelected(layout: String) {
+        if layoutForView?.layout != layout {
+            layoutForView?.layout = layout
+            NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
+            self.groupByField = "name"
+            if self.dataSource.groupByField != self.groupByField {
+                self.dataSource.changeGroupByField(self.groupByField)
+            }
+
+            self.collectionView.reloadData()
+            self.collectionView.collectionViewLayout.invalidateLayout()
+            self.collectionView.setCollectionViewLayout(self.mediaLayout, animated: true) {_ in self.isTransitioning = false }
         }
     }
 

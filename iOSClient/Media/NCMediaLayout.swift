@@ -25,13 +25,15 @@ public let collectionViewMediaElementKindSectionHeader = "collectionViewMediaEle
 public let collectionViewMediaElementKindSectionFooter = "collectionViewMediaElementKindSectionFooter"
 
 protocol NCMediaLayoutDelegate: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath, columnCount: Int, mediaLayout: String) -> CGSize
+    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath, columnCount: Int, typeLayout: String) -> CGSize
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, heightForHeaderInSection section: Int) -> Float
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, heightForFooterInSection section: Int) -> Float
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, insetForSection section: Int) -> UIEdgeInsets
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, insetForHeaderInSection section: Int) -> UIEdgeInsets
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, insetForFooterInSection section: Int) -> UIEdgeInsets
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, minimumInteritemSpacingForSection section: Int) -> Float
+    func getLayout() -> String?
+    func getColumnCount() -> Int
 }
 
 public class NCMediaLayout: UICollectionViewLayout {
@@ -46,22 +48,22 @@ public class NCMediaLayout: UICollectionViewLayout {
             invalidateIfNotEqual(oldValue, newValue: columnCount)
         }
     }
-    public var minimumColumnSpacing: Float = 2.0 {
+    public var minimumColumnSpacing: Float = 1.0 {
         didSet {
             invalidateIfNotEqual(oldValue, newValue: minimumColumnSpacing)
         }
     }
-    public var minimumInteritemSpacing: Float = 2.0 {
+    public var minimumInteritemSpacing: Float = .zero {
         didSet {
             invalidateIfNotEqual(oldValue, newValue: minimumInteritemSpacing)
         }
     }
-    public var headerHeight: Float = 0.0 {
+    public var headerHeight: Float = .zero {
         didSet {
             invalidateIfNotEqual(oldValue, newValue: headerHeight)
         }
     }
-    public var footerHeight: Float = 0.0 {
+    public var footerHeight: Float = .zero {
         didSet {
             invalidateIfNotEqual(oldValue, newValue: footerHeight)
         }
@@ -81,18 +83,14 @@ public class NCMediaLayout: UICollectionViewLayout {
             invalidateIfNotEqual(oldValue, newValue: sectionInset)
         }
     }
-    var mediaViewController: NCMedia?
-    var mediaLayout = ""
-
     public override var collectionViewContentSize: CGSize {
         let numberOfSections = collectionView?.numberOfSections
         if numberOfSections == 0 {
             return CGSize.zero
         }
-
         var contentSize = collectionView?.bounds.size
-        contentSize?.height = CGFloat(columnHeights[0])
 
+        contentSize?.height = CGFloat(columnHeights[0])
         return contentSize!
     }
 
@@ -115,9 +113,8 @@ public class NCMediaLayout: UICollectionViewLayout {
               let collectionView = collectionView,
               let delegate = delegate else { return }
 
-        mediaLayout = NCKeychain().mediaTypeLayout
-        columnCount = NCKeychain().mediaColumnCount
-        mediaViewController?.buildMediaPhotoVideo(columnCount: columnCount)
+        columnCount = delegate.getColumnCount()
+        (delegate as? NCMedia)?.buildMediaPhotoVideo(columnCount: columnCount)
         if UIDevice.current.userInterfaceIdiom == .phone,
            (UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight) {
             columnCount += 2
@@ -184,7 +181,8 @@ public class NCMediaLayout: UICollectionViewLayout {
 
                 let xOffset = Float(sectionInset.left) + Float(itemWidth + minimumColumnSpacing) * Float(columnIndex)
                 let yOffset = columnHeights[columnIndex]
-                let itemSize = delegate.collectionView(collectionView, layout: self, sizeForItemAtIndexPath: indexPath, columnCount: self.columnCount, mediaLayout: self.mediaLayout)
+                let typeLayout = delegate.getLayout() ?? NCGlobal.shared.mediaLayoutRatio
+                let itemSize = delegate.collectionView(collectionView, layout: self, sizeForItemAtIndexPath: indexPath, columnCount: self.columnCount, typeLayout: typeLayout)
                 var itemHeight: Float = 0.0
                 if itemSize.height > 0 && itemSize.width > 0 {
                     itemHeight = Float(itemSize.height) * itemWidth / Float(itemSize.width)

@@ -28,7 +28,7 @@ import NextcloudKit
 import EasyTipView
 import JGProgressHUD
 
-class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate, NCSectionFooterDelegate, NCSectionHeaderEmptyDataDelegate, NCAccountSettingsModelDelegate, UIAdaptivePresentationControllerDelegate, UIContextMenuInteractionDelegate {
+class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCPhotoCellDelegate, NCSectionHeaderMenuDelegate, NCSectionFooterDelegate, NCSectionHeaderEmptyDataDelegate, NCAccountSettingsModelDelegate, UIAdaptivePresentationControllerDelegate, UIContextMenuInteractionDelegate {
 
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -55,13 +55,17 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var groupByField = "name"
     var providers: [NKSearchProvider]?
     var searchResults: [NKSearchResult]?
-    var listLayout: NCListLayout!
-    var gridLayout: NCGridLayout!
+    var listLayout = NCListLayout()
+    var gridLayout = NCGridLayout()
+    var mediaLayout = NCMediaLayout()
     var literalSearch: String?
     var tabBarSelect: NCCollectionViewCommonSelectTabBar!
     var timerNotificationCenter: Timer?
     var notificationReloadDataSource: Int = 0
     var notificationReloadDataSourceNetwork: Int = 0
+    var attributesZoomIn: UIMenuElement.Attributes = []
+    var attributesZoomOut: UIMenuElement.Attributes = []
+    let maxImageGrid: CGFloat = 7
 
     // DECLARE
     var layoutKey = ""
@@ -91,11 +95,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         tabBarSelect = NCCollectionViewCommonSelectTabBar(controller: tabBarController as? NCMainTabBarController, delegate: self)
         self.navigationController?.presentationController?.delegate = self
-
-        // CollectionView & layout
         collectionView.alwaysBounceVertical = true
-        listLayout = NCListLayout()
-        gridLayout = NCGridLayout()
 
         // Color
         view.backgroundColor = .systemBackground
@@ -116,6 +116,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         // Cell
         collectionView.register(UINib(nibName: "NCListCell", bundle: nil), forCellWithReuseIdentifier: "listCell")
         collectionView.register(UINib(nibName: "NCGridCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
+        collectionView.register(UINib(nibName: "NCPhotoCell", bundle: nil), forCellWithReuseIdentifier: "photoCell")
         collectionView.register(UINib(nibName: "NCTransferCell", bundle: nil), forCellWithReuseIdentifier: "transferCell")
 
         // Header
@@ -168,8 +169,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         gridLayout.itemForLine = CGFloat(layoutForView?.itemForLine ?? 3)
         if layoutForView?.layout == NCGlobal.shared.layoutList {
             collectionView?.collectionViewLayout = listLayout
-        } else {
+        } else if layoutForView?.layout == NCGlobal.shared.layoutGrid {
             collectionView?.collectionViewLayout = gridLayout
+        } else if layoutForView?.layout == NCGlobal.shared.layoutPhotoRatio || layoutForView?.layout == NCGlobal.shared.layoutPhotoSquare {
+            collectionView?.collectionViewLayout = mediaLayout
         }
 
         // FIXME: iPAD PDF landscape mode iOS 16
@@ -602,7 +605,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if !accounts.isEmpty, !NCBrandOptions.shared.disable_multiaccount {
             let accountActions: [UIAction] = accounts.map { account in
                 let image = utility.loadUserImage(for: account.user, displayName: account.displayName, userBaseUrl: account)
-
                 var name: String = ""
                 var url: String = ""
 
@@ -621,7 +623,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 }
 
                 action.subtitle = url
-
                 return action
             }
 
@@ -662,9 +663,21 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard layoutKey != NCGlobal.shared.layoutViewTransfers else { return }
         let isTabBarHidden = self.tabBarController?.tabBar.isHidden ?? true
         let isTabBarSelectHidden = tabBarSelect.isHidden()
+        let columnCount = NCKeychain().photoColumnCount
 
         func createMenuActions() -> [UIMenuElement] {
             guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl) else { return [] }
+
+            if CGFloat(columnCount) >= maxImageGrid - 1 {
+                self.attributesZoomIn = []
+                self.attributesZoomOut = .disabled
+            } else if columnCount <= 1 {
+                self.attributesZoomIn = .disabled
+                self.attributesZoomOut = []
+            } else {
+                self.attributesZoomIn = []
+                self.attributesZoomOut = []
+            }
 
             let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: utility.loadImage(named: "checkmark.circle"), attributes: self.dataSource.getMetadataSourceForAllSections().isEmpty ? .disabled : []) { _ in
                 self.setEditMode(true)
@@ -680,7 +693,35 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.setNavigationRightItems()
             }
 
-            let viewStyleSubmenu = UIMenu(title: "", options: .displayInline, children: [list, grid])
+            let menuPhoto = UIMenu(title: "", options: .displayInline, children: [
+                UIAction(title: NSLocalizedString("_media_square_", comment: ""), image: utility.loadImage(named: "square.grid.3x3"), state: layoutForView.layout == NCGlobal.shared.layoutPhotoSquare ? .on : .off) { _ in
+                    self.onPhotoSelected(layout: NCGlobal.shared.layoutPhotoSquare)
+                    self.setNavigationRightItems()
+                },
+                UIAction(title: NSLocalizedString("_media_ratio_", comment: ""), image: utility.loadImage(named: "rectangle.grid.3x2"), state: layoutForView.layout == NCGlobal.shared.layoutPhotoRatio ? .on : .off) { _ in
+                    self.onPhotoSelected(layout: NCGlobal.shared.layoutPhotoRatio)
+                    self.setNavigationRightItems()
+                }
+            ])
+
+            let menuZoom = UIMenu(title: "", options: .displayInline, children: [
+                UIAction(title: NSLocalizedString("_zoom_out_", comment: ""), image: utility.loadImage(named: "minus.magnifyingglass"), attributes: self.attributesZoomOut) { _ in
+                    UIView.animate(withDuration: 0.0, animations: {
+                        NCKeychain().photoColumnCount = columnCount + 1
+                        self.collectionView.reloadData()
+                        self.setNavigationRightItems()
+                    })
+                },
+                UIAction(title: NSLocalizedString("_zoom_in_", comment: ""), image: utility.loadImage(named: "plus.magnifyingglass"), attributes: self.attributesZoomIn) { _ in
+                    UIView.animate(withDuration: 0.0, animations: {
+                        NCKeychain().photoColumnCount = columnCount - 1
+                        self.collectionView.reloadData()
+                        self.setNavigationRightItems()
+                    })
+                }
+            ])
+
+            let viewStyleSubmenu = UIMenu(title: "", options: .displayInline, children: [list, grid, UIMenu(title: NSLocalizedString("_photo_", comment: ""), children: [menuPhoto, menuZoom])])
 
             let ascending = layoutForView.ascending
             let ascendingChevronImage = utility.loadImage(named: ascending ? "chevron.up" : "chevron.down")
@@ -1039,7 +1080,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func unifiedSearchMore(metadataForSection: NCMetadataForSection?) {
-
         guard let metadataForSection = metadataForSection, let lastSearchResult = metadataForSection.lastSearchResult, let cursor = lastSearchResult.cursor, let term = literalSearch else { return }
 
         metadataForSection.unifiedSearchInProgress = true
@@ -1087,7 +1127,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 // MARK: - E2EE
 
 extension NCCollectionViewCommon: NCEndToEndInitializeDelegate {
-
     func endToEndInitializeSuccess(metadata: tableMetadata?) {
         if let metadata {
             pushMetadata(metadata)
@@ -1096,7 +1135,6 @@ extension NCCollectionViewCommon: NCEndToEndInitializeDelegate {
 }
 
 extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
-
     func isHeaderMenuTransferViewEnabled() -> Bool {
         if headerMenuTransferView, let metadata = NCManageDatabase.shared.getMetadataFromOcId(NCNetworking.shared.transferInForegorund?.ocId), metadata.isTransferInForeground {
             return true
@@ -1114,7 +1152,6 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
         } else {
             NCNetworking.shared.transferInForegorund = nil
         }
-
         return size
     }
 
@@ -1168,7 +1205,6 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
         if isSearchingMode && isPaginated && metadatasCount > 0 {
             size.height += NCGlobal.shared.heightFooterButton
         }
-
         return size
     }
 }
@@ -1218,9 +1254,7 @@ extension NCCollectionViewCommon: EasyTipViewDelegate {
 }
 
 extension NCCollectionViewCommon {
-
     func getAvatarFromIconUrl(metadata: tableMetadata) -> String? {
-
         var ownerId: String?
         if metadata.iconUrl.contains("http") && metadata.iconUrl.contains("avatar") {
             let splitIconUrl = metadata.iconUrl.components(separatedBy: "/")

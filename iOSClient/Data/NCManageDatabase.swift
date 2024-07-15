@@ -219,7 +219,6 @@ class NCManageDatabase: NSObject {
         self.clearTable(tableGPS.self, account: nil)
         self.clearTable(TableGroupfolders.self, account: account)
         self.clearTable(TableGroupfoldersGroups.self, account: account)
-        self.clearTable(NCDBLayoutForView.self, account: account)
         self.clearTable(tableLocalFile.self, account: account)
         self.clearTable(tableMetadata.self, account: account)
         self.clearTable(tablePhotoLibrary.self, account: account)

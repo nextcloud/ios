@@ -87,7 +87,6 @@ class NCMedia: UIViewController {
         collectionView.dropDelegate = self
 
         layout.sectionInset = UIEdgeInsets(top: 0, left: 2, bottom: 0, right: 2)
-        layout.mediaViewController = self
         collectionView.collectionViewLayout = layout
 
         tabBarSelect = NCMediaSelectTabBar(tabBarController: self.tabBarController, delegate: self)
@@ -285,7 +284,7 @@ class NCMedia: UIViewController {
     func getImage(metadata: tableMetadata) -> UIImage? {
         let fileNamePathPreview = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
 
-        if let image = imageCache.getMediaImage(ocId: metadata.ocId, etag: metadata.etag) {
+        if let image = imageCache.getPreviewImageCache(ocId: metadata.ocId, etag: metadata.etag) {
             return image
         } else if FileManager().fileExists(atPath: fileNamePathPreview), let image = UIImage(contentsOfFile: fileNamePathPreview) {
             return image
@@ -483,6 +482,14 @@ extension NCMedia: UICollectionViewDataSource {
 // MARK: -
 
 extension NCMedia: NCMediaLayoutDelegate {
+    func getColumnCount() -> Int {
+        return NCKeychain().mediaColumnCount
+    }
+
+    func getLayout() -> String? {
+         return NCKeychain().mediaTypeLayout
+    }
+
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, heightForHeaderInSection section: Int) -> Float {
         var height: Double = 0
         if metadatas?.count ?? 0 == 0 {
@@ -508,18 +515,18 @@ extension NCMedia: NCMediaLayoutDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, minimumInteritemSpacingForSection section: Int) -> Float {
-        return .zero
+        return 1.0
     }
 
-    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath, columnCount: Int, mediaLayout: String) -> CGSize {
+    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath, columnCount: Int, typeLayout: String) -> CGSize {
         let size = CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
-        if mediaLayout == NCGlobal.shared.mediaLayoutRatio {
+        if typeLayout == NCGlobal.shared.mediaLayoutRatio {
             guard let metadatas = self.metadatas,
                   let metadata = metadatas[indexPath.row] else { return size }
 
             if metadata.imageSize != CGSize.zero {
                 return metadata.imageSize
-            } else if let size = imageCache.getMediaSize(ocId: metadata.ocId, etag: metadata.etag) {
+            } else if let size = imageCache.getPreviewSizeCache(ocId: metadata.ocId, etag: metadata.etag) {
                 return size
             }
         }
