@@ -73,7 +73,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     if let image = NCImageCache.shared.getIconImageCache(ocId: metadata.ocId, etag: metadata.etag) {
                         cell.filePreviewImageView?.image = image
                     } else if metadata.hasPreview {
-                        cell.filePreviewImageView?.image = utility.createImage(metadata: metadata).icon
+                        cell.filePreviewImageView?.image = utility.getIcon(metadata: metadata)
                     }
                 }
                 if cell.filePreviewImageView?.image == nil {
