@@ -29,8 +29,7 @@ import NextcloudKit
     @objc func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool)
 }
 
-class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresentationControllerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate {
-
+class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresentationControllerDelegate, NCListCellDelegate, NCSectionHeaderMenuDelegate {
     @IBOutlet private var collectionView: UICollectionView!
     @IBOutlet private var buttonCancel: UIBarButtonItem!
     @IBOutlet private var bottomContraint: NSLayoutConstraint?
@@ -215,6 +214,15 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
     @IBAction func valueChangedSwitchOverwrite(_ sender: UISwitch) {
         overwrite = sender.isOn
+    }
+
+    func tapShareListItem(with objectId: String, indexPath: IndexPath, sender: Any) {
+    }
+
+    func tapMoreListItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
+    }
+
+    func longPressListItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
     }
 
     // MARK: - Push metadata

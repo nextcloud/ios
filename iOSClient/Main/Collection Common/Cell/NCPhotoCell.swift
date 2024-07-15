@@ -154,8 +154,3 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
 protocol NCPhotoCellDelegate: AnyObject {
     func longPressGridItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer)
 }
-
-// optional func
-extension NCPhotoCellDelegate {
-    func longPressGridItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {}
-}

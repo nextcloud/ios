@@ -86,8 +86,15 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 
     override func awakeFromNib() {
         super.awakeFromNib()
+        initCell()
+    }
 
-        // use entire cell as accessibility element
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        initCell()
+    }
+
+    func initCell() {
         accessibilityHint = nil
         accessibilityLabel = nil
         accessibilityValue = nil
@@ -106,23 +113,9 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         longPressedGesture.delaysTouchesBegan = true
         self.addGestureRecognizer(longPressedGesture)
 
-        let longPressedGestureMore = UILongPressGestureRecognizer(target: self, action: #selector(longPressInsideMore(gestureRecognizer:)))
-        longPressedGestureMore.minimumPressDuration = 0.5
-        longPressedGestureMore.delegate = self
-        longPressedGestureMore.delaysTouchesBegan = true
-        buttonMore.addGestureRecognizer(longPressedGestureMore)
-
         labelTitle.text = ""
         labelInfo.text = ""
         labelSubinfo.text = ""
-    }
-
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        imageItem.backgroundColor = nil
-        accessibilityHint = nil
-        accessibilityLabel = nil
-        accessibilityValue = nil
     }
 
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
@@ -131,10 +124,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 
     @IBAction func touchUpInsideMore(_ sender: Any) {
         gridCellDelegate?.tapMoreGridItem(with: objectId, namedButtonMore: namedButtonMore, image: imageItem.image, indexPath: indexPath, sender: sender)
-    }
-
-    @objc func longPressInsideMore(gestureRecognizer: UILongPressGestureRecognizer) {
-        gridCellDelegate?.longPressMoreGridItem(with: objectId, namedButtonMore: namedButtonMore, indexPath: indexPath, gestureRecognizer: gestureRecognizer)
     }
 
     @objc func longPress(gestureRecognizer: UILongPressGestureRecognizer) {
@@ -176,19 +165,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     }
 
     func selected(_ status: Bool) {
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId), !metadata.isInTransfer else {
-            imageSelect.isHidden = true
-            imageVisualEffect.isHidden = true
-            return
-        }
         if status {
-            if traitCollection.userInterfaceStyle == .dark {
-                imageVisualEffect.effect = UIBlurEffect(style: .dark)
-                imageVisualEffect.backgroundColor = .black
-            } else {
-                imageVisualEffect.effect = UIBlurEffect(style: .extraLight)
-                imageVisualEffect.backgroundColor = .lightGray
-            }
             imageSelect.image = NCImageCache.images.checkedYes
             imageVisualEffect.isHidden = false
         } else {
@@ -224,15 +201,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 
 protocol NCGridCellDelegate: AnyObject {
     func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any)
-    func longPressMoreGridItem(with objectId: String, namedButtonMore: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer)
     func longPressGridItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer)
-}
-
-// optional func
-extension NCGridCellDelegate {
-    func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) {}
-    func longPressMoreGridItem(with objectId: String, namedButtonMore: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {}
-    func longPressGridItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {}
 }
 
 // MARK: - Grid Layout

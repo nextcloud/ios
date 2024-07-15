@@ -137,12 +137,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         longPressedGesture.delaysTouchesBegan = true
         self.addGestureRecognizer(longPressedGesture)
 
-        let longPressedGestureMore = UILongPressGestureRecognizer(target: self, action: #selector(longPressInsideMore(gestureRecognizer:)))
-        longPressedGestureMore.minimumPressDuration = 0.5
-        longPressedGestureMore.delegate = self
-        longPressedGestureMore.delaysTouchesBegan = true
-        buttonMore.addGestureRecognizer(longPressedGestureMore)
-
         separator.backgroundColor = .separator
         separatorHeightConstraint.constant = 0.5
 
@@ -180,10 +174,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 
     @IBAction func touchUpInsideMore(_ sender: Any) {
         listCellDelegate?.tapMoreListItem(with: objectId, namedButtonMore: namedButtonMore, image: imageItem.image, indexPath: indexPath, sender: sender)
-    }
-
-    @objc func longPressInsideMore(gestureRecognizer: UILongPressGestureRecognizer) {
-        listCellDelegate?.longPressMoreListItem(with: objectId, namedButtonMore: namedButtonMore, indexPath: indexPath, gestureRecognizer: gestureRecognizer)
     }
 
     @objc func longPress(gestureRecognizer: UILongPressGestureRecognizer) {
@@ -338,16 +328,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 protocol NCListCellDelegate: AnyObject {
     func tapShareListItem(with objectId: String, indexPath: IndexPath, sender: Any)
     func tapMoreListItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any)
-    func longPressMoreListItem(with objectId: String, namedButtonMore: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer)
     func longPressListItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer)
-}
-
-// optional func
-extension NCListCellDelegate {
-    func tapShareListItem(with objectId: String, indexPath: IndexPath, sender: Any) {}
-    func tapMoreListItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) {}
-    func longPressMoreListItem(with objectId: String, namedButtonMore: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {}
-    func longPressListItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {}
 }
 
 // MARK: - List Layout
