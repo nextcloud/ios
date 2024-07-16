@@ -28,7 +28,6 @@ import NextcloudKit
 import RealmSwift
 
 class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
-
     var metadata: tableMetadata
     var cell: NCCellProtocol?
     var collectionView: UICollectionView?

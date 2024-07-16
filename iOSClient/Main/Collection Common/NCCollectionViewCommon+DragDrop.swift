@@ -29,13 +29,11 @@ import JGProgressHUD
 
 extension NCCollectionViewCommon: UICollectionViewDragDelegate {
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
-
         if isEditMode {
             return NCDragDrop().performDrag(selectOcId: selectOcId)
         } else if let metadata = dataSource.cellForItemAt(indexPath: indexPath) {
             return NCDragDrop().performDrag(metadata: metadata)
         }
-
         return []
     }
 
@@ -51,7 +49,6 @@ extension NCCollectionViewCommon: UICollectionViewDragDelegate {
             previewParameters.visiblePath = UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: cell.frame.width, height: cell.frame.height - 40), cornerRadius: 10)
             return previewParameters
         }
-
         return nil
     }
 }
@@ -65,6 +62,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
 
     func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
         var destinationMetadata: tableMetadata?
+
         if let destinationIndexPath {
             destinationMetadata = dataSource.cellForItemAt(indexPath: destinationIndexPath)
         }
@@ -103,7 +101,6 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
                 }
             }
         }
-
         return UICollectionViewDropProposal(operation: .copy)
     }
 
@@ -139,20 +136,20 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
     @objc func copyMenuFile() {
         guard let sourceMetadatas = DragDropHover.shared.sourceMetadatas else { return }
         var serverUrl: String = self.serverUrl
+
         if let destinationMetadata = DragDropHover.shared.destinationMetadata, destinationMetadata.directory {
             serverUrl = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
         }
-
         NCDragDrop().copyFile(metadatas: sourceMetadatas, serverUrl: serverUrl)
     }
 
     @objc func moveMenuFile() {
         guard let sourceMetadatas = DragDropHover.shared.sourceMetadatas else { return }
         var serverUrl: String = self.serverUrl
+
         if let destinationMetadata = DragDropHover.shared.destinationMetadata, destinationMetadata.directory {
             serverUrl = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
         }
-
         NCDragDrop().moveFile(metadatas: sourceMetadatas, serverUrl: serverUrl)
     }
 }

@@ -91,7 +91,6 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
 
         if canDeleteServer {
             let copyMetadatas = metadatas
-
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .destructive) { _ in
                 Task {
                     var error = NKError()
