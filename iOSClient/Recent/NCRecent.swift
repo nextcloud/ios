@@ -56,6 +56,7 @@ class NCRecent: NCCollectionViewCommon {
                                        directoryOnTop: false,
                                        favoriteOnTop: false,
                                        groupByField: self.groupByField,
+                                       layout: layoutForView?.layout,
                                        providers: self.providers,
                                        searchResults: self.searchResults)
     }

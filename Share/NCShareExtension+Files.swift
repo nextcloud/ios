@@ -43,7 +43,8 @@ extension NCShareExtension {
             ascending: layoutForView?.ascending,
             directoryOnTop: layoutForView?.directoryOnTop,
             favoriteOnTop: true,
-            groupByField: groupByField)
+            groupByField: groupByField,
+            layout: layoutForView?.layout)
 
         if withLoadFolder {
             loadFolder()

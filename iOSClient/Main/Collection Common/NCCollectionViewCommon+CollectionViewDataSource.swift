@@ -153,7 +153,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             gridCell.gridCellDelegate = self
             cell = gridCell
         } else {
-            // LAYOUT LIST
+        // LAYOUT LIST
             guard let listCell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell else { return NCListCell() }
             listCell.listCellDelegate = self
             cell = listCell

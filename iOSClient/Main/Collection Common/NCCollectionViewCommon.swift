@@ -1046,6 +1046,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     ascending: self.layoutForView?.ascending,
                     directoryOnTop: self.layoutForView?.directoryOnTop,
                     favoriteOnTop: true,
+                    layout: self.layoutForView?.layout,
                     providers: self.providers,
                     searchResults: self.searchResults)
             } update: { _, _, searchResult, metadatas in
@@ -1073,6 +1074,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     directoryOnTop: self.layoutForView?.directoryOnTop,
                     favoriteOnTop: true,
                     groupByField: self.groupByField,
+                    layout: self.layoutForView?.layout,
                     providers: self.providers,
                     searchResults: self.searchResults)
             }

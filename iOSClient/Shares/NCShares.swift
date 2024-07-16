@@ -63,6 +63,7 @@ class NCShares: NCCollectionViewCommon {
                                            directoryOnTop: layoutForView?.directoryOnTop,
                                            favoriteOnTop: true,
                                            groupByField: groupByField,
+                                           layout: layoutForView?.layout,
                                            providers: providers,
                                            searchResults: searchResults)
             DispatchQueue.main.async {

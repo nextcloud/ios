@@ -529,7 +529,8 @@ extension NCSelect {
                                        ascending: true,
                                        directoryOnTop: true,
                                        favoriteOnTop: true,
-                                       groupByField: "none")
+                                       groupByField: "none",
+                                       layout: nil)
 
         if withLoadFolder {
             loadFolder()

@@ -122,6 +122,7 @@ class NCFiles: NCCollectionViewCommon {
             directoryOnTop: self.layoutForView?.directoryOnTop,
             favoriteOnTop: true,
             groupByField: self.groupByField,
+            layout: layoutForView?.layout,
             providers: self.providers,
             searchResults: self.searchResults)
     }

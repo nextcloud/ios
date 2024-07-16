@@ -29,7 +29,9 @@ class NCDataSource: NSObject {
     var metadatasForSection: [NCMetadataForSection] = []
     var directory: tableDirectory?
     var groupByField: String = ""
+    var layout: String?
 
+    private let utilityFileSystem = NCUtilityFileSystem()
     private var sectionsValue: [String] = []
     private var providers: [NKSearchProvider]?
     private var searchResults: [NKSearchResult]?
@@ -43,7 +45,7 @@ class NCDataSource: NSObject {
         super.init()
     }
 
-    init(metadatas: [tableMetadata], account: String, directory: tableDirectory? = nil, sort: String? = "none", ascending: Bool? = false, directoryOnTop: Bool? = true, favoriteOnTop: Bool? = true, groupByField: String = "name", providers: [NKSearchProvider]? = nil, searchResults: [NKSearchResult]? = nil) {
+    init(metadatas: [tableMetadata], account: String, directory: tableDirectory? = nil, sort: String? = "none", ascending: Bool? = false, directoryOnTop: Bool? = true, favoriteOnTop: Bool? = true, groupByField: String = "name", layout: String?, providers: [NKSearchProvider]? = nil, searchResults: [NKSearchResult]? = nil) {
         super.init()
 
         self.metadatas = metadatas.filter({
@@ -55,6 +57,7 @@ class NCDataSource: NSObject {
         self.directoryOnTop = directoryOnTop ?? true
         self.favoriteOnTop = favoriteOnTop ?? true
         self.groupByField = groupByField
+        self.layout = layout
         // unified search
         self.providers = providers
         self.searchResults = searchResults
@@ -108,8 +111,14 @@ class NCDataSource: NSObject {
             if !self.sectionsValue.contains(section) {
                 self.sectionsValue.append(section)
             }
+            // image Cache
+            if (layout == NCGlobal.shared.layoutPhotoRatio || layout == NCGlobal.shared.layoutPhotoSquare),
+               (metadata.isVideo || metadata.isImage),
+               NCImageCache.shared.getPreviewImageCache(ocId: metadata.ocId, etag: metadata.etag) == nil,
+               let image = UIImage(contentsOfFile: self.utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
+                NCImageCache.shared.addPreviewImageCache(metadata: metadata, image: image)
+            }
         }
-
         // Unified search
         if let providers = self.providers, !providers.isEmpty {
             let sectionsDictionary = ThreadSafeDictionary<String, Int>()
