@@ -997,16 +997,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()
         autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: appDelegate.account)
-
         // get layout for view
         layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl)
-
-        // set GroupField for Grid
-        if !isSearchingMode && layoutForView?.layout == NCGlobal.shared.layoutGrid {
-            groupByField = "classFile"
-        } else {
-            groupByField = "name"
-        }
 
         DispatchQueue.global(qos: .userInteractive).async {
             if withQueryDB { self.queryDB() }
@@ -1167,7 +1159,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
             }
         }
 
-        if isSearchingMode || layoutForView?.layout == NCGlobal.shared.layoutGrid || dataSource.numberOfSections() > 1 {
+        if isSearchingMode || self.groupByField != "name" || dataSource.numberOfSections() > 1 {
             if section == 0 {
                 return (getHeaderHeight(), headerRichWorkspace, NCGlobal.shared.heightSection)
             } else {

@@ -45,11 +45,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
         if layoutForView?.layout != NCGlobal.shared.layoutGrid {
             layoutForView?.layout = NCGlobal.shared.layoutGrid
             NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
-            if isSearchingMode {
-                self.groupByField = "name"
-            } else {
-                self.groupByField = "classFile"
-            }
+            self.groupByField = "name"
             if self.dataSource.groupByField != self.groupByField {
                 self.dataSource.changeGroupByField(self.groupByField)
             }
