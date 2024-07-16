@@ -198,13 +198,10 @@ protocol NCGridCellDelegate: AnyObject {
 // MARK: - Grid Layout
 
 class NCGridLayout: UICollectionViewFlowLayout {
-
     var heightLabelPlusButton: CGFloat = 60
     var marginLeftRight: CGFloat = 10
     var itemForLine: CGFloat = 3
     var itemWidthDefault: CGFloat = 140
-
-    // MARK: - View Life Cycle
 
     override init() {
         super.init()

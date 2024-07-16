@@ -314,10 +314,7 @@ protocol NCListCellDelegate: AnyObject {
 // MARK: - List Layout
 
 class NCListLayout: UICollectionViewFlowLayout {
-
     var itemHeight: CGFloat = 60
-
-    // MARK: - View Life Cycle
 
     override init() {
         super.init()

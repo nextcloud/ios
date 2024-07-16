@@ -48,6 +48,9 @@ extension NCCollectionViewCommon: UICollectionViewDragDelegate {
         } else if let cell = collectionView.cellForItem(at: indexPath) as? NCGridCell {
             previewParameters.visiblePath = UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: cell.frame.width, height: cell.frame.height - 40), cornerRadius: 10)
             return previewParameters
+        } else if let cell = collectionView.cellForItem(at: indexPath) as? NCPhotoCell {
+            previewParameters.visiblePath = UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: cell.frame.width, height: cell.frame.height), cornerRadius: 10)
+            return previewParameters
         }
         return nil
     }
