@@ -28,15 +28,7 @@ extension NCShareExtension {
     @objc func reloadDatasource(withLoadFolder: Bool) {
         layoutForView = NCManageDatabase.shared.setLayoutForView(account: activeAccount.account, key: keyLayout, serverUrl: serverUrl)
         let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", activeAccount.account, serverUrl))
-
-        self.dataSource = NCDataSource(
-            metadatas: metadatas,
-            account: activeAccount.account,
-            sort: layoutForView?.sort,
-            ascending: layoutForView?.ascending,
-            directoryOnTop: layoutForView?.directoryOnTop,
-            favoriteOnTop: true,
-            layout: layoutForView?.layout)
+        self.dataSource = NCDataSource(metadatas: metadatas, account: activeAccount.account, layoutForView: layoutForView)
 
         if withLoadFolder {
             loadFolder()

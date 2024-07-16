@@ -523,15 +523,8 @@ extension NCSelect {
         }
 
         let metadatas = NCManageDatabase.shared.getMetadatas(predicate: predicate!)
-        self.dataSource = NCDataSource(metadatas: metadatas,
-                                       account: activeAccount.account,
-                                       sort: "fileName",
-                                       ascending: true,
-                                       directoryOnTop: true,
-                                       favoriteOnTop: true,
-                                       groupByField: "none",
-                                       layout: nil)
-
+        self.dataSource = NCDataSource(metadatas: metadatas, account: activeAccount.account, layoutForView: nil)
+                                     
         if withLoadFolder {
             loadFolder()
         }

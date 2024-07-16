@@ -56,16 +56,7 @@ class NCShares: NCCollectionViewCommon {
         var metadatas: [tableMetadata] = []
 
         func reload() {
-            self.dataSource = NCDataSource(metadatas: metadatas,
-                                           account: appDelegate.account,
-                                           sort: layoutForView?.sort,
-                                           ascending: layoutForView?.ascending,
-                                           directoryOnTop: layoutForView?.directoryOnTop,
-                                           favoriteOnTop: true,
-                                           groupByField: groupByField,
-                                           layout: layoutForView?.layout,
-                                           providers: providers,
-                                           searchResults: searchResults)
+            self.dataSource = NCDataSource(metadatas: metadatas, account: appDelegate.account, layoutForView: layoutForView, providers: providers, searchResults: searchResults)
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()
                 self.collectionView.reloadData()

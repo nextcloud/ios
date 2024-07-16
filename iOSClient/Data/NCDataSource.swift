@@ -28,7 +28,7 @@ class NCDataSource: NSObject {
     var metadatas: [tableMetadata] = []
     var metadatasForSection: [NCMetadataForSection] = []
     var directory: tableDirectory?
-    var groupByField: String = ""
+    var groupBy: String?
     var layout: String?
 
     private let utilityFileSystem = NCUtilityFileSystem()
@@ -45,19 +45,19 @@ class NCDataSource: NSObject {
         super.init()
     }
 
-    init(metadatas: [tableMetadata], account: String, directory: tableDirectory? = nil, sort: String? = "none", ascending: Bool? = false, directoryOnTop: Bool? = true, favoriteOnTop: Bool? = true, groupByField: String = "name", layout: String?, providers: [NKSearchProvider]? = nil, searchResults: [NKSearchResult]? = nil) {
+    init(metadatas: [tableMetadata], account: String, directory: tableDirectory? = nil, layoutForView: NCDBLayoutForView?, providers: [NKSearchProvider]? = nil, searchResults: [NKSearchResult]? = nil) {
         super.init()
 
         self.metadatas = metadatas.filter({
             !(NCGlobal.shared.includeHiddenFiles.contains($0.fileNameView) || $0.isTransferInForeground)
         })
         self.directory = directory
-        self.sort = sort ?? "none"
-        self.ascending = ascending ?? false
-        self.directoryOnTop = directoryOnTop ?? true
-        self.favoriteOnTop = favoriteOnTop ?? true
-        self.groupByField = groupByField
-        self.layout = layout
+        self.sort = layoutForView?.sort ?? "none"
+        self.ascending = layoutForView?.ascending ?? false
+        self.directoryOnTop = layoutForView?.directoryOnTop ?? true
+        self.favoriteOnTop = true
+        self.groupBy = layoutForView?.groupBy ?? "none"
+        self.layout = layoutForView?.layout
         // unified search
         self.providers = providers
         self.searchResults = searchResults
@@ -80,9 +80,9 @@ class NCDataSource: NSObject {
         self.directory = nil
     }
 
-    func changeGroupByField(_ groupByField: String) {
-        self.groupByField = groupByField
-        print("DATASOURCE: set group by filed " + groupByField)
+    func changeGroupByField(_ groupBy: String) {
+        self.groupBy = groupBy
+        print("DATASOURCE: set group by filed " + groupBy)
         self.metadatasForSection.removeAll()
         self.sectionsValue.removeAll()
         print("DATASOURCE: remove  all sections")
@@ -257,13 +257,13 @@ class NCDataSource: NSObject {
     }
 
     internal func getSectionValue(metadata: tableMetadata) -> String {
-        switch self.groupByField {
-        case "name":
+        switch self.groupBy {
+        case "name", "none":
             return NSLocalizedString(metadata.name, comment: "")
         case "classFile":
             return NSLocalizedString(metadata.classFile, comment: "").lowercased().firstUppercased
         default:
-            return NSLocalizedString(metadata.classFile, comment: "")
+            return NSLocalizedString(metadata.name, comment: "")
         }
     }
 
@@ -348,7 +348,6 @@ class NCMetadataForSection: NSObject {
         //
         if sort != "none" && !sort.isEmpty {
             metadatasSorted = metadatas.sorted {
-
                 switch sort {
                 case "date":
                     if ascending {

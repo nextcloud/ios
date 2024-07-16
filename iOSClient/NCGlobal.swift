@@ -179,6 +179,7 @@ class NCGlobal: NSObject {
     let layoutViewShares                            = "LayoutShares"
     let layoutViewShareExtension                    = "LayoutShareExtension"
     let layoutViewGroupfolders                      = "LayoutGroupfolders"
+    let layoutViewMedia                             = "LayoutMedia"
 
     // Button Type in Cell list/grid
     //

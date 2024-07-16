@@ -51,14 +51,7 @@ class NCRecent: NCCollectionViewCommon {
         super.queryDB()
 
         let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@", self.appDelegate.account), numItems: 200, sorted: "date", ascending: false)
-        self.dataSource = NCDataSource(metadatas: metadatas,
-                                       account: self.appDelegate.account,
-                                       directoryOnTop: false,
-                                       favoriteOnTop: false,
-                                       groupByField: self.groupByField,
-                                       layout: layoutForView?.layout,
-                                       providers: self.providers,
-                                       searchResults: self.searchResults)
+        self.dataSource = NCDataSource(metadatas: metadatas, account: self.appDelegate.account, layoutForView: layoutForView, providers: self.providers, searchResults: self.searchResults)
     }
 
     override func reloadDataSourceNetwork(withQueryDB: Bool = false) {

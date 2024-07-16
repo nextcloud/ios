@@ -338,8 +338,6 @@ class NCListLayout: UICollectionViewFlowLayout {
                 let itemWidth: CGFloat = collectionView.frame.width
                 return CGSize(width: itemWidth, height: self.itemHeight)
             }
-
-            // Default fallback
             return CGSize(width: 100, height: 100)
         }
         set {
