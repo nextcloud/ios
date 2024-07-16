@@ -95,7 +95,11 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
         accessibilityLabel = nil
         accessibilityValue = nil
 
-        imageVisualEffect.alpha = 0.4
+        imageVisualEffect.clipsToBounds = true
+        imageVisualEffect.alpha = 0.5
+
+        imageSelect.isHidden = true
+        imageSelect.image = NCImageCache.images.checkedYes
 
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPress(gestureRecognizer:)))
         longPressedGesture.minimumPressDuration = 0.5
@@ -115,17 +119,6 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
     func selected(_ status: Bool, isEditMode: Bool) {
         if status {
             imageSelect.isHidden = false
-            accessibilityCustomActions = nil
-        } else {
-            imageSelect.isHidden = true
-            imageVisualEffect.isHidden = true
-        }
-    }
-
-    func selected(_ status: Bool) {
-        if status {
-            imageSelect.isHidden = false
-            imageSelect.image = NCImageCache.images.checkedYes
             imageVisualEffect.isHidden = false
         } else {
             imageSelect.isHidden = true
