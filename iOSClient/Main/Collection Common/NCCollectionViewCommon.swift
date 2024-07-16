@@ -258,8 +258,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
-
         let viewController = presentationController.presentedViewController
+
         if viewController is NCViewerRichWorkspaceWebView {
             closeRichWorkspaceWebView()
         }
@@ -303,7 +303,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             self.showTip()
         }
-
         guard let userInfo = notification.userInfo as NSDictionary?,
               let error = userInfo["error"] as? NKError,
               error.errorCode != NCGlobal.shared.errorNotModified else { return }
@@ -321,6 +320,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @objc func reloadDataSourceNetwork(_ notification: NSNotification) {
         var withQueryDB = false
+
         if let userInfo = notification.userInfo as NSDictionary?,
            let reload = userInfo["withQueryDB"] as? Bool {
             withQueryDB = reload
@@ -537,7 +537,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let totalBytesExpected = userInfo["totalBytesExpected"] as? Int64,
               let ocId = userInfo["ocId"] as? String
         else { return }
-
         let chunk: Int = userInfo["chunk"] as? Int ?? 0
         let e2eEncrypted: Bool = userInfo["e2eEncrypted"] as? Bool ?? false
 
@@ -594,13 +593,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         let activeAccount = NCManageDatabase.shared.getActiveAccount()
         let image = utility.loadUserImage(for: appDelegate.user, displayName: activeAccount?.displayName, userBaseUrl: appDelegate)
         let accountButton = AccountSwitcherButton(type: .custom)
+        let accounts = NCManageDatabase.shared.getAllAccountOrderAlias()
 
         accountButton.setImage(image, for: .normal)
         accountButton.setImage(image, for: .highlighted)
         accountButton.semanticContentAttribute = .forceLeftToRight
         accountButton.sizeToFit()
-
-        let accounts = NCManageDatabase.shared.getAllAccountOrderAlias()
 
         if !accounts.isEmpty, !NCBrandOptions.shared.disable_multiaccount {
             let accountActions: [UIAction] = accounts.map { account in
@@ -934,12 +932,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func longPressCollecationView(_ gestureRecognizer: UILongPressGestureRecognizer) {
-
         openMenuItems(with: nil, gestureRecognizer: gestureRecognizer)
     }
 
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
-
         return UIContextMenuConfiguration(identifier: nil, previewProvider: {
             return nil
         }, actionProvider: { _ in
@@ -948,7 +944,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func openMenuItems(with objectId: String?, gestureRecognizer: UILongPressGestureRecognizer) {
-
         if gestureRecognizer.state != .began { return }
 
         var listMenuItems: [UIMenuItem] = []
@@ -1172,6 +1167,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         var height: CGFloat = 0
+
         if isEditMode {
             return CGSize.zero
         } else if dataSource.getMetadataSourceForAllSections().isEmpty {
@@ -1212,8 +1208,8 @@ extension NCCollectionViewCommon: EasyTipViewDelegate {
               self.serverUrl == utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId),
               let view = self.navigationItem.leftBarButtonItem?.customView,
               !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest) else { return }
-
         var preferences = EasyTipView.Preferences()
+
         preferences.drawing.foregroundColor = .white
         preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
         preferences.drawing.textAlignment = .left
@@ -1250,6 +1246,7 @@ extension NCCollectionViewCommon: EasyTipViewDelegate {
 extension NCCollectionViewCommon {
     func getAvatarFromIconUrl(metadata: tableMetadata) -> String? {
         var ownerId: String?
+
         if metadata.iconUrl.contains("http") && metadata.iconUrl.contains("avatar") {
             let splitIconUrl = metadata.iconUrl.components(separatedBy: "/")
             var found: Bool = false
@@ -1275,6 +1272,7 @@ extension NCCollectionViewCommon {
 
     func cancelSession(metadata: tableMetadata) async {
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+
         utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
 
         // No session found
