@@ -24,7 +24,6 @@
 import UIKit
 
 class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
-
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
@@ -67,10 +66,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         get { return labelSubinfo }
         set { labelSubinfo = newValue }
     }
-    var fileSelectImage: UIImageView? {
-        get { return imageSelect }
-        set { imageSelect = newValue }
-    }
     var fileStatusImage: UIImageView? {
         get { return imageStatus }
         set { imageStatus = newValue }
@@ -106,6 +101,9 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         imageVisualEffect.layer.cornerRadius = 6
         imageVisualEffect.clipsToBounds = true
         imageVisualEffect.alpha = 0.5
+
+        imageSelect.isHidden = true
+        imageSelect.image = NCImageCache.images.checkedYes
 
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPress(gestureRecognizer:)))
         longPressedGesture.minimumPressDuration = 0.5
@@ -151,22 +149,16 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         buttonMore.isHidden = status
     }
 
-    func selectMode(_ status: Bool) {
-        if status {
-            imageSelect.isHidden = false
+    func selected(_ status: Bool, isEditMode: Bool) {
+        if isEditMode {
             buttonMore.isHidden = true
             accessibilityCustomActions = nil
         } else {
-            imageSelect.isHidden = true
-            imageVisualEffect.isHidden = true
             buttonMore.isHidden = false
             setA11yActions()
         }
-    }
-
-    func selected(_ status: Bool) {
         if status {
-            imageSelect.image = NCImageCache.images.checkedYes
+            imageSelect.isHidden = false
             imageVisualEffect.isHidden = false
         } else {
             imageSelect.isHidden = true
@@ -175,7 +167,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     }
 
     func writeInfoDateSize(date: NSDate, size: Int64) {
-
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .short
         dateFormatter.timeStyle = .none

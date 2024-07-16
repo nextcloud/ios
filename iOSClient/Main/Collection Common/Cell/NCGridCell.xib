@@ -145,6 +145,16 @@
             </connections>
             <point key="canvasLocation" x="233.59999999999999" y="242.42878560719643"/>
         </collectionViewCell>
+        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="star.fill" catalog="system" id="S13-dA-D78">
+            <rect key="frame" x="0.0" y="0.0" width="26" height="26"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <color key="tintColor" systemColor="tertiarySystemFillColor"/>
+            <constraints>
+                <constraint firstAttribute="width" constant="26" id="2DR-LM-0n5"/>
+                <constraint firstAttribute="height" constant="26" id="71F-iU-xS7"/>
+            </constraints>
+            <point key="canvasLocation" x="173" y="554"/>
+        </imageView>
     </objects>
     <resources>
         <image name="ellipsis" catalog="system" width="128" height="37"/>
@@ -157,6 +167,9 @@
         </systemColor>
         <systemColor name="systemGrayColor">
             <color red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="tertiarySystemFillColor">
+            <color red="0.46274509800000002" green="0.46274509800000002" blue="0.50196078430000002" alpha="0.12" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

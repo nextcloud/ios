@@ -30,8 +30,7 @@ protocol NCTrashCellProtocol {
     var imageItem: UIImageView! { get set }
     var indexPath: IndexPath { get set }
 
-    func selectMode(_ status: Bool)
-    func selected(_ status: Bool)
+    func selected(_ status: Bool, isEditMode: Bool)
 }
 
 extension NCTrashCellProtocol where Self: UICollectionViewCell {

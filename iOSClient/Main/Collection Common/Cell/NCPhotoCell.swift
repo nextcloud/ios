@@ -67,10 +67,6 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
         get { return nil }
         set { }
     }
-    var fileSelectImage: UIImageView? {
-        get { return imageSelect }
-        set { imageSelect = newValue }
-    }
     var fileStatusImage: UIImageView? {
         get { return imageStatus }
         set { imageStatus = newValue }
@@ -116,7 +112,7 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
         photoCellDelegate?.longPressGridItem(with: objectId, indexPath: indexPath, gestureRecognizer: gestureRecognizer)
     }
 
-    func selectMode(_ status: Bool) {
+    func selected(_ status: Bool, isEditMode: Bool) {
         if status {
             imageSelect.isHidden = false
             accessibilityCustomActions = nil

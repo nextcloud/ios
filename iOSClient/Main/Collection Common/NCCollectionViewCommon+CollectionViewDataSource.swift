@@ -171,7 +171,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             isMounted = metadata.permissions.contains(permissions.permissionMounted) && !metadataFolder!.permissions.contains(permissions.permissionMounted)
         }
 
-        cell.fileSelectImage?.image = nil
         cell.fileStatusImage?.image = nil
         cell.fileLocalImage?.image = nil
         cell.fileFavoriteImage?.image = nil
@@ -334,16 +333,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         // Edit mode
-        if isEditMode {
-            cell.selectMode(true)
-            if selectOcId.contains(metadata.ocId) {
-                cell.selected(true)
-                a11yValues.append(NSLocalizedString("_selected_", comment: ""))
-            } else {
-                cell.selected(false)
-            }
+        if selectOcId.contains(metadata.ocId) {
+            cell.selected(true, isEditMode: isEditMode)
+            a11yValues.append(NSLocalizedString("_selected_", comment: ""))
         } else {
-            cell.selectMode(false)
+            cell.selected(false, isEditMode: isEditMode)
         }
 
         // Accessibility

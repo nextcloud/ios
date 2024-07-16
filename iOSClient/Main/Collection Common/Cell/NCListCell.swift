@@ -24,7 +24,6 @@
 import UIKit
 
 class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
-
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
@@ -85,10 +84,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     var fileProgressView: UIProgressView? {
         get { return progressView }
         set { progressView = newValue }
-    }
-    var fileSelectImage: UIImageView? {
-        get { return imageSelect }
-        set { imageSelect = newValue }
     }
     var fileStatusImage: UIImageView? {
         get { return imageStatus }
@@ -225,8 +220,8 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         separator.isHidden = status
     }
 
-    func selectMode(_ status: Bool) {
-        if status {
+    func selected(_ status: Bool, isEditMode: Bool) {
+        if isEditMode {
             imageItemLeftConstraint.constant = 45
             imageSelect.isHidden = false
             imageShared.isHidden = true
@@ -244,29 +239,13 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             backgroundView = nil
             setA11yActions()
         }
-    }
-
-    func selected(_ status: Bool) {
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId), !metadata.isInTransfer else {
-            backgroundView = nil
-            separator.isHidden = false
-            return
-        }
         if status {
-            var blurEffect: UIVisualEffect?
             var blurEffectView: UIView?
-            imageSelect.image = NCImageCache.images.checkedYes
-            if traitCollection.userInterfaceStyle == .dark {
-                blurEffect = UIBlurEffect(style: .dark)
-                blurEffectView = UIVisualEffectView(effect: blurEffect)
-                blurEffectView?.backgroundColor = .black
-            } else {
-                blurEffect = UIBlurEffect(style: .extraLight)
-                blurEffectView = UIVisualEffectView(effect: blurEffect)
-                blurEffectView?.backgroundColor = .lightGray
-            }
+            blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .systemMaterial))
+            blurEffectView?.backgroundColor = .lightGray
             blurEffectView?.frame = self.bounds
             blurEffectView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+            imageSelect.image = NCImageCache.images.checkedYes
             backgroundView = blurEffectView
             separator.isHidden = true
         } else {
@@ -274,6 +253,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             backgroundView = nil
             separator.isHidden = false
         }
+
     }
 
     func writeInfoDateSize(date: NSDate, size: Int64) {
