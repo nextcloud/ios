@@ -58,7 +58,6 @@ class NCFiles: NCCollectionViewCommon {
                 self.selectOcId.removeAll()
 
                 self.layoutForView = NCManageDatabase.shared.getLayoutForView(account: self.appDelegate.account, key: self.layoutKey, serverUrl: self.serverUrl)
-                self.gridLayout.itemForLine = CGFloat(self.layoutForView?.itemForLine ?? 3)
                 if self.layoutForView?.layout == NCGlobal.shared.layoutList {
                     self.collectionView?.collectionViewLayout = self.listLayout
                 } else if self.layoutForView?.layout == NCGlobal.shared.layoutGrid {

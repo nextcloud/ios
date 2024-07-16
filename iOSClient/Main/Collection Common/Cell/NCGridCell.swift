@@ -200,7 +200,7 @@ protocol NCGridCellDelegate: AnyObject {
 class NCGridLayout: UICollectionViewFlowLayout {
     var heightLabelPlusButton: CGFloat = 60
     var marginLeftRight: CGFloat = 10
-    var itemForLine: CGFloat = 3
+    var column: CGFloat = 3
     var itemWidthDefault: CGFloat = 140
 
     override init() {
@@ -222,20 +222,15 @@ class NCGridLayout: UICollectionViewFlowLayout {
     override var itemSize: CGSize {
         get {
             if let collectionView = collectionView {
-
                 if collectionView.frame.width < 400 {
-                    itemForLine = 3
+                    column = 3
                 } else {
-                    itemForLine = collectionView.frame.width / itemWidthDefault
+                    column = collectionView.frame.width / itemWidthDefault
                 }
-
-                let itemWidth: CGFloat = (collectionView.frame.width - marginLeftRight * 2 - marginLeftRight * (itemForLine - 1)) / itemForLine
+                let itemWidth: CGFloat = (collectionView.frame.width - marginLeftRight * 2 - marginLeftRight * (column - 1)) / column
                 let itemHeight: CGFloat = itemWidth + heightLabelPlusButton
-
                 return CGSize(width: itemWidth, height: itemHeight)
             }
-
-            // Default fallback
             return CGSize(width: itemWidthDefault, height: itemWidthDefault)
         }
         set {

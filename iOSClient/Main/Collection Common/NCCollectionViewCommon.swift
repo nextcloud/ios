@@ -166,7 +166,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         setNavigationRightItems()
 
         layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl)
-        gridLayout.itemForLine = CGFloat(layoutForView?.itemForLine ?? 3)
         if layoutForView?.layout == NCGlobal.shared.layoutList {
             collectionView?.collectionViewLayout = listLayout
         } else if layoutForView?.layout == NCGlobal.shared.layoutGrid {
@@ -661,15 +660,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard layoutKey != NCGlobal.shared.layoutViewTransfers else { return }
         let isTabBarHidden = self.tabBarController?.tabBar.isHidden ?? true
         let isTabBarSelectHidden = tabBarSelect.isHidden()
-        let columnCount = NCKeychain().photoColumnCount
+        let columnPhoto = self.layoutForView?.columnPhoto ?? 3
 
         func createMenuActions() -> [UIMenuElement] {
             guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl) else { return [] }
 
-            if CGFloat(columnCount) >= maxImageGrid - 1 {
+            if CGFloat(columnPhoto) >= maxImageGrid - 1 {
                 self.attributesZoomIn = []
                 self.attributesZoomOut = .disabled
-            } else if columnCount <= 1 {
+            } else if columnPhoto <= 1 {
                 self.attributesZoomIn = .disabled
                 self.attributesZoomOut = []
             } else {
@@ -705,14 +704,18 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             let menuZoom = UIMenu(title: "", options: .displayInline, children: [
                 UIAction(title: NSLocalizedString("_zoom_out_", comment: ""), image: utility.loadImage(named: "minus.magnifyingglass"), attributes: self.attributesZoomOut) { _ in
                     UIView.animate(withDuration: 0.0, animations: {
-                        NCKeychain().photoColumnCount = columnCount + 1
+                        let column = columnPhoto + 1
+                        self.layoutForView?.columnPhoto = column
+                        NCManageDatabase.shared.setLayoutForView(account: self.appDelegate.account, key: self.layoutKey, serverUrl: self.serverUrl, layout: self.layoutForView?.layout, columnPhoto: column)
                         self.collectionView.reloadData()
                         self.setNavigationRightItems()
                     })
                 },
                 UIAction(title: NSLocalizedString("_zoom_in_", comment: ""), image: utility.loadImage(named: "plus.magnifyingglass"), attributes: self.attributesZoomIn) { _ in
                     UIView.animate(withDuration: 0.0, animations: {
-                        NCKeychain().photoColumnCount = columnCount - 1
+                        let column = columnPhoto - 1
+                        self.layoutForView?.columnPhoto = column
+                        NCManageDatabase.shared.setLayoutForView(account: self.appDelegate.account, key: self.layoutKey, serverUrl: self.serverUrl, layout: self.layoutForView?.layout, columnPhoto: column)
                         self.collectionView.reloadData()
                         self.setNavigationRightItems()
                     })

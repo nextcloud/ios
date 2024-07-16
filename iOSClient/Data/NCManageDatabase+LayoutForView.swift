@@ -35,12 +35,23 @@ class NCDBLayoutForView: Object {
     @Persisted var groupBy: String = "none"
     @Persisted var directoryOnTop: Bool = true
     @Persisted var titleButtonHeader: String = "_sorted_by_name_a_z_"
-    @Persisted var itemForLine: Int = 3
+    @Persisted var columnGrid: Int = 3
+    @Persisted var columnPhoto: Int = 3
 }
 
 extension NCManageDatabase {
     @discardableResult
-    func setLayoutForView(account: String, key: String, serverUrl: String, layout: String? = nil, sort: String? = nil, ascending: Bool? = nil, groupBy: String? = nil, directoryOnTop: Bool? = nil, titleButtonHeader: String? = nil, itemForLine: Int? = nil) -> NCDBLayoutForView? {
+    func setLayoutForView(account: String,
+                          key: String,
+                          serverUrl: String,
+                          layout: String? = nil,
+                          sort: String? = nil,
+                          ascending: Bool? = nil,
+                          groupBy: String? = nil,
+                          directoryOnTop: Bool? = nil,
+                          titleButtonHeader: String? = nil,
+                          columnGrid: Int? = nil,
+                          columnPhoto: Int? = nil) -> NCDBLayoutForView? {
         var keyStore = key
         if !serverUrl.isEmpty { keyStore = serverUrl}
         let index = account + " " + keyStore
@@ -56,29 +67,32 @@ extension NCManageDatabase {
                 }
                 addObject.account = account
                 addObject.keyStore = keyStore
-                if let layout = layout {
+                if let layout {
                     addObject.layout = layout
                 }
-                if let sort = sort {
+                if let sort {
                     addObject.sort = sort
                 }
-                if let sort = sort {
+                if let sort {
                     addObject.sort = sort
                 }
-                if let ascending = ascending {
+                if let ascending {
                     addObject.ascending = ascending
                 }
-                if let groupBy = groupBy {
+                if let groupBy {
                     addObject.groupBy = groupBy
                 }
-                if let directoryOnTop = directoryOnTop {
+                if let directoryOnTop {
                     addObject.directoryOnTop = directoryOnTop
                 }
-                if let titleButtonHeader = titleButtonHeader {
+                if let titleButtonHeader {
                     addObject.titleButtonHeader = titleButtonHeader
                 }
-                if let itemForLine = itemForLine {
-                    addObject.itemForLine = itemForLine
+                if let columnGrid {
+                    addObject.columnGrid = columnGrid
+                }
+                if let columnPhoto {
+                    addObject.columnPhoto = columnPhoto
                 }
                 realm.add(addObject, update: .all)
             }

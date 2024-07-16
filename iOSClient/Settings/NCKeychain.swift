@@ -296,18 +296,6 @@ import KeychainAccess
         }
     }
 
-    var photoColumnCount: Int {
-        get {
-            if let value = try? keychain.get("photoColumnCount"), let result = Int(value) {
-                return result
-            }
-            return 3
-        }
-        set {
-            keychain["photoColumnCount"] = String(newValue)
-        }
-    }
-
     var mediaTypeLayout: String {
         get {
             if let value = try? keychain.get("mediaTypeLayout") {
