@@ -23,7 +23,7 @@
 
 import UIKit
 import SwiftUI
-import Realm
+import RealmSwift
 import NextcloudKit
 import EasyTipView
 import JGProgressHUD

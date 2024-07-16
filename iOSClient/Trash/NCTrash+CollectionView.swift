@@ -21,8 +21,8 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Realm
 import UIKit
+import RealmSwift
 
 // MARK: UICollectionViewDelegate
 extension NCTrash: UICollectionViewDelegate {

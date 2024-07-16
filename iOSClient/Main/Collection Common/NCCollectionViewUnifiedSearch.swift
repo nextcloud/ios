@@ -24,7 +24,7 @@
 import Foundation
 import Queuer
 import NextcloudKit
-import Realm
+import RealmSwift
 
 class NCCollectionViewUnifiedSearch: ConcurrentOperation {
 

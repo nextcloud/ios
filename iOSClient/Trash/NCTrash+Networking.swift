@@ -19,10 +19,10 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Realm
 import UIKit
 import NextcloudKit
 import Queuer
+import RealmSwift
 
 extension NCTrash {
     @objc func loadListingTrash() {
