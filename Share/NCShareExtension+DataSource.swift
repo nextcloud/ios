@@ -80,7 +80,6 @@ extension NCShareExtension: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath), let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell else {
             return UICollectionViewCell()
         }
@@ -92,7 +91,6 @@ extension NCShareExtension: UICollectionViewDataSource {
         cell.fileUser = metadata.ownerId
         cell.labelTitle.text = metadata.fileNameView
         cell.labelTitle.textColor = NCBrandColor.shared.textColor
-
         cell.imageSelect.image = nil
         cell.imageStatus.image = nil
         cell.imageLocal.image = nil
@@ -101,7 +99,6 @@ extension NCShareExtension: UICollectionViewDataSource {
         cell.imageMore.image = nil
         cell.imageItem.image = nil
         cell.imageItem.backgroundColor = nil
-
         cell.progressView.progress = 0.0
 
         if metadata.directory {
@@ -117,7 +114,6 @@ extension NCShareExtension: UICollectionViewDataSource {
         cell.backgroundView = nil
         cell.hideButtonMore(true)
         cell.hideButtonShare(true)
-        cell.selectMode(false)
 
         // Live Photo
         if metadata.isLivePhoto {

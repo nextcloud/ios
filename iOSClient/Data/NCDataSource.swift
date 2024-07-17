@@ -28,8 +28,10 @@ class NCDataSource: NSObject {
     var metadatas: [tableMetadata] = []
     var metadatasForSection: [NCMetadataForSection] = []
     var directory: tableDirectory?
-    var groupByField: String = ""
+    var groupBy: String?
+    var layout: String?
 
+    private let utilityFileSystem = NCUtilityFileSystem()
     private var sectionsValue: [String] = []
     private var providers: [NKSearchProvider]?
     private var searchResults: [NKSearchResult]?
@@ -43,18 +45,25 @@ class NCDataSource: NSObject {
         super.init()
     }
 
-    init(metadatas: [tableMetadata], account: String, directory: tableDirectory? = nil, sort: String? = "none", ascending: Bool? = false, directoryOnTop: Bool? = true, favoriteOnTop: Bool? = true, groupByField: String = "name", providers: [NKSearchProvider]? = nil, searchResults: [NKSearchResult]? = nil) {
+    init(metadatas: [tableMetadata],
+         account: String,
+         directory: tableDirectory? = nil,
+         layoutForView: NCDBLayoutForView?,
+         favoriteOnTop: Bool = true,
+         providers: [NKSearchProvider]? = nil,
+         searchResults: [NKSearchResult]? = nil) {
         super.init()
 
         self.metadatas = metadatas.filter({
             !(NCGlobal.shared.includeHiddenFiles.contains($0.fileNameView) || $0.isTransferInForeground)
         })
         self.directory = directory
-        self.sort = sort ?? "none"
-        self.ascending = ascending ?? false
-        self.directoryOnTop = directoryOnTop ?? true
-        self.favoriteOnTop = favoriteOnTop ?? true
-        self.groupByField = groupByField
+        self.sort = layoutForView?.sort ?? "none"
+        self.ascending = layoutForView?.ascending ?? false
+        self.directoryOnTop = layoutForView?.directoryOnTop ?? true
+        self.favoriteOnTop = favoriteOnTop
+        self.groupBy = layoutForView?.groupBy ?? "none"
+        self.layout = layoutForView?.layout
         // unified search
         self.providers = providers
         self.searchResults = searchResults
@@ -77,9 +86,9 @@ class NCDataSource: NSObject {
         self.directory = nil
     }
 
-    func changeGroupByField(_ groupByField: String) {
-        self.groupByField = groupByField
-        print("DATASOURCE: set group by filed " + groupByField)
+    func changeGroupByField(_ groupBy: String) {
+        self.groupBy = groupBy
+        print("DATASOURCE: set group by filed " + groupBy)
         self.metadatasForSection.removeAll()
         self.sectionsValue.removeAll()
         print("DATASOURCE: remove  all sections")
@@ -108,8 +117,14 @@ class NCDataSource: NSObject {
             if !self.sectionsValue.contains(section) {
                 self.sectionsValue.append(section)
             }
+            // image Cache
+            if (layout == NCGlobal.shared.layoutPhotoRatio || layout == NCGlobal.shared.layoutPhotoSquare),
+               (metadata.isVideo || metadata.isImage),
+               NCImageCache.shared.getPreviewImageCache(ocId: metadata.ocId, etag: metadata.etag) == nil,
+               let image = UIImage(contentsOfFile: self.utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
+                NCImageCache.shared.addPreviewImageCache(metadata: metadata, image: image)
+            }
         }
-
         // Unified search
         if let providers = self.providers, !providers.isEmpty {
             let sectionsDictionary = ThreadSafeDictionary<String, Int>()
@@ -248,13 +263,13 @@ class NCDataSource: NSObject {
     }
 
     internal func getSectionValue(metadata: tableMetadata) -> String {
-        switch self.groupByField {
-        case "name":
+        switch self.groupBy {
+        case "name", "none":
             return NSLocalizedString(metadata.name, comment: "")
         case "classFile":
             return NSLocalizedString(metadata.classFile, comment: "").lowercased().firstUppercased
         default:
-            return NSLocalizedString(metadata.classFile, comment: "")
+            return NSLocalizedString(metadata.name, comment: "")
         }
     }
 
@@ -339,7 +354,6 @@ class NCMetadataForSection: NSObject {
         //
         if sort != "none" && !sort.isEmpty {
             metadatasSorted = metadatas.sorted {
-
                 switch sort {
                 case "date":
                     if ascending {

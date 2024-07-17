@@ -26,24 +26,9 @@ import UniformTypeIdentifiers
 
 extension NCShareExtension {
     @objc func reloadDatasource(withLoadFolder: Bool) {
-        var groupByField = "name"
-
         layoutForView = NCManageDatabase.shared.setLayoutForView(account: activeAccount.account, key: keyLayout, serverUrl: serverUrl)
-
-        // set GroupField for Grid
-        if layoutForView?.layout == NCGlobal.shared.layoutGrid {
-            groupByField = "classFile"
-        }
-
         let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", activeAccount.account, serverUrl))
-        self.dataSource = NCDataSource(
-            metadatas: metadatas,
-            account: activeAccount.account,
-            sort: layoutForView?.sort,
-            ascending: layoutForView?.ascending,
-            directoryOnTop: layoutForView?.directoryOnTop,
-            favoriteOnTop: true,
-            groupByField: groupByField)
+        self.dataSource = NCDataSource(metadatas: metadatas, account: activeAccount.account, layoutForView: layoutForView)
 
         if withLoadFolder {
             loadFolder()

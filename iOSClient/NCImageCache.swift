@@ -199,7 +199,6 @@ class NCImageCache: NSObject {
     ///
     /// SIZE CACHE
     ///
-
     func getPreviewSizeCache(ocId: String, etag: String) -> CGSize? {
         if let size = cacheSizePreview.value(forKey: ocId + etag) {
             return size

@@ -12,7 +12,11 @@ import NextcloudKit
 
 extension NCCollectionViewCommon: NCMediaLayoutDelegate {
     func getColumnCount() -> Int {
-        NCKeychain().photoColumnCount
+        if let column = self.layoutForView?.columnPhoto, column > 0 {
+            return column
+        }
+        self.layoutForView?.columnPhoto = 3
+        return 3
     }
 
     func getLayout() -> String? {

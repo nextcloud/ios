@@ -29,8 +29,7 @@ import NextcloudKit
     @objc func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool)
 }
 
-class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresentationControllerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate {
-
+class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresentationControllerDelegate, NCListCellDelegate, NCSectionHeaderMenuDelegate {
     @IBOutlet private var collectionView: UICollectionView!
     @IBOutlet private var buttonCancel: UIBarButtonItem!
     @IBOutlet private var bottomContraint: NSLayoutConstraint?
@@ -217,6 +216,15 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         overwrite = sender.isOn
     }
 
+    func tapShareListItem(with objectId: String, indexPath: IndexPath, sender: Any) {
+    }
+
+    func tapMoreListItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
+    }
+
+    func longPressListItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
+    }
+
     // MARK: - Push metadata
 
     func pushMetadata(_ metadata: tableMetadata) {
@@ -369,7 +377,7 @@ extension NCSelect: UICollectionViewDataSource {
         cell.backgroundView = nil
         cell.hideButtonMore(true)
         cell.hideButtonShare(true)
-        cell.selectMode(false)
+        cell.selected(false, isEditMode: false)
 
         // Live Photo
         if metadata.isLivePhoto {
@@ -515,14 +523,8 @@ extension NCSelect {
         }
 
         let metadatas = NCManageDatabase.shared.getMetadatas(predicate: predicate!)
-        self.dataSource = NCDataSource(metadatas: metadatas,
-                                       account: activeAccount.account,
-                                       sort: "fileName",
-                                       ascending: true,
-                                       directoryOnTop: true,
-                                       favoriteOnTop: true,
-                                       groupByField: "none")
-
+        self.dataSource = NCDataSource(metadatas: metadatas, account: activeAccount.account, layoutForView: nil)
+                                     
         if withLoadFolder {
             loadFolder()
         }

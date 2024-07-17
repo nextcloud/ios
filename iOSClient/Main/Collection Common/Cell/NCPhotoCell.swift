@@ -67,10 +67,6 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
         get { return nil }
         set { }
     }
-    var fileSelectImage: UIImageView? {
-        get { return imageSelect }
-        set { imageSelect = newValue }
-    }
     var fileStatusImage: UIImageView? {
         get { return imageStatus }
         set { imageStatus = newValue }
@@ -86,30 +82,30 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
 
     override func awakeFromNib() {
         super.awakeFromNib()
+        initCell()
+    }
 
-        // use entire cell as accessibility element
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        initCell()
+    }
+
+    func initCell() {
         accessibilityHint = nil
         accessibilityLabel = nil
         accessibilityValue = nil
-        isAccessibilityElement = true
 
-        imageVisualEffect.layer.cornerRadius = 6
         imageVisualEffect.clipsToBounds = true
         imageVisualEffect.alpha = 0.5
+
+        imageSelect.isHidden = true
+        imageSelect.image = NCImageCache.images.checkedYes
 
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPress(gestureRecognizer:)))
         longPressedGesture.minimumPressDuration = 0.5
         longPressedGesture.delegate = self
         longPressedGesture.delaysTouchesBegan = true
         self.addGestureRecognizer(longPressedGesture)
-    }
-
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        imageItem.backgroundColor = nil
-        accessibilityHint = nil
-        accessibilityLabel = nil
-        accessibilityValue = nil
     }
 
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
@@ -120,31 +116,9 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
         photoCellDelegate?.longPressGridItem(with: objectId, indexPath: indexPath, gestureRecognizer: gestureRecognizer)
     }
 
-    func selectMode(_ status: Bool) {
+    func selected(_ status: Bool, isEditMode: Bool) {
         if status {
             imageSelect.isHidden = false
-            accessibilityCustomActions = nil
-        } else {
-            imageSelect.isHidden = true
-            imageVisualEffect.isHidden = true
-        }
-    }
-
-    func selected(_ status: Bool) {
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId), !metadata.isInTransfer else {
-            imageSelect.isHidden = true
-            imageVisualEffect.isHidden = true
-            return
-        }
-        if status {
-            if traitCollection.userInterfaceStyle == .dark {
-                imageVisualEffect.effect = UIBlurEffect(style: .dark)
-                imageVisualEffect.backgroundColor = .black
-            } else {
-                imageVisualEffect.effect = UIBlurEffect(style: .extraLight)
-                imageVisualEffect.backgroundColor = .lightGray
-            }
-            imageSelect.image = NCImageCache.images.checkedYes
             imageVisualEffect.isHidden = false
         } else {
             imageSelect.isHidden = true
@@ -167,14 +141,5 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
 }
 
 protocol NCPhotoCellDelegate: AnyObject {
-    func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any)
-    func longPressMoreGridItem(with objectId: String, namedButtonMore: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer)
     func longPressGridItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer)
-}
-
-// optional func
-extension NCPhotoCellDelegate {
-    func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) {}
-    func longPressMoreGridItem(with objectId: String, namedButtonMore: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {}
-    func longPressGridItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {}
 }

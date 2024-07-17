@@ -85,19 +85,16 @@ extension NCMedia {
     }
 
     func createMenu() {
-        var columnCount = NCKeychain().mediaColumnCount
-        let layout = NCKeychain().mediaTypeLayout
+        var layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")
+        var columnPhoto = layoutForView?.columnPhoto ?? 3
+        let layout = layoutForView?.layout ?? NCGlobal.shared.mediaLayoutRatio
         let layoutTitle = (layout == NCGlobal.shared.mediaLayoutRatio) ? NSLocalizedString("_media_square_", comment: "") : NSLocalizedString("_media_ratio_", comment: "")
         let layoutImage = (layout == NCGlobal.shared.mediaLayoutRatio) ? utility.loadImage(named: "square.grid.3x3") : utility.loadImage(named: "rectangle.grid.3x2")
 
-        if UIDevice.current.userInterfaceIdiom == .phone, UIDevice.current.orientation.isLandscape {
-            columnCount += 2
-        }
-
-        if CGFloat(columnCount) >= maxImageGrid - 1 {
+        if CGFloat(columnPhoto) >= maxImageGrid - 1 {
             self.attributesZoomIn = []
             self.attributesZoomOut = .disabled
-        } else if columnCount <= 1 {
+        } else if columnPhoto <= 1 {
             self.attributesZoomIn = .disabled
             self.attributesZoomOut = []
         } else {
@@ -124,9 +121,9 @@ extension NCMedia {
         ])
         let viewLayoutMenu = UIAction(title: layoutTitle, image: layoutImage) { _ in
             if layout == NCGlobal.shared.mediaLayoutRatio {
-                NCKeychain().mediaTypeLayout = NCGlobal.shared.mediaLayoutSquare
+                NCManageDatabase.shared.setLayoutForView(account: self.appDelegate.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", layout: NCGlobal.shared.mediaLayoutSquare)
             } else {
-                NCKeychain().mediaTypeLayout = NCGlobal.shared.mediaLayoutRatio
+                NCManageDatabase.shared.setLayoutForView(account: self.appDelegate.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", layout: NCGlobal.shared.mediaLayoutRatio)
             }
             self.createMenu()
             self.collectionViewReloadData()
@@ -136,14 +133,16 @@ extension NCMedia {
             UIMenu(title: NSLocalizedString("_zoom_", comment: ""), children: [
                 UIAction(title: NSLocalizedString("_zoom_out_", comment: ""), image: utility.loadImage(named: "minus.magnifyingglass"), attributes: self.attributesZoomOut) { _ in
                     UIView.animate(withDuration: 0.0, animations: {
-                        NCKeychain().mediaColumnCount = columnCount + 1
+                        let column = columnPhoto + 1
+                        NCManageDatabase.shared.setLayoutForView(account: self.appDelegate.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: column)
                         self.createMenu()
                         self.collectionViewReloadData()
                     })
                 },
                 UIAction(title: NSLocalizedString("_zoom_in_", comment: ""), image: utility.loadImage(named: "plus.magnifyingglass"), attributes: self.attributesZoomIn) { _ in
                     UIView.animate(withDuration: 0.0, animations: {
-                        NCKeychain().mediaColumnCount = columnCount - 1
+                        let column = columnPhoto - 1
+                        NCManageDatabase.shared.setLayoutForView(account: self.appDelegate.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: column)
                         self.createMenu()
                         self.collectionViewReloadData()
                     })

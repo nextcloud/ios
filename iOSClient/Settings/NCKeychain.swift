@@ -284,42 +284,6 @@ import KeychainAccess
         }
     }
 
-    var mediaColumnCount: Int {
-        get {
-            if let value = try? keychain.get("mediaColumnCount"), let result = Int(value) {
-                return result
-            }
-            return 3
-        }
-        set {
-            keychain["mediaColumnCount"] = String(newValue)
-        }
-    }
-
-    var photoColumnCount: Int {
-        get {
-            if let value = try? keychain.get("photoColumnCount"), let result = Int(value) {
-                return result
-            }
-            return 3
-        }
-        set {
-            keychain["photoColumnCount"] = String(newValue)
-        }
-    }
-
-    var mediaTypeLayout: String {
-        get {
-            if let value = try? keychain.get("mediaTypeLayout") {
-                return value
-            }
-            return NCGlobal.shared.mediaLayoutRatio
-        }
-        set {
-            keychain["mediaTypeLayout"] = String(newValue)
-        }
-    }
-
     var textRecognitionStatus: Bool {
         get {
             migrate(key: "textRecognitionStatus")

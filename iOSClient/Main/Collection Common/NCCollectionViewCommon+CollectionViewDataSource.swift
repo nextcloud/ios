@@ -153,7 +153,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             gridCell.gridCellDelegate = self
             cell = gridCell
         } else {
-            // LAYOUT LIST
+        // LAYOUT LIST
             guard let listCell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell else { return NCListCell() }
             listCell.listCellDelegate = self
             cell = listCell
@@ -171,7 +171,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             isMounted = metadata.permissions.contains(permissions.permissionMounted) && !metadataFolder!.permissions.contains(permissions.permissionMounted)
         }
 
-        cell.fileSelectImage?.image = nil
         cell.fileStatusImage?.image = nil
         cell.fileLocalImage?.image = nil
         cell.fileFavoriteImage?.image = nil
@@ -244,7 +243,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.filePreviewImageView?.image = cell.filePreviewImageView?.image?.colorizeFolder(metadata: metadata, tableDirectory: tableDirectory)
         } else {
             let tableLocalFile = NCManageDatabase.shared.getResultsTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))?.first
-
             // image local
             if let tableLocalFile, tableLocalFile.offline {
                 a11yValues.append(NSLocalizedString("_offline_", comment: ""))
@@ -334,16 +332,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         // Edit mode
-        if isEditMode {
-            cell.selectMode(true)
-            if selectOcId.contains(metadata.ocId) {
-                cell.selected(true)
-                a11yValues.append(NSLocalizedString("_selected_", comment: ""))
-            } else {
-                cell.selected(false)
-            }
+        if selectOcId.contains(metadata.ocId) {
+            cell.selected(true, isEditMode: isEditMode)
+            a11yValues.append(NSLocalizedString("_selected_", comment: ""))
         } else {
-            cell.selectMode(false)
+            cell.selected(false, isEditMode: isEditMode)
         }
 
         // Accessibility

@@ -33,7 +33,6 @@ protocol NCCellProtocol {
     var fileInfoLabel: UILabel? { get set }
     var fileSubinfoLabel: UILabel? { get set }
     var fileProgressView: UIProgressView? { get set }
-    var fileSelectImage: UIImageView? { get set }
     var fileStatusImage: UIImageView? { get set }
     var fileLocalImage: UIImageView? { get set }
     var fileFavoriteImage: UIImageView? { get set }
@@ -48,8 +47,7 @@ protocol NCCellProtocol {
     func setButtonMore(named: String, image: UIImage)
     func hideButtonShare(_ status: Bool)
     func hideButtonMore(_ status: Bool)
-    func selectMode(_ status: Bool)
-    func selected(_ status: Bool)
+    func selected(_ status: Bool, isEditMode: Bool)
     func setAccessibility(label: String, value: String)
     func setTags(tags: [String])
     func setIconOutlines()
@@ -88,10 +86,6 @@ extension NCCellProtocol {
         get { return nil }
         set {}
     }
-    var fileSelectImage: UIImageView? {
-        get { return nil }
-        set {}
-    }
     var fileStatusImage: UIImageView? {
         get { return nil }
         set {}
@@ -123,8 +117,7 @@ extension NCCellProtocol {
     func setButtonMore(named: String, image: UIImage) {}
     func hideButtonShare(_ status: Bool) {}
     func hideButtonMore(_ status: Bool) {}
-    func selectMode(_ status: Bool) {}
-    func selected(_ status: Bool) {}
+    func selected(_ status: Bool, isEditMode: Bool) {}
     func setAccessibility(label: String, value: String) {}
     func setTags(tags: [String]) {}
     func setIconOutlines() {}

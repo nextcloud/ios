@@ -23,9 +23,9 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Realm
 import UIKit
 import NextcloudKit
+import RealmSwift
 
 class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegate {
 
@@ -84,7 +84,6 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         navigationController?.setNavigationBarAppearance()
         navigationItem.title = titleCurrentFolder
         layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: NCGlobal.shared.layoutViewTrash, serverUrl: "")
-        gridLayout.itemForLine = CGFloat(layoutForView?.itemForLine ?? 3)
 
         if layoutForView?.layout == NCGlobal.shared.layoutList {
             collectionView.collectionViewLayout = listLayout
