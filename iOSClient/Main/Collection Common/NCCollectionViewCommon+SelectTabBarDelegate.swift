@@ -124,12 +124,6 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
         setEditMode(false)
     }
 
-    func saveLayout(_ layoutForView: NCDBLayoutForView) {
-        NCManageDatabase.shared.setLayoutForView(layoutForView: layoutForView)
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
-        setNavigationRightItems()
-    }
-
     func getSelectedMetadatas() -> [tableMetadata] {
         var selectedMetadatas: [tableMetadata] = []
         for ocId in selectOcId {
