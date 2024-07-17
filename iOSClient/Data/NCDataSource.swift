@@ -45,7 +45,13 @@ class NCDataSource: NSObject {
         super.init()
     }
 
-    init(metadatas: [tableMetadata], account: String, directory: tableDirectory? = nil, layoutForView: NCDBLayoutForView?, providers: [NKSearchProvider]? = nil, searchResults: [NKSearchResult]? = nil) {
+    init(metadatas: [tableMetadata],
+         account: String,
+         directory: tableDirectory? = nil,
+         layoutForView: NCDBLayoutForView?,
+         favoriteOnTop: Bool = true,
+         providers: [NKSearchProvider]? = nil,
+         searchResults: [NKSearchResult]? = nil) {
         super.init()
 
         self.metadatas = metadatas.filter({
@@ -55,7 +61,7 @@ class NCDataSource: NSObject {
         self.sort = layoutForView?.sort ?? "none"
         self.ascending = layoutForView?.ascending ?? false
         self.directoryOnTop = layoutForView?.directoryOnTop ?? true
-        self.favoriteOnTop = true
+        self.favoriteOnTop = favoriteOnTop
         self.groupBy = layoutForView?.groupBy ?? "none"
         self.layout = layoutForView?.layout
         // unified search
