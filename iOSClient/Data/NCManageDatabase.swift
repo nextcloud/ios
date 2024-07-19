@@ -40,7 +40,7 @@ class NCManageDatabase: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
 
     override init() {
-        let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroups)
+        let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         let databaseFileUrlPath = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
 
         if let databaseFilePath = databaseFileUrlPath?.path {

@@ -168,7 +168,7 @@ extension NCLoginProvider: WKNavigationDelegate {
         let account: String = "\(username) \(urlBase)"
         let user = username
 
-        NextcloudKit.shared.setup(account: account, user: user, userId: user, password: password, urlBase: urlBase)
+        NextcloudKit.shared.setup(account: account, user: user, userId: user, password: password, urlBase: urlBase, groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         NextcloudKit.shared.getUserProfile { _, userProfile, _, error in
 
             if error == .success, let userProfile {

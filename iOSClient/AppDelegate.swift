@@ -111,7 +111,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             userId = activeAccount.userId
             password = NCKeychain().getPassword(account: account)
 
-            NextcloudKit.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: urlBase)
+            NextcloudKit.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: urlBase, groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
             NCManageDatabase.shared.setCapabilities(account: account)
 
             NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
@@ -287,7 +287,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        if let pref = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroups),
+        if let pref = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup),
            let data = pref.object(forKey: "NOTIFICATION_DATA") as? [String: AnyObject] {
             nextcloudPushNotificationAction(data: data)
             pref.set(nil, forKey: "NOTIFICATION_DATA")
@@ -474,7 +474,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let account: String = "\(username) \(urlBase)"
         let user = username
 
-        NextcloudKit.shared.setup(account: account, user: user, userId: user, password: password, urlBase: urlBase)
+        NextcloudKit.shared.setup(account: account, user: user, userId: user, password: password, urlBase: urlBase, groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         NextcloudKit.shared.getUserProfile { _, userProfile, _, error in
 
             if error == .success, let userProfile {
@@ -520,7 +520,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         self.userId = tableAccount.userId
         self.password = NCKeychain().getPassword(account: tableAccount.account)
 
-        NextcloudKit.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: urlBase)
+        NextcloudKit.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: urlBase, groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         NCManageDatabase.shared.setCapabilities(account: account)
 
         if let userProfile {
