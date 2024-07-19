@@ -369,10 +369,10 @@ extension NCManageDatabase {
             global.capabilityGroupfoldersEnabled = data.capabilities.groupfolders?.hasGroupFolders ?? false
             global.capabilitySecurityGuardDiagnostics = data.capabilities.securityguard?.diagnostics ?? false
 
-            global.capabilityForbiddenFileNames = data.capabilities.files?.forbiddenFileNames
-            global.capabilityForbiddenFileNameBasenames = data.capabilities.files?.forbiddenFileNameBasenames
-            global.capabilityForbiddenFileNameCharacters = data.capabilities.files?.forbiddenFileNameCharacters
-            global.capabilityForbiddenFileNameExtensions = data.capabilities.files?.forbiddenFileNameExtensions
+            global.capabilityForbiddenFileNames = data.capabilities.files?.forbiddenFileNames ?? []
+            global.capabilityForbiddenFileNameBasenames = data.capabilities.files?.forbiddenFileNameBasenames ?? []
+            global.capabilityForbiddenFileNameCharacters = data.capabilities.files?.forbiddenFileNameCharacters ?? []
+            global.capabilityForbiddenFileNameExtensions = data.capabilities.files?.forbiddenFileNameExtensions ?? []
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
             return

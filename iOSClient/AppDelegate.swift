@@ -92,7 +92,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             utilityFileSystem.removeFile(atPath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! + "/" + NextcloudKit.shared.nkCommonInstance.filenameLog)
 
         } else {
-
             levelLog = NCKeychain().logLevel
             NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
             NextcloudKit.shared.nkCommonInstance.copyLogToDocumentDirectory = true
@@ -151,6 +150,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         BGTaskScheduler.shared.register(forTaskWithIdentifier: NCGlobal.shared.processingTask, using: nil) { task in
             self.handleProcessingTask(task)
         }
+
+        FileNameValidator.shared.setup(
+            forbiddenFileNames: NCGlobal.shared.capabilityForbiddenFileNames,
+            forbiddenFileNameBasenames: NCGlobal.shared.capabilityForbiddenFileNameBasenames,
+            forbiddenFileNameCharacters: NCGlobal.shared.capabilityForbiddenFileNameCharacters,
+            forbiddenFileNameExtensions: NCGlobal.shared.capabilityForbiddenFileNameExtensions
+        )
+//        FileNameValidator.fileAlreadyExistsError = NCGlobal.filealr
 
         return true
     }

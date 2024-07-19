@@ -58,6 +58,14 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+//        let blur = UIBlurEffect(style: .systemThinMaterial)
+//        let blurredEffectView = UIVisualEffectView(effect: blur)
+//        blurredEffectView.frame = view.bounds
+//        blurredEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+//        blurredEffectView.isUserInteractionEnabled = false
+//        view.insertSubview(blurredEffectView, at: 1)
+
+        view.insertBlur(style: .systemMaterial)
 
         if let metadata = self.metadata {
 

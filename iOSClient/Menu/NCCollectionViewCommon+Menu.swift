@@ -281,6 +281,11 @@ extension NCCollectionViewCommon {
                     icon: utility.loadImage(named: "text.cursor", colors: [NCBrandColor.shared.iconImageColor]),
                     order: 120,
                     action: { _ in
+//                        let alert = UIAlertController.renameFile { cancelled in
+//
+//                        }
+//
+//                        self.present(alert, animated: true)
 
                         if let vcRename = UIStoryboard(name: "NCRenameFile", bundle: nil).instantiateInitialViewController() as? NCRenameFile {
 
@@ -289,7 +294,8 @@ extension NCCollectionViewCommon {
                             vcRename.indexPath = indexPath
 
                             let popup = NCPopupViewController(contentController: vcRename, popupWidth: vcRename.width, popupHeight: vcRename.height)
-
+                            popup.shadowEnabled = false
+                            
                             self.present(popup, animated: true)
                         }
                     }

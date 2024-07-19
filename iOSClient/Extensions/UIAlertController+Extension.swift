@@ -149,4 +149,21 @@ extension UIAlertController {
         })
         return alertController
     }
+
+//    static func renameFile(completion: @escaping (_ cancelled: Bool) -> Void) -> UIAlertController {
+//        let alertController = UIAlertController(
+//            title: NSLocalizedString("_rename_", comment: ""),
+//            message: nil,
+//            preferredStyle: .alert)
+//        alertController.addTextField { textField in
+//            textField.autocapitalizationType = .words
+//        }
+//        alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { _ in
+//            completion(true)
+//        })
+//        alertController.addAction(UIAlertAction(title: NSLocalizedString("_rename_", comment: ""), style: .default) { _ in
+//            completion(false)
+//        })
+//        return alertController
+//    }
 }
