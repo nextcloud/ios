@@ -109,7 +109,9 @@ class NCNetworking: NSObject, NKCommonDelegate {
         configuration.isDiscretionary = false
         configuration.httpMaximumConnectionsPerHost = sessionMaximumConnectionsPerHost
         configuration.requestCachePolicy = NSURLRequest.CachePolicy.reloadIgnoringLocalCacheData
+        configuration.httpCookieStorage = HTTPCookieStorage.sharedCookieStorage(forGroupContainerIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         let session = URLSession(configuration: configuration, delegate: nkBackground, delegateQueue: OperationQueue.main)
+
         return session
     }()
 
@@ -120,6 +122,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         configuration.isDiscretionary = false
         configuration.httpMaximumConnectionsPerHost = sessionMaximumConnectionsPerHost
         configuration.requestCachePolicy = NSURLRequest.CachePolicy.reloadIgnoringLocalCacheData
+        configuration.httpCookieStorage = HTTPCookieStorage.sharedCookieStorage(forGroupContainerIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         let session = URLSession(configuration: configuration, delegate: nkBackground, delegateQueue: OperationQueue.main)
         return session
     }()
@@ -131,6 +134,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         configuration.isDiscretionary = false
         configuration.httpMaximumConnectionsPerHost = sessionMaximumConnectionsPerHost
         configuration.requestCachePolicy = NSURLRequest.CachePolicy.reloadIgnoringLocalCacheData
+        configuration.httpCookieStorage = HTTPCookieStorage.sharedCookieStorage(forGroupContainerIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         let session = URLSession(configuration: configuration, delegate: nkBackground, delegateQueue: OperationQueue.main)
         return session
     }()
@@ -142,7 +146,8 @@ class NCNetworking: NSObject, NKCommonDelegate {
         configuration.isDiscretionary = false
         configuration.httpMaximumConnectionsPerHost = sessionMaximumConnectionsPerHost
         configuration.requestCachePolicy = NSURLRequest.CachePolicy.reloadIgnoringLocalCacheData
-        configuration.sharedContainerIdentifier = NCBrandOptions.shared.capabilitiesGroups
+        configuration.sharedContainerIdentifier = NCBrandOptions.shared.capabilitiesGroup
+        configuration.httpCookieStorage = HTTPCookieStorage.sharedCookieStorage(forGroupContainerIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         let session = URLSession(configuration: configuration, delegate: nkBackground, delegateQueue: OperationQueue.main)
         return session
     }()

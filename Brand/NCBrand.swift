@@ -52,7 +52,7 @@ let userAgent: String = {
     var folderDefaultAutoUpload: String = "Photos"
 
     // Capabilities Group
-    var capabilitiesGroups: String = "group.it.twsweb.Crypto-Cloud"
+    var capabilitiesGroup: String = "group.it.twsweb.Crypto-Cloud"
     var capabilitiesGroupApps: String = "group.com.nextcloud.apps"
 
     // BRAND ONLY
