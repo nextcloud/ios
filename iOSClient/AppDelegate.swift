@@ -471,7 +471,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NextcloudKit.shared.getUserProfile(url: url, user: user, password: password, userAgent: userAgent) { userProfile, _, error in
             if error == .success, let userProfile {
                 var urlBase = url
-                if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
+                if urlBase.last == "/" {
+                    urlBase = String(urlBase.dropLast())
+                }
                 let account: String = "\(userProfile.userId)@\(urlBase)"
 
                 /// OLD account compatibility remove account

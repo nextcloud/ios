@@ -127,20 +127,16 @@ private class LoginManager: ObservableObject {
         NextcloudKit.shared.getLoginFlowV2Poll(token: self.loginFlowV2Token, endpoint: self.loginFlowV2Endpoint) { server, loginName, appPassword, _, error in
             if error == .success, let server, let loginName, let appPassword {
                 self.isLoading = true
-                self.createAccount(server: server, username: loginName, password: appPassword)
+                self.appDelegate.createAccount(url: server, user: loginName, password: appPassword) { error in
+                    if error == .success {
+                        self.pollFinished = true
+                    }
+                }
             }
         }
     }
 
     func openLoginInBrowser() {
         UIApplication.shared.open(URL(string: loginFlowV2Login)!)
-    }
-
-    private func createAccount(server: String, username: String, password: String) {
-        appDelegate.createAccount(url: server, user: username, password: password) { error in
-            if error == .success {
-                self.pollFinished = true
-            }
-        }
     }
 }
