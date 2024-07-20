@@ -395,7 +395,6 @@ extension NCShareExtension {
 }
 
 extension NCShareExtension: uploadE2EEDelegate {
-
     func start() {
         self.hud.progress = 0
     }
