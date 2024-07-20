@@ -1,5 +1,5 @@
 //
-//  NCMedia+MediaLayoutDelegate.swift
+//  NCMedia+MediaLayout.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 16/07/24.
