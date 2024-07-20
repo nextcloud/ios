@@ -464,18 +464,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // MARK: - Account
 
-    func createAccount(server: String, username: String, password: String, completion: @escaping (_ error: NKError) -> Void) {
-        var urlBase = server
-        if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
-        let account: String = "\(username) \(urlBase)"
-        let user = username
-
-        NextcloudKit.shared.setup(account: account, user: user, userId: user, password: password, urlBase: urlBase, groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
-        NextcloudKit.shared.getUserProfile { _, userProfile, _, error in
+    func createAccount(url: String,
+                       user: String,
+                       password: String,
+                       completion: @escaping (_ error: NKError) -> Void) {
+        NextcloudKit.shared.getUserProfile(url: url, user: user, password: password, userAgent: userAgent) { userProfile, _, error in
             if error == .success, let userProfile {
+                var urlBase = url
+                if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
+                let account: String = "\(userProfile.userId)@\(urlBase)"
+
+                /// OLD account compatibility remove account
+                let oldAccount: String = "\(user) \(urlBase)"
+                NCManageDatabase.shared.deleteAccount(oldAccount)
+                ///
+
                 NCManageDatabase.shared.deleteAccount(account)
                 NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
+
                 NCKeychain().setClientCertificate(account: account, p12Data: NCNetworking.shared.p12Data, p12Password: NCNetworking.shared.p12Password)
+
                 self.changeAccount(account, userProfile: userProfile)
             } else {
                 let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)

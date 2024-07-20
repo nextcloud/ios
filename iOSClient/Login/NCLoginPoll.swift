@@ -137,7 +137,7 @@ private class LoginManager: ObservableObject {
     }
 
     private func createAccount(server: String, username: String, password: String) {
-        appDelegate.createAccount(server: server, username: username, password: password) { error in
+        appDelegate.createAccount(url: server, user: username, password: password) { error in
             if error == .success {
                 self.pollFinished = true
             }

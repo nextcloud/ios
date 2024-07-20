@@ -217,15 +217,13 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         }
 
         // AppConfig
-        if let serverUrl = configServerUrl {
-            if let username = self.configUsername, let password = configAppPassword {
-                createAccount(server: serverUrl, username: username, password: password)
-                return
-            } else if let username = self.configUsername, let password = configPassword {
-                getAppPassword(serverUrl: serverUrl, username: username, password: password)
-                return
+        if let url = configServerUrl {
+            if let user = self.configUsername, let password = configAppPassword {
+                appDelegate.createAccount(url: url, user: user, password: password) { _ in }
+            } else if let user = self.configUsername, let password = configPassword {
+                getAppPassword(url: url, user: user, password: password)
             } else {
-                urlBase = serverUrl
+                urlBase = url
             }
         }
     }
@@ -426,17 +424,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             if let host = URL(string: url)?.host {
                 NCNetworking.shared.writeCertificate(host: host)
             }
-            let urlBase = url
-            let account = user + " " + user
-
-            NextcloudKit.shared.setup(account: account, user: user, userId: user, password: password, urlBase: urlBase, groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
-            NextcloudKit.shared.getUserProfile { _, userProfile, _, error in
-                if error == .success, let userProfile {
-                    NCManageDatabase.shared.deleteAccount(account)
-                    NCManageDatabase.shared.addAccount(account, urlBase: url, user: user, userId: userProfile.userId, password: password)
-
-                    self.appDelegate.changeAccount(account, userProfile: userProfile)
-
+            appDelegate.createAccount(url: url, user: user, password: password) { error in
+                if error == .success {
                     let window = UIApplication.shared.firstWindow
                     if window?.rootViewController is NCMainTabBarController {
                         self.dismiss(animated: true)
@@ -483,31 +472,30 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         }
     }
 
-    private func createAccount(server: String, username: String, password: String) {
-        appDelegate.createAccount(server: server, username: username, password: password) { error in
-            if error == .success {
-                let window = UIApplication.shared.firstWindow
-                if window?.rootViewController is NCMainTabBarController {
-                    self.dismiss(animated: true)
-                } else {
-                    if let mainTabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
-                        mainTabBarController.modalPresentationStyle = .fullScreen
-                        mainTabBarController.view.alpha = 0
-                        window?.rootViewController = mainTabBarController
-                        window?.makeKeyAndVisible()
-                        UIView.animate(withDuration: 0.5) {
-                            mainTabBarController.view.alpha = 1
+    private func getAppPassword(url: String, user: String, password: String) {
+        NextcloudKit.shared.getAppPassword(url: url, user: user, password: password) { token, _, error in
+            if error == .success, let password = token {
+                self.appDelegate.createAccount(url: url, user: user, password: password) { error in
+                    if error == .success {
+                        let window = UIApplication.shared.firstWindow
+                        if window?.rootViewController is NCMainTabBarController {
+                            self.dismiss(animated: true)
+                        } else {
+                            if let mainTabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+                                mainTabBarController.modalPresentationStyle = .fullScreen
+                                mainTabBarController.view.alpha = 0
+                                window?.rootViewController = mainTabBarController
+                                window?.makeKeyAndVisible()
+                                UIView.animate(withDuration: 0.5) {
+                                    mainTabBarController.view.alpha = 1
+                                }
+                            }
                         }
+                    } else {
+                        NCContentPresenter().showError(error: error)
+                        self.dismiss(animated: true, completion: nil)
                     }
                 }
-            }
-        }
-    }
-
-    private func getAppPassword(serverUrl: String, username: String, password: String) {
-        NextcloudKit.shared.getAppPassword(serverUrl: serverUrl, username: username, password: password) { token, _, error in
-            if error == .success, let password = token {
-                self.createAccount(server: serverUrl, username: username, password: password)
             } else {
                 NCContentPresenter().showError(error: error)
                 self.dismiss(animated: true, completion: nil)
