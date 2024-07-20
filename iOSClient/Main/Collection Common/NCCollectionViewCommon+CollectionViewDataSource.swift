@@ -506,4 +506,23 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             return footer
         }
     }
+
+    // MARK: -
+
+    func getAvatarFromIconUrl(metadata: tableMetadata) -> String? {
+        var ownerId: String?
+
+        if metadata.iconUrl.contains("http") && metadata.iconUrl.contains("avatar") {
+            let splitIconUrl = metadata.iconUrl.components(separatedBy: "/")
+            var found: Bool = false
+            for item in splitIconUrl {
+                if found {
+                    ownerId = item
+                    break
+                }
+                if item == "avatar" { found = true}
+            }
+        }
+        return ownerId
+    }
 }
