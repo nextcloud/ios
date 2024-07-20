@@ -1,5 +1,5 @@
 //
-//  NCc.swift
+//  NCCollectionViewCommon+CollectionViewDelegateFlowLayout.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 19/07/24.
