@@ -105,7 +105,6 @@ extension NCShareExtension: UICollectionViewDataSource {
             setupDirectoryCell(cell, indexPath: indexPath, with: metadata)
         }
 
-        // image Favorite
         if metadata.favorite {
             cell.imageFavorite.image = NCImageCache.images.favorite
         }
@@ -114,16 +113,14 @@ extension NCShareExtension: UICollectionViewDataSource {
         cell.backgroundView = nil
         cell.hideButtonMore(true)
         cell.hideButtonShare(true)
+        cell.selected(false, isEditMode: false)
 
-        // Live Photo
         if metadata.isLivePhoto {
             cell.imageStatus.image = NCImageCache.images.livePhoto
         }
 
-        // Add TAGS
         cell.setTags(tags: Array(metadata.tags))
 
-        // Remove last separator
         cell.separator.isHidden = collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1
 
         return cell
