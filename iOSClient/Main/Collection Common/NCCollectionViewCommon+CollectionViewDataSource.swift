@@ -384,8 +384,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
             if dataSource.getMetadataSourceForAllSections().isEmpty {
 
-                guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderEmptyData", for: indexPath) as? NCSectionHeaderEmptyData else { return NCSectionHeaderEmptyData() }
-                self.headerEmptyData = header
+                guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeaderEmptyData", for: indexPath) as? NCSectionFirstHeaderEmptyData else { return NCSectionFirstHeaderEmptyData() }
+                self.sectionFirstHeaderEmptyData = header
                 header.delegate = self
 
                 if !isSearchingMode, headerMenuTransferView, let ocId = NCNetworking.shared.transferInForegorund?.ocId {

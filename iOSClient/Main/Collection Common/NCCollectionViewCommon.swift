@@ -28,7 +28,7 @@ import NextcloudKit
 import EasyTipView
 import JGProgressHUD
 
-class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCPhotoCellDelegate, NCSectionFirstHeaderDelegate, NCSectionFooterDelegate, NCSectionHeaderEmptyDataDelegate, NCAccountSettingsModelDelegate, UIAdaptivePresentationControllerDelegate, UIContextMenuInteractionDelegate {
+class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCPhotoCellDelegate, NCSectionFirstHeaderDelegate, NCSectionFooterDelegate, NCSectionFirstHeaderEmptyDataDelegate, NCAccountSettingsModelDelegate, UIAdaptivePresentationControllerDelegate, UIContextMenuInteractionDelegate {
 
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -48,7 +48,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var dataSource = NCDataSource()
     var richWorkspaceText: String?
     var sectionFirstHeader: NCSectionFirstHeader?
-    var headerEmptyData: NCSectionHeaderEmptyData?
+    var sectionFirstHeaderEmptyData: NCSectionFirstHeaderEmptyData?
     var isSearchingMode: Bool = false
     var layoutForView: NCDBLayoutForView?
     var dataSourceTask: URLSessionTask?
@@ -121,7 +121,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         // Header
         collectionView.register(UINib(nibName: "NCSectionFirstHeader", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionFirstHeader")
         collectionView.register(UINib(nibName: "NCSectionHeader", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeader")
-        collectionView.register(UINib(nibName: "NCSectionHeaderEmptyData", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeaderEmptyData")
+        collectionView.register(UINib(nibName: "NCSectionFirstHeaderEmptyData", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionFirstHeaderEmptyData")
 
         // Footer
         collectionView.register(UINib(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
@@ -547,7 +547,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     self.collectionView.reloadData()
                 }
                 self.sectionFirstHeader?.progressTransfer.progress = progressNumber.floatValue
-                self.headerEmptyData?.progressTransfer.progress = progressNumber.floatValue
+                self.sectionFirstHeaderEmptyData?.progressTransfer.progress = progressNumber.floatValue
             } else {
                 guard let indexPath = self.dataSource.getIndexPathMetadata(ocId: ocId).indexPath,
                       let cell = self.collectionView?.cellForItem(at: indexPath),
