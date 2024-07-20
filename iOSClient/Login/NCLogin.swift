@@ -399,17 +399,13 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     // MARK: - QRCode
 
     func dismissQRCode(_ value: String?, metadataType: String?) {
-
         guard var value = value else { return }
-
         let protocolLogin = NCBrandOptions.shared.webLoginAutenticationProtocol + "login/"
 
         if value.hasPrefix(protocolLogin) && value.contains("user:") && value.contains("password:") && value.contains("server:") {
-
             value = value.replacingOccurrences(of: protocolLogin, with: "")
             let valueArray = value.components(separatedBy: "&")
             if valueArray.count == 3 {
-
                 let user = valueArray[0].replacingOccurrences(of: "user:", with: "")
                 let password = valueArray[1].replacingOccurrences(of: "password:", with: "")
                 let urlBase = valueArray[2].replacingOccurrences(of: "server:", with: "")
@@ -418,7 +414,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 loginButton.isEnabled = false
 
                 NextcloudKit.shared.checkServer(serverUrl: serverUrl) { error in
-
                     self.loginButton.isEnabled = true
                     self.standardLogin(url: urlBase, user: user, password: password, error: error)
                 }
@@ -427,9 +422,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     }
 
     func standardLogin(url: String, user: String, password: String, error: NKError) {
-
         if error == .success {
-
             if let host = URL(string: url)?.host {
                 NCNetworking.shared.writeCertificate(host: host)
             }
@@ -438,9 +431,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
             NextcloudKit.shared.setup(account: account, user: user, userId: user, password: password, urlBase: urlBase, groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
             NextcloudKit.shared.getUserProfile { _, userProfile, _, error in
-
                 if error == .success, let userProfile {
-
                     NCManageDatabase.shared.deleteAccount(account)
                     NCManageDatabase.shared.addAccount(account, urlBase: url, user: user, userId: userProfile.userId, password: password)
 
@@ -461,15 +452,12 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                         }
                     }
                 } else {
-
                     let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
                     self.present(alertController, animated: true)
                 }
             }
-
         } else if error.errorCode == NSURLErrorServerCertificateUntrusted {
-
             let alertController = UIAlertController(title: NSLocalizedString("_ssl_certificate_untrusted_", comment: ""), message: NSLocalizedString("_connect_server_anyway_", comment: ""), preferredStyle: .alert)
 
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { _ in
@@ -487,9 +475,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             }))
 
             self.present(alertController, animated: true)
-
         } else {
-
             let message = NSLocalizedString("_not_possible_connect_to_server_", comment: "") + ".\n" + error.errorDescription
             let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: message, preferredStyle: .alert)
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))

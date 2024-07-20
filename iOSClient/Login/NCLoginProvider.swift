@@ -170,9 +170,7 @@ extension NCLoginProvider: WKNavigationDelegate {
 
         NextcloudKit.shared.setup(account: account, user: user, userId: user, password: password, urlBase: urlBase, groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         NextcloudKit.shared.getUserProfile { _, userProfile, _, error in
-
             if error == .success, let userProfile {
-
                 NCManageDatabase.shared.deleteAccount(account)
                 NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
 
@@ -192,7 +190,6 @@ extension NCLoginProvider: WKNavigationDelegate {
                         }
                     }
                 }
-
             } else {
                 let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
