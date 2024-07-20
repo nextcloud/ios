@@ -25,7 +25,6 @@ import UIKit
 import NextcloudKit
 
 extension NCMedia {
-
     func reloadDataSource() {
         self.metadatas = imageCache.getMediaMetadatas(account: activeAccount.account, predicate: self.getPredicate())
         self.collectionViewReloadData()

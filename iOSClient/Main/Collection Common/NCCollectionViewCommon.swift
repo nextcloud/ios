@@ -28,7 +28,7 @@ import NextcloudKit
 import EasyTipView
 import JGProgressHUD
 
-class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCPhotoCellDelegate, NCSectionHeaderMenuDelegate, NCSectionFooterDelegate, NCSectionHeaderEmptyDataDelegate, NCAccountSettingsModelDelegate, UIAdaptivePresentationControllerDelegate, UIContextMenuInteractionDelegate {
+class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCPhotoCellDelegate, NCSectionFirstHeaderDelegate, NCSectionFooterDelegate, NCSectionFirstHeaderEmptyDataDelegate, NCAccountSettingsModelDelegate, UIAdaptivePresentationControllerDelegate, UIContextMenuInteractionDelegate {
 
     @IBOutlet weak var collectionView: UICollectionView!
 
@@ -47,8 +47,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var metadataFolder: tableMetadata?
     var dataSource = NCDataSource()
     var richWorkspaceText: String?
-    var headerMenu: NCSectionHeaderMenu?
-    var headerEmptyData: NCSectionHeaderEmptyData?
+    var sectionFirstHeader: NCSectionFirstHeader?
+    var sectionFirstHeaderEmptyData: NCSectionFirstHeaderEmptyData?
     var isSearchingMode: Bool = false
     var layoutForView: NCDBLayoutForView?
     var dataSourceTask: URLSessionTask?
@@ -119,9 +119,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         collectionView.register(UINib(nibName: "NCTransferCell", bundle: nil), forCellWithReuseIdentifier: "transferCell")
 
         // Header
-        collectionView.register(UINib(nibName: "NCSectionHeaderMenu", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeaderMenu")
+        collectionView.register(UINib(nibName: "NCSectionFirstHeader", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionFirstHeader")
         collectionView.register(UINib(nibName: "NCSectionHeader", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeader")
-        collectionView.register(UINib(nibName: "NCSectionHeaderEmptyData", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeaderEmptyData")
+        collectionView.register(UINib(nibName: "NCSectionFirstHeaderEmptyData", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionFirstHeaderEmptyData")
 
         // Footer
         collectionView.register(UINib(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
@@ -546,8 +546,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     NCNetworking.shared.transferInForegorund = NCNetworking.TransferInForegorund(ocId: ocId, progress: progressNumber.floatValue)
                     self.collectionView.reloadData()
                 }
-                self.headerMenu?.progressTransfer.progress = progressNumber.floatValue
-                self.headerEmptyData?.progressTransfer.progress = progressNumber.floatValue
+                self.sectionFirstHeader?.progressTransfer.progress = progressNumber.floatValue
+                self.sectionFirstHeaderEmptyData?.progressTransfer.progress = progressNumber.floatValue
             } else {
                 guard let indexPath = self.dataSource.getIndexPathMetadata(ocId: ocId).indexPath,
                       let cell = self.collectionView?.cellForItem(at: indexPath),
@@ -908,6 +908,107 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     // MARK: - TAP EVENT
 
+    // sessionIdentifierDownload: String = "com.nextcloud.nextcloudkit.session.download"
+    // sessionIdentifierUpload: String = "com.nextcloud.nextcloudkit.session.upload"
+
+    // sessionUploadBackground: String = "com.nextcloud.session.upload.background"
+    // sessionUploadBackgroundWWan: String = "com.nextcloud.session.upload.backgroundWWan"
+    // sessionUploadBackgroundExtension: String = "com.nextcloud.session.upload.extension"
+
+    func cancelSession(metadata: tableMetadata) async {
+        let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+
+        utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+
+        // No session found
+        if metadata.session.isEmpty {
+            NCNetworking.shared.uploadRequest.removeValue(forKey: fileNameLocalPath)
+            NCNetworking.shared.downloadRequest.removeValue(forKey: fileNameLocalPath)
+            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
+            return
+        }
+
+        // DOWNLOAD FOREGROUND
+        if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload {
+            if let request = NCNetworking.shared.downloadRequest[fileNameLocalPath] {
+                request.cancel()
+            } else if let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) {
+                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                           session: "",
+                                                           sessionError: "",
+                                                           selector: "",
+                                                           status: NCGlobal.shared.metadataStatusNormal)
+                NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile),
+                                                object: nil,
+                                                userInfo: ["ocId": metadata.ocId,
+                                                           "serverUrl": metadata.serverUrl,
+                                                           "account": metadata.account])
+            }
+            return
+        }
+
+        // DOWNLOAD BACKGROUND
+        if metadata.session == NCNetworking.shared.sessionDownloadBackground {
+            let session: URLSession? = NCNetworking.shared.sessionManagerDownloadBackground
+            if let tasks = await session?.tasks {
+                for task in tasks.2 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
+                    if task.taskIdentifier == metadata.sessionTaskIdentifier {
+                        task.cancel()
+                    }
+                }
+            }
+            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                       session: "",
+                                                       sessionError: "",
+                                                       selector: "",
+                                                       status: NCGlobal.shared.metadataStatusNormal)
+            NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile),
+                                            object: nil,
+                                            userInfo: ["ocId": metadata.ocId,
+                                                       "serverUrl": metadata.serverUrl,
+                                                       "account": metadata.account])
+        }
+
+        // UPLOAD FOREGROUND
+        if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload {
+            if let request = NCNetworking.shared.uploadRequest[fileNameLocalPath] {
+                request.cancel()
+                NCNetworking.shared.uploadRequest.removeValue(forKey: fileNameLocalPath)
+            }
+            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
+                                            object: nil,
+                                            userInfo: ["ocId": metadata.ocId,
+                                                       "serverUrl": metadata.serverUrl,
+                                                       "account": metadata.account])
+            return
+        }
+
+        // UPLOAD BACKGROUND
+        var session: URLSession?
+        if metadata.session == NCNetworking.shared.sessionUploadBackground {
+            session = NCNetworking.shared.sessionManagerUploadBackground
+        } else if metadata.session == NCNetworking.shared.sessionUploadBackgroundWWan {
+            session = NCNetworking.shared.sessionManagerUploadBackgroundWWan
+        } else if metadata.session == NCNetworking.shared.sessionUploadBackgroundExtension {
+            session = NCNetworking.shared.sessionManagerUploadBackgroundExtension
+        }
+        if let tasks = await session?.tasks {
+            for task in tasks.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
+                if task.taskIdentifier == metadata.sessionTaskIdentifier {
+                    task.cancel()
+                }
+            }
+            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
+                                            object: nil,
+                                            userInfo: ["ocId": metadata.ocId,
+                                                       "serverUrl": metadata.serverUrl,
+                                                       "account": metadata.account])
+        }
+    }
+
     func tapMoreListItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
         tapMoreGridItem(with: objectId, namedButtonMore: namedButtonMore, image: image, indexPath: indexPath, sender: sender)
     }
@@ -1127,258 +1228,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 filesServerUrl[serverUrlPush] = viewController
                 navigationController?.pushViewController(viewController, animated: true)
             }
-        }
-    }
-}
-
-// MARK: - E2EE
-
-extension NCCollectionViewCommon: NCEndToEndInitializeDelegate {
-    func endToEndInitializeSuccess(metadata: tableMetadata?) {
-        if let metadata {
-            pushMetadata(metadata)
-        }
-    }
-}
-
-extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
-    func isHeaderMenuTransferViewEnabled() -> Bool {
-        if headerMenuTransferView, let metadata = NCManageDatabase.shared.getMetadataFromOcId(NCNetworking.shared.transferInForegorund?.ocId), metadata.isTransferInForeground {
-            return true
-        }
-        return false
-    }
-
-    func getHeaderHeight() -> CGFloat {
-        var size: CGFloat = 0
-
-        if isHeaderMenuTransferViewEnabled() {
-            if !isSearchingMode {
-                size += NCGlobal.shared.heightHeaderTransfer
-            }
-        } else {
-            NCNetworking.shared.transferInForegorund = nil
-        }
-        return size
-    }
-
-    func getHeaderHeight(section: Int) -> (heightHeaderCommands: CGFloat, heightHeaderRichWorkspace: CGFloat, heightHeaderSection: CGFloat) {
-        var headerRichWorkspace: CGFloat = 0
-
-        if let richWorkspaceText = richWorkspaceText, showDescription {
-            let trimmed = richWorkspaceText.trimmingCharacters(in: .whitespaces)
-            if !trimmed.isEmpty && !isSearchingMode {
-                headerRichWorkspace = UIScreen.main.bounds.size.height / 6
-            }
-        }
-
-        if isSearchingMode || layoutForView?.groupBy != "none" || dataSource.numberOfSections() > 1 {
-            if section == 0 {
-                return (getHeaderHeight(), headerRichWorkspace, NCGlobal.shared.heightSection)
-            } else {
-                return (0, 0, NCGlobal.shared.heightSection)
-            }
-        } else {
-            return (getHeaderHeight(), headerRichWorkspace, 0)
-        }
-    }
-
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        var height: CGFloat = 0
-
-        if isEditMode {
-            return CGSize.zero
-        } else if dataSource.getMetadataSourceForAllSections().isEmpty {
-            height = NCGlobal.shared.getHeightHeaderEmptyData(view: view, portraitOffset: emptyDataPortaitOffset, landscapeOffset: emptyDataLandscapeOffset, isHeaderMenuTransferViewEnabled: isHeaderMenuTransferViewEnabled())
-        } else {
-            let (heightHeaderCommands, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: section)
-            height = heightHeaderCommands + heightHeaderRichWorkspace + heightHeaderSection
-        }
-        return CGSize(width: collectionView.frame.width, height: height)
-    }
-
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-        let sections = dataSource.numberOfSections()
-        let metadataForSection = self.dataSource.getMetadataForSection(section)
-        let isPaginated = metadataForSection?.lastSearchResult?.isPaginated ?? false
-        let metadatasCount: Int = metadataForSection?.lastSearchResult?.entries.count ?? 0
-        var size = CGSize(width: collectionView.frame.width, height: 0)
-
-        if section == sections - 1 {
-            size.height += NCGlobal.shared.endHeightFooter
-        } else {
-            size.height += NCGlobal.shared.heightFooter
-        }
-
-        if isSearchingMode && isPaginated && metadatasCount > 0 {
-            size.height += NCGlobal.shared.heightFooterButton
-        }
-        return size
-    }
-}
-
-extension NCCollectionViewCommon: EasyTipViewDelegate {
-    func showTip() {
-        guard !appDelegate.account.isEmpty,
-              self is NCFiles,
-              self.view.window != nil,
-              !NCBrandOptions.shared.disable_multiaccount,
-              self.serverUrl == utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId),
-              let view = self.navigationItem.leftBarButtonItem?.customView,
-              !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest) else { return }
-        var preferences = EasyTipView.Preferences()
-
-        preferences.drawing.foregroundColor = .white
-        preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
-        preferences.drawing.textAlignment = .left
-        preferences.drawing.arrowPosition = .top
-        preferences.drawing.cornerRadius = 10
-
-        preferences.animating.dismissTransform = CGAffineTransform(translationX: 0, y: 100)
-        preferences.animating.showInitialTransform = CGAffineTransform(translationX: 0, y: -100)
-        preferences.animating.showInitialAlpha = 0
-        preferences.animating.showDuration = 1.5
-        preferences.animating.dismissDuration = 1.5
-
-        if appDelegate.tipView == nil {
-            appDelegate.tipView = EasyTipView(text: NSLocalizedString("_tip_accountrequest_", comment: ""), preferences: preferences, delegate: self)
-            appDelegate.tipView?.show(forView: view)
-        }
-    }
-
-    func easyTipViewDidTap(_ tipView: EasyTipView) {
-        NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest)
-    }
-
-    func easyTipViewDidDismiss(_ tipView: EasyTipView) { }
-
-    func dismissTip() {
-        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest) {
-            NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest)
-        }
-        appDelegate.tipView?.dismiss()
-        appDelegate.tipView = nil
-    }
-}
-
-extension NCCollectionViewCommon {
-    func getAvatarFromIconUrl(metadata: tableMetadata) -> String? {
-        var ownerId: String?
-
-        if metadata.iconUrl.contains("http") && metadata.iconUrl.contains("avatar") {
-            let splitIconUrl = metadata.iconUrl.components(separatedBy: "/")
-            var found: Bool = false
-            for item in splitIconUrl {
-                if found {
-                    ownerId = item
-                    break
-                }
-                if item == "avatar" { found = true}
-            }
-        }
-        return ownerId
-    }
-
-    // MARK: - Cancel (Download Upload)
-
-    // sessionIdentifierDownload: String = "com.nextcloud.nextcloudkit.session.download"
-    // sessionIdentifierUpload: String = "com.nextcloud.nextcloudkit.session.upload"
-
-    // sessionUploadBackground: String = "com.nextcloud.session.upload.background"
-    // sessionUploadBackgroundWWan: String = "com.nextcloud.session.upload.backgroundWWan"
-    // sessionUploadBackgroundExtension: String = "com.nextcloud.session.upload.extension"
-
-    func cancelSession(metadata: tableMetadata) async {
-        let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
-
-        utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-
-        // No session found
-        if metadata.session.isEmpty {
-            NCNetworking.shared.uploadRequest.removeValue(forKey: fileNameLocalPath)
-            NCNetworking.shared.downloadRequest.removeValue(forKey: fileNameLocalPath)
-            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
-            return
-        }
-
-        // DOWNLOAD FOREGROUND
-        if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload {
-            if let request = NCNetworking.shared.downloadRequest[fileNameLocalPath] {
-                request.cancel()
-            } else if let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) {
-                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                           session: "",
-                                                           sessionError: "",
-                                                           selector: "",
-                                                           status: NCGlobal.shared.metadataStatusNormal)
-                NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile),
-                                                object: nil,
-                                                userInfo: ["ocId": metadata.ocId,
-                                                           "serverUrl": metadata.serverUrl,
-                                                           "account": metadata.account])
-            }
-            return
-        }
-
-        // DOWNLOAD BACKGROUND
-        if metadata.session == NCNetworking.shared.sessionDownloadBackground {
-            let session: URLSession? = NCNetworking.shared.sessionManagerDownloadBackground
-            if let tasks = await session?.tasks {
-                for task in tasks.2 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
-                    if task.taskIdentifier == metadata.sessionTaskIdentifier {
-                        task.cancel()
-                    }
-                }
-            }
-            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                       session: "",
-                                                       sessionError: "",
-                                                       selector: "",
-                                                       status: NCGlobal.shared.metadataStatusNormal)
-            NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile),
-                                            object: nil,
-                                            userInfo: ["ocId": metadata.ocId,
-                                                       "serverUrl": metadata.serverUrl,
-                                                       "account": metadata.account])
-        }
-
-        // UPLOAD FOREGROUND
-        if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload {
-            if let request = NCNetworking.shared.uploadRequest[fileNameLocalPath] {
-                request.cancel()
-                NCNetworking.shared.uploadRequest.removeValue(forKey: fileNameLocalPath)
-            }
-            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
-                                            object: nil,
-                                            userInfo: ["ocId": metadata.ocId,
-                                                       "serverUrl": metadata.serverUrl,
-                                                       "account": metadata.account])
-            return
-        }
-
-        // UPLOAD BACKGROUND
-        var session: URLSession?
-        if metadata.session == NCNetworking.shared.sessionUploadBackground {
-            session = NCNetworking.shared.sessionManagerUploadBackground
-        } else if metadata.session == NCNetworking.shared.sessionUploadBackgroundWWan {
-            session = NCNetworking.shared.sessionManagerUploadBackgroundWWan
-        } else if metadata.session == NCNetworking.shared.sessionUploadBackgroundExtension {
-            session = NCNetworking.shared.sessionManagerUploadBackgroundExtension
-        }
-        if let tasks = await session?.tasks {
-            for task in tasks.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
-                if task.taskIdentifier == metadata.sessionTaskIdentifier {
-                    task.cancel()
-                }
-            }
-            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
-                                            object: nil,
-                                            userInfo: ["ocId": metadata.ocId,
-                                                       "serverUrl": metadata.serverUrl,
-                                                       "account": metadata.account])
         }
     }
 }

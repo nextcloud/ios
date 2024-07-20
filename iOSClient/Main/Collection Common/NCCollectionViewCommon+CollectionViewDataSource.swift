@@ -384,8 +384,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
             if dataSource.getMetadataSourceForAllSections().isEmpty {
 
-                guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderEmptyData", for: indexPath) as? NCSectionHeaderEmptyData else { return NCSectionHeaderEmptyData() }
-                self.headerEmptyData = header
+                guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeaderEmptyData", for: indexPath) as? NCSectionFirstHeaderEmptyData else { return NCSectionFirstHeaderEmptyData() }
+                self.sectionFirstHeaderEmptyData = header
                 header.delegate = self
 
                 if !isSearchingMode, headerMenuTransferView, let ocId = NCNetworking.shared.transferInForegorund?.ocId {
@@ -423,9 +423,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
             } else if indexPath.section == 0 {
 
-                guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as? NCSectionHeaderMenu else { return NCSectionHeaderMenu() }
+                guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeader", for: indexPath) as? NCSectionFirstHeader else { return NCSectionFirstHeader() }
                 let (_, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: indexPath.section)
-                self.headerMenu = header
+                self.sectionFirstHeader = header
                 header.delegate = self
 
                 if !isSearchingMode, headerMenuTransferView, let ocId = NCNetworking.shared.transferInForegorund?.ocId {
@@ -505,5 +505,24 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
             return footer
         }
+    }
+
+    // MARK: -
+
+    func getAvatarFromIconUrl(metadata: tableMetadata) -> String? {
+        var ownerId: String?
+
+        if metadata.iconUrl.contains("http") && metadata.iconUrl.contains("avatar") {
+            let splitIconUrl = metadata.iconUrl.components(separatedBy: "/")
+            var found: Bool = false
+            for item in splitIconUrl {
+                if found {
+                    ownerId = item
+                    break
+                }
+                if item == "avatar" { found = true}
+            }
+        }
+        return ownerId
     }
 }

@@ -1,5 +1,5 @@
 //
-//  NCSectionHeaderEmptyData.swift
+//  NCSectionFirstHeaderEmptyData.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 09/10/2018.
@@ -24,11 +24,11 @@
 import UIKit
 import MarkdownKit
 
-protocol NCSectionHeaderEmptyDataDelegate: AnyObject {
+protocol NCSectionFirstHeaderEmptyDataDelegate: AnyObject {
     func tapButtonTransfer(_ sender: Any)
 }
 
-class NCSectionHeaderEmptyData: UICollectionReusableView {
+class NCSectionFirstHeaderEmptyData: UICollectionReusableView {
 
     @IBOutlet weak var viewTransfer: UIView!
     @IBOutlet weak var viewTransferHeightConstraint: NSLayoutConstraint!
@@ -43,7 +43,7 @@ class NCSectionHeaderEmptyData: UICollectionReusableView {
     @IBOutlet weak var emptyTitle: UILabel!
     @IBOutlet weak var emptyDescription: UILabel!
 
-    weak var delegate: NCSectionHeaderEmptyDataDelegate?
+    weak var delegate: NCSectionFirstHeaderEmptyDataDelegate?
 
     override func awakeFromNib() {
         super.awakeFromNib()

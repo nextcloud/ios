@@ -42,7 +42,7 @@ extension NCShareExtension: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         if kind == UICollectionView.elementKindSectionHeader {
-            guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderEmptyData", for: indexPath) as? NCSectionHeaderEmptyData else { return NCSectionHeaderEmptyData() }
+            guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeaderEmptyData", for: indexPath) as? NCSectionFirstHeaderEmptyData else { return NCSectionFirstHeaderEmptyData() }
             if self.dataSourceTask?.state == .running {
                 header.emptyImage.image = utility.loadImage(named: "wifi", colors: [NCBrandColor.shared.brandElement])
                 header.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
@@ -105,7 +105,6 @@ extension NCShareExtension: UICollectionViewDataSource {
             setupDirectoryCell(cell, indexPath: indexPath, with: metadata)
         }
 
-        // image Favorite
         if metadata.favorite {
             cell.imageFavorite.image = NCImageCache.images.favorite
         }
@@ -114,16 +113,14 @@ extension NCShareExtension: UICollectionViewDataSource {
         cell.backgroundView = nil
         cell.hideButtonMore(true)
         cell.hideButtonShare(true)
+        cell.selected(false, isEditMode: false)
 
-        // Live Photo
         if metadata.isLivePhoto {
             cell.imageStatus.image = NCImageCache.images.livePhoto
         }
 
-        // Add TAGS
         cell.setTags(tags: Array(metadata.tags))
 
-        // Remove last separator
         cell.separator.isHidden = collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1
 
         return cell

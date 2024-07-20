@@ -42,6 +42,11 @@ class tableMetadata: Object, NCUserBaseUrl {
            self.favorite == object.favorite,
            self.livePhotoFile == object.livePhotoFile,
            self.sharePermissionsCollaborationServices == object.sharePermissionsCollaborationServices,
+           self.height == object.height,
+           self.width == object.width,
+           self.latitude == object.latitude,
+           self.longitude == object.longitude,
+           self.altitude == object.altitude,
            Array(self.tags).elementsEqual(Array(object.tags)),
            Array(self.shareType).elementsEqual(Array(object.shareType)),
            Array(self.sharePermissionsCloudMesh).elementsEqual(Array(object.sharePermissionsCloudMesh)) {

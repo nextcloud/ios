@@ -1,5 +1,5 @@
 //
-//  NCCollectionViewCommon+SelectTabBarDelegate.swift
+//  NCCollectionViewCommon+SelectTabBar.swift
 //  Nextcloud
 //
 //  Created by Milen on 01.03.24.

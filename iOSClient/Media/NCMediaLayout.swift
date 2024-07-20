@@ -21,8 +21,8 @@
 
 import UIKit
 
-public let collectionViewMediaElementKindSectionHeader = "collectionViewMediaElementKindSectionHeader"
-public let collectionViewMediaElementKindSectionFooter = "collectionViewMediaElementKindSectionFooter"
+public let mediaSectionHeader = "mediaSectionHeader"
+public let mediaSectionFooter = "mediaSectionFooter"
 
 protocol NCMediaLayoutDelegate: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath, columnCount: Int, typeLayout: String) -> CGSize
@@ -154,7 +154,7 @@ public class NCMediaLayout: UICollectionViewLayout {
             top += Float(headerInset.top)
 
             if headerHeight > 0 {
-                attributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: collectionViewMediaElementKindSectionHeader, with: NSIndexPath(item: 0, section: section) as IndexPath)
+                attributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: mediaSectionHeader, with: NSIndexPath(item: 0, section: section) as IndexPath)
                 attributes.frame = CGRect(x: headerInset.left, y: CGFloat(top), width: collectionView.frame.size.width - (headerInset.left + headerInset.right), height: CGFloat(headerHeight))
 
                 headersAttribute[section] = attributes
@@ -205,7 +205,7 @@ public class NCMediaLayout: UICollectionViewLayout {
             top += Float(footerInset.top)
 
             if footerHeight > 0 {
-                attributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: collectionViewMediaElementKindSectionFooter, with: NSIndexPath(item: 0, section: section) as IndexPath)
+                attributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: mediaSectionFooter, with: NSIndexPath(item: 0, section: section) as IndexPath)
                 attributes.frame = CGRect(x: footerInset.left, y: CGFloat(top), width: collectionView.frame.size.width - (footerInset.left + footerInset.right), height: CGFloat(footerHeight))
 
                 footersAttribute[section] = attributes
@@ -247,9 +247,9 @@ public class NCMediaLayout: UICollectionViewLayout {
     public override func layoutAttributesForSupplementaryView(ofKind elementKind: String, at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
         var attribute: UICollectionViewLayoutAttributes?
 
-        if elementKind == collectionViewMediaElementKindSectionHeader {
+        if elementKind == mediaSectionHeader {
             attribute = headersAttribute[indexPath.section]
-        } else if elementKind == collectionViewMediaElementKindSectionFooter {
+        } else if elementKind == mediaSectionFooter {
             attribute = footersAttribute[indexPath.section]
         }
 
