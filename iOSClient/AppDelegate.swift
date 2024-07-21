@@ -468,24 +468,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                        user: String,
                        password: String,
                        completion: @escaping (_ error: NKError) -> Void) {
-        NextcloudKit.shared.getUserProfile(url: url, user: user, password: password, userAgent: userAgent) { userProfile, _, error in
-            if error == .success, let userProfile {
-                var urlBase = url
-                if urlBase.last == "/" {
-                    urlBase = String(urlBase.dropLast())
-                }
-                let oldAccount: String = "\(user) \(urlBase)"
-                var account: String = "\(user)@\(urlBase)"
-                if let accounts = NCManageDatabase.shared.getAccounts(),
-                   accounts.contains(oldAccount) {
-                    account = oldAccount
-                }
+        var urlBase = url
+        if urlBase.last == "/" {
+            urlBase = String(urlBase.dropLast())
+        }
+        let oldAccount: String = "\(user) \(urlBase)"
+        var account: String = "\(user)@\(urlBase)"
+        if let accounts = NCManageDatabase.shared.getAccounts(),
+           accounts.contains(oldAccount) {
+            account = oldAccount
+        }
 
+        NextcloudKit.shared.setup(account: account, user: user, userId: user, password: password, urlBase: urlBase)
+        NextcloudKit.shared.getUserProfile { _, userProfile, _, error in
+            if error == .success, let userProfile {
                 NCManageDatabase.shared.deleteAccount(account)
                 NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
-
                 NCKeychain().setClientCertificate(account: account, p12Data: NCNetworking.shared.p12Data, p12Password: NCNetworking.shared.p12Password)
-
                 self.changeAccount(account, userProfile: userProfile)
             } else {
                 let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
