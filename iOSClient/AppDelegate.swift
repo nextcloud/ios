@@ -474,12 +474,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 if urlBase.last == "/" {
                     urlBase = String(urlBase.dropLast())
                 }
-                let account: String = "\(userProfile.userId)@\(urlBase)"
-
-                /// OLD account compatibility remove account
                 let oldAccount: String = "\(user) \(urlBase)"
-                NCManageDatabase.shared.deleteAccount(oldAccount)
-                ///
+                var account: String = "\(user)@\(urlBase)"
+                if let accounts = NCManageDatabase.shared.getAccounts(),
+                   accounts.contains(oldAccount) {
+                    account = oldAccount
+                }
 
                 NCManageDatabase.shared.deleteAccount(account)
                 NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
