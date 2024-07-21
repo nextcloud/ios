@@ -496,14 +496,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func changeAccount(_ account: String, userProfile: NKUserProfile?) {
+        guard let tableAccount = NCManageDatabase.shared.setAccountActive(account) else {
+            return
+        }
+
         NCNetworking.shared.cancelAllQueue()
         NCNetworking.shared.cancelDataTask()
         NCNetworking.shared.cancelDownloadTasks()
         NCNetworking.shared.cancelUploadTasks()
-
-        guard let tableAccount = NCManageDatabase.shared.setAccountActive(account) else {
-            return
-        }
 
         if account != self.account {
             DispatchQueue.global().async {
