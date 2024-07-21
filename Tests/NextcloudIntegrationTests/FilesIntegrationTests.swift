@@ -37,7 +37,7 @@ final class FilesIntegrationTests: BaseIntegrationXCTestCase {
         let serverUrl = "\(TestConstants.server)/remote.php/dav/files/\(TestConstants.username)"
         let serverUrlFileName = "\(serverUrl)/\(folderName)"
 
-        NextcloudKit.shared.setup(account: TestConstants.account, user: TestConstants.username, userId: TestConstants.username, password: appToken, urlBase: TestConstants.server)
+        NextcloudKit.shared.setup(account: TestConstants.account, user: TestConstants.username, userId: TestConstants.username, password: appToken, urlBase: TestConstants.server, groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
         // Test creating folder
         NCNetworking.shared.createFolder(fileName: folderName, serverUrl: serverUrl, account: TestConstants.account, urlBase: TestConstants.server, userId: TestConstants.username, withPush: true, sceneIdentifier: nil) { error in
