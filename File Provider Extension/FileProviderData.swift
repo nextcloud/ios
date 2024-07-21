@@ -76,7 +76,6 @@ class fileProviderData: NSObject {
         // NO DOMAIN -> Set default account
         if domain == nil {
             guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else { return nil }
-
             account = activeAccount.account
             user = activeAccount.user
             userId = activeAccount.userId
@@ -99,7 +98,6 @@ class fileProviderData: NSObject {
             guard let host = url.host else { continue }
             let accountDomain = activeAccount.userId + " (" + host + ")"
             if accountDomain == domain!.identifier.rawValue {
-
                 account = activeAccount.account
                 user = activeAccount.user
                 userId = activeAccount.userId

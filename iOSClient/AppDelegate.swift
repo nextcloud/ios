@@ -464,11 +464,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // MARK: - Account
 
-    func createAccount(server: String, username: String, password: String, completion: @escaping (_ error: NKError) -> Void) {
-        var urlBase = server
-        if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
-        let account: String = "\(username) \(urlBase)"
-        let user = username
+    func createAccount(url: String,
+                       user: String,
+                       password: String,
+                       completion: @escaping (_ error: NKError) -> Void) {
+        var urlBase = url
+        if urlBase.last == "/" {
+            urlBase = String(urlBase.dropLast())
+        }
+        let oldAccount: String = "\(user) \(urlBase)"
+        var account: String = "\(user)@\(urlBase)"
+        if let accounts = NCManageDatabase.shared.getAccounts(),
+           accounts.contains(oldAccount) {
+            account = oldAccount
+        }
 
         NextcloudKit.shared.setup(account: account, user: user, userId: user, password: password, urlBase: urlBase, groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         NextcloudKit.shared.getUserProfile { _, userProfile, _, error in
@@ -487,12 +496,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func changeAccount(_ account: String, userProfile: NKUserProfile?) {
+        guard let tableAccount = NCManageDatabase.shared.setAccountActive(account) else {
+            return
+        }
+
         NCNetworking.shared.cancelAllQueue()
         NCNetworking.shared.cancelDataTask()
         NCNetworking.shared.cancelDownloadTasks()
         NCNetworking.shared.cancelUploadTasks()
-
-        guard let tableAccount = NCManageDatabase.shared.setAccountActive(account) else { return }
 
         if account != self.account {
             DispatchQueue.global().async {
