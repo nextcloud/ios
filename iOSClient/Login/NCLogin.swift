@@ -28,7 +28,6 @@ import SwiftEntryKit
 import SwiftUI
 
 class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
-
     @IBOutlet weak var imageBrand: UIImageView!
     @IBOutlet weak var imageBrandConstraintY: NSLayoutConstraint!
     @IBOutlet weak var baseUrl: UITextField!
@@ -408,9 +407,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 let password = valueArray[1].replacingOccurrences(of: "password:", with: "")
                 let urlBase = valueArray[2].replacingOccurrences(of: "server:", with: "")
                 let serverUrl = urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav
-
                 loginButton.isEnabled = false
-
                 NextcloudKit.shared.checkServer(serverUrl: serverUrl) { error in
                     self.loginButton.isEnabled = true
                     self.standardLogin(url: urlBase, user: user, password: password, error: error)

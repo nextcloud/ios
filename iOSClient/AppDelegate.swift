@@ -501,7 +501,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCNetworking.shared.cancelDownloadTasks()
         NCNetworking.shared.cancelUploadTasks()
 
-        guard let tableAccount = NCManageDatabase.shared.setAccountActive(account) else { return }
+        guard let tableAccount = NCManageDatabase.shared.setAccountActive(account) else {
+            return
+        }
 
         if account != self.account {
             DispatchQueue.global().async {
