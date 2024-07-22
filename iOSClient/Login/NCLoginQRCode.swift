@@ -67,7 +67,6 @@ class NCLoginQRCode: NSObject, QRCodeReaderViewControllerDelegate {
             return try QRCodeReader.supportsMetadataObjectTypes()
         } catch let error as NSError {
             let alert: UIAlertController
-
             switch error.code {
             case -11852:
                 alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_qrcode_not_authorized_", comment: ""), preferredStyle: .alert)
@@ -84,7 +83,6 @@ class NCLoginQRCode: NSObject, QRCodeReaderViewControllerDelegate {
                 alert = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_qrcode_not_supported_", comment: ""), preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .cancel, handler: nil))
             }
-
             delegate?.present(alert, animated: true, completion: nil)
             return false
         }

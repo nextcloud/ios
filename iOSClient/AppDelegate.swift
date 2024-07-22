@@ -487,6 +487,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 NCKeychain().setClientCertificate(account: account, p12Data: NCNetworking.shared.p12Data, p12Password: NCNetworking.shared.p12Password)
                 self.changeAccount(account, userProfile: userProfile)
             } else {
+                NextcloudKit.shared.setup(account: self.account, user: self.user, userId: self.userId, password: self.password, urlBase: self.urlBase, groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
                 let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
                 UIApplication.shared.firstWindow?.rootViewController?.present(alertController, animated: true)
