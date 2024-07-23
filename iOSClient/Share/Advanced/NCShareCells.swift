@@ -276,6 +276,7 @@ class NCShareToggleCell: UITableViewCell {
         guard let customIcons = customIcons,
               let iconName = isOn ? customIcons.onIconName : customIcons.offIconName else {
             self.accessoryType = isOn ? .checkmark : .none
+            self.tintColor = NCBrandColor.shared.brandElement
             return
         }
         let image = NCUtility().loadImage(named: iconName, colors: [NCBrandColor.shared.brandElement], size: self.frame.height - 26)

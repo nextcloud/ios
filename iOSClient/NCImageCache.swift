@@ -249,10 +249,10 @@ import RealmSwift
         images.canShare = utility.loadImage(named: "person.fill.badge.plus", colors: NCBrandColor.shared.iconImageMultiColors)
         images.shareByLink = utility.loadImage(named: "link", colors: [NCBrandColor.shared.iconImageColor])
 
-        images.favorite = utility.loadImage(named: "star.fill", colors: [NCBrandColor.shared.yellowFavorite])
+        images.favorite = utility.loadImage(named: "star.fill", colors: [NCBrandColor.shared.brandElement])
         images.livePhoto = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor])
         images.offlineFlag = utility.loadImage(named: "arrow.down.circle.fill", colors: [.systemGreen])
-        images.local = utility.loadImage(named: "checkmark.circle.fill", colors: [.systemGreen])
+        images.local = utility.loadImage(named: "checkmark.circle.fill", colors: [NCBrandColor.shared.brandElement])
 
         images.checkedYes = utility.loadImage(named: "checkmark.circle.fill", colors: [NCBrandColor.shared.brandElement])
         images.checkedNo = utility.loadImage(named: "circle", colors: [NCBrandColor.shared.brandElement])
