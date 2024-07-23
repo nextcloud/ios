@@ -396,7 +396,8 @@ import KeychainAccess
     @objc func getPassword(account: String) -> String {
         let key = "password" + account
         migrate(key: key)
-        return (try? keychain.get(key)) ?? ""
+        let password = (try? keychain.get(key)) ?? ""
+        return password
     }
 
     func setPassword(account: String, password: String?) {

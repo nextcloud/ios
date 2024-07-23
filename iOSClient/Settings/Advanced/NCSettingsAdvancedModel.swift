@@ -162,10 +162,8 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
     ///
     /// - Parameter
     /// exit: Boolean indicating whether to reset the application.
-    func resetNextCloud(exit: Bool) {
-        if exit {
-            self.appDelegate.resetApplication()
-        } else { }
+    func resetNextCloud() {
+        self.appDelegate.resetApplication()
     }
 
     /// Exits the Nextcloud application if specified.

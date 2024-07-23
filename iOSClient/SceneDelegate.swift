@@ -187,7 +187,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     for account in accounts {
                         let urlBase = URL(string: account.urlBase)
                         if url.contains(urlBase?.host ?? "") && userId == account.userId {
-                            appDelegate.changeAccount(account.account, userProfile: nil)
+                            appDelegate.changeAccount(account.account, userProfile: nil) { }
                             return account
                         }
                     }
@@ -387,7 +387,7 @@ extension SceneDelegate: NCAccountRequestDelegate {
     func accountRequestAddAccount() { }
 
     func accountRequestChangeAccount(account: String) {
-        appDelegate?.changeAccount(account, userProfile: nil)
+        appDelegate?.changeAccount(account, userProfile: nil) { }
     }
 }
 

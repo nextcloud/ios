@@ -289,7 +289,7 @@ class NCFiles: NCCollectionViewCommon {
         if NCManageDatabase.shared.getAllAccount().isEmpty {
             appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
         } else if let account = tableAccount?.account, account != appDelegate.account {
-            appDelegate.changeAccount(account, userProfile: nil)
+            appDelegate.changeAccount(account, userProfile: nil) { }
         } else if isRoot {
             titleCurrentFolder = getNavigationTitle()
             navigationItem.title = titleCurrentFolder

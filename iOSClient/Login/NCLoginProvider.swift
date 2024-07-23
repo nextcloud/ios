@@ -171,7 +171,7 @@ extension NCLoginProvider: WKNavigationDelegate {
             if error == .success, let userProfile {
                 NCManageDatabase.shared.deleteAccount(account)
                 NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
-                self.appDelegate.changeAccount(account, userProfile: userProfile)
+                self.appDelegate.changeAccount(account, userProfile: userProfile) { }
                 let window = UIApplication.shared.firstWindow
                 if window?.rootViewController is NCMainTabBarController {
                     self.dismiss(animated: true)

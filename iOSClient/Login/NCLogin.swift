@@ -210,15 +210,13 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         }
 
         // AppConfig
-        if let serverUrl = configServerUrl {
-            if let username = self.configUsername, let password = configAppPassword {
-                createAccount(server: serverUrl, username: username, password: password)
-                return
-            } else if let username = self.configUsername, let password = configPassword {
-                getAppPassword(serverUrl: serverUrl, username: username, password: password)
-                return
+        if let url = configServerUrl {
+            if let user = self.configUsername, let password = configAppPassword {
+                return createAccount(urlBase: url, user: user, password: password)
+            } else if let user = self.configUsername, let password = configPassword {
+                return getAppPassword(urlBase: url, user: user, password: password)
             } else {
-                urlBase = serverUrl
+                urlBase = url
             }
         }
     }
@@ -375,100 +373,57 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 loginButton.isEnabled = false
                 NextcloudKit.shared.checkServer(serverUrl: serverUrl) { error in
                     self.loginButton.isEnabled = true
-                    self.standardLogin(url: urlBase, user: user, password: password, error: error)
-                }
-            }
-        }
-    }
-
-    func standardLogin(url: String, user: String, password: String, error: NKError) {
-        if error == .success {
-            if let host = URL(string: url)?.host {
-                NCNetworking.shared.writeCertificate(host: host)
-            }
-            let urlBase = url
-            let account = user + " " + user
-            NextcloudKit.shared.setup(account: account, user: user, userId: user, password: password, urlBase: urlBase)
-            NextcloudKit.shared.getUserProfile { _, userProfile, _, error in
-                if error == .success, let userProfile {
-                    NCManageDatabase.shared.deleteAccount(account)
-                    NCManageDatabase.shared.addAccount(account, urlBase: url, user: user, userId: userProfile.userId, password: password)
-                    self.appDelegate.changeAccount(account, userProfile: userProfile)
-                    let window = UIApplication.shared.firstWindow
-                    if window?.rootViewController is NCMainTabBarController {
-                        self.dismiss(animated: true)
+                    if error == .success {
+                        self.createAccount(urlBase: urlBase, user: user, password: password)
                     } else {
-                        if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
-                            controller.modalPresentationStyle = .fullScreen
-                            controller.view.alpha = 0
-                            window?.rootViewController = controller
-                            window?.makeKeyAndVisible()
-                            UIView.animate(withDuration: 0.5) {
-                                controller.view.alpha = 1
-                            }
-                        }
-                    }
-                } else {
-                    NextcloudKit.shared.setup(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, password: self.appDelegate.password, urlBase: self.appDelegate.urlBase, groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
-                    let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
-                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-                    self.present(alertController, animated: true)
-                }
-            }
-        } else if error.errorCode == NSURLErrorServerCertificateUntrusted {
-            let alertController = UIAlertController(title: NSLocalizedString("_ssl_certificate_untrusted_", comment: ""), message: NSLocalizedString("_connect_server_anyway_", comment: ""), preferredStyle: .alert)
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { _ in
-                if let host = URL(string: url)?.host {
-                    NCNetworking.shared.writeCertificate(host: host)
-                }
-            }))
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { _ in }))
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_certificate_details_", comment: ""), style: .default, handler: { _ in
-                if let navigationController = UIStoryboard(name: "NCViewCertificateDetails", bundle: nil).instantiateInitialViewController() {
-                    self.present(navigationController, animated: true)
-                }
-            }))
-            self.present(alertController, animated: true)
-        } else {
-
-            let message = NSLocalizedString("_not_possible_connect_to_server_", comment: "") + ".\n" + error.errorDescription
-            let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: message, preferredStyle: .alert)
-            alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-            self.present(alertController, animated: true, completion: { })
-        }
-    }
-
-    private func createAccount(server: String, username: String, password: String) {
-        appDelegate.createAccount(url: server, user: username, password: password) { error in
-            if error == .success {
-                let window = UIApplication.shared.firstWindow
-                if window?.rootViewController is NCMainTabBarController {
-                    self.dismiss(animated: true)
-                } else {
-                    if let mainTabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
-                        mainTabBarController.modalPresentationStyle = .fullScreen
-                        mainTabBarController.view.alpha = 0
-                        window?.rootViewController = mainTabBarController
-                        window?.makeKeyAndVisible()
-                        UIView.animate(withDuration: 0.5) {
-                            mainTabBarController.view.alpha = 1
-                        }
+                        let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
+                        alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
+                        self.present(alertController, animated: true)
                     }
                 }
             }
         }
     }
 
-    private func getAppPassword(serverUrl: String, username: String, password: String) {
-        NextcloudKit.shared.getAppPassword(url: serverUrl, user: username, password: password) { token, _, error in
+    private func getAppPassword(urlBase: String, user: String, password: String) {
+        NextcloudKit.shared.getAppPassword(url: urlBase, user: user, password: password) { token, _, error in
             if error == .success, let password = token {
-                self.createAccount(server: serverUrl, username: username, password: password)
+                self.createAccount(urlBase: urlBase, user: user, password: password)
             } else {
                 NCContentPresenter().showError(error: error)
                 self.dismiss(animated: true, completion: nil)
             }
         }
     }
+
+    private func createAccount(urlBase: String, user: String, password: String) {
+        if let host = URL(string: urlBase)?.host {
+            NCNetworking.shared.writeCertificate(host: host)
+        }
+        self.appDelegate.createAccount(urlBase: urlBase, user: user, password: password) { error in
+            if error == .success {
+                let window = UIApplication.shared.firstWindow
+                if window?.rootViewController is NCMainTabBarController {
+                    self.dismiss(animated: true)
+                } else {
+                    if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+                        controller.modalPresentationStyle = .fullScreen
+                        controller.view.alpha = 0
+                        window?.rootViewController = controller
+                        window?.makeKeyAndVisible()
+                        UIView.animate(withDuration: 0.5) {
+                            controller.view.alpha = 1
+                        }
+                    }
+                }
+            } else {
+                let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
+                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
+                self.present(alertController, animated: true)
+            }
+        }
+    }
+
 }
 
 extension NCLogin: NCShareAccountsDelegate {

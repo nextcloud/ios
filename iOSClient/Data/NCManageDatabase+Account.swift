@@ -85,15 +85,11 @@ extension NCManageDatabase {
             let realm = try Realm()
             try realm.write {
                 let addObject = tableAccount()
-
                 addObject.account = account
-
                 NCKeychain().setPassword(account: account, password: password)
-
                 addObject.urlBase = urlBase
                 addObject.user = user
                 addObject.userId = userId
-
                 realm.add(addObject, update: .all)
             }
         } catch let error {

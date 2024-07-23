@@ -168,20 +168,22 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
 
     @objc func changeAccount() {
         if let activeAccount {
-            self.appDelegate.changeAccount(activeAccount.account, userProfile: nil)
+            self.appDelegate.changeAccount(activeAccount.account, userProfile: nil) { }
         }
     }
 
     /// Function to delete the current account
     func deleteAccount() {
         if let activeAccount {
-            appDelegate.deleteAccount(activeAccount.account, wipe: false)
+            appDelegate.deleteAccount(activeAccount.account)
             if let account = NCManageDatabase.shared.getAllAccount().first?.account {
-                appDelegate.changeAccount(account, userProfile: nil)
+                appDelegate.changeAccount(account, userProfile: nil) {
+                    onViewAppear()
+                }
             } else {
                 dismissView = true
+                appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
             }
-            onViewAppear()
         }
     }
 }
