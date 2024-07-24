@@ -68,6 +68,7 @@ extension UIAlertController {
             textField.autocapitalizationType = .words
         }
 
+
         // only allow saving if folder name exists
         NotificationCenter.default.addObserver(
             forName: UITextField.textDidChangeNotification,
@@ -75,7 +76,9 @@ extension UIAlertController {
             queue: .main) { _ in
                 guard let text = alertController.textFields?.first?.text else { return }
                 let folderName = text.trimmingCharacters(in: .whitespaces)
+                let checkFolderName = FileNameValidator.shared.fileAlreadyExistsError
                 okAction.isEnabled = !folderName.isEmpty && folderName != "." && folderName != ".."
+//                alertController.message = folderName != "." && folderName != ".." ? "This is an error" : ""
             }
 
         alertController.addAction(cancelAction)
@@ -166,4 +169,64 @@ extension UIAlertController {
 //        })
 //        return alertController
 //    }
+
+    static func renameFile(oldName: String, completion: ((_ error: NKError) -> Void)? = nil) -> UIAlertController {
+//        class Test: NSObject, UITextFieldDelegate {
+//            func textFieldDidBeginEditing(_ textField: UITextField) {
+//                textField.selectedTextRange = textField.textRange(from: textField.beginningOfDocument, to: textField.endOfDocument)
+//                    textField.becomeFirstResponder()
+//                }
+//        }
+
+
+        let alertController = UIAlertController(title: NSLocalizedString("_rename_", comment: ""), message: nil, preferredStyle: .alert)
+
+        let okAction = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default, handler: { _ in
+            guard let fileNameFolder = alertController.textFields?.first?.text else { return }
+        })
+
+        // text field is initially empty, no action
+        okAction.isEnabled = false
+        let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel)
+
+        alertController.addTextField { textField in
+            textField.text = oldName
+            textField.autocapitalizationType = .words
+//            textField.becomeFirstResponder()
+//            if let start = textField.position(from: textField.beginningOfDocument, offset: 0),
+//               let end = textField.position(from: start, offset: textField.text?.withRemovedFileExtension.count ?? 0) {
+//                textField.selectedTextRange = textField.textRange(from: start, to: end)
+//            }
+//            textField.selectAll(nil)
+        }
+
+        // only allow saving if folder name exists
+        NotificationCenter.default.addObserver(
+            forName: UITextField.textDidBeginEditingNotification,
+            object: alertController.textFields?.first,
+            queue: .main) { _ in
+                guard let textField = alertController.textFields?.first else { return }
+
+                if let start = textField.position(from: textField.beginningOfDocument, offset: 0),
+                              let end = textField.position(from: start, offset: textField.text?.withRemovedFileExtension.count ?? 0) {
+                               textField.selectedTextRange = textField.textRange(from: start, to: end)
+                           }
+//                           textField.selectAll(nil)
+            }
+
+        NotificationCenter.default.addObserver(
+            forName: UITextField.textDidChangeNotification,
+            object: alertController.textFields?.first,
+            queue: .main) { _ in
+                guard let text = alertController.textFields?.first?.text else { return }
+
+                let textCheck = FileNameValidator.shared.checkFileName(text)
+                okAction.isEnabled = textCheck?.error == nil
+                alertController.message = textCheck?.error.localizedDescription
+            }
+
+        alertController.addAction(cancelAction)
+        alertController.addAction(okAction)
+        return alertController
+    }
 }

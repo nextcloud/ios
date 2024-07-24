@@ -295,8 +295,42 @@ extension NCCollectionViewCommon {
 
                             let popup = NCPopupViewController(contentController: vcRename, popupWidth: vcRename.width, popupHeight: vcRename.height)
                             popup.shadowEnabled = false
+
+//                            let alertController = UIAlertController(title: "Alert", message: nil, preferredStyle: .alert)
                             
-                            self.present(popup, animated: true)
+
+
+//                            // Create an instance of your custom view controller
+//                            let customViewController = CustomAlertViewController()
+//                            customViewController.alertController = alertController
+//
+//                            // Add the custom view controller to the alert
+//                            alertController.setValue(customViewController, forKey: "contentViewController")
+
+//                            alertController.addTextField {
+//                                   $0.placeholder = "Email"
+//                                   $0.addTarget(alertController, action: #selector(alertController.textDidChangeInLoginAlert), for: .editingChanged)
+//                               }
+//
+//                            let updateAction = UIAlertAction(title: "Update", style: .default) { _ in
+//                                // Code to update the alert controller
+//                                alertController.title = "Updated Title"
+//                                alertController.message = "Updated Message"
+//
+//                                // Adding a new action as an example
+//                                let newAction = UIAlertAction(title: "New Action", style: .default, handler: nil)
+//                                alertController.addAction(newAction)
+//                            }
+//                            alertController.addAction(updateAction)
+//
+//
+//                            // Add a dummy action to ensure there's something to present the alert
+//                            let dummyAction = UIAlertAction(title: "Close", style: .cancel, handler: nil)
+//                            alertController.addAction(dummyAction)
+//
+//                            self.present(alertController, animated: true, completion: nil)
+
+                            self.present(UIAlertController.renameFile(oldName: metadata.fileName), animated: true)
                         }
                     }
                 )
@@ -383,3 +417,31 @@ extension TimeInterval {
         return formatter.string(from: self)
     }
 }
+
+//class CustomAlertViewController: UIViewController {
+//    var alertController: UIAlertController?
+//
+//    override func viewDidLoad() {
+//        super.viewDidLoad()
+//
+//        // Add your custom views and logic herey
+//
+//        let button = UIButton(type: .system)
+//        button.setTitle("Press me", for: .normal)
+//        button.addTarget(self, action: #selector(buttonPressed), for: .touchUpInside)
+//
+//        // Add button to the view
+//        button.translatesAutoresizingMaskIntoConstraints = false
+//        view.addSubview(button)
+//
+//        NSLayoutConstraint.activate([
+//            button.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+//            button.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+//        ])
+//    }
+//
+//    @objc func buttonPressed() {
+//        // Handle button press without dismissing the alert
+//        print("Button pressed!")
+//    }
+//}

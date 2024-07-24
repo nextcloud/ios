@@ -24,16 +24,16 @@
 import UIKit
 import NextcloudKit
 
-public protocol NCRenameFileDelegate: AnyObject {
+public protocol NCCreateFolderDelegate: AnyObject {
     func rename(fileName: String, fileNameNew: String)
 }
 
 // optional func
-public extension NCRenameFileDelegate {
+public extension NCCreateFolderDelegate {
     func rename(fileName: String, fileNameNew: String) {}
 }
 
-class NCRenameFile: UIViewController, UITextFieldDelegate {
+class NCCreateFolder: UIViewController, UITextFieldDelegate {
 
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var previewFile: UIImageView!
@@ -52,15 +52,12 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
     var fileName: String?
     var imagePreview: UIImage?
     var disableChangeExt: Bool = false
-    weak var delegate: NCRenameFileDelegate?
+    weak var delegate: NCCreateFolderDelegate?
 
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        view.insertBlur(style: .systemMaterial)
-
         if let metadata = self.metadata {
 
             if metadata.directory {
@@ -171,7 +168,6 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
             }
 
             if metadata.directory {
-
                 fileNameNew = fileNameNoExtensionNew
                 renameMetadata(metadata, fileNameNew: fileNameNew, indexPath: indexPath)
 
@@ -203,7 +199,6 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
                     self.present(alertController, animated: true)
 
                 } else {
-
                     fileNameNew = fileNameNoExtensionNew + "." + extNew
                     renameMetadata(metadata, fileNameNew: fileNameNew, indexPath: indexPath)
                 }
@@ -241,11 +236,8 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
             NCActivityIndicator.shared.stop()
 
             if error == .success {
-
                 self.dismiss(animated: true)
-
             } else {
-
                 NCContentPresenter().showError(error: error)
             }
         }
