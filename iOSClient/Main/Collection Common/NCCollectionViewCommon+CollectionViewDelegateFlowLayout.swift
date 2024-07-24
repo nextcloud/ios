@@ -26,17 +26,7 @@ import UIKit
 
 extension NCCollectionViewCommon: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        var height: CGFloat = 0
-
-        if isEditMode {
-            return CGSize.zero
-        } else if dataSource.getMetadataSourceForAllSections().isEmpty {
-            height = NCGlobal.shared.getHeightHeaderEmptyData(view: view, portraitOffset: emptyDataPortaitOffset, landscapeOffset: emptyDataLandscapeOffset, isHeaderMenuTransferViewEnabled: isHeaderMenuTransferViewEnabled())
-        } else {
-            let (heightHeaderCommands, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: section)
-            height = heightHeaderCommands + heightHeaderRichWorkspace + heightHeaderSection
-        }
-        return CGSize(width: collectionView.frame.width, height: height)
+        return sizeForHeaderInSection(section: section)
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {

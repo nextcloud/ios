@@ -1234,30 +1234,32 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    // MARK: - Header calculate size
+    // MARK: - Header size
 
     func isHeaderMenuTransferViewEnabled() -> Bool {
-        if headerMenuTransferView, let metadata = NCManageDatabase.shared.getMetadataFromOcId(NCNetworking.shared.transferInForegorund?.ocId), metadata.isTransferInForeground {
+        if headerMenuTransferView,
+           let metadata = NCManageDatabase.shared.getMetadataFromOcId(NCNetworking.shared.transferInForegorund?.ocId),
+           metadata.isTransferInForeground {
             return true
         }
         return false
     }
 
-    func getHeaderHeight() -> CGFloat {
-        var size: CGFloat = 0
-
-        if isHeaderMenuTransferViewEnabled() {
-            if !isSearchingMode {
-                size += NCGlobal.shared.heightHeaderTransfer
-            }
-        } else {
-            NCNetworking.shared.transferInForegorund = nil
-        }
-        return size
-    }
-
     func getHeaderHeight(section: Int) -> (heightHeaderCommands: CGFloat, heightHeaderRichWorkspace: CGFloat, heightHeaderSection: CGFloat) {
         var headerRichWorkspace: CGFloat = 0
+
+        func getHeaderHeight() -> CGFloat {
+            var size: CGFloat = 0
+
+            if isHeaderMenuTransferViewEnabled() {
+                if !isSearchingMode {
+                    size += NCGlobal.shared.heightHeaderTransfer
+                }
+            } else {
+                NCNetworking.shared.transferInForegorund = nil
+            }
+            return size
+        }
 
         if let richWorkspaceText = richWorkspaceText, showDescription {
             let trimmed = richWorkspaceText.trimmingCharacters(in: .whitespaces)
@@ -1277,6 +1279,19 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
+    func sizeForHeaderInSection(section: Int) -> CGSize {
+        var height: CGFloat = 0
+
+        if isEditMode {
+            return CGSize.zero
+        } else if dataSource.getMetadataSourceForAllSections().isEmpty {
+            height = NCGlobal.shared.getHeightHeaderEmptyData(view: view, portraitOffset: emptyDataPortaitOffset, landscapeOffset: emptyDataLandscapeOffset, isHeaderMenuTransferViewEnabled: isHeaderMenuTransferViewEnabled())
+        } else {
+            let (heightHeaderCommands, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: section)
+            height = heightHeaderCommands + heightHeaderRichWorkspace + heightHeaderSection
+        }
+        return CGSize(width: collectionView.frame.width, height: height)
+    }
 }
 
 // MARK: -
