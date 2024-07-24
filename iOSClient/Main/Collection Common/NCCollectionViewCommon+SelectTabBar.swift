@@ -1,5 +1,5 @@
 //
-//  NCCollectionViewCommon+SelectTabBarDelegate.swift
+//  NCCollectionViewCommon+SelectTabBar.swift
 //  Nextcloud
 //
 //  Created by Milen on 01.03.24.
@@ -26,40 +26,6 @@ import Foundation
 import NextcloudKit
 
 extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
-    func onListSelected() {
-        if layoutForView?.layout == NCGlobal.shared.layoutGrid {
-            layoutForView?.layout = NCGlobal.shared.layoutList
-            NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
-            self.groupByField = "name"
-            if self.dataSource.groupByField != self.groupByField {
-                self.dataSource.changeGroupByField(self.groupByField)
-            }
-
-            self.collectionView.reloadData()
-            self.collectionView.collectionViewLayout.invalidateLayout()
-            self.collectionView.setCollectionViewLayout(self.listLayout, animated: true) {_ in self.isTransitioning = false }
-        }
-    }
-
-    func onGridSelected() {
-        if layoutForView?.layout == NCGlobal.shared.layoutList {
-            layoutForView?.layout = NCGlobal.shared.layoutGrid
-            NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl, layout: layoutForView?.layout)
-            if isSearchingMode {
-                self.groupByField = "name"
-            } else {
-                self.groupByField = "classFile"
-            }
-            if self.dataSource.groupByField != self.groupByField {
-                self.dataSource.changeGroupByField(self.groupByField)
-            }
-
-            self.collectionView.reloadData()
-            self.collectionView.collectionViewLayout.invalidateLayout()
-            self.collectionView.setCollectionViewLayout(self.gridLayout, animated: true) {_ in self.isTransitioning = false }
-        }
-    }
-
     func selectAll() {
         if !selectOcId.isEmpty, dataSource.getMetadataSourceForAllSections().count == selectOcId.count {
             selectOcId = []
@@ -79,7 +45,6 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
 
         if canDeleteServer {
             let copyMetadatas = metadatas
-
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .destructive) { _ in
                 Task {
                     var error = NKError()
@@ -157,12 +122,6 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
             NCNetworking.shared.lockUnlockFile(metadata, shoulLock: !isAnyLocked)
         }
         setEditMode(false)
-    }
-
-    func saveLayout(_ layoutForView: NCDBLayoutForView) {
-        NCManageDatabase.shared.setLayoutForView(layoutForView: layoutForView)
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
-        setNavigationRightItems()
     }
 
     func getSelectedMetadatas() -> [tableMetadata] {

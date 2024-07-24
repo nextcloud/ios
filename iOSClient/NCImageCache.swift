@@ -174,35 +174,6 @@ class NCImageCache: NSObject {
         return self.metadatas
     }
 
-    ///
-    /// MEDIA PREVIEW CACHE
-    ///
-    func setMediaImage(ocId: String, etag: String, image: UIImage, date: Date) {
-        cacheImagePreview.setValue(imageInfo(image: image, size: image.size, date: date), forKey: ocId + etag)
-    }
-
-    func getMediaImage(ocId: String, etag: String) -> UIImage? {
-        if let cache = cacheImagePreview.value(forKey: ocId + etag) {
-            return cache.image
-        }
-        return nil
-    }
-
-    func hasMediaImageEnoughSpace() -> Bool {
-        return limitCacheImagePreview > cacheImagePreview.count
-    }
-
-    ///
-    /// MEDIA SIZE CACHE
-    ///
-    func setMediaSize(ocId: String, etag: String, size: CGSize) {
-        cacheSizePreview.setValue(size, forKey: ocId + etag)
-    }
-
-    func getMediaSize(ocId: String, etag: String) -> CGSize? {
-        return cacheSizePreview.value(forKey: ocId + etag) ?? nil
-    }
-
     func getMediaMetadatas(account: String, predicate: NSPredicate? = nil) -> ThreadSafeArray<tableMetadata>? {
         guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return nil }
         let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: tableAccount.urlBase, userId: tableAccount.userId) + tableAccount.mediaPath
@@ -211,14 +182,42 @@ class NCImageCache: NSObject {
     }
 
     ///
+    /// PREVIEW CACHE
+    ///
+    func addPreviewImageCache(metadata: tableMetadata, image: UIImage) {
+        cacheImagePreview.setValue(imageInfo(image: image, size: image.size, date: metadata.date as Date), forKey: metadata.ocId + metadata.etag)
+        cacheSizePreview.setValue(image.size, forKey: metadata.ocId + metadata.etag)
+    }
+
+    func getPreviewImageCache(ocId: String, etag: String) -> UIImage? {
+        if let cache = cacheImagePreview.value(forKey: ocId + etag) {
+            return cache.image
+        }
+        return nil
+    }
+
+    ///
+    /// SIZE CACHE
+    ///
+    func getPreviewSizeCache(ocId: String, etag: String) -> CGSize? {
+        if let size = cacheSizePreview.value(forKey: ocId + etag) {
+            return size
+        } else {
+            if let image = UIImage(contentsOfFile: NCUtilityFileSystem().getDirectoryProviderStoragePreviewOcId(ocId, etag: etag)) {
+                return image.size
+            }
+        }
+        return nil
+    }
+
+    ///
     /// ICON CACHE
     ///
-
-    func setIconImage(ocId: String, etag: String, image: UIImage) {
+    func setIconImageCache(ocId: String, etag: String, image: UIImage) {
         cacheImageIcon.setValue(image, forKey: ocId + etag)
     }
 
-    func getIconImage(ocId: String, etag: String) -> UIImage? {
+    func getIconImageCache(ocId: String, etag: String) -> UIImage? {
         return cacheImageIcon.value(forKey: ocId + etag)
     }
 

@@ -36,10 +36,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene),
               let appDelegate else { return }
         self.window = UIWindow(windowScene: windowScene)
-#if os(visionOS)
-        // TEST
-        // window?.overrideUserInterfaceStyle = .dark
-#endif
 
         if NCManageDatabase.shared.getActiveAccount() != nil {
             if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
@@ -191,7 +187,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     for account in accounts {
                         let urlBase = URL(string: account.urlBase)
                         if url.contains(urlBase?.host ?? "") && userId == account.userId {
-                            appDelegate.changeAccount(account.account, userProfile: nil)
+                            appDelegate.changeAccount(account.account, userProfile: nil) { }
                             return account
                         }
                     }
@@ -391,7 +387,7 @@ extension SceneDelegate: NCAccountRequestDelegate {
     func accountRequestAddAccount() { }
 
     func accountRequestChangeAccount(account: String) {
-        appDelegate?.changeAccount(account, userProfile: nil)
+        appDelegate?.changeAccount(account, userProfile: nil) { }
     }
 }
 

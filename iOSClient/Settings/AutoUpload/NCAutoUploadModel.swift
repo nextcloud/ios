@@ -82,18 +82,19 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
             serverUrl = NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
         }
         if autoUpload {
-            requestAuthorization()
+            requestAuthorization { value in
+                self.autoUpload = value
+                self.updateAccountProperty(\.autoUpload, value: value)
+            }
         }
     }
 
     // MARK: - All functions
 
-    func requestAuthorization() {
+    func requestAuthorization(completion: @escaping (Bool) -> Void = { _ in }) {
         PHPhotoLibrary.requestAuthorization { status in
             DispatchQueue.main.async {
                 let value = (status == .authorized)
-                self.autoUpload = value
-                self.updateAccountProperty(\.autoUpload, value: value)
                 if !value {
                     let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_access_photo_not_enabled_msg_", comment: ""), responseData: nil)
                     NCContentPresenter().messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
@@ -101,6 +102,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
                     let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_access_background_app_refresh_denied_", comment: ""), responseData: nil)
                     NCContentPresenter().messageNotification("_info_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .info)
                 }
+                completion(value)
             }
         }
     }
@@ -108,15 +110,26 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     /// Updates the auto-upload setting.
     func handleAutoUploadChange(newValue: Bool) {
         if newValue {
-            requestAuthorization()
+            requestAuthorization { value in
+                self.autoUpload = value
+                self.updateAccountProperty(\.autoUpload, value: value)
+                NCManageDatabase.shared.setAccountAutoUploadFileName("")
+                NCManageDatabase.shared.setAccountAutoUploadDirectory("", urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId, account: self.appDelegate.account)
+                NCAutoUpload.shared.alignPhotoLibrary(viewController: self.controller)
+            }
         } else {
             updateAccountProperty(\.autoUpload, value: newValue)
+            updateAccountProperty(\.autoUploadFull, value: newValue)
+            NCManageDatabase.shared.clearMetadatasUpload(account: appDelegate.account)
         }
     }
 
     /// Updates the auto-upload image setting.
     func handleAutoUploadImageChange(newValue: Bool) {
         updateAccountProperty(\.autoUploadImage, value: newValue)
+        if newValue {
+            NCAutoUpload.shared.alignPhotoLibrary(viewController: controller)
+        }
     }
 
     /// Updates the auto-upload image over WWAN setting.
@@ -127,6 +140,9 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     /// Updates the auto-upload video setting.
     func handleAutoUploadVideoChange(newValue: Bool) {
         updateAccountProperty(\.autoUploadVideo, value: newValue)
+        if newValue {
+            NCAutoUpload.shared.alignPhotoLibrary(viewController: controller)
+        }
     }
 
     /// Updates the auto-upload video over WWAN setting.
@@ -139,10 +155,8 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         updateAccountProperty(\.autoUploadFull, value: newValue)
         if newValue {
             NCAutoUpload.shared.autoUploadFullPhotos(viewController: self.controller, log: "Auto upload full")
-            NCManageDatabase.shared.setAccountAutoUploadProperty("autoUploadFull", state: true)
         } else {
             NCManageDatabase.shared.clearMetadatasUpload(account: appDelegate.account)
-            NCManageDatabase.shared.setAccountAutoUploadProperty("autoUploadFull", state: false)
         }
     }
 

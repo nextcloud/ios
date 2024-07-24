@@ -26,7 +26,6 @@ import NextcloudKit
 import Queuer
 
 class NCMediaDownloadThumbnaill: ConcurrentOperation {
-
     var metadata: tableMetadata
     var media: NCMedia
     var fileNamePreviewLocalPath: String
@@ -73,7 +72,7 @@ class NCMediaDownloadThumbnaill: ConcurrentOperation {
                         }
                     }
                 }
-                NCImageCache.shared.setMediaSize(ocId: self.metadata.ocId, etag: self.metadata.etag, size: imagePreview.size)
+                NCImageCache.shared.addPreviewImageCache(metadata: self.metadata, image: imagePreview)
             }
             self.finish()
         }

@@ -150,13 +150,9 @@ extension FileProviderExtension {
                     NCManageDatabase.shared.setDirectory(serverUrl: fileNamePathFrom, serverUrlTo: fileNamePathTo, encrypted: directoryTable.e2eEncrypted, account: account)
                 } else {
                     let itemIdentifier = self.providerUtility.getItemIdentifier(metadata: metadata)
-                    // rename file
                     self.providerUtility.moveFile(self.utilityFileSystem.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: fileNameFrom), toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: itemName))
-
                     self.providerUtility.moveFile(self.utilityFileSystem.getDirectoryProviderStoragePreviewOcId(itemIdentifier.rawValue, etag: metadata.etag), toPath: self.utilityFileSystem.getDirectoryProviderStoragePreviewOcId(itemIdentifier.rawValue, etag: metadata.etag))
-
                     self.providerUtility.moveFile(self.utilityFileSystem.getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, etag: metadata.etag), toPath: self.utilityFileSystem.getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, etag: metadata.etag))
-
                     NCManageDatabase.shared.setLocalFile(ocId: ocId, fileName: itemName)
                 }
 
@@ -181,11 +177,10 @@ extension FileProviderExtension {
         if favoriteRank == nil {
             fileProviderData.shared.listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
         } else {
-            if let rank = fileProviderData.shared.listFavoriteIdentifierRank[itemIdentifier.rawValue] {
-                favorite = true
-            } else {
+            if fileProviderData.shared.listFavoriteIdentifierRank[itemIdentifier.rawValue] == nil {
                 fileProviderData.shared.listFavoriteIdentifierRank[itemIdentifier.rawValue] = favoriteRank
             }
+            favorite = true
         }
 
         if (favorite == true && metadata.favorite == false) || (favorite == false && metadata.favorite == true) {
@@ -198,8 +193,8 @@ extension FileProviderExtension {
                     // Change DB
                     metadata.favorite = favorite
                     NCManageDatabase.shared.addMetadata(metadata)
-
-                    let item = fileProviderData.shared.signalEnumerator(ocId: metadata.ocId)
+                    /// SIGNAL
+                    let item = fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .workingSet)
                     completionHandler(item, nil)
                 } else {
                     guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else {
@@ -207,8 +202,8 @@ extension FileProviderExtension {
                     }
                     // Errore, remove from listFavoriteIdentifierRank
                     fileProviderData.shared.listFavoriteIdentifierRank.removeValue(forKey: itemIdentifier.rawValue)
-
-                    let item = fileProviderData.shared.signalEnumerator(ocId: metadata.ocId)
+                    /// SIGNAL
+                    let item = fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .workingSet)
                     completionHandler(item, NSFileProviderError(.serverUnreachable))
                 }
             }
@@ -222,10 +217,9 @@ extension FileProviderExtension {
         let ocId = metadataForTag.ocId
         let account = metadataForTag.account
 
-        // Add, Remove (nil)
         NCManageDatabase.shared.addTag(ocId, tagIOS: tagData, account: account)
-
-        let item = fileProviderData.shared.signalEnumerator(ocId: ocId)
+        /// SIGNAL WORKINGSET
+        let item = fileProviderData.shared.signalEnumerator(ocId: ocId, type: .workingSet)
         completionHandler(item, nil)
     }
 

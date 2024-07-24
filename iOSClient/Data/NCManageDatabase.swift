@@ -40,11 +40,8 @@ class NCManageDatabase: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
 
     override init() {
-        let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroups)
+        let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         let databaseFileUrlPath = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
-        let bundleUrl: URL = Bundle.main.bundleURL
-        let bundlePathExtension: String = bundleUrl.pathExtension
-        let isAppex: Bool = bundlePathExtension == "appex"
 
         if let databaseFilePath = databaseFileUrlPath?.path {
             if FileManager.default.fileExists(atPath: databaseFilePath) {
@@ -65,91 +62,39 @@ class NCManageDatabase: NSObject {
             }
         }
 
-        if isAppex {
-            Realm.Configuration.defaultConfiguration = Realm.Configuration(
-                fileURL: dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName),
+        do {
+            _ = try Realm(configuration: Realm.Configuration(
+                fileURL: databaseFileUrlPath,
                 schemaVersion: databaseSchemaVersion,
-                objectTypes: [tableMetadata.self,
-                              tableLocalFile.self,
-                              tableDirectory.self,
-                              tableTag.self,
-                              tableAccount.self,
-                              tableCapabilities.self,
-                              tablePhotoLibrary.self,
-                              tableE2eEncryption.self,
-                              tableE2eEncryptionLock.self,
-                              tableE2eMetadata12.self,
-                              tableE2eMetadata.self,
-                              tableE2eUsers.self,
-                              tableE2eCounter.self,
-                              tableShare.self,
-                              tableChunk.self,
-                              tableAvatar.self,
-                              tableDashboardWidget.self,
-                              tableDashboardWidgetButton.self,
-                              NCDBLayoutForView.self,
-                              TableSecurityGuardDiagnostics.self]
-            )
-        } else {
-            do {
-                _ = try Realm(configuration: Realm.Configuration(
-                    fileURL: databaseFileUrlPath,
-                    schemaVersion: databaseSchemaVersion,
-
-                    migrationBlock: { migration, oldSchemaVersion in
-
-                        if oldSchemaVersion < 255 {
-                            migration.deleteData(forType: tableActivity.className())
-                            migration.deleteData(forType: tableActivityLatestId.className())
-                            migration.deleteData(forType: tableActivityPreview.className())
-                            migration.deleteData(forType: tableActivitySubjectRich.className())
-                        }
-
-                        if oldSchemaVersion < 292 {
-                            migration.deleteData(forType: tableVideo.className())
-                        }
-
-                        if oldSchemaVersion < 319 {
-                            migration.deleteData(forType: tableChunk.className())
-                            migration.deleteData(forType: tableDirectory.className())
-                            migration.deleteData(forType: tableE2eEncryptionLock.className())
-                            migration.deleteData(forType: tableGPS.className())
-                        }
-
-                        if oldSchemaVersion < 333 {
-                            migration.deleteData(forType: tableMetadata.className())
-                            migration.enumerateObjects(ofType: tableDirectory.className()) { _, newObject in
-                                newObject?["etag"] = ""
-                            }
-                        }
-
-                    }, shouldCompactOnLaunch: { totalBytes, usedBytes in
-                        // totalBytes refers to the size of the file on disk in bytes (data + free space)
-                        // usedBytes refers to the number of bytes used by data in the file
-                        // Compact if the file is over 100MB in size and less than 50% 'used'
-                        let oneHundredMB = 100 * 1024 * 1024
-                        return (totalBytes > oneHundredMB) && (Double(usedBytes) / Double(totalBytes)) < 0.5
+                migrationBlock: { migration, oldSchemaVersion in
+                    if oldSchemaVersion < 354 {
+                        migration.deleteData(forType: NCDBLayoutForView.className())
                     }
-                ))
-
-            } catch let error {
-                if let databaseFileUrlPath = databaseFileUrlPath {
-                    do {
-#if !EXTENSION
-                        let nkError = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: error.localizedDescription)
-                        NCContentPresenter().showError(error: nkError, priority: .max)
-#endif
-                        NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] DATABASE ERROR: \(error.localizedDescription)")
-                        try FileManager.default.removeItem(at: databaseFileUrlPath)
-                    } catch {}
+                }, shouldCompactOnLaunch: { totalBytes, usedBytes in
+                    // totalBytes refers to the size of the file on disk in bytes (data + free space)
+                    // usedBytes refers to the number of bytes used by data in the file
+                    // Compact if the file is over 100MB in size and less than 50% 'used'
+                    let oneHundredMB = 100 * 1024 * 1024
+                    return (totalBytes > oneHundredMB) && (Double(usedBytes) / Double(totalBytes)) < 0.5
                 }
+            ))
+        } catch let error {
+            if let databaseFileUrlPath = databaseFileUrlPath {
+                do {
+#if !EXTENSION
+                    let nkError = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: error.localizedDescription)
+                    NCContentPresenter().showError(error: nkError, priority: .max)
+#endif
+                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] DATABASE ERROR: \(error.localizedDescription)")
+                    try FileManager.default.removeItem(at: databaseFileUrlPath)
+                } catch {}
             }
-
-            Realm.Configuration.defaultConfiguration = Realm.Configuration(
-                fileURL: dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName),
-                schemaVersion: databaseSchemaVersion
-            )
         }
+
+        Realm.Configuration.defaultConfiguration = Realm.Configuration(
+            fileURL: dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName),
+            schemaVersion: databaseSchemaVersion
+        )
 
         // Verify Database, if corrupt remove it
         do {
@@ -219,7 +164,6 @@ class NCManageDatabase: NSObject {
         self.clearTable(tableGPS.self, account: nil)
         self.clearTable(TableGroupfolders.self, account: account)
         self.clearTable(TableGroupfoldersGroups.self, account: account)
-        self.clearTable(NCDBLayoutForView.self, account: account)
         self.clearTable(tableLocalFile.self, account: account)
         self.clearTable(tableMetadata.self, account: account)
         self.clearTable(tablePhotoLibrary.self, account: account)
@@ -269,7 +213,6 @@ class NCManageDatabase: NSObject {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
-
         return nil
     }
 

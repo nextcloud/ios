@@ -58,11 +58,12 @@ class NCFiles: NCCollectionViewCommon {
                 self.selectOcId.removeAll()
 
                 self.layoutForView = NCManageDatabase.shared.getLayoutForView(account: self.appDelegate.account, key: self.layoutKey, serverUrl: self.serverUrl)
-                self.gridLayout.itemForLine = CGFloat(self.layoutForView?.itemForLine ?? 3)
                 if self.layoutForView?.layout == NCGlobal.shared.layoutList {
                     self.collectionView?.collectionViewLayout = self.listLayout
-                } else {
+                } else if self.layoutForView?.layout == NCGlobal.shared.layoutGrid {
                     self.collectionView?.collectionViewLayout = self.gridLayout
+                } else if self.layoutForView?.layout == NCGlobal.shared.layoutPhotoSquare || self.layoutForView?.layout == NCGlobal.shared.layoutPhotoRatio {
+                    self.collectionView?.collectionViewLayout = self.mediaLayout
                 }
 
                 self.titleCurrentFolder = self.getNavigationTitle()
@@ -111,17 +112,7 @@ class NCFiles: NCCollectionViewCommon {
         }
 
         self.richWorkspaceText = directory?.richWorkspace
-        self.dataSource = NCDataSource(
-            metadatas: metadatas,
-            account: self.appDelegate.account,
-            directory: directory,
-            sort: self.layoutForView?.sort,
-            ascending: self.layoutForView?.ascending,
-            directoryOnTop: self.layoutForView?.directoryOnTop,
-            favoriteOnTop: true,
-            groupByField: self.groupByField,
-            providers: self.providers,
-            searchResults: self.searchResults)
+        self.dataSource = NCDataSource(metadatas: metadatas, account: self.appDelegate.account, layoutForView: layoutForView, providers: self.providers, searchResults: self.searchResults)
     }
 
     override func reloadDataSource(withQueryDB: Bool = true) {
@@ -298,7 +289,7 @@ class NCFiles: NCCollectionViewCommon {
         if NCManageDatabase.shared.getAllAccount().isEmpty {
             appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
         } else if let account = tableAccount?.account, account != appDelegate.account {
-            appDelegate.changeAccount(account, userProfile: nil)
+            appDelegate.changeAccount(account, userProfile: nil) { }
         } else if isRoot {
             titleCurrentFolder = getNavigationTitle()
             navigationItem.title = titleCurrentFolder

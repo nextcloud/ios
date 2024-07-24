@@ -62,11 +62,21 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.filePreviewImageView?.layer.borderColor = UIColor.lightGray.cgColor
             }
             if metadata.name == NCGlobal.shared.appName {
-                if let image = NCImageCache.shared.getIconImage(ocId: metadata.ocId, etag: metadata.etag) {
-                    cell.filePreviewImageView?.image = image
-                } else if let image = utility.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: !metadata.hasPreview) {
-                    cell.filePreviewImageView?.image = image
+                if layoutForView?.layout == NCGlobal.shared.layoutPhotoRatio || layoutForView?.layout == NCGlobal.shared.layoutPhotoSquare {
+                    if let image = NCImageCache.shared.getPreviewImageCache(ocId: metadata.ocId, etag: metadata.etag) {
+                        cell.filePreviewImageView?.image = image
+                    } else if let image = UIImage(contentsOfFile: self.utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
+                        cell.filePreviewImageView?.image = image
+                        NCImageCache.shared.addPreviewImageCache(metadata: metadata, image: image)
+                    }
                 } else {
+                    if let image = NCImageCache.shared.getIconImageCache(ocId: metadata.ocId, etag: metadata.etag) {
+                        cell.filePreviewImageView?.image = image
+                    } else if metadata.hasPreview {
+                        cell.filePreviewImageView?.image = utility.getIcon(metadata: metadata)
+                    }
+                }
+                if cell.filePreviewImageView?.image == nil {
                     if metadata.iconName.isEmpty {
                         cell.filePreviewImageView?.image = NCImageCache.images.file
                     } else {
@@ -107,7 +117,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 }
             }
         }
-
         /// AVATAR
         if !metadata.ownerId.isEmpty,
            metadata.ownerId != appDelegate.userId,
@@ -133,16 +142,21 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         var isMounted = false
         var a11yValues: [String] = []
 
-        // LAYOUT LIST
-        if layoutForView?.layout == NCGlobal.shared.layoutList {
-            guard let listCell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell else { return NCListCell() }
-            listCell.listCellDelegate = self
-            cell = listCell
-        } else {
+        // LAYOUT PHOTO
+        if layoutForView?.layout == NCGlobal.shared.layoutPhotoRatio || layoutForView?.layout == NCGlobal.shared.layoutPhotoSquare {
+            guard let photoCell = collectionView.dequeueReusableCell(withReuseIdentifier: "photoCell", for: indexPath) as? NCPhotoCell else { return NCPhotoCell() }
+            photoCell.photoCellDelegate = self
+            cell = photoCell
+        } else if layoutForView?.layout == NCGlobal.shared.layoutGrid {
         // LAYOUT GRID
             guard let gridCell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridCell else { return NCGridCell() }
             gridCell.gridCellDelegate = self
             cell = gridCell
+        } else {
+        // LAYOUT LIST
+            guard let listCell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell else { return NCListCell() }
+            listCell.listCellDelegate = self
+            cell = listCell
         }
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return cell }
 
@@ -157,7 +171,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             isMounted = metadata.permissions.contains(permissions.permissionMounted) && !metadataFolder!.permissions.contains(permissions.permissionMounted)
         }
 
-        cell.fileSelectImage?.image = nil
         cell.fileStatusImage?.image = nil
         cell.fileLocalImage?.image = nil
         cell.fileFavoriteImage?.image = nil
@@ -230,7 +243,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.filePreviewImageView?.image = cell.filePreviewImageView?.image?.colorizeFolder(metadata: metadata, tableDirectory: tableDirectory)
         } else {
             let tableLocalFile = NCManageDatabase.shared.getResultsTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))?.first
-
             // image local
             if let tableLocalFile, tableLocalFile.offline {
                 a11yValues.append(NSLocalizedString("_offline_", comment: ""))
@@ -320,16 +332,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         // Edit mode
-        if isEditMode {
-            cell.selectMode(true)
-            if selectOcId.contains(metadata.ocId) {
-                cell.selected(true)
-                a11yValues.append(NSLocalizedString("_selected_", comment: ""))
-            } else {
-                cell.selected(false)
-            }
+        if selectOcId.contains(metadata.ocId) {
+            cell.selected(true, isEditMode: isEditMode)
+            a11yValues.append(NSLocalizedString("_selected_", comment: ""))
         } else {
-            cell.selectMode(false)
+            cell.selected(false, isEditMode: isEditMode)
         }
 
         // Accessibility
@@ -346,7 +353,18 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.fileTitleLabel?.attributedText = attributedString
         }
 
-        // Add TAGS
+        // Layout photo
+        if layoutForView?.layout == NCGlobal.shared.layoutPhotoRatio || layoutForView?.layout == NCGlobal.shared.layoutPhotoSquare {
+            if metadata.directory {
+                cell.filePreviewImageBottom?.constant = 10
+                cell.fileTitleLabel?.text = metadata.fileNameView
+            } else {
+                cell.filePreviewImageBottom?.constant = 0
+                cell.fileTitleLabel?.text = ""
+            }
+        }
+
+        // TAGS
         cell.setTags(tags: Array(metadata.tags))
 
         // Hide buttons
@@ -362,12 +380,12 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
 
-        if kind == UICollectionView.elementKindSectionHeader {
+        if kind == UICollectionView.elementKindSectionHeader || kind == mediaSectionHeader {
 
             if dataSource.getMetadataSourceForAllSections().isEmpty {
 
-                guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderEmptyData", for: indexPath) as? NCSectionHeaderEmptyData else { return NCSectionHeaderEmptyData() }
-                self.headerEmptyData = header
+                guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeaderEmptyData", for: indexPath) as? NCSectionFirstHeaderEmptyData else { return NCSectionFirstHeaderEmptyData() }
+                self.sectionFirstHeaderEmptyData = header
                 header.delegate = self
 
                 if !isSearchingMode, headerMenuTransferView, let ocId = NCNetworking.shared.transferInForegorund?.ocId {
@@ -405,9 +423,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
             } else if indexPath.section == 0 {
 
-                guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as? NCSectionHeaderMenu else { return NCSectionHeaderMenu() }
+                guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeader", for: indexPath) as? NCSectionFirstHeader else { return NCSectionFirstHeader() }
                 let (_, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: indexPath.section)
-                self.headerMenu = header
+                self.sectionFirstHeader = header
                 header.delegate = self
 
                 if !isSearchingMode, headerMenuTransferView, let ocId = NCNetworking.shared.transferInForegorund?.ocId {
@@ -487,5 +505,24 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
             return footer
         }
+    }
+
+    // MARK: -
+
+    func getAvatarFromIconUrl(metadata: tableMetadata) -> String? {
+        var ownerId: String?
+
+        if metadata.iconUrl.contains("http") && metadata.iconUrl.contains("avatar") {
+            let splitIconUrl = metadata.iconUrl.components(separatedBy: "/")
+            var found: Bool = false
+            for item in splitIconUrl {
+                if found {
+                    ownerId = item
+                    break
+                }
+                if item == "avatar" { found = true}
+            }
+        }
+        return ownerId
     }
 }

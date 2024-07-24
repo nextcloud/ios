@@ -29,13 +29,11 @@ import NextcloudKit
 
 extension NCMedia: UICollectionViewDragDelegate {
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
-
         if isEditMode {
             return NCDragDrop().performDrag(selectOcId: selectOcId)
         } else if let metadata = self.metadatas?[indexPath.row] {
             return NCDragDrop().performDrag(metadata: metadata)
         }
-
         return []
     }
 }
