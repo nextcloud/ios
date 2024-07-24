@@ -360,22 +360,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
 
-        // [WEBPersonalized] [AppConfig]
-        if NCBrandOptions.shared.use_AppConfig {
-            if activeLogin?.view.window == nil {
-                urlBase = NCBrandOptions.shared.loginBaseUrl
-                NextcloudKit.shared.getLoginFlowV2(serverUrl: urlBase) { token, endpoint, login, _, error in
-                    // Login Flow V2
-                    if error == .success, let token, let endpoint, let login {
-                        let vc = UIHostingController(rootView: NCLoginPoll(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login, cancelButtonDisabled: NCManageDatabase.shared.getAccounts().isEmptyOrNil))
-                        UIApplication.shared.firstWindow?.rootViewController?.present(vc, animated: true)
-                    }
-                }
-
-                return
-            }
-        }
-
         // Nextcloud standard login
         if selector == NCGlobal.shared.introSignup {
             if activeLogin?.view.window == nil {
@@ -391,7 +375,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 }
             }
 
-        } else if NCBrandOptions.shared.disable_intro && NCBrandOptions.shared.disable_request_login_url {
+        } else if NCBrandOptions.shared.disable_request_login_url {
             if activeLogin?.view.window == nil {
                 activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
                 activeLogin?.urlBase = NCBrandOptions.shared.loginBaseUrl
