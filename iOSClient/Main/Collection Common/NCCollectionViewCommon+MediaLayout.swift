@@ -1,5 +1,5 @@
 //
-//  NCCollectionViewCommon+PhotoLayout.swift
+//  NCCollectionViewCommon+MediaLayout.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 13/07/24.
