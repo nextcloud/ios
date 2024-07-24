@@ -1292,6 +1292,27 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
         return CGSize(width: collectionView.frame.width, height: height)
     }
+
+    // MARK: - Footer size
+
+    func sizeForFooterInSection(section: Int) -> CGSize {
+        let sections = dataSource.numberOfSections()
+        let metadataForSection = self.dataSource.getMetadataForSection(section)
+        let isPaginated = metadataForSection?.lastSearchResult?.isPaginated ?? false
+        let metadatasCount: Int = metadataForSection?.lastSearchResult?.entries.count ?? 0
+        var size = CGSize(width: collectionView.frame.width, height: 0)
+
+        if section == sections - 1 {
+            size.height += NCGlobal.shared.endHeightFooter
+        } else {
+            size.height += NCGlobal.shared.heightFooter
+        }
+
+        if isSearchingMode && isPaginated && metadatasCount > 0 {
+            size.height += NCGlobal.shared.heightFooterButton
+        }
+        return size
+    }
 }
 
 // MARK: -
