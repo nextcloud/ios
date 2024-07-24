@@ -39,6 +39,12 @@ extension NCCollectionViewCommon: NCMediaLayoutDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, heightForHeaderInSection section: Int) -> Float {
+        var height: CGFloat = 0
+
+        if dataSource.getMetadataSourceForAllSections().isEmpty {
+            height = NCGlobal.shared.getHeightHeaderEmptyData(view: view, portraitOffset: emptyDataPortaitOffset, landscapeOffset: emptyDataLandscapeOffset, isHeaderMenuTransferViewEnabled: isHeaderMenuTransferViewEnabled())
+            return Float(height)
+        }
         return .zero
     }
 

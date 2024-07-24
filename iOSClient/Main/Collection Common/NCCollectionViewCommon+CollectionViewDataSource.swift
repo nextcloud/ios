@@ -380,7 +380,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
 
-        if kind == UICollectionView.elementKindSectionHeader {
+        if kind == UICollectionView.elementKindSectionHeader || kind == mediaSectionHeader {
 
             if dataSource.getMetadataSourceForAllSections().isEmpty {
 
