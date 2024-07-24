@@ -203,6 +203,7 @@ public class NCMediaLayout: UICollectionViewLayout {
             let columnIndex = longestColumnIndex()
             top = columnHeights[columnIndex] - minimumInteritemSpacing + Float(sectionInset.bottom)
             top += Float(footerInset.top)
+            let footerHeight = delegate.collectionView(collectionView, layout: self, heightForFooterInSection: section)
 
             if footerHeight > 0 {
                 attributes = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: mediaSectionFooter, with: NSIndexPath(item: 0, section: section) as IndexPath)
