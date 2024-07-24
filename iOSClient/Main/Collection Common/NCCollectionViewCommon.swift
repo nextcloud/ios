@@ -1208,7 +1208,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         } else {
             cell.filePreviewImageView?.contentMode = .scaleAspectFit
         }
-        cell.fileAvatarImageView?.contentMode = .center
+        cell.fileAvatarImageView?.contentMode = .scaleAspectFit
 
         // Thumbnail
         if !metadata.directory {

@@ -245,9 +245,9 @@ import RealmSwift
 
         images.file = utility.loadImage(named: "doc", colors: [NCBrandColor.shared.iconImageColor2])
 
-        images.shared = utility.loadImage(named: "person.fill.badge.plus", colors: NCBrandColor.shared.iconImageMultiColors)
-        images.canShare = utility.loadImage(named: "person.fill.badge.plus", colors: NCBrandColor.shared.iconImageMultiColors)
-        images.shareByLink = utility.loadImage(named: "link", colors: [NCBrandColor.shared.iconImageColor])
+        images.shared = UIImage(resource: .Share.canShare).withTintColor(NCBrandColor.shared.brandElement)
+        images.canShare = UIImage(resource: .Share.canShare).withTintColor(NCBrandColor.shared.brandElement)
+        images.shareByLink = UIImage(resource: .Share.shared).withTintColor(NCBrandColor.shared.brandElement)
 
         images.favorite = utility.loadImage(named: "star.fill", colors: [NCBrandColor.shared.brandElement])
         images.livePhoto = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor])
