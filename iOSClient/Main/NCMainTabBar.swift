@@ -125,15 +125,15 @@ class NCMainTabBar: UITabBar {
 
         // File
         if let item = items?[0] {
-            item.title = NSLocalizedString("_home_", comment: "")
-            item.image = UIImage(systemName: "folder.fill")
+            item.title = NSLocalizedString("_home_dir_", comment: "")
+            item.image = UIImage(named: "home")
             item.selectedImage = item.image
         }
-
-        // Favorite
+        
+        // Media
         if let item = items?[1] {
-            item.title = NSLocalizedString("_favorites_", comment: "")
-            item.image = UIImage(systemName: "star.fill")
+            item.title = NSLocalizedString("_media_", comment: "")
+            item.image = UIImage(named: "media")
             item.selectedImage = item.image
         }
 
@@ -145,18 +145,17 @@ class NCMainTabBar: UITabBar {
             item.isEnabled = false
         }
 
-        // Media
+        // Shares
         if let item = items?[3] {
-            item.title = NSLocalizedString("_media_", comment: "")
-            item.image = UIImage(systemName: "photo")
+            item.title = NSLocalizedString("_list_shares_", comment: "")
+            item.image = UIImage(named: "shares")
             item.selectedImage = item.image
         }
-
-        // More
+        
+        // Favorite
         if let item = items?[4] {
-            item.title = NSLocalizedString("_more_", comment: "")
-            item.image = UIImage(systemName: "line.3.horizontal")
-            item.image = UIImage(systemName: "ellipsis")
+            item.title = NSLocalizedString("_favorites_", comment: "")
+            item.image = UIImage(systemName: "star.fill")
             item.selectedImage = item.image
         }
 
