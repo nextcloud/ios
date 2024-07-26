@@ -293,40 +293,22 @@ extension NCNetworking {
                         date: Date?,
                         size: Int64,
                         error: NKError) {
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/master
         DispatchQueue.main.async {
             var isApplicationStateActive = false
 #if !EXTENSION
             isApplicationStateActive = UIApplication.shared.applicationState == .active
 #endif
             DispatchQueue.global(qos: .userInteractive).async {
-<<<<<<< HEAD
                 let ocIdTemp = metadata.ocId
                 let selector = metadata.sessionSelector
 
                 self.uploadMetadataInBackground.removeValue(forKey: FileNameServerUrl(fileName: metadata.fileName, serverUrl: metadata.serverUrl))
-=======
-
-                let ocIdTemp = metadata.ocId
-                let selector = metadata.sessionSelector
-
-                self.uploadMetadataInBackground.removeValue(forKey: FileNameServerUrl(fileName: metadata.fileName, serverUrl: metadata.serverUrl))
-
-                if error == .success, let ocId = ocId, size == metadata.size {
->>>>>>> origin/master
 
                 if error == .success, let ocId = ocId, size == metadata.size {
                     self.removeTransferInError(ocId: ocIdTemp)
 
                     let metadata = tableMetadata.init(value: metadata)
-<<<<<<< HEAD
                     metadata.uploadDate = (date as? NSDate) ?? NSDate()
-=======
-                    metadata.uploadDate = date ?? NSDate()
->>>>>>> origin/master
                     metadata.etag = etag ?? ""
                     metadata.ocId = ocId
                     metadata.chunk = 0
@@ -360,13 +342,7 @@ extension NCNetworking {
                                                         userInfo: userInfo)
                     }
                 } else {
-<<<<<<< HEAD
                     if error.errorCode == NSURLErrorCancelled || error.errorCode == NCGlobal.shared.errorRequestExplicityCancelled {
-=======
-
-                    if error.errorCode == NSURLErrorCancelled || error.errorCode == NCGlobal.shared.errorRequestExplicityCancelled {
-
->>>>>>> origin/master
                         self.removeTransferInError(ocId: ocIdTemp)
                         self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
                         NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
@@ -375,13 +351,7 @@ extension NCNetworking {
                                                         userInfo: ["ocId": metadata.ocId,
                                                                    "serverUrl": metadata.serverUrl,
                                                                    "account": metadata.account])
-<<<<<<< HEAD
                     } else if error.errorCode == NCGlobal.shared.errorBadRequest || error.errorCode == NCGlobal.shared.errorUnsupportedMediaType {
-=======
-
-                    } else if error.errorCode == NCGlobal.shared.errorBadRequest || error.errorCode == NCGlobal.shared.errorUnsupportedMediaType {
-
->>>>>>> origin/master
                         self.removeTransferInError(ocId: ocIdTemp)
                         self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
                         NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
@@ -396,13 +366,7 @@ extension NCNetworking {
 
                         // Client Diagnostic
                         NCManageDatabase.shared.addDiagnostic(account: metadata.account, issue: NCGlobal.shared.diagnosticIssueVirusDetected)
-<<<<<<< HEAD
                     } else if error.errorCode == NCGlobal.shared.errorForbidden && isApplicationStateActive {
-=======
-
-                    } else if error.errorCode == NCGlobal.shared.errorForbidden && isApplicationStateActive {
-
->>>>>>> origin/master
                         self.removeTransferInError(ocId: ocIdTemp)
 #if !EXTENSION
                         DispatchQueue.main.async {
@@ -445,10 +409,6 @@ extension NCNetworking {
                         }
 #endif
                     } else {
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/master
                         self.transferInError(ocId: metadata.ocId)
                         NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                                    sessionError: error.errorDescription,
@@ -486,11 +446,7 @@ extension NCNetworking {
             return delegate.uploadProgress(progress, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected, fileName: fileName, serverUrl: serverUrl, session: session, task: task)
         }
 
-<<<<<<< HEAD
         DispatchQueue.global(qos: .userInteractive).async {
-=======
-        DispatchQueue.global().async {
->>>>>>> origin/master
             var metadata: tableMetadata?
 
             if let metadataTmp = self.uploadMetadataInBackground[FileNameServerUrl(fileName: fileName, serverUrl: serverUrl)] {

@@ -1,15 +1,8 @@
 //
-<<<<<<<< HEAD:iOSClient/Main/Collection Common/NCCollectionViewCommon+EndToEndInitialize.swift
 //  NCCollectionViewCommon+EndToEndInitialize.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 20/07/24.
-========
-//  LazyView.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 01/06/24.
->>>>>>>> origin/master:iOSClient/GUI/LazyView.swift
 //  Copyright © 2024 Marino Faggiana. All rights reserved.
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
@@ -28,7 +21,6 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-<<<<<<<< HEAD:iOSClient/Main/Collection Common/NCCollectionViewCommon+EndToEndInitialize.swift
 import Foundation
 import UIKit
 
@@ -37,17 +29,5 @@ extension NCCollectionViewCommon: NCEndToEndInitializeDelegate {
         if let metadata {
             pushMetadata(metadata)
         }
-========
-import SwiftUI
-
-/// LazyView is a view that delays the initialization of its contained view until it is actually needed.
-struct LazyView<Content: View>: View {
-    let build: () -> Content
-    init(_ build: @escaping () -> Content) {
-        self.build = build
-    }
-    var body: Content {
-        build()
->>>>>>>> origin/master:iOSClient/GUI/LazyView.swift
     }
 }

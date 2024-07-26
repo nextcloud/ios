@@ -82,32 +82,19 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
             serverUrl = NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
         }
         if autoUpload {
-<<<<<<< HEAD
             requestAuthorization { value in
                 self.autoUpload = value
                 self.updateAccountProperty(\.autoUpload, value: value)
             }
-=======
-            requestAuthorization()
->>>>>>> origin/master
         }
     }
 
     // MARK: - All functions
 
-<<<<<<< HEAD
     func requestAuthorization(completion: @escaping (Bool) -> Void = { _ in }) {
         PHPhotoLibrary.requestAuthorization { status in
             DispatchQueue.main.async {
                 let value = (status == .authorized)
-=======
-    func requestAuthorization() {
-        PHPhotoLibrary.requestAuthorization { status in
-            DispatchQueue.main.async {
-                let value = (status == .authorized)
-                self.autoUpload = value
-                self.updateAccountProperty(\.autoUpload, value: value)
->>>>>>> origin/master
                 if !value {
                     let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_access_photo_not_enabled_msg_", comment: ""), responseData: nil)
                     NCContentPresenter().messageNotification("_error_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .error)
@@ -115,10 +102,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
                     let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: NSLocalizedString("_access_background_app_refresh_denied_", comment: ""), responseData: nil)
                     NCContentPresenter().messageNotification("_info_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .info)
                 }
-<<<<<<< HEAD
                 completion(value)
-=======
->>>>>>> origin/master
             }
         }
     }
@@ -126,7 +110,6 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     /// Updates the auto-upload setting.
     func handleAutoUploadChange(newValue: Bool) {
         if newValue {
-<<<<<<< HEAD
             requestAuthorization { value in
                 self.autoUpload = value
                 self.updateAccountProperty(\.autoUpload, value: value)
@@ -138,23 +121,15 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
             updateAccountProperty(\.autoUpload, value: newValue)
             updateAccountProperty(\.autoUploadFull, value: newValue)
             NCManageDatabase.shared.clearMetadatasUpload(account: appDelegate.account)
-=======
-            requestAuthorization()
-        } else {
-            updateAccountProperty(\.autoUpload, value: newValue)
->>>>>>> origin/master
         }
     }
 
     /// Updates the auto-upload image setting.
     func handleAutoUploadImageChange(newValue: Bool) {
         updateAccountProperty(\.autoUploadImage, value: newValue)
-<<<<<<< HEAD
         if newValue {
             NCAutoUpload.shared.alignPhotoLibrary(viewController: controller)
         }
-=======
->>>>>>> origin/master
     }
 
     /// Updates the auto-upload image over WWAN setting.
@@ -165,12 +140,9 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     /// Updates the auto-upload video setting.
     func handleAutoUploadVideoChange(newValue: Bool) {
         updateAccountProperty(\.autoUploadVideo, value: newValue)
-<<<<<<< HEAD
         if newValue {
             NCAutoUpload.shared.alignPhotoLibrary(viewController: controller)
         }
-=======
->>>>>>> origin/master
     }
 
     /// Updates the auto-upload video over WWAN setting.
@@ -183,15 +155,8 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         updateAccountProperty(\.autoUploadFull, value: newValue)
         if newValue {
             NCAutoUpload.shared.autoUploadFullPhotos(viewController: self.controller, log: "Auto upload full")
-<<<<<<< HEAD
         } else {
             NCManageDatabase.shared.clearMetadatasUpload(account: appDelegate.account)
-=======
-            NCManageDatabase.shared.setAccountAutoUploadProperty("autoUploadFull", state: true)
-        } else {
-            NCManageDatabase.shared.clearMetadatasUpload(account: appDelegate.account)
-            NCManageDatabase.shared.setAccountAutoUploadProperty("autoUploadFull", state: false)
->>>>>>> origin/master
         }
     }
 

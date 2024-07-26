@@ -228,7 +228,6 @@ extension NCUtility {
         }
     }
 
-<<<<<<< HEAD
     func getIcon(metadata: tableMetadata) -> UIImage? {
         let iconPath = self.utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
         guard let icon = UIImage(contentsOfFile: iconPath) else { return nil }
@@ -241,40 +240,11 @@ extension NCUtility {
                 }
             } catch { }
             return iconResize
-=======
-    func createFilePreviewImage(ocId: String, etag: String, fileNameView: String, classFile: String, status: Int, createPreviewMedia: Bool) -> UIImage? {
-        var imagePreview: UIImage?
-        let filePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)
-        let iconImagePath = utilityFileSystem.getDirectoryProviderStorageIconOcId(ocId, etag: etag)
-
-        if FileManager.default.fileExists(atPath: iconImagePath) {
-            imagePreview = UIImage(contentsOfFile: iconImagePath)
-        } else if !createPreviewMedia {
-            return nil
-        } else if createPreviewMedia && status >= NCGlobal.shared.metadataStatusNormal && classFile == NKCommon.TypeClassFile.image.rawValue && FileManager().fileExists(atPath: filePath) {
-            if let image = UIImage(contentsOfFile: filePath), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon)), let data = image.jpegData(compressionQuality: 0.5) {
-                do {
-                    try data.write(to: URL(fileURLWithPath: iconImagePath), options: .atomic)
-                    imagePreview = image
-                } catch { }
-            }
-        } else if createPreviewMedia && status >= NCGlobal.shared.metadataStatusNormal && classFile == NKCommon.TypeClassFile.video.rawValue && FileManager().fileExists(atPath: filePath) {
-            if let image = imageFromVideo(url: URL(fileURLWithPath: filePath), at: 0), let image = image.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon)), let data = image.jpegData(compressionQuality: 0.5) {
-                do {
-                    try data.write(to: URL(fileURLWithPath: iconImagePath), options: .atomic)
-                    imagePreview = image
-                } catch { }
-            }
->>>>>>> origin/master
         }
         return icon
     }
 
-<<<<<<< HEAD
     func pdfThumbnail(url: URL, width: CGFloat = 240) -> UIImage? {
-=======
-    @objc func pdfThumbnail(url: URL, width: CGFloat = 240) -> UIImage? {
->>>>>>> origin/master
         guard let data = try? Data(contentsOf: url), let page = PDFDocument(data: data)?.page(at: 0) else {
             return nil
         }
@@ -397,11 +367,7 @@ extension NCUtility {
         return CGSize(width: widthPreview, height: heightPreview)
     }
 
-<<<<<<< HEAD
     func getUserStatus(userIcon: String?, userStatus: String?, userMessage: String?) -> (statusImage: UIImage?, statusMessage: String, descriptionMessage: String) {
-=======
-    func getUserStatus(userIcon: String?, userStatus: String?, userMessage: String?) -> (statusImage: UIImage, statusMessage: String, descriptionMessage: String) {
->>>>>>> origin/master
         var statusImage: UIImage?
         var statusMessage: String = ""
         var descriptionMessage: String = ""
@@ -437,14 +403,6 @@ extension NCUtility {
             statusMessage = messageUserDefined
         }
 
-<<<<<<< HEAD
         return(statusImage, statusMessage, descriptionMessage)
-=======
-        if let statusImage {
-            return(statusImage, statusMessage, descriptionMessage)
-        } else {
-            return(UIImage(), statusMessage, descriptionMessage)
-        }
->>>>>>> origin/master
     }
 }

@@ -35,12 +35,6 @@ class NCImageCache: NSObject {
     // MARK: -
 
     private let limitCacheImagePreview: Int = 1000
-<<<<<<< HEAD
-=======
-    private let limitSizeImagePreview: Int = 100000
-    private let limitSizeImageIcon: Int = 100000
-
->>>>>>> origin/master
     private var brandElementColor: UIColor?
     private var totalSize: Int64 = 0
 
@@ -151,11 +145,7 @@ class NCImageCache: NSObject {
             }
             autoreleasepool {
                 if let image = UIImage(contentsOfFile: file.path.path) {
-<<<<<<< HEAD
                     if counter < limitCacheImagePreview {
-=======
-                    if counter < limitCacheImagePreview, file.fileSize > limitSizeImagePreview {
->>>>>>> origin/master
                         cacheImagePreview.setValue(imageInfo(image: image, size: image.size, date: file.date), forKey: file.ocIdEtag)
                         totalSize = totalSize + Int64(file.fileSize)
                         counter += 1
@@ -184,42 +174,6 @@ class NCImageCache: NSObject {
         return self.metadatas
     }
 
-<<<<<<< HEAD
-=======
-    ///
-    /// MEDIA PREVIEW CACHE
-    ///
-    func setMediaImage(ocId: String, etag: String, image: UIImage, date: Date) {
-        cacheImagePreview.setValue(imageInfo(image: image, size: image.size, date: date), forKey: ocId + etag)
-    }
-
-    func getMediaImage(ocId: String, etag: String) -> UIImage? {
-        if let cache = cacheImagePreview.value(forKey: ocId + etag) {
-            return cache.image
-        }
-        return nil
-    }
-
-    func hasMediaImageEnoughSpace() -> Bool {
-        return limitCacheImagePreview > cacheImagePreview.count
-    }
-
-    func hasMediaImageEnoughSize(_ size: Int64) -> Bool {
-        return limitSizeImagePreview < size
-    }
-
-    ///
-    /// MEDIA SIZE CACHE
-    ///
-    func setMediaSize(ocId: String, etag: String, size: CGSize) {
-        cacheSizePreview.setValue(size, forKey: ocId + etag)
-    }
-
-    func getMediaSize(ocId: String, etag: String) -> CGSize? {
-        return cacheSizePreview.value(forKey: ocId + etag) ?? nil
-    }
-
->>>>>>> origin/master
     func getMediaMetadatas(account: String, predicate: NSPredicate? = nil) -> ThreadSafeArray<tableMetadata>? {
         guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return nil }
         let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: tableAccount.urlBase, userId: tableAccount.userId) + tableAccount.mediaPath
@@ -228,7 +182,6 @@ class NCImageCache: NSObject {
     }
 
     ///
-<<<<<<< HEAD
     /// PREVIEW CACHE
     ///
     func addPreviewImageCache(metadata: tableMetadata, image: UIImage) {
@@ -265,19 +218,6 @@ class NCImageCache: NSObject {
     }
 
     func getIconImageCache(ocId: String, etag: String) -> UIImage? {
-=======
-    /// ICON CACHE
-    ///
-    func hasIconImageEnoughSize(_ size: Int64) -> Bool {
-        return limitSizeImageIcon < size
-    }
-
-    func setIconImage(ocId: String, etag: String, image: UIImage) {
-        cacheImageIcon.setValue(image, forKey: ocId + etag)
-    }
-
-    func getIconImage(ocId: String, etag: String) -> UIImage? {
->>>>>>> origin/master
         return cacheImageIcon.value(forKey: ocId + etag)
     }
 

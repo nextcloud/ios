@@ -283,11 +283,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-<<<<<<< HEAD
         if let pref = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup),
-=======
-        if let pref = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroups),
->>>>>>> origin/master
            let data = pref.object(forKey: "NOTIFICATION_DATA") as? [String: AnyObject] {
             nextcloudPushNotificationAction(data: data)
             pref.set(nil, forKey: "NOTIFICATION_DATA")
@@ -364,25 +360,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
 
-<<<<<<< HEAD
-=======
-        // [WEBPersonalized] [AppConfig]
-        if NCBrandOptions.shared.use_AppConfig {
-            if activeLogin?.view.window == nil {
-                urlBase = NCBrandOptions.shared.loginBaseUrl
-                NextcloudKit.shared.getLoginFlowV2(serverUrl: urlBase) { token, endpoint, login, _, error in
-                    // Login Flow V2
-                    if error == .success, let token, let endpoint, let login {
-                        let vc = UIHostingController(rootView: NCLoginPoll(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login, cancelButtonDisabled: NCManageDatabase.shared.getAccounts().isEmptyOrNil))
-                        UIApplication.shared.firstWindow?.rootViewController?.present(vc, animated: true)
-                    }
-                }
-
-                return
-            }
-        }
-
->>>>>>> origin/master
         // Nextcloud standard login
         if selector == NCGlobal.shared.introSignup {
             if activeLogin?.view.window == nil {
@@ -398,11 +375,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 }
             }
 
-<<<<<<< HEAD
         } else if NCBrandOptions.shared.disable_request_login_url {
-=======
-        } else if NCBrandOptions.shared.disable_intro && NCBrandOptions.shared.disable_request_login_url {
->>>>>>> origin/master
             if activeLogin?.view.window == nil {
                 activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
                 activeLogin?.urlBase = NCBrandOptions.shared.loginBaseUrl
@@ -476,7 +449,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // MARK: - Account
 
-<<<<<<< HEAD
     func createAccount(urlBase: String,
                        user: String,
                        password: String,
@@ -510,37 +482,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         guard let tableAccount = NCManageDatabase.shared.setAccountActive(account) else {
             return completion()
         }
-=======
-    func createAccount(server: String, username: String, password: String, completion: @escaping (_ error: NKError) -> Void) {
-        var urlBase = server
-        if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
-        let account: String = "\(username) \(urlBase)"
-        let user = username
->>>>>>> origin/master
 
-        NextcloudKit.shared.setup(account: account, user: user, userId: user, password: password, urlBase: urlBase)
-        NextcloudKit.shared.getUserProfile { _, userProfile, _, error in
-
-            if error == .success, let userProfile {
-
-                NCManageDatabase.shared.deleteAccount(account)
-                NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
-
-                NCKeychain().setClientCertificate(account: account, p12Data: NCNetworking.shared.p12Data, p12Password: NCNetworking.shared.p12Password)
-
-                self.changeAccount(account, userProfile: userProfile)
-            } else {
-
-                let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
-                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-                UIApplication.shared.firstWindow?.rootViewController?.present(alertController, animated: true)
-            }
-
-            completion(error)
-        }
-    }
-
-    func changeAccount(_ account: String, userProfile: NKUserProfile?) {
         NCNetworking.shared.cancelAllQueue()
         NCNetworking.shared.cancelDataTask()
         NCNetworking.shared.cancelDownloadTasks()
@@ -570,10 +512,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         NCPushNotification.shared.pushNotification()
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/master
         NCService().startRequestServicesServer()
 
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
@@ -584,22 +522,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         completion()
     }
 
-<<<<<<< HEAD
     func deleteAccount(_ account: String) {
-=======
-    func deleteAccount(_ account: String, wipe: Bool) {
->>>>>>> origin/master
         UIApplication.shared.allSceneSessionDestructionExceptFirst()
 
         if let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) {
             NCPushNotification.shared.unsubscribingNextcloudServerPushNotification(account: account.account, urlBase: account.urlBase, user: account.user, withSubscribing: false)
-<<<<<<< HEAD
-=======
-        }
-
-        NextcloudKit.shared.deleteAppPassword(serverUrl: urlBase, username: userId, password: password) { _, error in
-            print(error)
->>>>>>> origin/master
         }
 
         let results = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "account == %@", account), sorted: "ocId", ascending: false)

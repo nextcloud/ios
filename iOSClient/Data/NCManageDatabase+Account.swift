@@ -86,10 +86,6 @@ extension NCManageDatabase {
             try realm.write {
                 let addObject = tableAccount()
                 addObject.account = account
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/master
                 NCKeychain().setPassword(account: account, password: password)
                 addObject.urlBase = urlBase
                 addObject.user = user
@@ -397,11 +393,7 @@ extension NCManageDatabase {
         }
     }
 
-<<<<<<< HEAD
     func setAccountAlias(_ account: String, alias: String) {
-=======
-    @objc func setAccountAlias(_ account: String, alias: String) {
->>>>>>> origin/master
         let alias = alias.trimmingCharacters(in: .whitespacesAndNewlines)
 
         do {

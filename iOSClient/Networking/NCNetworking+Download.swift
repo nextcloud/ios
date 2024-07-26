@@ -241,11 +241,7 @@ extension NCNetworking {
             return delegate.downloadProgress(progress, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected, fileName: fileName, serverUrl: serverUrl, session: session, task: task)
         }
 
-<<<<<<< HEAD
         DispatchQueue.global(qos: .userInteractive).async {
-=======
-        DispatchQueue.global().async {
->>>>>>> origin/master
             var metadata: tableMetadata?
 
             if let metadataTmp = self.downloadMetadataInBackground[FileNameServerUrl(fileName: fileName, serverUrl: serverUrl)] {

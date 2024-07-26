@@ -449,10 +449,6 @@ extension NCNetworking {
                                      fileNameNew: String,
                                      indexPath: IndexPath,
                                      completion: @escaping (_ error: NKError) -> Void) {
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/master
         let permission = utility.permissionsContainsString(metadata.permissions, permissions: NCPermissions().permissionCanRename)
         if !metadata.permissions.isEmpty && !permission {
             return completion(NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_"))
@@ -511,10 +507,6 @@ extension NCNetworking {
     }
 
     private func moveMetadataPlain(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> NKError {
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/master
         let permission = utility.permissionsContainsString(metadata.permissions, permissions: NCPermissions().permissionCanRename)
         if !metadata.permissions.isEmpty && !permission {
             return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_")
@@ -562,10 +554,6 @@ extension NCNetworking {
     }
 
     private func copyMetadataPlain(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> NKError {
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/master
         let permission = utility.permissionsContainsString(metadata.permissions, permissions: NCPermissions().permissionCanRename)
         if !metadata.permissions.isEmpty && !permission {
             return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_")
@@ -655,21 +643,6 @@ extension NCNetworking {
         }
     }
 
-<<<<<<< HEAD
-=======
-    // MARK: - Get Preview
-
-    func getPreview(url: URL,
-                    options: NKRequestOptions = NKRequestOptions()) async -> (account: String, data: Data?, error: NKError) {
-
-        await withUnsafeContinuation({ continuation in
-            NextcloudKit.shared.getPreview(url: url, options: options) { account, data, error in
-                continuation.resume(returning: (account: account, data: data, error: error))
-            }
-        })
-    }
-
->>>>>>> origin/master
     // MARK: - Search
 
     /// WebDAV search

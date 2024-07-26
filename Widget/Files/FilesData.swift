@@ -216,7 +216,6 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 guard let url = URL(string: urlString) else { continue }
 
                 // IMAGE
-<<<<<<< HEAD
                 let fileNamePreviewLocalPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(file.ocId, etag: file.etag)
                 let fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(file.ocId, etag: file.etag)
                 if FileManager.default.fileExists(atPath: fileNameIconLocalPath) {
@@ -226,19 +225,6 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                     let sizePreview = NCUtility().getSizePreview(width: Int(file.width), height: Int(file.height))
                     let (_, _, imageIcon, _, _, _) = await NCNetworking.shared.downloadPreview(fileId: file.fileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, fileNameIconLocalPath: fileNameIconLocalPath, widthPreview: Int(sizePreview.width), heightPreview: Int(sizePreview.height), sizeIcon: NCGlobal.shared.sizeIcon, options: options)
                     image = imageIcon
-=======
-                if let result = utility.createFilePreviewImage(ocId: file.ocId, etag: file.etag, fileNameView: file.fileName, classFile: file.classFile, status: 0, createPreviewMedia: false) {
-                    image = result
-                } else if file.hasPreview {
-
-                    let fileNamePreviewLocalPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(file.ocId, etag: file.etag)
-                    let fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(file.ocId, etag: file.etag)
-                    let sizePreview = NCUtility().getSizePreview(width: Int(file.width), height: Int(file.height))
-                    let (_, _, imageIcon, _, _, _) = await NextcloudKit.shared.downloadPreview(fileId: file.fileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, fileNameIconLocalPath: fileNameIconLocalPath, widthPreview: Int(sizePreview.width), heightPreview: Int(sizePreview.height), sizeIcon: NCGlobal.shared.sizeIcon, options: options)
-                    if let result = imageIcon {
-                         image = result
-                    }
->>>>>>> origin/master
                 }
                 if image == nil {
                     image = utility.loadImage(named: file.iconName, useTypeIconFile: true)

@@ -125,7 +125,6 @@ private class LoginManager: ObservableObject {
 
     func poll() {
         NextcloudKit.shared.getLoginFlowV2Poll(token: self.loginFlowV2Token, endpoint: self.loginFlowV2Endpoint) { server, loginName, appPassword, _, error in
-<<<<<<< HEAD
             if error == .success, let urlBase = server, let user = loginName, let appPassword {
                 self.isLoading = true
                 self.appDelegate.createAccount(urlBase: urlBase, user: user, password: appPassword) { error in
@@ -133,11 +132,6 @@ private class LoginManager: ObservableObject {
                         self.pollFinished = true
                     }
                 }
-=======
-            if error == .success, let server, let loginName, let appPassword {
-                self.isLoading = true
-                self.createAccount(server: server, username: loginName, password: appPassword)
->>>>>>> origin/master
             }
         }
     }
@@ -145,15 +139,4 @@ private class LoginManager: ObservableObject {
     func openLoginInBrowser() {
         UIApplication.shared.open(URL(string: loginFlowV2Login)!)
     }
-<<<<<<< HEAD
-=======
-
-    private func createAccount(server: String, username: String, password: String) {
-        appDelegate.createAccount(server: server, username: username, password: password) { error in
-            if error == .success {
-                self.pollFinished = true
-            }
-        }
-    }
->>>>>>> origin/master
 }

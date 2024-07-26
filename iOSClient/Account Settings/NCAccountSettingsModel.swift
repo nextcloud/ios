@@ -131,31 +131,19 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     }
 
     /// Function to update the user data
-<<<<<<< HEAD
     func getUserStatus() -> (statusImage: UIImage?, statusMessage: String, descriptionMessage: String) {
-=======
-    func getUserStatus() -> (statusImage: UIImage, statusMessage: String, descriptionMessage: String) {
->>>>>>> origin/master
         guard let activeAccount else { return (UIImage(), "", "") }
         if NCGlobal.shared.capabilityUserStatusEnabled,
            let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", activeAccount.account)) {
             return NCUtility().getUserStatus(userIcon: tableAccount.userStatusIcon, userStatus: tableAccount.userStatusStatus, userMessage: tableAccount.userStatusMessage)
         }
-<<<<<<< HEAD
         return (nil, "", "")
-=======
-        return (UIImage(), "", "")
->>>>>>> origin/master
     }
 
     /// Function to know the height of "account" data
     func getTableViewHeight() -> CGFloat {
         guard let activeAccount else { return 0 }
-<<<<<<< HEAD
         var height: CGFloat = NCGlobal.shared.capabilityUserStatusEnabled ? 190 : 220
-=======
-        var height: CGFloat = 190
->>>>>>> origin/master
         if NCGlobal.shared.capabilityUserStatusEnabled,
            let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", activeAccount.account)) {
             if !tableAccount.email.isEmpty { height += 30 }
@@ -180,18 +168,13 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
 
     @objc func changeAccount() {
         if let activeAccount {
-<<<<<<< HEAD
             self.appDelegate.changeAccount(activeAccount.account, userProfile: nil) { }
-=======
-            self.appDelegate.changeAccount(activeAccount.account, userProfile: nil)
->>>>>>> origin/master
         }
     }
 
     /// Function to delete the current account
     func deleteAccount() {
         if let activeAccount {
-<<<<<<< HEAD
             appDelegate.deleteAccount(activeAccount.account)
             if let account = NCManageDatabase.shared.getAllAccount().first?.account {
                 appDelegate.changeAccount(account, userProfile: nil) {
@@ -201,15 +184,6 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
                 dismissView = true
                 appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
             }
-=======
-            appDelegate.deleteAccount(activeAccount.account, wipe: false)
-            if let account = NCManageDatabase.shared.getAllAccount().first?.account {
-                appDelegate.changeAccount(account, userProfile: nil)
-            } else {
-                dismissView = true
-            }
-            onViewAppear()
->>>>>>> origin/master
         }
     }
 }

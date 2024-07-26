@@ -287,10 +287,7 @@ class NCMedia: UIViewController {
         if let image = imageCache.getPreviewImageCache(ocId: metadata.ocId, etag: metadata.etag) {
             return image
         } else if FileManager().fileExists(atPath: fileNamePathPreview), let image = UIImage(contentsOfFile: fileNamePathPreview) {
-<<<<<<< HEAD
             imageCache.addPreviewImageCache(metadata: metadata, image: image)
-=======
->>>>>>> origin/master
             return image
         } else if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal,
                   (!utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)),
