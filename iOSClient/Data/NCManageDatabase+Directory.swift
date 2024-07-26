@@ -84,6 +84,11 @@ extension NCManageDatabase {
         directory.permissions = metadata.permissions
         directory.richWorkspace = metadata.richWorkspace
     }
+<<<<<<< HEAD
+=======
+
+    func deleteDirectoryAndSubDirectory(serverUrl: String, account: String) {
+>>>>>>> origin/master
 
     func deleteDirectoryAndSubDirectory(serverUrl: String, account: String) {
 #if !EXTENSION
@@ -231,7 +236,11 @@ extension NCManageDatabase {
                     directory.serverUrl = serverUrl
                     directory.offline = offline
                     addDirectory(directory: directory, metadata: metadata)
+<<<<<<< HEAD
                     realm.add(directory, update: .all)
+=======
+                    realm.add(directory)
+>>>>>>> origin/master
                 }
             }
         } catch let error {

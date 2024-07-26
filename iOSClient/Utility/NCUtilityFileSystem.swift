@@ -64,7 +64,11 @@ class NCUtilityFileSystem: NSObject {
         return path
     }
     var directoryProviderStorage: String {
+<<<<<<< HEAD
         guard let directoryGroup = fileManager.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup) else { return "" }
+=======
+        guard let directoryGroup = fileManager.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroups) else { return "" }
+>>>>>>> origin/master
         let path = directoryGroup.appendingPathComponent(NCGlobal.shared.directoryProviderStorage).path
         if !fileManager.fileExists(atPath: path) {
             do {
@@ -151,7 +155,11 @@ class NCUtilityFileSystem: NSObject {
     }
 
     func createDirectoryStandard() {
+<<<<<<< HEAD
         guard let directoryGroup = fileManager.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)?.path else { return }
+=======
+        guard let directoryGroup = fileManager.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroups)?.path else { return }
+>>>>>>> origin/master
         if !fileManager.fileExists(atPath: directoryDocuments) { try? fileManager.createDirectory(atPath: directoryDocuments, withIntermediateDirectories: true) }
         let appDatabaseNextcloud = directoryGroup + "/" + NCGlobal.shared.appDatabaseNextcloud
         if !fileManager.fileExists(atPath: appDatabaseNextcloud) { try? fileManager.createDirectory(atPath: appDatabaseNextcloud, withIntermediateDirectories: true) }

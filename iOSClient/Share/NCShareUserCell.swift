@@ -157,12 +157,16 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
         imageItem.image = NCShareCommon().getImageShareType(shareType: sharee.shareType)
         imageShareeType.image = NCShareCommon().getImageShareType(shareType: sharee.shareType)
         let status = utility.getUserStatus(userIcon: sharee.userIcon, userStatus: sharee.userStatus, userMessage: sharee.userMessage)
+<<<<<<< HEAD
 
         if let statusImage = status.statusImage {
             imageStatus.image = statusImage
             imageStatus.makeCircularBackground(withColor: .systemBackground)
         }
 
+=======
+        imageStatus.image = status.statusImage
+>>>>>>> origin/master
         self.status.text = status.statusMessage
         if self.status.text?.count ?? 0 > 0 {
             centerTitle.constant = -5

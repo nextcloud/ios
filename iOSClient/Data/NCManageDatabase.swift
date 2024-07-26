@@ -217,6 +217,7 @@ class NCManageDatabase: NSObject {
     }
 
     // MARK: -
+<<<<<<< HEAD
     // MARK: Func T
 
     func fetchPagedResults<T: Object>(ofType type: T.Type, primaryKey: String, recordsPerPage: Int, pageNumber: Int, filter: NSPredicate? = nil, sortedByKeyPath: String? = nil, sortedAscending: Bool = true) -> Results<T>? {
@@ -244,6 +245,8 @@ class NCManageDatabase: NSObject {
     }
 
     // MARK: -
+=======
+>>>>>>> origin/master
     // MARK: SWIFTUI PREVIEW
 
     func previewCreateDB() {

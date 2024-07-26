@@ -102,7 +102,10 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
 
     /// Updates the value of `appIntegration` in the keychain.
     func updateAppIntegration() {
+<<<<<<< HEAD
         NSFileProviderManager.removeAllDomains { _ in }
+=======
+>>>>>>> origin/master
         keychain.disableFilesApp = appIntegration
     }
 
@@ -162,8 +165,15 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
     ///
     /// - Parameter
     /// exit: Boolean indicating whether to reset the application.
+<<<<<<< HEAD
     func resetNextCloud() {
         self.appDelegate.resetApplication()
+=======
+    func resetNextCloud(exit: Bool) {
+        if exit {
+            self.appDelegate.resetApplication()
+        } else { }
+>>>>>>> origin/master
     }
 
     /// Exits the Nextcloud application if specified.

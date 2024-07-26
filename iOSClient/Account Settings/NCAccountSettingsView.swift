@@ -52,6 +52,7 @@ struct NCAccountSettingsView: View {
                                         .resizable()
                                         .scaledToFit()
                                         .frame(width: UIScreen.main.bounds.width, height: 75)
+<<<<<<< HEAD
                                     if let statusImage = status.statusImage {
                                         ZStack {
                                             Circle()
@@ -64,6 +65,18 @@ struct NCAccountSettingsView: View {
                                         }
                                         .offset(x: 30, y: 30)
                                     }
+=======
+                                    ZStack {
+                                        Circle()
+                                            .fill(.white)
+                                            .frame(width: 30, height: 30)
+                                        Image(uiImage: status.statusImage)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 30, height: 30)
+                                        }
+                                        .offset(x: 30, y: 30)
+>>>>>>> origin/master
                                 }
                                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                                 Text(model.getUserName())
@@ -155,6 +168,7 @@ struct NCAccountSettingsView: View {
                     }
                     ///
                     /// User Status
+<<<<<<< HEAD
                     if NCGlobal.shared.capabilityUserStatusEnabled {
                         Button(action: {
                             showUserStatus = true
@@ -179,6 +193,30 @@ struct NCAccountSettingsView: View {
                         }
                         .onChange(of: showUserStatus) { _ in }
                     }
+=======
+                    Button(action: {
+                        showUserStatus = true
+                    }, label: {
+                        HStack {
+                            Image(systemName: "moon.fill")
+                                .resizable()
+                                .scaledToFit()
+                                .font(Font.system(.body).weight(.light))
+                                .frame(width: 20, height: 20)
+                                .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
+                            Text(NSLocalizedString("_set_user_status_", comment: ""))
+                                .lineLimit(1)
+                                .truncationMode(.middle)
+                                .foregroundStyle(Color(NCBrandColor.shared.textColor))
+                                .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
+                        }
+                        .font(.system(size: 14))
+                    })
+                    .sheet(isPresented: $showUserStatus) {
+                        UserStatusView(showUserStatus: $showUserStatus)
+                    }
+                    .onChange(of: showUserStatus) { _ in }
+>>>>>>> origin/master
                     ///
                     /// Certificate server
                     Button(action: {

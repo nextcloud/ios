@@ -31,6 +31,7 @@ import Queuer
 @objc protocol uploadE2EEDelegate: AnyObject { }
 #endif
 
+<<<<<<< HEAD
 @objc protocol NCNetworkingDelegate {
     func downloadProgress(_ progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String, session: URLSession, task: URLSessionTask)
     func uploadProgress(_ progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String, session: URLSession, task: URLSessionTask)
@@ -38,6 +39,8 @@ import Queuer
     func uploadComplete(fileName: String, serverUrl: String, ocId: String?, etag: String?, date: Date?, size: Int64, task: URLSessionTask, error: NKError)
 }
 
+=======
+>>>>>>> origin/master
 @objc protocol ClientCertificateDelegate {
     func onIncorrectPassword()
     func didAskForClientCertificate()
@@ -71,8 +74,12 @@ class NCNetworking: NSObject, NKCommonDelegate {
     let uploadMetadataInBackground = ThreadSafeDictionary<FileNameServerUrl, tableMetadata>()
     let downloadMetadataInBackground = ThreadSafeDictionary<FileNameServerUrl, tableMetadata>()
     var transferInForegorund: TransferInForegorund?
+<<<<<<< HEAD
     weak var delegate: NCNetworkingDelegate?
     weak var certificateDelegate: ClientCertificateDelegate?
+=======
+    weak var delegate: ClientCertificateDelegate?
+>>>>>>> origin/master
 
     var p12Data: Data?
     var p12Password: String?
@@ -219,13 +226,21 @@ class NCNetworking: NSObject, NKCommonDelegate {
                 if let p12Data = self.p12Data,
                    let cert = (p12Data, self.p12Password) as? UserCertificate,
                    let pkcs12 = try? PKCS12(pkcs12Data: cert.data, password: cert.password, onIncorrectPassword: {
+<<<<<<< HEAD
                        self.certificateDelegate?.onIncorrectPassword()
+=======
+                       self.delegate?.onIncorrectPassword()
+>>>>>>> origin/master
                    }) {
                     let creds = PKCS12.urlCredential(for: pkcs12)
 
                     completionHandler(URLSession.AuthChallengeDisposition.useCredential, creds)
                 } else {
+<<<<<<< HEAD
                     self.certificateDelegate?.didAskForClientCertificate()
+=======
+                    self.delegate?.didAskForClientCertificate()
+>>>>>>> origin/master
                     completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
                 }
             }

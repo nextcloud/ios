@@ -290,7 +290,11 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForHeaderInSection index: Int) -> CGFloat {
         let section = sections[index]
 
+<<<<<<< HEAD
         if section.type == .moreApps || (index > 0 && sections[index - 1].type == .moreApps) {
+=======
+        if section.type == .moreApps || sections[index - 1].type == .moreApps {
+>>>>>>> origin/master
             return 1
         } else {
             return 20
@@ -367,6 +371,11 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         } else if item.url == "logout" {
             let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
             let actionYes = UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (_: UIAlertAction) in
+<<<<<<< HEAD
+=======
+                // let manageAccount = CCManageAccount()
+                // manageAccount.delete(self.appDelegate.account)
+>>>>>>> origin/master
                 self.appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
             }
 

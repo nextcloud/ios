@@ -218,7 +218,10 @@ class NCOperationDownloadThumbnailActivity: ConcurrentOperation {
 
     override func start() {
         guard !isCancelled else { return self.finish() }
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/master
         NextcloudKit.shared.downloadPreview(fileId: fileId,
                                             fileNamePreviewLocalPath: fileNamePreviewLocalPath,
                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imagePreview, _, _, _, error in
