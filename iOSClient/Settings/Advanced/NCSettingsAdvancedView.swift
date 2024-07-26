@@ -263,7 +263,7 @@ struct NCSettingsAdvancedView: View {
                 .tint(Color(UIColor.label))
                 .alert(NSLocalizedString("_want_exit_", comment: ""), isPresented: $showExitAlert) {
                     Button(NSLocalizedString("_ok_", comment: ""), role: .destructive) {
-                        model.resetNextCloud(exit: showExitAlert)
+                        model.resetNextCloud()
                     }
                     Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel) { }
                 }

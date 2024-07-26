@@ -26,7 +26,6 @@ import RealmSwift
 import NextcloudKit
 
 extension NCManageDatabase {
-
     func setMetadataSession(ocId: String,
                             newFileName: String? = nil,
                             session: String? = nil,
@@ -80,7 +79,6 @@ extension NCManageDatabase {
     func setMetadataSession(ocId: String,
                             status: Int? = nil,
                             taskIdentifier: Int? = nil) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -160,6 +158,7 @@ extension NCManageDatabase {
     @discardableResult
     func setMetadataStatus(ocId: String, status: Int) -> tableMetadata? {
         var result: tableMetadata?
+
         do {
             let realm = try Realm()
             try realm.write {

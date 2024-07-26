@@ -652,14 +652,14 @@
 "_enforce_password_protection_" = "Enforce password protection";
 "_password_obligatory_"         = "Enforce password protection enabled, password obligatory";
 "_shared_with_you_by_"          = "Shared with you by";
-"_shareLinksearch_placeholder_" = "Type a name and press Search";
+"_shareLinksearch_placeholder_" = "Name, email, or Federated Cloud ID …";
 "_shareLinksearch_mail_placeholder_" = "Type a name or an email and press Search";
 "_new_comment_"                 = "New comment …";
 "_edit_comment_"                = "Edit comment";
 "_delete_comment_"              = "Delete comment";
 "_share_allow_editing_"         = "Allow editing";
 "_share_read_only_"             = "View only";
-"_share_editing_"               = "Editing";
+"_share_editing_"               = "Can edit";
 "_share_allow_upload_"          = "Allow upload and editing";
 "_share_file_drop_"             = "File drop (upload only)";
 "_share_secure_file_drop_"      = "Secure file drop (upload only)";
@@ -676,7 +676,7 @@
 "_share_can_download_"          = "Allow download";
 "_share_unshare_"               = "Unshare";
 "_share_internal_link_"         = "Internal link";
-"_share_internal_link_des_"     = "Only works for users with access to this folder";
+"_share_internal_link_des_"     = "Only works for users with access to this file/folder";
 "_share_reshare_disabled_"      = "You are not allowed to reshare this file/folder";
 "_share_reshare_restricted_"    = "Note: You only have limited permission to reshare this file/folder";
 

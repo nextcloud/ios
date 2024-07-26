@@ -25,7 +25,6 @@ import UIKit
 
 class NCActivityCommentView: UIView, UITextFieldDelegate {
     @IBOutlet weak var imageItem: UIImageView!
-    @IBOutlet weak var labelUser: UILabel!
     @IBOutlet weak var newCommentField: UITextField!
 
     var completionHandler: ((String?) -> Void)?
@@ -42,13 +41,6 @@ class NCActivityCommentView: UIView, UITextFieldDelegate {
         } else {
             imageItem.image = NCUtility().loadImage(named: "person.crop.circle", colors: [NCBrandColor.shared.iconImageColor])
         }
-
-        if account.displayName.isEmpty {
-            labelUser.text = account.user
-        } else {
-            labelUser.text = account.displayName
-        }
-        labelUser.textColor = NCBrandColor.shared.textColor
     }
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -56,4 +48,13 @@ class NCActivityCommentView: UIView, UITextFieldDelegate {
         completionHandler?(textField.text)
         return true
     }
+}
+
+extension NCActivityCommentView: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
+        completionHandler?(searchBar.text)
+    }
+
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) { }
 }

@@ -1,5 +1,5 @@
 //
-//  NCSectionHeaderEmptyData.swift
+//  NCSectionFirstHeaderEmptyData.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 09/10/2018.
@@ -24,11 +24,11 @@
 import UIKit
 import MarkdownKit
 
-protocol NCSectionHeaderEmptyDataDelegate: AnyObject {
+protocol NCSectionFirstHeaderEmptyDataDelegate: AnyObject {
     func tapButtonTransfer(_ sender: Any)
 }
 
-class NCSectionHeaderEmptyData: UICollectionReusableView {
+class NCSectionFirstHeaderEmptyData: UICollectionReusableView {
 
     @IBOutlet weak var viewTransfer: UIView!
     @IBOutlet weak var viewTransferHeightConstraint: NSLayoutConstraint!
@@ -43,7 +43,7 @@ class NCSectionHeaderEmptyData: UICollectionReusableView {
     @IBOutlet weak var emptyTitle: UILabel!
     @IBOutlet weak var emptyDescription: UILabel!
 
-    weak var delegate: NCSectionHeaderEmptyDataDelegate?
+    weak var delegate: NCSectionFirstHeaderEmptyDataDelegate?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -84,7 +84,6 @@ class NCSectionHeaderEmptyData: UICollectionReusableView {
     // MARK: - Transfer
 
     func setViewTransfer(isHidden: Bool, ocId: String? = nil, text: String? = nil, progress: Float? = nil) {
-
         labelTransfer.text = text
         viewTransfer.isHidden = isHidden
         progressTransfer.progress = 0
@@ -95,14 +94,13 @@ class NCSectionHeaderEmptyData: UICollectionReusableView {
             var image: UIImage?
             if let ocId,
                let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                image = NCUtility().createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: true)?.darken()
+                image = NCUtility().getIcon(metadata: metadata)?.darken()
                 if image == nil {
                     image = NCUtility().loadImage(named: metadata.iconName, useTypeIconFile: true)
                     buttonTransfer.backgroundColor = .lightGray
                 } else {
                     buttonTransfer.backgroundColor = .clear
                 }
-                buttonTransfer.setImage(image, for: .normal)
             }
             viewTransferHeightConstraint.constant = NCGlobal.shared.heightHeaderTransfer
             if let progress {

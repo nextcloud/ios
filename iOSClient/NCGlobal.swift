@@ -167,6 +167,8 @@ class NCGlobal: NSObject {
     //
     let layoutList                                  = "typeLayoutList"
     let layoutGrid                                  = "typeLayoutGrid"
+    let layoutPhotoRatio                            = "typeLayoutPhotoRatio"
+    let layoutPhotoSquare                           = "typeLayoutPhotoSquare"
 
     let layoutViewTrash                             = "LayoutTrash"
     let layoutViewOffline                           = "LayoutOffline"
@@ -177,6 +179,7 @@ class NCGlobal: NSObject {
     let layoutViewShares                            = "LayoutShares"
     let layoutViewShareExtension                    = "LayoutShareExtension"
     let layoutViewGroupfolders                      = "LayoutGroupfolders"
+    let layoutViewMedia                             = "LayoutMedia"
 
     // Button Type in Cell list/grid
     //

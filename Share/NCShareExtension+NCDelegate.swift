@@ -97,7 +97,6 @@ extension NCShareExtension: NCAccountRequestDelegate {
 }
 
 extension NCShareExtension: NCShareCellDelegate, NCRenameFileDelegate, NCListCellDelegate {
-
     func removeFile(named fileName: String) {
         guard let index = self.filesName.firstIndex(of: fileName) else {
             return showAlert(title: "_file_not_found_", description: fileName)
@@ -138,6 +137,15 @@ extension NCShareExtension: NCShareCellDelegate, NCRenameFileDelegate, NCListCel
 
         filesName[fileIx] = fileNameNew
         tableView.reloadData()
+    }
+
+    func tapShareListItem(with objectId: String, indexPath: IndexPath, sender: Any) {
+    }
+
+    func tapMoreListItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
+    }
+
+    func longPressListItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
     }
 }
 

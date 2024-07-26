@@ -28,10 +28,7 @@ class IntentHandler: INExtension, DashboardIntentHandling, AccountIntentHandling
 
     // MARK: - Account
 
-    // Account
-
     func provideAccountsOptionsCollection(for intent: AccountIntent, with completion: @escaping (INObjectCollection<Accounts>?, Error?) -> Void) {
-
         var accounts: [Accounts] = []
         let results = NCManageDatabase.shared.getAllAccount()
 
@@ -52,7 +49,6 @@ class IntentHandler: INExtension, DashboardIntentHandling, AccountIntentHandling
     }
 
     func defaultAccounts(for intent: AccountIntent) -> Accounts? {
-
         if NCManageDatabase.shared.getActiveAccount() == nil {
             return nil
         } else {
@@ -63,9 +59,7 @@ class IntentHandler: INExtension, DashboardIntentHandling, AccountIntentHandling
     // MARK: - Dashboard
 
     // Application
-
     func provideApplicationsOptionsCollection(for intent: DashboardIntent, with completion: @escaping (INObjectCollection<Applications>?, Error?) -> Void) {
-
         var applications: [Applications] = []
         var account: tableAccount?
 
@@ -90,7 +84,6 @@ class IntentHandler: INExtension, DashboardIntentHandling, AccountIntentHandling
     }
 
     func defaultApplications(for intent: DashboardIntent) -> Applications? {
-
         guard let account = NCManageDatabase.shared.getActiveAccount() else {
             return nil
         }
@@ -101,9 +94,7 @@ class IntentHandler: INExtension, DashboardIntentHandling, AccountIntentHandling
     }
 
     // Account
-
     func provideAccountsOptionsCollection(for intent: DashboardIntent, with completion: @escaping (INObjectCollection<Accounts>?, Error?) -> Void) {
-
         var accounts: [Accounts] = []
         let results = NCManageDatabase.shared.getAllAccount()
 
@@ -124,7 +115,6 @@ class IntentHandler: INExtension, DashboardIntentHandling, AccountIntentHandling
     }
 
     func defaultAccounts(for intent: DashboardIntent) -> Accounts? {
-
         if NCManageDatabase.shared.getActiveAccount() == nil {
             return nil
         } else {

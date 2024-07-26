@@ -62,16 +62,7 @@ class NCGroupfolders: NCCollectionViewCommon {
             metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
         }
 
-        self.dataSource = NCDataSource(
-            metadatas: metadatas,
-            account: self.appDelegate.account,
-            sort: self.layoutForView?.sort,
-            ascending: self.layoutForView?.ascending,
-            directoryOnTop: self.layoutForView?.directoryOnTop,
-            favoriteOnTop: true,
-            groupByField: self.groupByField,
-            providers: self.providers,
-            searchResults: self.searchResults)
+        self.dataSource = NCDataSource(metadatas: metadatas, account: self.appDelegate.account, layoutForView: layoutForView, providers: self.providers, searchResults: self.searchResults)
     }
 
     override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
@@ -90,7 +81,7 @@ class NCGroupfolders: NCCollectionViewCommon {
                         let mountPoint = groupfolder.mountPoint.hasPrefix("/") ? groupfolder.mountPoint : "/" + groupfolder.mountPoint
                         let serverUrlFileName = homeServerUrl + mountPoint
                         if NCManageDatabase.shared.getMetadataFromDirectory(account: self.appDelegate.account, serverUrl: serverUrlFileName) == nil {
-                            let results = await NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles)
+                            let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles)
                             if results.error == .success, let file = results.files.first {
                                 let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
                                 let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)

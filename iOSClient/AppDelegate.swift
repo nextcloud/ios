@@ -87,12 +87,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NextcloudKit.shared.nkCommonInstance.pathLog = utilityFileSystem.directoryGroup
 
         if NCBrandOptions.shared.disable_log {
-
             utilityFileSystem.removeFile(atPath: NextcloudKit.shared.nkCommonInstance.filenamePathLog)
             utilityFileSystem.removeFile(atPath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! + "/" + NextcloudKit.shared.nkCommonInstance.filenameLog)
-
         } else {
-
             levelLog = NCKeychain().logLevel
             NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
             NextcloudKit.shared.nkCommonInstance.copyLogToDocumentDirectory = true
@@ -101,6 +98,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Account active \(activeAccount.account)")
+
             if NCKeychain().getPassword(account: activeAccount.account).isEmpty {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] PASSWORD NOT FOUND for \(activeAccount.account)")
             }
@@ -111,16 +109,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             userId = activeAccount.userId
             password = NCKeychain().getPassword(account: account)
 
-            NextcloudKit.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: urlBase)
+            NextcloudKit.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: urlBase, groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
             NCManageDatabase.shared.setCapabilities(account: account)
 
             NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
             DispatchQueue.global().async {
                 NCImageCache.shared.createMediaCache(account: self.account, withCacheSize: true)
             }
-
         } else {
-
             NCKeychain().removeAll()
             if let bundleID = Bundle.main.bundleIdentifier {
                 UserDefaults.standard.removePersistentDomain(forName: bundleID)
@@ -287,7 +283,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        if let pref = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroups),
+        if let pref = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup),
            let data = pref.object(forKey: "NOTIFICATION_DATA") as? [String: AnyObject] {
             nextcloudPushNotificationAction(data: data)
             pref.set(nil, forKey: "NOTIFICATION_DATA")
@@ -321,8 +317,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 let accounts = NCManageDatabase.shared.getAllAccount()
                 for account in accounts {
                     if account.account == accountPush {
-                        self.changeAccount(account.account, userProfile: nil)
-                        findAccount = true
+                        self.changeAccount(account.account, userProfile: nil) {
+                            findAccount = true
+                        }
                     }
                 }
             }
@@ -363,22 +360,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
 
-        // [WEBPersonalized] [AppConfig]
-        if NCBrandOptions.shared.use_AppConfig {
-            if activeLogin?.view.window == nil {
-                urlBase = NCBrandOptions.shared.loginBaseUrl
-                NextcloudKit.shared.getLoginFlowV2(serverUrl: urlBase) { token, endpoint, login, _, error in
-                    // Login Flow V2
-                    if error == .success, let token, let endpoint, let login {
-                        let vc = UIHostingController(rootView: NCLoginPoll(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login, cancelButtonDisabled: NCManageDatabase.shared.getAccounts().isEmptyOrNil))
-                        UIApplication.shared.firstWindow?.rootViewController?.present(vc, animated: true)
-                    }
-                }
-
-                return
-            }
-        }
-
         // Nextcloud standard login
         if selector == NCGlobal.shared.introSignup {
             if activeLogin?.view.window == nil {
@@ -394,7 +375,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 }
             }
 
-        } else if NCBrandOptions.shared.disable_intro && NCBrandOptions.shared.disable_request_login_url {
+        } else if NCBrandOptions.shared.disable_request_login_url {
             if activeLogin?.view.window == nil {
                 activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
                 activeLogin?.urlBase = NCBrandOptions.shared.loginBaseUrl
@@ -468,41 +449,44 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // MARK: - Account
 
-    func createAccount(server: String, username: String, password: String, completion: @escaping (_ error: NKError) -> Void) {
-        var urlBase = server
+    func createAccount(urlBase: String,
+                       user: String,
+                       password: String,
+                       completion: @escaping (_ error: NKError) -> Void) {
+        var urlBase = urlBase
         if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
-        let account: String = "\(username) \(urlBase)"
-        let user = username
+        let account: String = "\(user) \(urlBase)"
 
-        NextcloudKit.shared.setup(account: account, user: user, userId: user, password: password, urlBase: urlBase)
+        NextcloudKit.shared.setup(account: account, user: user, userId: user, password: password, urlBase: urlBase, groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         NextcloudKit.shared.getUserProfile { _, userProfile, _, error in
-
             if error == .success, let userProfile {
-
                 NCManageDatabase.shared.deleteAccount(account)
                 NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
-
                 NCKeychain().setClientCertificate(account: account, p12Data: NCNetworking.shared.p12Data, p12Password: NCNetworking.shared.p12Password)
-
-                self.changeAccount(account, userProfile: userProfile)
+                self.changeAccount(account, userProfile: userProfile) {
+                    completion(error)
+                }
             } else {
-
+                NextcloudKit.shared.setup(account: self.account, user: self.user, userId: self.userId, password: self.password, urlBase: self.urlBase, groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
                 let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
                 UIApplication.shared.firstWindow?.rootViewController?.present(alertController, animated: true)
+                completion(error)
             }
-
-            completion(error)
         }
     }
 
-    func changeAccount(_ account: String, userProfile: NKUserProfile?) {
+    func changeAccount(_ account: String,
+                       userProfile: NKUserProfile?,
+                       completion: () -> Void) {
+        guard let tableAccount = NCManageDatabase.shared.setAccountActive(account) else {
+            return completion()
+        }
+
         NCNetworking.shared.cancelAllQueue()
         NCNetworking.shared.cancelDataTask()
         NCNetworking.shared.cancelDownloadTasks()
         NCNetworking.shared.cancelUploadTasks()
-
-        guard let tableAccount = NCManageDatabase.shared.setAccountActive(account) else { return }
 
         if account != self.account {
             DispatchQueue.global().async {
@@ -520,7 +504,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         self.userId = tableAccount.userId
         self.password = NCKeychain().getPassword(account: tableAccount.account)
 
-        NextcloudKit.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: urlBase)
+        NextcloudKit.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: urlBase, groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         NCManageDatabase.shared.setCapabilities(account: account)
 
         if let userProfile {
@@ -528,7 +512,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         NCPushNotification.shared.pushNotification()
-
         NCService().startRequestServicesServer()
 
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
@@ -536,17 +519,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeUser)
+        completion()
     }
 
-    func deleteAccount(_ account: String, wipe: Bool) {
+    func deleteAccount(_ account: String) {
         UIApplication.shared.allSceneSessionDestructionExceptFirst()
 
         if let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) {
             NCPushNotification.shared.unsubscribingNextcloudServerPushNotification(account: account.account, urlBase: account.urlBase, user: account.user, withSubscribing: false)
-        }
-
-        NextcloudKit.shared.deleteAppPassword(serverUrl: urlBase, username: userId, password: password) { _, error in
-            print(error)
         }
 
         let results = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "account == %@", account), sorted: "ocId", ascending: false)
@@ -566,22 +546,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         self.userId = ""
         self.password = ""
 
-        if wipe {
-            let accounts = NCManageDatabase.shared.getAccounts()
-            if accounts?.count ?? 0 > 0 {
-                if let newAccount = accounts?.first {
-                    self.changeAccount(newAccount, userProfile: nil)
-                }
-            } else {
-                openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
-            }
+        /*
+        NextcloudKit.shared.deleteAppPassword(serverUrl: urlBase, username: userId, password: password) { _, error in
+            print(error)
         }
+        */
     }
 
     func deleteAllAccounts() {
         let accounts = NCManageDatabase.shared.getAccounts()
         accounts?.forEach({ account in
-            deleteAccount(account, wipe: true)
+            deleteAccount(account)
         })
     }
 

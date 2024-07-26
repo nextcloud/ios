@@ -1,5 +1,5 @@
 //
-//  NCSectionHeaderFooter.swift
+//  NCSectionFirstHeader.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 09/10/2018.
@@ -24,7 +24,12 @@
 import UIKit
 import MarkdownKit
 
-class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate {
+protocol NCSectionFirstHeaderDelegate: AnyObject {
+    func tapButtonTransfer(_ sender: Any)
+    func tapRichWorkspace(_ sender: Any)
+}
+
+class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegate {
 
     @IBOutlet weak var buttonTransfer: UIButton!
     @IBOutlet weak var imageButtonTransfer: UIImageView!
@@ -42,7 +47,7 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     @IBOutlet weak var viewSectionHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var transferSeparatorBottomHeightConstraint: NSLayoutConstraint!
 
-    weak var delegate: NCSectionHeaderMenuDelegate?
+    weak var delegate: NCSectionFirstHeaderDelegate?
     let utility = NCUtility()
     private var markdownParser = MarkdownParser()
     private var richWorkspaceText: String?
@@ -103,7 +108,6 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     // MARK: - RichWorkspace
 
     func setRichWorkspaceHeight(_ size: CGFloat) {
-
         viewRichWorkspaceHeightConstraint.constant = size
         if size == 0 {
             viewRichWorkspace.isHidden = true
@@ -113,7 +117,6 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     }
 
     func setInterfaceColor() {
-
         if traitCollection.userInterfaceStyle == .dark {
             gradient.colors = [UIColor(white: 0, alpha: 0).cgColor, UIColor.black.cgColor]
         } else {
@@ -133,7 +136,6 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     // MARK: - Transfer
 
     func setViewTransfer(isHidden: Bool, ocId: String? = nil, text: String? = nil, progress: Float? = nil) {
-
         labelTransfer.text = text
         viewTransfer.isHidden = isHidden
         progressTransfer.progress = 0
@@ -144,14 +146,13 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
             var image: UIImage?
             if let ocId,
                let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                image = utility.createFilePreviewImage(ocId: metadata.ocId, etag: metadata.etag, fileNameView: metadata.fileNameView, classFile: metadata.classFile, status: metadata.status, createPreviewMedia: true)?.darken()
+                image = utility.getIcon(metadata: metadata)?.darken()
                 if image == nil {
                     image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true)
                     buttonTransfer.backgroundColor = .lightGray
                 } else {
                     buttonTransfer.backgroundColor = .clear
                 }
-                buttonTransfer.setImage(image, for: .normal)
             }
             viewTransferHeightConstraint.constant = NCGlobal.shared.heightHeaderTransfer
             if let progress {
@@ -163,8 +164,8 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     // MARK: - Section
 
     func setSectionHeight(_ size: CGFloat) {
-
         viewSectionHeightConstraint.constant = size
+
         if size == 0 {
             viewSection.isHidden = true
         } else {
@@ -181,139 +182,6 @@ class NCSectionHeaderMenu: UICollectionReusableView, UIGestureRecognizerDelegate
     @objc func touchUpInsideViewRichWorkspace(_ sender: Any) {
         delegate?.tapRichWorkspace(sender)
     }
-}
-
-protocol NCSectionHeaderMenuDelegate: AnyObject {
-    func tapButtonTransfer(_ sender: Any)
-    func tapRichWorkspace(_ sender: Any)
-}
-
-// optional func
-extension NCSectionHeaderMenuDelegate {
-    func tapButtonTransfer(_ sender: Any) {}
-    func tapRichWorkspace(_ sender: Any) {}
-}
-
-class NCSectionHeader: UICollectionReusableView {
-
-    @IBOutlet weak var labelSection: UILabel!
-
-    override func awakeFromNib() {
-        super.awakeFromNib()
-
-        self.backgroundColor = UIColor.clear
-        self.labelSection.text = ""
-    }
-}
-
-class NCSectionFooter: UICollectionReusableView, NCSectionFooterDelegate {
-
-    @IBOutlet weak var buttonSection: UIButton!
-    @IBOutlet weak var activityIndicatorSection: UIActivityIndicatorView!
-    @IBOutlet weak var labelSection: UILabel!
-    @IBOutlet weak var separator: UIView!
-    @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
-    @IBOutlet weak var buttonSectionHeightConstraint: NSLayoutConstraint!
-
-    weak var delegate: NCSectionFooterDelegate?
-    var metadataForSection: NCMetadataForSection?
-    let utilityFileSystem = NCUtilityFileSystem()
-
-    override func awakeFromNib() {
-        super.awakeFromNib()
-
-        self.backgroundColor = .clear
-        labelSection.textColor = NCBrandColor.shared.textColor2
-        labelSection.text = ""
-
-        separator.backgroundColor = .separator
-        separatorHeightConstraint.constant = 0.5
-
-        buttonIsHidden(true)
-        activityIndicatorSection.isHidden = true
-        activityIndicatorSection.color = NCBrandColor.shared.textColor
-    }
-
-    func setTitleLabel(directories: Int, files: Int, size: Int64) {
-
-        var foldersText = ""
-        var filesText = ""
-
-        if directories > 1 {
-            foldersText = "\(directories) " + NSLocalizedString("_folders_", comment: "")
-        } else if directories == 1 {
-            foldersText = "1 " + NSLocalizedString("_folder_", comment: "")
-        }
-
-        if files > 1 {
-            filesText = "\(files) " + NSLocalizedString("_files_", comment: "") + " • " + utilityFileSystem.transformedSize(size)
-        } else if files == 1 {
-            filesText = "1 " + NSLocalizedString("_file_", comment: "") + " • " + utilityFileSystem.transformedSize(size)
-        }
-
-        if foldersText.isEmpty {
-            labelSection.text = filesText
-        } else if filesText.isEmpty {
-            labelSection.text = foldersText
-        } else {
-            labelSection.text = foldersText + " • " + filesText
-        }
-    }
-
-    func setTitleLabel(_ text: String) {
-
-        labelSection.text = text
-    }
-
-    func setButtonText(_ text: String) {
-
-        buttonSection.setTitle(text, for: .normal)
-    }
-
-    func separatorIsHidden(_ isHidden: Bool) {
-
-        separator.isHidden = isHidden
-    }
-
-    func buttonIsHidden(_ isHidden: Bool) {
-
-        buttonSection.isHidden = isHidden
-        if isHidden {
-            buttonSectionHeightConstraint.constant = 0
-        } else {
-            buttonSectionHeightConstraint.constant = NCGlobal.shared.heightFooterButton
-        }
-    }
-
-    func showActivityIndicatorSection() {
-
-        buttonSection.isHidden = true
-        buttonSectionHeightConstraint.constant = NCGlobal.shared.heightFooterButton
-
-        activityIndicatorSection.isHidden = false
-        activityIndicatorSection.startAnimating()
-    }
-
-    func hideActivityIndicatorSection() {
-
-        activityIndicatorSection.stopAnimating()
-        activityIndicatorSection.isHidden = true
-    }
-
-    // MARK: - Action
-
-    @IBAction func touchUpInsideButton(_ sender: Any) {
-        delegate?.tapButtonSection(sender, metadataForSection: metadataForSection)
-    }
-}
-
-protocol NCSectionFooterDelegate: AnyObject {
-    func tapButtonSection(_ sender: Any, metadataForSection: NCMetadataForSection?)
-}
-
-// optional func
-extension NCSectionFooterDelegate {
-    func tapButtonSection(_ sender: Any, metadataForSection: NCMetadataForSection?) {}
 }
 
 // https://stackoverflow.com/questions/16278463/darken-an-uiimage
