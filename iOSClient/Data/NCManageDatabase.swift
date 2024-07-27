@@ -40,11 +40,46 @@ class NCManageDatabase: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
 
     override init() {
+        func migrationSchema(_ migration: Migration, _ oldSchemaVersion: UInt64) {
+            if oldSchemaVersion < 354 {
+                migration.deleteData(forType: NCDBLayoutForView.className())
+            }
+        }
+
+        func compactDB(_ totalBytes: Int, _ usedBytes: Int) -> Bool {
+            // totalBytes refers to the size of the file on disk in bytes (data + free space)
+            // usedBytes refers to the number of bytes used by data in the file
+            // Compact if the file is over 100MB in size and less than 50% 'used'
+            let oneHundredMB = 100 * 1024 * 1024
+            return (totalBytes > oneHundredMB) && (Double(usedBytes) / Double(totalBytes)) < 0.5
+        }
+
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         let databaseFileUrlPath = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
         let bundleUrl: URL = Bundle.main.bundleURL
         let bundlePathExtension: String = bundleUrl.pathExtension
+        let bundleFileName: String = (bundleUrl.path as NSString).lastPathComponent
         let isAppex: Bool = bundlePathExtension == "appex"
+        var objectTypesAppex = [tableMetadata.self,
+                                tableLocalFile.self,
+                                tableDirectory.self,
+                                tableTag.self,
+                                tableAccount.self,
+                                tableCapabilities.self,
+                                tablePhotoLibrary.self,
+                                tableE2eEncryption.self,
+                                tableE2eEncryptionLock.self,
+                                tableE2eMetadata12.self,
+                                tableE2eMetadata.self,
+                                tableE2eUsers.self,
+                                tableE2eCounter.self,
+                                tableShare.self,
+                                tableChunk.self,
+                                tableAvatar.self,
+                                tableDashboardWidget.self,
+                                tableDashboardWidgetButton.self,
+                                NCDBLayoutForView.self,
+                                TableSecurityGuardDiagnostics.self]
 
         if let databaseFilePath = databaseFileUrlPath?.path {
             if FileManager.default.fileExists(atPath: databaseFilePath) {
@@ -66,40 +101,29 @@ class NCManageDatabase: NSObject {
         }
 
         if isAppex {
+            if bundleFileName == "File Provider Extension.appex" {
+                objectTypesAppex = [tableMetadata.self,
+                                    tableLocalFile.self,
+                                    tableDirectory.self,
+                                    tableTag.self,
+                                    tableAccount.self,
+                                    tableCapabilities.self]
+            }
             Realm.Configuration.defaultConfiguration = Realm.Configuration(fileURL: databaseFileUrlPath,
                                                                            schemaVersion: databaseSchemaVersion,
                                                                            migrationBlock: { migration, oldSchemaVersion in
-            }, objectTypes: [tableMetadata.self,
-                             tableLocalFile.self,
-                             tableDirectory.self,
-                             tableTag.self,
-                             tableAccount.self,
-                             tableCapabilities.self,
-                             tablePhotoLibrary.self,
-                             tableE2eEncryption.self,
-                             tableE2eEncryptionLock.self,
-                             tableE2eMetadata12.self,
-                             tableE2eMetadata.self,
-                             tableE2eUsers.self,
-                             tableE2eCounter.self,
-                             tableShare.self,
-                             tableChunk.self,
-                             tableAvatar.self,
-                             tableDashboardWidget.self,
-                             tableDashboardWidgetButton.self,
-                             NCDBLayoutForView.self,
-                             TableSecurityGuardDiagnostics.self])
+                migrationSchema(migration, oldSchemaVersion)
+            }, shouldCompactOnLaunch: { totalBytes, usedBytes in
+                compactDB(totalBytes, usedBytes)
+            }, objectTypes: objectTypesAppex)
         } else {
             do {
                 _ = try Realm(configuration: Realm.Configuration(fileURL: databaseFileUrlPath,
                                                                  schemaVersion: databaseSchemaVersion,
                                                                  migrationBlock: { migration, oldSchemaVersion in
+                    migrationSchema(migration, oldSchemaVersion)
                     }, shouldCompactOnLaunch: { totalBytes, usedBytes in
-                        // totalBytes refers to the size of the file on disk in bytes (data + free space)
-                        // usedBytes refers to the number of bytes used by data in the file
-                        // Compact if the file is over 100MB in size and less than 50% 'used'
-                        let oneHundredMB = 100 * 1024 * 1024
-                        return (totalBytes > oneHundredMB) && (Double(usedBytes) / Double(totalBytes)) < 0.5
+                        compactDB(totalBytes, usedBytes)
                     }
                 ))
             } catch let error {
