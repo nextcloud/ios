@@ -109,13 +109,22 @@ class NCManageDatabase: NSObject {
                                     tableAccount.self,
                                     tableCapabilities.self]
             }
-            Realm.Configuration.defaultConfiguration = Realm.Configuration(fileURL: databaseFileUrlPath,
-                                                                           schemaVersion: databaseSchemaVersion,
-                                                                           migrationBlock: { migration, oldSchemaVersion in
-                migrationSchema(migration, oldSchemaVersion)
-            }, shouldCompactOnLaunch: { totalBytes, usedBytes in
-                compactDB(totalBytes, usedBytes)
-            }, objectTypes: objectTypesAppex)
+            do {
+                _ = try Realm(configuration: Realm.Configuration(fileURL: databaseFileUrlPath,
+                                                                 schemaVersion: databaseSchemaVersion,
+                                                                 migrationBlock: { migration, oldSchemaVersion in
+                    migrationSchema(migration, oldSchemaVersion)
+                    }, shouldCompactOnLaunch: { totalBytes, usedBytes in
+                        compactDB(totalBytes, usedBytes)
+                    }, objectTypes: objectTypesAppex))
+            } catch let error {
+                if let databaseFileUrlPath {
+                    do {
+                        NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] DATABASE ERROR: \(error.localizedDescription)")
+                        try FileManager.default.removeItem(at: databaseFileUrlPath)
+                    } catch {}
+                }
+            }
         } else {
             do {
                 _ = try Realm(configuration: Realm.Configuration(fileURL: databaseFileUrlPath,
@@ -124,10 +133,9 @@ class NCManageDatabase: NSObject {
                     migrationSchema(migration, oldSchemaVersion)
                     }, shouldCompactOnLaunch: { totalBytes, usedBytes in
                         compactDB(totalBytes, usedBytes)
-                    }
-                ))
+                    }))
             } catch let error {
-                if let databaseFileUrlPath = databaseFileUrlPath {
+                if let databaseFileUrlPath {
                     do {
 #if !EXTENSION
                         let nkError = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: error.localizedDescription)
@@ -138,30 +146,13 @@ class NCManageDatabase: NSObject {
                     } catch {}
                 }
             }
-
+        }
+        ///
+        do {
             Realm.Configuration.defaultConfiguration = Realm.Configuration(
                 fileURL: dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName),
                 schemaVersion: databaseSchemaVersion
             )
-        }
-
-        // Verify Database, if corrupt remove it
-        do {
-            _ = try Realm()
-        } catch let error {
-            if let databaseFileUrlPath = databaseFileUrlPath {
-                do {
-#if !EXTENSION
-                    let nkError = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: error.localizedDescription)
-                    NCContentPresenter().showError(error: nkError, priority: .max)
-#endif
-                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] DATABASE ERROR: \(error.localizedDescription)")
-                    try FileManager.default.removeItem(at: databaseFileUrlPath)
-                } catch { }
-            }
-        }
-
-        do {
             _ = try Realm()
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not open database: \(error)")
