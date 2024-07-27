@@ -53,7 +53,7 @@ class NCManageDatabase: NSObject {
             let oneHundredMB = 100 * 1024 * 1024
             return (totalBytes > oneHundredMB) && (Double(usedBytes) / Double(totalBytes)) < 0.5
         }
-
+        var realm: Realm?
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         let databaseFileUrlPath = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
         let bundleUrl: URL = Bundle.main.bundleURL
@@ -110,7 +110,7 @@ class NCManageDatabase: NSObject {
                                     tableCapabilities.self]
             }
             do {
-                _ = try Realm(configuration: Realm.Configuration(fileURL: databaseFileUrlPath,
+                realm = try Realm(configuration: Realm.Configuration(fileURL: databaseFileUrlPath,
                                                                  schemaVersion: databaseSchemaVersion,
                                                                  migrationBlock: { migration, oldSchemaVersion in
                     migrationSchema(migration, oldSchemaVersion)
@@ -127,7 +127,7 @@ class NCManageDatabase: NSObject {
             }
         } else {
             do {
-                _ = try Realm(configuration: Realm.Configuration(fileURL: databaseFileUrlPath,
+                realm = try Realm(configuration: Realm.Configuration(fileURL: databaseFileUrlPath,
                                                                  schemaVersion: databaseSchemaVersion,
                                                                  migrationBlock: { migration, oldSchemaVersion in
                     migrationSchema(migration, oldSchemaVersion)
@@ -147,13 +147,16 @@ class NCManageDatabase: NSObject {
                 }
             }
         }
-        ///
+        /// START WITH REALM.CONFIGURATION.DEFAULTCONFIGURATION
         do {
             Realm.Configuration.defaultConfiguration = Realm.Configuration(
                 fileURL: dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName),
                 schemaVersion: databaseSchemaVersion
             )
-            _ = try Realm()
+            realm = try Realm()
+            if let realm, let url = realm.configuration.fileURL {
+                print("Realm is located at: \(url)")
+            }
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not open database: \(error)")
         }
