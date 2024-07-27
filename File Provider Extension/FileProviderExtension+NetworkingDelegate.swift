@@ -55,7 +55,7 @@ extension FileProviderExtension: NCNetworkingDelegate {
             NCManageDatabase.shared.addMetadata(metadata)
             NCManageDatabase.shared.addLocalFile(metadata: metadata)
             /// NEW File
-            if ocId != metadata.ocIdTemp {
+            if !metadata.ocIdTemp.isEmpty, ocId != metadata.ocIdTemp {
                 let atPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTemp)
                 let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId)
                 utilityFileSystem.copyFile(atPath: atPath, toPath: toPath)
