@@ -588,67 +588,23 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func setNavigationLeftItems() {
         guard layoutKey == NCGlobal.shared.layoutViewFiles else { return }
-        let activeAccount = NCManageDatabase.shared.getActiveAccount()
-        let image = utility.loadUserImage(for: appDelegate.user, displayName: activeAccount?.displayName, userBaseUrl: appDelegate)
-        let accountButton = AccountSwitcherButton(type: .custom)
-
-        accountButton.setImage(image, for: .normal)
-        accountButton.setImage(image, for: .highlighted)
-        accountButton.semanticContentAttribute = .forceLeftToRight
-        accountButton.sizeToFit()
-
-        let accounts = NCManageDatabase.shared.getAllAccountOrderAlias()
-
-        if !accounts.isEmpty, !NCBrandOptions.shared.disable_multiaccount, !NCBrandOptions.shared.disable_manage_account {
-            let accountActions: [UIAction] = accounts.map { account in
-                let image = utility.loadUserImage(for: account.user, displayName: account.displayName, userBaseUrl: account)
-
-                var name: String = ""
-                var url: String = ""
-
-                if account.alias.isEmpty {
-                    name = account.displayName
-                    url = (URL(string: account.urlBase)?.host ?? "")
-                } else {
-                    name = account.alias
-                }
-
-                let action = UIAction(title: name, image: image, state: account.active ? .on : .off) { _ in
-                    if !account.active {
-                        self.appDelegate.changeAccount(account.account, userProfile: nil)
-                        self.setEditMode(false)
-                    }
-                }
-
-                action.subtitle = url
-
-                return action
-            }
-
-            let addAccountAction = UIAction(title: NSLocalizedString("_add_account_", comment: ""), image: utility.loadImage(named: "person.crop.circle.badge.plus", colors: NCBrandColor.shared.iconImageMultiColors)) { _ in
-                self.appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
-            }
-
-            let addAccountSubmenu = UIMenu(title: "", options: .displayInline, children: [addAccountAction])
-
-            let menu = UIMenu(children: accountActions + [addAccountSubmenu])
-
-            accountButton.menu = menu
-            accountButton.showsMenuAsPrimaryAction = true
-
-            accountButton.onMenuOpened = {
-                self.dismissTip()
-            }
-        }
-
+        
         navigationItem.leftItemsSupplementBackButton = true
-        navigationItem.setLeftBarButtonItems([UIBarButtonItem(customView: accountButton)], animated: true)
+        navigationItem.setLeftBarButtonItems([UIBarButtonItem(image: UIImage(systemName: "line.3.horizontal"),
+                                                              style: .plain,
+                                                              action: { [weak self] in
+            self?.showBurgerMenu()
+        })], animated: true)
 
         if titlePreviusFolder != nil {
             navigationController?.navigationBar.topItem?.title = titlePreviusFolder
         }
 
         navigationItem.title = titleCurrentFolder
+    }
+    
+    func showBurgerMenu() {
+        (self.tabBarController as? NCMainTabBarController)?.showBurgerMenu()
     }
 
     func setNavigationRightItems() {
@@ -1058,6 +1014,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - Push metadata
 
     func pushMetadata(_ metadata: tableMetadata) {
+        // TODO: - Need to research why I can't open directory of recent files
         guard let filesServerUrl = (tabBarController as? NCMainTabBarController)?.filesServerUrl else { return }
         let serverUrlPush = utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
 
