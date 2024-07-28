@@ -229,18 +229,6 @@ class FileProviderExtension: NSFileProviderExtension {
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcIdAndOcIdTemp(itemIdentifier.rawValue) else { return }
         let serverUrlFileName = metadata.serverUrl + "/" + fileName
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: fileName)
-
-        //  // utilityFileSystem.copyFile(atPath: url.path, toPath: fileNameLocalPath)
-        /*
-        // Temp ocId ?
-        if outstandingOcIdTemp[ocId] != nil && outstandingOcIdTemp[ocId] != ocId {
-            ocId = outstandingOcIdTemp[ocId]!
-            let atPath = utilityFileSystem.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: fileName)
-            let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
-            utilityFileSystem.copyFile(atPath: atPath, toPath: toPath)
-        }
-        */
-
         NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                    session: NCNetworking.shared.sessionUploadBackgroundExtension,
                                                    sessionError: "",
