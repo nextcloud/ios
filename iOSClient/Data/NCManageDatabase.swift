@@ -202,24 +202,6 @@ class NCManageDatabase: NSObject {
         self.clearTable(tableE2eCounter.self, account: account)
     }
 
-    @objc func removeDB() {
-        let realmURL = Realm.Configuration.defaultConfiguration.fileURL!
-        let realmURLs = [
-            realmURL,
-            realmURL.appendingPathExtension("lock"),
-            realmURL.appendingPathExtension("note"),
-            realmURL.appendingPathExtension("management")
-        ]
-
-        for URL in realmURLs {
-            do {
-                try FileManager.default.removeItem(at: URL)
-            } catch let error {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
-            }
-        }
-    }
-
     func getThreadConfined(_ object: Object) -> Any {
         return ThreadSafeReference(to: object)
     }
