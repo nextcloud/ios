@@ -81,14 +81,6 @@ class NCManageDatabase: NSObject {
                                 NCDBLayoutForView.self,
                                 TableSecurityGuardDiagnostics.self]
 
-        if let databaseFilePath = databaseFileUrlPath?.path {
-            if FileManager.default.fileExists(atPath: databaseFilePath) {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] DATABASE FOUND in " + databaseFilePath)
-            } else {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] DATABASE NOT FOUND in " + databaseFilePath)
-            }
-        }
-
         // Disable file protection for directory DB
         // https://docs.mongodb.com/realm/sdk/ios/examples/configure-and-open-a-realm/#std-label-ios-open-a-local-realm
         if let folderPathURL = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud) {
