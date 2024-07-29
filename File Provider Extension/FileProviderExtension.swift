@@ -200,6 +200,12 @@ class FileProviderExtension: NSFileProviderExtension {
                 return completionHandler(NSFileProviderError(.noSuchItem))
             }
             if error == .success {
+                metadata.sceneIdentifier = nil
+                metadata.session = ""
+                metadata.sessionError = ""
+                metadata.sessionSelector = ""
+                metadata.sessionDate = nil
+                metadata.sessionTaskIdentifier = 0
                 metadata.status = NCGlobal.shared.metadataStatusNormal
                 metadata.date = (date as? NSDate) ?? NSDate()
                 metadata.etag = etag ?? ""
