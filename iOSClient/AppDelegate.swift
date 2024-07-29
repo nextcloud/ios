@@ -458,7 +458,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let account: String = "\(user) \(urlBase)"
 
         NextcloudKit.shared.setup(account: account, user: user, userId: user, password: password, urlBase: urlBase, groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
-        NextcloudKit.shared.getUserProfile { _, userProfile, _, error in
+        NextcloudKit.shared.getUserProfile { account, userProfile, _, error in
             if error == .success, let userProfile {
                 NCManageDatabase.shared.deleteAccount(account)
                 NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)

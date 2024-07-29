@@ -166,7 +166,13 @@ class FileProviderExtension: NSFileProviderExtension {
     override func startProvidingItem(at url: URL, completionHandler: @escaping ((_ error: Error?) -> Void)) {
         let pathComponents = url.pathComponents
         let itemIdentifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
-        guard let metadata = providerUtility.getTableMetadataFromItemIdentifier(itemIdentifier) else {
+        var metadata: tableMetadata?
+        if let result = fileProviderData.shared.getUploadMetadata(id: itemIdentifier.rawValue) {
+            metadata = result.metadata
+        } else {
+            metadata = NCManageDatabase.shared.getMetadataFromOcIdAndOcIdTemp(itemIdentifier.rawValue)
+        }
+        guard let metadata else {
             return completionHandler(NSFileProviderError(.noSuchItem))
         }
         if metadata.session == NCNetworking.shared.sessionUploadBackgroundExtension {
@@ -232,18 +238,24 @@ class FileProviderExtension: NSFileProviderExtension {
         assert(pathComponents.count > 2)
         let itemIdentifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
         let fileName = pathComponents[pathComponents.count - 1]
+        let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: fileName)
         var metadata: tableMetadata?
-        if let result = fileProviderData.shared.getUploadMetadata(ocId: itemIdentifier.rawValue) {
+        if let result = fileProviderData.shared.getUploadMetadata(id: itemIdentifier.rawValue) {
+            do {
+                try FileManager.default.copyItem(atPath: url.path, toPath: fileNameLocalPath)
+                print("File successfully copied to \(fileNameLocalPath)")
+            } catch {
+                print("Failed to copy file: \(error)")
+            }
             metadata = result.metadata
         } else {
             metadata = NCManageDatabase.shared.getMetadataFromOcIdAndOcIdTemp(itemIdentifier.rawValue)
         }
-        guard let metadata  else { return }
-        let serverUrlFileName = metadata.serverUrl + "/" + fileName
-        let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: fileName)
-        if !metadata.ocIdTemp.isEmpty, metadata.ocId != metadata.ocIdTemp {
-            utilityFileSystem.copyFile(atPath: url.path, toPath: fileNameLocalPath)
+        guard let metadata else {
+            return
         }
+        let serverUrlFileName = metadata.serverUrl + "/" + fileName
+
         NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                    session: NCNetworking.shared.sessionUploadBackgroundExtension,
                                                    sessionError: "",
@@ -254,7 +266,6 @@ class FileProviderExtension: NSFileProviderExtension {
                                                        status: NCGlobal.shared.metadataStatusUploading,
                                                        taskIdentifier: task.taskIdentifier)
             fileProviderData.shared.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(metadata.fileId)) { _ in }
-            fileProviderData.shared.appendUploadMetadata(metadata: metadata, task: task)
         }
     }
 
@@ -319,7 +330,7 @@ class FileProviderExtension: NSFileProviderExtension {
                                                                status: NCGlobal.shared.metadataStatusUploading,
                                                                taskIdentifier: task.taskIdentifier)
                     fileProviderData.shared.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(ocIdTemp)) { _ in }
-                    fileProviderData.shared.appendUploadMetadata(metadata: metadata, task: task)
+                    fileProviderData.shared.appendUploadMetadata(id: ocIdTemp, metadata: metadata, task: task)
                 }
 
                 let item = FileProviderItem(metadata: tableMetadata.init(value: metadata), parentItemIdentifier: parentItemIdentifier)

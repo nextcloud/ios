@@ -59,6 +59,7 @@ class fileProviderData: NSObject {
     }
 
     struct UploadMetadata {
+        var id: String
         var metadata: tableMetadata
         var task: URLSessionUploadTask?
     }
@@ -150,14 +151,14 @@ class fileProviderData: NSObject {
 
     // MARK: -
 
-    func appendUploadMetadata(metadata: tableMetadata, task: URLSessionUploadTask?) {
-        if let index = uploadMetadata.firstIndex(where: { $0.metadata.ocId == metadata.ocId }) {
+    func appendUploadMetadata(id: String, metadata: tableMetadata, task: URLSessionUploadTask?) {
+        if let index = uploadMetadata.firstIndex(where: { $0.id == id }) {
             uploadMetadata.remove(at: index)
         }
-        uploadMetadata.append(UploadMetadata(metadata: metadata, task: task))
+        uploadMetadata.append(UploadMetadata(id: id, metadata: metadata, task: task))
     }
 
-    func getUploadMetadata(ocId: String) -> UploadMetadata? {
-        return uploadMetadata.filter({ $0.metadata.ocId == ocId }).first
+    func getUploadMetadata(id: String) -> UploadMetadata? {
+        return uploadMetadata.filter({ $0.id == id }).first
     }
 }
