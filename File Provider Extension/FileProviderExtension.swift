@@ -55,7 +55,6 @@ import Alamofire
 class FileProviderExtension: NSFileProviderExtension {
     let providerUtility = fileProviderUtility()
     let utilityFileSystem = NCUtilityFileSystem()
-    var uploadingMetadata: [String: tableMetadata] = [:]
 
     override init() {
         super.init()
@@ -234,8 +233,8 @@ class FileProviderExtension: NSFileProviderExtension {
         let itemIdentifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
         let fileName = pathComponents[pathComponents.count - 1]
         var metadata: tableMetadata?
-        if let result = uploadingMetadata[itemIdentifier.rawValue] {
-            metadata = result
+        if let result = fileProviderData.shared.getUploadMetadata(ocId: itemIdentifier.rawValue) {
+            metadata = result.metadata
         } else {
             metadata = NCManageDatabase.shared.getMetadataFromOcIdAndOcIdTemp(itemIdentifier.rawValue)
         }
@@ -255,6 +254,7 @@ class FileProviderExtension: NSFileProviderExtension {
                                                        status: NCGlobal.shared.metadataStatusUploading,
                                                        taskIdentifier: task.taskIdentifier)
             fileProviderData.shared.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(metadata.fileId)) { _ in }
+            fileProviderData.shared.appendUploadMetadata(metadata: metadata, task: task)
         }
     }
 
@@ -315,11 +315,11 @@ class FileProviderExtension: NSFileProviderExtension {
                 let fileNameLocalPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: fileName)
 
                 if let task = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: nil, dateModificationFile: nil, session: NCNetworking.shared.sessionManagerUploadBackgroundExtension) {
-                    self.uploadingMetadata[metadata.ocId] = metadata
                     NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                                status: NCGlobal.shared.metadataStatusUploading,
                                                                taskIdentifier: task.taskIdentifier)
                     fileProviderData.shared.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(ocIdTemp)) { _ in }
+                    fileProviderData.shared.appendUploadMetadata(metadata: metadata, task: task)
                 }
 
                 let item = FileProviderItem(metadata: tableMetadata.init(value: metadata), parentItemIdentifier: parentItemIdentifier)

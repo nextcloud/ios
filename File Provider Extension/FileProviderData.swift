@@ -58,6 +58,13 @@ class fileProviderData: NSObject {
         case workingSet
     }
 
+    struct UploadMetadata {
+        var metadata: tableMetadata
+        var task: URLSessionUploadTask?
+    }
+
+    var uploadMetadata: [UploadMetadata] = []
+
     // MARK: - 
 
     func setupAccount(domain: NSFileProviderDomain?, providerExtension: NSFileProviderExtension) -> tableAccount? {
@@ -139,5 +146,18 @@ class fileProviderData: NSObject {
         }
         fileProviderManager.signalEnumerator(for: .workingSet) { _ in }
         return item
+    }
+
+    // MARK: -
+
+    func appendUploadMetadata(metadata: tableMetadata, task: URLSessionUploadTask?) {
+        if let index = uploadMetadata.firstIndex(where: { $0.metadata.ocId == metadata.ocId }) {
+            uploadMetadata.remove(at: index)
+        }
+        uploadMetadata.append(UploadMetadata(metadata: metadata, task: task))
+    }
+
+    func getUploadMetadata(ocId: String) -> UploadMetadata? {
+        return uploadMetadata.filter({ $0.metadata.ocId == ocId }).first
     }
 }
