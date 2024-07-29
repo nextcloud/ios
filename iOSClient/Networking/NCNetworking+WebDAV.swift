@@ -216,6 +216,7 @@ extension NCNetworking {
         if fileNameFolder.isEmpty {
             return completion(NKError())
         }
+
         let fileNameFolderUrl = serverUrl + "/" + fileNameFolder
 
         NextcloudKit.shared.createFolder(serverUrlFileName: fileNameFolderUrl) { account, _, _, error in

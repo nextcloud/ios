@@ -1090,9 +1090,10 @@
 "_poll_desc_"                    = "Please complete the log in process in your browser";
 
 // MARK: File name validator
-"_filename_empty_" = "File name is empty";
-"_file_name_validator_upload_content_error_" = "Some files cannot be uploaded due to reserved names or invalid characters";
-"_file_name_validator_error_contains_reserved_names_or_invalid_characters_" = "Folder path contains reserved names or invalid characters";
-"_file_name_validator_error_invalid_character_" = "File name contains invalid characters: %s";
-"_file_name_validator_error_reserved_names_" = "%s is a reserved name";
-"_file_name_validator_error_ends_with_space_period_" = "File name ends with a space or a period";
+"_file_name_validator_error_upload_invalid_name_" = "Some files could not be uploaded as they contain forbidden names or invalid characters";
+"_file_name_validator_error_file_invalid_name_" = "File or folder name contains forbidden names or invalid characters";
+"_file_name_validator_error_folder_invalid_name_" = "Folder path contains forbidden names or invalid characters";
+"_file_name_validator_error_ends_with_space_period_" = "File or folder name ends with a space or a period";
+"_file_name_validator_error_reserved_name_" = "%s is a reserved name";
+"_file_name_validator_error_forbidden_file_extension_" = ".%s is a forbidden file extension";
+"_file_name_validator_error_invalid_character_" = "File or folder name contains an invalid character: %s";

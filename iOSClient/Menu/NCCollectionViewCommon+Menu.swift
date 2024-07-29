@@ -281,57 +281,7 @@ extension NCCollectionViewCommon {
                     icon: utility.loadImage(named: "text.cursor", colors: [NCBrandColor.shared.iconImageColor]),
                     order: 120,
                     action: { _ in
-//                        let alert = UIAlertController.renameFile { cancelled in
-//
-//                        }
-//
-//                        self.present(alert, animated: true)
-
-                        if let vcRename = UIStoryboard(name: "NCRenameFile", bundle: nil).instantiateInitialViewController() as? NCRenameFile {
-
-                            vcRename.metadata = metadata
-                            vcRename.imagePreview = imageIcon
-                            vcRename.indexPath = indexPath
-
-                            let popup = NCPopupViewController(contentController: vcRename, popupWidth: vcRename.width, popupHeight: vcRename.height)
-                            popup.shadowEnabled = false
-
-//                            let alertController = UIAlertController(title: "Alert", message: nil, preferredStyle: .alert)
-                            
-
-
-//                            // Create an instance of your custom view controller
-//                            let customViewController = CustomAlertViewController()
-//                            customViewController.alertController = alertController
-//
-//                            // Add the custom view controller to the alert
-//                            alertController.setValue(customViewController, forKey: "contentViewController")
-
-//                            alertController.addTextField {
-//                                   $0.placeholder = "Email"
-//                                   $0.addTarget(alertController, action: #selector(alertController.textDidChangeInLoginAlert), for: .editingChanged)
-//                               }
-//
-//                            let updateAction = UIAlertAction(title: "Update", style: .default) { _ in
-//                                // Code to update the alert controller
-//                                alertController.title = "Updated Title"
-//                                alertController.message = "Updated Message"
-//
-//                                // Adding a new action as an example
-//                                let newAction = UIAlertAction(title: "New Action", style: .default, handler: nil)
-//                                alertController.addAction(newAction)
-//                            }
-//                            alertController.addAction(updateAction)
-//
-//
-//                            // Add a dummy action to ensure there's something to present the alert
-//                            let dummyAction = UIAlertAction(title: "Close", style: .cancel, handler: nil)
-//                            alertController.addAction(dummyAction)
-//
-//                            self.present(alertController, animated: true, completion: nil)
-
-                            self.present(UIAlertController.renameFile(oldName: metadata.fileName), animated: true)
-                        }
+                        self.present(UIAlertController.renameFile(oldName: metadata.fileName), animated: true)
                     }
                 )
             )

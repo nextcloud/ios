@@ -109,7 +109,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             userId = activeAccount.userId
             password = NCKeychain().getPassword(account: account)
 
-            NextcloudKit.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: urlBase, groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+            NextcloudKit.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: urlBase)
             NCManageDatabase.shared.setCapabilities(account: account)
 
             NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
@@ -481,7 +481,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
         let account: String = "\(user) \(urlBase)"
 
-        NextcloudKit.shared.setup(account: account, user: user, userId: user, password: password, urlBase: urlBase, groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+        NextcloudKit.shared.setup(account: account, user: user, userId: user, password: password, urlBase: urlBase)
         NextcloudKit.shared.getUserProfile { _, userProfile, _, error in
             if error == .success, let userProfile {
                 NCManageDatabase.shared.deleteAccount(account)
@@ -491,7 +491,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     completion(error)
                 }
             } else {
-                NextcloudKit.shared.setup(account: self.account, user: self.user, userId: self.userId, password: self.password, urlBase: self.urlBase, groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+                NextcloudKit.shared.setup(account: self.account, user: self.user, userId: self.userId, password: self.password, urlBase: self.urlBase)
                 let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
                 UIApplication.shared.firstWindow?.rootViewController?.present(alertController, animated: true)
@@ -528,7 +528,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         self.userId = tableAccount.userId
         self.password = NCKeychain().getPassword(account: tableAccount.account)
 
-        NextcloudKit.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: urlBase, groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+        NextcloudKit.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: urlBase)
         NCManageDatabase.shared.setCapabilities(account: account)
 
         if let userProfile {

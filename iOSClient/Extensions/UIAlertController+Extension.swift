@@ -68,7 +68,6 @@ extension UIAlertController {
             textField.autocapitalizationType = .words
         }
 
-
         // only allow saving if folder name exists
         NotificationCenter.default.addObserver(
             forName: UITextField.textDidChangeNotification,
@@ -76,9 +75,10 @@ extension UIAlertController {
             queue: .main) { _ in
                 guard let text = alertController.textFields?.first?.text else { return }
                 let folderName = text.trimmingCharacters(in: .whitespaces)
-                let checkFolderName = FileNameValidator.shared.fileAlreadyExistsError
-                okAction.isEnabled = !folderName.isEmpty && folderName != "." && folderName != ".."
-//                alertController.message = folderName != "." && folderName != ".." ? "This is an error" : ""
+
+                let textCheck = FileNameValidator.shared.checkFileName(folderName)
+                okAction.isEnabled = textCheck?.error == nil && !folderName.isEmpty
+                alertController.message = textCheck?.error.localizedDescription
             }
 
         alertController.addAction(cancelAction)
@@ -196,8 +196,8 @@ extension UIAlertController {
 //            if let start = textField.position(from: textField.beginningOfDocument, offset: 0),
 //               let end = textField.position(from: start, offset: textField.text?.withRemovedFileExtension.count ?? 0) {
 //                textField.selectedTextRange = textField.textRange(from: start, to: end)
-//            }
-//            textField.selectAll(nil)
+            //            }
+            //            textField.selectAll(nil)
         }
 
         // only allow saving if folder name exists
@@ -208,10 +208,9 @@ extension UIAlertController {
                 guard let textField = alertController.textFields?.first else { return }
 
                 if let start = textField.position(from: textField.beginningOfDocument, offset: 0),
-                              let end = textField.position(from: start, offset: textField.text?.withRemovedFileExtension.count ?? 0) {
-                               textField.selectedTextRange = textField.textRange(from: start, to: end)
-                           }
-//                           textField.selectAll(nil)
+                   let end = textField.position(from: start, offset: textField.text?.withRemovedFileExtension.count ?? 0) {
+                    textField.selectedTextRange = textField.textRange(from: start, to: end)
+                }
             }
 
         NotificationCenter.default.addObserver(
@@ -221,7 +220,7 @@ extension UIAlertController {
                 guard let text = alertController.textFields?.first?.text else { return }
 
                 let textCheck = FileNameValidator.shared.checkFileName(text)
-                okAction.isEnabled = textCheck?.error == nil
+                okAction.isEnabled = textCheck?.error == nil && !text.isEmpty
                 alertController.message = textCheck?.error.localizedDescription
             }
 
