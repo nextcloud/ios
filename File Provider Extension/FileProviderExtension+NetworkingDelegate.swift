@@ -48,8 +48,13 @@ extension FileProviderExtension: NCNetworkingDelegate {
             if let fileId = NCUtility().ocIdToFileId(ocId: ocId) {
                 metadata.fileId = fileId
             }
+
+            metadata.sceneIdentifier = nil
             metadata.session = ""
             metadata.sessionError = ""
+            metadata.sessionSelector = ""
+            metadata.sessionDate = nil
+            metadata.sessionTaskIdentifier = 0
             metadata.status = NCGlobal.shared.metadataStatusNormal
 
             NCManageDatabase.shared.addMetadata(metadata)
@@ -62,7 +67,9 @@ extension FileProviderExtension: NCNetworkingDelegate {
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocIdTemp))
             }
             /// SIGNAL
-            fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
+            }
         } else {
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocIdTemp))
             /// SIGNAL
