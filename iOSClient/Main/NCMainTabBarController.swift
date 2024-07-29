@@ -28,16 +28,6 @@ class NCMainTabBarController: UITabBarController {
     var documentPickerViewController: NCDocumentPickerViewController?
     let filesServerUrl = ThreadSafeDictionary<String, NCFiles>()
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-    private(set) var burgerMenuController: BurgerMenuAttachController?
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        burgerMenuController = BurgerMenuAttachController(with: self)
-    }
-    
-    func showBurgerMenu() {
-        burgerMenuController?.showMenu()
-    }
 
     func currentViewController() -> UIViewController? {
         return (selectedViewController as? UINavigationController)?.topViewController
