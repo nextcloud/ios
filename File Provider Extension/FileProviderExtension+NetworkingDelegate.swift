@@ -67,9 +67,7 @@ extension FileProviderExtension: NCNetworkingDelegate {
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocIdTemp))
             }
             /// SIGNAL
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
-            }
+            fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
         } else {
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocIdTemp))
             /// SIGNAL

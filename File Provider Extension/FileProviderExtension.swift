@@ -55,6 +55,7 @@ import Alamofire
 class FileProviderExtension: NSFileProviderExtension {
     let providerUtility = fileProviderUtility()
     let utilityFileSystem = NCUtilityFileSystem()
+    var uploadingMetadata: [String: tableMetadata] = [:]
 
     override init() {
         super.init()
@@ -232,7 +233,13 @@ class FileProviderExtension: NSFileProviderExtension {
         assert(pathComponents.count > 2)
         let itemIdentifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
         let fileName = pathComponents[pathComponents.count - 1]
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcIdAndOcIdTemp(itemIdentifier.rawValue) else { return }
+        var metadata: tableMetadata?
+        if let result = uploadingMetadata[itemIdentifier.rawValue] {
+            metadata = result
+        } else {
+            metadata = NCManageDatabase.shared.getMetadataFromOcIdAndOcIdTemp(itemIdentifier.rawValue)
+        }
+        guard let metadata  else { return }
         let serverUrlFileName = metadata.serverUrl + "/" + fileName
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: fileName)
         if !metadata.ocIdTemp.isEmpty, metadata.ocId != metadata.ocIdTemp {
@@ -308,6 +315,7 @@ class FileProviderExtension: NSFileProviderExtension {
                 let fileNameLocalPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: fileName)
 
                 if let task = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: nil, dateModificationFile: nil, session: NCNetworking.shared.sessionManagerUploadBackgroundExtension) {
+                    self.uploadingMetadata[metadata.ocId] = metadata
                     NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                                status: NCGlobal.shared.metadataStatusUploading,
                                                                taskIdentifier: task.taskIdentifier)
