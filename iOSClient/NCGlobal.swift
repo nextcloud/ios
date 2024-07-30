@@ -485,4 +485,8 @@ class NCGlobal: NSObject {
     // DRAG & DROP
     //
     let metadataOcIdDataRepresentation      = "text/com.nextcloud.ocId"
+
+    // GROUP AMIN
+    //
+    let groupAdmin                          = "admin"
 }

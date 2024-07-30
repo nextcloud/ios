@@ -33,6 +33,8 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     /// Keychain access
     var keychain = NCKeychain()
+    /// State variable for indicating if the user is in Admin group
+    @Published var isAdminGroup: Bool = false
     /// State variable for indicating whether hidden files are shown.
     @Published var showHiddenFiles: Bool = false
     /// State variable for indicating the most compatible format.
@@ -65,6 +67,8 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
 
     /// Triggered when the view appears.
     func onViewAppear() {
+        let groups = NCManageDatabase.shared.getAccountGroups(account: appDelegate.account)
+        isAdminGroup = groups.contains(NCGlobal.shared.groupAdmin)
         showHiddenFiles = keychain.showHiddenFiles
         mostCompatible = keychain.formatCompatibility
         livePhoto = keychain.livePhoto
@@ -73,6 +77,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
         crashReporter = keychain.disableCrashservice
         selectedLogLevel = LogLevel(rawValue: keychain.logLevel) ?? .standard
         selectedInterval = CacheDeletionInterval(rawValue: keychain.cleanUpDay) ?? .never
+
         DispatchQueue.global().async {
             self.calculateSize()
         }

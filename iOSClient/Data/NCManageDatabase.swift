@@ -40,16 +40,46 @@ class NCManageDatabase: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
 
     override init() {
-        let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
-        let databaseFileUrlPath = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
-
-        if let databaseFilePath = databaseFileUrlPath?.path {
-            if FileManager.default.fileExists(atPath: databaseFilePath) {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] DATABASE FOUND in " + databaseFilePath)
-            } else {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] DATABASE NOT FOUND in " + databaseFilePath)
+        func migrationSchema(_ migration: Migration, _ oldSchemaVersion: UInt64) {
+            if oldSchemaVersion < 354 {
+                migration.deleteData(forType: NCDBLayoutForView.className())
             }
         }
+
+        func compactDB(_ totalBytes: Int, _ usedBytes: Int) -> Bool {
+            // totalBytes refers to the size of the file on disk in bytes (data + free space)
+            // usedBytes refers to the number of bytes used by data in the file
+            // Compact if the file is over 100MB in size and less than 50% 'used'
+            let oneHundredMB = 100 * 1024 * 1024
+            return (totalBytes > oneHundredMB) && (Double(usedBytes) / Double(totalBytes)) < 0.5
+        }
+        var realm: Realm?
+        let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+        let databaseFileUrlPath = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
+        let bundleUrl: URL = Bundle.main.bundleURL
+        let bundlePathExtension: String = bundleUrl.pathExtension
+        let bundleFileName: String = (bundleUrl.path as NSString).lastPathComponent
+        let isAppex: Bool = bundlePathExtension == "appex"
+        var objectTypesAppex = [tableMetadata.self,
+                                tableLocalFile.self,
+                                tableDirectory.self,
+                                tableTag.self,
+                                tableAccount.self,
+                                tableCapabilities.self,
+                                tablePhotoLibrary.self,
+                                tableE2eEncryption.self,
+                                tableE2eEncryptionLock.self,
+                                tableE2eMetadata12.self,
+                                tableE2eMetadata.self,
+                                tableE2eUsers.self,
+                                tableE2eCounter.self,
+                                tableShare.self,
+                                tableChunk.self,
+                                tableAvatar.self,
+                                tableDashboardWidget.self,
+                                tableDashboardWidgetButton.self,
+                                NCDBLayoutForView.self,
+                                TableSecurityGuardDiagnostics.self]
 
         // Disable file protection for directory DB
         // https://docs.mongodb.com/realm/sdk/ios/examples/configure-and-open-a-realm/#std-label-ios-open-a-local-realm
@@ -62,60 +92,48 @@ class NCManageDatabase: NSObject {
             }
         }
 
-        do {
-            _ = try Realm(configuration: Realm.Configuration(
-                fileURL: databaseFileUrlPath,
-                schemaVersion: databaseSchemaVersion,
-                migrationBlock: { migration, oldSchemaVersion in
-                    if oldSchemaVersion < 354 {
-                        migration.deleteData(forType: NCDBLayoutForView.className())
-                    }
-                }, shouldCompactOnLaunch: { totalBytes, usedBytes in
-                    // totalBytes refers to the size of the file on disk in bytes (data + free space)
-                    // usedBytes refers to the number of bytes used by data in the file
-                    // Compact if the file is over 100MB in size and less than 50% 'used'
-                    let oneHundredMB = 100 * 1024 * 1024
-                    return (totalBytes > oneHundredMB) && (Double(usedBytes) / Double(totalBytes)) < 0.5
+        if isAppex {
+            if bundleFileName == "File Provider Extension.appex" {
+                objectTypesAppex = [tableMetadata.self,
+                                    tableLocalFile.self,
+                                    tableDirectory.self,
+                                    tableTag.self,
+                                    tableAccount.self,
+                                    tableCapabilities.self]
+            }
+            do {
+                Realm.Configuration.defaultConfiguration =
+                Realm.Configuration(fileURL: databaseFileUrlPath,
+                                    schemaVersion: databaseSchemaVersion,
+                                    migrationBlock: { migration, oldSchemaVersion in
+                                        migrationSchema(migration, oldSchemaVersion)
+                                    }, shouldCompactOnLaunch: { totalBytes, usedBytes in
+                                        compactDB(totalBytes, usedBytes)
+                                    }, objectTypes: objectTypesAppex)
+                realm = try Realm()
+                if let realm, let url = realm.configuration.fileURL {
+                    print("Realm is located at: \(url)")
                 }
-            ))
-        } catch let error {
-            if let databaseFileUrlPath = databaseFileUrlPath {
-                do {
-#if !EXTENSION
-                    let nkError = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: error.localizedDescription)
-                    NCContentPresenter().showError(error: nkError, priority: .max)
-#endif
-                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] DATABASE ERROR: \(error.localizedDescription)")
-                    try FileManager.default.removeItem(at: databaseFileUrlPath)
-                } catch {}
+            } catch let error {
+                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] DATABASE ERROR: \(error.localizedDescription)")
             }
-        }
-
-        Realm.Configuration.defaultConfiguration = Realm.Configuration(
-            fileURL: dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName),
-            schemaVersion: databaseSchemaVersion
-        )
-
-        // Verify Database, if corrupt remove it
-        do {
-            _ = try Realm()
-        } catch let error {
-            if let databaseFileUrlPath = databaseFileUrlPath {
-                do {
-#if !EXTENSION
-                    let nkError = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: error.localizedDescription)
-                    NCContentPresenter().showError(error: nkError, priority: .max)
-#endif
-                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] DATABASE ERROR: \(error.localizedDescription)")
-                    try FileManager.default.removeItem(at: databaseFileUrlPath)
-                } catch { }
+        } else {
+            do {
+                Realm.Configuration.defaultConfiguration =
+                Realm.Configuration(fileURL: databaseFileUrlPath,
+                                    schemaVersion: databaseSchemaVersion,
+                                    migrationBlock: { migration, oldSchemaVersion in
+                                        migrationSchema(migration, oldSchemaVersion)
+                                    }, shouldCompactOnLaunch: { totalBytes, usedBytes in
+                                        compactDB(totalBytes, usedBytes)
+                                    })
+                realm = try Realm()
+                if let realm, let url = realm.configuration.fileURL {
+                    print("Realm is located at: \(url)")
+                }
+            } catch let error {
+                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] DATABASE ERROR: \(error.localizedDescription)")
             }
-        }
-
-        do {
-            _ = try Realm()
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not open database: \(error)")
         }
     }
 
@@ -182,24 +200,6 @@ class NCManageDatabase: NSObject {
         self.clearTable(tableE2eMetadata.self, account: account)
         self.clearTable(tableE2eUsers.self, account: account)
         self.clearTable(tableE2eCounter.self, account: account)
-    }
-
-    @objc func removeDB() {
-        let realmURL = Realm.Configuration.defaultConfiguration.fileURL!
-        let realmURLs = [
-            realmURL,
-            realmURL.appendingPathExtension("lock"),
-            realmURL.appendingPathExtension("note"),
-            realmURL.appendingPathExtension("management")
-        ]
-
-        for URL in realmURLs {
-            do {
-                try FileManager.default.removeItem(at: URL)
-            } catch let error {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
-            }
-        }
     }
 
     func getThreadConfined(_ object: Object) -> Any {
