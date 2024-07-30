@@ -407,4 +407,16 @@ extension NCManageDatabase {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
     }
+
+    func getAccountGroups(account: String) -> [String] {
+        do {
+            let realm = try Realm()
+            if let result = realm.objects(tableAccount.self).filter("account == %@", account).first {
+                return result.groups.components(separatedBy: ",")
+            }
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
+        }
+        return []
+    }
 }
