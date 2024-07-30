@@ -36,6 +36,7 @@ extension FileProviderExtension: NCNetworkingDelegate {
     func uploadComplete(fileName: String, serverUrl: String, ocId: String?, etag: String?, date: Date?, size: Int64, task: URLSessionTask, error: NKError) {
         guard let url = task.currentRequest?.url,
               let metadata = NCManageDatabase.shared.getMetadata(from: url, sessionTaskIdentifier: task.taskIdentifier) else { return }
+
         if error == .success, let ocId {
             /// SIGNAL
             fileProviderData.shared.signalEnumerator(ocId: metadata.ocIdTemp, type: .delete)
@@ -48,14 +49,19 @@ extension FileProviderExtension: NCNetworkingDelegate {
             if let fileId = NCUtility().ocIdToFileId(ocId: ocId) {
                 metadata.fileId = fileId
             }
+
+            metadata.sceneIdentifier = nil
             metadata.session = ""
             metadata.sessionError = ""
+            metadata.sessionSelector = ""
+            metadata.sessionDate = nil
+            metadata.sessionTaskIdentifier = 0
             metadata.status = NCGlobal.shared.metadataStatusNormal
 
             NCManageDatabase.shared.addMetadata(metadata)
             NCManageDatabase.shared.addLocalFile(metadata: metadata)
             /// NEW File
-            if ocId != metadata.ocIdTemp {
+            if !metadata.ocIdTemp.isEmpty, ocId != metadata.ocIdTemp {
                 let atPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTemp)
                 let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId)
                 utilityFileSystem.copyFile(atPath: atPath, toPath: toPath)
