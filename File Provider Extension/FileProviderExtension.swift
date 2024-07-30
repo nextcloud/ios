@@ -238,15 +238,8 @@ class FileProviderExtension: NSFileProviderExtension {
         assert(pathComponents.count > 2)
         let itemIdentifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
         let fileName = pathComponents[pathComponents.count - 1]
-        let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: fileName)
         var metadata: tableMetadata?
         if let result = fileProviderData.shared.getUploadMetadata(id: itemIdentifier.rawValue) {
-            do {
-                try FileManager.default.copyItem(atPath: url.path, toPath: fileNameLocalPath)
-                print("File successfully copied to \(fileNameLocalPath)")
-            } catch {
-                print("Failed to copy file: \(error)")
-            }
             metadata = result.metadata
         } else {
             metadata = NCManageDatabase.shared.getMetadataFromOcIdAndOcIdTemp(itemIdentifier.rawValue)
@@ -261,7 +254,7 @@ class FileProviderExtension: NSFileProviderExtension {
                                                    sessionError: "",
                                                    selector: "",
                                                    status: NCGlobal.shared.metadataStatusUploading)
-        if let task = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: nil, dateModificationFile: nil, session: NCNetworking.shared.sessionManagerUploadBackgroundExtension) {
+        if let task = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: url.path, dateCreationFile: nil, dateModificationFile: nil, session: NCNetworking.shared.sessionManagerUploadBackgroundExtension) {
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                        status: NCGlobal.shared.metadataStatusUploading,
                                                        taskIdentifier: task.taskIdentifier)

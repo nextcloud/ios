@@ -75,12 +75,12 @@ class fileProviderUtility: NSObject {
         do {
             try fileManager.removeItem(atPath: toPath)
         } catch let error {
-            print("error: \(error)")
+            print("Error: \(error.localizedDescription)")
         }
         do {
             try fileManager.copyItem(atPath: atPath, toPath: toPath)
         } catch let error {
-            print("error: \(error)")
+            print("Error: \(error.localizedDescription)")
         }
     }
 
@@ -90,12 +90,28 @@ class fileProviderUtility: NSObject {
         do {
             try fileManager.removeItem(atPath: toPath)
         } catch let error {
-            print("error: \(error)")
+            print("Error: \(error.localizedDescription)")
         }
         do {
             try fileManager.moveItem(atPath: atPath, toPath: toPath)
         } catch let error {
-            print("error: \(error)")
+            print("Error: \(error.localizedDescription)")
+        }
+    }
+
+    func getFileSize(from url: URL) -> Int64? {
+        do {
+            let attributes = try fileManager.attributesOfItem(atPath: url.path)
+
+            if let fileSize = attributes[FileAttributeKey.size] as? Int64 {
+                return fileSize
+            } else {
+                print("Failed to retrieve file size.")
+                return nil
+            }
+        } catch {
+            print("Error: \(error.localizedDescription)")
+            return nil
         }
     }
 }
