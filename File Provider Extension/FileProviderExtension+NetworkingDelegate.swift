@@ -37,42 +37,44 @@ extension FileProviderExtension: NCNetworkingDelegate {
         guard let url = task.currentRequest?.url,
               let metadata = NCManageDatabase.shared.getMetadata(from: url, sessionTaskIdentifier: task.taskIdentifier) else { return }
 
-        if error == .success, let ocId {
-            /// SIGNAL
-            fileProviderData.shared.signalEnumerator(ocId: metadata.ocIdTemp, type: .delete)
-            metadata.fileName = fileName
-            metadata.serverUrl = serverUrl
-            metadata.uploadDate = (date as? NSDate) ?? NSDate()
-            metadata.etag = etag ?? ""
-            metadata.ocId = ocId
-            metadata.size = size
-            if let fileId = NCUtility().ocIdToFileId(ocId: ocId) {
-                metadata.fileId = fileId
-            }
+        DispatchQueue.global(qos: .userInteractive).async {
+            if error == .success, let ocId {
+                /// SIGNAL
+                fileProviderData.shared.signalEnumerator(ocId: metadata.ocIdTemp, type: .delete)
+                metadata.fileName = fileName
+                metadata.serverUrl = serverUrl
+                metadata.uploadDate = (date as? NSDate) ?? NSDate()
+                metadata.etag = etag ?? ""
+                metadata.ocId = ocId
+                metadata.size = size
+                if let fileId = NCUtility().ocIdToFileId(ocId: ocId) {
+                    metadata.fileId = fileId
+                }
 
-            metadata.sceneIdentifier = nil
-            metadata.session = ""
-            metadata.sessionError = ""
-            metadata.sessionSelector = ""
-            metadata.sessionDate = nil
-            metadata.sessionTaskIdentifier = 0
-            metadata.status = NCGlobal.shared.metadataStatusNormal
+                metadata.sceneIdentifier = nil
+                metadata.session = ""
+                metadata.sessionError = ""
+                metadata.sessionSelector = ""
+                metadata.sessionDate = nil
+                metadata.sessionTaskIdentifier = 0
+                metadata.status = NCGlobal.shared.metadataStatusNormal
 
-            NCManageDatabase.shared.addMetadata(metadata)
-            NCManageDatabase.shared.addLocalFile(metadata: metadata)
-            /// NEW File
-            if !metadata.ocIdTemp.isEmpty, ocId != metadata.ocIdTemp {
-                let atPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTemp)
-                let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId)
-                utilityFileSystem.copyFile(atPath: atPath, toPath: toPath)
+                NCManageDatabase.shared.addMetadata(metadata)
+                NCManageDatabase.shared.addLocalFile(metadata: metadata)
+                /// NEW File
+                if !metadata.ocIdTemp.isEmpty, ocId != metadata.ocIdTemp {
+                    let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTemp)
+                    let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId)
+                    self.utilityFileSystem.copyFile(atPath: atPath, toPath: toPath)
+                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocIdTemp))
+                }
+                /// SIGNAL
+                fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
+            } else {
                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocIdTemp))
+                /// SIGNAL
+                fileProviderData.shared.signalEnumerator(ocId: metadata.ocIdTemp, type: .delete)
             }
-            /// SIGNAL
-            fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
-        } else {
-            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocIdTemp))
-            /// SIGNAL
-            fileProviderData.shared.signalEnumerator(ocId: metadata.ocIdTemp, type: .delete)
         }
     }
 }
