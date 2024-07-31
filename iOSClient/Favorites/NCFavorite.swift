@@ -68,7 +68,7 @@ class NCFavorite: NCCollectionViewCommon {
     override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
         super.reloadDataSourceNetwork()
 
-        NextcloudKit.shared.listingFavorites(showHiddenFiles: NCKeychain().showHiddenFiles, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
+        NextcloudKit.shared.listingFavorites(showHiddenFiles: NCKeychain().showHiddenFiles, account: self.appDelegate.account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()
         } completion: { account, files, _, error in

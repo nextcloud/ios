@@ -297,7 +297,7 @@ extension NCUtility {
         let imageNamePath = utilityFileSystem.directoryUserData + "/" + fileNamePNG
 
         if !FileManager.default.fileExists(atPath: imageNamePath) || rewrite == true {
-            NextcloudKit.shared.downloadContent(serverUrl: iconURL.absoluteString) { _, data, error in
+            NextcloudKit.shared.downloadContent(serverUrl: iconURL.absoluteString, account: account) { _, data, error in
                 if error == .success && data != nil {
                     if let image = UIImage(data: data!) {
                         var newImage: UIImage = image

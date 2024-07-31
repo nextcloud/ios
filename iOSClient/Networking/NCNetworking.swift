@@ -197,7 +197,9 @@ class NCNetworking: NSObject, NKCommonDelegate {
         if typeReachability == NKCommon.TypeReachability.reachableCellular || typeReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi {
             if !lastReachability {
 #if !EXTENSION
-                NCService().startRequestServicesServer()
+                if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
+                    NCService().startRequestServicesServer(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId)
+                }
 #endif
             }
             lastReachability = true

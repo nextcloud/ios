@@ -67,7 +67,7 @@ extension NCNetworking {
             NCManageDatabase.shared.addMetadata(metadata)
         }
 
-        NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, options: options, requestHandler: { request in
+        NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account, options: options, requestHandler: { request in
             self.downloadRequest[fileNameLocalPath] = request
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                        status: NCGlobal.shared.metadataStatusDownloading)
@@ -126,7 +126,7 @@ extension NCNetworking {
 
         start()
 
-        if let task = nkBackground.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, session: session) {
+        if let task = nkBackground.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account, session: session) {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Download file \(metadata.fileNameView) with task with taskIdentifier \(task.taskIdentifier)")
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                        status: NCGlobal.shared.metadataStatusDownloading,
@@ -273,18 +273,17 @@ extension NCNetworking {
                         cell: NCCellProtocol,
                         view: UIView?) {
         let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
+        guard let tableAccount = NCManageDatabase.shared.getActiveAccount() else { return }
 
         if let image = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) {
             cell.fileAvatarImageView?.image = image
             return
         }
 
-        if let account = NCManageDatabase.shared.getActiveAccount() {
-            cell.fileAvatarImageView?.image = utility.loadUserImage(for: user, displayName: dispalyName, userBaseUrl: account)
-        }
+        cell.fileAvatarImageView?.image = utility.loadUserImage(for: user, displayName: dispalyName, userBaseUrl: tableAccount)
 
         for case let operation as NCOperationDownloadAvatar in downloadAvatarQueue.operations where operation.fileName == fileName { return }
-        downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: user, fileName: fileName, fileNameLocalPath: fileNameLocalPath, cell: cell, view: view))
+        downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: user, fileName: fileName, fileNameLocalPath: fileNameLocalPath, account: tableAccount.account, cell: cell, view: view))
     }
 #endif
 

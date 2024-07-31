@@ -32,25 +32,24 @@ class NCService: NSObject {
 
     // MARK: -
 
-    @objc public func startRequestServicesServer() {
+    public func startRequestServicesServer(account: String, user: String, userId: String) {
         guard !appDelegate.account.isEmpty, UIApplication.shared.applicationState != .background else {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Service not start request service server with the application in background")
             return
         }
-        let account = appDelegate.account
 
         NCManageDatabase.shared.clearAllAvatarLoaded()
         NCPushNotification.shared.pushNotification()
 
         Task {
             addInternalTypeIdentifier()
-            let result = await requestServerStatus()
+            let result = await requestServerStatus(account: account)
             if result {
-                requestServerCapabilities()
-                getAvatar()
+                requestServerCapabilities(account: account)
+                getAvatar(account: account, userId: userId, user: user)
                 NCNetworkingE2EE().unlockAll(account: account)
                 sendClientDiagnosticsRemoteOperation(account: account)
-                synchronize()
+                synchronize(account: account)
             }
         }
     }
@@ -89,7 +88,7 @@ class NCService: NSObject {
 
     // MARK: -
 
-    private func requestServerStatus() async -> Bool {
+    private func requestServerStatus(account: String) async -> Bool {
         switch await NCNetworking.shared.getServerStatus(serverUrl: appDelegate.urlBase, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) {
         case .success(let serverInfo):
             if serverInfo.maintenance {
@@ -108,7 +107,7 @@ class NCService: NSObject {
             return false
         }
 
-        let resultUserProfile = await NCNetworking.shared.getUserProfile(options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue))
+        let resultUserProfile = await NCNetworking.shared.getUserProfile(account: account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue))
         if resultUserProfile.error == .success, let userProfile = resultUserProfile.userProfile {
             NCManageDatabase.shared.setAccountUserProfile(account: resultUserProfile.account, userProfile: userProfile)
             return true
@@ -127,10 +126,10 @@ class NCService: NSObject {
         }
     }
 
-    func synchronize() {
+    func synchronize(account: String) {
         NextcloudKit.shared.listingFavorites(showHiddenFiles: NCKeychain().showHiddenFiles,
+                                             account: account,
                                              options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
-
             guard error == .success else { return }
             NCManageDatabase.shared.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
                 NCManageDatabase.shared.updateMetadatasFavorite(account: account, metadatas: metadatas)
@@ -140,18 +139,18 @@ class NCService: NSObject {
         }
     }
 
-    func getAvatar() {
-        let fileName = appDelegate.userBaseUrl + "-" + self.appDelegate.user + ".png"
+    func getAvatar(account: String, userId: String, user: String) {
+        let fileName = appDelegate.userBaseUrl + "-" + user + ".png"
         let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
         let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
 
-        NextcloudKit.shared.downloadAvatar(user: appDelegate.userId,
+        NextcloudKit.shared.downloadAvatar(user: userId,
                                            fileNameLocalPath: fileNameLocalPath,
                                            sizeImage: NCGlobal.shared.avatarSize,
                                            avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
                                            etag: etag,
+                                           account: account,
                                            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, _, _, etag, error in
-
             if let etag = etag, error == .success {
                 NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
             } else if error.errorCode == NCGlobal.shared.errorNotModified {
@@ -161,10 +160,10 @@ class NCService: NSObject {
         }
     }
 
-    private func requestServerCapabilities() {
+    private func requestServerCapabilities(account: String) {
         guard !appDelegate.account.isEmpty else { return }
 
-        NextcloudKit.shared.getCapabilities(options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, data, error in
+        NextcloudKit.shared.getCapabilities(account: account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, data, error in
             guard error == .success, let data = data else {
                 NCBrandColor.shared.settingThemingColor(account: account)
                 NCImageCache.shared.createImagesBrandCache()
@@ -185,7 +184,7 @@ class NCService: NSObject {
             // Text direct editor detail
             if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion18 {
                 let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-                NextcloudKit.shared.NCTextObtainEditorDetails(options: options) { account, editors, creators, _, error in
+                NextcloudKit.shared.NCTextObtainEditorDetails(account: account, options: options) { account, editors, creators, _, error in
                     if error == .success && account == self.appDelegate.account {
                         NCManageDatabase.shared.addDirectEditing(account: account, editors: editors, creators: creators)
                     }
@@ -194,7 +193,7 @@ class NCService: NSObject {
 
             // External file Server
             if NCGlobal.shared.capabilityExternalSites {
-                NextcloudKit.shared.getExternalSite(options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, externalSites, _, error in
+                NextcloudKit.shared.getExternalSite(account: account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, externalSites, _, error in
                     if error == .success && account == self.appDelegate.account {
                         NCManageDatabase.shared.deleteExternalSites(account: account)
                         for externalSite in externalSites {
@@ -208,7 +207,7 @@ class NCService: NSObject {
 
             // User Status
             if NCGlobal.shared.capabilityUserStatusEnabled {
-                NextcloudKit.shared.getUserStatus(options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, userId, _, error in
+                NextcloudKit.shared.getUserStatus(account: account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, userId, _, error in
                     if error == .success && account == self.appDelegate.account && userId == self.appDelegate.userId {
                         NCManageDatabase.shared.setAccountUserStatus(userStatusClearAt: clearAt, userStatusIcon: icon, userStatusMessage: message, userStatusMessageId: messageId, userStatusMessageIsPredefined: messageIsPredefined, userStatusStatus: status, userStatusStatusIsUserDefined: statusIsUserDefined, account: account)
                     }
@@ -351,7 +350,7 @@ class NCService: NSObject {
             let issues = Issues(syncConflicts: syncConflicts, virusDetected: virusDetected, e2eeErrors: e2eeErrors, problems: problems)
             let data = try JSONEncoder().encode(issues)
             data.printJson()
-            NextcloudKit.shared.sendClientDiagnosticsRemoteOperation(data: data, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, error in
+            NextcloudKit.shared.sendClientDiagnosticsRemoteOperation(data: data, account: account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, error in
                 if error == .success {
                     NCManageDatabase.shared.deleteDiagnostics(account: account, ids: ids)
                 }
