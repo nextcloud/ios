@@ -27,6 +27,7 @@
 import UIKit
 import AVFoundation
 import QuartzCore
+import NextcloudKit
 
 class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
 
@@ -98,7 +99,7 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
     func uploadMetadata() {
         let fileNamePath = NSTemporaryDirectory() + self.fileName
         let metadata = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: UUID().uuidString, serverUrl: self.serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "")
-        metadata.session = NCNetworking.shared.sessionUploadBackground
+        metadata.session = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground
         metadata.sessionSelector = NCGlobal.shared.selectorUploadFile
         metadata.status = NCGlobal.shared.metadataStatusWaitUpload
         metadata.sessionDate = Date()

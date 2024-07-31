@@ -94,7 +94,7 @@ extension NCNetworking {
                 }
                 completion(afError, error)
             }
-        } else if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload {
+        } else if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionUpload {
             let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
             uploadFile(metadata: metadata, fileNameLocalPath: fileNameLocalPath, start: start, progressHandler: progressHandler) { _, _, _, _, _, _, afError, error in
                 completion(afError, error)
@@ -231,16 +231,9 @@ extension NCNetworking {
     private func uploadFileInBackground(metadata: tableMetadata,
                                         start: @escaping () -> Void = { },
                                         completion: @escaping (_ error: NKError) -> Void) {
-        var session: URLSession?
         let metadata = tableMetadata.init(value: metadata)
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
-
-        if metadata.session == sessionUploadBackground || metadata.session == sessionUploadBackgroundExtension {
-            session = sessionManagerUploadBackground
-        } else if metadata.session == sessionUploadBackgroundWWan {
-            session = sessionManagerUploadBackgroundWWan
-        }
 
         start()
 
@@ -249,7 +242,7 @@ extension NCNetworking {
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             completion(NKError(errorCode: NCGlobal.shared.errorResourceNotFound, errorDescription: NSLocalizedString("_error_not_found_", value: "The requested resource could not be found", comment: "")))
         } else {
-            if let task = nkBackground.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, account: metadata.account, session: session!) {
+            if let task = nkBackground.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, account: metadata.account, sessionIdentifier: metadata.session) {
 
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload file \(metadata.fileNameView) with task with taskIdentifier \(task.taskIdentifier)")
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
@@ -473,49 +466,34 @@ extension NCNetworking {
         }
     }
 
-    func getUploadBackgroundSession(queue: DispatchQueue = .main,
-                                    completion: @escaping (_ filesNameLocalPath: [String]) -> Void) {
-        var filesNameLocalPath: [String] = []
-
-        sessionManagerUploadBackground.getAllTasks(completionHandler: { tasks in
-            for task in tasks {
-                filesNameLocalPath.append(task.description)
-            }
-            self.sessionManagerUploadBackgroundWWan.getAllTasks(completionHandler: { tasks in
-                for task in tasks {
-                    filesNameLocalPath.append(task.description)
-                }
-                queue.async { completion(filesNameLocalPath) }
-            })
-        })
-    }
-
     func cancelUploadTasks() {
         uploadRequest.removeAll()
-        let sessionManager = NextcloudKit.shared.sessionManager
-        sessionManager.session.getTasksWithCompletionHandler { _, uploadTasks, _ in
-            uploadTasks.forEach {
-                $0.cancel()
+        NextcloudKit.shared.nkCommonInstance.nksessions.forEach { nkSession in
+            nkSession.sessionData.session.getTasksWithCompletionHandler { _, uploadTasks, _ in
+                uploadTasks.forEach {
+                    $0.cancel()
+                }
             }
         }
-
-        if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status > 0 AND session == %@", NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload)) {
+        if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status > 0 AND session == %@", NextcloudKit.shared.nkCommonInstance.identifierSessionUpload)) {
             NCManageDatabase.shared.deleteMetadata(results: results)
         }
     }
 
     func cancelUploadBackgroundTask() {
-        Task {
-            let tasksBackground = await NCNetworking.shared.sessionManagerUploadBackground.tasks
-            for task in tasksBackground.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
-                task.cancel()
-            }
-            let tasksBackgroundWWan = await NCNetworking.shared.sessionManagerUploadBackgroundWWan.tasks
-            for task in tasksBackgroundWWan.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
-                task.cancel()
-            }
-            if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status > 0 AND (session == %@ || session == %@)", NCNetworking.shared.sessionUploadBackground, NCNetworking.shared.sessionUploadBackgroundWWan)) {
-                NCManageDatabase.shared.deleteMetadata(results: results)
+        NextcloudKit.shared.nkCommonInstance.nksessions.forEach { session in
+            Task {
+                let tasksBackground = await session.sessionUploadBackground.tasks
+                for task in tasksBackground.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
+                    task.cancel()
+                }
+                let tasksBackgroundWWan = await session.sessionUploadBackgroundWWan.tasks
+                for task in tasksBackgroundWWan.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
+                    task.cancel()
+                }
+                if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status > 0 AND (session == %@ || session == %@)", NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground, NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundWWan)) {
+                    NCManageDatabase.shared.deleteMetadata(results: results)
+                }
             }
         }
     }

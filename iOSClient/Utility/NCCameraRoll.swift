@@ -23,6 +23,7 @@
 
 import Foundation
 import Photos
+import UIKit
 import NextcloudKit
 
 class NCCameraRoll: NSObject {
@@ -59,7 +60,7 @@ class NCCameraRoll: NSObject {
             }
             metadataSource.e2eEncrypted = metadata.isDirectoryE2EE
             if metadataSource.chunk > 0 || metadataSource.e2eEncrypted {
-                metadataSource.session = NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload
+                metadataSource.session = NextcloudKit.shared.nkCommonInstance.identifierSessionUpload
             }
             metadataSource.isExtractFile = true
             if let metadata = NCManageDatabase.shared.addMetadata(metadataSource) {
@@ -123,7 +124,7 @@ class NCCameraRoll: NSObject {
                     }
                     metadata.e2eEncrypted = metadata.isDirectoryE2EE
                     if metadata.chunk > 0 || metadata.e2eEncrypted {
-                        metadata.session = NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload
+                        metadata.session = NextcloudKit.shared.nkCommonInstance.identifierSessionUpload
                     }
                     metadata.isExtractFile = true
                     if let metadata = NCManageDatabase.shared.addMetadata(metadata) {
@@ -285,7 +286,7 @@ class NCCameraRoll: NSObject {
                 }
                 metadataLivePhoto.e2eEncrypted = metadata.isDirectoryE2EE
                 if metadataLivePhoto.chunk > 0 || metadataLivePhoto.e2eEncrypted {
-                    metadataLivePhoto.session = NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload
+                    metadataLivePhoto.session = NextcloudKit.shared.nkCommonInstance.identifierSessionUpload
                 }
                 metadataLivePhoto.creationDate = metadata.creationDate
                 metadataLivePhoto.date = metadata.date

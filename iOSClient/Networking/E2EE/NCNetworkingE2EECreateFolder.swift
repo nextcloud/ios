@@ -144,7 +144,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         // WRITE DB (DIRECTORY - METADATA)
         //
         let resultsReadFileOrFolder = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", account: account)
-        guard resultsReadFileOrFolder.error == .success, let file = resultsReadFileOrFolder.files.first else {
+        guard resultsReadFileOrFolder.error == .success, let file = resultsReadFileOrFolder.files?.first else {
             await networkingE2EE.unlock(account: account, serverUrl: serverUrl)
             return resultsReadFileOrFolder.error
         }

@@ -220,7 +220,7 @@ extension NCActivity: UITableViewDataSource {
 
         // Image
         let fileName = appDelegate.userBaseUrl + "-" + comment.actorId + ".png"
-        NCNetworking.shared.downloadAvatar(user: comment.actorId, dispalyName: comment.actorDisplayName, fileName: fileName, cell: cell, view: tableView)
+        NCNetworking.shared.downloadAvatar(user: comment.actorId, dispalyName: comment.actorDisplayName, fileName: fileName, account: comment.account, cell: cell, view: tableView)
         // Username
         cell.labelUser.text = comment.actorDisplayName
         cell.labelUser.textColor = NCBrandColor.shared.textColor
@@ -280,7 +280,7 @@ extension NCActivity: UITableViewDataSource {
             cell.avatar.isHidden = false
             cell.fileUser = activity.user
             let fileName = appDelegate.userBaseUrl + "-" + activity.user + ".png"
-            NCNetworking.shared.downloadAvatar(user: activity.user, dispalyName: nil, fileName: fileName, cell: cell, view: tableView)
+            NCNetworking.shared.downloadAvatar(user: activity.user, dispalyName: nil, fileName: fileName, account: appDelegate.account, cell: cell, view: tableView)
             cell.subjectLeadingConstraint.constant = 15
         } else {
             cell.subjectLeadingConstraint.constant = -30

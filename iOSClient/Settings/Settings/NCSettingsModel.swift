@@ -99,7 +99,7 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
         let configLink = appDelegate.urlBase + NCBrandOptions.shared.mobileconfig
         let configServer = NCConfigServer()
         if let url = URL(string: configLink) {
-            configServer.startService(url: url)
+            configServer.startService(url: url, account: appDelegate.account)
         }
     }
 

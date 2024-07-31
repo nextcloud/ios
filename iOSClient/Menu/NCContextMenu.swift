@@ -85,7 +85,7 @@ class NCContextMenu: NSObject {
                                "account": metadata.account])
             } else {
                 guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                               session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                                                               session: NextcloudKit.shared.nkCommonInstance.identifierSessionDownload,
                                                                                                selector: NCGlobal.shared.selectorOpenIn,
                                                                                                sceneIdentifier: sceneIdentifier) else { return }
                 hud.show(in: viewController.view)
@@ -132,7 +132,7 @@ class NCContextMenu: NSObject {
                                "account": metadata.account])
             } else {
                 guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                               session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                                                               session: NextcloudKit.shared.nkCommonInstance.identifierSessionDownload,
                                                                                                selector: NCGlobal.shared.selectorLoadFileQuickLook,
                                                                                                sceneIdentifier: sceneIdentifier) else { return }
                 hud.show(in: viewController.view)

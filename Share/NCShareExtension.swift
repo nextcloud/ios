@@ -307,7 +307,7 @@ extension NCShareExtension {
                 ocId: ocId,
                 serverUrl: serverUrl, urlBase: activeAccount.urlBase, url: "",
                 contentType: "")
-            metadata.session = NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload
+            metadata.session = NextcloudKit.shared.nkCommonInstance.identifierSessionUpload
             metadata.sessionSelector = NCGlobal.shared.selectorUploadFileShareExtension
             metadata.size = utilityFileSystem.getFileSize(filePath: toPath)
             metadata.status = NCGlobal.shared.metadataStatusWaitUpload

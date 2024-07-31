@@ -31,7 +31,7 @@ extension NCTrash {
             self.collectionView.reloadData()
         } completion: { account, items, _, error in
             self.refreshControl.endRefreshing()
-            if account == self.appDelegate.account {
+            if account == self.appDelegate.account, let items {
                 NCManageDatabase.shared.deleteTrash(filePath: self.getFilePath(), account: account)
                 NCManageDatabase.shared.addTrash(account: account, items: items)
             }

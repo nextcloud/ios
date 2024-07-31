@@ -76,7 +76,7 @@ class NCUploadScanDocument: ObservableObject {
                                                           url: "",
                                                           contentType: "")
 
-        metadata.session = NCNetworking.shared.sessionUploadBackground
+        metadata.session = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground
         metadata.sessionSelector = NCGlobal.shared.selectorUploadFile
         metadata.status = NCGlobal.shared.metadataStatusWaitUpload
         metadata.sessionDate = Date()

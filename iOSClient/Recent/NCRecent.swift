@@ -138,7 +138,7 @@ class NCRecent: NCCollectionViewCommon {
             self.dataSourceTask = task
             self.collectionView.reloadData()
         } completion: { _, files, _, error in
-            if error == .success {
+            if error == .success, let files {
                 NCManageDatabase.shared.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
                     // Add metadatas
                     NCManageDatabase.shared.addMetadatas(metadatas)

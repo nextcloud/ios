@@ -26,7 +26,7 @@ class NCNetworkingE2EEMarkFolder: NSObject {
     func markFolderE2ee(account: String, fileName: String, serverUrl: String, userId: String) async -> NKError {
         let serverUrlFileName = serverUrl + "/" + fileName
         let resultsReadFileOrFolder = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", account: account)
-        guard resultsReadFileOrFolder.error == .success, let file = resultsReadFileOrFolder.files.first else { return resultsReadFileOrFolder.error }
+        guard resultsReadFileOrFolder.error == .success, let file = resultsReadFileOrFolder.files?.first else { return resultsReadFileOrFolder.error }
         let resultsMarkE2EEFolder = await NCNetworking.shared.markE2EEFolder(fileId: file.fileId, delete: false, account: account, options: NCNetworkingE2EE().getOptions())
         guard resultsMarkE2EEFolder.error == .success else { return resultsMarkE2EEFolder.error }
 

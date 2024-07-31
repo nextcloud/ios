@@ -45,7 +45,7 @@ extension NCNetworking {
                                              options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
             taskHandler(task)
         } completion: { account, files, _, error in
-            guard error == .success else {
+            guard error == .success, let files else {
                 return completion(account, nil, nil, 0, 0, error)
             }
 
@@ -84,7 +84,7 @@ extension NCNetworking {
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: showHiddenFiles, account: account, options: options) { task in
             taskHandler(task)
         } completion: { account, files, _, error in
-            guard error == .success, files.count == 1, let file = files.first else {
+            guard error == .success, files?.count == 1, let file = files?.first else {
                 completion(account, nil, error)
                 return
             }
@@ -104,7 +104,7 @@ extension NCNetworking {
                                              depth: "0",
                                              account: account,
                                              options: options) { account, files, _, error in
-            if error == .success, let file = files.first {
+            if error == .success, let file = files?.first {
                 completion(account, true, file, error)
             } else if error.errorCode == NCGlobal.shared.errorResourceNotFound {
                 completion(account, false, nil, error)
@@ -663,7 +663,7 @@ extension NCNetworking {
                                           options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
             taskHandler(task)
         } completion: { _, files, _, error in
-            guard error == .success else { return completion(nil, error) }
+            guard error == .success, let files else { return completion(nil, error) }
 
             NCManageDatabase.shared.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
                 NCManageDatabase.shared.addMetadatas(metadatas)
@@ -835,11 +835,11 @@ extension NCNetworking {
     }
 
     func cancelDataTask() {
-        let sessionManager = NextcloudKit.shared.sessionManager
-
-        sessionManager.session.getTasksWithCompletionHandler { dataTasks, _, _ in
-            dataTasks.forEach {
-                $0.cancel()
+        NextcloudKit.shared.nkCommonInstance.nksessions.forEach { session in
+            session.sessionData.session.getTasksWithCompletionHandler { dataTasks, _, _ in
+                dataTasks.forEach {
+                    $0.cancel()
+                }
             }
         }
     }

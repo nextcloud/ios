@@ -246,7 +246,7 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
             url: url.path,
             contentType: "")
 
-        metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
+        metadataForUpload.session = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground
         if override {
             metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFileNODelete
         } else {

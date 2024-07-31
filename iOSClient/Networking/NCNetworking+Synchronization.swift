@@ -48,7 +48,7 @@ extension NCNetworking {
                 if NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "account == %@ AND sessionSelector == %@ AND (status == %d OR status == %d)", account, NCGlobal.shared.selectorSynchronizationOffline, NCGlobal.shared.metadataStatusWaitDownload, NCGlobal.shared.metadataStatusDownloading)) != nil { return }
             }
 
-            if error == .success {
+            if error == .success, let files {
                 for file in files {
                     if file.directory {
                         metadatasDirectory.append(NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: false))
@@ -58,7 +58,7 @@ extension NCNetworking {
                 }
                 NCManageDatabase.shared.addMetadatas(metadatasDirectory)
                 NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: metadatasSynchronizationOffline,
-                                                                          session: NCNetworking.shared.sessionDownloadBackground,
+                                                                          session: NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground,
                                                                           selector: NCGlobal.shared.selectorSynchronizationOffline)
                 NCManageDatabase.shared.setDirectorySynchronizationDate(serverUrl: serverUrl, account: account)
                 let diffDate = Date().timeIntervalSinceReferenceDate - startDate.timeIntervalSinceReferenceDate
