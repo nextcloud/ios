@@ -30,7 +30,7 @@ extension NCShare: NCShareLinkCellDelegate, NCShareUserCellDelegate {
         guard let metadata = self.metadata, let appDelegate = appDelegate else { return }
 
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-        NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName) { _, metadata, error in
+        NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: metadata.account) { _, metadata, error in
             if error == .success, let metadata = metadata {
                 let internalLink = appDelegate.urlBase + "/index.php/f/" + metadata.fileId
                 self.shareCommon.copyLink(link: internalLink, viewController: self, sender: sender)

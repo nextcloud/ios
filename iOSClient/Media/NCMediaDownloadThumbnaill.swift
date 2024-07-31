@@ -55,6 +55,7 @@ class NCMediaDownloadThumbnaill: ConcurrentOperation {
                                             heightPreview: Int(sizePreview.height),
                                             sizeIcon: NCGlobal.shared.sizeIcon,
                                             etag: etagResource,
+                                            account: metadata.account,
                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imagePreview, _, _, etag, error in
             if error == .success, let imagePreview {
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)

@@ -1126,7 +1126,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func pasteFilesMenu() {
-        NCActionCenter.shared.pastePasteboard(serverUrl: serverUrl, hudView: tabBarController?.view)
+        NCActionCenter.shared.pastePasteboard(serverUrl: serverUrl, account: appDelegate.account, hudView: tabBarController?.view)
     }
 
     // MARK: - DataSource + NC Endpoint
@@ -1182,7 +1182,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.collectionView.reloadData()
             }
         } else {
-            NCNetworking.shared.searchFiles(urlBase: appDelegate, literal: literalSearch) { task in
+            NCNetworking.shared.searchFiles(urlBase: appDelegate, literal: literalSearch, account: appDelegate.account) { task in
                 self.dataSourceTask = task
                 self.collectionView.reloadData()
             } completion: { metadatas, error in

@@ -178,7 +178,7 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
                         cell.fileId = fileId
                         if !FileManager.default.fileExists(atPath: fileNamePath) {
                             if NCNetworking.shared.downloadThumbnailActivityQueue.operations.filter({ ($0 as? NCOperationDownloadThumbnailActivity)?.fileId == fileId }).isEmpty {
-                                NCNetworking.shared.downloadThumbnailActivityQueue.addOperation(NCOperationDownloadThumbnailActivity(fileId: fileId, fileNamePreviewLocalPath: fileNamePath, cell: cell, collectionView: collectionView))
+                                NCNetworking.shared.downloadThumbnailActivityQueue.addOperation(NCOperationDownloadThumbnailActivity(fileId: fileId, fileNamePreviewLocalPath: fileNamePath, account: appDelegate.account, cell: cell, collectionView: collectionView))
                             }
                         }
                     }
@@ -208,10 +208,12 @@ class NCOperationDownloadThumbnailActivity: ConcurrentOperation {
     var collectionView: UICollectionView?
     var fileNamePreviewLocalPath: String
     var fileId: String
+    var account: String
 
-    init(fileId: String, fileNamePreviewLocalPath: String, cell: NCActivityCollectionViewCell?, collectionView: UICollectionView?) {
+    init(fileId: String, fileNamePreviewLocalPath: String, account: String, cell: NCActivityCollectionViewCell?, collectionView: UICollectionView?) {
         self.fileNamePreviewLocalPath = fileNamePreviewLocalPath
         self.fileId = fileId
+        self.account = account
         self.cell = cell
         self.collectionView = collectionView
     }
@@ -221,6 +223,7 @@ class NCOperationDownloadThumbnailActivity: ConcurrentOperation {
 
         NextcloudKit.shared.downloadPreview(fileId: fileId,
                                             fileNamePreviewLocalPath: fileNamePreviewLocalPath,
+                                            account: account,
                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imagePreview, _, _, _, error in
             if error == .success, let imagePreview = imagePreview {
                 DispatchQueue.main.async {

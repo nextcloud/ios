@@ -43,7 +43,7 @@ class NCCreateDocument: NSObject {
                 options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentNCText())
             }
 
-            NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateId, options: options) { account, url, _, error in
+            NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateId, account: appDelegate.account, options: options) { account, url, _, error in
                 guard error == .success, account == self.appDelegate.account, let url = url else {
                     NCContentPresenter().showError(error: error)
                     return
@@ -56,7 +56,7 @@ class NCCreateDocument: NSObject {
 
         } else if editorId == NCGlobal.shared.editorCollabora {
 
-            NextcloudKit.shared.createRichdocuments(path: fileNamePath, templateId: templateId) { account, url, _, error in
+            NextcloudKit.shared.createRichdocuments(path: fileNamePath, templateId: templateId, account: appDelegate.account) { account, url, _, error in
                 guard error == .success, account == self.appDelegate.account, let url = url else {
                     NCContentPresenter().showError(error: error)
                     return
@@ -82,7 +82,7 @@ class NCCreateDocument: NSObject {
                 options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentNCText())
             }
 
-            let results = await textGetListOfTemplates(options: options)
+            let results = await textGetListOfTemplates(account:appDelegate.account, options: options)
             if results.error == .success {
                 for template in results.templates {
                     let temp = NKEditorTemplates()
@@ -120,7 +120,7 @@ class NCCreateDocument: NSObject {
         }
 
         if editorId == NCGlobal.shared.editorCollabora {
-            let results = await getTemplatesRichdocuments(typeTemplate: templateId)
+            let results = await getTemplatesRichdocuments(typeTemplate: templateId, account: appDelegate.account)
             if results.error == .success {
                 for template in results.templates! {
                     let temp = NKEditorTemplates()
@@ -145,19 +145,19 @@ class NCCreateDocument: NSObject {
 
     // MARK: - NextcloudKit async/await
 
-    func textGetListOfTemplates(options: NKRequestOptions = NKRequestOptions()) async -> (account: String, templates: [NKEditorTemplates], data: Data?, error: NKError) {
+    func textGetListOfTemplates(account: String, options: NKRequestOptions = NKRequestOptions()) async -> (account: String, templates: [NKEditorTemplates], data: Data?, error: NKError) {
 
         await withUnsafeContinuation({ continuation in
-            NextcloudKit.shared.NCTextGetListOfTemplates { account, templates, data, error in
+            NextcloudKit.shared.NCTextGetListOfTemplates(account: account) { account, templates, data, error in
                 continuation.resume(returning: (account: account, templates: templates, data: data, error: error))
             }
         })
     }
 
-    func getTemplatesRichdocuments(typeTemplate: String, options: NKRequestOptions = NKRequestOptions()) async -> (account: String, templates: [NKRichdocumentsTemplate]?, data: Data?, error: NKError) {
+    func getTemplatesRichdocuments(typeTemplate: String, account: String, options: NKRequestOptions = NKRequestOptions()) async -> (account: String, templates: [NKRichdocumentsTemplate]?, data: Data?, error: NKError) {
 
         await withUnsafeContinuation({ continuation in
-            NextcloudKit.shared.getTemplatesRichdocuments(typeTemplate: typeTemplate, options: options) { account, templates, data, error in
+            NextcloudKit.shared.getTemplatesRichdocuments(typeTemplate: typeTemplate, account: account, options: options) { account, templates, data, error in
                 continuation.resume(returning: (account: account, templates: templates, data: data, error: error))
             }
         })

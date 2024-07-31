@@ -458,7 +458,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let account: String = "\(user) \(urlBase)"
 
         NextcloudKit.shared.setup(account: account, user: user, userId: user, password: password, urlBase: urlBase, groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
-        NextcloudKit.shared.getUserProfile { account, userProfile, _, error in
+        NextcloudKit.shared.getUserProfile(account: account) { account, userProfile, _, error in
             if error == .success, let userProfile {
                 NCManageDatabase.shared.deleteAccount(account)
                 NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
@@ -512,7 +512,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         NCPushNotification.shared.pushNotification()
-        NCService().startRequestServicesServer()
+        NCService().startRequestServicesServer(account: self.account, user: self.user, userId: self.userId)
 
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(items) uploads")

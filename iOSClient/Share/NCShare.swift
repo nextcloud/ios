@@ -159,7 +159,8 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
                 fileNameLocalPath: fileNameLocalPath,
                 sizeImage: NCGlobal.shared.avatarSize,
                 avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
-                etag: etag) { _, imageAvatar, _, etag, error in
+                etag: etag,
+                account: metadata.account) { _, imageAvatar, _, etag, error in
                     if error == .success, let etag = etag, let imageAvatar = imageAvatar {
                         NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
                         self.sharedWithYouByImage.image = imageAvatar
@@ -272,7 +273,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         dropDown.customCellConfiguration = { (index: Index, _, cell: DropDownCell) -> Void in
             guard let cell = cell as? NCSearchUserDropDownCell else { return }
             let sharee = sharees[index]
-            cell.setupCell(sharee: sharee, baseUrl: appDelegate)
+            cell.setupCell(sharee: sharee, userBaseUrl: appDelegate)
         }
 
         dropDown.selectionAction = { index, _ in
