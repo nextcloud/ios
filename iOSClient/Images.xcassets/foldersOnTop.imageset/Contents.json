@@ -1,19 +1,8 @@
 {
   "images" : [
     {
-      "filename" : "foldersOnTop.png",
-      "idiom" : "universal",
-      "scale" : "1x"
-    },
-    {
-      "filename" : "foldersOnTop@2x.png",
-      "idiom" : "universal",
-      "scale" : "2x"
-    },
-    {
-      "filename" : "foldersOnTop@3x.png",
-      "idiom" : "universal",
-      "scale" : "3x"
+      "filename" : "Folder_outline_icon.svg",
+      "idiom" : "universal"
     }
   ],
   "info" : {
