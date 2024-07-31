@@ -82,7 +82,7 @@ class NCGroupfolders: NCCollectionViewCommon {
                         let serverUrlFileName = homeServerUrl + mountPoint
                         if NCManageDatabase.shared.getMetadataFromDirectory(account: self.appDelegate.account, serverUrl: serverUrlFileName) == nil {
                             let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles, account: account)
-                            if results.error == .success, let file = results.files.first {
+                            if results.error == .success, let file = results.files?.first {
                                 let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
                                 let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
                                 NCManageDatabase.shared.addMetadata(metadata)

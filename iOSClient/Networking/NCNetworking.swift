@@ -44,7 +44,7 @@ import Queuer
 }
 
 @objcMembers
-class NCNetworking: NSObject, NKCommonDelegate {
+class NCNetworking: NSObject, NextcloudKitDelegate {
     public static let shared: NCNetworking = {
         let instance = NCNetworking()
         NotificationCenter.default.addObserver(instance, selector: #selector(applicationDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
@@ -96,62 +96,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
         return nckb
     }()
 
-    public let sessionMaximumConnectionsPerHost = 5
-    public let sessionDownloadBackground: String = "com.nextcloud.session.download.background"
-    public let sessionUploadBackground: String = "com.nextcloud.session.upload.background"
-    public let sessionUploadBackgroundWWan: String = "com.nextcloud.session.upload.backgroundWWan"
-    public let sessionUploadBackgroundExtension: String = "com.nextcloud.session.upload.extension"
-
-    public lazy var sessionManagerDownloadBackground: URLSession = {
-        let configuration = URLSessionConfiguration.background(withIdentifier: sessionDownloadBackground)
-        configuration.allowsCellularAccess = true
-        configuration.sessionSendsLaunchEvents = true
-        configuration.isDiscretionary = false
-        configuration.httpMaximumConnectionsPerHost = sessionMaximumConnectionsPerHost
-        configuration.requestCachePolicy = NSURLRequest.CachePolicy.reloadIgnoringLocalCacheData
-        configuration.httpCookieStorage = HTTPCookieStorage.sharedCookieStorage(forGroupContainerIdentifier: NCBrandOptions.shared.capabilitiesGroup)
-        let session = URLSession(configuration: configuration, delegate: nkBackground, delegateQueue: OperationQueue.main)
-
-        return session
-    }()
-
-    public lazy var sessionManagerUploadBackground: URLSession = {
-        let configuration = URLSessionConfiguration.background(withIdentifier: sessionUploadBackground)
-        configuration.allowsCellularAccess = true
-        configuration.sessionSendsLaunchEvents = true
-        configuration.isDiscretionary = false
-        configuration.httpMaximumConnectionsPerHost = sessionMaximumConnectionsPerHost
-        configuration.requestCachePolicy = NSURLRequest.CachePolicy.reloadIgnoringLocalCacheData
-        configuration.httpCookieStorage = HTTPCookieStorage.sharedCookieStorage(forGroupContainerIdentifier: NCBrandOptions.shared.capabilitiesGroup)
-        let session = URLSession(configuration: configuration, delegate: nkBackground, delegateQueue: OperationQueue.main)
-        return session
-    }()
-
-    public lazy var sessionManagerUploadBackgroundWWan: URLSession = {
-        let configuration = URLSessionConfiguration.background(withIdentifier: sessionUploadBackgroundWWan)
-        configuration.allowsCellularAccess = false
-        configuration.sessionSendsLaunchEvents = true
-        configuration.isDiscretionary = false
-        configuration.httpMaximumConnectionsPerHost = sessionMaximumConnectionsPerHost
-        configuration.requestCachePolicy = NSURLRequest.CachePolicy.reloadIgnoringLocalCacheData
-        configuration.httpCookieStorage = HTTPCookieStorage.sharedCookieStorage(forGroupContainerIdentifier: NCBrandOptions.shared.capabilitiesGroup)
-        let session = URLSession(configuration: configuration, delegate: nkBackground, delegateQueue: OperationQueue.main)
-        return session
-    }()
-
-    public lazy var sessionManagerUploadBackgroundExtension: URLSession = {
-        let configuration = URLSessionConfiguration.background(withIdentifier: sessionUploadBackgroundExtension)
-        configuration.allowsCellularAccess = true
-        configuration.sessionSendsLaunchEvents = true
-        configuration.isDiscretionary = false
-        configuration.httpMaximumConnectionsPerHost = sessionMaximumConnectionsPerHost
-        configuration.requestCachePolicy = NSURLRequest.CachePolicy.reloadIgnoringLocalCacheData
-        configuration.sharedContainerIdentifier = NCBrandOptions.shared.capabilitiesGroup
-        configuration.httpCookieStorage = HTTPCookieStorage.sharedCookieStorage(forGroupContainerIdentifier: NCBrandOptions.shared.capabilitiesGroup)
-        let session = URLSession(configuration: configuration, delegate: nkBackground, delegateQueue: OperationQueue.main)
-        return session
-    }()
-
     // REQUESTS
     var requestsUnifiedSearch: [DataRequest] = []
 
@@ -175,14 +119,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
             self.getActiveAccountCertificate()
         }
-
-#if EXTENSION
-        print("Start Background Upload Extension: ", sessionUploadBackgroundExtension)
-#else
-        print("Start Background Download: ", sessionManagerDownloadBackground)
-        print("Start Background Upload: ", sessionManagerUploadBackground)
-        print("Start Background Upload WWan: ", sessionManagerUploadBackgroundWWan)
-#endif
     }
 
     // MARK: - NotificationCenter

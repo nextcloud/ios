@@ -90,7 +90,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             self.fetchItemsForPage(serverUrl: serverUrl, pageNumber: pageNumber) { metadatas in
                 if let metadatas {
                     for metadata in metadatas {
-                        if metadata.e2eEncrypted || (!metadata.session.isEmpty && metadata.session != NCNetworking.shared.sessionUploadBackgroundExtension) {
+                        if metadata.e2eEncrypted || (!metadata.session.isEmpty && metadata.session != NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundExt) {
                             continue
                         }
                         if let parentItemIdentifier = self.providerUtility.getParentItemIdentifier(metadata: metadata) {
@@ -161,7 +161,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
 
         if pageNumber == 1 {
             NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: NCKeychain().showHiddenFiles, account: fileProviderData.shared.account) { _, files, _, error in
-                if error == .success {
+                if error == .success, let files {
                     NCManageDatabase.shared.convertFilesToMetadatas(files, useFirstAsMetadataFolder: true) { metadataFolder, metadatas in
                         /// FOLDER
                         NCManageDatabase.shared.addMetadata(metadataFolder)

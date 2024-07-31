@@ -44,10 +44,10 @@ class NCOperationSaveLivePhoto: ConcurrentOperation {
     override func start() {
         guard !isCancelled,
             let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                     session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                                                     session: NextcloudKit.shared.nkCommonInstance.identifierSessionDownload,
                                                                                      selector: ""),
             let metadataLive = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadataMOV],
-                                                                                         session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                                                         session: NextcloudKit.shared.nkCommonInstance.identifierSessionDownload,
                                                                                          selector: "") else { return self.finish() }
         DispatchQueue.main.async {
             self.hud.indicatorView = JGProgressHUDRingIndicatorView()

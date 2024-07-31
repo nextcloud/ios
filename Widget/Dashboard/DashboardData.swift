@@ -131,15 +131,16 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
 
     // NETWORKING
     let password = NCKeychain().getPassword(account: account.account)
-    NextcloudKit.shared.setup(
-        account: account.account,
-        user: account.user,
-        userId: account.userId,
-        password: password,
-        urlBase: account.urlBase,
-        userAgent: userAgent,
-        nextcloudVersion: 0,
-        delegate: NCNetworking.shared)
+
+    NextcloudKit.shared.setup(delegate: NCNetworking.shared)
+    NextcloudKit.shared.appendAccount(account.account,
+                                      urlBase: account.urlBase,
+                                      user: account.user,
+                                      userId: account.userId,
+                                      password: password,
+                                      userAgent: userAgent,
+                                      nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
+                                      groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
     // LOG
     let levelLog = NCKeychain().logLevel

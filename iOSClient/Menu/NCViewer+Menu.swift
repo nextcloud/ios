@@ -133,7 +133,7 @@ extension NCViewer {
                                            "account": metadata.account])
                         } else {
                             guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                                           session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                                                                           session: NextcloudKit.shared.nkCommonInstance.identifierSessionDownload,
                                                                                                            selector: NCGlobal.shared.selectorSaveAsScan,
                                                                                                            sceneIdentifier: sceneIdentifier) else { return }
                             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
@@ -186,7 +186,7 @@ extension NCViewer {
                     icon: utility.loadImage(named: "photo", colors: [NCBrandColor.shared.iconImageColor]),
                     action: { _ in
                         guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                                       session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                                                                       session: NextcloudKit.shared.nkCommonInstance.identifierSessionDownload,
                                                                                                        selector: "",
                                                                                                        sceneIdentifier: sceneIdentifier) else { return }
                         NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
@@ -239,7 +239,7 @@ extension NCViewer {
                                            "account": metadata.account])
                         } else {
                             guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                                           session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                                                                           session: NextcloudKit.shared.nkCommonInstance.identifierSessionDownload,
                                                                                                            selector: NCGlobal.shared.selectorLoadFileQuickLook,
                                                                                                            sceneIdentifier: sceneIdentifier) else { return }
                             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)

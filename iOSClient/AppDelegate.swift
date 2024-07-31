@@ -62,6 +62,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         let utilityFileSystem = NCUtilityFileSystem()
         let utility = NCUtility()
+        var levelLog = 0
 
         NCSettingsBundleHelper.checkAndExecuteSettings(delay: 0)
 
@@ -76,15 +77,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         utilityFileSystem.emptyTemporaryDirectory()
         utilityFileSystem.clearCacheDirectory("com.limit-point.LivePhoto")
 
+        // NextcloudKit
+        NextcloudKit.shared.setup(delegate: NCNetworking.shared)
+        NextcloudKit.shared.nkCommonInstance.pathLog = utilityFileSystem.directoryGroup
+
         // Activated singleton
         _ = NCActionCenter.shared
         _ = NCNetworking.shared
-
-        NextcloudKit.shared.setup(delegate: NCNetworking.shared)
-        NextcloudKit.shared.setup(userAgent: userAgent)
-
-        var levelLog = 0
-        NextcloudKit.shared.nkCommonInstance.pathLog = utilityFileSystem.directoryGroup
 
         if NCBrandOptions.shared.disable_log {
             utilityFileSystem.removeFile(atPath: NextcloudKit.shared.nkCommonInstance.filenamePathLog)
@@ -109,10 +108,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             userId = activeAccount.userId
             password = NCKeychain().getPassword(account: account)
 
-            NextcloudKit.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: urlBase, groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
-            NCManageDatabase.shared.setCapabilities(account: account)
+            /*
+             for account in NCManageDatabase.shared.getAllAccount() {
+                 NextcloudKit.shared.appendAccount(account.account,
+                                                   urlBase: account.urlBase,
+                                                   user: account.user,
+                                                   userId: account.userId,
+                                                   password: NCKeychain().getPassword(account: account.account),
+                                                   userAgent: userAgent,
+                                                   nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
+                                                   groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+             }
+             */
+            NextcloudKit.shared.appendAccount(activeAccount.account,
+                                              urlBase: activeAccount.urlBase,
+                                              user: activeAccount.user,
+                                              userId: activeAccount.userId,
+                                              password: NCKeychain().getPassword(account: activeAccount.account),
+                                              userAgent: userAgent,
+                                              nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
+                                              groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
+            NCManageDatabase.shared.setCapabilities(account: account)
             NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
+
             DispatchQueue.global().async {
                 NCImageCache.shared.createMediaCache(account: self.account, withCacheSize: true)
             }
@@ -260,7 +279,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 }
             }
 
-            let counter = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND (session == %@ || session == %@) AND status != %d", self.account, NCNetworking.shared.sessionDownloadBackground, NCNetworking.shared.sessionUploadBackground, NCGlobal.shared.metadataStatusNormal))?.count ?? 0
+            let counter = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND (session == %@ || session == %@) AND status != %d", self.account, NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground, NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground, NCGlobal.shared.metadataStatusNormal))?.count ?? 0
             UIApplication.shared.applicationIconBadgeNumber = counter
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) completion handle")
@@ -457,17 +476,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
         let account: String = "\(user) \(urlBase)"
 
-        NextcloudKit.shared.setup(account: account, user: user, userId: user, password: password, urlBase: urlBase, groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+        NextcloudKit.shared.appendAccount(account,
+                                          urlBase: urlBase,
+                                          user: user,
+                                          userId: user,
+                                          password: password,
+                                          userAgent: userAgent,
+                                          nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
+                                          groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+
         NextcloudKit.shared.getUserProfile(account: account) { account, userProfile, _, error in
             if error == .success, let userProfile {
                 NCManageDatabase.shared.deleteAccount(account)
                 NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
                 NCKeychain().setClientCertificate(account: account, p12Data: NCNetworking.shared.p12Data, p12Password: NCNetworking.shared.p12Password)
+
+                NextcloudKit.shared.updateAccount(account, userId: userProfile.userId)
+
                 self.changeAccount(account, userProfile: userProfile) {
                     completion(error)
                 }
             } else {
-                NextcloudKit.shared.setup(account: self.account, user: self.user, userId: self.userId, password: self.password, urlBase: self.urlBase, groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+                NextcloudKit.shared.removeAccount(account)
                 let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
                 UIApplication.shared.firstWindow?.rootViewController?.present(alertController, animated: true)
@@ -504,7 +534,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         self.userId = tableAccount.userId
         self.password = NCKeychain().getPassword(account: tableAccount.account)
 
-        NextcloudKit.shared.setup(account: account, user: user, userId: userId, password: password, urlBase: urlBase, groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         NCManageDatabase.shared.setCapabilities(account: account)
 
         if let userProfile {

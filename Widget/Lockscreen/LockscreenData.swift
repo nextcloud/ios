@@ -52,7 +52,7 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, fami
         account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", accountIdentifier))
     }
 
-    guard let account else {
+    guard let account = account else {
         return completion(LockscreenData(date: Date(), isPlaceholder: true, activity: "", link: URL(string: "https://")!, quotaRelative: 0, quotaUsed: "", quotaTotal: "", error: false))
     }
 
@@ -65,15 +65,16 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, fami
 
     // NETWORKING
     let password = NCKeychain().getPassword(account: account.account)
-    NextcloudKit.shared.setup(
-        account: account.account,
-        user: account.user,
-        userId: account.userId,
-        password: password,
-        urlBase: account.urlBase,
-        userAgent: userAgent,
-        nextcloudVersion: 0,
-        delegate: NCNetworking.shared)
+
+    NextcloudKit.shared.setup(delegate: NCNetworking.shared)
+    NextcloudKit.shared.appendAccount(account.account,
+                                      urlBase: account.urlBase,
+                                      user: account.user,
+                                      userId: account.userId,
+                                      password: password,
+                                      userAgent: userAgent,
+                                      nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
+                                      groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
     let options = NKRequestOptions(timeout: 90, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
     if #available(iOSApplicationExtension 16.0, *) {

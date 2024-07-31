@@ -61,8 +61,6 @@ class FileProviderExtension: NSFileProviderExtension {
 
         // Create directory File Provider Storage
         _ = utilityFileSystem.directoryProviderStorage
-        // Configure URLSession
-        _ = NCNetworking.shared.sessionManagerUploadBackgroundExtension
         // Domains
         // FileProviderDomain().registerDomains()
     }
@@ -175,7 +173,7 @@ class FileProviderExtension: NSFileProviderExtension {
         guard let metadata else {
             return completionHandler(NSFileProviderError(.noSuchItem))
         }
-        if metadata.session == NCNetworking.shared.sessionUploadBackgroundExtension {
+        if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundExt {
             return completionHandler(nil)
         }
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
@@ -187,7 +185,7 @@ class FileProviderExtension: NSFileProviderExtension {
             return completionHandler(nil)
         } else {
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                       session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                       session: NextcloudKit.shared.nkCommonInstance.identifierSessionDownload,
                                                        sessionError: "",
                                                        selector: "",
                                                        status: NCGlobal.shared.metadataStatusDownloading)
@@ -250,11 +248,11 @@ class FileProviderExtension: NSFileProviderExtension {
         let serverUrlFileName = metadata.serverUrl + "/" + fileName
 
         NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                   session: NCNetworking.shared.sessionUploadBackgroundExtension,
+                                                   session: NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundExt,
                                                    sessionError: "",
                                                    selector: "",
                                                    status: NCGlobal.shared.metadataStatusUploading)
-        if let task = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: url.path, dateCreationFile: nil, dateModificationFile: nil, account: metadata.account, session: NCNetworking.shared.sessionManagerUploadBackgroundExtension) {
+        if let task = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: url.path, dateCreationFile: nil, dateModificationFile: nil, account: metadata.account, sessionIdentifier: metadata.session) {
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                        status: NCGlobal.shared.metadataStatusUploading,
                                                        taskIdentifier: task.taskIdentifier)
@@ -267,8 +265,9 @@ class FileProviderExtension: NSFileProviderExtension {
         assert(pathComponents.count > 2)
         let itemIdentifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcIdAndOcIdTemp(itemIdentifier.rawValue) else { return }
-        if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload {
-            NextcloudKit.shared.sessionManager.session.getTasksWithCompletionHandler { _, _, downloadTasks in
+        if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionDownload {
+            let session = NextcloudKit.shared.nkCommonInstance.getSession(account: metadata.session)?.sessionUploadBackgroundExt
+            session?.getTasksWithCompletionHandler { _, _, downloadTasks in
                 downloadTasks.forEach { task in
                     if metadata.sessionTaskIdentifier == task.taskIdentifier {
                         task.cancel()
@@ -309,7 +308,7 @@ class FileProviderExtension: NSFileProviderExtension {
                 fileURL.stopAccessingSecurityScopedResource()
 
                 let metadata = NCManageDatabase.shared.createMetadata(account: fileProviderData.shared.account, user: fileProviderData.shared.user, userId: fileProviderData.shared.userId, fileName: fileName, fileNameView: fileName, ocId: ocIdTemp, serverUrl: tableDirectory.serverUrl, urlBase: fileProviderData.shared.accountUrlBase, url: "", contentType: "")
-                metadata.session = NCNetworking.shared.sessionUploadBackgroundExtension
+                metadata.session = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundExt
                 metadata.size = size
                 metadata.status = NCGlobal.shared.metadataStatusUploading
 
@@ -318,7 +317,7 @@ class FileProviderExtension: NSFileProviderExtension {
                 let serverUrlFileName = tableDirectory.serverUrl + "/" + fileName
                 let fileNameLocalPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTemp, fileNameView: fileName)
 
-                if let task = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: nil, dateModificationFile: nil, account: metadata.account, session: NCNetworking.shared.sessionManagerUploadBackgroundExtension) {
+                if let task = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: nil, dateModificationFile: nil, account: metadata.account, sessionIdentifier: metadata.session) {
                     NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                                status: NCGlobal.shared.metadataStatusUploading,
                                                                taskIdentifier: task.taskIdentifier)

@@ -166,7 +166,15 @@ extension NCLoginProvider: WKNavigationDelegate {
         let account: String = "\(username) \(urlBase)"
         let user = username
 
-        NextcloudKit.shared.setup(account: account, user: user, userId: user, password: password, urlBase: urlBase)
+        NextcloudKit.shared.appendAccount(account,
+                                          urlBase: urlBase,
+                                          user: user,
+                                          userId: user,
+                                          password: password,
+                                          userAgent: userAgent,
+                                          nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
+                                          groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+
         NextcloudKit.shared.getUserProfile(account: account) { _, userProfile, _, error in
             if error == .success, let userProfile {
                 NCManageDatabase.shared.deleteAccount(account)

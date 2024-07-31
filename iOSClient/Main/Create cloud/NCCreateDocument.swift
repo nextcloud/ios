@@ -83,8 +83,8 @@ class NCCreateDocument: NSObject {
             }
 
             let results = await textGetListOfTemplates(account:appDelegate.account, options: options)
-            if results.error == .success {
-                for template in results.templates {
+            if results.error == .success, let resultTemplates = results.templates {
+                for template in resultTemplates {
                     let temp = NKEditorTemplates()
                     temp.identifier = template.identifier
                     temp.ext = template.ext
@@ -145,8 +145,7 @@ class NCCreateDocument: NSObject {
 
     // MARK: - NextcloudKit async/await
 
-    func textGetListOfTemplates(account: String, options: NKRequestOptions = NKRequestOptions()) async -> (account: String, templates: [NKEditorTemplates], data: Data?, error: NKError) {
-
+    func textGetListOfTemplates(account: String, options: NKRequestOptions = NKRequestOptions()) async -> (account: String, templates: [NKEditorTemplates]?, data: Data?, error: NKError) {
         await withUnsafeContinuation({ continuation in
             NextcloudKit.shared.NCTextGetListOfTemplates(account: account) { account, templates, data, error in
                 continuation.resume(returning: (account: account, templates: templates, data: data, error: error))
@@ -155,7 +154,6 @@ class NCCreateDocument: NSObject {
     }
 
     func getTemplatesRichdocuments(typeTemplate: String, account: String, options: NKRequestOptions = NKRequestOptions()) async -> (account: String, templates: [NKRichdocumentsTemplate]?, data: Data?, error: NKError) {
-
         await withUnsafeContinuation({ continuation in
             NextcloudKit.shared.getTemplatesRichdocuments(typeTemplate: typeTemplate, account: account, options: options) { account, templates, data, error in
                 continuation.resume(returning: (account: account, templates: templates, data: data, error: error))

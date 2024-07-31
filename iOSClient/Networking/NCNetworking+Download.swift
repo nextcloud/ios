@@ -34,7 +34,7 @@ extension NCNetworking {
                   requestHandler: @escaping (_ request: DownloadRequest) -> Void = { _ in },
                   progressHandler: @escaping (_ progress: Progress) -> Void = { _ in },
                   completion: @escaping (_ afError: AFError?, _ error: NKError) -> Void = { _, _ in }) {
-        if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload {
+        if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionDownload {
             downloadFile(metadata: metadata, withNotificationProgressTask: withNotificationProgressTask) {
                 start()
             } requestHandler: { request in
@@ -120,13 +120,12 @@ extension NCNetworking {
                                           requestHandler: @escaping (_ request: DownloadRequest) -> Void = { _ in },
                                           progressHandler: @escaping (_ progress: Progress) -> Void = { _ in },
                                           completion: @escaping (_ afError: AFError?, _ error: NKError) -> Void = { _, _ in }) {
-        let session: URLSession = sessionManagerDownloadBackground
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
 
         start()
 
-        if let task = nkBackground.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account, session: session) {
+        if let task = nkBackground.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account) {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Download file \(metadata.fileNameView) with task with taskIdentifier \(task.taskIdentifier)")
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                        status: NCGlobal.shared.metadataStatusDownloading,
@@ -270,44 +269,49 @@ extension NCNetworking {
     func downloadAvatar(user: String,
                         dispalyName: String?,
                         fileName: String,
+                        account: String,
                         cell: NCCellProtocol,
                         view: UIView?) {
         let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
-        guard let tableAccount = NCManageDatabase.shared.getActiveAccount() else { return }
 
         if let image = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) {
             cell.fileAvatarImageView?.image = image
             return
         }
 
-        cell.fileAvatarImageView?.image = utility.loadUserImage(for: user, displayName: dispalyName, userBaseUrl: tableAccount)
+        if let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) {
+            cell.fileAvatarImageView?.image = utility.loadUserImage(for: user, displayName: dispalyName, userBaseUrl: account)
+        }
 
         for case let operation as NCOperationDownloadAvatar in downloadAvatarQueue.operations where operation.fileName == fileName { return }
-        downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: user, fileName: fileName, fileNameLocalPath: fileNameLocalPath, account: tableAccount.account, cell: cell, view: view))
+        downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: user, fileName: fileName, fileNameLocalPath: fileNameLocalPath, account: account, cell: cell, view: view))
     }
 #endif
 
     func cancelDownloadTasks() {
         downloadRequest.removeAll()
-        let sessionManager = NextcloudKit.shared.sessionManager
-        sessionManager.session.getTasksWithCompletionHandler { _, _, downloadTasks in
-            downloadTasks.forEach {
-                $0.cancel()
+        NextcloudKit.shared.nkCommonInstance.nksessions.forEach { session in
+            session.sessionData.session.getTasksWithCompletionHandler { _, _, downloadTasks in
+                downloadTasks.forEach {
+                    $0.cancel()
+                }
             }
         }
-        if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status < 0 AND session == %@", NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload)) {
+        if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status < 0 AND session == %@", NextcloudKit.shared.nkCommonInstance.identifierSessionDownload)) {
             NCManageDatabase.shared.clearMetadataSession(metadatas: results)
         }
     }
 
     func cancelDownloadBackgroundTask() {
-        Task {
-            let tasksBackground = await NCNetworking.shared.sessionManagerDownloadBackground.tasks
-            for task in tasksBackground.2 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
-                task.cancel()
-            }
-            if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status < 0 AND session == %@", NCNetworking.shared.sessionDownloadBackground)) {
-                NCManageDatabase.shared.clearMetadataSession(metadatas: results)
+        NextcloudKit.shared.nkCommonInstance.nksessions.forEach { session in
+            Task {
+                let tasksBackground = await session.sessionDownloadBackground.tasks
+                for task in tasksBackground.2 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
+                    task.cancel()
+                }
+                if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status < 0 AND session == %@", NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground)) {
+                    NCManageDatabase.shared.clearMetadataSession(metadatas: results)
+                }
             }
         }
     }
@@ -325,7 +329,7 @@ class NCOperationDownload: ConcurrentOperation {
     override func start() {
         guard !isCancelled else { return self.finish() }
 
-        metadata.session = NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload
+        metadata.session = NextcloudKit.shared.nkCommonInstance.identifierSessionDownload
         metadata.sessionError = ""
         metadata.sessionSelector = selector
         metadata.sessionTaskIdentifier = 0

@@ -125,17 +125,19 @@ class NCAutoUpload: NSObject {
                 }
 
                 if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
-                    session = NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload
+                    session = NextcloudKit.shared.nkCommonInstance.identifierSessionUpload
                 } else {
                     if assetMediaType == PHAssetMediaType.image && account.autoUploadWWAnPhoto == false {
-                        session = NCNetworking.shared.sessionUploadBackground
+                        session = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground
                     } else if assetMediaType == PHAssetMediaType.video && account.autoUploadWWAnVideo == false {
-                        session = NCNetworking.shared.sessionUploadBackground
+                        session = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground
                     } else if assetMediaType == PHAssetMediaType.image && account.autoUploadWWAnPhoto {
-                        session = NCNetworking.shared.sessionUploadBackgroundWWan
+                        session = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundWWan
                     } else if assetMediaType == PHAssetMediaType.video && account.autoUploadWWAnVideo {
-                        session = NCNetworking.shared.sessionUploadBackgroundWWan
-                    } else { session = NCNetworking.shared.sessionUploadBackground }
+                        session = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundWWan
+                    } else {
+                        session = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground
+                    }
                 }
 
                 // MOST COMPATIBLE SEARCH --> HEIC --> JPG

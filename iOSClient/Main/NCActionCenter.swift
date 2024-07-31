@@ -173,7 +173,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             }
             NCManageDatabase.shared.addLocalFile(metadata: metadata, offline: true)
             NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: metadatasSynchronizationOffline,
-                                                                      session: NCNetworking.shared.sessionDownloadBackground,
+                                                                      session: NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground,
                                                                       selector: NCGlobal.shared.selectorSynchronizationOffline)
         }
     }
@@ -344,7 +344,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         for (metadata, url) in downloadMetadata {
             processor.execute { completion in
                 guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                               session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                                                               session: NextcloudKit.shared.nkCommonInstance.identifierSessionDownload,
                                                                                                selector: "",
                                                                                                sceneIdentifier: controller.sceneIdentifier) else { return completion() }
                 NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {

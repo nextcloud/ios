@@ -73,15 +73,15 @@ extension NCShareExtension: NCAccountRequestDelegate {
         NCImageCache.shared.createImagesBrandCache()
 
         // NETWORKING
-        NextcloudKit.shared.setup(
-            account: activeAccount.account,
-            user: activeAccount.user,
-            userId: activeAccount.userId,
-            password: NCKeychain().getPassword(account: activeAccount.account),
-            urlBase: activeAccount.urlBase,
-            userAgent: userAgent,
-            nextcloudVersion: 0,
-            delegate: NCNetworking.shared)
+        NextcloudKit.shared.setup(delegate: NCNetworking.shared)
+        NextcloudKit.shared.appendAccount(activeAccount.account,
+                                          urlBase: activeAccount.urlBase,
+                                          user: activeAccount.user,
+                                          userId: activeAccount.userId,
+                                          password: NCKeychain().getPassword(account: activeAccount.account),
+                                          userAgent: userAgent,
+                                          nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
+                                          groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()

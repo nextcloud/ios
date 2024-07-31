@@ -44,7 +44,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.fileAvatarImageView?.contentMode = .scaleAspectFill
                 cell.fileAvatarImageView?.image = image
             } else {
-                NCNetworking.shared.downloadAvatar(user: user, dispalyName: dispalyName, fileName: fileName, cell: cell, view: collectionView)
+                NCNetworking.shared.downloadAvatar(user: user, dispalyName: dispalyName, fileName: fileName, account: metadata.account, cell: cell, view: collectionView)
             }
         }
         /// CONTENT MODE
