@@ -67,7 +67,7 @@ class NCPushNotification {
               let pushDevicePublicKey = String(data: pushPublicKey, encoding: .utf8)  else { return }
         let proxyServerPath = NCBrandOptions.shared.pushNotificationServerProxy
 
-        NextcloudKit.shared.subscribingPushNotification(serverUrl: urlBase, user: user, password: keychain.getPassword(account: account), pushTokenHash: pushTokenHash, devicePublicKey: pushDevicePublicKey, proxyServerUrl: proxyServerPath, account: account) { account, deviceIdentifier, signature, publicKey, _, error in
+        NextcloudKit.shared.subscribingPushNotification(serverUrl: urlBase, pushTokenHash: pushTokenHash, devicePublicKey: pushDevicePublicKey, proxyServerUrl: proxyServerPath, account: account) { account, deviceIdentifier, signature, publicKey, _, error in
             if error == .success, let deviceIdentifier, let signature, let publicKey {
                 let userAgent = String(format: "%@  (Strict VoIP)", NCBrandOptions.shared.getUserAgent())
                 let options = NKRequestOptions(customUserAgent: userAgent)
@@ -90,7 +90,7 @@ class NCPushNotification {
               let signature = keychain.getPushNotificationDeviceIdentifierSignature(account: account),
               let publicKey = keychain.getPushNotificationSubscribingPublicKey(account: account) else { return }
 
-        NextcloudKit.shared.unsubscribingPushNotification(serverUrl: urlBase, user: user, password: keychain.getPassword(account: account), account: account) { _, error in
+        NextcloudKit.shared.unsubscribingPushNotification(serverUrl: urlBase, account: account) { _, error in
             if error == .success {
                 let proxyServerPath = NCBrandOptions.shared.pushNotificationServerProxy
                 let userAgent = String(format: "%@  (Strict VoIP)", NCBrandOptions.shared.getUserAgent())

@@ -926,6 +926,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func cancelSession(metadata: tableMetadata) async {
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+        let nkSession = NextcloudKit.shared.nkCommonInstance.getSession(account: metadata.account)
 
         utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
 
@@ -939,7 +940,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
 
         // DOWNLOAD FOREGROUND
-        if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload {
+        if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionDownload {
             if let request = NCNetworking.shared.downloadRequest[fileNameLocalPath] {
                 request.cancel()
             } else if let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) {
@@ -958,9 +959,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
 
         // DOWNLOAD BACKGROUND
-        if metadata.session == NCNetworking.shared.sessionDownloadBackground {
-            let session: URLSession? = NCNetworking.shared.sessionManagerDownloadBackground
-            if let tasks = await session?.tasks {
+        if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground {
+            if let tasks = await nkSession?.sessionDownloadBackground.tasks {
                 for task in tasks.2 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
                     if task.taskIdentifier == metadata.sessionTaskIdentifier {
                         task.cancel()
@@ -980,7 +980,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
 
         // UPLOAD FOREGROUND
-        if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload {
+        if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionUpload {
             if let request = NCNetworking.shared.uploadRequest[fileNameLocalPath] {
                 request.cancel()
                 NCNetworking.shared.uploadRequest.removeValue(forKey: fileNameLocalPath)
@@ -996,12 +996,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         // UPLOAD BACKGROUND
         var session: URLSession?
-        if metadata.session == NCNetworking.shared.sessionUploadBackground {
-            session = NCNetworking.shared.sessionManagerUploadBackground
-        } else if metadata.session == NCNetworking.shared.sessionUploadBackgroundWWan {
-            session = NCNetworking.shared.sessionManagerUploadBackgroundWWan
-        } else if metadata.session == NCNetworking.shared.sessionUploadBackgroundExtension {
-            session = NCNetworking.shared.sessionManagerUploadBackgroundExtension
+        if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground {
+            session = nkSession?.sessionUploadBackground
+        } else if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundWWan {
+            session = nkSession?.sessionUploadBackgroundWWan
+        } else if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundExt {
+            session = nkSession?.sessionUploadBackgroundExt
         }
         if let tasks = await session?.tasks {
             for task in tasks.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
