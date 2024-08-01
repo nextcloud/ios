@@ -94,6 +94,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
         isEditMode = false
         setNavigationRightItems()
+        setNavigationLeftItems()
 
         reloadDataSource()
         loadListingTrash()
@@ -157,6 +158,19 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
             navigationItem.rightBarButtonItems = [menu]
         } else {
             navigationItem.rightBarButtonItems?.first?.menu = navigationItem.rightBarButtonItems?.first?.menu?.replacingChildren(createMenuActions())
+        }
+    }
+    
+    func setNavigationLeftItems() {
+        if layoutKey == NCGlobal.shared.layoutViewTrash {
+            navigationItem.leftItemsSupplementBackButton = true
+            if navigationController?.viewControllers.count == 1 {
+                navigationItem.setLeftBarButtonItems([UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""),
+                                                                      style: .plain,
+                                                                      action: { [weak self] in
+                    self?.dismiss(animated: true)
+                })], animated: true)
+            }
         }
     }
 
