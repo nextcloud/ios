@@ -367,22 +367,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
 
-        // [WEBPersonalized] [AppConfig]
-        if NCBrandOptions.shared.use_AppConfig {
-            if activeLogin?.view.window == nil {
-                urlBase = NCBrandOptions.shared.loginBaseUrl
-                NextcloudKit.shared.getLoginFlowV2(serverUrl: urlBase) { token, endpoint, login, _, error in
-                    // Login Flow V2
-                    if error == .success, let token, let endpoint, let login {
-                        let vc = UIHostingController(rootView: NCLoginPoll(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login, cancelButtonDisabled: NCManageDatabase.shared.getAccounts().isEmptyOrNil))
-                        UIApplication.shared.firstWindow?.rootViewController?.present(vc, animated: true)
-                    }
-                }
-
-                return
-            }
-        }
-
         // Nextcloud standard login
         if selector == NCGlobal.shared.introSignup {
             if activeLogin?.view.window == nil {
@@ -398,7 +382,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 }
             }
 
-        } else if NCBrandOptions.shared.disable_intro && NCBrandOptions.shared.disable_request_login_url {
+        } else if NCBrandOptions.shared.disable_request_login_url {
             if activeLogin?.view.window == nil {
                 activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
                 activeLogin?.urlBase = NCBrandOptions.shared.loginBaseUrl
@@ -481,7 +465,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let account: String = "\(user) \(urlBase)"
 
         NextcloudKit.shared.setup(account: account, user: user, userId: user, password: password, urlBase: urlBase)
-        NextcloudKit.shared.getUserProfile { _, userProfile, _, error in
+        NextcloudKit.shared.getUserProfile(account: account) { account, userProfile, _, error in
             if error == .success, let userProfile {
                 NCManageDatabase.shared.deleteAccount(account)
                 NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
@@ -535,7 +519,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         NCPushNotification.shared.pushNotification()
-        NCService().startRequestServicesServer()
+        NCService().startRequestServicesServer(account: self.account, user: self.user, userId: self.userId)
 
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(items) uploads")

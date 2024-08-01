@@ -175,7 +175,7 @@ class NCFiles: NCCollectionViewCommon {
     private func networkReadFolder(completion: @escaping(_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ metadatasDifferentCount: Int, _ metadatasModified: Int, _ error: NKError) -> Void) {
         var tableDirectory: tableDirectory?
 
-        NCNetworking.shared.readFile(serverUrlFileName: serverUrl) { task in
+        NCNetworking.shared.readFile(serverUrlFileName: serverUrl, account: appDelegate.account) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()
         } completion: { account, metadata, error in
@@ -204,7 +204,7 @@ class NCFiles: NCCollectionViewCommon {
                        NCKeychain().isEndToEndEnabled(account: account),
                        !NCNetworkingE2EE().isInUpload(account: account, serverUrl: self.serverUrl) {
                         let lock = NCManageDatabase.shared.getE2ETokenLock(account: account, serverUrl: self.serverUrl)
-                        NCNetworkingE2EE().getMetadata(fileId: metadataFolder.ocId, e2eToken: lock?.e2eToken) { account, version, e2eMetadata, signature, _, error in
+                        NCNetworkingE2EE().getMetadata(fileId: metadataFolder.ocId, e2eToken: lock?.e2eToken, account: account) { account, version, e2eMetadata, signature, _, error in
                             if account == self.appDelegate.account, error == .success, let e2eMetadata = e2eMetadata {
                                 let error = NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: signature, serverUrl: self.serverUrl, account: account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
                                 if error == .success {

@@ -181,52 +181,54 @@ struct NCAccountSettingsView: View {
                     }
                     ///
                     /// Certificate server
-                    Button(action: {
-                        showServerCertificate.toggle()
-                    }, label: {
-                        HStack {
-                            Image(systemName: "lock")
-                                .resizable()
-                                .scaledToFit()
-                                .font(Font.system(.body).weight(.light))
-                                .frame(width: 20, height: 20)
-                                .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
-                            Text(NSLocalizedString("_certificate_details_", comment: ""))
-                                .lineLimit(1)
-                                .truncationMode(.middle)
-                                .foregroundStyle(Color(NCBrandColor.shared.textColor))
-                                .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
+                    if model.isAdminGroup() {
+                        Button(action: {
+                            showServerCertificate.toggle()
+                        }, label: {
+                            HStack {
+                                Image(systemName: "lock")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .font(Font.system(.body).weight(.light))
+                                    .frame(width: 20, height: 20)
+                                    .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
+                                Text(NSLocalizedString("_certificate_details_", comment: ""))
+                                    .lineLimit(1)
+                                    .truncationMode(.middle)
+                                    .foregroundStyle(Color(NCBrandColor.shared.textColor))
+                                    .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
+                            }
+                            .font(.system(size: 14))
+                        })
+                        .sheet(isPresented: $showServerCertificate) {
+                            if let url = URL(string: model.activeAccount?.urlBase), let host = url.host {
+                                certificateDetailsView(host: host, title: NSLocalizedString("_certificate_view_", comment: ""))
+                            }
                         }
-                        .font(.system(size: 14))
-                    })
-                    .sheet(isPresented: $showServerCertificate) {
-                        if let url = URL(string: model.activeAccount?.urlBase), let host = url.host {
-                            certificateDetailsView(host: host, title: NSLocalizedString("_certificate_view_", comment: ""))
-                        }
-                    }
-                    ///
-                    /// Certificate push
-                    Button(action: {
-                        showPushCertificate.toggle()
-                    }, label: {
-                        HStack {
-                            Image(systemName: "lock")
-                                .resizable()
-                                .scaledToFit()
-                                .font(Font.system(.body).weight(.light))
-                                .frame(width: 20, height: 20)
-                                .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
-                            Text(NSLocalizedString("_certificate_pn_details_", comment: ""))
-                                .lineLimit(1)
-                                .truncationMode(.middle)
-                                .foregroundStyle(Color(NCBrandColor.shared.textColor))
-                                .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
-                        }
-                        .font(.system(size: 14))
-                    })
-                    .sheet(isPresented: $showPushCertificate) {
-                        if let url = URL(string: NCBrandOptions.shared.pushNotificationServerProxy), let host = url.host {
-                            certificateDetailsView(host: host, title: NSLocalizedString("_certificate_pn_view_", comment: ""))
+                        ///
+                        /// Certificate push
+                        Button(action: {
+                            showPushCertificate.toggle()
+                        }, label: {
+                            HStack {
+                                Image(systemName: "lock")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .font(Font.system(.body).weight(.light))
+                                    .frame(width: 20, height: 20)
+                                    .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
+                                Text(NSLocalizedString("_certificate_pn_details_", comment: ""))
+                                    .lineLimit(1)
+                                    .truncationMode(.middle)
+                                    .foregroundStyle(Color(NCBrandColor.shared.textColor))
+                                    .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
+                            }
+                            .font(.system(size: 14))
+                        })
+                        .sheet(isPresented: $showPushCertificate) {
+                            if let url = URL(string: NCBrandOptions.shared.pushNotificationServerProxy), let host = url.host {
+                                certificateDetailsView(host: host, title: NSLocalizedString("_certificate_pn_view_", comment: ""))
+                            }
                         }
                     }
                 })

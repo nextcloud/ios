@@ -107,11 +107,13 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         // brand
         if NCBrandOptions.shared.disable_request_login_url {
             baseUrl.text = NCBrandOptions.shared.loginBaseUrl
-            baseUrl.isHidden = true
+            baseUrl.isEnabled = false
+            baseUrl.isUserInteractionEnabled = false
+            baseUrl.alpha = 0.5
         }
 
         // qrcode
-        qrCode.setImage(UIImage(named: "qrcode")?.image(color: textColor, size: 100), for: .normal)
+        qrCode.setImage(UIImage(systemName: "qrcode.viewfinder")?.image(color: textColor, size: 100), for: .normal)
 
         // certificate
         certificate.setImage(UIImage(named: "certificate")?.image(color: textColor, size: 100), for: .normal)

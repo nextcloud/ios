@@ -310,6 +310,7 @@ class NCViewerMedia: UIViewController {
                                                 widthPreview: Int(sizePreview.width),
                                                 heightPreview: Int(sizePreview.height),
                                                 sizeIcon: NCGlobal.shared.sizeIcon,
+                                                account: metadata.account,
                                                 options: NKRequestOptions(queue: .main)) { _, imagePreview, _, _, etag, error in
                 if error == .success, let image = imagePreview {
                     NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)

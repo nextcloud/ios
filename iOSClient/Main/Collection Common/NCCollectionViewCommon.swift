@@ -596,13 +596,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         let image = utility.loadUserImage(for: appDelegate.user, displayName: activeAccount?.displayName, userBaseUrl: appDelegate)
         let accountButton = AccountSwitcherButton(type: .custom)
         let accounts = NCManageDatabase.shared.getAllAccountOrderAlias()
+        var childrenAccountSubmenu: [UIMenuElement] = []
 
         accountButton.setImage(image, for: .normal)
         accountButton.setImage(image, for: .highlighted)
         accountButton.semanticContentAttribute = .forceLeftToRight
         accountButton.sizeToFit()
 
-        if !accounts.isEmpty, !NCBrandOptions.shared.disable_multiaccount {
+        if !accounts.isEmpty {
             let accountActions: [UIAction] = accounts.map { account in
                 let image = utility.loadUserImage(for: account.user, displayName: account.displayName, userBaseUrl: account)
                 var name: String = ""
@@ -637,8 +638,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.present(accountSettingsController, animated: true, completion: nil)
             }
 
-            let addAccountSubmenu = UIMenu(title: "", options: .displayInline, children: [addAccountAction, settingsAccountAction])
+            if !NCBrandOptions.shared.disable_multiaccount {
+                childrenAccountSubmenu.append(addAccountAction)
+            }
+            childrenAccountSubmenu.append(settingsAccountAction)
 
+            let addAccountSubmenu = UIMenu(title: "", options: .displayInline, children: childrenAccountSubmenu)
             let menu = UIMenu(children: accountActions + [addAccountSubmenu])
 
             accountButton.menu = menu
@@ -1121,7 +1126,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func pasteFilesMenu() {
-        NCActionCenter.shared.pastePasteboard(serverUrl: serverUrl, hudView: tabBarController?.view)
+        NCActionCenter.shared.pastePasteboard(serverUrl: serverUrl, account: appDelegate.account, hudView: tabBarController?.view)
     }
 
     // MARK: - DataSource + NC Endpoint
@@ -1177,7 +1182,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.collectionView.reloadData()
             }
         } else {
-            NCNetworking.shared.searchFiles(urlBase: appDelegate, literal: literalSearch) { task in
+            NCNetworking.shared.searchFiles(urlBase: appDelegate, literal: literalSearch, account: appDelegate.account) { task in
                 self.dataSourceTask = task
                 self.collectionView.reloadData()
             } completion: { metadatas, error in

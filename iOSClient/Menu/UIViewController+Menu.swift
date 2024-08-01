@@ -61,11 +61,10 @@ extension UIViewController {
     }
 
     func showProfileMenu(userId: String) {
-
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
         guard NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion23 else { return }
 
-        NextcloudKit.shared.getHovercard(for: userId) { account, card, _, _ in
+        NextcloudKit.shared.getHovercard(for: userId, account: appDelegate.account) { account, card, _, _ in
             guard let card = card, account == appDelegate.account else { return }
 
             let personHeader = NCMenuAction(
