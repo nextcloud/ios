@@ -36,7 +36,6 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
     var fileName: String = ""
     var serverUrl = ""
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-    var userBaseUrl: NCUserBaseUrl!
 
     @IBOutlet weak var contentContainerView: UIView!
     @IBOutlet weak var durationLabel: UILabel!
@@ -47,7 +46,6 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        userBaseUrl = appDelegate
 
         voiceRecordHUD.update(0.0)
         durationLabel.text = ""
@@ -58,7 +56,7 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
         voiceRecordHUD.fillColor = UIColor.green
 
         Task {
-            self.fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + ".m4a", account: self.userBaseUrl.account, serverUrl: self.serverUrl)
+            self.fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + ".m4a", account: self.appDelegate.account, serverUrl: self.serverUrl)
             recording = NCAudioRecorder(to: self.fileName)
             recording.delegate = self
             do {
@@ -100,7 +98,7 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
 
     func uploadMetadata() {
         let fileNamePath = NSTemporaryDirectory() + self.fileName
-        let metadata = NCManageDatabase.shared.createMetadata(account: userBaseUrl.account, user: appDelegate.user, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: UUID().uuidString, serverUrl: self.serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "")
+        let metadata = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: UUID().uuidString, serverUrl: self.serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "")
         metadata.session = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground
         metadata.sessionSelector = NCGlobal.shared.selectorUploadFile
         metadata.status = NCGlobal.shared.metadataStatusWaitUpload

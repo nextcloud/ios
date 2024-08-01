@@ -32,7 +32,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @IBOutlet weak var collectionView: UICollectionView!
 
-    var userBaseUrl: NCUserBaseUrl!
     var autoUploadFileName = ""
     var autoUploadDirectory = ""
     var isTransitioning: Bool = false
@@ -92,7 +91,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        userBaseUrl = appDelegate
 
         tabBarSelect = NCCollectionViewCommonSelectTabBar(controller: tabBarController as? NCMainTabBarController, delegate: self)
         self.navigationController?.presentationController?.delegate = self
@@ -136,7 +134,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
             self.dataSource.clearDirectory()
-            NCManageDatabase.shared.cleanEtagDirectory(account: self.userBaseUrl.account, serverUrl: self.serverUrl)
+            NCManageDatabase.shared.cleanEtagDirectory(account: self.appDelegate.account, serverUrl: self.serverUrl)
             self.reloadDataSourceNetwork()
         }
 
@@ -160,7 +158,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        userBaseUrl = appDelegate
 
         navigationController?.setNavigationBarAppearance()
         navigationController?.navigationBar.prefersLargeTitles = true
@@ -171,7 +168,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         setNavigationLeftItems()
         setNavigationRightItems()
 
-        layoutForView = NCManageDatabase.shared.getLayoutForView(account: userBaseUrl.account, key: layoutKey, serverUrl: serverUrl)
+        layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl)
         if layoutForView?.layout == NCGlobal.shared.layoutList {
             collectionView?.collectionViewLayout = listLayout
         } else if layoutForView?.layout == NCGlobal.shared.layoutGrid {
@@ -390,7 +387,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func renameFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let account = userInfo["account"] as? String,
-              account == userBaseUrl.account
+              account == appDelegate.account
         else { return }
 
         reloadDataSource()
@@ -402,7 +399,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let serverUrl = userInfo["serverUrl"] as? String,
               serverUrl == self.serverUrl,
               let account = userInfo["account"] as? String,
-              account == userBaseUrl.account,
+              account == appDelegate.account,
               let withPush = userInfo["withPush"] as? Bool
         else { return }
 
@@ -437,7 +434,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let serverUrl = userInfo["serverUrl"] as? String,
               serverUrl == self.serverUrl || self.serverUrl.isEmpty,
               let account = userInfo["account"] as? String,
-              account == userBaseUrl.account
+              account == appDelegate.account
         else { return }
 
         self.notificationReloadDataSource += 1
@@ -448,7 +445,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let serverUrl = userInfo["serverUrl"] as? String,
               serverUrl == self.serverUrl || self.serverUrl.isEmpty,
               let account = userInfo["account"] as? String,
-              account == userBaseUrl.account,
+              account == appDelegate.account,
               let error = userInfo["error"] as? NKError
         else { return }
 
@@ -464,7 +461,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let serverUrl = userInfo["serverUrl"] as? String,
               serverUrl == self.serverUrl || self.serverUrl.isEmpty,
               let account = userInfo["account"] as? String,
-              account == userBaseUrl.account
+              account == appDelegate.account
         else { return }
 
         reloadDataSource()
@@ -485,7 +482,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             DispatchQueue.main.async { self.collectionView?.reloadData() }
         }
 
-        if serverUrl == self.serverUrl, account == userBaseUrl.account {
+        if serverUrl == self.serverUrl, account == appDelegate.account {
             notificationReloadDataSource += 1
         }
     }
@@ -502,7 +499,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             DispatchQueue.main.async { self.collectionView?.reloadData() }
         }
 
-        if account == userBaseUrl.account, serverUrl == self.serverUrl {
+        if account == appDelegate.account, serverUrl == self.serverUrl {
             notificationReloadDataSource += 1
         }
     }
@@ -512,7 +509,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let serverUrl = userInfo["serverUrl"] as? String,
               serverUrl == self.serverUrl,
               let account = userInfo["account"] as? String,
-              account == userBaseUrl.account
+              account == appDelegate.account
         else { return }
 
         notificationReloadDataSource += 1
@@ -530,7 +527,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             DispatchQueue.main.async { self.collectionView?.reloadData() }
         }
 
-        if account == userBaseUrl.account, serverUrl == self.serverUrl {
+        if account == appDelegate.account, serverUrl == self.serverUrl {
             reloadDataSource()
         }
     }
@@ -673,7 +670,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         let isTabBarSelectHidden = tabBarSelect.isHidden()
 
         func createMenuActions() -> [UIMenuElement] {
-            guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: userBaseUrl.account, key: layoutKey, serverUrl: serverUrl) else { return [] }
+            guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl) else { return [] }
             let columnPhoto = self.layoutForView?.columnPhoto ?? 3
 
             func saveLayout(_ layoutForView: NCDBLayoutForView) {
@@ -807,9 +804,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 saveLayout(layoutForView)
             }
 
-            let personalFilesOnly = NCKeychain().getPersonalFilesOnly(account: userBaseUrl.account)
+            let personalFilesOnly = NCKeychain().getPersonalFilesOnly(account: appDelegate.account)
             let personalFilesOnlyAction = UIAction(title: NSLocalizedString("_personal_files_only_", comment: ""), image: utility.loadImage(named: "folder.badge.person.crop", colors: NCBrandColor.shared.iconImageMultiColors), state: personalFilesOnly ? .on : .off) { _ in
-                NCKeychain().setPersonalFilesOnly(account: self.userBaseUrl.account, value: !personalFilesOnly)
+                NCKeychain().setPersonalFilesOnly(account: self.appDelegate.account, value: !personalFilesOnly)
                 self.reloadDataSource()
             }
 
@@ -1129,7 +1126,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func pasteFilesMenu() {
-        NCActionCenter.shared.pastePasteboard(serverUrl: serverUrl, account: userBaseUrl.account, hudView: tabBarController?.view)
+        NCActionCenter.shared.pastePasteboard(serverUrl: serverUrl, account: appDelegate.account, hudView: tabBarController?.view)
     }
 
     // MARK: - DataSource + NC Endpoint
@@ -1137,13 +1134,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func queryDB() { }
 
     @objc func reloadDataSource(withQueryDB: Bool = true) {
-        guard !userBaseUrl.account.isEmpty, !self.isSearchingMode else { return }
+        guard !appDelegate.account.isEmpty, !self.isSearchingMode else { return }
 
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()
-        autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: userBaseUrl.account)
+        autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: appDelegate.account)
         // get layout for view
-        layoutForView = NCManageDatabase.shared.getLayoutForView(account: userBaseUrl.account, key: layoutKey, serverUrl: serverUrl)
+        layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl)
 
         DispatchQueue.global(qos: .userInteractive).async {
             if withQueryDB { self.queryDB() }
@@ -1162,7 +1159,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func networkSearch() {
-        guard !userBaseUrl.account.isEmpty, let literalSearch = literalSearch, !literalSearch.isEmpty
+        guard !appDelegate.account.isEmpty, let literalSearch = literalSearch, !literalSearch.isEmpty
         else { return self.refreshControl.endRefreshing() }
 
         self.dataSource.clearDataSource()
@@ -1176,7 +1173,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             } providers: { _, searchProviders in
                 self.providers = searchProviders
                 self.searchResults = []
-                self.dataSource = NCDataSource(metadatas: [], account: self.userBaseUrl.account, layoutForView: self.layoutForView, providers: self.providers, searchResults: self.searchResults)
+                self.dataSource = NCDataSource(metadatas: [], account: self.appDelegate.account, layoutForView: self.layoutForView, providers: self.providers, searchResults: self.searchResults)
             } update: { _, _, searchResult, metadatas in
                 guard let metadatas, !metadatas.isEmpty, self.isSearchingMode, let searchResult else { return }
                 NCNetworking.shared.unifiedSearchQueue.addOperation(NCCollectionViewUnifiedSearch(collectionViewCommon: self, metadatas: metadatas, searchResult: searchResult))
@@ -1185,7 +1182,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.collectionView.reloadData()
             }
         } else {
-            NCNetworking.shared.searchFiles(urlBase: appDelegate, literal: literalSearch, account: userBaseUrl.account) { task in
+            NCNetworking.shared.searchFiles(urlBase: appDelegate, literal: literalSearch, account: appDelegate.account) { task in
                 self.dataSourceTask = task
                 self.collectionView.reloadData()
             } completion: { metadatas, error in
@@ -1194,7 +1191,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     self.collectionView.reloadData()
                 }
                 guard let metadatas = metadatas, error == .success, self.isSearchingMode else { return }
-                self.dataSource = NCDataSource(metadatas: metadatas, account: self.userBaseUrl.account, layoutForView: self.layoutForView, providers: self.providers, searchResults: self.searchResults)
+                self.dataSource = NCDataSource(metadatas: metadatas, account: self.appDelegate.account, layoutForView: self.layoutForView, providers: self.providers, searchResults: self.searchResults)
             }
         }
     }

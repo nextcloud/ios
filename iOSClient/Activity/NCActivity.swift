@@ -37,7 +37,6 @@ class NCActivity: UIViewController, NCSharePagingContent {
     var showComments: Bool = false
 
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-    var userBaseUrl: NCUserBaseUrl!
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
     var allItems: [DateCompareable] = []
@@ -58,7 +57,6 @@ class NCActivity: UIViewController, NCSharePagingContent {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        userBaseUrl = appDelegate
 
         self.navigationController?.navigationBar.prefersLargeTitles = true
         view.backgroundColor = .systemBackground
@@ -97,7 +95,6 @@ class NCActivity: UIViewController, NCSharePagingContent {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        userBaseUrl = appDelegate
 
         navigationController?.setNavigationBarAppearance()
         fetchAll(isInitial: true)
@@ -267,7 +264,7 @@ extension NCActivity: UITableViewDataSource {
                     cell.icon.image = image.withTintColor(NCBrandColor.shared.textColor, renderingMode: .alwaysOriginal)
                 }
             } else {
-                NextcloudKit.shared.downloadContent(serverUrl: activity.icon, account: userBaseUrl.account) { _, data, error in
+                NextcloudKit.shared.downloadContent(serverUrl: activity.icon, account: appDelegate.account) { _, data, error in
                     if error == .success {
                         do {
                             try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
@@ -283,7 +280,7 @@ extension NCActivity: UITableViewDataSource {
             cell.avatar.isHidden = false
             cell.fileUser = activity.user
             let fileName = appDelegate.userBaseUrl + "-" + activity.user + ".png"
-            NCNetworking.shared.downloadAvatar(user: activity.user, dispalyName: nil, fileName: fileName, account: userBaseUrl.account, cell: cell, view: tableView)
+            NCNetworking.shared.downloadAvatar(user: activity.user, dispalyName: nil, fileName: fileName, account: appDelegate.account, cell: cell, view: tableView)
             cell.subjectLeadingConstraint.constant = 15
         } else {
             cell.subjectLeadingConstraint.constant = -30
@@ -303,7 +300,7 @@ extension NCActivity: UITableViewDataSource {
             }
 
             for key in keys {
-                if let result = NCManageDatabase.shared.getActivitySubjectRich(account: userBaseUrl.account, idActivity: activity.idActivity, key: key) {
+                if let result = NCManageDatabase.shared.getActivitySubjectRich(account: appDelegate.account, idActivity: activity.idActivity, key: key) {
                     orderKeysId.append(result.id)
                     subject = subject.replacingOccurrences(of: "{\(key)}", with: "<bold>" + result.name + "</bold>")
                 }
@@ -380,7 +377,7 @@ extension NCActivity {
         }
 
         let activities = NCManageDatabase.shared.getActivity(
-            predicate: NSPredicate(format: "account == %@", userBaseUrl.account),
+            predicate: NSPredicate(format: "account == %@", appDelegate.account),
             filterFileId: metadata?.fileId)
         newItems += activities.filter
 
@@ -413,7 +410,7 @@ extension NCActivity {
 
     /// Check if most recent activivities are loaded, if not trigger reload
     func checkRecentActivity(disptachGroup: DispatchGroup) {
-        guard let result = NCManageDatabase.shared.getLatestActivityId(account: userBaseUrl.account), metadata == nil, hasActivityToLoad else {
+        guard let result = NCManageDatabase.shared.getLatestActivityId(account: appDelegate.account), metadata == nil, hasActivityToLoad else {
             return self.loadActivity(idActivity: 0, disptachGroup: disptachGroup)
         }
         let resultActivityId = max(result.activityFirstKnown, result.activityLastGiven)
@@ -426,14 +423,14 @@ extension NCActivity {
             objectId: nil,
             objectType: objectType,
             previews: true,
-            account: userBaseUrl.account) { task in
+            account: appDelegate.account) { task in
                 self.dataSourceTask = task
             } completion: { account, _, activityFirstKnown, activityLastGiven, _, error in
                 defer { disptachGroup.leave() }
 
                 let largestActivityId = max(activityFirstKnown, activityLastGiven)
                 guard error == .success,
-                      account == self.userBaseUrl.account,
+                      account == self.appDelegate.account,
                       largestActivityId > resultActivityId
                 else {
                     self.hasActivityToLoad = error.errorCode == NCGlobal.shared.errorNotModified ? false : self.hasActivityToLoad
@@ -455,12 +452,12 @@ extension NCActivity {
             objectId: metadata?.fileId,
             objectType: objectType,
             previews: true,
-            account: userBaseUrl.account) { task in
+            account: appDelegate.account) { task in
                 self.dataSourceTask = task
             } completion: { account, activities, activityFirstKnown, activityLastGiven, _, error in
                 defer { disptachGroup.leave() }
                 guard error == .success,
-                      account == self.userBaseUrl.account,
+                      account == self.appDelegate.account,
                       !activities.isEmpty
                 else {
                     self.hasActivityToLoad = error.errorCode == NCGlobal.shared.errorNotModified ? false : self.hasActivityToLoad
@@ -470,7 +467,7 @@ extension NCActivity {
 
                 // update most recently loaded activity only when all activities are loaded (not filtered)
                 let largestActivityId = max(activityFirstKnown, activityLastGiven)
-                if let result = NCManageDatabase.shared.getLatestActivityId(account: self.userBaseUrl.account) {
+                if let result = NCManageDatabase.shared.getLatestActivityId(account: self.appDelegate.account) {
                     resultActivityId = max(result.activityFirstKnown, result.activityLastGiven)
                 }
                 if self.metadata == nil, largestActivityId > resultActivityId {
@@ -512,7 +509,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
                     alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
                         guard let message = alert.textFields?.first?.text, !message.isEmpty else { return }
 
-                        NextcloudKit.shared.updateComments(fileId: metadata.fileId, messageId: tableComments.messageId, message: message, account: self.userBaseUrl.account) { _, error in
+                        NextcloudKit.shared.updateComments(fileId: metadata.fileId, messageId: tableComments.messageId, message: message, account: metadata.account) { _, error in
                             if error == .success {
                                 self.loadComments()
                             } else {
