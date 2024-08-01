@@ -153,32 +153,7 @@ extension UIAlertController {
         return alertController
     }
 
-//    static func renameFile(completion: @escaping (_ cancelled: Bool) -> Void) -> UIAlertController {
-//        let alertController = UIAlertController(
-//            title: NSLocalizedString("_rename_", comment: ""),
-//            message: nil,
-//            preferredStyle: .alert)
-//        alertController.addTextField { textField in
-//            textField.autocapitalizationType = .words
-//        }
-//        alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { _ in
-//            completion(true)
-//        })
-//        alertController.addAction(UIAlertAction(title: NSLocalizedString("_rename_", comment: ""), style: .default) { _ in
-//            completion(false)
-//        })
-//        return alertController
-//    }
-
     static func renameFile(oldName: String, completion: ((_ error: NKError) -> Void)? = nil) -> UIAlertController {
-//        class Test: NSObject, UITextFieldDelegate {
-//            func textFieldDidBeginEditing(_ textField: UITextField) {
-//                textField.selectedTextRange = textField.textRange(from: textField.beginningOfDocument, to: textField.endOfDocument)
-//                    textField.becomeFirstResponder()
-//                }
-//        }
-
-
         let alertController = UIAlertController(title: NSLocalizedString("_rename_", comment: ""), message: nil, preferredStyle: .alert)
 
         let okAction = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default, handler: { _ in
@@ -192,12 +167,6 @@ extension UIAlertController {
         alertController.addTextField { textField in
             textField.text = oldName
             textField.autocapitalizationType = .words
-//            textField.becomeFirstResponder()
-//            if let start = textField.position(from: textField.beginningOfDocument, offset: 0),
-//               let end = textField.position(from: start, offset: textField.text?.withRemovedFileExtension.count ?? 0) {
-//                textField.selectedTextRange = textField.textRange(from: start, to: end)
-            //            }
-            //            textField.selectAll(nil)
         }
 
         // only allow saving if folder name exists

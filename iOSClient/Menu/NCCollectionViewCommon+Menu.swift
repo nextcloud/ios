@@ -171,7 +171,7 @@ extension NCCollectionViewCommon {
                     icon: utility.loadImage(named: "lock", colors: [NCBrandColor.shared.iconImageColor]),
                     order: 30,
                     action: { _ in
-                        NextcloudKit.shared.markE2EEFolder(fileId: metadata.fileId, delete: true, account: metadata.account) { _, error in
+                        NextcloudKit.shared.markE2EEFolder(fileId: metadata.fileId, delete: true) { _, error in
                             if error == .success {
                                 NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, serverUrl))
                                 NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, encrypted: false, account: metadata.account)
@@ -367,31 +367,3 @@ extension TimeInterval {
         return formatter.string(from: self)
     }
 }
-
-//class CustomAlertViewController: UIViewController {
-//    var alertController: UIAlertController?
-//
-//    override func viewDidLoad() {
-//        super.viewDidLoad()
-//
-//        // Add your custom views and logic herey
-//
-//        let button = UIButton(type: .system)
-//        button.setTitle("Press me", for: .normal)
-//        button.addTarget(self, action: #selector(buttonPressed), for: .touchUpInside)
-//
-//        // Add button to the view
-//        button.translatesAutoresizingMaskIntoConstraints = false
-//        view.addSubview(button)
-//
-//        NSLayoutConstraint.activate([
-//            button.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-//            button.centerYAnchor.constraint(equalTo: view.centerYAnchor)
-//        ])
-//    }
-//
-//    @objc func buttonPressed() {
-//        // Handle button press without dismissing the alert
-//        print("Button pressed!")
-//    }
-//}
