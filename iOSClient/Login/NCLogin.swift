@@ -388,7 +388,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     }
 
     private func getAppPassword(urlBase: String, user: String, password: String) {
-        NextcloudKit.shared.getAppPassword(serverUrl: urlBase, username: user, password: password) { token, _, error in
+        NextcloudKit.shared.getAppPassword(url: urlBase, user: user, password: password) { token, _, error in
             if error == .success, let password = token {
                 self.createAccount(urlBase: urlBase, user: user, password: password)
             } else {

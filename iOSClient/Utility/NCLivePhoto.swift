@@ -468,7 +468,7 @@ extension NCLivePhoto {
                       account: String,
                       options: NKRequestOptions = NKRequestOptions()) async -> (account: String, error: NKError) {
         await withUnsafeContinuation({ continuation in
-            NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: livePhotoFile, options: options) { account, error in
+            NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: livePhotoFile, account: account, options: options) { account, error in
                 continuation.resume(returning: (account: account, error: error))
             }
         })
