@@ -57,18 +57,18 @@ class NCFavorite: NCCollectionViewCommon {
         var metadatas: [tableMetadata] = []
 
         if self.serverUrl.isEmpty {
-            metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND favorite == true", self.appDelegate.account))
+            metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND favorite == true", self.userBaseUrl.account))
         } else {
-            metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
+            metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.userBaseUrl.account, self.serverUrl))
         }
 
-        self.dataSource = NCDataSource(metadatas: metadatas, account: self.appDelegate.account, layoutForView: layoutForView, providers: self.providers, searchResults: self.searchResults)
+        self.dataSource = NCDataSource(metadatas: metadatas, account: self.userBaseUrl.account, layoutForView: layoutForView, providers: self.providers, searchResults: self.searchResults)
     }
 
     override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
         super.reloadDataSourceNetwork()
 
-        NextcloudKit.shared.listingFavorites(showHiddenFiles: NCKeychain().showHiddenFiles, account: self.appDelegate.account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
+        NextcloudKit.shared.listingFavorites(showHiddenFiles: NCKeychain().showHiddenFiles, account: self.userBaseUrl.account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()
         } completion: { account, files, _, error in
