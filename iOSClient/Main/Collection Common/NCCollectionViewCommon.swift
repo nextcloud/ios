@@ -32,6 +32,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @IBOutlet weak var collectionView: UICollectionView!
 
+    var userBaseUrl: NCUserBaseUrl!
     var autoUploadFileName = ""
     var autoUploadDirectory = ""
     var isTransitioning: Bool = false
@@ -91,7 +92,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        userBaseUrl = appDelegate
+        
         tabBarSelect = NCCollectionViewCommonSelectTabBar(controller: tabBarController as? NCMainTabBarController, delegate: self)
         self.navigationController?.presentationController?.delegate = self
         collectionView.alwaysBounceVertical = true
