@@ -183,8 +183,9 @@ class NCMainTabBar: UITabBar {
         centerButton.action(for: .touchUpInside) { _ in
 
             if let controller = self.window?.rootViewController as? NCMainTabBarController {
+                let userBaseUrl = self.appDelegate
                 let serverUrl = controller.currentServerUrl()
-                if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, serverUrl)) {
+                if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", userBaseUrl.account, serverUrl)) {
                     if !directory.permissions.contains("CK") {
                         let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_add_file_")
                         NCContentPresenter().showWarning(error: error)

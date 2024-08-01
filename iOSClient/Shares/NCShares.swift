@@ -42,7 +42,6 @@ class NCShares: NCCollectionViewCommon {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        userBaseUrl = appDelegate
 
         if dataSource.metadatas.isEmpty {
             reloadDataSource()
