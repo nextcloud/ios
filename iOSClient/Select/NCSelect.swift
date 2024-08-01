@@ -531,7 +531,7 @@ extension NCSelect {
 
         let metadatas = NCManageDatabase.shared.getMetadatas(predicate: predicate!)
         self.dataSource = NCDataSource(metadatas: metadatas, account: activeAccount.account, layoutForView: nil)
-                                     
+
         if withLoadFolder {
             loadFolder()
         }

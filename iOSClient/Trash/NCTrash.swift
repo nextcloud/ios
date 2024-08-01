@@ -48,6 +48,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
     var layoutKey = NCGlobal.shared.layoutViewTrash
     let refreshControl = UIRefreshControl()
     var filename: String?
+    var userBaseUrl: NCUserBaseUrl!
 
     // MARK: - View Life Cycle
 
@@ -81,9 +82,12 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        userBaseUrl = appDelegate
+
         navigationController?.setNavigationBarAppearance()
         navigationItem.title = titleCurrentFolder
-        layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: NCGlobal.shared.layoutViewTrash, serverUrl: "")
+
+        layoutForView = NCManageDatabase.shared.getLayoutForView(account: userBaseUrl.account, key: NCGlobal.shared.layoutViewTrash, serverUrl: "")
 
         if layoutForView?.layout == NCGlobal.shared.layoutList {
             collectionView.collectionViewLayout = listLayout
@@ -126,7 +130,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
     func setNavigationRightItems() {
         func createMenuActions() -> [UIMenuElement] {
-            guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: "") else { return [] }
+            guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: userBaseUrl.account, key: layoutKey, serverUrl: "") else { return [] }
             let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: utility.loadImage(named: "checkmark.circle", colors: [NCBrandColor.shared.iconImageColor]), attributes: self.datasource.isEmpty ? .disabled : []) { _ in
                 self.setEditMode(true)
             }
@@ -202,7 +206,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
     @objc func reloadDataSource(withQueryDB: Bool = true) {
 
-        datasource = NCManageDatabase.shared.getTrash(filePath: getFilePath(), account: appDelegate.account)
+        datasource = NCManageDatabase.shared.getTrash(filePath: getFilePath(), account: userBaseUrl.account)
         collectionView.reloadData()
         setNavigationRightItems()
 

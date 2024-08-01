@@ -378,7 +378,7 @@ extension NCNetworking {
         }
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let options = NKRequestOptions(customHeader: customHeader)
-        let result = await NCNetworking.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: metadata.account ,options: options)
+        let result = await NCNetworking.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: metadata.account, options: options)
 
         if result.error == .success || result.error.errorCode == NCGlobal.shared.errorResourceNotFound {
             do {
