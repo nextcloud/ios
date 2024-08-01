@@ -130,7 +130,7 @@ class NCService: NSObject {
         NextcloudKit.shared.listingFavorites(showHiddenFiles: NCKeychain().showHiddenFiles,
                                              account: account,
                                              options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
-            guard error == .success else { return }
+            guard error == .success, let files else { return }
             NCManageDatabase.shared.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
                 NCManageDatabase.shared.updateMetadatasFavorite(account: account, metadatas: metadatas)
             }
@@ -246,7 +246,7 @@ class NCService: NSObject {
             guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(file.ocId) else { continue }
             if NCNetworking.shared.isSynchronizable(ocId: metadata.ocId, fileName: metadata.fileName, etag: metadata.etag) {
                 NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                          session: NCNetworking.shared.sessionDownloadBackground,
+                                                                          session: NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground,
                                                                           selector: NCGlobal.shared.selectorSynchronizationOffline)
             }
         }

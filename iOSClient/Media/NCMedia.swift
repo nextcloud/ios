@@ -187,10 +187,12 @@ class NCMedia: UIViewController {
 
         // Cancel Queue & Retrieves Properties
         NCNetworking.shared.downloadThumbnailQueue.cancelAll()
-        NextcloudKit.shared.sessionManager.session.getTasksWithCompletionHandler { dataTasks, _, _ in
-            dataTasks.forEach {
-                if $0.taskDescription == self.taskDescriptionRetrievesProperties {
-                    $0.cancel()
+        if let nkSession = NextcloudKit.shared.nkCommonInstance.getSession(account: appDelegate.account) {
+            nkSession.sessionData.session.getTasksWithCompletionHandler { dataTasks, _, _ in
+                dataTasks.forEach {
+                    if $0.taskDescription == self.taskDescriptionRetrievesProperties {
+                        $0.cancel()
+                    }
                 }
             }
         }
