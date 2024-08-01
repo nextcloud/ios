@@ -26,8 +26,8 @@ import NextcloudKit
 import JGProgressHUD
 
 class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
-
     var metadataTemp: tableMetadata?
+    var userBaseUrl: NCUserBaseUrl!
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -46,14 +46,17 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        userBaseUrl = appDelegate
 
         listLayout.itemHeight = 105
-        NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl, layout: NCGlobal.shared.layoutList)
+        NCManageDatabase.shared.setLayoutForView(account: userBaseUrl.account, key: layoutKey, serverUrl: serverUrl, layout: NCGlobal.shared.layoutList)
         self.navigationItem.title = titleCurrentFolder
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        userBaseUrl = appDelegate
+
         reloadDataSource()
         Task {
             await NCNetworkingProcess.shared.verifyZombie()
@@ -148,7 +151,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
         guard let metadata = metadataTemp,
               let hudView = self.tabBarController?.view,
-              appDelegate.account == metadata.account else { return }
+              userBaseUrl.account == metadata.account else { return }
 
         let cameraRoll = NCCameraRoll()
         cameraRoll.extractCameraRoll(from: metadata) { metadatas in
@@ -241,7 +244,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             cell.labelStatus.text = ""
             cell.labelInfo.text = ""
         }
-        if self.appDelegate.account != metadata.account {
+        if self.userBaseUrl.account != metadata.account {
             cell.labelInfo.text = NSLocalizedString("_waiting_for_", comment: "") + " " + NSLocalizedString("_user_", comment: "").lowercased() + " \(metadata.userId) " + NSLocalizedString("_in_", comment: "") + " \(metadata.urlBase)"
         }
         let isWiFi = NCNetworking.shared.networkReachability == .reachableEthernetOrWiFi
@@ -265,7 +268,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         super.queryDB()
 
         let metadatas: [tableMetadata] = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal), sorted: "sessionDate", ascending: true) ?? []
-        self.dataSource = NCDataSource(metadatas: metadatas, account: self.appDelegate.account, layoutForView: layoutForView)
+        self.dataSource = NCDataSource(metadatas: metadatas, account: self.userBaseUrl.account, layoutForView: layoutForView)
     }
 
     override func reloadDataSource(withQueryDB: Bool = true) {
