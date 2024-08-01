@@ -99,7 +99,7 @@ class NCViewer: NSObject {
                     NCActivityIndicator.shared.start(backgroundView: viewController.view)
                     NextcloudKit.shared.createUrlRichdocuments(fileID: metadata.fileId, account: metadata.account) { account, url, _, error in
                         NCActivityIndicator.shared.stop()
-                        if error == .success && account == self.appDelegate.account && url != nil {
+                        if error == .success, url != nil {
                             if let navigationController = viewController.navigationController,
                                let viewController: NCViewerRichDocument = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as? NCViewerRichDocument {
                                 viewController.metadata = metadata
@@ -139,7 +139,7 @@ class NCViewer: NSObject {
                     NCActivityIndicator.shared.start(backgroundView: viewController.view)
                     NextcloudKit.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: editor, account: metadata.account, options: options) { account, url, _, error in
                         NCActivityIndicator.shared.stop()
-                        if error == .success && account == self.appDelegate.account && url != nil {
+                        if error == .success, url != nil {
                             if let navigationController = viewController.navigationController,
                                let viewController: NCViewerNextcloudText = UIStoryboard(name: "NCViewerNextcloudText", bundle: nil).instantiateInitialViewController() as? NCViewerNextcloudText {
                                 viewController.metadata = metadata

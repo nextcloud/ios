@@ -214,7 +214,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
                             NCActivityIndicator.shared.start(backgroundView: view)
 
-                            NextcloudKit.shared.download(serverUrlFileName: url, fileNameLocalPath: fileNameLocalPath, account: appDelegate.account, requestHandler: { _ in
+                            NextcloudKit.shared.download(serverUrlFileName: url, fileNameLocalPath: fileNameLocalPath, account: self.metadata.account, requestHandler: { _ in
 
                             }, taskHandler: { _ in
 
@@ -305,14 +305,12 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
             let path = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
 
-            NextcloudKit.shared.createAssetRichdocuments(path: path, account: metadata.account) { account, url, _, error in
-                if error == .success, account == self.appDelegate.account, let url {
+            NextcloudKit.shared.createAssetRichdocuments(path: path, account: metadata.account) { _, url, _, error in
+                if error == .success, let url {
                     let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata.fileNameView)', '\(url)')"
                     self.webView.evaluateJavaScript(functionJS, completionHandler: { _, _ in })
-                } else if error != .success {
-                    NCContentPresenter().showError(error: error)
                 } else {
-                    print("[ERROR] It has been changed user during networking process, error.")
+                    NCContentPresenter().showError(error: error)
                 }
             }
         }
@@ -322,14 +320,12 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
         let path = utilityFileSystem.getFileNamePath(metadata!.fileName, serverUrl: serverUrl!, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
 
-        NextcloudKit.shared.createAssetRichdocuments(path: path, account: metadata.account) { account, url, _, error in
-            if error == .success, account == self.appDelegate.account, let url {
+        NextcloudKit.shared.createAssetRichdocuments(path: path, account: metadata.account) { _, url, _, error in
+            if error == .success, let url {
                 let functionJS = "OCA.RichDocuments.documentsMain.postAsset('\(metadata.fileNameView)', '\(url)')"
                 self.webView.evaluateJavaScript(functionJS, completionHandler: { _, _ in })
-            } else if error != .success {
-                NCContentPresenter().showError(error: error)
             } else {
-                print("[ERROR] It has been changed user during networking process, error.")
+                NCContentPresenter().showError(error: error)
             }
         }
     }
