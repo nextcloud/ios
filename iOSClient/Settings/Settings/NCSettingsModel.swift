@@ -31,8 +31,6 @@ import LocalAuthentication
 class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
     /// AppDelegate
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-    /// Account
-    var userBaseUrl: NCUserBaseUrl!
     /// Keychain access
     var keychain = NCKeychain()
     /// State to control the lock on/off section
@@ -57,7 +55,6 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
     /// Initializes the view model with default values.
     init(controller: NCMainTabBarController?) {
         self.controller = controller
-        self.userBaseUrl = appDelegate
         onViewAppear()
     }
 
@@ -102,7 +99,7 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
         let configLink = appDelegate.urlBase + NCBrandOptions.shared.mobileconfig
         let configServer = NCConfigServer()
         if let url = URL(string: configLink) {
-            configServer.startService(url: url, account: userBaseUrl.account)
+            configServer.startService(url: url, account: appDelegate.account)
         }
     }
 

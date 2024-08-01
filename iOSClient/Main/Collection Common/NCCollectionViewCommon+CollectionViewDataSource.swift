@@ -120,7 +120,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         /// AVATAR
         if !metadata.ownerId.isEmpty,
            metadata.ownerId != appDelegate.userId,
-           userBaseUrl.account == metadata.account {
+           appDelegate.account == metadata.account {
             let fileName = metadata.userBaseUrl + "-" + metadata.ownerId + ".png"
             downloadAvatar(fileName: fileName, user: metadata.ownerId, dispalyName: metadata.ownerDisplayName)
         }
@@ -208,7 +208,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         // Accessibility [shared]
-        if metadata.ownerId != appDelegate.userId, userBaseUrl.account == metadata.account {
+        if metadata.ownerId != appDelegate.userId, appDelegate.account == metadata.account {
             a11yValues.append(NSLocalizedString("_shared_with_you_by_", comment: "") + " " + metadata.ownerDisplayName)
         }
 
@@ -268,7 +268,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         } else {
             cell.fileSharedImage?.image = NCImageCache.images.canShare
         }
-        if userBaseUrl.account != metadata.account {
+        if appDelegate.account != metadata.account {
             cell.fileSharedImage?.image = NCImageCache.images.shared
         }
 
