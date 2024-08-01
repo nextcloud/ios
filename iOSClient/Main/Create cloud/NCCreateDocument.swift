@@ -82,7 +82,7 @@ class NCCreateDocument: NSObject {
                 options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentNCText())
             }
 
-            let results = await textGetListOfTemplates(account:appDelegate.account, options: options)
+            let results = await textGetListOfTemplates(account: appDelegate.account, options: options)
             if results.error == .success, let resultTemplates = results.templates {
                 for template in resultTemplates {
                     let temp = NKEditorTemplates()

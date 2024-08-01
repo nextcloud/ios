@@ -26,12 +26,12 @@ import RealmSwift
 
 extension NCTrash {
     @objc func loadListingTrash() {
-        NextcloudKit.shared.listingTrash(filename: filename, showHiddenFiles: false, account: appDelegate.account) { task in
+        NextcloudKit.shared.listingTrash(filename: filename, showHiddenFiles: false, account: userBaseUrl.account) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()
         } completion: { account, items, _, error in
             self.refreshControl.endRefreshing()
-            if account == self.appDelegate.account, let items {
+            if let items {
                 NCManageDatabase.shared.deleteTrash(filePath: self.getFilePath(), account: account)
                 NCManageDatabase.shared.addTrash(account: account, items: items)
             }
@@ -43,12 +43,12 @@ extension NCTrash {
     }
 
     func restoreItem(with fileId: String) {
-        guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: fileId, account: appDelegate.account) else { return }
+        guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: fileId, account: userBaseUrl.account) else { return }
         let fileNameFrom = tableTrash.filePath + tableTrash.fileName
         let fileNameTo = appDelegate.urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav + "/trashbin/" + appDelegate.userId + "/restore/" + tableTrash.fileName
 
-        NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: true, account: appDelegate.account) { account, error in
-            guard error == .success, account == self.appDelegate.account else {
+        NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: true, account: userBaseUrl.account) { account, error in
+            guard error == .success else {
                 NCContentPresenter().showError(error: error)
                 return
             }
@@ -60,22 +60,22 @@ extension NCTrash {
     func emptyTrash() {
         let serverUrlFileName = appDelegate.urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav + "/trashbin/" + appDelegate.userId + "/trash"
 
-        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: appDelegate.account) { account, error in
-            guard error == .success, account == self.appDelegate.account else {
+        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: userBaseUrl.account) { _, error in
+            guard error == .success else {
                 NCContentPresenter().showError(error: error)
                 return
             }
-            NCManageDatabase.shared.deleteTrash(fileId: nil, account: self.appDelegate.account)
+            NCManageDatabase.shared.deleteTrash(fileId: nil, account: self.userBaseUrl.account)
             self.reloadDataSource()
         }
     }
 
     func deleteItem(with fileId: String) {
-        guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: fileId, account: appDelegate.account) else { return }
+        guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: fileId, account: userBaseUrl.account) else { return }
         let serverUrlFileName = tableTrash.filePath + tableTrash.fileName
 
-        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: appDelegate.account) { account, error in
-            guard error == .success, account == self.appDelegate.account else {
+        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: userBaseUrl.account) { account, error in
+            guard error == .success else {
                 NCContentPresenter().showError(error: error)
                 return
             }

@@ -347,7 +347,6 @@ class NCSharePagingView: PagingView {
             pageView.topAnchor.constraint(equalTo: headerView.bottomAnchor)
         ])
 
-
 //        setNeedsLayout()
 //        layoutIfNeeded()
     }
