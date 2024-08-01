@@ -27,7 +27,6 @@ import JGProgressHUD
 
 class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     var metadataTemp: tableMetadata?
-    var userBaseUrl: NCUserBaseUrl!
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -46,7 +45,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        userBaseUrl = appDelegate
 
         listLayout.itemHeight = 105
         NCManageDatabase.shared.setLayoutForView(account: userBaseUrl.account, key: layoutKey, serverUrl: serverUrl, layout: NCGlobal.shared.layoutList)
