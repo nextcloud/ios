@@ -31,6 +31,8 @@ import SwiftUI
 class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
     /// AppDelegate
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    /// Account
+    var userBaseUrl: NCUserBaseUrl!
     /// Keychain access
     var keychain = NCKeychain()
     /// State variable for indicating if the user is in Admin group
@@ -62,12 +64,13 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
     /// Initializes the view model with default values.
     init(controller: NCMainTabBarController?) {
         self.controller = controller
+        self.userBaseUrl = appDelegate
         onViewAppear()
     }
 
     /// Triggered when the view appears.
     func onViewAppear() {
-        let groups = NCManageDatabase.shared.getAccountGroups(account: appDelegate.account)
+        let groups = NCManageDatabase.shared.getAccountGroups(account: userBaseUrl.account)
         isAdminGroup = groups.contains(NCGlobal.shared.groupAdmin)
         showHiddenFiles = keychain.showHiddenFiles
         mostCompatible = keychain.formatCompatibility
@@ -136,7 +139,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
             URLCache.shared.memoryCapacity = 0
             URLCache.shared.diskCapacity = 0
 
-            NCManageDatabase.shared.clearDatabase(account: self.appDelegate.account, removeAccount: false)
+            NCManageDatabase.shared.clearDatabase(account: self.userBaseUrl.account, removeAccount: false)
 
             let ufs = NCUtilityFileSystem()
             ufs.removeGroupDirectoryProviderStorage()
@@ -146,7 +149,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
             ufs.createDirectoryStandard()
 
             NCAutoUpload.shared.alignPhotoLibrary(viewController: self.controller)
-            NCImageCache.shared.createMediaCache(account: self.appDelegate.account, withCacheSize: true)
+            NCImageCache.shared.createMediaCache(account: self.userBaseUrl.account, withCacheSize: true)
 
             NCActivityIndicator.shared.stop()
             self.calculateSize()

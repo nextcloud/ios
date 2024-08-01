@@ -33,6 +33,7 @@ import MarkdownKit
     private let richWorkspaceCommon = NCRichWorkspaceCommon()
     private var markdownParser = MarkdownParser()
     private var textViewColor: UIColor?
+    private var userBaseUrl: NCUserBaseUrl!
 
     var richWorkspaceText: String = ""
     var serverUrl: String = ""
@@ -42,6 +43,7 @@ import MarkdownKit
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        userBaseUrl = appDelegate
 
         view.backgroundColor = .systemBackground
         navigationController?.navigationBar.tintColor = NCBrandColor.shared.iconImageColor
@@ -61,10 +63,11 @@ import MarkdownKit
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        userBaseUrl = appDelegate
 
-        NCNetworking.shared.readFile(serverUrlFileName: self.serverUrl, account: appDelegate.account, queue: .main) { _ in
+        NCNetworking.shared.readFile(serverUrlFileName: self.serverUrl, account: userBaseUrl.account, queue: .main) { _ in
         } completion: { account, metadata, error in
-            if error == .success, account == self.appDelegate.account, let metadata {
+            if error == .success, let metadata {
                 NCManageDatabase.shared.setDirectory(serverUrl: self.serverUrl, richWorkspace: metadata.richWorkspace, account: account)
                 if self.richWorkspaceText != metadata.richWorkspace, metadata.richWorkspace != nil {
                     self.delegate?.richWorkspaceText = self.richWorkspaceText
