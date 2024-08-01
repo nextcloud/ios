@@ -28,7 +28,6 @@ import NextcloudKit
 import RealmSwift
 
 class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegate {
-
     @IBOutlet weak var collectionView: UICollectionView!
 
     var filePath = ""
@@ -54,6 +53,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        userBaseUrl = appDelegate
 
         tabBarSelect = NCTrashSelectTabBar(tabBarController: tabBarController, delegate: self)
 
