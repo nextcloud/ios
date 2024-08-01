@@ -154,7 +154,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             forbiddenFileNameCharacters: NCGlobal.shared.capabilityForbiddenFileNameCharacters,
             forbiddenFileNameExtensions: NCGlobal.shared.capabilityForbiddenFileNameExtensions
         )
-//        FileNameValidator.fileAlreadyExistsError = NCGlobal.filealr
 
         return true
     }
@@ -541,6 +540,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
         }
+
+        FileNameValidator.shared.setup(
+            forbiddenFileNames: NCGlobal.shared.capabilityForbiddenFileNames,
+            forbiddenFileNameBasenames: NCGlobal.shared.capabilityForbiddenFileNameBasenames,
+            forbiddenFileNameCharacters: NCGlobal.shared.capabilityForbiddenFileNameCharacters,
+            forbiddenFileNameExtensions: NCGlobal.shared.capabilityForbiddenFileNameExtensions
+        )
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeUser)
         completion()

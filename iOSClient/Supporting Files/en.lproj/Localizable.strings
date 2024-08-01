@@ -1094,6 +1094,6 @@
 "_file_name_validator_error_file_invalid_name_" = "File or folder name contains forbidden names or invalid characters";
 "_file_name_validator_error_folder_invalid_name_" = "Folder path contains forbidden names or invalid characters";
 "_file_name_validator_error_ends_with_space_period_" = "File or folder name ends with a space or a period";
-"_file_name_validator_error_reserved_name_" = "%s is a reserved name";
-"_file_name_validator_error_forbidden_file_extension_" = ".%s is a forbidden file extension";
-"_file_name_validator_error_invalid_character_" = "File or folder name contains an invalid character: %s";
+"_file_name_validator_error_reserved_name_" = "%@ is a reserved name";
+"_file_name_validator_error_forbidden_file_extension_" = ".%@ is a forbidden file extension";
+"_file_name_validator_error_invalid_character_" = "File or folder name contains an invalid character: %@";
