@@ -108,26 +108,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             userId = activeAccount.userId
             password = NCKeychain().getPassword(account: account)
 
-            /*
-             for account in NCManageDatabase.shared.getAllAccount() {
-                 NextcloudKit.shared.appendAccount(account.account,
-                                                   urlBase: account.urlBase,
-                                                   user: account.user,
-                                                   userId: account.userId,
-                                                   password: NCKeychain().getPassword(account: account.account),
-                                                   userAgent: userAgent,
-                                                   nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
-                                                   groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
-             }
-             */
-            NextcloudKit.shared.appendAccount(activeAccount.account,
-                                              urlBase: activeAccount.urlBase,
-                                              user: activeAccount.user,
-                                              userId: activeAccount.userId,
-                                              password: NCKeychain().getPassword(account: activeAccount.account),
-                                              userAgent: userAgent,
-                                              nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
-                                              groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+            for account in NCManageDatabase.shared.getAllAccount() {
+                NextcloudKit.shared.appendAccount(account.account,
+                                                  urlBase: account.urlBase,
+                                                  user: account.user,
+                                                  userId: account.userId,
+                                                  password: NCKeychain().getPassword(account: account.account),
+                                                  userAgent: userAgent,
+                                                  nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
+                                                  groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+            }
 
             NCManageDatabase.shared.setCapabilities(account: account)
             NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
