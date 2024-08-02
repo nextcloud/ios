@@ -77,7 +77,7 @@ class NCImageCache: NSObject {
     ///
     /// MEDIA CACHE
     ///
-    func createMediaCache(account: String, withCacheSize: Bool) {
+    func createMediaCache(withCacheSize: Bool, domain: NCDomain.Domain) {
         if createMediaCacheInProgress {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] ThumbnailLRUCache image process already in progress")
             return
@@ -86,7 +86,7 @@ class NCImageCache: NSObject {
 
         self.metadatasInfo.removeAll()
         self.metadatas = nil
-        self.metadatas = getMediaMetadatas(account: account)
+        self.metadatas = getMediaMetadatas(domain: domain)
         let manager = FileManager.default
         let resourceKeys = Set<URLResourceKey>([.nameKey, .pathKey, .fileSizeKey, .creationDateKey])
         struct FileInfo {
@@ -174,11 +174,10 @@ class NCImageCache: NSObject {
         return self.metadatas
     }
 
-    func getMediaMetadatas(account: String, predicate: NSPredicate? = nil) -> ThreadSafeArray<tableMetadata>? {
-        guard let domain = NCDomain.shared.getDomain(account: account),
-              let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else { return nil }
+    func getMediaMetadatas(predicate: NSPredicate? = nil, domain: NCDomain.Domain) -> ThreadSafeArray<tableMetadata>? {
+        guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", domain.account)) else { return nil }
         let startServerUrl = NCUtilityFileSystem().getHomeServer(domain: domain) + tableAccount.mediaPath
-        let predicateBoth = NSPredicate(format: showBothPredicateMediaString, account, startServerUrl)
+        let predicateBoth = NSPredicate(format: showBothPredicateMediaString, domain.account, startServerUrl)
         return NCManageDatabase.shared.getMediaMetadatas(predicate: predicate ?? predicateBoth)
     }
 

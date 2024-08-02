@@ -63,6 +63,7 @@ extension NCShareExtension: NCAccountRequestDelegate {
             return
         }
         self.activeAccount = activeAccount
+        let domain = NCDomain.Domain(account: self.activeAccount.account, urlBase: self.activeAccount.urlBase, user: self.activeAccount.user, userId: self.activeAccount.userId, sceneIdentifier: "")
 
         // CAPABILITIES
         NCManageDatabase.shared.setCapabilities(account: account)
@@ -85,9 +86,9 @@ extension NCShareExtension: NCAccountRequestDelegate {
 
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()
-        autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: activeAccount.urlBase, userId: activeAccount.userId, account: activeAccount.account)
+        autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(domain: domain)
 
-        serverUrl = utilityFileSystem.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId)
+        serverUrl = utilityFileSystem.getHomeServer(domain: domain)
 
         layoutForView = NCManageDatabase.shared.getLayoutForView(account: activeAccount.account, key: keyLayout, serverUrl: serverUrl)
 

@@ -197,7 +197,7 @@ class NCShareExtension: UIViewController {
     }
 
     func setNavigationBar(navigationTitle: String) {
-
+        let domain = NCDomain.Domain(account: self.activeAccount.account, urlBase: self.activeAccount.urlBase, user: self.activeAccount.user, userId: self.activeAccount.userId, sceneIdentifier: "")
         navigationItem.title = navigationTitle
         cancelButton.title = NSLocalizedString("_cancel_", comment: "")
 
@@ -216,7 +216,7 @@ class NCShareExtension: UIViewController {
                 self.reloadDatasource(withLoadFolder: true)
 
                 var navigationTitle = (self.serverUrl as NSString).lastPathComponent
-                if self.utilityFileSystem.getHomeServer(urlBase: self.activeAccount.urlBase, userId: self.activeAccount.userId) == self.serverUrl {
+                if self.utilityFileSystem.getHomeServer(domain: domain) == self.serverUrl {
                     navigationTitle = NCBrandOptions.shared.brand
                 }
                 self.setNavigationBar(navigationTitle: navigationTitle)
@@ -227,7 +227,7 @@ class NCShareExtension: UIViewController {
         let profileButton = UIButton(type: .custom)
         profileButton.setImage(image, for: .normal)
 
-        if serverUrl == utilityFileSystem.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId) {
+        if serverUrl == utilityFileSystem.getHomeServer(domain: domain) {
 
             var title = "  "
             if let userAlias = activeAccount?.alias, !userAlias.isEmpty {
@@ -248,7 +248,7 @@ class NCShareExtension: UIViewController {
             }
         }
         var navItems = [UIBarButtonItem(customView: profileButton)]
-        if serverUrl != utilityFileSystem.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId) {
+        if serverUrl != utilityFileSystem.getHomeServer(domain: domain) {
             let space = UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil)
             space.width = 20
             navItems.append(contentsOf: [UIBarButtonItem(customView: backButton), space])
