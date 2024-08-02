@@ -57,7 +57,7 @@ class NCUploadAssetsModel: NSObject, ObservableObject, NCCreateFormUploadConflic
     var metadatasUploadInConflict: [tableMetadata] = []
     var timer: Timer?
 
-    init(assets: [TLPHAsset], serverUrl: String, domain: NCDomain.Domain, controller: NCMainTabBarController?) {
+    init(assets: [TLPHAsset], serverUrl: String, controller: NCMainTabBarController?, domain: NCDomain.Domain) {
         self.assets = assets
         self.serverUrl = serverUrl
         self.domain = domain

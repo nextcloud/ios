@@ -170,9 +170,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         guard let controller = SceneManager.shared.getController(scene: scene) as? NCMainTabBarController,
               let url = URLContexts.first?.url,
-              let appDelegate else { return }
+              let appDelegate,
+              let domain = NCDomain.shared.getActiveDomain() else { return }
         let sceneIdentifier = controller.sceneIdentifier
-        let account = NCDomain.shared.getActiveAccount()
+        let account = domain.account
         let scheme = url.scheme
         let action = url.host
 
@@ -221,7 +222,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
                     NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: controller) { hasPermission in
                         if hasPermission {
-                            NCPhotosPickerViewController(controller: controller, maxSelectedAssets: 0, singleSelectedMode: false)
+                            NCPhotosPickerViewController(controller: controller, maxSelectedAssets: 0, singleSelectedMode: false, domain: domain)
                         }
                     }
 

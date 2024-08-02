@@ -37,7 +37,7 @@ class NCPhotosPickerViewController: NSObject {
     var singleSelectedMode = false
 
     @discardableResult
-    init(controller: NCMainTabBarController, maxSelectedAssets: Int, singleSelectedMode: Bool) {
+    init(controller: NCMainTabBarController, maxSelectedAssets: Int, singleSelectedMode: Bool, domain: NCDomain.Domain) {
         self.controller = controller
         super.init()
 
@@ -47,7 +47,7 @@ class NCPhotosPickerViewController: NSObject {
         self.openPhotosPickerViewController { assets in
             if !assets.isEmpty {
                 let serverUrl = controller.currentServerUrl()
-                let view = NCUploadAssetsView(model: NCUploadAssetsModel(assets: assets, serverUrl: serverUrl, userBaseUrl: self.appDelegate, controller: controller))
+                let view = NCUploadAssetsView(model: NCUploadAssetsModel(assets: assets, serverUrl: serverUrl, controller: controller, domain: domain))
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                     controller.present(UIHostingController(rootView: view), animated: true, completion: nil)
                 }
@@ -114,7 +114,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
     var mainTabBarController: NCMainTabBarController
 
     @discardableResult
-    init (controller: NCMainTabBarController, isViewerMedia: Bool, allowsMultipleSelection: Bool, viewController: UIViewController? = nil) {
+    init (controller: NCMainTabBarController, isViewerMedia: Bool, allowsMultipleSelection: Bool, viewController: UIViewController? = nil, domain: NCDomain.Domain) {
         self.mainTabBarController = controller
         self.isViewerMedia = isViewerMedia
         self.viewController = viewController
@@ -131,14 +131,14 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
         mainTabBarController.present(documentProviderMenu, animated: true, completion: nil)
     }
 
-    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL], domain: NCDomain.Domain) {
         if isViewerMedia,
             let urlIn = urls.first,
             let url = self.copySecurityScopedResource(url: urlIn, urlOut: FileManager.default.temporaryDirectory.appendingPathComponent(urlIn.lastPathComponent)),
             let viewController = self.viewController {
             let ocId = NSUUID().uuidString
             let fileName = url.lastPathComponent
-            let metadata = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: "", urlBase: appDelegate.urlBase, url: url.path, contentType: "")
+            let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: "", url: url.path, contentType: "", domain: domain)
             if metadata.classFile == NKCommon.TypeClassFile.unknow.rawValue {
                 metadata.classFile = NKCommon.TypeClassFile.video.rawValue
             }
@@ -159,7 +159,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
 
                 guard self.copySecurityScopedResource(url: urlIn, urlOut: urlOut) != nil else { continue }
 
-                let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "")
+                let metadataForUpload = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, url: "", contentType: "", domain: domain)
 
                 metadataForUpload.session = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground
                 metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
@@ -167,7 +167,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                 metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
                 metadataForUpload.sessionDate = Date()
 
-                if NCManageDatabase.shared.getMetadataConflict(account: appDelegate.account, serverUrl: serverUrl, fileNameView: fileName) != nil {
+                if NCManageDatabase.shared.getMetadataConflict(account: domain.account, serverUrl: serverUrl, fileNameView: fileName) != nil {
                     metadatasInConflict.append(metadataForUpload)
                 } else {
                     metadatas.append(metadataForUpload)

@@ -27,11 +27,11 @@ import EasyTipView
 
 extension NCCollectionViewCommon: EasyTipViewDelegate {
     func showTip() {
-        guard !appDelegate.account.isEmpty,
+        guard let domain = NCDomain.shared.getActiveDomain(),
               self is NCFiles,
               self.view.window != nil,
               !NCBrandOptions.shared.disable_multiaccount,
-              self.serverUrl == utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId),
+              self.serverUrl == utilityFileSystem.getHomeServer(domain: domain),
               let view = self.navigationItem.leftBarButtonItem?.customView,
               !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest) else { return }
         var preferences = EasyTipView.Preferences()
