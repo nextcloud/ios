@@ -111,7 +111,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
 
             DispatchQueue.global().async {
-                NCImageCache.shared.createMediaCache(account: activeAccount.account, withCacheSize: true)
+                if let domain = NCDomain.shared.getActiveDomain() {
+                    NCImageCache.shared.createMediaCache(withCacheSize: true, domain: domain)
+                }
             }
         } else {
             NCKeychain().removeAll()
@@ -489,7 +491,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func changeAccount(_ account: String,
                        userProfile: NKUserProfile?,
                        completion: () -> Void) {
-        guard let tableAccount = NCManageDatabase.shared.setAccountActive(account) else {
+        guard let tableAccount = NCManageDatabase.shared.setAccountActive(account),
+              let domain = NCDomain.shared.getActiveDomain() else {
             return completion()
         }
 
@@ -498,12 +501,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCNetworking.shared.cancelDownloadTasks()
         NCNetworking.shared.cancelUploadTasks()
 
-        if account != NCDomain.shared.getActiveAccount() {
+        if account != domain.account {
             DispatchQueue.global().async {
                 if NCManageDatabase.shared.getAccounts()?.count == 1 {
-                    NCImageCache.shared.createMediaCache(account: account, withCacheSize: true)
+                    NCImageCache.shared.createMediaCache(withCacheSize: true, domain: domain)
                 } else {
-                    NCImageCache.shared.createMediaCache(account: account, withCacheSize: false)
+                    NCImageCache.shared.createMediaCache(withCacheSize: false, domain: domain)
                 }
             }
         }
