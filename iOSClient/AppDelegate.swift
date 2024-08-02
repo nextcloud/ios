@@ -95,6 +95,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] PASSWORD NOT FOUND for \(activeAccount.account)")
             }
 
+            NCDomain.shared.setActiveTableAccount(activeAccount)
+
             for account in NCManageDatabase.shared.getAllAccount() {
                 NCDomain.shared.appendDomain(account: account.account, urlBase: account.urlBase, user: account.user, userId: account.userId, sceneIdentifier: "")
                 NextcloudKit.shared.appendAccount(account.account,
@@ -491,22 +493,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func changeAccount(_ account: String,
                        userProfile: NKUserProfile?,
                        completion: () -> Void) {
-        guard let tableAccount = NCManageDatabase.shared.setAccountActive(account),
-              let domain = NCDomain.shared.getActiveDomain() else {
+        let previusActiveAccount = NCDomain.shared.getActiveAccount()
+        guard let activeTableAccount = NCManageDatabase.shared.setAccountActive(account) else {
             return completion()
         }
+
+        NCDomain.shared.setActiveTableAccount(activeTableAccount)
 
         NCNetworking.shared.cancelAllQueue()
         NCNetworking.shared.cancelDataTask()
         NCNetworking.shared.cancelDownloadTasks()
         NCNetworking.shared.cancelUploadTasks()
 
-        if account != domain.account {
+        if account != previusActiveAccount {
             DispatchQueue.global().async {
-                if NCManageDatabase.shared.getAccounts()?.count == 1 {
-                    NCImageCache.shared.createMediaCache(withCacheSize: true, domain: domain)
-                } else {
-                    NCImageCache.shared.createMediaCache(withCacheSize: false, domain: domain)
+                if let domain = NCDomain.shared.getActiveDomain() {
+                    if NCManageDatabase.shared.getAccounts()?.count == 1 {
+                        NCImageCache.shared.createMediaCache(withCacheSize: true, domain: domain)
+                    } else {
+                        NCImageCache.shared.createMediaCache(withCacheSize: false, domain: domain)
+                    }
                 }
             }
         }
