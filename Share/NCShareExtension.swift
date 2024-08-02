@@ -302,7 +302,7 @@ extension NCShareExtension {
             let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
             guard utilityFileSystem.copyFile(atPath: (NSTemporaryDirectory() + fileName), toPath: toPath),
                   let domain = NCDomain.shared.getDomain(account: activeAccount.account) else { continue }
-            let metadata = NCManageDatabase.shared.createMetadata(domain: domain, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, url: "", contentType: "")
+            let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, url: "", contentType: "", domain: domain)
             metadata.session = NextcloudKit.shared.nkCommonInstance.identifierSessionUpload
             metadata.sessionSelector = NCGlobal.shared.selectorUploadFileShareExtension
             metadata.size = utilityFileSystem.getFileSize(filePath: toPath)

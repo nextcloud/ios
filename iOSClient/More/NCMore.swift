@@ -225,7 +225,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
         // ITEM : External
         if NCBrandOptions.shared.disable_more_external_site == false {
-            if let externalSites = NCManageDatabase.shared.getAllExternalSites(account: appDelegate.account) {
+            if let externalSites = NCManageDatabase.shared.getAllExternalSites(account: NCDomain.shared.getActiveAccount()) {
                 for externalSite in externalSites {
                     if !externalSite.name.isEmpty, !externalSite.url.isEmpty, let urlEncoded = externalSite.url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
                         item = NKExternalSite()

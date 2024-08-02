@@ -101,7 +101,7 @@ class NCShares: NCCollectionViewCommon {
                 guard let domain = NCDomain.shared.getDomain(account: account) else { return }
                 NCManageDatabase.shared.deleteTableShare(account: account)
                 if let shares = shares, !shares.isEmpty {
-                    let home = self.utilityFileSystem.getHomeServer(urlBase: domain.urlBase, userId: domain.userId)
+                    let home = self.utilityFileSystem.getHomeServer(domain: domain)
                     NCManageDatabase.shared.addShare(account: account, home: home, shares: shares)
                 }
                 self.reloadDataSource()

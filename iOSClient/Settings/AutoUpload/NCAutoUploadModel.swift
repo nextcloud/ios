@@ -28,8 +28,6 @@ import NextcloudKit
 
 /// A model that allows the user to configure the `auto upload settings for Nextcloud`
 class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
-    /// AppDelegate
-    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     /// A state variable that indicates whether auto upload is enabled or not
     @Published var autoUpload: Bool = false
     /// A state variable that indicates whether to open NCSelect View or not
@@ -69,18 +67,17 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
 
     /// Triggered when the view appears.
     func onViewAppear() {
-        let activeAccount: tableAccount? = manageDatabase.getActiveAccount()
-        if let account = activeAccount {
-            autoUpload = account.autoUpload
-            autoUploadImage = account.autoUploadImage
-            autoUploadWWAnPhoto = account.autoUploadWWAnPhoto
-            autoUploadVideo = account.autoUploadVideo
-            autoUploadWWAnVideo = account.autoUploadWWAnVideo
-            autoUploadFull = account.autoUploadFull
-            autoUploadCreateSubfolder = account.autoUploadCreateSubfolder
-            autoUploadSubfolderGranularity = Granularity(rawValue: account.autoUploadSubfolderGranularity) ?? .monthly
-            serverUrl = NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-        }
+        guard let domain = NCDomain.shared.getActiveDomain() else { return }
+        let activeTableAccount = NCDomain.shared.getActiveTableAccount()
+        autoUpload = activeTableAccount.autoUpload
+        autoUploadImage = activeTableAccount.autoUploadImage
+        autoUploadWWAnPhoto = activeTableAccount.autoUploadWWAnPhoto
+        autoUploadVideo = activeTableAccount.autoUploadVideo
+        autoUploadWWAnVideo = activeTableAccount.autoUploadWWAnVideo
+        autoUploadFull = activeTableAccount.autoUploadFull
+        autoUploadCreateSubfolder = activeTableAccount.autoUploadCreateSubfolder
+        autoUploadSubfolderGranularity = Granularity(rawValue: activeTableAccount.autoUploadSubfolderGranularity) ?? .monthly
+        serverUrl = NCUtilityFileSystem().getHomeServer(domain: domain)
         if autoUpload {
             requestAuthorization { value in
                 self.autoUpload = value
@@ -109,18 +106,19 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
 
     /// Updates the auto-upload setting.
     func handleAutoUploadChange(newValue: Bool) {
+        guard let domain = NCDomain.shared.getActiveDomain() else { return }
         if newValue {
             requestAuthorization { value in
                 self.autoUpload = value
                 self.updateAccountProperty(\.autoUpload, value: value)
                 NCManageDatabase.shared.setAccountAutoUploadFileName("")
-                NCManageDatabase.shared.setAccountAutoUploadDirectory("", urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId, account: self.appDelegate.account)
+                NCManageDatabase.shared.setAccountAutoUploadDirectory("", domain: domain)
                 NCAutoUpload.shared.alignPhotoLibrary(viewController: self.controller)
             }
         } else {
             updateAccountProperty(\.autoUpload, value: newValue)
             updateAccountProperty(\.autoUploadFull, value: newValue)
-            NCManageDatabase.shared.clearMetadatasUpload(account: appDelegate.account)
+            NCManageDatabase.shared.clearMetadatasUpload(account: domain.account)
         }
     }
 
@@ -156,7 +154,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         if newValue {
             NCAutoUpload.shared.autoUploadFullPhotos(viewController: self.controller, log: "Auto upload full")
         } else {
-            NCManageDatabase.shared.clearMetadatasUpload(account: appDelegate.account)
+            NCManageDatabase.shared.clearMetadatasUpload(account: NCDomain.shared.getActiveAccount())
         }
     }
 
@@ -181,8 +179,9 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     ///
     /// - Returns: The path for auto-upload.
     func returnPath() -> String {
-        let autoUploadPath = manageDatabase.getAccountAutoUploadDirectory(urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: appDelegate.account) + "/" + manageDatabase.getAccountAutoUploadFileName()
-        let homeServer = NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+        guard let domain = NCDomain.shared.getActiveDomain() else { return "" }
+        let autoUploadPath = manageDatabase.getAccountAutoUploadDirectory(domain: domain) + "/" + manageDatabase.getAccountAutoUploadFileName()
+        let homeServer = NCUtilityFileSystem().getHomeServer(domain: domain)
         let path = autoUploadPath.replacingOccurrences(of: homeServer, with: "")
         return path
     }
@@ -192,13 +191,14 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     /// - Parameter
     /// serverUrl: The server URL to set as the auto-upload directory.
     func setAutoUploadDirectory(serverUrl: String?) {
-        guard let serverUrl = serverUrl else { return }
-        let home = NCUtilityFileSystem().getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+        guard let domain = NCDomain.shared.getActiveDomain(),
+              let serverUrl = serverUrl else { return }
+        let home = NCUtilityFileSystem().getHomeServer(domain: domain)
         if home != serverUrl {
             let fileName = (serverUrl as NSString).lastPathComponent
             NCManageDatabase.shared.setAccountAutoUploadFileName(fileName)
             if let path = NCUtilityFileSystem().deleteLastPath(serverUrlPath: serverUrl, home: home) {
-                NCManageDatabase.shared.setAccountAutoUploadDirectory(path, urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: appDelegate.account)
+                NCManageDatabase.shared.setAccountAutoUploadDirectory(path, domain: domain)
             }
         }
         onViewAppear()
