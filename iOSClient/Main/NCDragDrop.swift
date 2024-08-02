@@ -105,6 +105,7 @@ class NCDragDrop: NSObject {
                 let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
 
                 try data.write(to: URL(fileURLWithPath: fileNamePath))
+
                 let metadataForUpload = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, url: "", contentType: "", domain: domain)
                 metadataForUpload.session = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground
                 metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
