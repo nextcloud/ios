@@ -28,7 +28,7 @@ import NextcloudKit
 extension NCShare {
     func toggleShareMenu(for share: tableShare) {
         var actions = [NCMenuAction]()
-        guard let domain = NCDomain.shared.getActiveDomain() else { return }
+        let domain = NCDomain.shared.getActiveDomain()
 
         if share.shareType == 3, canReshare {
             actions.append(

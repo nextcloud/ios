@@ -30,8 +30,8 @@ class NCCreateDocument: NSObject {
     let utility = NCUtility()
 
     func createDocument(controller: NCMainTabBarController, fileNamePath: String, fileName: String, editorId: String, creatorId: String? = nil, templateId: String, account: String) {
-        guard let domain = NCDomain.shared.getDomain(account: account),
-              let viewController = controller.currentViewController() else { return }
+        let domain = NCDomain.shared.getDomain(account: account)
+        guard let viewController = controller.currentViewController() else { return }
         var UUID = NSUUID().uuidString
         UUID = "TEMP" + UUID.replacingOccurrences(of: "-", with: "")
         var options = NKRequestOptions()

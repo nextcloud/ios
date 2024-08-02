@@ -26,7 +26,7 @@ import NextcloudKit
 
 extension NCMedia {
     func reloadDataSource() {
-        guard let domain = NCDomain.shared.getActiveDomain() else { return }
+        let domain = NCDomain.shared.getActiveDomain()
         self.metadatas = imageCache.getMediaMetadatas(predicate: self.getPredicate(domain: domain), domain: domain)
         self.collectionViewReloadData()
     }
@@ -121,11 +121,7 @@ extension NCMedia {
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Media not reload datasource network with the application in background")
             return(lessDate, greaterDate, 0, false, NKError())
         }
-
-        guard let activeAccount = NCManageDatabase.shared.getActiveAccount(),
-              let domainn = NCDomain.shared.getDomain(account: activeAccount.account) else {
-            return(lessDate, greaterDate, 0, false, NKError())
-        }
+        let domain = NCDomain.shared.getDomain(account: activeAccount.account)
         NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate)")
         let options = NKRequestOptions(timeout: timeout, taskDescription: self.taskDescriptionRetrievesProperties, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
         let results = await NCNetworking.shared.searchMedia(path: activeAccount.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: NCKeychain().showHiddenFiles, includeHiddenFiles: [], account: activeAccount.account, options: options)
@@ -135,7 +131,7 @@ extension NCMedia {
         } else if results.error == .success, let files = results.files {
             let metadatas = await NCManageDatabase.shared.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false).metadatas
             var predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-            predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, getPredicate(showAll: true, domain: domainn)])
+            predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, getPredicate(showAll: true, domain: domain)])
             let resultsUpdate = NCManageDatabase.shared.updateMetadatas(metadatas, predicate: predicate)
             let isChaged: Bool = (resultsUpdate.metadatasDifferentCount != 0 || resultsUpdate.metadatasModified != 0)
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] End searchMedia UpdateMetadatas with differentCount \(resultsUpdate.metadatasDifferentCount), modified \(resultsUpdate.metadatasModified)")

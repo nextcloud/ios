@@ -49,7 +49,7 @@ class NCRecent: NCCollectionViewCommon {
 
     override func queryDB() {
         super.queryDB()
-        guard let domain = NCDomain.shared.getActiveDomain() else { return }
+        let domain = NCDomain.shared.getActiveDomain()
         let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@", domain.account), numItems: 200, sorted: "date", ascending: false)
 
         layoutForView?.sort = "date"
@@ -61,7 +61,7 @@ class NCRecent: NCCollectionViewCommon {
 
     override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
         super.reloadDataSourceNetwork()
-        guard let domain = NCDomain.shared.getActiveDomain() else { return }
+        let domain = NCDomain.shared.getActiveDomain()
         let requestBodyRecent =
         """
         <?xml version=\"1.0\"?>

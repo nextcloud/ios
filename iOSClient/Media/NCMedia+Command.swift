@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import UIKit
 import NextcloudKit
 
 extension NCMedia {
@@ -100,7 +101,7 @@ extension NCMedia {
     }
 
     func createMenu() {
-        guard let domain = NCDomain.shared.getActiveDomain() else { return }
+        let domain = NCDomain.shared.getActiveDomain()
         let layoutForView = NCManageDatabase.shared.getLayoutForView(account: domain.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")
         let columnPhoto = layoutForView?.columnPhoto ?? 3
         let layout = layoutForView?.layout ?? NCGlobal.shared.mediaLayoutRatio

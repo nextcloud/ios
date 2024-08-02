@@ -144,7 +144,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         self.navigationItem.title = titleCurrentFolder
-        guard let domain = NCDomain.shared.getActiveDomain() else { return }
+        let domain = NCDomain.shared.getActiveDomain()
 
         // set the serverUrl
         if serverUrl.isEmpty {
@@ -505,7 +505,7 @@ extension NCSelect {
 
     @objc func loadDatasource(withLoadFolder: Bool) {
         var predicate: NSPredicate?
-        guard let domain = NCDomain.shared.getActiveDomain() else { return }
+        let domain = NCDomain.shared.getActiveDomain()
 
         if includeDirectoryE2EEncryption {
             if includeImages {

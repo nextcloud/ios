@@ -51,7 +51,7 @@ class NCOffline: NCCollectionViewCommon {
 
     override func queryDB() {
         super.queryDB()
-        guard let domain = NCDomain.shared.getActiveDomain() else { return }
+        let domain = NCDomain.shared.getActiveDomain()
         var ocIds: [String] = []
         var metadatas: [tableMetadata] = []
 

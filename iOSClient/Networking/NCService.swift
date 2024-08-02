@@ -89,7 +89,7 @@ class NCService: NSObject {
     // MARK: -
 
     private func requestServerStatus(account: String) async -> Bool {
-        guard let serverUrl = NCDomain.shared.getDomain(account: account)?.urlBase else { return false }
+        let serverUrl = NCDomain.shared.getDomain(account: account).urlBase
         switch await NCNetworking.shared.getServerStatus(serverUrl: serverUrl, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) {
         case .success(let serverInfo):
             if serverInfo.maintenance {
@@ -141,7 +141,7 @@ class NCService: NSObject {
     }
 
     func getAvatar(account: String) {
-        guard let domain = NCDomain.shared.getDomain(account: account) else { return }
+        let domain = NCDomain.shared.getDomain(account: account)
         let fileName =  NCDomain.shared.getUserBaseUrl(account: account) + "-" + domain.user + ".png"
         let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
         let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag

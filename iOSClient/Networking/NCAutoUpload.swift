@@ -83,7 +83,7 @@ class NCAutoUpload: NSObject {
     }
 
     private func uploadAssetsNewAndFull(viewController: UIViewController?, selector: String, log: String, completion: @escaping (_ items: Int) -> Void) {
-        guard let domain = NCDomain.shared.getActiveDomain() else { return completion(0) }
+        let domain = NCDomain.shared.getActiveDomain()
         let activeTableAccount = NCDomain.shared.getActiveTableAccount()
         let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(domain: domain)
         var metadatas: [tableMetadata] = []

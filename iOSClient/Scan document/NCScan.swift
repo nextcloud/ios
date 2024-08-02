@@ -143,8 +143,8 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     }
 
     @IBAction func saveAction(sender: UIBarButtonItem) {
-        guard let domain = NCDomain.shared.getActiveDomain(),
-              !imagesDestination.isEmpty else { return }
+        guard !imagesDestination.isEmpty else { return }
+        let domain = NCDomain.shared.getActiveDomain()
         var images: [UIImage] = []
         for image in imagesDestination {
             images.append(filter(image: image)!)

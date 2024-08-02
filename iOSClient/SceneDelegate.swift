@@ -170,9 +170,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         guard let controller = SceneManager.shared.getController(scene: scene) as? NCMainTabBarController,
               let url = URLContexts.first?.url,
-              let appDelegate,
-              let domain = NCDomain.shared.getActiveDomain() else { return }
+              let appDelegate else { return }
         let sceneIdentifier = controller.sceneIdentifier
+        let domain = NCDomain.shared.getActiveDomain()
         let account = domain.account
         let scheme = url.scheme
         let action = url.host
@@ -232,7 +232,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
                 case NCGlobal.shared.actionTextDocument:
 
-                    guard let domain = NCDomain.shared.getActiveDomain() else { return }
+                    let domain = NCDomain.shared.getActiveDomain()
                     let directEditingCreators = NCManageDatabase.shared.getDirectEditingCreators(account: account)
                     let directEditingCreator = directEditingCreators!.first(where: { $0.editor == NCGlobal.shared.editorText})!
                     let serverUrl = controller.currentServerUrl()

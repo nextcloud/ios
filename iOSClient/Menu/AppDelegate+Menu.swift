@@ -31,7 +31,7 @@ extension AppDelegate {
 
     func toggleMenu(controller: NCMainTabBarController) {
         var actions: [NCMenuAction] = []
-        guard let domain = NCDomain.shared.getActiveDomain() else { return }
+        let domain = NCDomain.shared.getActiveDomain()
         let directEditingCreators = NCManageDatabase.shared.getDirectEditingCreators(account: domain.account)
         let serverUrl = controller.currentServerUrl()
         let isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, account: domain.account)

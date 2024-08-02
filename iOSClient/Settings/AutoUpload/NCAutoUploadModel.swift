@@ -23,6 +23,7 @@
 //
 
 import Foundation
+import UIKit
 import Photos
 import NextcloudKit
 
@@ -67,7 +68,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
 
     /// Triggered when the view appears.
     func onViewAppear() {
-        guard let domain = NCDomain.shared.getActiveDomain() else { return }
+        let domain = NCDomain.shared.getActiveDomain()
         let activeTableAccount = NCDomain.shared.getActiveTableAccount()
         autoUpload = activeTableAccount.autoUpload
         autoUploadImage = activeTableAccount.autoUploadImage
@@ -106,7 +107,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
 
     /// Updates the auto-upload setting.
     func handleAutoUploadChange(newValue: Bool) {
-        guard let domain = NCDomain.shared.getActiveDomain() else { return }
+        let domain = NCDomain.shared.getActiveDomain()
         if newValue {
             requestAuthorization { value in
                 self.autoUpload = value
@@ -179,7 +180,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     ///
     /// - Returns: The path for auto-upload.
     func returnPath() -> String {
-        guard let domain = NCDomain.shared.getActiveDomain() else { return "" }
+        let domain = NCDomain.shared.getActiveDomain()
         let autoUploadPath = manageDatabase.getAccountAutoUploadDirectory(domain: domain) + "/" + manageDatabase.getAccountAutoUploadFileName()
         let homeServer = NCUtilityFileSystem().getHomeServer(domain: domain)
         let path = autoUploadPath.replacingOccurrences(of: homeServer, with: "")
@@ -191,8 +192,8 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     /// - Parameter
     /// serverUrl: The server URL to set as the auto-upload directory.
     func setAutoUploadDirectory(serverUrl: String?) {
-        guard let domain = NCDomain.shared.getActiveDomain(),
-              let serverUrl = serverUrl else { return }
+        guard let serverUrl else { return }
+        let domain = NCDomain.shared.getActiveDomain()
         let home = NCUtilityFileSystem().getHomeServer(domain: domain)
         if home != serverUrl {
             let fileName = (serverUrl as NSString).lastPathComponent

@@ -1134,7 +1134,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func queryDB() { }
 
     @objc func reloadDataSource(withQueryDB: Bool = true) {
-        guard let domain = NCDomain.shared.getActiveDomain(), !self.isSearchingMode else { return }
+        let domain = NCDomain.shared.getActiveDomain()
+        guard !self.isSearchingMode else { return }
 
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()
