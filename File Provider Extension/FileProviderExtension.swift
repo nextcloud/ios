@@ -311,7 +311,7 @@ class FileProviderExtension: NSFileProviderExtension {
 
                 fileURL.stopAccessingSecurityScopedResource()
 
-                let metadata = NCManageDatabase.shared.createMetadata(domain: domain, fileName: fileName, fileNameView: fileName, ocId: ocIdTemp, serverUrl: tableDirectory.serverUrl, url: "", contentType: "")
+                let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: ocIdTemp, serverUrl: tableDirectory.serverUrl, url: "", contentType: "", domain: domain)
                 metadata.session = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundExt
                 metadata.size = size
                 metadata.status = NCGlobal.shared.metadataStatusUploading

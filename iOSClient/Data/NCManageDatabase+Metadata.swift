@@ -453,7 +453,7 @@ extension NCManageDatabase {
         })
     }
 
-    func createMetadata(domain: NCDomain.Domain, fileName: String, fileNameView: String, ocId: String, serverUrl: String, url: String, contentType: String, isUrl: Bool = false, name: String = NCGlobal.shared.appName, subline: String? = nil, iconName: String? = nil, iconUrl: String? = nil) -> tableMetadata {
+    func createMetadata(fileName: String, fileNameView: String, ocId: String, serverUrl: String, url: String, contentType: String, isUrl: Bool = false, name: String = NCGlobal.shared.appName, subline: String? = nil, iconName: String? = nil, iconUrl: String? = nil, domain: NCDomain.Domain) -> tableMetadata {
         let metadata = tableMetadata()
 
         if isUrl {

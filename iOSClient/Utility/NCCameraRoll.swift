@@ -262,14 +262,13 @@ class NCCameraRoll: NSObject {
             PHAssetResourceManager.default().writeData(for: videoResource, toFile: URL(fileURLWithPath: fileNamePath), options: nil) { error in
                 guard error == nil,
                       let domain = NCDomain.shared.getDomain(account: metadata.account) else { return completion(nil) }
-                let metadataLivePhoto = NCManageDatabase.shared.createMetadata(domain: domain,
-                                                                               fileName: fileName,
+                let metadataLivePhoto = NCManageDatabase.shared.createMetadata(fileName: fileName,
                                                                                fileNameView: fileName,
                                                                                ocId: ocId,
                                                                                serverUrl: metadata.serverUrl,
                                                                                url: "",
-                                                                               contentType: "")
-
+                                                                               contentType: "",
+                                                                               domain: domain)
                 metadataLivePhoto.livePhotoFile = metadata.fileName
                 metadataLivePhoto.classFile = NKCommon.TypeClassFile.video.rawValue
                 metadataLivePhoto.isExtractFile = true

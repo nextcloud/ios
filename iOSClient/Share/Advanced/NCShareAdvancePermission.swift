@@ -54,10 +54,12 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
                         let error = NKError(errorCode: NCGlobal.shared.errorE2EEUploadInProgress, errorDescription: NSLocalizedString("_e2e_in_upload_", comment: ""))
                         return NCContentPresenter().showInfo(error: error)
                     }
-                    let error = await NCNetworkingE2EE().uploadMetadata(account: metadata.account, serverUrl: serverUrl, userId: metadata.userId, addUserId: share.shareWith, removeUserId: nil)
+                    guard let domain = NCDomain.shared.getActiveDomain() else {
+                        return NCContentPresenter().showError(error: NKError())
+                    }
+                    let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, addUserId: share.shareWith, removeUserId: nil, domain: domain)
                     if error != .success {
-                        NCContentPresenter().showError(error: error)
-                        return
+                        return NCContentPresenter().showError(error: error)
                     }
                 }
                 networking?.createShare(option: share)
