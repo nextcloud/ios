@@ -7,6 +7,8 @@
 //
 
 import Foundation
+import UIKit
+import SwiftUI
 
 class NCCapabilitiesModel: ObservableObject, ViewOnAppearHandling {
     struct Capability: Identifiable, Hashable {
@@ -27,7 +29,7 @@ class NCCapabilitiesModel: ObservableObject, ViewOnAppearHandling {
 
     /// Triggered when the view appears.
     func onViewAppear() {
-        guard let domain = NCDomain.shared.getActiveDomain() else { return }
+        let domain = NCDomain.shared.getActiveDomain()
         var textEditor = false
         var onlyofficeEditors = false
 

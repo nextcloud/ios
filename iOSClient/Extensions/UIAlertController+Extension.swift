@@ -34,9 +34,7 @@ extension UIAlertController {
     /// - Returns: The presentable alert controller
     static func createFolder(serverUrl: String, account: String, markE2ee: Bool = false, sceneIdentifier: String? = nil, completion: ((_ error: NKError) -> Void)? = nil) -> UIAlertController {
         let alertController = UIAlertController(title: NSLocalizedString("_create_folder_", comment: ""), message: nil, preferredStyle: .alert)
-        guard let domain = NCDomain.shared.getDomain(account: account) else {
-            return alertController
-        }
+        let domain = NCDomain.shared.getDomain(account: account)
 
         let okAction = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default, handler: { _ in
             guard let fileNameFolder = alertController.textFields?.first?.text else { return }

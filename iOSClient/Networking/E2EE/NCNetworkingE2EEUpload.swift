@@ -46,6 +46,7 @@ class NCNetworkingE2EEUpload: NSObject {
     func upload(metadata: tableMetadata, uploadE2EEDelegate: uploadE2EEDelegate? = nil, hudView: UIView?, hud: JGProgressHUD?) async -> NKError {
         var metadata = metadata
         let ocIdTemp = metadata.ocId
+        let domain = NCDomain.shared.getDomain(account: metadata.account)
 
         if let result = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "serverUrl == %@ AND fileNameView == %@ AND ocId != %@", metadata.serverUrl, metadata.fileNameView, metadata.ocId)) {
             metadata.fileName = result.fileName
@@ -54,8 +55,7 @@ class NCNetworkingE2EEUpload: NSObject {
         }
         metadata.session = NextcloudKit.shared.nkCommonInstance.identifierSessionUpload
         metadata.sessionError = ""
-        guard let domain = NCDomain.shared.getDomain(account: metadata.account),
-              let result = NCManageDatabase.shared.addMetadata(metadata),
+        guard let result = NCManageDatabase.shared.addMetadata(metadata),
               let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
             return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
         }

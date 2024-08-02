@@ -28,13 +28,12 @@ class NCNetworkingE2EERename: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
 
     func rename(metadata: tableMetadata, fileNameNew: String, indexPath: IndexPath) async -> NKError {
-
+        let domain = NCDomain.shared.getDomain(account: metadata.account)
         // verify if exists the new fileName
         if NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameNew)) != nil {
             return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_file_already_exists_")
         }
-        guard let domain = NCDomain.shared.getDomain(account: metadata.account),
-              let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
+        guard let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
             return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_")
         }
 
