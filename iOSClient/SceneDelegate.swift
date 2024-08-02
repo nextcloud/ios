@@ -72,7 +72,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             UIApplication.shared.allSceneSessionDestructionExceptFirst()
             return
         }
-        guard !appDelegate.account.isEmpty else { return }
+        if NCDomain.shared.getActiveAccount().isEmpty { return }
 
         hidePrivacyProtectionWindow()
         if let window = SceneManager.shared.getWindow(scene: scene), let controller = SceneManager.shared.getController(scene: scene) {
@@ -101,9 +101,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         hidePrivacyProtectionWindow()
 
-        if let appDelegate {
-            NCService().startRequestServicesServer(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId)
-        }
+        NCService().startRequestServicesServer(account: NCDomain.shared.getActiveAccount())
+
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
         }
@@ -111,8 +110,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func sceneWillResignActive(_ scene: UIScene) {
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Scene will resign active")
-        guard let appDelegate,
-              !appDelegate.account.isEmpty else { return }
+        if NCDomain.shared.getActiveAccount().isEmpty { return }
 
         // STOP TIMER UPLOAD PROCESS
         NCNetworkingProcess.shared.stopTimer()
@@ -139,7 +137,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneDidEnterBackground(_ scene: UIScene) {
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Scene did enter in background")
         guard let appDelegate,
-              !appDelegate.account.isEmpty else { return }
+              !NCDomain.shared.getActiveAccount().isEmpty else { return }
 
         if let autoUpload = NCManageDatabase.shared.getActiveAccount()?.autoUpload, autoUpload {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Auto upload: true")
@@ -174,7 +172,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
               let url = URLContexts.first?.url,
               let appDelegate else { return }
         let sceneIdentifier = controller.sceneIdentifier
-        let account = appDelegate.account
+        let account = NCDomain.shared.getActiveAccount()
         let scheme = url.scheme
         let action = url.host
 
@@ -233,13 +231,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
                 case NCGlobal.shared.actionTextDocument:
 
-                    let directEditingCreators = NCManageDatabase.shared.getDirectEditingCreators(account: appDelegate.account)
+                    guard let domain = NCDomain.shared.getActiveDomain() else { return }
+                    let directEditingCreators = NCManageDatabase.shared.getDirectEditingCreators(account: account)
                     let directEditingCreator = directEditingCreators!.first(where: { $0.editor == NCGlobal.shared.editorText})!
                     let serverUrl = controller.currentServerUrl()
 
                     Task {
-                        let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + ".md", account: appDelegate.account, serverUrl: serverUrl)
-                        let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+                        let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + ".md", account: account, serverUrl: serverUrl)
+                        let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: serverUrl, urlBase: domain.urlBase, userId: domain.userId)
 
                         NCCreateDocument().createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: NCGlobal.shared.editorText, creatorId: directEditingCreator.identifier, templateId: NCGlobal.shared.templateDocument)
                     }
@@ -290,7 +289,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     return
                 }
 
-                let davFiles = NextcloudKit.shared.nkCommonInstance.dav + "/files/" + appDelegate.userId
+                let davFiles = NextcloudKit.shared.nkCommonInstance.dav + "/files/" + NCDomain.shared.getActiveUserId()
 
                 if pathScheme.contains("/") {
                     fileName = (pathScheme as NSString).lastPathComponent

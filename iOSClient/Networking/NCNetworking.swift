@@ -133,9 +133,7 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
         if typeReachability == NKCommon.TypeReachability.reachableCellular || typeReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi {
             if !lastReachability {
 #if !EXTENSION
-                if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                    NCService().startRequestServicesServer(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId)
-                }
+                NCService().startRequestServicesServer(account: NCDomain.shared.getActiveAccount())
 #endif
             }
             lastReachability = true

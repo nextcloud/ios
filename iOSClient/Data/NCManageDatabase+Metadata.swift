@@ -25,7 +25,7 @@ import Foundation
 import RealmSwift
 import NextcloudKit
 
-class tableMetadata: Object, NCUserBaseUrl {
+class tableMetadata: Object {
     override func isEqual(_ object: Any?) -> Bool {
         if let object = object as? tableMetadata,
            self.account == object.account,

@@ -82,7 +82,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
         commentView = Bundle.main.loadNibNamed("NCActivityCommentView", owner: self, options: nil)?.first as? NCActivityCommentView
         commentView?.setup(urlBase: appDelegate, account: activeAccount) { newComment in
             guard let newComment = newComment, !newComment.isEmpty, let metadata = self.metadata else { return }
-            NextcloudKit.shared.putComments(fileId: metadata.fileId, message: newComment, account: self.appDelegate.account) { _, error in
+            NextcloudKit.shared.putComments(fileId: metadata.fileId, message: newComment, account: NCDomain.shared.getActiveAccount()) { _, error in
                 if error == .success {
                     self.commentView?.newCommentField.text?.removeAll()
                     self.loadComments()
@@ -209,7 +209,8 @@ extension NCActivity: UITableViewDataSource {
     }
 
     func makeCommentCell(_ comment: tableComments, for indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? NCShareCommentsCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? NCShareCommentsCell,
+              let domain = NCDomain.shared.getActiveDomain() else {
             return UITableViewCell()
         }
 
@@ -219,7 +220,7 @@ extension NCActivity: UITableViewDataSource {
         cell.sizeToFit()
 
         // Image
-        let fileName = appDelegate.userBaseUrl + "-" + comment.actorId + ".png"
+        let fileName = NCDomain.shared.getActiveUserBaseUrl() + "-" + comment.actorId + ".png"
         NCNetworking.shared.downloadAvatar(user: comment.actorId, dispalyName: comment.actorDisplayName, fileName: fileName, account: comment.account, cell: cell, view: tableView)
         // Username
         cell.labelUser.text = comment.actorDisplayName
@@ -231,7 +232,7 @@ extension NCActivity: UITableViewDataSource {
         cell.labelMessage.text = comment.message
         cell.labelMessage.textColor = NCBrandColor.shared.textColor
         // Button Menu
-        if comment.actorId == appDelegate.userId {
+        if comment.actorId == NCDomain.shared.getActiveUserId() {
             cell.buttonMenu.isHidden = false
         } else {
             cell.buttonMenu.isHidden = true
@@ -241,7 +242,8 @@ extension NCActivity: UITableViewDataSource {
     }
 
     func makeActivityCell(_ activity: tableActivity, for indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "tableCell", for: indexPath) as? NCActivityTableViewCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "tableCell", for: indexPath) as? NCActivityTableViewCell,
+              let domain = NCDomain.shared.getActiveDomain() else {
             return UITableViewCell()
         }
         var orderKeysId: [String] = []
@@ -264,7 +266,7 @@ extension NCActivity: UITableViewDataSource {
                     cell.icon.image = image.withTintColor(NCBrandColor.shared.textColor, renderingMode: .alwaysOriginal)
                 }
             } else {
-                NextcloudKit.shared.downloadContent(serverUrl: activity.icon, account: appDelegate.account) { _, data, error in
+                NextcloudKit.shared.downloadContent(serverUrl: activity.icon, account: domain.account) { _, data, error in
                     if error == .success {
                         do {
                             try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
@@ -276,11 +278,11 @@ extension NCActivity: UITableViewDataSource {
         }
 
         // avatar
-        if !activity.user.isEmpty && activity.user != appDelegate.userId {
+        if !activity.user.isEmpty && activity.user != domain.userId {
             cell.avatar.isHidden = false
             cell.fileUser = activity.user
-            let fileName = appDelegate.userBaseUrl + "-" + activity.user + ".png"
-            NCNetworking.shared.downloadAvatar(user: activity.user, dispalyName: nil, fileName: fileName, account: appDelegate.account, cell: cell, view: tableView)
+            let fileName = NCDomain.shared.getActiveUserBaseUrl() + "-" + activity.user + ".png"
+            NCNetworking.shared.downloadAvatar(user: activity.user, dispalyName: nil, fileName: fileName, account: domain.account, cell: cell, view: tableView)
             cell.subjectLeadingConstraint.constant = 15
         } else {
             cell.subjectLeadingConstraint.constant = -30
@@ -300,7 +302,7 @@ extension NCActivity: UITableViewDataSource {
             }
 
             for key in keys {
-                if let result = NCManageDatabase.shared.getActivitySubjectRich(account: appDelegate.account, idActivity: activity.idActivity, key: key) {
+                if let result = NCManageDatabase.shared.getActivitySubjectRich(account: domain.account, idActivity: activity.idActivity, key: key) {
                     orderKeysId.append(result.id)
                     subject = subject.replacingOccurrences(of: "{\(key)}", with: "<bold>" + result.name + "</bold>")
                 }
@@ -377,7 +379,7 @@ extension NCActivity {
         }
 
         let activities = NCManageDatabase.shared.getActivity(
-            predicate: NSPredicate(format: "account == %@", appDelegate.account),
+            predicate: NSPredicate(format: "account == %@", NCDomain.shared.getActiveAccount()),
             filterFileId: metadata?.fileId)
         newItems += activities.filter
 
@@ -410,7 +412,8 @@ extension NCActivity {
 
     /// Check if most recent activivities are loaded, if not trigger reload
     func checkRecentActivity(disptachGroup: DispatchGroup) {
-        guard let result = NCManageDatabase.shared.getLatestActivityId(account: appDelegate.account), metadata == nil, hasActivityToLoad else {
+        guard let domain = NCDomain.shared.getActiveDomain(),
+              let result = NCManageDatabase.shared.getLatestActivityId(account: domain.account), metadata == nil, hasActivityToLoad else {
             return self.loadActivity(idActivity: 0, disptachGroup: disptachGroup)
         }
         let resultActivityId = max(result.activityFirstKnown, result.activityLastGiven)
@@ -423,14 +426,14 @@ extension NCActivity {
             objectId: nil,
             objectType: objectType,
             previews: true,
-            account: appDelegate.account) { task in
+            account: domain.account) { task in
                 self.dataSourceTask = task
             } completion: { account, _, activityFirstKnown, activityLastGiven, _, error in
                 defer { disptachGroup.leave() }
 
                 let largestActivityId = max(activityFirstKnown, activityLastGiven)
                 guard error == .success,
-                      account == self.appDelegate.account,
+                      account == domain.account,
                       largestActivityId > resultActivityId
                 else {
                     self.hasActivityToLoad = error.errorCode == NCGlobal.shared.errorNotModified ? false : self.hasActivityToLoad
@@ -442,7 +445,8 @@ extension NCActivity {
     }
 
     func loadActivity(idActivity: Int, limit: Int = 200, disptachGroup: DispatchGroup) {
-        guard hasActivityToLoad else { return }
+        guard let domain = NCDomain.shared.getActiveDomain(),
+              hasActivityToLoad else { return }
         var resultActivityId = 0
 
         disptachGroup.enter()
@@ -452,12 +456,12 @@ extension NCActivity {
             objectId: metadata?.fileId,
             objectType: objectType,
             previews: true,
-            account: appDelegate.account) { task in
+            account: domain.account) { task in
                 self.dataSourceTask = task
             } completion: { account, activities, activityFirstKnown, activityLastGiven, _, error in
                 defer { disptachGroup.leave() }
                 guard error == .success,
-                      account == self.appDelegate.account,
+                      account == domain.account,
                       !activities.isEmpty
                 else {
                     self.hasActivityToLoad = error.errorCode == NCGlobal.shared.errorNotModified ? false : self.hasActivityToLoad
@@ -467,7 +471,7 @@ extension NCActivity {
 
                 // update most recently loaded activity only when all activities are loaded (not filtered)
                 let largestActivityId = max(activityFirstKnown, activityLastGiven)
-                if let result = NCManageDatabase.shared.getLatestActivityId(account: self.appDelegate.account) {
+                if let result = NCManageDatabase.shared.getLatestActivityId(account: domain.account) {
                     resultActivityId = max(result.activityFirstKnown, result.activityLastGiven)
                 }
                 if self.metadata == nil, largestActivityId > resultActivityId {

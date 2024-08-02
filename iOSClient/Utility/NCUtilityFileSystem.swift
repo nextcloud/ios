@@ -202,8 +202,11 @@ class NCUtilityFileSystem: NSObject {
         } catch { print("Error: \(error)") }
     }
 
-    func isDirectoryE2EE(serverUrl: String, userBase: NCUserBaseUrl) -> Bool {
-        return isDirectoryE2EE(account: userBase.account, urlBase: userBase.urlBase, userId: userBase.userId, serverUrl: serverUrl)
+    func isDirectoryE2EE(serverUrl: String, account: String) -> Bool {
+        if let domain = NCDomain.shared.getDomain(account: account) {
+            return isDirectoryE2EE(account: domain.account, urlBase: domain.urlBase, userId: domain.userId, serverUrl: serverUrl)
+        }
+        return false
     }
 
     func isDirectoryE2EE(file: NKFile) -> Bool {

@@ -180,7 +180,7 @@ extension NCAccountRequest: UITableViewDataSource {
             avatarImage?.image = utility.loadUserImage(
                 for: account.user,
                    displayName: account.displayName,
-                   userBaseUrl: account)
+                account: account.account)
 
             if account.alias.isEmpty {
                 userLabel?.text = account.user.uppercased()

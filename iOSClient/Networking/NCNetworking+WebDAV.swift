@@ -650,12 +650,11 @@ extension NCNetworking {
     // MARK: - Search
 
     /// WebDAV search
-    func searchFiles(urlBase: NCUserBaseUrl,
-                     literal: String,
+    func searchFiles(literal: String,
                      account: String,
                      taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
                      completion: @escaping (_ metadatas: [tableMetadata]?, _ error: NKError) -> Void) {
-        NextcloudKit.shared.searchLiteral(serverUrl: urlBase.urlBase,
+        NextcloudKit.shared.searchLiteral(serverUrl: NCDomain.shared.getActiveUrlBase(),
                                           depth: "infinity",
                                           literal: literal,
                                           showHiddenFiles: NCKeychain().showHiddenFiles,
@@ -674,19 +673,22 @@ extension NCNetworking {
 
     /// Unified Search (NC>=20)
     ///
-    func unifiedSearchFiles(userBaseUrl: NCUserBaseUrl,
-                            literal: String,
+    func unifiedSearchFiles(literal: String,
+                            account: String,
                             taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
                             providers: @escaping (_ accout: String, _ searchProviders: [NKSearchProvider]?) -> Void,
                             update: @escaping (_ account: String, _ id: String, NKSearchResult?, [tableMetadata]?) -> Void,
                             completion: @escaping (_ account: String, _ error: NKError) -> Void) {
         let dispatchGroup = DispatchGroup()
+        guard let domain = NCDomain.shared.getDomain(account: account) else {
+            return completion("", NKError())
+        }
         dispatchGroup.enter()
         dispatchGroup.notify(queue: .main) {
-            completion(userBaseUrl.account, NKError())
+            completion(domain.account, NKError())
         }
 
-        NextcloudKit.shared.unifiedSearch(term: literal, timeout: 30, timeoutProvider: 90, account: userBaseUrl.account) { _ in
+        NextcloudKit.shared.unifiedSearch(term: literal, timeout: 30, timeoutProvider: 90, account: domain.account) { _ in
             // example filter
             // ["calendar", "files", "fulltextsearch"].contains(provider.id)
             return true
@@ -706,11 +708,11 @@ extension NCNetworking {
             case "files":
                 partialResult.entries.forEach({ entry in
                     if let fileId = entry.fileId,
-                       let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && fileId == %@", userBaseUrl.userAccount, String(fileId))) {
+                       let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && fileId == %@", domain.account, String(fileId))) {
                         metadatas.append(metadata)
                     } else if let filePath = entry.filePath {
                         let semaphore = DispatchSemaphore(value: 0)
-                        self.loadMetadata(userBaseUrl: userBaseUrl, filePath: filePath, dispatchGroup: dispatchGroup) { _, metadata, _ in
+                        self.loadMetadata(domain: domain, filePath: filePath, dispatchGroup: dispatchGroup) { _, metadata, _ in
                             metadatas.append(metadata)
                             semaphore.signal()
                         }
@@ -725,13 +727,13 @@ extension NCNetworking {
                     guard let dir = url?.queryItems?["dir"]?.value, let filename = url?.queryItems?["scrollto"]?.value else { return }
                     if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(
                               format: "account == %@ && path == %@ && fileName == %@",
-                              userBaseUrl.userAccount,
-                              "/remote.php/dav/files/" + userBaseUrl.user + dir,
+                              domain.account,
+                              "/remote.php/dav/files/" + domain.user + dir,
                               filename)) {
                         metadatas.append(metadata)
                     } else {
                         let semaphore = DispatchSemaphore(value: 0)
-                        self.loadMetadata(userBaseUrl: userBaseUrl, filePath: dir + filename, dispatchGroup: dispatchGroup) { _, metadata, _ in
+                        self.loadMetadata(domain: domain, filePath: dir + filename, dispatchGroup: dispatchGroup) { _, metadata, _ in
                             metadatas.append(metadata)
                             semaphore.signal()
                         }
@@ -740,7 +742,7 @@ extension NCNetworking {
                 })
             default:
                 partialResult.entries.forEach({ entry in
-                    let metadata = NCManageDatabase.shared.createMetadata(account: userBaseUrl.account, user: userBaseUrl.user, userId: userBaseUrl.userId, fileName: entry.title, fileNameView: entry.title, ocId: NSUUID().uuidString, serverUrl: userBaseUrl.urlBase, urlBase: userBaseUrl.urlBase, url: entry.resourceURL, contentType: "", isUrl: true, name: partialResult.id, subline: entry.subline, iconName: entry.icon, iconUrl: entry.thumbnailURL)
+                    let metadata = NCManageDatabase.shared.createMetadata(account: domain.account, user: domain.user, userId: domain.userId, fileName: entry.title, fileNameView: entry.title, ocId: NSUUID().uuidString, serverUrl: domain.urlBase, urlBase: domain.urlBase, url: entry.resourceURL, contentType: "", isUrl: true, name: partialResult.id, subline: entry.subline, iconName: entry.icon, iconUrl: entry.thumbnailURL)
                     metadatas.append(metadata)
                 })
             }
@@ -751,29 +753,31 @@ extension NCNetworking {
         }
     }
 
-    func unifiedSearchFilesProvider(userBaseUrl: NCUserBaseUrl,
-                                    id: String, term: String,
+    func unifiedSearchFilesProvider(id: String, term: String,
                                     limit: Int, cursor: Int,
+                                    account: String,
                                     taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
                                     completion: @escaping (_ account: String, _ searchResult: NKSearchResult?, _ metadatas: [tableMetadata]?, _ error: NKError) -> Void) {
         var metadatas: [tableMetadata] = []
+        guard let domain = NCDomain.shared.getDomain(account: account) else {
+            return completion("", nil, nil, NKError())
+        }
 
-        let request = NextcloudKit.shared.searchProvider(id, term: term, limit: limit, cursor: cursor, timeout: 60, account: userBaseUrl.account) { task in
+        let request = NextcloudKit.shared.searchProvider(id, term: term, limit: limit, cursor: cursor, timeout: 60, account: domain.account) { task in
             taskHandler(task)
         } completion: { account, searchResult, _, error in
             guard let searchResult = searchResult else {
-                completion(account, nil, metadatas, error)
-                return
+                return completion(account, nil, metadatas, error)
             }
 
             switch id {
             case "files":
                 searchResult.entries.forEach({ entry in
-                    if let fileId = entry.fileId, let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && fileId == %@", userBaseUrl.userAccount, String(fileId))) {
+                    if let fileId = entry.fileId, let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && fileId == %@", domain.account, String(fileId))) {
                         metadatas.append(metadata)
                     } else if let filePath = entry.filePath {
                         let semaphore = DispatchSemaphore(value: 0)
-                        self.loadMetadata(userBaseUrl: userBaseUrl, filePath: filePath, dispatchGroup: nil) { _, metadata, _ in
+                        self.loadMetadata(domain: domain, filePath: filePath, dispatchGroup: nil) { _, metadata, _ in
                             metadatas.append(metadata)
                             semaphore.signal()
                         }
@@ -786,11 +790,11 @@ extension NCNetworking {
                 searchResult.entries.forEach({ entry in
                     let url = URLComponents(string: entry.resourceURL)
                     guard let dir = url?.queryItems?["dir"]?.value, let filename = url?.queryItems?["scrollto"]?.value else { return }
-                    if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && path == %@ && fileName == %@", userBaseUrl.userAccount, "/remote.php/dav/files/" + userBaseUrl.user + dir, filename)) {
+                    if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && path == %@ && fileName == %@", domain.account, "/remote.php/dav/files/" + domain.user + dir, filename)) {
                         metadatas.append(metadata)
                     } else {
                         let semaphore = DispatchSemaphore(value: 0)
-                        self.loadMetadata(userBaseUrl: userBaseUrl, filePath: dir + filename, dispatchGroup: nil) { _, metadata, _ in
+                        self.loadMetadata(domain: domain, filePath: dir + filename, dispatchGroup: nil) { _, metadata, _ in
                             metadatas.append(metadata)
                             semaphore.signal()
                         }
@@ -799,7 +803,7 @@ extension NCNetworking {
                 })
             default:
                 searchResult.entries.forEach({ entry in
-                    let newMetadata = NCManageDatabase.shared.createMetadata(account: userBaseUrl.account, user: userBaseUrl.user, userId: userBaseUrl.userId, fileName: entry.title, fileNameView: entry.title, ocId: NSUUID().uuidString, serverUrl: userBaseUrl.urlBase, urlBase: userBaseUrl.urlBase, url: entry.resourceURL, contentType: "", isUrl: true, name: searchResult.name.lowercased(), subline: entry.subline, iconName: entry.icon, iconUrl: entry.thumbnailURL)
+                    let newMetadata = NCManageDatabase.shared.createMetadata(account: domain.account, user: domain.user, userId: domain.userId, fileName: entry.title, fileNameView: entry.title, ocId: NSUUID().uuidString, serverUrl: domain.urlBase, urlBase: domain.urlBase, url: entry.resourceURL, contentType: "", isUrl: true, name: searchResult.name.lowercased(), subline: entry.subline, iconName: entry.icon, iconUrl: entry.thumbnailURL)
                     metadatas.append(newMetadata)
                 })
             }
@@ -818,14 +822,14 @@ extension NCNetworking {
         requestsUnifiedSearch.removeAll()
     }
 
-    private func loadMetadata(userBaseUrl: NCUserBaseUrl,
+    private func loadMetadata(domain: NCDomain.Domain,
                               filePath: String,
                               dispatchGroup: DispatchGroup? = nil,
                               completion: @escaping (String, tableMetadata, NKError) -> Void) {
-        let urlPath = userBaseUrl.urlBase + "/remote.php/dav/files/" + userBaseUrl.user + filePath
+        let urlPath = domain.urlBase + "/remote.php/dav/files/" + domain.user + filePath
 
         dispatchGroup?.enter()
-        self.readFile(serverUrlFileName: urlPath, account: userBaseUrl.account) { account, metadata, error in
+        self.readFile(serverUrlFileName: urlPath, account: domain.account) { account, metadata, error in
             defer { dispatchGroup?.leave() }
             guard let metadata = metadata else { return }
             let returnMetadata = tableMetadata.init(value: metadata)

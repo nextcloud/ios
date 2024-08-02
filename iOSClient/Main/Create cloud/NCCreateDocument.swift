@@ -29,8 +29,9 @@ class NCCreateDocument: NSObject {
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utility = NCUtility()
 
-    func createDocument(controller: NCMainTabBarController, fileNamePath: String, fileName: String, editorId: String, creatorId: String? = nil, templateId: String) {
-        guard let viewController = controller.currentViewController() else { return }
+    func createDocument(controller: NCMainTabBarController, fileNamePath: String, fileName: String, editorId: String, creatorId: String? = nil, templateId: String, account: String) {
+        guard let domain = NCDomain.shared.getDomain(account: account),
+              let viewController = controller.currentViewController() else { return }
         var UUID = NSUUID().uuidString
         UUID = "TEMP" + UUID.replacingOccurrences(of: "-", with: "")
         var options = NKRequestOptions()
@@ -43,33 +44,33 @@ class NCCreateDocument: NSObject {
                 options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentNCText())
             }
 
-            NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateId, account: appDelegate.account, options: options) { account, url, _, error in
-                guard error == .success, account == self.appDelegate.account, let url = url else {
+            NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateId, account: account, options: options) { account, url, _, error in
+                guard error == .success, account == account, let url = url else {
                     NCContentPresenter().showError(error: error)
                     return
                 }
                 let contentType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false).mimeType
-                let metadata = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: UUID, serverUrl: serverUrl, urlBase: self.appDelegate.urlBase, url: url, contentType: contentType)
+                let metadata = NCManageDatabase.shared.createMetadata(account: account, user: domain.user, userId: domain.userId, fileName: fileName, fileNameView: fileName, ocId: UUID, serverUrl: serverUrl, urlBase: domain.urlBase, url: url, contentType: contentType)
 
                 NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
             }
 
         } else if editorId == NCGlobal.shared.editorCollabora {
 
-            NextcloudKit.shared.createRichdocuments(path: fileNamePath, templateId: templateId, account: appDelegate.account) { account, url, _, error in
-                guard error == .success, account == self.appDelegate.account, let url = url else {
+            NextcloudKit.shared.createRichdocuments(path: fileNamePath, templateId: templateId, account: account) { account, url, _, error in
+                guard error == .success, account == account, let url = url else {
                     NCContentPresenter().showError(error: error)
                     return
                 }
                 let contentType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false).mimeType
-                let metadata = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: UUID, serverUrl: serverUrl, urlBase: self.appDelegate.urlBase, url: url, contentType: contentType)
+                let metadata = NCManageDatabase.shared.createMetadata(account: account, user: domain.user, userId: domain.userId, fileName: fileName, fileNameView: fileName, ocId: UUID, serverUrl: serverUrl, urlBase: domain.urlBase, url: url, contentType: contentType)
 
                 NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
             }
         }
     }
 
-    func getTemplate(editorId: String, templateId: String) async -> (templates: [NKEditorTemplates], selectedTemplate: NKEditorTemplates, ext: String) {
+    func getTemplate(editorId: String, templateId: String, account: String) async -> (templates: [NKEditorTemplates], selectedTemplate: NKEditorTemplates, ext: String) {
         var templates: [NKEditorTemplates] = []
         var selectedTemplate = NKEditorTemplates()
         var ext: String = ""
@@ -82,7 +83,7 @@ class NCCreateDocument: NSObject {
                 options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentNCText())
             }
 
-            let results = await textGetListOfTemplates(account: appDelegate.account, options: options)
+            let results = await textGetListOfTemplates(account: account, options: options)
             if results.error == .success, let resultTemplates = results.templates {
                 for template in resultTemplates {
                     let temp = NKEditorTemplates()
@@ -120,7 +121,7 @@ class NCCreateDocument: NSObject {
         }
 
         if editorId == NCGlobal.shared.editorCollabora {
-            let results = await getTemplatesRichdocuments(typeTemplate: templateId, account: appDelegate.account)
+            let results = await getTemplatesRichdocuments(typeTemplate: templateId, account: account)
             if results.error == .success {
                 for template in results.templates! {
                     let temp = NKEditorTemplates()
