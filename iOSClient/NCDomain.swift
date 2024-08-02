@@ -36,14 +36,14 @@ public class NCDomain: NSObject {
     }
     var domain: ThreadSafeArray<Domain> = ThreadSafeArray()
 
-    func addDomain(account: String, urlBase: String, user: String, userId: String, sceneIdentifier: String) {
+    public func addDomain(account: String, urlBase: String, user: String, userId: String, sceneIdentifier: String) {
         if self.domain.filter({ $0.account == account }).first != nil {
             return updateDomain(account, userId: userId, sceneIdentifier: sceneIdentifier)
         }
         self.domain.append(Domain(account: account, urlBase: urlBase, user: user, userId: userId, sceneIdentifier: sceneIdentifier))
     }
 
-    func updateDomain(_ account: String, userId: String? = nil, sceneIdentifier: String? = nil) {
+    public func updateDomain(_ account: String, userId: String? = nil, sceneIdentifier: String? = nil) {
         guard var domain = self.domain.filter({ $0.account == account }).first else { return }
         if let userId {
             domain.userId = userId
@@ -53,11 +53,76 @@ public class NCDomain: NSObject {
         }
     }
 
-    func getActiveAccount() -> Domain? {
+    public func removeDomain(account: String) {
+        self.domain.remove(where: { $0.account == account })
+    }
+
+    public func getDomain(account: String) -> Domain? {
+        return self.domain.filter({ $0.account == account }).first
+    }
+
+    public func getActiveDomain() -> Domain? {
         if let activeAccount = NCManageDatabase.shared.getActiveStringAccount(),
            let domain = self.domain.filter({ $0.account == activeAccount }).first {
             return domain
         }
         return nil
     }
+
+    public func getActiveAccount() -> String {
+        if let activeAccount = NCManageDatabase.shared.getActiveStringAccount(),
+           let domain = self.domain.filter({ $0.account == activeAccount }).first {
+            return domain.account
+        }
+        return ""
+    }
+
+    public func getActiveUrlBase() -> String {
+        if let activeAccount = NCManageDatabase.shared.getActiveStringAccount(),
+           let domain = self.domain.filter({ $0.account == activeAccount }).first {
+            return domain.urlBase
+        }
+        return ""
+    }
+
+    public func getActiveUserId() -> String {
+        if let activeAccount = NCManageDatabase.shared.getActiveStringAccount(),
+           let domain = self.domain.filter({ $0.account == activeAccount }).first {
+            return domain.userId
+        }
+        return ""
+    }
+
+    /*
+     import Foundation
+
+     @objc public protocol NCUserBaseUrl {
+         var user: String { get }
+         var urlBase: String { get }
+         var account: String { get }
+         var userId: String { get }
+     }
+
+     public extension NCUserBaseUrl {
+         var userBaseUrl: String {
+             user + "-" + (URL(string: urlBase)?.host ?? "")
+         }
+         var userAccount: String {
+             user + " " + urlBase
+         }
+     }
+
+     */
+    public func getActiveUserBaseUrl() -> String {
+        if let activeAccount = NCManageDatabase.shared.getActiveStringAccount() {
+           return self.getUserBaseUrl(account: activeAccount)
+        }
+        return ""
+    }
+
+    public func getUserBaseUrl(account: String) -> String {
+        guard let domain = self.domain.filter({ $0.account == account }).first else { return "" }
+        return domain.user + "-" + (URL(string: domain.urlBase)?.host ?? "")
+    }
+
 }

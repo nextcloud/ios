@@ -223,7 +223,7 @@ class NCShareExtension: UIViewController {
             }
         }
 
-        let image = utility.loadUserImage(for: activeAccount.user, displayName: activeAccount.displayName, userBaseUrl: activeAccount)
+        let image = utility.loadUserImage(for: activeAccount.user, displayName: activeAccount.displayName, account: activeAccount.account)
         let profileButton = UIButton(type: .custom)
         profileButton.setImage(image, for: .normal)
 
@@ -278,7 +278,7 @@ class NCShareExtension: UIViewController {
     }
 
     @objc func actionCreateFolder() {
-        let alertController = UIAlertController.createFolder(serverUrl: serverUrl, userBaseUrl: activeAccount) { error in
+        let alertController = UIAlertController.createFolder(serverUrl: serverUrl, account: NCDomain.shared.getActiveAccount()) { error in
             guard error != .success else { return }
             self.showAlert(title: "_error_createsubfolders_upload_", description: error.errorDescription)
         }

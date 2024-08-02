@@ -25,7 +25,7 @@ import Foundation
 import RealmSwift
 import NextcloudKit
 
-class tableAccount: Object, NCUserBaseUrl {
+class tableAccount: Object {
     @objc dynamic var account = ""
     @objc dynamic var active: Bool = false
     @objc dynamic var address = ""

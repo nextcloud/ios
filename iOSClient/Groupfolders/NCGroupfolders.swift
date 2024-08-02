@@ -53,24 +53,24 @@ class NCGroupfolders: NCCollectionViewCommon {
 
     override func queryDB() {
         super.queryDB()
-
         var metadatas: [tableMetadata] = []
+        guard let domain = NCDomain.shared.getActiveDomain() else { return }
 
         if self.serverUrl.isEmpty {
-            metadatas = NCManageDatabase.shared.getMetadatasFromGroupfolders(account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
+            metadatas = NCManageDatabase.shared.getMetadatasFromGroupfolders(account: domain.account, urlBase: domain.urlBase, userId: domain.userId)
         } else {
-            metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
+            metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", domain.account, self.serverUrl))
         }
 
-        self.dataSource = NCDataSource(metadatas: metadatas, account: self.appDelegate.account, layoutForView: layoutForView, providers: self.providers, searchResults: self.searchResults)
+        self.dataSource = NCDataSource(metadatas: metadatas, account: domain.account, layoutForView: layoutForView, providers: self.providers, searchResults: self.searchResults)
     }
 
     override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
         super.reloadDataSourceNetwork()
+        guard let domain = NCDomain.shared.getActiveDomain() else { return }
+        let homeServerUrl = utilityFileSystem.getHomeServer(urlBase: domain.urlBase, userId: domain.userId)
 
-        let homeServerUrl = utilityFileSystem.getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
-
-        NextcloudKit.shared.getGroupfolders(account: self.appDelegate.account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
+        NextcloudKit.shared.getGroupfolders(account: domain.account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()
         } completion: { account, results, _, error in
@@ -80,7 +80,7 @@ class NCGroupfolders: NCCollectionViewCommon {
                     for groupfolder in groupfolders {
                         let mountPoint = groupfolder.mountPoint.hasPrefix("/") ? groupfolder.mountPoint : "/" + groupfolder.mountPoint
                         let serverUrlFileName = homeServerUrl + mountPoint
-                        if NCManageDatabase.shared.getMetadataFromDirectory(account: self.appDelegate.account, serverUrl: serverUrlFileName) == nil {
+                        if NCManageDatabase.shared.getMetadataFromDirectory(account: account, serverUrl: serverUrlFileName) == nil {
                             let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles, account: account)
                             if results.error == .success, let file = results.files?.first {
                                 let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
