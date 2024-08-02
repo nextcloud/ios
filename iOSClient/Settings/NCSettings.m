@@ -219,6 +219,8 @@
     self.tableView.backgroundColor = UIColor.systemGroupedBackgroundColor;
     appDelegate = (AppDelegate *)[[UIApplication sharedApplication] delegate];
     
+    [self configureNavigationItem];
+
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground) name:UIApplicationDidEnterBackgroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changeUser) name:NCGlobal.shared.notificationCenterChangeUser object:nil];
 
@@ -483,6 +485,21 @@
         sectionName = [NSString stringWithFormat:@"\n%@\n\n%@\n%@", versionNextcloudiOS, versionNextcloud, nameSlogan];
     }
     return sectionName;
+}
+
+- (void)configureNavigationItem {
+    if ([self.navigationController.viewControllers count] == 1) {
+        self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"_close_", comment: @"")
+                                                                                 style:UIBarButtonItemStylePlain
+                                                                                target:self
+                                                                                action:@selector(onCloseTap)];
+    } else {
+        self.navigationItem.leftBarButtonItem = nil;
+    }
+}
+
+- (void)onCloseTap {
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end

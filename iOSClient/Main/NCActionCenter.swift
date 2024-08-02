@@ -487,7 +487,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
               let navigationController = mainTabBarController.viewControllers?.first as? UINavigationController
         else { return }
         var serverUrlPush = self.utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-        let filesServerUrl = mainTabBarController.filesServerUrl
+        let filesServerUrl = FilesServerUrlsHolder.filesServerUrl
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             navigationController.popToRootViewController(animated: false)
