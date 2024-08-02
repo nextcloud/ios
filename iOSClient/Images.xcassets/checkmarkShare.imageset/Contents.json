@@ -1,15 +1,12 @@
 {
   "images" : [
     {
-      "filename" : "lock_open.svg",
+      "filename" : "checkmark.svg",
       "idiom" : "universal"
     }
   ],
   "info" : {
     "author" : "xcode",
     "version" : 1
-  },
-  "properties" : {
-    "preserves-vector-representation" : true
   }
 }
