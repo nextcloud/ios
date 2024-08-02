@@ -96,6 +96,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] PASSWORD NOT FOUND for \(activeAccount.account)")
             }
 
+            NCDomain.shared.appendDomain(account: activeAccount.account, urlBase: activeAccount.urlBase, user: activeAccount.user, userId: activeAccount.userId, sceneIdentifier: "")
+            NextcloudKit.shared.appendAccount(activeAccount.account,
+                                              urlBase: activeAccount.urlBase,
+                                              user: activeAccount.user,
+                                              userId: activeAccount.userId,
+                                              password: NCKeychain().getPassword(account: activeAccount.account),
+                                              userAgent: userAgent,
+                                              nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
+                                              groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+
+            /*
             for account in NCManageDatabase.shared.getAllAccount() {
                 NCDomain.shared.appendDomain(account: account.account, urlBase: account.urlBase, user: account.user, userId: account.userId, sceneIdentifier: "")
                 NextcloudKit.shared.appendAccount(account.account,
@@ -107,6 +118,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                                                   nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
                                                   groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
             }
+            */
 
             NCManageDatabase.shared.setCapabilities(account: activeAccount.account)
             NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
