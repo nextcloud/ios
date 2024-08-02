@@ -50,7 +50,7 @@ class NCCreateDocument: NSObject {
                     return
                 }
                 let contentType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false).mimeType
-                let metadata = NCManageDatabase.shared.createMetadata(domain: domain, fileName: fileName, fileNameView: fileName, ocId: UUID, serverUrl: serverUrl, url: url, contentType: contentType)
+                let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: UUID, serverUrl: serverUrl, url: url, contentType: contentType, domain: domain)
 
                 NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
             }
@@ -63,7 +63,7 @@ class NCCreateDocument: NSObject {
                     return
                 }
                 let contentType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false).mimeType
-                let metadata = NCManageDatabase.shared.createMetadata(domain: domain, fileName: fileName, fileNameView: fileName, ocId: UUID, serverUrl: serverUrl, url: url, contentType: contentType)
+                let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: UUID, serverUrl: serverUrl, url: url, contentType: contentType, domain: domain)
 
                 NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
             }
