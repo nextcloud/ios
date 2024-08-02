@@ -44,8 +44,7 @@ extension UIViewController {
 
         case "spreed":
             guard
-                let appDelegate = UIApplication.shared.delegate as? AppDelegate,
-                let talkUrl = URL(string: "nextcloudtalk://open-conversation?server=\(appDelegate.urlBase)&user=\(appDelegate.userId)&withUser=\(userId)"),
+                let talkUrl = URL(string: "nextcloudtalk://open-conversation?server=\(NCDomain.shared.getActiveUrlBase())&user=\(NCDomain.shared.getActiveUserId())&withUser=\(userId)"),
                 UIApplication.shared.canOpenURL(talkUrl)
             else { fallthrough /* default: open web link in browser */ }
             UIApplication.shared.open(talkUrl)
@@ -61,18 +60,18 @@ extension UIViewController {
     }
 
     func showProfileMenu(userId: String) {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
-        guard NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion23 else { return }
+        guard let domain = NCDomain.shared.getActiveDomain(),
+              NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion23 else { return }
 
-        NextcloudKit.shared.getHovercard(for: userId, account: appDelegate.account) { account, card, _, _ in
-            guard let card = card, account == appDelegate.account else { return }
+        NextcloudKit.shared.getHovercard(for: userId, account: domain.account) { account, card, _, _ in
+            guard let card = card, account == domain.account else { return }
 
             let personHeader = NCMenuAction(
                 title: card.displayName,
                 icon: NCUtility().loadUserImage(
                     for: userId,
                        displayName: card.displayName,
-                       userBaseUrl: appDelegate),
+                    account: domain.account),
                 action: nil)
 
             let actions = card.actions.map { action -> NCMenuAction in

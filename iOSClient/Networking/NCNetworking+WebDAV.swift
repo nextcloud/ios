@@ -742,7 +742,7 @@ extension NCNetworking {
                 })
             default:
                 partialResult.entries.forEach({ entry in
-                    let metadata = NCManageDatabase.shared.createMetadata(account: domain.account, user: domain.user, userId: domain.userId, fileName: entry.title, fileNameView: entry.title, ocId: NSUUID().uuidString, serverUrl: domain.urlBase, urlBase: domain.urlBase, url: entry.resourceURL, contentType: "", isUrl: true, name: partialResult.id, subline: entry.subline, iconName: entry.icon, iconUrl: entry.thumbnailURL)
+                    let metadata = NCManageDatabase.shared.createMetadata(domain: domain, fileName: entry.title, fileNameView: entry.title, ocId: NSUUID().uuidString, serverUrl: domain.urlBase, url: entry.resourceURL, contentType: "", isUrl: true, name: partialResult.id, subline: entry.subline, iconName: entry.icon, iconUrl: entry.thumbnailURL)
                     metadatas.append(metadata)
                 })
             }
@@ -803,7 +803,7 @@ extension NCNetworking {
                 })
             default:
                 searchResult.entries.forEach({ entry in
-                    let newMetadata = NCManageDatabase.shared.createMetadata(account: domain.account, user: domain.user, userId: domain.userId, fileName: entry.title, fileNameView: entry.title, ocId: NSUUID().uuidString, serverUrl: domain.urlBase, urlBase: domain.urlBase, url: entry.resourceURL, contentType: "", isUrl: true, name: searchResult.name.lowercased(), subline: entry.subline, iconName: entry.icon, iconUrl: entry.thumbnailURL)
+                    let newMetadata = NCManageDatabase.shared.createMetadata(domain: domain, fileName: entry.title, fileNameView: entry.title, ocId: NSUUID().uuidString, serverUrl: domain.urlBase, url: entry.resourceURL, contentType: "", isUrl: true, name: searchResult.name.lowercased(), subline: entry.subline, iconName: entry.icon, iconUrl: entry.thumbnailURL)
                     metadatas.append(newMetadata)
                 })
             }

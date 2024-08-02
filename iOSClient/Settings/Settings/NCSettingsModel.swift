@@ -29,8 +29,6 @@ import TOPasscodeViewController
 import LocalAuthentication
 
 class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
-    /// AppDelegate
-    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     /// Keychain access
     var keychain = NCKeychain()
     /// State to control the lock on/off section
@@ -96,10 +94,10 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
     /// This function initiates a service call to download the configuration files
     /// using the URL provided in the `configLink` property.
     func getConfigFiles() {
-        let configLink = appDelegate.urlBase + NCBrandOptions.shared.mobileconfig
+        let configLink = NCDomain.shared.getActiveUrlBase() + NCBrandOptions.shared.mobileconfig
         let configServer = NCConfigServer()
         if let url = URL(string: configLink) {
-            configServer.startService(url: url, account: appDelegate.account)
+            configServer.startService(url: url, account: NCDomain.shared.getActiveAccount())
         }
     }
 

@@ -237,6 +237,6 @@ struct NCUploadAssetsView: View {
     }
 }
 
-#Preview {
-    NCUploadAssetsView(model: NCUploadAssetsModel(assets: [], serverUrl: "/", userBaseUrl: (UIApplication.shared.delegate as? AppDelegate)!, controller: nil))
+#Preview {    
+    NCUploadAssetsView(model: NCUploadAssetsModel(assets: [], serverUrl: "/", domain: NCDomain.shared.getEmptyDomain(), controller: nil))
 }

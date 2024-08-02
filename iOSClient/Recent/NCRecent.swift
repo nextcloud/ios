@@ -49,19 +49,19 @@ class NCRecent: NCCollectionViewCommon {
 
     override func queryDB() {
         super.queryDB()
-
-        let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@", self.appDelegate.account), numItems: 200, sorted: "date", ascending: false)
+        guard let domain = NCDomain.shared.getActiveDomain() else { return }
+        let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@", domain.account), numItems: 200, sorted: "date", ascending: false)
 
         layoutForView?.sort = "date"
         layoutForView?.ascending = false
         layoutForView?.directoryOnTop = false
 
-        self.dataSource = NCDataSource(metadatas: metadatas, account: self.appDelegate.account, layoutForView: layoutForView, favoriteOnTop: false, providers: self.providers, searchResults: self.searchResults)
+        self.dataSource = NCDataSource(metadatas: metadatas, account: domain.account, layoutForView: layoutForView, favoriteOnTop: false, providers: self.providers, searchResults: self.searchResults)
     }
 
     override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
         super.reloadDataSourceNetwork()
-
+        guard let domain = NCDomain.shared.getActiveDomain() else { return }
         let requestBodyRecent =
         """
         <?xml version=\"1.0\"?>
@@ -128,12 +128,12 @@ class NCRecent: NCCollectionViewCommon {
         dateFormatter.locale = Locale(identifier: "en_US_POSIX")
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
         let lessDateString = dateFormatter.string(from: Date())
-        let requestBody = String(format: requestBodyRecent, "/files/" + appDelegate.userId, lessDateString)
+        let requestBody = String(format: requestBodyRecent, "/files/" + domain.userId, lessDateString)
 
-        NextcloudKit.shared.searchBodyRequest(serverUrl: appDelegate.urlBase,
+        NextcloudKit.shared.searchBodyRequest(serverUrl: domain.urlBase,
                                               requestBody: requestBody,
                                               showHiddenFiles: NCKeychain().showHiddenFiles,
-                                              account: appDelegate.account,
+                                              account: domain.account,
                                               options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()

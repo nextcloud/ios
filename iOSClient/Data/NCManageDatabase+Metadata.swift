@@ -452,7 +452,7 @@ extension NCManageDatabase {
         })
     }
 
-    func createMetadata(account: String, user: String, userId: String, fileName: String, fileNameView: String, ocId: String, serverUrl: String, urlBase: String, url: String, contentType: String, isUrl: Bool = false, name: String = NCGlobal.shared.appName, subline: String? = nil, iconName: String? = nil, iconUrl: String? = nil) -> tableMetadata {
+    func createMetadata(domain: NCDomain.Domain, fileName: String, fileNameView: String, ocId: String, serverUrl: String, url: String, contentType: String, isUrl: Bool = false, name: String = NCGlobal.shared.appName, subline: String? = nil, iconName: String? = nil, iconUrl: String? = nil) -> tableMetadata {
         let metadata = tableMetadata()
 
         if isUrl {
@@ -480,7 +480,7 @@ extension NCManageDatabase {
 
         let fileName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        metadata.account = account
+        metadata.account = domain.account
         metadata.creationDate = Date() as NSDate
         metadata.date = Date() as NSDate
         metadata.hasPreview = true
@@ -495,9 +495,9 @@ extension NCManageDatabase {
         metadata.subline = subline
         metadata.uploadDate = Date() as NSDate
         metadata.url = url
-        metadata.urlBase = urlBase
-        metadata.user = user
-        metadata.userId = userId
+        metadata.urlBase = domain.urlBase
+        metadata.user = domain.user
+        metadata.userId = domain.userId
 
         if !metadata.urlBase.isEmpty, metadata.serverUrl.hasPrefix(metadata.urlBase) {
             metadata.path = String(metadata.serverUrl.dropFirst(metadata.urlBase.count)) + "/"

@@ -185,7 +185,7 @@ class NCMainTabBar: UITabBar {
             if let controller = self.window?.rootViewController as? NCMainTabBarController {
                 let userBaseUrl = self.appDelegate
                 let serverUrl = controller.currentServerUrl()
-                if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", userBaseUrl.account, serverUrl)) {
+                if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", NCDomain.shared.getActiveAccount(), serverUrl)) {
                     if !directory.permissions.contains("CK") {
                         let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_add_file_")
                         NCContentPresenter().showWarning(error: error)

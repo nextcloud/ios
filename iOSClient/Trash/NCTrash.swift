@@ -84,7 +84,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         navigationController?.setNavigationBarAppearance()
         navigationItem.title = titleCurrentFolder
 
-        layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: NCGlobal.shared.layoutViewTrash, serverUrl: "")
+        layoutForView = NCManageDatabase.shared.getLayoutForView(account: NCDomain.shared.getActiveAccount(), key: NCGlobal.shared.layoutViewTrash, serverUrl: "")
 
         if layoutForView?.layout == NCGlobal.shared.layoutList {
             collectionView.collectionViewLayout = listLayout
@@ -127,7 +127,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
     func setNavigationRightItems() {
         func createMenuActions() -> [UIMenuElement] {
-            guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: "") else { return [] }
+            guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: NCDomain.shared.getActiveAccount(), key: layoutKey, serverUrl: "") else { return [] }
             let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: utility.loadImage(named: "checkmark.circle", colors: [NCBrandColor.shared.iconImageColor]), attributes: self.datasource.isEmpty ? .disabled : []) { _ in
                 self.setEditMode(true)
             }
@@ -203,7 +203,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
     @objc func reloadDataSource(withQueryDB: Bool = true) {
 
-        datasource = NCManageDatabase.shared.getTrash(filePath: getFilePath(), account: appDelegate.account)
+        datasource = NCManageDatabase.shared.getTrash(filePath: getFilePath(), account: NCDomain.shared.getActiveAccount())
         collectionView.reloadData()
         setNavigationRightItems()
 
@@ -227,8 +227,8 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
     func getFilePath() -> String {
         if filePath.isEmpty {
-            guard let userId = (appDelegate.userId as NSString).addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlFragmentAllowed) else { return "" }
-            let filePath = appDelegate.urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav + "/trashbin/" + userId + "/trash"
+            guard let userId = (NCDomain.shared.getActiveUserId() as NSString).addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlFragmentAllowed) else { return "" }
+            let filePath = NCDomain.shared.getActiveUrlBase() + "/" + NextcloudKit.shared.nkCommonInstance.dav + "/trashbin/" + userId + "/trash"
             return filePath + "/"
         } else {
             return filePath + "/"

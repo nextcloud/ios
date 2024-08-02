@@ -300,13 +300,9 @@ extension NCShareExtension {
         for fileName in filesName {
             let ocId = NSUUID().uuidString
             let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
-            guard utilityFileSystem.copyFile(atPath: (NSTemporaryDirectory() + fileName), toPath: toPath) else { continue }
-            let metadata = NCManageDatabase.shared.createMetadata(
-                account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId,
-                fileName: fileName, fileNameView: fileName,
-                ocId: ocId,
-                serverUrl: serverUrl, urlBase: activeAccount.urlBase, url: "",
-                contentType: "")
+            guard utilityFileSystem.copyFile(atPath: (NSTemporaryDirectory() + fileName), toPath: toPath),
+                  let domain = NCDomain.shared.getDomain(account: activeAccount.account) else { continue }
+            let metadata = NCManageDatabase.shared.createMetadata(domain: domain, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, url: "", contentType: "")
             metadata.session = NextcloudKit.shared.nkCommonInstance.identifierSessionUpload
             metadata.sessionSelector = NCGlobal.shared.selectorUploadFileShareExtension
             metadata.size = utilityFileSystem.getFileSize(filePath: toPath)
