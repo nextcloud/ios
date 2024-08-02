@@ -279,9 +279,7 @@ extension NCNetworking {
             return
         }
 
-        if let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) {
-            cell.fileAvatarImageView?.image = utility.loadUserImage(for: user, displayName: dispalyName, userBaseUrl: account)
-        }
+        cell.fileAvatarImageView?.image = utility.loadUserImage(for: user, displayName: dispalyName, account: NCDomain.shared.getActiveAccount())
 
         for case let operation as NCOperationDownloadAvatar in downloadAvatarQueue.operations where operation.fileName == fileName { return }
         downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: user, fileName: fileName, fileNameLocalPath: fileNameLocalPath, account: account, cell: cell, view: view))

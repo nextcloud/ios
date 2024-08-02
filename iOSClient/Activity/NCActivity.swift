@@ -74,15 +74,12 @@ class NCActivity: UIViewController, NCSharePagingContent {
 
     func setupComments() {
         // Display Name & Quota
-        guard let activeAccount = NCManageDatabase.shared.getActiveAccount(), height > 0 else {
-            return
-        }
-
+        let account = NCDomain.shared.getActiveAccount()
         tableView.register(UINib(nibName: "NCShareCommentsCell", bundle: nil), forCellReuseIdentifier: "cell")
         commentView = Bundle.main.loadNibNamed("NCActivityCommentView", owner: self, options: nil)?.first as? NCActivityCommentView
-        commentView?.setup(urlBase: appDelegate, account: activeAccount) { newComment in
+        commentView?.setup(account: account) { newComment in
             guard let newComment = newComment, !newComment.isEmpty, let metadata = self.metadata else { return }
-            NextcloudKit.shared.putComments(fileId: metadata.fileId, message: newComment, account: NCDomain.shared.getActiveAccount()) { _, error in
+            NextcloudKit.shared.putComments(fileId: metadata.fileId, message: newComment, account: account) { _, error in
                 if error == .success {
                     self.commentView?.newCommentField.text?.removeAll()
                     self.loadComments()

@@ -33,7 +33,6 @@ class NCNetworkingProcess: NSObject {
         return instance
     }()
 
-    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
     var notificationToken: NotificationToken?
     var timerProcess: Timer?
@@ -43,7 +42,8 @@ class NCNetworkingProcess: NSObject {
     func startTimer(scene: UIScene) {
         self.timerProcess?.invalidate()
         self.timerProcess = Timer.scheduledTimer(withTimeInterval: 2, repeats: true, block: { _ in
-            guard !self.appDelegate.account.isEmpty,
+            let account = NCDomain.shared.getActiveAccount()
+            guard !account.isEmpty,
                   !self.pauseProcess else { return }
 
             // In Downloading or Uploading [TEST]
@@ -55,7 +55,7 @@ class NCNetworkingProcess: NSObject {
             }
             */
 
-            guard let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND status != %d", self.appDelegate.account, NCGlobal.shared.metadataStatusNormal)) else { return }
+            guard let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND status != %d", account, NCGlobal.shared.metadataStatusNormal)) else { return }
 
             if results.isEmpty {
                 //
@@ -63,22 +63,22 @@ class NCNetworkingProcess: NSObject {
                 //
                 if NCKeychain().removePhotoCameraRoll,
                    UIApplication.shared.applicationState == .active,
-                   let localIdentifiers = NCManageDatabase.shared.getAssetLocalIdentifiersUploaded(account: self.appDelegate.account),
+                   let localIdentifiers = NCManageDatabase.shared.getAssetLocalIdentifiersUploaded(account: account),
                    !localIdentifiers.isEmpty {
                     self.pauseProcess = true
                     PHPhotoLibrary.shared().performChanges({
                         PHAssetChangeRequest.deleteAssets(PHAsset.fetchAssets(withLocalIdentifiers: localIdentifiers, options: nil) as NSFastEnumeration)
                     }, completionHandler: { _, _ in
-                        NCManageDatabase.shared.clearAssetLocalIdentifiers(localIdentifiers, account: self.appDelegate.account)
+                        NCManageDatabase.shared.clearAssetLocalIdentifiers(localIdentifiers, account: account)
                         self.pauseProcess = false
                     })
                 }
                 NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil, userInfo: ["counterDownload": 0, "counterUpload": 0])
             } else {
                 Task {
-                    let results = await self.start(scene: scene)
-                    let counterDownload = await NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND session == %@ AND (status == %d || status == %d)", self.appDelegate.account, NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground, NCGlobal.shared.metadataStatusWaitDownload, NCGlobal.shared.metadataStatusDownloading))?.count ?? 0
-                    let counterUpload = await NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND session == %@ AND (status == %d || status == %d)", self.appDelegate.account, NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground, NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusUploading))?.count ?? 0
+                    let results = await self.start(scene: scene, account: account)
+                    let counterDownload = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND session == %@ AND (status == %d || status == %d)", account, NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground, NCGlobal.shared.metadataStatusWaitDownload, NCGlobal.shared.metadataStatusDownloading))?.count ?? 0
+                    let counterUpload = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND session == %@ AND (status == %d || status == %d)", account, NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground, NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusUploading))?.count ?? 0
                     print("[INFO] PROCESS Download: \(results.counterDownloading)/\(counterDownload) Upload: \(results.counterUploading)/\(counterUpload)")
                     NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil, userInfo: ["counterDownload": counterDownload, "counterUpload": counterUpload])
                 }
@@ -91,18 +91,18 @@ class NCNetworkingProcess: NSObject {
     }
 
     @discardableResult
-    func start(scene: UIScene?) async -> (counterDownloading: Int, counterUploading: Int) {
+    func start(scene: UIScene?, account: String) async -> (counterDownloading: Int, counterUploading: Int) {
         self.pauseProcess = true
         let hudView = await SceneManager.shared.getController(scene: scene)?.view
-        let nkSession = await NextcloudKit.shared.nkCommonInstance.getSession(account: appDelegate.account)
+        let nkSession = NextcloudKit.shared.nkCommonInstance.getSession(account: account)
         let applicationState = await checkApplicationState()
         let maxConcurrentOperationDownload = NCBrandOptions.shared.maxConcurrentOperationDownload
         var maxConcurrentOperationUpload = NCBrandOptions.shared.maxConcurrentOperationUpload
         var filesNameLocalPath: [String] = []
         let sessionUploadSelectors = [NCGlobal.shared.selectorUploadFileNODelete, NCGlobal.shared.selectorUploadFile, NCGlobal.shared.selectorUploadAutoUpload, NCGlobal.shared.selectorUploadAutoUploadAll]
-        let metadatasDownloading = await NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status == %d", self.appDelegate.account, NCGlobal.shared.metadataStatusDownloading))
-        let metadatasUploading = await NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status == %d", self.appDelegate.account, NCGlobal.shared.metadataStatusUploading))
-        let metadatasUploadError: [tableMetadata] = await NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status == %d", self.appDelegate.account, NCGlobal.shared.metadataStatusUploadError), sorted: "sessionDate", ascending: true) ?? []
+        let metadatasDownloading = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status == %d", account, NCGlobal.shared.metadataStatusDownloading))
+        let metadatasUploading = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status == %d", account, NCGlobal.shared.metadataStatusUploading))
+        let metadatasUploadError: [tableMetadata] = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND status == %d", account, NCGlobal.shared.metadataStatusUploadError), sorted: "sessionDate", ascending: true) ?? []
         let isWiFi = NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi
         var counterDownloading = metadatasDownloading.count
         var counterUploading = metadatasUploading.count
@@ -113,13 +113,13 @@ class NCNetworkingProcess: NSObject {
         // ------------------------ DOWNLOAD
 
         let limitDownload = maxConcurrentOperationDownload - counterDownloading
-        let metadatasWaitDownload = await NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session == %@ AND status == %d", self.appDelegate.account, NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground, NCGlobal.shared.metadataStatusWaitDownload), numItems: limitDownload, sorted: "sessionDate", ascending: true)
+        let metadatasWaitDownload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session == %@ AND status == %d", account, NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground, NCGlobal.shared.metadataStatusWaitDownload), numItems: limitDownload, sorted: "sessionDate", ascending: true)
         for metadata in metadatasWaitDownload where counterDownloading < maxConcurrentOperationDownload {
             counterDownloading += 1
             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
         }
         if counterDownloading == 0 {
-            let metadatasDownloadError: [tableMetadata] = await NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session == %@ AND status == %d", self.appDelegate.account, NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground, NCGlobal.shared.metadataStatusDownloadError), sorted: "sessionDate", ascending: true) ?? []
+            let metadatasDownloadError: [tableMetadata] = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND session == %@ AND status == %d", account, NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground, NCGlobal.shared.metadataStatusDownloadError), sorted: "sessionDate", ascending: true) ?? []
             for metadata in metadatasDownloadError {
                 // Verify COUNTER ERROR
                 if let counter = NCNetworking.shared.transferInError[metadata.ocId],
@@ -162,7 +162,7 @@ class NCNetworkingProcess: NSObject {
 
         for sessionSelector in sessionUploadSelectors where counterUploading < maxConcurrentOperationUpload {
             let limitUpload = maxConcurrentOperationUpload - counterUploading
-            let metadatasWaitUpload = await NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND sessionSelector == %@ AND status == %d", self.appDelegate.account, sessionSelector, NCGlobal.shared.metadataStatusWaitUpload), numItems: limitUpload, sorted: "sessionDate", ascending: true)
+            let metadatasWaitUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND sessionSelector == %@ AND status == %d", account, sessionSelector, NCGlobal.shared.metadataStatusWaitUpload), numItems: limitUpload, sorted: "sessionDate", ascending: true)
             if !metadatasWaitUpload.isEmpty {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] PROCESS (UPLOAD) find \(metadatasWaitUpload.count) items")
             }
@@ -257,7 +257,7 @@ class NCNetworkingProcess: NSObject {
     // MARK: -
 
     func verifyZombie() async {
-        let nkSession = await NextcloudKit.shared.nkCommonInstance.getSession(account: appDelegate.account)
+        let nkSession = NextcloudKit.shared.nkCommonInstance.getSession(account: NCDomain.shared.getActiveAccount())
 
         // selectorUploadFileShareExtension (FOREGROUND)
         if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "session == %@ AND sessionSelector == %@", NextcloudKit.shared.nkCommonInstance.identifierSessionUpload, NCGlobal.shared.selectorUploadFileShareExtension)) {

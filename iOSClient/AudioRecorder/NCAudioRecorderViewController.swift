@@ -56,7 +56,7 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
         voiceRecordHUD.fillColor = UIColor.green
 
         Task {
-            self.fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + ".m4a", account: self.appDelegate.account, serverUrl: self.serverUrl)
+            self.fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + ".m4a", account: NCDomain.shared.getActiveAccount(), serverUrl: self.serverUrl)
             recording = NCAudioRecorder(to: self.fileName)
             recording.delegate = self
             do {
@@ -97,8 +97,9 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
     }
 
     func uploadMetadata() {
+        guard let domain = NCDomain.shared.getActiveDomain() else { return }
         let fileNamePath = NSTemporaryDirectory() + self.fileName
-        let metadata = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: UUID().uuidString, serverUrl: self.serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "")
+        let metadata = NCManageDatabase.shared.createMetadata(domain: domain, fileName: fileName, fileNameView: fileName, ocId: UUID().uuidString, serverUrl: self.serverUrl, url: "", contentType: "")
         metadata.session = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground
         metadata.sessionSelector = NCGlobal.shared.selectorUploadFile
         metadata.status = NCGlobal.shared.metadataStatusWaitUpload
