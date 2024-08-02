@@ -105,26 +105,6 @@ public class NCDomain: NSObject {
         return ""
     }
 
-    /*
-     import Foundation
-
-     @objc public protocol NCUserBaseUrl {
-         var user: String { get }
-         var urlBase: String { get }
-         var account: String { get }
-         var userId: String { get }
-     }
-
-     public extension NCUserBaseUrl {
-         var userBaseUrl: String {
-             user + "-" + (URL(string: urlBase)?.host ?? "")
-         }
-         var userAccount: String {
-             user + " " + urlBase
-         }
-     }
-
-     */
     public func getActiveUserBaseUrl() -> String {
         if let activeAccount = NCManageDatabase.shared.getActiveStringAccount() {
            return self.getUserBaseUrl(account: activeAccount)
