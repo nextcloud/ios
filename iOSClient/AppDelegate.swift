@@ -89,13 +89,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
+            NCDomain.shared.setActiveTableAccount(activeAccount)
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Account active \(activeAccount.account)")
 
             if NCKeychain().getPassword(account: activeAccount.account).isEmpty {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] PASSWORD NOT FOUND for \(activeAccount.account)")
             }
-
-            NCDomain.shared.setActiveTableAccount(activeAccount)
 
             for account in NCManageDatabase.shared.getAllAccount() {
                 NCDomain.shared.appendDomain(account: account.account, urlBase: account.urlBase, user: account.user, userId: account.userId, sceneIdentifier: "")
@@ -497,8 +496,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         guard let activeTableAccount = NCManageDatabase.shared.setAccountActive(account) else {
             return completion()
         }
-
-        NCDomain.shared.setActiveTableAccount(activeTableAccount)
 
         NCNetworking.shared.cancelAllQueue()
         NCNetworking.shared.cancelDataTask()

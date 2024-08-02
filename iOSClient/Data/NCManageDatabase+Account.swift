@@ -262,6 +262,7 @@ extension NCManageDatabase {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
             return nil
         }
+        NCDomain.shared.setActiveTableAccount(tableAccount.init(value: accountReturn))
         return tableAccount.init(value: accountReturn)
     }
 
