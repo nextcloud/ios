@@ -237,6 +237,6 @@ struct NCUploadAssetsView: View {
     }
 }
 
-#Preview {    
-    NCUploadAssetsView(model: NCUploadAssetsModel(assets: [], serverUrl: "/", domain: NCDomain.shared.getEmptyDomain(), controller: nil))
+#Preview {
+    NCUploadAssetsView(model: NCUploadAssetsModel(assets: [], serverUrl: "/", controller: nil, domain: NCDomain.shared.getEmptyDomain()))
 }
