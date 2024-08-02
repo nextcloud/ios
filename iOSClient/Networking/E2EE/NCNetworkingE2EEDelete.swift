@@ -28,7 +28,8 @@ class NCNetworkingE2EEDelete: NSObject {
 
     func delete(metadata: tableMetadata) async -> NKError {
 
-        guard let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
+        guard let domain = NCDomain.shared.getDomain(account: metadata.account),
+              let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
             return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_")
         }
 
@@ -53,7 +54,7 @@ class NCNetworkingE2EEDelete: NSObject {
 
         // DOWNLOAD METADATA
         //
-        let errorDownloadMetadata = await networkingE2EE.downloadMetadata(account: metadata.account, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, fileId: fileId, e2eToken: e2eToken)
+        let errorDownloadMetadata = await networkingE2EE.downloadMetadata(serverUrl: metadata.serverUrl, fileId: fileId, e2eToken: e2eToken, domain: domain)
         guard errorDownloadMetadata == .success else {
             await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
             return errorDownloadMetadata
@@ -65,13 +66,12 @@ class NCNetworkingE2EEDelete: NSObject {
 
         // UPLOAD METADATA
         //
-        let uploadMetadataError = await networkingE2EE.uploadMetadata(account: metadata.account,
-                                                                               serverUrl: metadata.serverUrl,
-                                                                               ocIdServerUrl: directory.ocId,
-                                                                               fileId: fileId,
-                                                                               userId: metadata.userId,
-                                                                               e2eToken: e2eToken,
-                                                                               method: "PUT")
+        let uploadMetadataError = await networkingE2EE.uploadMetadata(serverUrl: metadata.serverUrl,
+                                                                      ocIdServerUrl: directory.ocId,
+                                                                      fileId: fileId,
+                                                                      e2eToken: e2eToken,
+                                                                      method: "PUT",
+                                                                      domain: domain)
         guard uploadMetadataError == .success else {
             await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
             return uploadMetadataError
