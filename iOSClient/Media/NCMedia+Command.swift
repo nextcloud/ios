@@ -100,7 +100,8 @@ extension NCMedia {
     }
 
     func createMenu() {
-        let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")
+        guard let domain = NCDomain.shared.getActiveDomain() else { return }
+        let layoutForView = NCManageDatabase.shared.getLayoutForView(account: domain.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")
         let columnPhoto = layoutForView?.columnPhoto ?? 3
         let layout = layoutForView?.layout ?? NCGlobal.shared.mediaLayoutRatio
         let layoutTitle = (layout == NCGlobal.shared.mediaLayoutRatio) ? NSLocalizedString("_media_square_", comment: "") : NSLocalizedString("_media_ratio_", comment: "")
@@ -136,9 +137,9 @@ extension NCMedia {
         ])
         let viewLayoutMenu = UIAction(title: layoutTitle, image: layoutImage) { _ in
             if layout == NCGlobal.shared.mediaLayoutRatio {
-                NCManageDatabase.shared.setLayoutForView(account: self.appDelegate.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", layout: NCGlobal.shared.mediaLayoutSquare)
+                NCManageDatabase.shared.setLayoutForView(account: domain.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", layout: NCGlobal.shared.mediaLayoutSquare)
             } else {
-                NCManageDatabase.shared.setLayoutForView(account: self.appDelegate.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", layout: NCGlobal.shared.mediaLayoutRatio)
+                NCManageDatabase.shared.setLayoutForView(account: domain.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", layout: NCGlobal.shared.mediaLayoutRatio)
             }
             self.createMenu()
             self.collectionViewReloadData()
@@ -149,7 +150,7 @@ extension NCMedia {
                 UIAction(title: NSLocalizedString("_zoom_out_", comment: ""), image: utility.loadImage(named: "minus.magnifyingglass"), attributes: self.attributesZoomOut) { _ in
                     UIView.animate(withDuration: 0.0, animations: {
                         let column = columnPhoto + 1
-                        NCManageDatabase.shared.setLayoutForView(account: self.appDelegate.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: column)
+                        NCManageDatabase.shared.setLayoutForView(account: domain.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: column)
                         self.createMenu()
                         self.collectionViewReloadData()
                     })
@@ -157,7 +158,7 @@ extension NCMedia {
                 UIAction(title: NSLocalizedString("_zoom_in_", comment: ""), image: utility.loadImage(named: "plus.magnifyingglass"), attributes: self.attributesZoomIn) { _ in
                     UIView.animate(withDuration: 0.0, animations: {
                         let column = columnPhoto - 1
-                        NCManageDatabase.shared.setLayoutForView(account: self.appDelegate.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: column)
+                        NCManageDatabase.shared.setLayoutForView(account: domain.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: column)
                         self.createMenu()
                         self.collectionViewReloadData()
                     })
@@ -188,7 +189,7 @@ extension NCMedia {
             alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
                 guard let stringUrl = alert.textFields?.first?.text, !stringUrl.isEmpty, let url = URL(string: stringUrl) else { return }
                 let fileName = url.lastPathComponent
-                let metadata = NCManageDatabase.shared.createMetadata(account: self.activeAccount.account, user: self.activeAccount.user, userId: self.activeAccount.userId, fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: "", urlBase: self.activeAccount.urlBase, url: stringUrl, contentType: "")
+                let metadata = NCManageDatabase.shared.createMetadata(domain: domain, fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: "", url: stringUrl, contentType: "")
                 NCManageDatabase.shared.addMetadata(metadata)
                 NCViewer().view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: nil)
             }))

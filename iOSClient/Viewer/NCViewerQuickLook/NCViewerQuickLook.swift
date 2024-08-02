@@ -218,7 +218,8 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
     }
 
     fileprivate func saveModifiedFile(override: Bool) {
-        guard let metadata = self.metadata else { return }
+        guard let metadata = self.metadata,
+              let domain = NCDomain.shared.getActiveDomain() else { return }
         if !uploadMetadata {
             return self.dismiss(animated: true)
         }
@@ -235,14 +236,11 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
         guard utilityFileSystem.copyFile(atPath: url.path, toPath: fileNamePath) else { return }
 
         let metadataForUpload = NCManageDatabase.shared.createMetadata(
-            account: metadata.account,
-            user: metadata.user,
-            userId: metadata.userId,
+            domain: domain,
             fileName: metadata.fileName,
             fileNameView: metadata.fileNameView,
             ocId: ocId,
             serverUrl: metadata.serverUrl,
-            urlBase: metadata.urlBase,
             url: url.path,
             contentType: "")
 

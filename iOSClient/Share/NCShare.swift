@@ -126,7 +126,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
 
     // Shared with you by ...
     func checkSharedWithYou() {
-        guard let appDelegate = self.appDelegate, let metadata = metadata, !metadata.ownerId.isEmpty, metadata.ownerId != appDelegate.userId else { return }
+        guard let domain = NCDomain.shared.getActiveDomain(), let metadata = metadata, !metadata.ownerId.isEmpty, metadata.ownerId != domain.userId else { return }
 
         if !canReshare {
             searchField.isUserInteractionEnabled = false
@@ -140,7 +140,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         sharedWithYouByImage.image = utility.loadUserImage(
             for: metadata.ownerId,
             displayName: metadata.ownerDisplayName,
-            userBaseUrl: appDelegate)
+            account: domain.account)
         sharedWithYouByLabel.accessibilityHint = NSLocalizedString("_show_profile_", comment: "")
 
         let shareAction = UITapGestureRecognizer(target: self, action: #selector(openShareProfile))
@@ -148,7 +148,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         let shareLabelAction = UITapGestureRecognizer(target: self, action: #selector(openShareProfile))
         sharedWithYouByLabel.addGestureRecognizer(shareLabelAction)
 
-        let fileName = appDelegate.userBaseUrl + "-" + metadata.ownerId + ".png"
+        let fileName = NCDomain.shared.getUserBaseUrl(account: domain.account) + "-" + metadata.ownerId + ".png"
 
         if NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) == nil {
             let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
@@ -273,7 +273,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         dropDown.customCellConfiguration = { (index: Index, _, cell: DropDownCell) -> Void in
             guard let cell = cell as? NCSearchUserDropDownCell else { return }
             let sharee = sharees[index]
-            cell.setupCell(sharee: sharee, userBaseUrl: appDelegate)
+            cell.setupCell(sharee: sharee, account: NCDomain.shared.getActiveAccount())
         }
 
         dropDown.selectionAction = { index, _ in
@@ -349,7 +349,7 @@ extension NCShare: UITableViewDataSource {
             return cell
         }
 
-        guard let appDelegate = appDelegate, let tableShare = shares.share?[indexPath.row], let metadata else { return UITableViewCell() }
+        guard let domain = NCDomain.shared.getActiveDomain(), let tableShare = shares.share?[indexPath.row], let metadata else { return UITableViewCell() }
 
         // LINK
         if tableShare.shareType == shareCommon.SHARE_TYPE_LINK {
@@ -366,8 +366,8 @@ extension NCShare: UITableViewDataSource {
                 cell.indexPath = indexPath
                 cell.tableShare = tableShare
                 cell.delegate = self
-                cell.setupCellUI(userId: appDelegate.userId)
-                let fileName = appDelegate.userBaseUrl + "-" + tableShare.shareWith + ".png"
+                cell.setupCellUI(userId: domain.userId)
+                let fileName = NCDomain.shared.getUserBaseUrl(account: domain.account) + "-" + tableShare.shareWith + ".png"
                 NCNetworking.shared.downloadAvatar(user: tableShare.shareWith, dispalyName: tableShare.shareWithDisplayname, fileName: fileName, account: metadata.account, cell: cell, view: tableView)
                 return cell
             }
