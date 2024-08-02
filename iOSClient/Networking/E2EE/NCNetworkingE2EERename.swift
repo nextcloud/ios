@@ -33,7 +33,8 @@ class NCNetworkingE2EERename: NSObject {
         if NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameNew)) != nil {
             return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_file_already_exists_")
         }
-        guard let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
+        guard let domain = NCDomain.shared.getDomain(account: metadata.account),
+              let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
             return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_")
         }
 
@@ -50,7 +51,7 @@ class NCNetworkingE2EERename: NSObject {
 
         // DOWNLOAD METADATA
         //
-        let errorDownloadMetadata = await networkingE2EE.downloadMetadata(account: metadata.account, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, fileId: fileId, e2eToken: e2eToken)
+        let errorDownloadMetadata = await networkingE2EE.downloadMetadata(serverUrl: metadata.serverUrl, fileId: fileId, e2eToken: e2eToken, domain: domain)
         guard errorDownloadMetadata == .success else {
             await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
             return errorDownloadMetadata
@@ -58,18 +59,17 @@ class NCNetworkingE2EERename: NSObject {
 
         // DB RENAME
         //
-        let newFileNamePath = utilityFileSystem.getFileNamePath(fileNameNew, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
+        let newFileNamePath = utilityFileSystem.getFileNamePath(fileNameNew, serverUrl: metadata.serverUrl, domain: domain)
         NCManageDatabase.shared.renameFileE2eEncryption(account: metadata.account, serverUrl: metadata.serverUrl, fileNameIdentifier: metadata.fileName, newFileName: fileNameNew, newFileNamePath: newFileNamePath)
 
         // UPLOAD METADATA
         //
-        let uploadMetadataError = await networkingE2EE.uploadMetadata(account: metadata.account,
-                                                                               serverUrl: metadata.serverUrl,
-                                                                               ocIdServerUrl: directory.ocId,
-                                                                               fileId: fileId,
-                                                                               userId: metadata.userId,
-                                                                               e2eToken: e2eToken,
-                                                                               method: "PUT")
+        let uploadMetadataError = await networkingE2EE.uploadMetadata(serverUrl: metadata.serverUrl,
+                                                                      ocIdServerUrl: directory.ocId,
+                                                                      fileId: fileId,
+                                                                      e2eToken: e2eToken,
+                                                                      method: "PUT",
+                                                                      domain: domain)
         guard uploadMetadataError == .success else {
             await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
             return uploadMetadataError

@@ -29,7 +29,7 @@ import Photos
 import PDFKit
 
 class NCHostingUploadScanDocumentView: NSObject {
-    func makeShipDetailsUI(images: [UIImage], domain: NCDomain.Domain, serverUrl: String) -> UIViewController {
+    func makeShipDetailsUI(images: [UIImage], serverUrl: String, domain: NCDomain.Domain) -> UIViewController {
         let uploadScanDocument = NCUploadScanDocument(images: images, domain: domain, serverUrl: serverUrl)
         let details = UploadScanDocumentView(uploadScanDocument: uploadScanDocument)
         let vc = UIHostingController(rootView: details)
@@ -342,7 +342,7 @@ struct UploadScanDocumentView: View {
                     Section(header: Text(NSLocalizedString("_file_creation_", comment: ""))) {
                         HStack {
                             Label {
-                                if NCUtilityFileSystem().getHomeServer(urlBase: uploadScanDocument.domain.urlBase, userId: uploadScanDocument.domain.userId) == uploadScanDocument.serverUrl {
+                                if NCUtilityFileSystem().getHomeServer(domain: uploadScanDocument.domain) == uploadScanDocument.serverUrl {
                                     Text("/")
                                         .frame(maxWidth: .infinity, alignment: .trailing)
                                 } else {

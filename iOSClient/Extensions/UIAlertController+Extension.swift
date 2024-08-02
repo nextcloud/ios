@@ -53,7 +53,7 @@ extension UIAlertController {
                     }
                 }
             } else {
-                NCNetworking.shared.createFolder(fileName: fileNameFolder, serverUrl: serverUrl, account: domain.account, urlBase: domain.urlBase, userId: domain.userId, overwrite: false, withPush: true, sceneIdentifier: sceneIdentifier) { error in
+                NCNetworking.shared.createFolder(fileName: fileNameFolder, serverUrl: serverUrl, overwrite: false, withPush: true, sceneIdentifier: sceneIdentifier, domain: domain) { error in
                     if let completion = completion {
                         completion(error)
                     } else if error != .success {

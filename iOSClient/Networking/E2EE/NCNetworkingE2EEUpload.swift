@@ -44,7 +44,6 @@ class NCNetworkingE2EEUpload: NSObject {
     var numChunks: Int = 0
 
     func upload(metadata: tableMetadata, uploadE2EEDelegate: uploadE2EEDelegate? = nil, hudView: UIView?, hud: JGProgressHUD?) async -> NKError {
-
         var metadata = metadata
         let ocIdTemp = metadata.ocId
 
@@ -55,14 +54,14 @@ class NCNetworkingE2EEUpload: NSObject {
         }
         metadata.session = NextcloudKit.shared.nkCommonInstance.identifierSessionUpload
         metadata.sessionError = ""
-        guard let result = NCManageDatabase.shared.addMetadata(metadata),
+        guard let domain = NCDomain.shared.getDomain(account: metadata.account),
+              let result = NCManageDatabase.shared.addMetadata(metadata),
               let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
             return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
         }
         metadata = result
 
         func sendE2ee(e2eToken: String, fileId: String) async -> NKError {
-
             var key: NSString?, initializationVector: NSString?, authenticationTag: NSString?
             var method = "POST"
 
@@ -77,7 +76,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
             // DOWNLOAD METADATA
             //
-            let errorDownloadMetadata = await networkingE2EE.downloadMetadata(account: metadata.account, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, fileId: fileId, e2eToken: e2eToken)
+            let errorDownloadMetadata = await networkingE2EE.downloadMetadata(serverUrl: metadata.serverUrl, fileId: fileId, e2eToken: e2eToken, domain: domain)
             if errorDownloadMetadata == .success {
                 method = "PUT"
             } else if errorDownloadMetadata.errorCode != NCGlobal.shared.errorResourceNotFound {
@@ -108,13 +107,12 @@ class NCNetworkingE2EEUpload: NSObject {
 
             // UPLOAD METADATA
             //
-            let uploadMetadataError = await networkingE2EE.uploadMetadata(account: metadata.account,
-                                                                                   serverUrl: metadata.serverUrl,
-                                                                                   ocIdServerUrl: directory.ocId,
-                                                                                   fileId: fileId,
-                                                                                   userId: metadata.userId,
-                                                                                   e2eToken: e2eToken,
-                                                                                   method: method)
+            let uploadMetadataError = await networkingE2EE.uploadMetadata(serverUrl: metadata.serverUrl,
+                                                                          ocIdServerUrl: directory.ocId,
+                                                                          fileId: fileId,
+                                                                          e2eToken: e2eToken,
+                                                                          method: method,
+                                                                          domain: domain)
 
             return uploadMetadataError
         }
