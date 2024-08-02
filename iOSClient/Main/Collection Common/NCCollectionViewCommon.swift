@@ -134,7 +134,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
             self.dataSource.clearDirectory()
-            NCManageDatabase.shared.cleanEtagDirectory(account: self.appDelegate.account, serverUrl: self.serverUrl)
+            NCManageDatabase.shared.cleanEtagDirectory(serverUrl: self.serverUrl, account: NCDomain.shared.getActiveAccount())
             self.reloadDataSourceNetwork()
         }
 
@@ -168,7 +168,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         setNavigationLeftItems()
         setNavigationRightItems()
 
-        layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl)
+        layoutForView = NCManageDatabase.shared.getLayoutForView(account: NCDomain.shared.getActiveAccount(), key: layoutKey, serverUrl: serverUrl)
         if layoutForView?.layout == NCGlobal.shared.layoutList {
             collectionView?.collectionViewLayout = listLayout
         } else if layoutForView?.layout == NCGlobal.shared.layoutGrid {
@@ -387,7 +387,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func renameFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let account = userInfo["account"] as? String,
-              account == appDelegate.account
+              account == NCDomain.shared.getActiveAccount()
         else { return }
 
         reloadDataSource()
@@ -399,7 +399,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let serverUrl = userInfo["serverUrl"] as? String,
               serverUrl == self.serverUrl,
               let account = userInfo["account"] as? String,
-              account == appDelegate.account,
+              account == NCDomain.shared.getActiveAccount(),
               let withPush = userInfo["withPush"] as? Bool
         else { return }
 
@@ -434,7 +434,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let serverUrl = userInfo["serverUrl"] as? String,
               serverUrl == self.serverUrl || self.serverUrl.isEmpty,
               let account = userInfo["account"] as? String,
-              account == appDelegate.account
+              account == NCDomain.shared.getActiveAccount()
         else { return }
 
         self.notificationReloadDataSource += 1
@@ -445,7 +445,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let serverUrl = userInfo["serverUrl"] as? String,
               serverUrl == self.serverUrl || self.serverUrl.isEmpty,
               let account = userInfo["account"] as? String,
-              account == appDelegate.account,
+              account == NCDomain.shared.getActiveAccount(),
               let error = userInfo["error"] as? NKError
         else { return }
 
@@ -461,7 +461,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let serverUrl = userInfo["serverUrl"] as? String,
               serverUrl == self.serverUrl || self.serverUrl.isEmpty,
               let account = userInfo["account"] as? String,
-              account == appDelegate.account
+              account == NCDomain.shared.getActiveAccount()
         else { return }
 
         reloadDataSource()
@@ -482,7 +482,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             DispatchQueue.main.async { self.collectionView?.reloadData() }
         }
 
-        if serverUrl == self.serverUrl, account == appDelegate.account {
+        if serverUrl == self.serverUrl, account == NCDomain.shared.getActiveAccount() {
             notificationReloadDataSource += 1
         }
     }
@@ -499,7 +499,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             DispatchQueue.main.async { self.collectionView?.reloadData() }
         }
 
-        if account == appDelegate.account, serverUrl == self.serverUrl {
+        if account == NCDomain.shared.getActiveAccount(), serverUrl == self.serverUrl {
             notificationReloadDataSource += 1
         }
     }
@@ -509,7 +509,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let serverUrl = userInfo["serverUrl"] as? String,
               serverUrl == self.serverUrl,
               let account = userInfo["account"] as? String,
-              account == appDelegate.account
+              account == NCDomain.shared.getActiveAccount()
         else { return }
 
         notificationReloadDataSource += 1
@@ -527,7 +527,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             DispatchQueue.main.async { self.collectionView?.reloadData() }
         }
 
-        if account == appDelegate.account, serverUrl == self.serverUrl {
+        if account == NCDomain.shared.getActiveAccount(), serverUrl == self.serverUrl {
             reloadDataSource()
         }
     }
@@ -592,8 +592,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func setNavigationLeftItems() {
         guard layoutKey == NCGlobal.shared.layoutViewFiles else { return }
-        let activeAccount = NCManageDatabase.shared.getActiveAccount()
-        let image = utility.loadUserImage(for: appDelegate.user, displayName: activeAccount?.displayName, userBaseUrl: appDelegate)
+        guard let activeAccount = NCManageDatabase.shared.getActiveAccount()
+        let image = utility.loadUserImage(for: appDelegate.user, displayName: activeAccount?.displayName, account: a)
         let accountButton = AccountSwitcherButton(type: .custom)
         let accounts = NCManageDatabase.shared.getAllAccountOrderAlias()
         var childrenAccountSubmenu: [UIMenuElement] = []
