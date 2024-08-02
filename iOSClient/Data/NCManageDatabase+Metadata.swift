@@ -893,10 +893,10 @@ extension NCManageDatabase {
         return nil
     }
 
-    func getMetadataFolder(account: String, urlBase: String, userId: String, serverUrl: String) -> tableMetadata? {
+    func getMetadataFolder(domain: NCDomain.Domain, serverUrl: String) -> tableMetadata? {
         var serverUrl = serverUrl
         var fileName = ""
-        let serverUrlHome = utilityFileSystem.getHomeServer(urlBase: urlBase, userId: userId)
+        let serverUrlHome = utilityFileSystem.getHomeServer(urlBase: domain.urlBase, userId: domain.userId)
 
         if serverUrlHome == serverUrl {
             fileName = "."
@@ -911,7 +911,7 @@ extension NCManageDatabase {
         do {
             let realm = try Realm()
             realm.refresh()
-            guard let result = realm.objects(tableMetadata.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@", account, serverUrl, fileName).first else { return nil }
+            guard let result = realm.objects(tableMetadata.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@", domain.account, serverUrl, fileName).first else { return nil }
             return tableMetadata(value: result)
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")

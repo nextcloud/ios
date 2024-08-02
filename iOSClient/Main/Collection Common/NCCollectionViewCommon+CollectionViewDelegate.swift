@@ -36,13 +36,13 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 selectOcId.append(metadata.ocId)
             }
             collectionView.reloadItems(at: [indexPath])
-            tabBarSelect.update(selectOcId: selectOcId, metadatas: getSelectedMetadatas(), userId: appDelegate.userId)
+            tabBarSelect.update(selectOcId: selectOcId, metadatas: getSelectedMetadatas(), userId: metadata.userId)
             return
         }
 
         if metadata.e2eEncrypted {
             if NCGlobal.shared.capabilityE2EEEnabled {
-                if !NCKeychain().isEndToEndEnabled(account: appDelegate.account) {
+                if !NCKeychain().isEndToEndEnabled(account: metadata.account) {
                     let e2ee = NCEndToEndInitialize()
                     e2ee.delegate = self
                     e2ee.initEndToEndEncryption(viewController: self.tabBarController, metadata: metadata)

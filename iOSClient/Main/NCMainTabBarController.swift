@@ -27,14 +27,13 @@ class NCMainTabBarController: UITabBarController {
     var sceneIdentifier: String = UUID().uuidString
     var documentPickerViewController: NCDocumentPickerViewController?
     let filesServerUrl = ThreadSafeDictionary<String, NCFiles>()
-    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
     func currentViewController() -> UIViewController? {
         return (selectedViewController as? UINavigationController)?.topViewController
     }
 
     func currentServerUrl() -> String {
-        var serverUrl = NCUtilityFileSystem().getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
+        var serverUrl = NCUtilityFileSystem().getHomeServer(urlBase: NCDomain.shared.getActiveUrlBase(), userId: NCDomain.shared.getActiveUserId())
         let viewController = currentViewController()
         if let collectionViewCommon = viewController as? NCCollectionViewCommon {
             if !collectionViewCommon.serverUrl.isEmpty {

@@ -40,7 +40,7 @@ extension NCCollectionViewCommon {
         let applicationHandle = NCApplicationHandle()
         var iconHeader: UIImage!
 
-        if metadata.directory, let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl)) {
+        if metadata.directory, let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", NCDomain.shared.getActiveAccount(), serverUrl)) {
             isOffline = directory.offline
         } else if let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
             isOffline = localFile.offline
@@ -86,7 +86,7 @@ extension NCCollectionViewCommon {
 
         if metadata.lock {
             var lockOwnerName = metadata.lockOwnerDisplayName.isEmpty ? metadata.lockOwner : metadata.lockOwnerDisplayName
-            var lockIcon = utility.loadUserImage(for: metadata.lockOwner, displayName: lockOwnerName, userBaseUrl: metadata)
+            var lockIcon = utility.loadUserImage(for: metadata.lockOwner, displayName: lockOwnerName, account: metadata.account)
             if metadata.lockOwnerType != 0 {
                 lockOwnerName += " app"
                 if !metadata.lockOwnerEditor.isEmpty, let appIcon = UIImage(named: metadata.lockOwnerEditor) {
@@ -136,7 +136,7 @@ extension NCCollectionViewCommon {
         //
         // LOCK / UNLOCK
         //
-        if !metadata.directory, metadata.canUnlock(as: appDelegate.userId), !NCGlobal.shared.capabilityFilesLockVersion.isEmpty {
+        if !metadata.directory, metadata.canUnlock(as: metadata.userId), !NCGlobal.shared.capabilityFilesLockVersion.isEmpty {
             actions.append(NCMenuAction.lockUnlockFiles(shouldLock: !metadata.lock, metadatas: [metadata], order: 30))
         }
 
@@ -173,7 +173,7 @@ extension NCCollectionViewCommon {
                     action: { _ in
                         NextcloudKit.shared.markE2EEFolder(fileId: metadata.fileId, delete: true, account: metadata.account) { _, error in
                             if error == .success {
-                                NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, serverUrl))
+                                NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrl))
                                 NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, encrypted: false, account: metadata.account)
                                 NCManageDatabase.shared.setMetadataEncrypted(ocId: metadata.ocId, encrypted: false)
 
