@@ -111,9 +111,7 @@ class FileProviderExtension: NSFileProviderExtension {
 
     override func item(for identifier: NSFileProviderItemIdentifier) throws -> NSFileProviderItem {
         if identifier == .rootContainer {
-            guard let domain = NCDomain.shared.getDomain(account: fileProviderData.shared.account) else {
-                throw NSFileProviderError(.noSuchItem)
-            }
+            let domain = NCDomain.shared.getDomain(account: fileProviderData.shared.account)
             let metadata = tableMetadata()
             metadata.account = fileProviderData.shared.account
             metadata.directory = true
@@ -283,8 +281,8 @@ class FileProviderExtension: NSFileProviderExtension {
     override func importDocument(at fileURL: URL, toParentItemIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
         DispatchQueue.main.async {
             autoreleasepool {
-                guard let domain = NCDomain.shared.getDomain(account: fileProviderData.shared.account),
-                      let tableDirectory = self.providerUtility.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: domain.account, homeServerUrl: self.utilityFileSystem.getHomeServer(domain: domain)) else {
+                let domain = NCDomain.shared.getDomain(account: fileProviderData.shared.account)
+                guard let tableDirectory = self.providerUtility.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: domain.account, homeServerUrl: self.utilityFileSystem.getHomeServer(domain: domain)) else {
                     return completionHandler(nil, NSFileProviderError(.noSuchItem))
                 }
                 var size = 0 as Int64

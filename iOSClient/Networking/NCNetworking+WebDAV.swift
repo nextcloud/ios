@@ -676,9 +676,7 @@ extension NCNetworking {
                             update: @escaping (_ account: String, _ id: String, NKSearchResult?, [tableMetadata]?) -> Void,
                             completion: @escaping (_ account: String, _ error: NKError) -> Void) {
         let dispatchGroup = DispatchGroup()
-        guard let domain = NCDomain.shared.getDomain(account: account) else {
-            return completion("", NKError())
-        }
+        let domain = NCDomain.shared.getDomain(account: account)
         dispatchGroup.enter()
         dispatchGroup.notify(queue: .main) {
             completion(domain.account, NKError())
@@ -755,10 +753,7 @@ extension NCNetworking {
                                     taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
                                     completion: @escaping (_ account: String, _ searchResult: NKSearchResult?, _ metadatas: [tableMetadata]?, _ error: NKError) -> Void) {
         var metadatas: [tableMetadata] = []
-        guard let domain = NCDomain.shared.getDomain(account: account) else {
-            return completion("", nil, nil, NKError())
-        }
-
+        let domain = NCDomain.shared.getDomain(account: account)
         let request = NextcloudKit.shared.searchProvider(id, term: term, limit: limit, cursor: cursor, timeout: 60, account: domain.account) { task in
             taskHandler(task)
         } completion: { account, searchResult, _, error in

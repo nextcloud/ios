@@ -206,10 +206,10 @@ extension NCActivity: UITableViewDataSource {
     }
 
     func makeCommentCell(_ comment: tableComments, for indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? NCShareCommentsCell,
-              let domain = NCDomain.shared.getActiveDomain() else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? NCShareCommentsCell else {
             return UITableViewCell()
         }
+        let domain = NCDomain.shared.getActiveDomain()
 
         cell.indexPath = indexPath
         cell.tableComments = comment
@@ -239,11 +239,11 @@ extension NCActivity: UITableViewDataSource {
     }
 
     func makeActivityCell(_ activity: tableActivity, for indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "tableCell", for: indexPath) as? NCActivityTableViewCell,
-              let domain = NCDomain.shared.getActiveDomain() else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "tableCell", for: indexPath) as? NCActivityTableViewCell else {
             return UITableViewCell()
         }
         var orderKeysId: [String] = []
+        let domain = NCDomain.shared.getActiveDomain()
 
         cell.idActivity = activity.idActivity
         cell.indexPath = indexPath
@@ -409,8 +409,8 @@ extension NCActivity {
 
     /// Check if most recent activivities are loaded, if not trigger reload
     func checkRecentActivity(disptachGroup: DispatchGroup) {
-        guard let domain = NCDomain.shared.getActiveDomain(),
-              let result = NCManageDatabase.shared.getLatestActivityId(account: domain.account), metadata == nil, hasActivityToLoad else {
+        let domain = NCDomain.shared.getActiveDomain()
+        guard let result = NCManageDatabase.shared.getLatestActivityId(account: domain.account), metadata == nil, hasActivityToLoad else {
             return self.loadActivity(idActivity: 0, disptachGroup: disptachGroup)
         }
         let resultActivityId = max(result.activityFirstKnown, result.activityLastGiven)
@@ -442,9 +442,9 @@ extension NCActivity {
     }
 
     func loadActivity(idActivity: Int, limit: Int = 200, disptachGroup: DispatchGroup) {
-        guard let domain = NCDomain.shared.getActiveDomain(),
-              hasActivityToLoad else { return }
+        guard hasActivityToLoad else { return }
         var resultActivityId = 0
+        let domain = NCDomain.shared.getActiveDomain()
 
         disptachGroup.enter()
         NextcloudKit.shared.getActivity(

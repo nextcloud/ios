@@ -97,7 +97,7 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
     }
 
     func uploadMetadata() {
-        guard let domain = NCDomain.shared.getActiveDomain() else { return }
+        let domain = NCDomain.shared.getActiveDomain()
         let fileNamePath = NSTemporaryDirectory() + self.fileName
         let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: UUID().uuidString, serverUrl: self.serverUrl, url: "", contentType: "", domain: domain)
         metadata.session = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground

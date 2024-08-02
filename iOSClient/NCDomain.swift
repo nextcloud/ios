@@ -62,8 +62,11 @@ public class NCDomain: NSObject {
         return Domain(account: "", urlBase: "", user: "", userId: "", sceneIdentifier: "")
     }
 
-    public func getDomain(account: String) -> Domain? {
-        return self.domain.filter({ $0.account == account }).first
+    public func getDomain(account: String) -> Domain {
+        if let domain = self.domain.filter({ $0.account == account }).first {
+            return domain
+        }
+        return getEmptyDomain()
     }
 
     func setActiveTableAccount(_ activeTableAccount: tableAccount) {
@@ -74,11 +77,11 @@ public class NCDomain: NSObject {
         return activeTableAccount
     }
 
-    public func getActiveDomain() -> Domain? {
+    public func getActiveDomain() -> Domain {
         if let domain = self.domain.filter({ $0.account == self.activeTableAccount.account }).first {
             return domain
         }
-        return nil
+        return getEmptyDomain()
     }
 
     public func getActiveAccount() -> String {

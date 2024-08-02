@@ -54,7 +54,7 @@ class NCGroupfolders: NCCollectionViewCommon {
     override func queryDB() {
         super.queryDB()
         var metadatas: [tableMetadata] = []
-        guard let domain = NCDomain.shared.getActiveDomain() else { return }
+        let domain = NCDomain.shared.getActiveDomain()
 
         if self.serverUrl.isEmpty {
             metadatas = NCManageDatabase.shared.getMetadatasFromGroupfolders(domain: domain)
@@ -67,7 +67,7 @@ class NCGroupfolders: NCCollectionViewCommon {
 
     override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
         super.reloadDataSourceNetwork()
-        guard let domain = NCDomain.shared.getActiveDomain() else { return }
+        let domain = NCDomain.shared.getActiveDomain()
         let homeServerUrl = utilityFileSystem.getHomeServer(domain: domain)
 
         NextcloudKit.shared.getGroupfolders(account: domain.account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
