@@ -38,7 +38,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var urlBase: String = ""
     var user: String = ""
     var userId: String = ""
-    var password: String = ""
 
     var tipView: EasyTipView?
     var backgroundSessionCompletionHandler: (() -> Void)?
@@ -106,9 +105,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             urlBase = activeAccount.urlBase
             user = activeAccount.user
             userId = activeAccount.userId
-            password = NCKeychain().getPassword(account: account)
 
-            /*
             for account in NCManageDatabase.shared.getAllAccount() {
                 NextcloudKit.shared.appendAccount(account.account,
                                                   urlBase: account.urlBase,
@@ -119,15 +116,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                                                   nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
                                                   groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
             }
-            */
-            NextcloudKit.shared.appendAccount(activeAccount.account,
-                                              urlBase: activeAccount.urlBase,
-                                              user: activeAccount.user,
-                                              userId: activeAccount.userId,
-                                              password: NCKeychain().getPassword(account: activeAccount.account),
-                                              userAgent: userAgent,
-                                              nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
-                                              groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
             NCManageDatabase.shared.setCapabilities(account: account)
             NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
@@ -532,7 +520,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         self.urlBase = tableAccount.urlBase
         self.user = tableAccount.user
         self.userId = tableAccount.userId
-        self.password = NCKeychain().getPassword(account: tableAccount.account)
 
         NCManageDatabase.shared.setCapabilities(account: account)
 
@@ -573,7 +560,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         self.urlBase = ""
         self.user = ""
         self.userId = ""
-        self.password = ""
+      //  self.password = ""
 
         /*
         NextcloudKit.shared.deleteAppPassword(serverUrl: urlBase, username: userId, password: password) { _, error in
