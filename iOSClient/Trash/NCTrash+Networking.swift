@@ -43,8 +43,8 @@ extension NCTrash {
     }
 
     func restoreItem(with fileId: String) {
-        guard let domain = NCDomain.shared.getActiveDomain(),
-              let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: fileId, account: domain.account) else { return }
+        let domain = NCDomain.shared.getActiveDomain()
+        guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: fileId, account: domain.account) else { return }
         let fileNameFrom = tableTrash.filePath + tableTrash.fileName
         let fileNameTo = domain.urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav + "/trashbin/" + domain.userId + "/restore/" + tableTrash.fileName
 
@@ -59,7 +59,7 @@ extension NCTrash {
     }
 
     func emptyTrash() {
-        guard let domain = NCDomain.shared.getActiveDomain() else { return }
+        let domain = NCDomain.shared.getActiveDomain()
         let serverUrlFileName = domain.urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav + "/trashbin/" + domain.userId + "/trash"
 
         NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: domain.account) { account, error in
@@ -73,8 +73,8 @@ extension NCTrash {
     }
 
     func deleteItem(with fileId: String) {
-        guard let domain = NCDomain.shared.getActiveDomain(),
-              let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: fileId, account: domain.account) else { return }
+        let domain = NCDomain.shared.getActiveDomain()
+        guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: fileId, account: domain.account) else { return }
         let serverUrlFileName = tableTrash.filePath + tableTrash.fileName
 
         NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: domain.account) { account, error in

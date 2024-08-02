@@ -36,7 +36,7 @@ class NCViewer: NSObject {
     func view(viewController: UIViewController, metadata: tableMetadata, metadatas: [tableMetadata], imageIcon: UIImage?) {
         self.metadata = metadata
         self.metadatas = metadatas
-        guard let domain = NCDomain.shared.getDomain(account: metadata.account) else { return }
+        let domain = NCDomain.shared.getDomain(account: metadata.account)
 
         // URL
         if metadata.classFile == NKCommon.TypeClassFile.url.rawValue {

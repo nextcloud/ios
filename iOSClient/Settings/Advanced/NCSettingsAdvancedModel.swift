@@ -133,7 +133,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
         // Cancel all networking tasks
         NCNetworking.shared.cancelAllTask()
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            guard let domain = NCDomain.shared.getActiveDomain() else { return }
+            let domain = NCDomain.shared.getActiveDomain()
             URLCache.shared.memoryCapacity = 0
             URLCache.shared.diskCapacity = 0
 

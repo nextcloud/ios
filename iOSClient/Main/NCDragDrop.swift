@@ -99,7 +99,7 @@ class NCDragDrop: NSObject {
         do {
             let data = try Data(contentsOf: url)
             Task {
-                guard let domain = NCDomain.shared.getActiveDomain() else { return }
+                let domain = NCDomain.shared.getActiveDomain()
                 let ocId = NSUUID().uuidString
                 let fileName = await NCNetworking.shared.createFileName(fileNameBase: url.lastPathComponent, account: domain.account, serverUrl: serverUrl)
                 let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)

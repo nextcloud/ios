@@ -49,7 +49,7 @@ class NCFiles: NCCollectionViewCommon {
 
         if isRoot {
             NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
-                guard let domain = NCDomain.shared.getActiveDomain() else { return }
+                let domain = NCDomain.shared.getActiveDomain()
                 self.navigationController?.popToRootViewController(animated: false)
                 self.serverUrl = self.utilityFileSystem.getHomeServer(domain: domain)
                 self.isSearchingMode = false
@@ -76,7 +76,7 @@ class NCFiles: NCCollectionViewCommon {
 
     override func viewWillAppear(_ animated: Bool) {
         if isRoot {
-            guard let domain = NCDomain.shared.getActiveDomain() else { return }
+            let domain = NCDomain.shared.getActiveDomain()
             serverUrl = utilityFileSystem.getHomeServer(domain: domain)
             titleCurrentFolder = getNavigationTitle()
         }
@@ -99,7 +99,7 @@ class NCFiles: NCCollectionViewCommon {
 
     override func queryDB() {
         super.queryDB()
-        guard let domain = NCDomain.shared.getActiveDomain() else { return }
+        let domain = NCDomain.shared.getActiveDomain()
         var metadatas: [tableMetadata] = []
 
         if NCKeychain().getPersonalFilesOnly(account: domain.account) {
@@ -175,9 +175,7 @@ class NCFiles: NCCollectionViewCommon {
 
     private func networkReadFolder(completion: @escaping(_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ metadatasDifferentCount: Int, _ metadatasModified: Int, _ error: NKError) -> Void) {
         var tableDirectory: tableDirectory?
-        guard let domain = NCDomain.shared.getActiveDomain() else {
-            return completion(nil, nil, 0, 0, NKError())
-        }
+        let domain = NCDomain.shared.getActiveDomain()
 
         NCNetworking.shared.readFile(serverUrlFileName: serverUrl, account: domain.account) { task in
             self.dataSourceTask = task

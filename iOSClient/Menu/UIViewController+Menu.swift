@@ -60,8 +60,8 @@ extension UIViewController {
     }
 
     func showProfileMenu(userId: String) {
-        guard let domain = NCDomain.shared.getActiveDomain(),
-              NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion23 else { return }
+        guard NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion23 else { return }
+        let domain = NCDomain.shared.getActiveDomain()
 
         NextcloudKit.shared.getHovercard(for: userId, account: domain.account) { account, card, _, _ in
             guard let card = card, account == domain.account else { return }

@@ -85,8 +85,8 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
 
         NotificationCenter.default.addObserver(self, selector: #selector(reloadData), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataNCShare), object: nil)
 
-        guard let metadata,
-              let domain = NCDomain.shared.getDomain(account: metadata.account) else { return }
+        guard let metadata else { return }
+        let domain = NCDomain.shared.getDomain(account: metadata.account)
 
         if metadata.e2eEncrypted {
             let direcrory = NCManageDatabase.shared.getTableDirectory(account: metadata.account, serverUrl: metadata.serverUrl)
@@ -127,7 +127,8 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
 
     // Shared with you by ...
     func checkSharedWithYou() {
-        guard let domain = NCDomain.shared.getActiveDomain(), let metadata = metadata, !metadata.ownerId.isEmpty, metadata.ownerId != domain.userId else { return }
+        let domain = NCDomain.shared.getActiveDomain()
+        guard let metadata = metadata, !metadata.ownerId.isEmpty, metadata.ownerId != domain.userId else { return }
 
         if !canReshare {
             searchField.isUserInteractionEnabled = false
@@ -332,6 +333,7 @@ extension NCShare: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let domain = NCDomain.shared.getActiveDomain()
         // Setup default share cells
         guard indexPath.section != 0 else {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "cellLink", for: indexPath) as? NCShareLinkCell, let metadata = self.metadata
@@ -350,7 +352,7 @@ extension NCShare: UITableViewDataSource {
             return cell
         }
 
-        guard let domain = NCDomain.shared.getActiveDomain(), let tableShare = shares.share?[indexPath.row], let metadata else { return UITableViewCell() }
+        guard let tableShare = shares.share?[indexPath.row], let metadata else { return UITableViewCell() }
 
         // LINK
         if tableShare.shareType == shareCommon.SHARE_TYPE_LINK {

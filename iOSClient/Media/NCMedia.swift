@@ -366,8 +366,8 @@ extension NCMedia: UIScrollViewDelegate {
 
 extension NCMedia: NCSelectDelegate {
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
-        guard let domain = NCDomain.shared.getActiveDomain(),
-              let serverUrl else { return }
+        guard let serverUrl else { return }
+        let domain = NCDomain.shared.getActiveDomain()
         let home = utilityFileSystem.getHomeServer(domain: domain)
         let mediaPath = serverUrl.replacingOccurrences(of: home, with: "")
         NCManageDatabase.shared.setAccountMediaPath(mediaPath, account: activeAccount.account)

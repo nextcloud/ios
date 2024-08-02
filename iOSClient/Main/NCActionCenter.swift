@@ -479,8 +479,8 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     // MARK: -
 
     func openFileViewInFolder(serverUrl: String, fileNameBlink: String?, fileNameOpen: String?, sceneIdentifier: String) {
-        guard let domain = NCDomain.shared.getActiveDomain(),
-              let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier),
+        let domain = NCDomain.shared.getActiveDomain()
+        guard let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier),
               let navigationController = controller.viewControllers?.first as? UINavigationController
         else { return }
         var serverUrlPush = self.utilityFileSystem.getHomeServer(domain: domain)
@@ -566,12 +566,10 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     }
 
     func openSelectView(items: [tableMetadata], controller: NCMainTabBarController?) {
-        guard let domain = NCDomain.shared.getActiveDomain() else { return }
-
+        let domain = NCDomain.shared.getActiveDomain()
         let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as? UINavigationController
         let topViewController = navigationController?.topViewController as? NCSelect
         var listViewController = [NCSelect]()
-
         var copyItems: [tableMetadata] = []
         for item in items {
             copyItems.append(item)

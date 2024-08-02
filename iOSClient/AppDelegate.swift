@@ -124,9 +124,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
 
             DispatchQueue.global().async {
-                if let domain = NCDomain.shared.getActiveDomain() {
-                    NCImageCache.shared.createMediaCache(withCacheSize: true, domain: domain)
-                }
+                let domain = NCDomain.shared.getActiveDomain()
+                NCImageCache.shared.createMediaCache(withCacheSize: true, domain: domain)
             }
         } else {
             NCKeychain().removeAll()
@@ -516,12 +515,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         if account != previusActiveAccount {
             DispatchQueue.global().async {
-                if let domain = NCDomain.shared.getActiveDomain() {
-                    if NCManageDatabase.shared.getAccounts()?.count == 1 {
-                        NCImageCache.shared.createMediaCache(withCacheSize: true, domain: domain)
-                    } else {
-                        NCImageCache.shared.createMediaCache(withCacheSize: false, domain: domain)
-                    }
+                let domain = NCDomain.shared.getActiveDomain()
+                if NCManageDatabase.shared.getAccounts()?.count == 1 {
+                    NCImageCache.shared.createMediaCache(withCacheSize: true, domain: domain)
+                } else {
+                    NCImageCache.shared.createMediaCache(withCacheSize: false, domain: domain)
                 }
             }
         }

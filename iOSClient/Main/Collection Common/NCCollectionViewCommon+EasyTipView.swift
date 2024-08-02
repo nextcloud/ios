@@ -27,8 +27,8 @@ import EasyTipView
 
 extension NCCollectionViewCommon: EasyTipViewDelegate {
     func showTip() {
-        guard let domain = NCDomain.shared.getActiveDomain(),
-              self is NCFiles,
+        let domain = NCDomain.shared.getActiveDomain()
+        guard self is NCFiles,
               self.view.window != nil,
               !NCBrandOptions.shared.disable_multiaccount,
               self.serverUrl == utilityFileSystem.getHomeServer(domain: domain),

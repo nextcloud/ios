@@ -218,8 +218,8 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
     }
 
     fileprivate func saveModifiedFile(override: Bool) {
-        guard let metadata = self.metadata,
-              let domain = NCDomain.shared.getActiveDomain() else { return }
+        guard let metadata = self.metadata else { return }
+        let domain = NCDomain.shared.getDomain(account: metadata.account)
         if !uploadMetadata {
             return self.dismiss(animated: true)
         }

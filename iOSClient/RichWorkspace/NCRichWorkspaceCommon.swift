@@ -28,13 +28,13 @@ import NextcloudKit
     let utilityFileSystem = NCUtilityFileSystem()
 
     @objc func createViewerNextcloudText(serverUrl: String, viewController: UIViewController) {
+        let domain = NCDomain.shared.getActiveDomain()
         if !NextcloudKit.shared.isNetworkReachable() {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_go_online_")
             NCContentPresenter().showError(error: error)
             return
         }
-        guard let domain = NCDomain.shared.getActiveDomain(),
-              let directEditingCreator = NCManageDatabase.shared.getDirectEditingCreators(predicate: NSPredicate(format: "account == %@ AND editor == 'text'", domain.account))?.first else { return }
+        guard let directEditingCreator = NCManageDatabase.shared.getDirectEditingCreators(predicate: NSPredicate(format: "account == %@ AND editor == 'text'", domain.account))?.first else { return }
 
         NCActivityIndicator.shared.start(backgroundView: viewController.view)
 
@@ -61,7 +61,8 @@ import NextcloudKit
 
         if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", NCDomain.shared.getActiveAccount(), serverUrl, NCGlobal.shared.fileNameRichWorkspace.lowercased())) {
 
-            if metadata.url.isEmpty, let domain = NCDomain.shared.getDomain(account: metadata.account) {
+            if metadata.url.isEmpty {
+                let domain = NCDomain.shared.getDomain(account: metadata.account)
                 NCActivityIndicator.shared.start(backgroundView: viewController.view)
 
                 let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, domain: domain)
