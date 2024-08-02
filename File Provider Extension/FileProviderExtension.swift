@@ -120,7 +120,7 @@ class FileProviderExtension: NSFileProviderExtension {
             metadata.ocId = NSFileProviderItemIdentifier.rootContainer.rawValue
             metadata.fileName = "root"
             metadata.fileNameView = "root"
-            metadata.serverUrl = utilityFileSystem.getHomeServer(urlBase: domain.urlBase, userId: domain.userId)
+            metadata.serverUrl = utilityFileSystem.getHomeServer(domain: domain)
             metadata.classFile = NKCommon.TypeClassFile.directory.rawValue
             return FileProviderItem(metadata: metadata, parentItemIdentifier: NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue))
         } else {
@@ -284,7 +284,7 @@ class FileProviderExtension: NSFileProviderExtension {
         DispatchQueue.main.async {
             autoreleasepool {
                 guard let domain = NCDomain.shared.getDomain(account: fileProviderData.shared.account),
-                      let tableDirectory = self.providerUtility.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: domain.account, homeServerUrl: self.utilityFileSystem.getHomeServer(urlBase: domain.urlBase, userId: domain.userId)) else {
+                      let tableDirectory = self.providerUtility.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: domain.account, homeServerUrl: self.utilityFileSystem.getHomeServer(domain: domain)) else {
                     return completionHandler(nil, NSFileProviderError(.noSuchItem))
                 }
                 var size = 0 as Int64

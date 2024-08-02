@@ -204,18 +204,19 @@ class NCUtilityFileSystem: NSObject {
 
     func isDirectoryE2EE(serverUrl: String, account: String) -> Bool {
         if let domain = NCDomain.shared.getDomain(account: account) {
-            return isDirectoryE2EE(account: domain.account, urlBase: domain.urlBase, userId: domain.userId, serverUrl: serverUrl)
+            return isDirectoryE2EE(domain: domain, serverUrl: serverUrl)
         }
         return false
     }
 
     func isDirectoryE2EE(file: NKFile) -> Bool {
-        return isDirectoryE2EE(account: file.account, urlBase: file.urlBase, userId: file.userId, serverUrl: file.serverUrl)
+        let domain = NCDomain.Domain(account: file.account, urlBase: file.urlBase, user: file.user, userId: file.userId, sceneIdentifier: "")
+        return isDirectoryE2EE(domain: domain, serverUrl: file.serverUrl)
     }
 
-    func isDirectoryE2EE(account: String, urlBase: String, userId: String, serverUrl: String) -> Bool {
-        if serverUrl == getHomeServer(urlBase: urlBase, userId: userId) || serverUrl == ".." { return false }
-        if let directory = NCManageDatabase.shared.getTableDirectory(account: account, serverUrl: serverUrl) {
+    func isDirectoryE2EE(domain: NCDomain.Domain, serverUrl: String) -> Bool {
+        if serverUrl == getHomeServer(domain: domain) || serverUrl == ".." { return false }
+        if let directory = NCManageDatabase.shared.getTableDirectory(account: domain.account, serverUrl: serverUrl) {
             return directory.e2eEncrypted
         }
         return false
@@ -383,8 +384,8 @@ class NCUtilityFileSystem: NSObject {
 
     // MARK: - 
 
-    func getHomeServer(urlBase: String, userId: String) -> String {
-        return urlBase + "/remote.php/dav/files/" + userId
+    func getHomeServer(domain: NCDomain.Domain) -> String {
+        return domain.urlBase + "/remote.php/dav/files/" + domain.userId
     }
 
     func getPath(path: String, user: String, fileName: String? = nil) -> String {
@@ -421,8 +422,8 @@ class NCUtilityFileSystem: NSObject {
         }
     }
 
-    func getFileNamePath(_ fileName: String, serverUrl: String, urlBase: String, userId: String) -> String {
-        let home = getHomeServer(urlBase: urlBase, userId: userId)
+    func getFileNamePath(_ fileName: String, serverUrl: String, domain: NCDomain.Domain) -> String {
+        let home = getHomeServer(domain: domain)
         var fileNamePath = serverUrl.replacingOccurrences(of: home, with: "") + "/" + fileName
         if fileNamePath.first == "/" {
             fileNamePath.removeFirst()

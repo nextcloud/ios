@@ -177,35 +177,32 @@ extension NCNetworking {
 
     func createFolder(fileName: String,
                       serverUrl: String,
-                      account: String,
-                      urlBase: String,
-                      userId: String,
                       overwrite: Bool = false,
                       withPush: Bool,
                       sceneIdentifier: String?,
+                      domain: NCDomain.Domain,
                       completion: @escaping (_ error: NKError) -> Void) {
-        let isDirectoryEncrypted = utilityFileSystem.isDirectoryE2EE(account: account, urlBase: urlBase, userId: userId, serverUrl: serverUrl)
+        let isDirectoryEncrypted = utilityFileSystem.isDirectoryE2EE(domain: domain, serverUrl: serverUrl)
         let fileName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
 
         if isDirectoryEncrypted {
 #if !EXTENSION
             Task {
-                let error = await NCNetworkingE2EECreateFolder().createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, withPush: withPush, sceneIdentifier: sceneIdentifier)
+                let error = await NCNetworkingE2EECreateFolder().createFolder(fileName: fileName, serverUrl: serverUrl, withPush: withPush, sceneIdentifier: sceneIdentifier, domain: domain)
                 completion(error)
             }
 #endif
         } else {
-            createFolderPlain(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, overwrite: overwrite, withPush: withPush, sceneIdentifier: sceneIdentifier, completion: completion)
+            createFolderPlain(fileName: fileName, serverUrl: serverUrl, overwrite: overwrite, withPush: withPush, sceneIdentifier: sceneIdentifier, domain: domain, completion: completion)
         }
     }
 
     private func createFolderPlain(fileName: String,
                                    serverUrl: String,
-                                   account: String,
-                                   urlBase: String,
                                    overwrite: Bool,
                                    withPush: Bool,
                                    sceneIdentifier: String?,
+                                   domain: NCDomain.Domain,
                                    completion: @escaping (_ error: NKError) -> Void) {
         var fileNameFolder = utility.removeForbiddenCharacters(fileName)
 
@@ -215,14 +212,14 @@ extension NCNetworking {
             return completion(error)
         }
         if !overwrite {
-            fileNameFolder = utilityFileSystem.createFileName(fileNameFolder, serverUrl: serverUrl, account: account)
+            fileNameFolder = utilityFileSystem.createFileName(fileNameFolder, serverUrl: serverUrl, account: domain.account)
         }
         if fileNameFolder.isEmpty {
             return completion(NKError())
         }
         let fileNameFolderUrl = serverUrl + "/" + fileNameFolder
 
-        NextcloudKit.shared.createFolder(serverUrlFileName: fileNameFolderUrl, account: account) { account, _, _, error in
+        NextcloudKit.shared.createFolder(serverUrlFileName: fileNameFolderUrl, account: domain.account) { account, _, _, error in
             guard error == .success else {
                 if error.errorCode == NCGlobal.shared.errorMethodNotSupported && overwrite {
                     completion(NKError())
@@ -249,20 +246,18 @@ extension NCNetworking {
 
     func createFolder(assets: [PHAsset]?,
                       useSubFolder: Bool,
-                      account: String,
-                      urlBase: String,
-                      userId: String,
                       withPush: Bool,
-                      sceneIdentifier: String? = nil) -> Bool {
-        let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: urlBase, userId: userId, account: account)
-        let serverUrlBase = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: urlBase, userId: userId, account: account)
+                      sceneIdentifier: String? = nil,
+                      domain: NCDomain.Domain) -> Bool {
+        let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(domain: domain)
+        let serverUrlBase = NCManageDatabase.shared.getAccountAutoUploadDirectory(domain: domain)
         let fileNameBase = NCManageDatabase.shared.getAccountAutoUploadFileName()
         let autoUploadSubfolderGranularity = NCManageDatabase.shared.getAccountAutoUploadSubfolderGranularity()
 
         func createFolder(fileName: String, serverUrl: String) -> Bool {
             var result: Bool = false
             let semaphore = DispatchSemaphore(value: 0)
-            NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, account: account, urlBase: urlBase, userId: userId, overwrite: true, withPush: withPush, sceneIdentifier: sceneIdentifier) { error in
+            NCNetworking.shared.createFolder(fileName: fileName, serverUrl: serverUrl, overwrite: true, withPush: withPush, sceneIdentifier: sceneIdentifier, domain: domain) { error in
                 if error == .success { result = true }
                 semaphore.signal()
             }
@@ -588,7 +583,8 @@ extension NCNetworking {
 
     private func favoriteMetadataPlain(_ metadata: tableMetadata,
                                        completion: @escaping (_ error: NKError) -> Void) {
-        let fileName = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
+        let domain = NCDomain.Domain(account: metadata.account, urlBase: metadata.urlBase, user: metadata.user, userId: metadata.userId, sceneIdentifier: "")
+        let fileName = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, domain: domain)
         let favorite = !metadata.favorite
         let ocId = metadata.ocId
 

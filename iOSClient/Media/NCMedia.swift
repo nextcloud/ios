@@ -187,7 +187,7 @@ class NCMedia: UIViewController {
 
         // Cancel Queue & Retrieves Properties
         NCNetworking.shared.downloadThumbnailQueue.cancelAll()
-        if let nkSession = NextcloudKit.shared.nkCommonInstance.getSession(account: appDelegate.account) {
+        if let nkSession = NextcloudKit.shared.nkCommonInstance.getSession(account: NCDomain.shared.getActiveAccount()) {
             nkSession.sessionData.session.getTasksWithCompletionHandler { dataTasks, _, _ in
                 dataTasks.forEach {
                     if $0.taskDescription == self.taskDescriptionRetrievesProperties {
@@ -366,8 +366,9 @@ extension NCMedia: UIScrollViewDelegate {
 
 extension NCMedia: NCSelectDelegate {
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
-        guard let serverUrl = serverUrl else { return }
-        let home = utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+        guard let domain = NCDomain.shared.getActiveDomain(),
+              let serverUrl else { return }
+        let home = utilityFileSystem.getHomeServer(urlBase: domain.urlBase, userId: domain.userId)
         let mediaPath = serverUrl.replacingOccurrences(of: home, with: "")
         NCManageDatabase.shared.setAccountMediaPath(mediaPath, account: activeAccount.account)
         activeAccount = NCManageDatabase.shared.getActiveAccount() ?? tableAccount()

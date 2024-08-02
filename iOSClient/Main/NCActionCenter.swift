@@ -52,7 +52,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
               let selector = userInfo["selector"] as? String,
               let error = userInfo["error"] as? NKError,
               let account = userInfo["account"] as? String,
-              account == appDelegate?.account
+              account == NCDomain.shared.getActiveAccount()
         else { return }
 
         guard error == .success else {
@@ -253,7 +253,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         guard let userInfo = notification.userInfo as NSDictionary?,
               let error = userInfo["error"] as? NKError,
               let account = userInfo["account"] as? String,
-              account == self.appDelegate?.account
+              account == NCDomain.shared.getActiveAccount()
         else { return }
 
         if error != .success, error.errorCode != NSURLErrorCancelled, error.errorCode != NCGlobal.shared.errorRequestExplicityCancelled {
@@ -479,7 +479,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     // MARK: -
 
     func openFileViewInFolder(serverUrl: String, fileNameBlink: String?, fileNameOpen: String?, sceneIdentifier: String) {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate,
+        guard let domain = NCDomain.shared.getActiveDomain(),
               let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier),
               let navigationController = controller.viewControllers?.first as? UINavigationController
         else { return }
