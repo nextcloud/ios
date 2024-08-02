@@ -187,7 +187,8 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "transferCell", for: indexPath) as? NCTransferCell,
-              let metadata = dataSource.cellForItemAt(indexPath: indexPath) else {
+              let metadata = dataSource.cellForItemAt(indexPath: indexPath),
+              let domain = NCDomain.shared.getDomain(account: metadata.account) else {
             return NCTransferCell()
         }
 
@@ -201,7 +202,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         cell.imageItem.backgroundColor = nil
         cell.labelTitle.text = metadata.fileNameView
         cell.labelTitle.textColor = NCBrandColor.shared.textColor
-        let serverUrlHome = utilityFileSystem.getHomeServer(urlBase: metadata.urlBase, userId: metadata.userId)
+        let serverUrlHome = utilityFileSystem.getHomeServer(domain: domain)
         var pathText = metadata.serverUrl.replacingOccurrences(of: serverUrlHome, with: "")
         if pathText.isEmpty { pathText = "/" }
         cell.labelPath.text = pathText

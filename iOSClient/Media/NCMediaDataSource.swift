@@ -26,7 +26,8 @@ import NextcloudKit
 
 extension NCMedia {
     func reloadDataSource() {
-        self.metadatas = imageCache.getMediaMetadatas(account: activeAccount.account, predicate: self.getPredicate())
+        guard let domain = NCDomain.shared.getActiveDomain() else { return }
+        self.metadatas = imageCache.getMediaMetadatas(predicate: self.getPredicate(domain: domain), domain: domain)
         self.collectionViewReloadData()
     }
 
@@ -121,19 +122,20 @@ extension NCMedia {
             return(lessDate, greaterDate, 0, false, NKError())
         }
 
-        guard let mediaPath = NCManageDatabase.shared.getActiveAccount()?.mediaPath else {
+        guard let activeAccount = NCManageDatabase.shared.getActiveAccount(),
+              let domainn = NCDomain.shared.getDomain(account: activeAccount.account) else {
             return(lessDate, greaterDate, 0, false, NKError())
         }
         NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate)")
         let options = NKRequestOptions(timeout: timeout, taskDescription: self.taskDescriptionRetrievesProperties, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-        let results = await NCNetworking.shared.searchMedia(path: mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: NCKeychain().showHiddenFiles, includeHiddenFiles: [], account: activeAccount.account, options: options)
+        let results = await NCNetworking.shared.searchMedia(path: activeAccount.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: NCKeychain().showHiddenFiles, includeHiddenFiles: [], account: activeAccount.account, options: options)
         if results.account != self.activeAccount.account {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "User changed")
             return(lessDate, greaterDate, 0, false, error)
         } else if results.error == .success, let files = results.files {
             let metadatas = await NCManageDatabase.shared.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false).metadatas
             var predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-            predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, getPredicate(showAll: true)])
+            predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, getPredicate(showAll: true, domain: domainn)])
             let resultsUpdate = NCManageDatabase.shared.updateMetadatas(metadatas, predicate: predicate)
             let isChaged: Bool = (resultsUpdate.metadatasDifferentCount != 0 || resultsUpdate.metadatasModified != 0)
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] End searchMedia UpdateMetadatas with differentCount \(resultsUpdate.metadatasDifferentCount), modified \(resultsUpdate.metadatasModified)")
@@ -143,8 +145,8 @@ extension NCMedia {
         }
     }
 
-    private func getPredicate(showAll: Bool = false) -> NSPredicate {
-        let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId) + activeAccount.mediaPath
+    private func getPredicate(showAll: Bool = false, domain: NCDomain.Domain) -> NSPredicate {
+        let startServerUrl = NCUtilityFileSystem().getHomeServer(domain: domain) + activeAccount.mediaPath
 
         if showAll {
             return NSPredicate(format: imageCache.showAllPredicateMediaString, activeAccount.account, startServerUrl)

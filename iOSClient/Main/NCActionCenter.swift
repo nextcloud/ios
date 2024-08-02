@@ -483,7 +483,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
               let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier),
               let navigationController = controller.viewControllers?.first as? UINavigationController
         else { return }
-        var serverUrlPush = self.utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+        var serverUrlPush = self.utilityFileSystem.getHomeServer(domain: domain)
         let filesServerUrl = controller.filesServerUrl
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -566,7 +566,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     }
 
     func openSelectView(items: [tableMetadata], controller: NCMainTabBarController?) {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        guard let domain = NCDomain.shared.getActiveDomain() else { return }
 
         let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as? UINavigationController
         let topViewController = navigationController?.topViewController as? NCSelect
@@ -577,7 +577,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             copyItems.append(item)
         }
 
-        let homeUrl = utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+        let homeUrl = utilityFileSystem.getHomeServer(domain: domain)
         var serverUrl = copyItems[0].serverUrl
 
         // Setup view controllers such that the current view is of the same directory the items to be copied are in

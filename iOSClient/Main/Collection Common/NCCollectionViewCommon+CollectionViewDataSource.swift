@@ -111,7 +111,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 }
                 if !metadata.iconUrl.isEmpty {
                     if let ownerId = getAvatarFromIconUrl(metadata: metadata) {
-                        let fileName = metadata.userBaseUrl + "-" + ownerId + ".png"
+                        let fileName = NCDomain.shared.getUserBaseUrl(account: metadata.account) + "-" + ownerId + ".png"
                         downloadAvatar(fileName: fileName, user: ownerId, dispalyName: nil)
                     }
                 }
@@ -119,9 +119,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
         /// AVATAR
         if !metadata.ownerId.isEmpty,
-           metadata.ownerId != appDelegate.userId,
-           appDelegate.account == metadata.account {
-            let fileName = metadata.userBaseUrl + "-" + metadata.ownerId + ".png"
+           metadata.ownerId != metadata.userId {
+           // appDelegate.account == metadata.account {
+            let fileName = NCDomain.shared.getUserBaseUrl(account: metadata.account) + "-" + metadata.ownerId + ".png"
             downloadAvatar(fileName: fileName, user: metadata.ownerId, dispalyName: metadata.ownerDisplayName)
         }
     }
@@ -207,8 +207,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.fileProgressView?.isHidden = false
         }
 
-        // Accessibility [shared]
-        if metadata.ownerId != appDelegate.userId, appDelegate.account == metadata.account {
+        // Accessibility [shared] if metadata.ownerId != appDelegate.userId, appDelegate.account == metadata.account {
+        if metadata.ownerId != metadata.userId {
             a11yValues.append(NSLocalizedString("_shared_with_you_by_", comment: "") + " " + metadata.ownerDisplayName)
         }
 
@@ -268,9 +268,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         } else {
             cell.fileSharedImage?.image = NCImageCache.images.canShare
         }
+        /*
         if appDelegate.account != metadata.account {
             cell.fileSharedImage?.image = NCImageCache.images.shared
         }
+        */
 
         // Button More
         if metadata.isInTransfer || metadata.isWaitingTransfer {

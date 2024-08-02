@@ -368,7 +368,7 @@ extension NCMedia: NCSelectDelegate {
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
         guard let domain = NCDomain.shared.getActiveDomain(),
               let serverUrl else { return }
-        let home = utilityFileSystem.getHomeServer(urlBase: domain.urlBase, userId: domain.userId)
+        let home = utilityFileSystem.getHomeServer(domain: domain)
         let mediaPath = serverUrl.replacingOccurrences(of: home, with: "")
         NCManageDatabase.shared.setAccountMediaPath(mediaPath, account: activeAccount.account)
         activeAccount = NCManageDatabase.shared.getActiveAccount() ?? tableAccount()
