@@ -162,7 +162,7 @@ class NCUploadAssetsModel: NSObject, ObservableObject, NCCreateFormUploadConflic
         if useAutoUploadFolder {
             DispatchQueue.global().async {
                 let assets = self.assets.compactMap { $0.phAsset }
-                let result = NCNetworking.shared.createFolder(assets: assets, useSubFolder: self.useAutoUploadSubFolder, account: self.domain.account, urlBase: self.domain.urlBase, userId: self.domain.userId, withPush: false)
+                let result = NCNetworking.shared.createFolder(assets: assets, useSubFolder: self.useAutoUploadSubFolder, withPush: false, domain: self.domain)
                 DispatchQueue.main.async {
                     self.showHUD = false
                     self.uploadInProgress.toggle()
@@ -183,7 +183,7 @@ class NCUploadAssetsModel: NSObject, ObservableObject, NCCreateFormUploadConflic
         let utilityFileSystem = NCUtilityFileSystem()
         var metadatasNOConflict: [tableMetadata] = []
         var metadatasUploadInConflict: [tableMetadata] = []
-        let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(urlBase: domain.urlBase, userId: domain.userId, account: domain.account)
+        let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(domain: self.domain)
         var serverUrl = useAutoUploadFolder ? autoUploadPath : serverUrl
 
         for tlAsset in assets {
@@ -211,7 +211,7 @@ class NCUploadAssetsModel: NSObject, ObservableObject, NCCreateFormUploadConflic
                 continue
             }
 
-            let metadata = NCManageDatabase.shared.createMetadata(domain: domain, fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: serverUrl, url: "", contentType: "")
+            let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: serverUrl, url: "", contentType: "", domain: domain)
 
             if livePhoto {
                 metadata.livePhotoFile = (metadata.fileName as NSString).deletingPathExtension + ".mov"

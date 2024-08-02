@@ -38,7 +38,7 @@ import NextcloudKit
 
         NCActivityIndicator.shared.start(backgroundView: viewController.view)
 
-        let fileNamePath = utilityFileSystem.getFileNamePath(NCGlobal.shared.fileNameRichWorkspace, serverUrl: serverUrl, urlBase: domain.urlBase, userId: domain.userId)
+        let fileNamePath = utilityFileSystem.getFileNamePath(NCGlobal.shared.fileNameRichWorkspace, serverUrl: serverUrl, domain: domain)
         NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: directEditingCreator.editor, creatorId: directEditingCreator.identifier, templateId: "", account: domain.account) { account, url, _, error in
             NCActivityIndicator.shared.stop()
             if error == .success {
@@ -56,16 +56,15 @@ import NextcloudKit
     @objc func openViewerNextcloudText(serverUrl: String, viewController: UIViewController) {
         if !NextcloudKit.shared.isNetworkReachable() {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_go_online_")
-            NCContentPresenter().showError(error: error)
-            return
+            return NCContentPresenter().showError(error: error)
         }
 
         if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", NCDomain.shared.getActiveAccount(), serverUrl, NCGlobal.shared.fileNameRichWorkspace.lowercased())) {
 
-            if metadata.url.isEmpty {
+            if metadata.url.isEmpty, let domain = NCDomain.shared.getDomain(account: metadata.account) {
                 NCActivityIndicator.shared.start(backgroundView: viewController.view)
 
-                let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
+                let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, domain: domain)
                 NextcloudKit.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: "text", account: metadata.account) { account, url, _, error in
                     NCActivityIndicator.shared.stop()
                     if error == .success {

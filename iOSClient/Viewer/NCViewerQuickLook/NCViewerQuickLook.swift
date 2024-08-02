@@ -235,14 +235,13 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
         let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: metadata.fileNameView)
         guard utilityFileSystem.copyFile(atPath: url.path, toPath: fileNamePath) else { return }
 
-        let metadataForUpload = NCManageDatabase.shared.createMetadata(
-            domain: domain,
-            fileName: metadata.fileName,
-            fileNameView: metadata.fileNameView,
-            ocId: ocId,
-            serverUrl: metadata.serverUrl,
-            url: url.path,
-            contentType: "")
+        let metadataForUpload = NCManageDatabase.shared.createMetadata(fileName: metadata.fileName,
+                                                                       fileNameView: metadata.fileNameView,
+                                                                       ocId: ocId,
+                                                                       serverUrl: metadata.serverUrl,
+                                                                       url: url.path,
+                                                                       contentType: "",
+                                                                       domain: domain)
 
         metadataForUpload.session = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground
         if override {

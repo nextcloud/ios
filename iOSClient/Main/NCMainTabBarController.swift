@@ -33,7 +33,8 @@ class NCMainTabBarController: UITabBarController {
     }
 
     func currentServerUrl() -> String {
-        var serverUrl = NCUtilityFileSystem().getHomeServer(urlBase: NCDomain.shared.getActiveUrlBase(), userId: NCDomain.shared.getActiveUserId())
+        guard let domain = NCDomain.shared.getActiveDomain() else { return "" }
+        var serverUrl = NCUtilityFileSystem().getHomeServer(domain: domain)
         let viewController = currentViewController()
         if let collectionViewCommon = viewController as? NCCollectionViewCommon {
             if !collectionViewCommon.serverUrl.isEmpty {

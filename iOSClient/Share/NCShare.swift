@@ -85,7 +85,8 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
 
         NotificationCenter.default.addObserver(self, selector: #selector(reloadData), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataNCShare), object: nil)
 
-        guard let metadata = metadata else { return }
+        guard let metadata,
+              let domain = NCDomain.shared.getDomain(account: metadata.account) else { return }
 
         if metadata.e2eEncrypted {
             let direcrory = NCManageDatabase.shared.getTableDirectory(account: metadata.account, serverUrl: metadata.serverUrl)
@@ -101,7 +102,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
 
         reloadData()
 
-        networking = NCShareNetworking(metadata: metadata, view: self.view, delegate: self)
+        networking = NCShareNetworking(metadata: metadata, view: self.view, delegate: self, domain: domain)
         if sharingEnabled {
             let isVisible = (self.navigationController?.topViewController as? NCSharePaging)?.page == .sharing
             networking?.readShare(showLoadingIndicator: isVisible)
