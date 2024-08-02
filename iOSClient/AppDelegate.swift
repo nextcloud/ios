@@ -96,7 +96,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
 
             for account in NCManageDatabase.shared.getAllAccount() {
-                NCDomain.shared.addDomain(account: account.account, urlBase: account.urlBase, user: account.user, userId: account.userId, sceneIdentifier: "")
+                NCDomain.shared.appendDomain(account: account.account, urlBase: account.urlBase, user: account.user, userId: account.userId, sceneIdentifier: "")
                 NextcloudKit.shared.appendAccount(account.account,
                                                   urlBase: account.urlBase,
                                                   user: account.user,
@@ -239,7 +239,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) disabled auto upload")
             }
 
-            let results = await NCNetworkingProcess.shared.start(scene: nil)
+            let results = await NCNetworkingProcess.shared.start(scene: nil, account: account)
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) networking process with download: \(results.counterDownloading) upload: \(results.counterUploading)")
 
             if taskText == "ProcessingTask",

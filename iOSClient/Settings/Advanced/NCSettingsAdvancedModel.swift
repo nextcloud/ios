@@ -67,7 +67,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
 
     /// Triggered when the view appears.
     func onViewAppear() {
-        let groups = NCManageDatabase.shared.getAccountGroups(account: appDelegate.account)
+        let groups = NCManageDatabase.shared.getAccountGroups(account: NCDomain.shared.getActiveAccount())
         isAdminGroup = groups.contains(NCGlobal.shared.groupAdmin)
         showHiddenFiles = keychain.showHiddenFiles
         mostCompatible = keychain.formatCompatibility
@@ -133,10 +133,11 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
         // Cancel all networking tasks
         NCNetworking.shared.cancelAllTask()
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            let account = NCDomain.shared.getActiveAccount()
             URLCache.shared.memoryCapacity = 0
             URLCache.shared.diskCapacity = 0
 
-            NCManageDatabase.shared.clearDatabase(account: self.appDelegate.account, removeAccount: false)
+            NCManageDatabase.shared.clearDatabase(account: account, removeAccount: false)
 
             let ufs = NCUtilityFileSystem()
             ufs.removeGroupDirectoryProviderStorage()
@@ -146,7 +147,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
             ufs.createDirectoryStandard()
 
             NCAutoUpload.shared.alignPhotoLibrary(viewController: self.controller)
-            NCImageCache.shared.createMediaCache(account: self.appDelegate.account, withCacheSize: true)
+            NCImageCache.shared.createMediaCache(account: account, withCacheSize: true)
 
             NCActivityIndicator.shared.stop()
             self.calculateSize()

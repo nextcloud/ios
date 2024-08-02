@@ -204,16 +204,16 @@ extension NCManageDatabase {
         return ""
     }
 
-    func getAccountAutoUploadDirectory(urlBase: String, userId: String, account: String) -> String {
+    func getAccountAutoUploadDirectory(domain: NCDomain.Domain) -> String {
         do {
             let realm = try Realm()
             guard let result = realm.objects(tableAccount.self).filter("active == true").first else { return "" }
             if result.autoUploadDirectory.isEmpty {
-                return utilityFileSystem.getHomeServer(urlBase: urlBase, userId: userId)
+                return utilityFileSystem.getHomeServer(domain: domain)
             } else {
                 // FIX change webdav -> /dav/files/
                 if result.autoUploadDirectory.contains("/webdav") {
-                    return utilityFileSystem.getHomeServer(urlBase: urlBase, userId: userId)
+                    return utilityFileSystem.getHomeServer(domain: domain)
                 } else {
                     return result.autoUploadDirectory
                 }
@@ -224,9 +224,9 @@ extension NCManageDatabase {
         return ""
     }
 
-    func getAccountAutoUploadPath(urlBase: String, userId: String, account: String) -> String {
+    func getAccountAutoUploadPath(domain: NCDomain.Domain) -> String {
         let cameraFileName = self.getAccountAutoUploadFileName()
-        let cameraDirectory = self.getAccountAutoUploadDirectory(urlBase: urlBase, userId: userId, account: account)
+        let cameraDirectory = self.getAccountAutoUploadDirectory(domain: domain)
         let folderPhotos = utilityFileSystem.stringAppendServerUrl(cameraDirectory, addFileName: cameraFileName)
         return folderPhotos
     }
@@ -319,7 +319,7 @@ extension NCManageDatabase {
         }
     }
 
-    func setAccountAutoUploadDirectory(_ serverUrl: String?, urlBase: String, userId: String, account: String) {
+    func setAccountAutoUploadDirectory(_ serverUrl: String?, domain: NCDomain.Domain) {
         do {
             let realm = try Realm()
             try realm.write {
@@ -327,7 +327,7 @@ extension NCManageDatabase {
                     if let serverUrl = serverUrl {
                         result.autoUploadDirectory = serverUrl
                     } else {
-                        result.autoUploadDirectory = self.getAccountAutoUploadDirectory(urlBase: urlBase, userId: userId, account: account)
+                        result.autoUploadDirectory = self.getAccountAutoUploadDirectory(domain: domain)
                     }
                 }
             }

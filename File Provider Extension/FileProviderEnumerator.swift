@@ -37,7 +37,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         self.enumeratedItemIdentifier = enumeratedItemIdentifier
         if enumeratedItemIdentifier == .rootContainer {
             if let domain = NCDomain.shared.getDomain(account: fileProviderData.shared.account)  {
-                serverUrl = NCUtilityFileSystem().getHomeServer(urlBase: domain.urlBase, userId: domain.userId)
+                serverUrl = NCUtilityFileSystem().getHomeServer(domain: domain)
             }
         } else {
             if let metadata = providerUtility.getTableMetadataFromItemIdentifier(enumeratedItemIdentifier),

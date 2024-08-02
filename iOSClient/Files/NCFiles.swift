@@ -51,7 +51,7 @@ class NCFiles: NCCollectionViewCommon {
             NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
                 guard let domain = NCDomain.shared.getActiveDomain() else { return }
                 self.navigationController?.popToRootViewController(animated: false)
-                self.serverUrl = self.utilityFileSystem.getHomeServer(urlBase: domain.urlBase, userId: domain.userId)
+                self.serverUrl = self.utilityFileSystem.getHomeServer(domain: domain)
                 self.isSearchingMode = false
                 self.isEditMode = false
                 self.selectOcId.removeAll()
@@ -77,7 +77,7 @@ class NCFiles: NCCollectionViewCommon {
     override func viewWillAppear(_ animated: Bool) {
         if isRoot {
             guard let domain = NCDomain.shared.getActiveDomain() else { return }
-            serverUrl = utilityFileSystem.getHomeServer(urlBase: domain.urlBase, userId: domain.userId)
+            serverUrl = utilityFileSystem.getHomeServer(domain: domain)
             titleCurrentFolder = getNavigationTitle()
         }
         super.viewWillAppear(animated)
@@ -210,14 +210,14 @@ class NCFiles: NCCollectionViewCommon {
                         let lock = NCManageDatabase.shared.getE2ETokenLock(account: account, serverUrl: self.serverUrl)
                         NCNetworkingE2EE().getMetadata(fileId: metadataFolder.ocId, e2eToken: lock?.e2eToken, account: account) { account, version, e2eMetadata, signature, _, error in
                             if error == .success, let e2eMetadata = e2eMetadata {
-                                let error = NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: signature, serverUrl: self.serverUrl, account: domain.account, urlBase: domain.urlBase, userId: domain.userId)
+                                let error = NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: signature, serverUrl: self.serverUrl, domain: domain)
                                 if error == .success {
                                     if version == "v1", NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
                                         NextcloudKit.shared.nkCommonInstance.writeLog("[E2EE] Conversion v1 to v2")
                                         NCActivityIndicator.shared.start()
                                         Task {
                                             let serverUrl = metadataFolder.serverUrl + "/" + metadataFolder.fileName
-                                            let error = await NCNetworkingE2EE().uploadMetadata(account: metadataFolder.account, serverUrl: serverUrl, userId: metadataFolder.userId, updateVersionV1V2: true)
+                                            let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, updateVersionV1V2: true, domain: domain)
                                             if error != .success {
                                                 NCContentPresenter().showError(error: error)
                                             }
@@ -236,7 +236,7 @@ class NCFiles: NCCollectionViewCommon {
                                 // no metadata found, send a new metadata
                                 Task {
                                     let serverUrl = metadataFolder.serverUrl + "/" + metadataFolder.fileName
-                                    let error = await NCNetworkingE2EE().uploadMetadata(account: metadataFolder.account, serverUrl: serverUrl, userId: metadataFolder.userId)
+                                    let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, domain: domain)
                                     if error != .success {
                                         NCContentPresenter().showError(error: error)
                                     }

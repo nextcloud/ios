@@ -253,7 +253,8 @@ extension tableMetadata {
     }
 
     @objc var isDirectoryE2EE: Bool {
-        NCUtilityFileSystem().isDirectoryE2EE(account: account, urlBase: urlBase, userId: userId, serverUrl: serverUrl)
+        let domain = NCDomain.Domain(account: account, urlBase: urlBase, user: user, userId: userId, sceneIdentifier: "")
+        return NCUtilityFileSystem().isDirectoryE2EE(domain: domain, serverUrl: serverUrl)
     }
 
     var isDirectoryE2EETop: Bool {
@@ -896,7 +897,7 @@ extension NCManageDatabase {
     func getMetadataFolder(domain: NCDomain.Domain, serverUrl: String) -> tableMetadata? {
         var serverUrl = serverUrl
         var fileName = ""
-        let serverUrlHome = utilityFileSystem.getHomeServer(urlBase: domain.urlBase, userId: domain.userId)
+        let serverUrlHome = utilityFileSystem.getHomeServer(domain: domain)
 
         if serverUrlHome == serverUrl {
             fileName = "."
@@ -1062,18 +1063,18 @@ extension NCManageDatabase {
         return nil
     }
 
-    func getMetadatasFromGroupfolders(account: String, urlBase: String, userId: String) -> [tableMetadata] {
+    func getMetadatasFromGroupfolders(domain: NCDomain.Domain) -> [tableMetadata] {
         var metadatas: [tableMetadata] = []
-        let homeServerUrl = utilityFileSystem.getHomeServer(urlBase: urlBase, userId: userId)
+        let homeServerUrl = utilityFileSystem.getHomeServer(domain: domain)
 
         do {
             let realm = try Realm()
             realm.refresh()
-            let groupfolders = realm.objects(TableGroupfolders.self).filter("account == %@", account)
+            let groupfolders = realm.objects(TableGroupfolders.self).filter("account == %@", domain.account)
             for groupfolder in groupfolders {
                 let mountPoint = groupfolder.mountPoint.hasPrefix("/") ? groupfolder.mountPoint : "/" + groupfolder.mountPoint
                 let serverUrlFileName = homeServerUrl + mountPoint
-                if let directory = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrlFileName).first,
+                if let directory = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", domain.account, serverUrlFileName).first,
                    let metadata = realm.objects(tableMetadata.self).filter("ocId == %@", directory.ocId).first {
                     metadatas.append(tableMetadata(value: metadata))
                 }
