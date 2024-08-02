@@ -36,7 +36,7 @@ public class NCDomain: NSObject {
     }
     var domain: ThreadSafeArray<Domain> = ThreadSafeArray()
 
-    public func addDomain(account: String, urlBase: String, user: String, userId: String, sceneIdentifier: String) {
+    public func appendDomain(account: String, urlBase: String, user: String, userId: String, sceneIdentifier: String) {
         if self.domain.filter({ $0.account == account }).first != nil {
             return updateDomain(account, userId: userId, sceneIdentifier: sceneIdentifier)
         }
@@ -55,6 +55,10 @@ public class NCDomain: NSObject {
 
     public func removeDomain(account: String) {
         self.domain.remove(where: { $0.account == account })
+    }
+
+    public func getEmptyDomain() -> Domain {
+        return Domain(account: "", urlBase: "", user: "", userId: "", sceneIdentifier: "")
     }
 
     public func getDomain(account: String) -> Domain? {

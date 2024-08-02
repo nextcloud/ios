@@ -32,7 +32,7 @@ extension NCShare: NCShareLinkCellDelegate, NCShareUserCellDelegate {
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: metadata.account) { _, metadata, error in
             if error == .success, let metadata = metadata {
-                let internalLink = appDelegate.urlBase + "/index.php/f/" + metadata.fileId
+                let internalLink = metadata.urlBase + "/index.php/f/" + metadata.fileId
                 self.shareCommon.copyLink(link: internalLink, viewController: self, sender: sender)
             } else {
                 NCContentPresenter().showError(error: error)

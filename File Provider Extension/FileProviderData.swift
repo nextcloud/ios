@@ -30,22 +30,15 @@ class fileProviderData: NSObject {
         return instance
     }()
 
-    var domain: NSFileProviderDomain?
+    var providerDomain: NSFileProviderDomain?
     var fileProviderManager: NSFileProviderManager = NSFileProviderManager.default
     let utilityFileSystem = NCUtilityFileSystem()
-
-    var account = ""
-    var user = ""
-    var userId = ""
-    var accountUrlBase = ""
-    var homeServerUrl = ""
-
     var listFavoriteIdentifierRank: [String: NSNumber] = [:]
-
     var fileProviderSignalDeleteContainerItemIdentifier: [NSFileProviderItemIdentifier: NSFileProviderItemIdentifier] = [:]
     var fileProviderSignalUpdateContainerItem: [NSFileProviderItemIdentifier: FileProviderItem] = [:]
     var fileProviderSignalDeleteWorkingSetItemIdentifier: [NSFileProviderItemIdentifier: NSFileProviderItemIdentifier] = [:]
     var fileProviderSignalUpdateWorkingSetItem: [NSFileProviderItemIdentifier: FileProviderItem] = [:]
+    var account: String = ""
 
     enum FileProviderError: Error {
         case downloadError
@@ -68,9 +61,9 @@ class fileProviderData: NSObject {
 
     // MARK: - 
 
-    func setupAccount(domain: NSFileProviderDomain?, providerExtension: NSFileProviderExtension) -> tableAccount? {
-        self.domain = domain
-        if let domain, let fileProviderManager = NSFileProviderManager(for: domain) {
+    func setupAccount(providerDomain: NSFileProviderDomain?, providerExtension: NSFileProviderExtension) -> tableAccount? {
+        self.providerDomain = providerDomain
+        if let providerDomain, let fileProviderManager = NSFileProviderManager(for: providerDomain) {
             self.fileProviderManager = fileProviderManager
         }
 
@@ -82,14 +75,11 @@ class fileProviderData: NSObject {
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start File Provider session with level \(levelLog) " + version + " (File Provider Extension)")
 
         // NO DOMAIN -> Set default account
-        if domain == nil {
+        if providerDomain == nil {
             guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else { return nil }
-            account = activeAccount.account
-            user = activeAccount.user
-            userId = activeAccount.userId
-            accountUrlBase = activeAccount.urlBase
-            homeServerUrl = utilityFileSystem.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId)
+            self.account = activeAccount.account
 
+            NCDomain.shared.appendDomain(account: activeAccount.account, urlBase: activeAccount.urlBase, user: activeAccount.user, userId: activeAccount.userId, sceneIdentifier: "")
             NextcloudKit.shared.setup(delegate: NCNetworking.shared)
             NextcloudKit.shared.appendAccount(activeAccount.account,
                                               urlBase: activeAccount.urlBase,
@@ -108,6 +98,7 @@ class fileProviderData: NSObject {
         let accounts = NCManageDatabase.shared.getAllAccount()
         if accounts.isEmpty { return nil }
 
+        /*
         for activeAccount in accounts {
             guard let url = NSURL(string: activeAccount.urlBase) else { continue }
             guard let host = url.host else { continue }
@@ -133,6 +124,7 @@ class fileProviderData: NSObject {
                 return tableAccount.init(value: activeAccount)
             }
         }
+        */
         return nil
     }
 

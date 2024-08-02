@@ -45,7 +45,7 @@ class NCViewer: NSObject {
                 if pathComponents.contains("call") {
                     let talkComponents = pathComponents.last?.components(separatedBy: "#")
                     if let roomToken = talkComponents?.first {
-                        let urlString = "nextcloudtalk://open-conversation?server=\(appDelegate.urlBase)&user=\(appDelegate.userId)&withRoomToken=\(roomToken)"
+                        let urlString = "nextcloudtalk://open-conversation?server=\(NCDomain.shared.getActiveUrlBase())&user=\(NCDomain.shared.getActiveUserId())&withRoomToken=\(roomToken)"
                         if let url = URL(string: urlString), UIApplication.shared.canOpenURL(url) {
                             UIApplication.shared.open(url)
                             return

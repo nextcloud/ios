@@ -260,15 +260,13 @@ class NCCameraRoll: NSObject {
             guard let videoResource = videoResource else { return completion(nil) }
             self.utilityFileSystem.removeFile(atPath: fileNamePath)
             PHAssetResourceManager.default().writeData(for: videoResource, toFile: URL(fileURLWithPath: fileNamePath), options: nil) { error in
-                if error != nil { return completion(nil) }
-                let metadataLivePhoto = NCManageDatabase.shared.createMetadata(account: metadata.account,
-                                                                               user: metadata.user,
-                                                                               userId: metadata.userId,
+                guard error == nil,
+                      let domain = NCDomain.shared.getDomain(account: metadata.account) else { return completion(nil) }
+                let metadataLivePhoto = NCManageDatabase.shared.createMetadata(domain: domain,
                                                                                fileName: fileName,
                                                                                fileNameView: fileName,
                                                                                ocId: ocId,
                                                                                serverUrl: metadata.serverUrl,
-                                                                               urlBase: metadata.urlBase,
                                                                                url: "",
                                                                                contentType: "")
 

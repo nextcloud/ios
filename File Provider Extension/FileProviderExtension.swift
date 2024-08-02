@@ -75,7 +75,7 @@ class FileProviderExtension: NSFileProviderExtension {
         var maybeEnumerator: NSFileProviderEnumerator?
 
         if containerItemIdentifier != NSFileProviderItemIdentifier.workingSet {
-            if fileProviderData.shared.setupAccount(domain: domain, providerExtension: self) == nil {
+            if fileProviderData.shared.setupAccount(providerDomain: domain, providerExtension: self) == nil {
                 throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo: [:])
             } else if NCKeychain().passcode != nil, NCKeychain().requestPasscodeAtStart {
                 throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo: ["code": NSNumber(value: NCGlobal.shared.errorUnauthorizedFilesPasscode)])
@@ -111,13 +111,16 @@ class FileProviderExtension: NSFileProviderExtension {
 
     override func item(for identifier: NSFileProviderItemIdentifier) throws -> NSFileProviderItem {
         if identifier == .rootContainer {
+            guard let domain = NCDomain.shared.getDomain(account: fileProviderData.shared.account) else {
+                throw NSFileProviderError(.noSuchItem)
+            }
             let metadata = tableMetadata()
             metadata.account = fileProviderData.shared.account
             metadata.directory = true
             metadata.ocId = NSFileProviderItemIdentifier.rootContainer.rawValue
             metadata.fileName = "root"
             metadata.fileNameView = "root"
-            metadata.serverUrl = fileProviderData.shared.homeServerUrl
+            metadata.serverUrl = utilityFileSystem.getHomeServer(urlBase: domain.urlBase, userId: domain.userId)
             metadata.classFile = NKCommon.TypeClassFile.directory.rawValue
             return FileProviderItem(metadata: metadata, parentItemIdentifier: NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue))
         } else {
@@ -280,7 +283,8 @@ class FileProviderExtension: NSFileProviderExtension {
     override func importDocument(at fileURL: URL, toParentItemIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
         DispatchQueue.main.async {
             autoreleasepool {
-                guard let tableDirectory = self.providerUtility.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: fileProviderData.shared.account, homeServerUrl: fileProviderData.shared.homeServerUrl) else {
+                guard let domain = NCDomain.shared.getDomain(account: fileProviderData.shared.account),
+                      let tableDirectory = self.providerUtility.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: domain.account, homeServerUrl: self.utilityFileSystem.getHomeServer(urlBase: domain.urlBase, userId: domain.userId)) else {
                     return completionHandler(nil, NSFileProviderError(.noSuchItem))
                 }
                 var size = 0 as Int64
@@ -307,7 +311,7 @@ class FileProviderExtension: NSFileProviderExtension {
 
                 fileURL.stopAccessingSecurityScopedResource()
 
-                let metadata = NCManageDatabase.shared.createMetadata(account: fileProviderData.shared.account, user: fileProviderData.shared.user, userId: fileProviderData.shared.userId, fileName: fileName, fileNameView: fileName, ocId: ocIdTemp, serverUrl: tableDirectory.serverUrl, urlBase: fileProviderData.shared.accountUrlBase, url: "", contentType: "")
+                let metadata = NCManageDatabase.shared.createMetadata(domain: domain, fileName: fileName, fileNameView: fileName, ocId: ocIdTemp, serverUrl: tableDirectory.serverUrl, url: "", contentType: "")
                 metadata.session = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundExt
                 metadata.size = size
                 metadata.status = NCGlobal.shared.metadataStatusUploading
