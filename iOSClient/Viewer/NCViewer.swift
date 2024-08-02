@@ -36,6 +36,7 @@ class NCViewer: NSObject {
     func view(viewController: UIViewController, metadata: tableMetadata, metadatas: [tableMetadata], imageIcon: UIImage?) {
         self.metadata = metadata
         self.metadatas = metadatas
+        guard let domain = NCDomain.shared.getDomain(account: metadata.account) else { return }
 
         // URL
         if metadata.classFile == NKCommon.TypeClassFile.url.rawValue {
@@ -135,7 +136,7 @@ class NCViewer: NSObject {
                     options = NKRequestOptions(customUserAgent: utility.getCustomUserAgentOnlyOffice())
                 }
                 if metadata.url.isEmpty {
-                    let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
+                    let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, domain: domain)
                     NCActivityIndicator.shared.start(backgroundView: viewController.view)
                     NextcloudKit.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: editor, account: metadata.account, options: options) { _, url, _, error in
                         NCActivityIndicator.shared.stop()

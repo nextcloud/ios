@@ -29,28 +29,28 @@ class NCShareNetworking: NSObject {
     weak var delegate: NCShareNetworkingDelegate?
     var view: UIView
     var metadata: tableMetadata
+    var domain: NCDomain.Domain
 
-    init(metadata: tableMetadata, view: UIView, delegate: NCShareNetworkingDelegate?) {
+    init(metadata: tableMetadata, view: UIView, delegate: NCShareNetworkingDelegate?, domain: NCDomain.Domain) {
         self.metadata = metadata
         self.view = view
         self.delegate = delegate
+        self.domain = domain
 
         super.init()
     }
 
     func readShare(showLoadingIndicator: Bool) {
-
         if showLoadingIndicator {
             NCActivityIndicator.shared.start(backgroundView: view)
         }
-
-        let filenamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
+        let filenamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, domain: domain)
         let parameter = NKShareParameter(path: filenamePath)
 
         NextcloudKit.shared.readShares(parameters: parameter, account: metadata.account) { account, shares, _, error in
             if error == .success, let shares = shares {
                 NCManageDatabase.shared.deleteTableShare(account: account, path: "/" + filenamePath)
-                let home = self.utilityFileSystem.getHomeServer(urlBase: self.metadata.urlBase, userId: self.metadata.userId)
+                let home = self.utilityFileSystem.getHomeServer(domain: self.domain)
                 NCManageDatabase.shared.addShare(account: self.metadata.account, home: home, shares: shares)
                 NextcloudKit.shared.getGroupfolders(account: account) { account, results, _, error in
                     if showLoadingIndicator {
@@ -80,13 +80,13 @@ class NCShareNetworking: NSObject {
         // https://github.com/nextcloud/ios-communication-library/pull/104
 
         NCActivityIndicator.shared.start(backgroundView: view)
-        let filenamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
+        let filenamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, domain: domain)
 
         NextcloudKit.shared.createShare(path: filenamePath, shareType: option.shareType, shareWith: option.shareWith, password: option.password, note: option.note, permissions: option.permissions, attributes: option.attributes, account: metadata.account) { _, share, _, error in
             NCActivityIndicator.shared.stop()
             if error == .success, let share = share {
                 option.idShare = share.idShare
-                let home = self.utilityFileSystem.getHomeServer(urlBase: self.metadata.urlBase, userId: self.metadata.userId)
+                let home = self.utilityFileSystem.getHomeServer(domain: self.domain)
                 NCManageDatabase.shared.addShare(account: self.metadata.account, home: home, shares: [share])
                 if option.hasChanges(comparedTo: share) {
                     self.updateShare(option: option)
@@ -116,7 +116,7 @@ class NCShareNetworking: NSObject {
         NextcloudKit.shared.updateShare(idShare: option.idShare, password: option.password, expireDate: option.expDateString, permissions: option.permissions, note: option.note, label: option.label, hideDownload: option.hideDownload, attributes: option.attributes, account: metadata.account) { _, share, _, error in
             NCActivityIndicator.shared.stop()
             if error == .success, let share = share {
-                let home = self.utilityFileSystem.getHomeServer(urlBase: self.metadata.urlBase, userId: self.metadata.userId)
+                let home = self.utilityFileSystem.getHomeServer(domain: self.domain)
                 NCManageDatabase.shared.addShare(account: self.metadata.account, home: home, shares: [share])
                 self.delegate?.readShareCompleted()
             } else {
