@@ -37,16 +37,16 @@ func getToolbarDataEntry(isPreview: Bool, completion: @escaping (_ entry: Toolba
     var userId = ""
     var url = ""
 
-    if let account = NCManageDatabase.shared.getActiveAccount() {
-        userId = account.userId
-        url = account.urlBase
+    if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
+        userId = activeTableAccount.userId
+        url = activeTableAccount.urlBase
     }
 
     if isPreview {
         return completion(ToolbarDataEntry(date: Date(), isPlaceholder: true, userId: userId, url: url, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " toolbar"))
     }
 
-    if NCManageDatabase.shared.getActiveAccount() == nil {
+    if NCManageDatabase.shared.getActiveTableAccount() == nil {
         return completion(ToolbarDataEntry(date: Date(), isPlaceholder: true, userId: userId, url: url, footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
     }
 

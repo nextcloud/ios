@@ -76,22 +76,27 @@ class fileProviderData: NSObject {
 
         // NO DOMAIN -> Set default account
         if providerDomain == nil {
-            guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else { return nil }
-            self.account = activeAccount.account
+            guard let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() else { return nil }
+            self.account = activeTableAccount.account
 
-            NCDomain.shared.appendDomain(account: activeAccount.account, urlBase: activeAccount.urlBase, user: activeAccount.user, userId: activeAccount.userId, sceneIdentifier: "")
+            NCDomain.shared.appendDomain(account: activeTableAccount.account,
+                                         urlBase: activeTableAccount.urlBase,
+                                         user: activeTableAccount.user,
+                                         userId: activeTableAccount.userId,
+                                         sceneIdentifier: "")
+
             NextcloudKit.shared.setup(delegate: NCNetworking.shared)
-            NextcloudKit.shared.appendAccount(activeAccount.account,
-                                              urlBase: activeAccount.urlBase,
-                                              user: activeAccount.user,
-                                              userId: activeAccount.userId,
-                                              password: NCKeychain().getPassword(account: activeAccount.account),
+            NextcloudKit.shared.appendAccount(activeTableAccount.account,
+                                              urlBase: activeTableAccount.urlBase,
+                                              user: activeTableAccount.user,
+                                              userId: activeTableAccount.userId,
+                                              password: NCKeychain().getPassword(account: activeTableAccount.account),
                                               userAgent: userAgent,
                                               nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
                                               groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
             NCNetworking.shared.delegate = providerExtension as? NCNetworkingDelegate
 
-            return tableAccount.init(value: activeAccount)
+            return tableAccount.init(value: activeTableAccount)
         }
 
         // DOMAIN

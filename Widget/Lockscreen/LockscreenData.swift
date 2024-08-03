@@ -47,7 +47,7 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, fami
 
     let accountIdentifier: String = configuration?.accounts?.identifier ?? "active"
     if accountIdentifier == "active" {
-        account = NCManageDatabase.shared.getActiveAccount()
+        account = NCManageDatabase.shared.getActiveTableAccount()
     } else {
         account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", accountIdentifier))
     }

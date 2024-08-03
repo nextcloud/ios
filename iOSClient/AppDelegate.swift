@@ -88,21 +88,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start session with level \(levelLog) " + versionNextcloudiOS)
         }
 
-        if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
-            NCDomain.shared.setActiveTableAccount(activeAccount)
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Account active \(activeAccount.account)")
+        if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
+            NCDomain.shared.setActiveTableAccount(activeTableAccount)
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Account active \(activeTableAccount.account)")
 
-            if NCKeychain().getPassword(account: activeAccount.account).isEmpty {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] PASSWORD NOT FOUND for \(activeAccount.account)")
+            if NCKeychain().getPassword(account: activeTableAccount.account).isEmpty {
+                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] PASSWORD NOT FOUND for \(activeTableAccount.account)")
             }
 
+            NCManageDatabase.shared.setCapabilities(account: activeTableAccount.account)
+            NCBrandColor.shared.settingThemingColor(account: activeTableAccount.account)
+
             /* -- SINGLE DOMAIN -- */
-            NCDomain.shared.appendDomain(account: activeAccount.account, urlBase: activeAccount.urlBase, user: activeAccount.user, userId: activeAccount.userId, sceneIdentifier: "")
-            NextcloudKit.shared.appendAccount(activeAccount.account,
-                                              urlBase: activeAccount.urlBase,
-                                              user: activeAccount.user,
-                                              userId: activeAccount.userId,
-                                              password: NCKeychain().getPassword(account: activeAccount.account),
+            NCDomain.shared.appendDomain(account: activeTableAccount.account,
+                                         urlBase: activeTableAccount.urlBase,
+                                         user: activeTableAccount.user,
+                                         userId: activeTableAccount.userId,
+                                         sceneIdentifier: "")
+
+            NextcloudKit.shared.appendAccount(activeTableAccount.account,
+                                              urlBase: activeTableAccount.urlBase,
+                                              user: activeTableAccount.user,
+                                              userId: activeTableAccount.userId,
+                                              password: NCKeychain().getPassword(account: activeTableAccount.account),
                                               userAgent: userAgent,
                                               nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
                                               groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
@@ -121,9 +129,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                                                   groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
             }
             */
-
-            NCManageDatabase.shared.setCapabilities(account: activeAccount.account)
-            NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
 
             DispatchQueue.global().async {
                 let domain = NCDomain.shared.getActiveDomain()

@@ -114,7 +114,7 @@ extension NCManageDatabase {
         }
     }
 
-    func getActiveAccount() -> tableAccount? {
+    func getActiveTableAccount() -> tableAccount? {
         do {
             let realm = try Realm()
             guard let result = realm.objects(tableAccount.self).filter("active == true").first else { return nil }
