@@ -97,13 +97,6 @@ public class NCDomain: NSObject {
         return ""
     }
 
-    public func getActiveUrlBase() -> String {
-        if let domain = self.domain.filter({ $0.account == self.activeTableAccount.account }).first {
-            return domain.urlBase
-        }
-        return ""
-    }
-
     public func getActiveUserId() -> String {
         if let domain = self.domain.filter({ $0.account == self.activeTableAccount.account }).first {
             return domain.userId

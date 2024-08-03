@@ -248,7 +248,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
     func tapAction(with notification: NKNotifications, label: String) {
         if notification.app == NCGlobal.shared.spreedName,
            let roomToken = notification.objectId.split(separator: "/").first,
-           let talkUrl = URL(string: "nextcloudtalk://open-conversation?server=\(NCDomain.shared.getActiveUrlBase())&user=\(NCDomain.shared.getActiveUserId())&withRoomToken=\(roomToken)"),
+           let talkUrl = URL(string: "nextcloudtalk://open-conversation?server=\(NCDomain.shared.getActiveDomain().urlBase)&user=\(NCDomain.shared.getActiveUserId())&withRoomToken=\(roomToken)"),
            UIApplication.shared.canOpenURL(talkUrl) {
             UIApplication.shared.open(talkUrl)
         } else if let actions = notification.actions,
@@ -262,7 +262,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
                 return
             }
 
-            NextcloudKit.shared.setNotification(serverUrl: serverUrl, idNotification: 0, method: method, account: NCDomain.shared.getActiveAccount()) { account, error in
+            NextcloudKit.shared.setNotification(serverUrl: serverUrl, idNotification: 0, method: method, account: NCDomain.shared.getActiveAccount()) { _, error in
                 if error == .success {
                     if let index = self.notifications.firstIndex(where: { $0.idNotification == notification.idNotification }) {
                         self.notifications.remove(at: index)
