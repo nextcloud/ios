@@ -77,7 +77,6 @@ public class NCDomain: NSObject {
         if self.activeTableAccount.account == tableAccount.account {
             self.activeTableAccount = tableAccount
         }
-        updateDomain(tableAccount.account, userId: tableAccount.userId)
     }
 
     func getActiveTableAccount() -> tableAccount {
