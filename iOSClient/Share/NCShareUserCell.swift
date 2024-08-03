@@ -175,7 +175,7 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
                displayName: nil,
             account: account)
 
-        let fileName = NCDomain.shared.getUserBaseUrl(account: account) + "-" + sharee.shareWith + ".png"
+        let fileName = NCDomain.shared.getStore(account: account) + "-" + sharee.shareWith + ".png"
         if NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) == nil {
             let fileNameLocalPath = NCUtilityFileSystem().directoryUserData + "/" + fileName
             let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag

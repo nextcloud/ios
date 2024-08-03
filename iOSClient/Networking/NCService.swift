@@ -142,7 +142,7 @@ class NCService: NSObject {
 
     func getAvatar(account: String) {
         let domain = NCDomain.shared.getDomain(account: account)
-        let fileName =  NCDomain.shared.getUserBaseUrl(account: account) + "-" + domain.user + ".png"
+        let fileName =  NCDomain.shared.getStore(account: account) + "-" + domain.user + ".png"
         let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
         let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
 

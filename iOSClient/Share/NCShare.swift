@@ -150,7 +150,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         let shareLabelAction = UITapGestureRecognizer(target: self, action: #selector(openShareProfile))
         sharedWithYouByLabel.addGestureRecognizer(shareLabelAction)
 
-        let fileName = NCDomain.shared.getUserBaseUrl(account: domain.account) + "-" + metadata.ownerId + ".png"
+        let fileName = NCDomain.shared.getStore(account: domain.account) + "-" + metadata.ownerId + ".png"
 
         if NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) == nil {
             let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
@@ -370,7 +370,7 @@ extension NCShare: UITableViewDataSource {
                 cell.tableShare = tableShare
                 cell.delegate = self
                 cell.setupCellUI(userId: domain.userId)
-                let fileName = NCDomain.shared.getUserBaseUrl(account: domain.account) + "-" + tableShare.shareWith + ".png"
+                let fileName = NCDomain.shared.getStore(account: domain.account) + "-" + tableShare.shareWith + ".png"
                 NCNetworking.shared.downloadAvatar(user: tableShare.shareWith, dispalyName: tableShare.shareWithDisplayname, fileName: fileName, account: metadata.account, cell: cell, view: tableView)
                 return cell
             }
