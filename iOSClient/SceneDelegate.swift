@@ -149,7 +149,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Auto upload: false")
         }
 
-        if let error = appDelegate?.updateShareAccounts() {
+        if let error = NCAccount().updateShareAccounts() {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Create share accounts \(error.localizedDescription)")
         }
 
@@ -184,7 +184,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     for account in accounts {
                         let urlBase = URL(string: account.urlBase)
                         if url.contains(urlBase?.host ?? "") && userId == account.userId {
-                            appDelegate.changeAccount(account.account, userProfile: nil) { }
+                            NCAccount().changeAccount(account.account, userProfile: nil) { }
                             return account
                         }
                     }
@@ -385,7 +385,7 @@ extension SceneDelegate: NCAccountRequestDelegate {
     func accountRequestAddAccount() { }
 
     func accountRequestChangeAccount(account: String) {
-        appDelegate?.changeAccount(account, userProfile: nil) { }
+        NCAccount().changeAccount(account, userProfile: nil) { }
     }
 }
 

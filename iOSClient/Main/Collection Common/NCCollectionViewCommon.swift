@@ -618,7 +618,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
                 let action = UIAction(title: name, image: image, state: account.active ? .on : .off) { _ in
                     if !account.active {
-                        self.appDelegate.changeAccount(account.account, userProfile: nil) { }
+                        NCAccount().changeAccount(account.account, userProfile: nil) { }
                         self.setEditMode(false)
                     }
                 }

@@ -175,16 +175,16 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
 
     @objc func changeAccount() {
         if let activeAccount {
-            self.appDelegate.changeAccount(activeAccount.account, userProfile: nil) { }
+            NCAccount().changeAccount(activeAccount.account, userProfile: nil) { }
         }
     }
 
     /// Function to delete the current account
     func deleteAccount() {
         if let activeAccount {
-            appDelegate.deleteAccount(activeAccount.account)
+            NCAccount().deleteAccount(activeAccount.account)
             if let account = NCManageDatabase.shared.getAllAccount().first?.account {
-                appDelegate.changeAccount(account, userProfile: nil) {
+                NCAccount().changeAccount(account, userProfile: nil) {
                     onViewAppear()
                 }
             } else {

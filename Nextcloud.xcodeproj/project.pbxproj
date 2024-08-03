@@ -757,6 +757,7 @@
 		F7A8D74228F18261008BBE1C /* NCUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70BFC7320E0FA7C00C67599 /* NCUtility.swift */; };
 		F7A8D74328F1826F008BBE1C /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
 		F7A8D74428F1827B008BBE1C /* ThreadSafeDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7245923289BB50B00474787 /* ThreadSafeDictionary.swift */; };
+		F7A8FD522C5E2557006C9CF8 /* NCAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A8FD512C5E2557006C9CF8 /* NCAccount.swift */; };
 		F7AC1CB028AB94490032D99F /* Array+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AC1CAF28AB94490032D99F /* Array+Extension.swift */; };
 		F7AC934A296193050002BC0F /* Reasons to use Nextcloud.pdf in Resources */ = {isa = PBXBuildFile; fileRef = F7AC9349296193050002BC0F /* Reasons to use Nextcloud.pdf */; };
 		F7AE00F5230D5F9E007ACF8A /* NCLoginProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7AE00F4230D5F9E007ACF8A /* NCLoginProvider.swift */; };
@@ -1520,6 +1521,7 @@
 		F7A60F85292D215000FCE1F2 /* NCShareAccounts.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCShareAccounts.storyboard; sourceTree = "<group>"; };
 		F7A7FDDB2C2DBD6200E9A93A /* NCDeepLinkHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCDeepLinkHandler.swift; sourceTree = "<group>"; };
 		F7A846DD2BB01ACB0024816F /* NCTrashCellProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTrashCellProtocol.swift; sourceTree = "<group>"; };
+		F7A8FD512C5E2557006C9CF8 /* NCAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAccount.swift; sourceTree = "<group>"; };
 		F7AA41B827C7CF4600494705 /* ca */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		F7AA41B927C7CF4B00494705 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		F7AA41BA27C7CF5000494705 /* zh-Hant-TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant-TW"; path = "zh-Hant-TW.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
@@ -2952,6 +2954,7 @@
 			children = (
 				F702F2CC25EE5B4F008F8E80 /* AppDelegate.swift */,
 				F77DD6A72C5CC093009448FB /* NCDomain.swift */,
+				F7A8FD512C5E2557006C9CF8 /* NCAccount.swift */,
 				F794E13E2BBC0F70003693D7 /* SceneDelegate.swift */,
 				F76B649B2ADFFAED00014640 /* NCImageCache.swift */,
 				F702F2CE25EE5B5C008F8E80 /* NCGlobal.swift */,
@@ -4355,6 +4358,7 @@
 				F761856C29E98543006EB3B0 /* NCIntroCollectionViewCell.swift in Sources */,
 				F75DD765290ABB25002EB562 /* Intent.intentdefinition in Sources */,
 				F74B6D952A7E239A00F03C5F /* NCManageDatabase+Chunk.swift in Sources */,
+				F7A8FD522C5E2557006C9CF8 /* NCAccount.swift in Sources */,
 				F310B1EF2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift in Sources */,
 				F702F2F725EE5CED008F8E80 /* NCLogin.swift in Sources */,
 				F7EB9B132BBC12F300EDF036 /* UIApplication+Extension.swift in Sources */,
