@@ -58,8 +58,8 @@ class NCLoginProvider: UIViewController {
 
         if let host = URL(string: urlBase)?.host {
             titleView = host
-            if let account = NCManageDatabase.shared.getActiveAccount(), NCKeychain().getPassword(account: account.account).isEmpty {
-                titleView = NSLocalizedString("_user_", comment: "") + " " + account.userId + " " + NSLocalizedString("_in_", comment: "") + " " + host
+            if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount(), NCKeychain().getPassword(account: activeTableAccount.account).isEmpty {
+                titleView = NSLocalizedString("_user_", comment: "") + " " + activeTableAccount.userId + " " + NSLocalizedString("_in_", comment: "") + " " + host
             }
         }
 

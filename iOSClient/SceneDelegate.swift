@@ -174,10 +174,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let action = url.host
 
         func getMatchedAccount(userId: String, url: String) -> tableAccount? {
-            if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
-                let urlBase = URL(string: activeAccount.urlBase)
-                if url.contains(urlBase?.host ?? "") && userId == activeAccount.userId {
-                   return activeAccount
+            if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
+                let urlBase = URL(string: activeTableAccount.urlBase)
+                if url.contains(urlBase?.host ?? "") && userId == activeTableAccount.userId {
+                   return activeTableAccount
                 } else {
                     let accounts = NCManageDatabase.shared.getAllAccount()
                     for account in accounts {

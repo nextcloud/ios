@@ -171,7 +171,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
 
     /// Updates a property of the active account in the database.
     private func updateAccountProperty<T>(_ keyPath: ReferenceWritableKeyPath<tableAccount, T>, value: T) {
-        guard let activeAccount = manageDatabase.getActiveAccount() else { return }
+        guard let activeAccount = manageDatabase.getActiveTableAccount() else { return }
         activeAccount[keyPath: keyPath] = value
         manageDatabase.updateAccount(activeAccount)
     }

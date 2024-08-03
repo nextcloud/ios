@@ -60,7 +60,7 @@ let filesDatasTest: [FilesData] = [
     .init(id: "9", image: UIImage(named: "widget")!, title: "title4", subTitle: "subTitle-description4", url: URL(string: "https://nextcloud.com/")!)
 ]
 
-func getTitleFilesWidget(account: tableAccount?) -> String {
+func getTitleFilesWidget(tableAccount: tableAccount?) -> String {
     let hour = Calendar.current.component(.hour, from: Date())
     var good = ""
 
@@ -72,8 +72,8 @@ func getTitleFilesWidget(account: tableAccount?) -> String {
     default: good = NSLocalizedString("_good_night_", value: "Good night", comment: "")
     }
 
-    if let account = account {
-        return good + ", " + account.displayName
+    if let tableAccount {
+        return good + ", " + tableAccount.displayName
     } else {
         return good
     }
@@ -89,31 +89,31 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
     let utility = NCUtility()
     let filesItems = getFilesItems(displaySize: displaySize)
     let datasPlaceholder = Array(filesDatasTest[0...filesItems - 1])
-    var account: tableAccount?
+    var activeTableAccount: tableAccount?
 
     if isPreview {
-        return completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: "", url: "", tile: getTitleFilesWidget(account: nil), footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " files"))
+        return completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: "", url: "", tile: getTitleFilesWidget(tableAccount: nil), footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " files"))
     }
 
     let accountIdentifier: String = configuration?.accounts?.identifier ?? "active"
     if accountIdentifier == "active" {
-        account = NCManageDatabase.shared.getActiveAccount()
+        activeTableAccount = NCManageDatabase.shared.getActiveTableAccount()
     } else {
-        account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", accountIdentifier))
+        activeTableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", accountIdentifier))
     }
 
-    guard let account = account else {
-        return completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: "", url: "", tile: getTitleFilesWidget(account: nil), footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
+    guard let activeTableAccount else {
+        return completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: "", url: "", tile: getTitleFilesWidget(tableAccount: nil), footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
     }
 
     // NETWORKING
-    let password = NCKeychain().getPassword(account: account.account)
+    let password = NCKeychain().getPassword(account: activeTableAccount.account)
 
     NextcloudKit.shared.setup(delegate: NCNetworking.shared)
-    NextcloudKit.shared.appendAccount(account.account,
-                                      urlBase: account.urlBase,
-                                      user: account.user,
-                                      userId: account.userId,
+    NextcloudKit.shared.appendAccount(activeTableAccount.account,
+                                      urlBase: activeTableAccount.urlBase,
+                                      user: activeTableAccount.user,
+                                      userId: activeTableAccount.userId,
                                       password: password,
                                       userAgent: userAgent,
                                       nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
@@ -174,7 +174,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
     dateFormatter.locale = Locale(identifier: "en_US_POSIX")
     dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
     let lessDateString = dateFormatter.string(from: Date())
-    let requestBody = String(format: requestBodyRecent, "/files/" + account.userId, lessDateString)
+    let requestBody = String(format: requestBodyRecent, "/files/" + activeTableAccount.userId, lessDateString)
 
     // LOG
     let levelLog = NCKeychain().logLevel
@@ -191,10 +191,10 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
     }
 
     let options = NKRequestOptions(timeout: 30, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-    NextcloudKit.shared.searchBodyRequest(serverUrl: account.urlBase, requestBody: requestBody, showHiddenFiles: NCKeychain().showHiddenFiles, account: account.account, options: options) { _, files, data, error in
+    NextcloudKit.shared.searchBodyRequest(serverUrl: activeTableAccount.urlBase, requestBody: requestBody, showHiddenFiles: NCKeychain().showHiddenFiles, account: activeTableAccount.account, options: options) { _, files, data, error in
         Task {
             var datas: [FilesData] = []
-            let title = getTitleFilesWidget(account: account)
+            let title = getTitleFilesWidget(tableAccount: activeTableAccount)
             let files = files?.sorted(by: { ($0.date as Date) > ($1.date as Date) }) ?? []
 
             for file in files {
@@ -224,7 +224,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 }
                 if image == nil, file.hasPreview {
                     let sizePreview = NCUtility().getSizePreview(width: Int(file.width), height: Int(file.height))
-                    let (_, _, imageIcon, _, _, _) = await NCNetworking.shared.downloadPreview(fileId: file.fileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, fileNameIconLocalPath: fileNameIconLocalPath, widthPreview: Int(sizePreview.width), heightPreview: Int(sizePreview.height), sizeIcon: NCGlobal.shared.sizeIcon, account: account.account, options: options)
+                    let (_, _, imageIcon, _, _, _) = await NCNetworking.shared.downloadPreview(fileId: file.fileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, fileNameIconLocalPath: fileNameIconLocalPath, widthPreview: Int(sizePreview.width), heightPreview: Int(sizePreview.height), sizeIcon: NCGlobal.shared.sizeIcon, account: activeTableAccount.account, options: options)
                     image = imageIcon
                 }
                 if image == nil {
@@ -241,13 +241,13 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 if datas.count == filesItems { break}
             }
 
-            let alias = (account.alias.isEmpty) ? "" : (" (" + account.alias + ")")
-            let footerText = "Files " + NSLocalizedString("_of_", comment: "") + " " + account.displayName + alias
+            let alias = (activeTableAccount.alias.isEmpty) ? "" : (" (" + activeTableAccount.alias + ")")
+            let footerText = "Files " + NSLocalizedString("_of_", comment: "") + " " + activeTableAccount.displayName + alias
 
             if error != .success {
-                completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: account.userId, url: account.urlBase, tile: title, footerImage: "xmark.icloud", footerText: error.errorDescription))
+                completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: activeTableAccount.userId, url: activeTableAccount.urlBase, tile: title, footerImage: "xmark.icloud", footerText: error.errorDescription))
             } else {
-                completion(FilesDataEntry(date: Date(), datas: datas, isPlaceholder: false, isEmpty: datas.isEmpty, userId: account.userId, url: account.urlBase, tile: title, footerImage: "checkmark.icloud", footerText: footerText))
+                completion(FilesDataEntry(date: Date(), datas: datas, isPlaceholder: false, isEmpty: datas.isEmpty, userId: activeTableAccount.userId, url: activeTableAccount.urlBase, tile: title, footerImage: "checkmark.icloud", footerText: footerText))
             }
         }
     }

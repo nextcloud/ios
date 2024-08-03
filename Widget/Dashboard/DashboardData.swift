@@ -101,7 +101,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
     let utility = NCUtility()
     let dashboardItems = getDashboardItems(displaySize: displaySize, withButton: false)
     let datasPlaceholder = Array(dashboardDatasTest[0...dashboardItems - 1])
-    var account: tableAccount?
+    var activeTableAccount: tableAccount?
 
     if isPreview {
         return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, isEmpty: false, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " dashboard"))
@@ -109,34 +109,34 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
 
     let accountIdentifier: String = configuration?.accounts?.identifier ?? "active"
     if accountIdentifier == "active" {
-        account = NCManageDatabase.shared.getActiveAccount()
+        activeTableAccount = NCManageDatabase.shared.getActiveTableAccount()
     } else {
-        account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", accountIdentifier))
+        activeTableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", accountIdentifier))
     }
 
-    guard let account = account else {
+    guard let activeTableAccount else {
         return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, isEmpty: false, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", comment: "")))
     }
 
     // Default widget
-    let result = NCManageDatabase.shared.getDashboardWidgetApplications(account: account.account).first
+    let result = NCManageDatabase.shared.getDashboardWidgetApplications(account: activeTableAccount.account).first
     let id: String = configuration?.applications?.identifier ?? (result?.id ?? "recommendations")
 
     // Capabilities
-    NCManageDatabase.shared.setCapabilities(account: account.account)
+    NCManageDatabase.shared.setCapabilities(account: activeTableAccount.account)
 
     guard NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion25 else {
         return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, isEmpty: false, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "xmark.icloud", footerText: NSLocalizedString("_widget_available_nc25_", comment: "")))
     }
 
     // NETWORKING
-    let password = NCKeychain().getPassword(account: account.account)
+    let password = NCKeychain().getPassword(account: activeTableAccount.account)
 
     NextcloudKit.shared.setup(delegate: NCNetworking.shared)
-    NextcloudKit.shared.appendAccount(account.account,
-                                      urlBase: account.urlBase,
-                                      user: account.user,
-                                      userId: account.userId,
+    NextcloudKit.shared.appendAccount(activeTableAccount.account,
+                                      urlBase: activeTableAccount.urlBase,
+                                      user: activeTableAccount.user,
+                                      userId: activeTableAccount.userId,
                                       password: password,
                                       userAgent: userAgent,
                                       nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
@@ -155,7 +155,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start \(NCBrandOptions.shared.brand) dashboard widget session with level \(levelLog) " + versionNextcloudiOS)
     }
 
-    let (tableDashboard, tableButton) = NCManageDatabase.shared.getDashboardWidget(account: account.account, id: id)
+    let (tableDashboard, tableButton) = NCManageDatabase.shared.getDashboardWidget(account: activeTableAccount.account, id: id)
     let existsButton = (tableButton?.isEmpty ?? true) ? false : true
     let title = tableDashboard?.title ?? id
 
@@ -169,7 +169,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
     let titleImage = imagetmp
 
     let options = NKRequestOptions(timeout: 90, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-    NextcloudKit.shared.getDashboardWidgetsApplication(id, account: account.account, options: options) { _, results, data, error in
+    NextcloudKit.shared.getDashboardWidgetsApplication(id, account: activeTableAccount.account, options: options) { _, results, data, error in
         Task {
             var datas = [DashboardData]()
             var numberItems = 0
@@ -226,7 +226,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
                                     if FileManager().fileExists(atPath: fileNamePath), let image = UIImage(contentsOfFile: fileNamePath) {
                                         icon = image
                                     } else {
-                                        let (_, data, error) = await NCNetworking.shared.downloadPreview(url: url, account: account.account)
+                                        let (_, data, error) = await NCNetworking.shared.downloadPreview(url: url, account: activeTableAccount.account)
                                         if error == .success,
                                            let image = convertDataToImage(data: data, size: CGSize(width: 256, height: 256), fileNameToWrite: fileName) {
                                             icon = image
@@ -249,8 +249,8 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
                 buttons = tableButton.filter(({ $0.type != "more" }))
             }
 
-            let alias = (account.alias.isEmpty) ? "" : (" (" + account.alias + ")")
-            let footerText = "Dashboard " + NSLocalizedString("_of_", comment: "") + " " + account.displayName + alias
+            let alias = (activeTableAccount.alias.isEmpty) ? "" : (" (" + activeTableAccount.alias + ")")
+            let footerText = "Dashboard " + NSLocalizedString("_of_", comment: "") + " " + activeTableAccount.displayName + alias
 
             if error != .success {
                 completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: tableDashboard, buttons: buttons, isPlaceholder: true, isEmpty: false, titleImage: titleImage, title: title, footerImage: "xmark.icloud", footerText: error.errorDescription))

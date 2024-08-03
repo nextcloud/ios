@@ -126,8 +126,8 @@ class NCShareExtension: UIViewController {
         }
 
         // Colors
-        if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
-            NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
+        if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
+            NCBrandColor.shared.settingThemingColor(account: activeTableAccount.account)
         }
         NCBrandColor.shared.createUserColors()
         NCImageCache.shared.createImagesCache()
@@ -145,7 +145,7 @@ class NCShareExtension: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         guard serverUrl.isEmpty else { return }
-        guard let activeAccount = NCManageDatabase.shared.getActiveAccount(),
+        guard let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount(),
               !NCPasscode.shared.isPasscodeReset else {
             return showAlert(description: "_no_active_account_") {
                 self.cancel(with: .noAccount)
