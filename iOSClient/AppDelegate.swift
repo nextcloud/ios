@@ -96,6 +96,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] PASSWORD NOT FOUND for \(activeAccount.account)")
             }
 
+            /* -- SINGLE DOMAIN -- */
             NCDomain.shared.appendDomain(account: activeAccount.account, urlBase: activeAccount.urlBase, user: activeAccount.user, userId: activeAccount.userId, sceneIdentifier: "")
             NextcloudKit.shared.appendAccount(activeAccount.account,
                                               urlBase: activeAccount.urlBase,
@@ -105,6 +106,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                                               userAgent: userAgent,
                                               nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
                                               groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+            /* -- SINGLE DOMAIN -- */
 
             /*
             for account in NCManageDatabase.shared.getAllAccount() {

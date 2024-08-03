@@ -168,8 +168,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         guard let controller = SceneManager.shared.getController(scene: scene) as? NCMainTabBarController,
-              let url = URLContexts.first?.url,
-              let appDelegate else { return }
+              let url = URLContexts.first?.url else { return }
         let sceneIdentifier = controller.sceneIdentifier
         let scheme = url.scheme
         let action = url.host
