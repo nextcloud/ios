@@ -27,8 +27,6 @@ import UIKit
 import MobileVLCKit
 
 class NCPlayer: NSObject {
-
-    internal let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     internal var url: URL?
     internal var player = VLCMediaPlayer()
     internal var dialogProvider: VLCDialogProvider?

@@ -38,7 +38,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     private var externalSiteMenu: [NKExternalSite] = []
     private var settingsMenu: [NKExternalSite] = []
     private var quotaMenu: [NKExternalSite] = []
-    private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private let applicationHandle = NCApplicationHandle()
     private let utilityFileSystem = NCUtilityFileSystem()
     private let utility = NCUtility()
@@ -361,7 +360,8 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         } else if item.url == "logout" {
             let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
             let actionYes = UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (_: UIAlertAction) in
-                self.appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
+                let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+                appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
             }
 
             let actionNo = UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (_: UIAlertAction) in

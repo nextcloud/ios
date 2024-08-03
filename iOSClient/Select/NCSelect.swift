@@ -35,7 +35,6 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     @IBOutlet private var buttonCancel: UIBarButtonItem!
     @IBOutlet private var bottomContraint: NSLayoutConstraint?
 
-    private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private var selectCommandViewSelect: NCSelectCommandView?
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()

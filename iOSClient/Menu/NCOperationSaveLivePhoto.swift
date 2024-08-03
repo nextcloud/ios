@@ -31,7 +31,6 @@ class NCOperationSaveLivePhoto: ConcurrentOperation {
     var metadata: tableMetadata
     var metadataMOV: tableMetadata
     let hud = JGProgressHUD()
-    let appDelegate = UIApplication.shared.delegate as? AppDelegate
     let utilityFileSystem = NCUtilityFileSystem()
     let hudView: UIView
 

@@ -27,8 +27,7 @@ import NextcloudKit
 class NCNetworkingCheckRemoteUser {
     func checkRemoteUser(account: String, error: NKError) {
         let token = NCKeychain().getPassword(account: account)
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate,
-              let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)),
+        guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)),
               !token.isEmpty else { return }
 
         NCNetworking.shared.cancelAllTask()
@@ -45,7 +44,8 @@ class NCNetworkingCheckRemoteUser {
                         if let newAccount = accounts?.first {
                             NCAccount().changeAccount(newAccount, userProfile: nil) { }
                         } else {
-                            appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
+                            let appDelegate = UIApplication.shared.delegate as? AppDelegate
+                            appDelegate?.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
                         }
                     }
                 } else {

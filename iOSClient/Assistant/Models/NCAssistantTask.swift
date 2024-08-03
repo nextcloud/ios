@@ -20,7 +20,6 @@ class NCAssistantTask: ObservableObject {
 
     private var tasks: [NKTextProcessingTask] = []
     private let excludedTypeIds = ["OCA\\ContextChat\\TextProcessing\\ContextChatTaskType"]
-    private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
     init() {
         load()

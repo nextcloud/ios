@@ -29,8 +29,6 @@ import Combine
 import SwiftUI
 
 class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
-    /// AppDelegate
-    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     /// Keychain access
     var keychain = NCKeychain()
     /// State variable for indicating if the user is in Admin group
@@ -169,7 +167,8 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
     /// - Parameter
     /// exit: Boolean indicating whether to reset the application.
     func resetNextCloud() {
-        self.appDelegate.resetApplication()
+        let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+        appDelegate.resetApplication()
     }
 
     /// Exits the Nextcloud application if specified.

@@ -26,8 +26,6 @@ import WebKit
 import NextcloudKit
 
 class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMessageHandler, NCSelectDelegate {
-
-    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
     var webView = WKWebView()
     var bottomConstraint: NSLayoutConstraint?

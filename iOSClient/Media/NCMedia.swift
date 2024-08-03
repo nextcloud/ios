@@ -39,7 +39,6 @@ class NCMedia: UIViewController {
     let layout = NCMediaLayout()
     var documentPickerViewController: NCDocumentPickerViewController?
     var tabBarSelect: NCMediaSelectTabBar!
-    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
     let imageCache = NCImageCache.shared

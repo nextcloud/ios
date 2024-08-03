@@ -36,7 +36,6 @@ class NCActivity: UIViewController, NCSharePagingContent {
     var metadata: tableMetadata?
     var showComments: Bool = false
 
-    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
     var allItems: [DateCompareable] = []

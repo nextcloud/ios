@@ -33,7 +33,6 @@ class NCAutoUpload: NSObject {
     }()
 
     private var endForAssetToUpload: Bool = false
-    private let appDelegate = UIApplication.shared.delegate as? AppDelegate
     private var applicationState = UIApplication.shared.applicationState
 
     // MARK: -

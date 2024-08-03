@@ -26,7 +26,6 @@ import UniformTypeIdentifiers
 import NextcloudKit
 
 class NCDragDrop: NSObject {
-    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
 
     func performDrag(metadata: tableMetadata? = nil, selectOcId: [String]? = nil) -> [UIDragItem] {

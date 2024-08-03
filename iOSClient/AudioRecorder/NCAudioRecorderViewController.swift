@@ -35,7 +35,6 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
     var startDate: Date = Date()
     var fileName: String = ""
     var serverUrl = ""
-    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
     @IBOutlet weak var contentContainerView: UIView!
     @IBOutlet weak var durationLabel: UILabel!
