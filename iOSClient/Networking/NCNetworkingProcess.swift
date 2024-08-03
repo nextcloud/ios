@@ -42,9 +42,9 @@ class NCNetworkingProcess: NSObject {
     func startTimer(scene: UIScene) {
         self.timerProcess?.invalidate()
         self.timerProcess = Timer.scheduledTimer(withTimeInterval: 2, repeats: true, block: { _ in
-            let account = NCDomain.shared.getActiveDomain().account
-            guard !account.isEmpty,
+            guard NCDomain.shared.isActiveDomainValid(),
                   !self.pauseProcess else { return }
+            let account = NCDomain.shared.getActiveDomain().account
 
             // In Downloading or Uploading [TEST]
             /*

@@ -1134,8 +1134,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func queryDB() { }
 
     @objc func reloadDataSource(withQueryDB: Bool = true) {
+        guard NCDomain.shared.isActiveDomainValid(), !self.isSearchingMode else { return }
         let domain = NCDomain.shared.getActiveDomain()
-        guard !self.isSearchingMode else { return }
 
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()
@@ -1160,8 +1160,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func networkSearch() {
-        guard let literalSearch = literalSearch, !literalSearch.isEmpty
-        else { return self.refreshControl.endRefreshing() }
+        guard NCDomain.shared.isActiveDomainValid(),
+              let literalSearch = literalSearch,
+              !literalSearch.isEmpty else {
+            return self.refreshControl.endRefreshing()
+        }
 
         self.dataSource.clearDataSource()
         self.refreshControl.beginRefreshing()
