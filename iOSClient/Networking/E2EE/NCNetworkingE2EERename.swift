@@ -20,6 +20,7 @@
 //
 
 import NextcloudKit
+import UIKit
 import Foundation
 
 class NCNetworkingE2EERename: NSObject {

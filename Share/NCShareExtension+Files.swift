@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import UIKit
 import UniformTypeIdentifiers
 
 extension NCShareExtension {

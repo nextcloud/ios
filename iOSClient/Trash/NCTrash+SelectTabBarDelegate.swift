@@ -20,6 +20,7 @@
 //
 
 import Foundation
+import UIKit
 
 extension NCTrash: NCTrashSelectTabBarDelegate {
     func onListSelected() {

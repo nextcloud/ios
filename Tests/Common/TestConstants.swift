@@ -20,6 +20,7 @@
 //
 
 import Foundation
+import UIKit
 
 public class TestConstants {
     static let timeoutLong: Double = 600

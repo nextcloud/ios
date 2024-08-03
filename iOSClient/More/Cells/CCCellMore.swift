@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import UIKit
 
 class CCCellMore: BaseNCMoreCell {
     @IBOutlet weak var labelText: UILabel!

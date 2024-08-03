@@ -20,6 +20,7 @@
 //
 
 import Foundation
+import UIKit
 import NextcloudKit
 
 extension NCEndToEndMetadata {
