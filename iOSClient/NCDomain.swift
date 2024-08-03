@@ -117,4 +117,7 @@ public class NCDomain: NSObject {
         return domain.user + "-" + (URL(string: domain.urlBase)?.host ?? "")
     }
 
+    public func isActiveValid() -> Bool {
+        return !getActiveDomain().account.isEmpty
+    }
 }
