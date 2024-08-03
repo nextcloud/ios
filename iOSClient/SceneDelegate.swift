@@ -37,7 +37,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
               let appDelegate else { return }
         self.window = UIWindow(windowScene: windowScene)
 
-        if NCDomain.shared.isActiveValid() {
+        if NCDomain.shared.isActiveDomainValid() {
             if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
                 SceneManager.shared.register(scene: scene, withRootViewController: controller)
                 window?.rootViewController = controller
@@ -72,7 +72,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             UIApplication.shared.allSceneSessionDestructionExceptFirst()
             return
         }
-        guard NCDomain.shared.isActiveValid() else { return }
+        guard NCDomain.shared.isActiveDomainValid() else { return }
 
         hidePrivacyProtectionWindow()
         if let window = SceneManager.shared.getWindow(scene: scene), let controller = SceneManager.shared.getController(scene: scene) {
@@ -110,7 +110,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func sceneWillResignActive(_ scene: UIScene) {
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Scene will resign active")
-        guard NCDomain.shared.isActiveValid() else { return }
+        guard NCDomain.shared.isActiveDomainValid() else { return }
 
         // STOP TIMER UPLOAD PROCESS
         NCNetworkingProcess.shared.stopTimer()
@@ -136,7 +136,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func sceneDidEnterBackground(_ scene: UIScene) {
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Scene did enter in background")
-        guard NCDomain.shared.isActiveValid() else { return }
+        guard NCDomain.shared.isActiveDomainValid() else { return }
 
         if NCDomain.shared.getActiveTableAccount().autoUpload {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Auto upload: true")
@@ -197,7 +197,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
          Example: nextcloud://open-action?action=create-voice-memo&&user=marinofaggiana&url=https://cloud.nextcloud.com
          */
 
-        if NCDomain.shared.isActiveValid() && scheme == NCGlobal.shared.appScheme && action == "open-action" {
+        if NCDomain.shared.isActiveDomainValid() && scheme == NCGlobal.shared.appScheme && action == "open-action" {
 
             if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
                 let queryItems = urlComponents.queryItems
@@ -264,7 +264,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
          Example: nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
          */
 
-        else if NCDomain.shared.isActiveValid() && scheme == NCGlobal.shared.appScheme && action == "open-file" {
+        else if NCDomain.shared.isActiveDomainValid() && scheme == NCGlobal.shared.appScheme && action == "open-file" {
 
             if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
 
@@ -306,7 +306,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
          Example: nextcloud://open-and-switch-account?user=marinofaggiana&url=https://cloud.nextcloud.com
          */
 
-        } else if NCDomain.shared.isActiveValid() && scheme == NCGlobal.shared.appScheme && action == "open-and-switch-account" {
+        } else if NCDomain.shared.isActiveDomainValid() && scheme == NCGlobal.shared.appScheme && action == "open-and-switch-account" {
             guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return }
             let queryItems = urlComponents.queryItems
             guard let userScheme = queryItems?.filter({ $0.name == "user" }).first?.value,
@@ -317,7 +317,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
             // Otherwise open the app and switch accounts
             return
-        } else if NCDomain.shared.isActiveValid(), let action {
+        } else if NCDomain.shared.isActiveDomainValid(), let action {
             if DeepLink(rawValue: action) != nil {
                 NCDeepLinkHandler().parseDeepLink(url, controller: controller)
             }
