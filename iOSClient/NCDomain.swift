@@ -75,7 +75,7 @@ public class NCDomain: NSObject {
         return Domain(account: "", urlBase: "", user: "", userId: "", sceneIdentifier: "")
     }
 
-    public func isActiveValid() -> Bool {
+    public func isActiveDomainValid() -> Bool {
         return !getActiveDomain().account.isEmpty
     }
 

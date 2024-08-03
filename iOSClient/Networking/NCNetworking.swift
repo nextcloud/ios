@@ -319,7 +319,7 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
     }
 
     private func getActiveAccountCertificate() {
-        if NCDomain.shared.isActiveValid() {
+        if NCDomain.shared.isActiveDomainValid() {
             (self.p12Data, self.p12Password) = NCKeychain().getClientCertificate(account: NCDomain.shared.getActiveDomain().account)
         }
     }
