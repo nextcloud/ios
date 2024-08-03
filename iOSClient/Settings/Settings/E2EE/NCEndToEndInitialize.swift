@@ -69,7 +69,7 @@ class NCEndToEndInitialize: NSObject {
                     let error = NKError(errorCode: error.errorCode, errorDescription: "Bad request: internal error")
                     NCContentPresenter().messageNotification("E2E get publicKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
                 case NCGlobal.shared.errorResourceNotFound:
-                    guard let csr = NCEndToEndEncryption.shared().createCSR(NCDomain.shared.getActiveUserId(), directory: self.utilityFileSystem.directoryUserData) else {
+                    guard let csr = NCEndToEndEncryption.shared().createCSR(NCDomain.shared.getActiveDomain().userId, directory: self.utilityFileSystem.directoryUserData) else {
                         let error = NKError(errorCode: error.errorCode, errorDescription: "Error creating CSR")
                         NCContentPresenter().messageNotification("E2E Csr", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
 
@@ -201,7 +201,7 @@ class NCEndToEndInitialize: NSObject {
 
     func createNewE2EE(e2ePassphrase: String, error: NKError, copyPassphrase: Bool) {
         var privateKeyString: NSString?
-        guard let privateKeyCipher = NCEndToEndEncryption.shared().encryptPrivateKey(NCDomain.shared.getActiveUserId(), directory: utilityFileSystem.directoryUserData, passphrase: e2ePassphrase, privateKey: &privateKeyString, iterationCount: 1024) else {
+        guard let privateKeyCipher = NCEndToEndEncryption.shared().encryptPrivateKey(NCDomain.shared.getActiveDomain().userId, directory: utilityFileSystem.directoryUserData, passphrase: e2ePassphrase, privateKey: &privateKeyString, iterationCount: 1024) else {
             let error = NKError(errorCode: error.errorCode, errorDescription: "Error creating private key cipher")
             NCContentPresenter().messageNotification("E2E privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
             return
