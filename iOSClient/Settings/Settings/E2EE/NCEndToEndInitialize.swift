@@ -212,7 +212,7 @@ class NCEndToEndInitialize: NSObject {
 
         NextcloudKit.shared.storeE2EEPrivateKey(privateKey: privateKeyCipher, account: NCDomain.shared.getActiveAccount()) { account, _, _, error in
             if error == .success, let privateKey = privateKeyString {
-                
+
                 NCKeychain().setEndToEndPrivateKey(account: account, privateKey: String(privateKey))
                 NCKeychain().setEndToEndPassphrase(account: account, passphrase: e2ePassphrase)
 

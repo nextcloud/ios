@@ -39,7 +39,7 @@ import NextcloudKit
         NCActivityIndicator.shared.start(backgroundView: viewController.view)
 
         let fileNamePath = utilityFileSystem.getFileNamePath(NCGlobal.shared.fileNameRichWorkspace, serverUrl: serverUrl, domain: domain)
-        NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: directEditingCreator.editor, creatorId: directEditingCreator.identifier, templateId: "", account: domain.account) { account, url, _, error in
+        NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: directEditingCreator.editor, creatorId: directEditingCreator.identifier, templateId: "", account: domain.account) { _, url, _, error in
             NCActivityIndicator.shared.stop()
             if error == .success {
                 if let viewerRichWorkspaceWebView = UIStoryboard(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkspaceWebView") as? NCViewerRichWorkspaceWebView {
@@ -66,7 +66,7 @@ import NextcloudKit
                 NCActivityIndicator.shared.start(backgroundView: viewController.view)
 
                 let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, domain: domain)
-                NextcloudKit.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: "text", account: metadata.account) { account, url, _, error in
+                NextcloudKit.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: "text", account: metadata.account) { _, url, _, error in
                     NCActivityIndicator.shared.stop()
                     if error == .success {
                         if let viewerRichWorkspaceWebView = UIStoryboard(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkspaceWebView") as? NCViewerRichWorkspaceWebView {
