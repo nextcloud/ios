@@ -37,6 +37,8 @@ public class NCDomain: NSObject {
     private var domain: ThreadSafeArray<Domain> = ThreadSafeArray()
     private var activeTableAccount = tableAccount()
 
+    /// DOMAIN
+    ///
     public func appendDomain(account: String, urlBase: String, user: String, userId: String, sceneIdentifier: String) {
         if self.domain.filter({ $0.account == account }).first != nil {
             return updateDomain(account, userId: userId, sceneIdentifier: sceneIdentifier)
@@ -58,17 +60,40 @@ public class NCDomain: NSObject {
         self.domain.remove(where: { $0.account == account })
     }
 
-    public func getEmptyDomain() -> Domain {
-        return Domain(account: "", urlBase: "", user: "", userId: "", sceneIdentifier: "")
-    }
-
     public func getDomain(account: String) -> Domain {
         if let domain = self.domain.filter({ $0.account == account }).first {
             return domain
         }
-        return getEmptyDomain()
+        return Domain(account: "", urlBase: "", user: "", userId: "", sceneIdentifier: "")
     }
 
+    public func getStore(account: String) -> String {
+        guard let domain = self.domain.filter({ $0.account == account }).first else { return "" }
+        return domain.user + "@" + (URL(string: domain.urlBase)?.host ?? "localhost")
+    }
+
+    /// ACTIVE DOMAIN
+    ///
+    public func getActiveDomain() -> Domain {
+        if let domain = self.domain.filter({ $0.account == self.activeTableAccount.account }).first {
+            return domain
+        }
+        return Domain(account: "", urlBase: "", user: "", userId: "", sceneIdentifier: "")
+    }
+
+    public func getActiveAccount() -> String {
+        if let domain = self.domain.filter({ $0.account == self.activeTableAccount.account }).first {
+            return domain.account
+        }
+        return ""
+    }
+
+    public func isActiveValid() -> Bool {
+        return !getActiveDomain().account.isEmpty
+    }
+
+    /// ACTIVE TABLE ACCOUNT
+    ///
     func setActiveTableAccount(_ activeTableAccount: tableAccount) {
         self.activeTableAccount = activeTableAccount
     }
@@ -81,35 +106,5 @@ public class NCDomain: NSObject {
 
     func getActiveTableAccount() -> tableAccount {
         return activeTableAccount
-    }
-
-    public func getActiveDomain() -> Domain {
-        if let domain = self.domain.filter({ $0.account == self.activeTableAccount.account }).first {
-            return domain
-        }
-        return getEmptyDomain()
-    }
-
-    public func getActiveAccount() -> String {
-        if let domain = self.domain.filter({ $0.account == self.activeTableAccount.account }).first {
-            return domain.account
-        }
-        return ""
-    }
-
-    public func getActiveUserBaseUrl() -> String {
-        if let activeAccount = NCManageDatabase.shared.getActiveStringAccount() {
-           return self.getUserBaseUrl(account: activeAccount)
-        }
-        return ""
-    }
-
-    public func getUserBaseUrl(account: String) -> String {
-        guard let domain = self.domain.filter({ $0.account == account }).first else { return "" }
-        return domain.user + "-" + (URL(string: domain.urlBase)?.host ?? "")
-    }
-
-    public func isActiveValid() -> Bool {
-        return !getActiveDomain().account.isEmpty
     }
 }

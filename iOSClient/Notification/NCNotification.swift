@@ -133,7 +133,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
             cell.avatar.isHidden = false
             cell.avatarLeadingMargin.constant = 50
 
-            let fileName = NCDomain.shared.getUserBaseUrl(account: NCDomain.shared.getActiveAccount()) + "-" + user + ".png"
+            let fileName = NCDomain.shared.getStore(account: NCDomain.shared.getActiveAccount()) + "-" + user + ".png"
             let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
 
             if let image = UIImage(contentsOfFile: fileNameLocalPath) {

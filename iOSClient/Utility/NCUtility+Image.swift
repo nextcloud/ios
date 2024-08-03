@@ -83,7 +83,7 @@ extension NCUtility {
     }
 
     func loadUserImage(for user: String, displayName: String?, account: String) -> UIImage {
-        let fileName = NCDomain.shared.getUserBaseUrl(account: account) + "-" + user + ".png"
+        let fileName = NCDomain.shared.getStore(account: account) + "-" + user + ".png"
         let localFilePath = utilityFileSystem.directoryUserData + "/" + fileName
 
         if var localImage = UIImage(contentsOfFile: localFilePath) {

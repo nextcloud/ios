@@ -217,7 +217,7 @@ extension NCActivity: UITableViewDataSource {
         cell.sizeToFit()
 
         // Image
-        let fileName = NCDomain.shared.getActiveUserBaseUrl() + "-" + comment.actorId + ".png"
+        let fileName = NCDomain.shared.getStore(account: domain.account) + "-" + comment.actorId + ".png"
         NCNetworking.shared.downloadAvatar(user: comment.actorId, dispalyName: comment.actorDisplayName, fileName: fileName, account: comment.account, cell: cell, view: tableView)
         // Username
         cell.labelUser.text = comment.actorDisplayName
@@ -278,7 +278,7 @@ extension NCActivity: UITableViewDataSource {
         if !activity.user.isEmpty && activity.user != domain.userId {
             cell.avatar.isHidden = false
             cell.fileUser = activity.user
-            let fileName = NCDomain.shared.getActiveUserBaseUrl() + "-" + activity.user + ".png"
+            let fileName = NCDomain.shared.getStore(account: domain.account) + "-" + activity.user + ".png"
             NCNetworking.shared.downloadAvatar(user: activity.user, dispalyName: nil, fileName: fileName, account: domain.account, cell: cell, view: tableView)
             cell.subjectLeadingConstraint.constant = 15
         } else {
