@@ -100,8 +100,6 @@ struct NCLoginPoll: View {
 }
 
 private class LoginManager: ObservableObject {
-    private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-
     var loginFlowV2Token = ""
     var loginFlowV2Endpoint = ""
     var loginFlowV2Login = ""

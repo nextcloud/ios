@@ -26,7 +26,6 @@ import UIKit
 import NextcloudKit
 
 class NCCreateDocument: NSObject {
-    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utility = NCUtility()
 
     func createDocument(controller: NCMainTabBarController, fileNamePath: String, fileName: String, editorId: String, creatorId: String? = nil, templateId: String, account: String) {

@@ -41,7 +41,6 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     var documentController: UIDocumentInteractionController?
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
-    let appDelegate = UIApplication.shared.delegate as? AppDelegate
 
     // MARK: - Download
 

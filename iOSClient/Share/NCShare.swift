@@ -238,8 +238,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
     }
 
     func getSharees(sharees: [NKSharee]?) {
-
-        guard let sharees = sharees, let appDelegate = appDelegate else { return }
+        guard let sharees else { return }
 
         dropDown = DropDown()
         let appearance = DropDown.appearance()

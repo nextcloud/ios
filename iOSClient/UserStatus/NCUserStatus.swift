@@ -68,7 +68,6 @@ class NCUserStatus: UIViewController {
     private var clearAtTimestamp: Double = 0     // Unix Timestamp representing the time to clear the status
     private let borderWidthButton: CGFloat = 1.5
     private let borderColorButton: CGColor = NCBrandColor.shared.brandElement.cgColor
-    private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
     // MARK: - View Life Cycle
 

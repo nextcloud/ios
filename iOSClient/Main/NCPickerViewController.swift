@@ -31,7 +31,6 @@ import SwiftUI
 // MARK: - Photo Picker
 
 class NCPhotosPickerViewController: NSObject {
-    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     var controller: NCMainTabBarController
     var maxSelectedAssets = 1
     var singleSelectedMode = false

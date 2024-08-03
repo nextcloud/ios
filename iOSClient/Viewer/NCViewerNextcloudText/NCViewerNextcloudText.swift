@@ -25,8 +25,6 @@ import UIKit
 import WebKit
 
 class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMessageHandler, WKUIDelegate {
-
-    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     var webView = WKWebView()
     var bottomConstraint: NSLayoutConstraint?
     var link: String = ""

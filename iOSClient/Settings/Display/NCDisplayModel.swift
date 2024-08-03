@@ -10,8 +10,6 @@ import Foundation
 import SwiftUI
 
 class NCDisplayModel: ObservableObject, ViewOnAppearHandling {
-    /// AppDelegate
-    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     /// Keychain access
     var keychain = NCKeychain()
     /// Root View Controller

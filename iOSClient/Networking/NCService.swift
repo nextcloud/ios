@@ -27,7 +27,6 @@ import NextcloudKit
 import RealmSwift
 
 class NCService: NSObject {
-    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
 
     // MARK: -

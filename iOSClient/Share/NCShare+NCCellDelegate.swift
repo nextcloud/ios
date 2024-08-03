@@ -27,7 +27,7 @@ import UIKit
 extension NCShare: NCShareLinkCellDelegate, NCShareUserCellDelegate {
 
     func copyInternalLink(sender: Any) {
-        guard let metadata = self.metadata, let appDelegate = appDelegate else { return }
+        guard let metadata = self.metadata else { return }
 
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: metadata.account) { _, metadata, error in

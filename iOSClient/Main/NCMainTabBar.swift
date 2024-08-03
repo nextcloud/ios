@@ -25,7 +25,6 @@ import UIKit
 import NextcloudKit
 
 class NCMainTabBar: UITabBar {
-
     private var fillColor: UIColor!
     private var shapeLayer: CALayer?
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!

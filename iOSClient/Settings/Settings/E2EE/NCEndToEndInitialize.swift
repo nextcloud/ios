@@ -30,7 +30,6 @@ import NextcloudKit
 
 class NCEndToEndInitialize: NSObject {
     @objc weak var delegate: NCEndToEndInitializeDelegate?
-    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
     var extractedPublicKey: String?
     var viewController: UIViewController?
