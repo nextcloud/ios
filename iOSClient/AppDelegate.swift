@@ -504,9 +504,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                        userProfile: NKUserProfile?,
                        completion: () -> Void) {
         let previusActiveAccount = NCDomain.shared.getActiveAccount()
-        guard let activeTableAccount = NCManageDatabase.shared.setAccountActive(account) else {
-            return completion()
-        }
 
         NCNetworking.shared.cancelAllQueue()
         NCNetworking.shared.cancelDataTask()
@@ -553,13 +550,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         for result in results {
             utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId))
         }
+        /// Remove account in all database
         NCManageDatabase.shared.clearDatabase(account: account, removeAccount: true)
 
         NCKeychain().clearAllKeysEndToEnd(account: account)
         NCKeychain().clearAllKeysPushNotification(account: account)
         NCKeychain().setPassword(account: account, password: nil)
-
-        NCDomain.shared.removeDomain(account: account)
     }
 
     func deleteAllAccounts() {

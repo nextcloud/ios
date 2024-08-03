@@ -84,14 +84,15 @@ extension NCManageDatabase {
         do {
             let realm = try Realm()
             try realm.write {
-                let addObject = tableAccount()
-                addObject.account = account
+                let tableAccount = tableAccount()
+                tableAccount.account = account
                 NCKeychain().setPassword(account: account, password: password)
-                addObject.urlBase = urlBase
-                addObject.user = user
-                addObject.userId = userId
-                realm.add(addObject, update: .all)
+                tableAccount.urlBase = urlBase
+                tableAccount.user = user
+                tableAccount.userId = userId
+                realm.add(tableAccount, update: .all)
             }
+            NCDomain.shared.appendDomain(account: account, urlBase: urlBase, user: user, userId: userId, sceneIdentifier: "")
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
@@ -116,6 +117,7 @@ extension NCManageDatabase {
                 let result = realm.objects(tableAccount.self).filter("account == %@", account)
                 realm.delete(result)
             }
+            NCDomain.shared.removeDomain(account: account)
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
