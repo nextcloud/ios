@@ -40,11 +40,8 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     private var quotaMenu: [NKExternalSite] = []
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private let applicationHandle = NCApplicationHandle()
-    private var tabAccount: tableAccount?
-
-    let utilityFileSystem = NCUtilityFileSystem()
-    let utility = NCUtility()
-
+    private let utilityFileSystem = NCUtilityFileSystem()
+    private let utility = NCUtility()
     private struct Section {
         var items: [NKExternalSite]
         var type: SectionType
@@ -198,30 +195,28 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
 
         // Display Name user & Quota
-        if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
-            self.tabAccount = activeAccount
+        let activeTableAccount = NCDomain.shared.getActiveTableAccount()
 
-            if activeAccount.quotaRelative > 0 {
-                progressQuota.progress = Float(activeAccount.quotaRelative) / 100
-            } else {
-                progressQuota.progress = 0
-            }
-
-            switch activeAccount.quotaTotal {
-            case -1:
-                quota = "0"
-            case -2:
-                quota = NSLocalizedString("_quota_space_unknown_", comment: "")
-            case -3:
-                quota = NSLocalizedString("_quota_space_unlimited_", comment: "")
-            default:
-                quota = utilityFileSystem.transformedSize(activeAccount.quotaTotal)
-            }
-
-            let quotaUsed: String = utilityFileSystem.transformedSize(activeAccount.quotaUsed)
-
-            labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
+        if activeTableAccount.quotaRelative > 0 {
+            progressQuota.progress = Float(activeTableAccount.quotaRelative) / 100
+        } else {
+            progressQuota.progress = 0
         }
+
+        switch activeTableAccount.quotaTotal {
+        case -1:
+            quota = "0"
+        case -2:
+            quota = NSLocalizedString("_quota_space_unknown_", comment: "")
+        case -3:
+            quota = NSLocalizedString("_quota_space_unlimited_", comment: "")
+        default:
+            quota = utilityFileSystem.transformedSize(activeTableAccount.quotaTotal)
+        }
+        let quotaUsed: String = utilityFileSystem.transformedSize(activeTableAccount.quotaUsed)
+
+        labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
+
 
         // ITEM : External
         if NCBrandOptions.shared.disable_more_external_site == false {

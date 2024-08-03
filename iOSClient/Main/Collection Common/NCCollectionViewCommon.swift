@@ -863,11 +863,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func getNavigationTitle() -> String {
-        let activeAccount = NCManageDatabase.shared.getActiveAccount()
-        guard let userAlias = activeAccount?.alias, !userAlias.isEmpty else {
+        let alias = NCDomain.shared.getActiveTableAccount().alias
+        if alias.isEmpty {
             return NCBrandOptions.shared.brand
         }
-        return userAlias
+        return alias
     }
 
     func accountSettingsDidDismiss(tableAccount: tableAccount?) { }

@@ -37,7 +37,6 @@ class NCMedia: UIViewController {
     @IBOutlet weak var gradientView: UIView!
 
     let layout = NCMediaLayout()
-    var activeAccount = tableAccount()
     var documentPickerViewController: NCDocumentPickerViewController?
     var tabBarSelect: NCMediaSelectTabBar!
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
@@ -116,8 +115,6 @@ class NCMedia: UIViewController {
         gradient.colors = [UIColor.black.withAlphaComponent(UIAccessibility.isReduceTransparencyEnabled ? 0.8 : 0.4).cgColor, UIColor.clear.cgColor]
         gradientView.layer.insertSublayer(gradient, at: 0)
 
-        activeAccount = NCManageDatabase.shared.getActiveAccount() ?? tableAccount()
-
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
             DispatchQueue.global(qos: .userInteractive).async {
@@ -127,10 +124,9 @@ class NCMedia: UIViewController {
         }
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
-            self.activeAccount = NCManageDatabase.shared.getActiveAccount() ?? tableAccount()
             if let metadatas = self.metadatas,
                let metadata = metadatas.first {
-                if metadata.account != self.activeAccount.account {
+                if metadata.account != NCDomain.shared.getActiveAccount() {
                     self.metadatas = nil
                     self.collectionViewReloadData()
                 }
@@ -370,8 +366,7 @@ extension NCMedia: NCSelectDelegate {
         let domain = NCDomain.shared.getActiveDomain()
         let home = utilityFileSystem.getHomeServer(domain: domain)
         let mediaPath = serverUrl.replacingOccurrences(of: home, with: "")
-        NCManageDatabase.shared.setAccountMediaPath(mediaPath, account: activeAccount.account)
-        activeAccount = NCManageDatabase.shared.getActiveAccount() ?? tableAccount()
+        NCManageDatabase.shared.setAccountMediaPath(mediaPath, account: NCDomain.shared.getActiveAccount())
         reloadDataSource()
         startTimer()
     }
