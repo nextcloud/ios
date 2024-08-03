@@ -39,9 +39,9 @@ class NCAutoUpload: NSObject {
     // MARK: -
 
     @objc func initAutoUpload(viewController: UIViewController?, completion: @escaping (_ items: Int) -> Void) {
-        guard let account = NCManageDatabase.shared.getActiveAccount(), account.autoUpload else {
-            completion(0)
-            return
+        guard NCDomain.shared.isActiveValid(),
+              NCDomain.shared.getActiveTableAccount().autoUpload else {
+            return completion(0)
         }
         applicationState = UIApplication.shared.applicationState
 

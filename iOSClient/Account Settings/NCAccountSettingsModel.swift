@@ -97,7 +97,7 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     func onViewAppear() {
         var indexActiveAccount = 0
         let accounts = NCManageDatabase.shared.getAllAccount()
-        var activeAccount = NCManageDatabase.shared.getActiveAccount()
+        var activeAccount = NCDomain.shared.getActiveTableAccount()
         var alias = ""
 
         for (index, account) in accounts.enumerated() {

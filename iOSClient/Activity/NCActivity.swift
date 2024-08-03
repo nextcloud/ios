@@ -370,8 +370,8 @@ extension NCActivity {
     func loadDataSource() {
         var newItems = [DateCompareable]()
 
-        if showComments, let metadata = metadata, let account = NCManageDatabase.shared.getActiveAccount() {
-            let comments = NCManageDatabase.shared.getComments(account: account.account, objectId: metadata.fileId)
+        if showComments, let metadata = metadata {
+            let comments = NCManageDatabase.shared.getComments(account: NCDomain.shared.getActiveAccount(), objectId: metadata.fileId)
             newItems += comments
         }
 
