@@ -177,7 +177,6 @@ extension NCLoginProvider: WKNavigationDelegate {
 
         NextcloudKit.shared.getUserProfile(account: account) { _, userProfile, _, error in
             if error == .success, let userProfile {
-                NCManageDatabase.shared.deleteAccount(account)
                 NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
                 self.appDelegate.changeAccount(account, userProfile: userProfile) { }
                 let window = UIApplication.shared.firstWindow
