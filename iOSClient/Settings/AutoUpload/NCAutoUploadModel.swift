@@ -155,7 +155,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         if newValue {
             NCAutoUpload.shared.autoUploadFullPhotos(viewController: self.controller, log: "Auto upload full")
         } else {
-            NCManageDatabase.shared.clearMetadatasUpload(account: NCDomain.shared.getActiveAccount())
+            NCManageDatabase.shared.clearMetadatasUpload(account: NCDomain.shared.getActiveDomain().account)
         }
     }
 

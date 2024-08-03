@@ -125,7 +125,7 @@ extension NCMedia {
         NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate)")
         let options = NKRequestOptions(timeout: timeout, taskDescription: self.taskDescriptionRetrievesProperties, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
         let results = await NCNetworking.shared.searchMedia(path: activeTableAccount.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: NCKeychain().showHiddenFiles, includeHiddenFiles: [], account: domain.account, options: options)
-        if activeTableAccount.account != NCDomain.shared.getActiveAccount() {
+        if activeTableAccount.account != NCDomain.shared.getActiveDomain().account {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "User changed")
             return(lessDate, greaterDate, 0, false, error)
         } else if results.error == .success, let files = results.files {

@@ -74,7 +74,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
 
     func setupComments() {
         // Display Name & Quota
-        let account = NCDomain.shared.getActiveAccount()
+        let account = NCDomain.shared.getActiveDomain().account
         tableView.register(UINib(nibName: "NCShareCommentsCell", bundle: nil), forCellReuseIdentifier: "cell")
         commentView = Bundle.main.loadNibNamed("NCActivityCommentView", owner: self, options: nil)?.first as? NCActivityCommentView
         commentView?.setup(account: account) { newComment in
@@ -371,12 +371,12 @@ extension NCActivity {
         var newItems = [DateCompareable]()
 
         if showComments, let metadata = metadata {
-            let comments = NCManageDatabase.shared.getComments(account: NCDomain.shared.getActiveAccount(), objectId: metadata.fileId)
+            let comments = NCManageDatabase.shared.getComments(account: NCDomain.shared.getActiveDomain().account, objectId: metadata.fileId)
             newItems += comments
         }
 
         let activities = NCManageDatabase.shared.getActivity(
-            predicate: NSPredicate(format: "account == %@", NCDomain.shared.getActiveAccount()),
+            predicate: NSPredicate(format: "account == %@", NCDomain.shared.getActiveDomain().account),
             filterFileId: metadata?.fileId)
         newItems += activities.filter
 

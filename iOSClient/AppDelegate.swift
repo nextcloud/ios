@@ -240,7 +240,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func handleAppRefreshProcessingTask(taskText: String, completion: @escaping () -> Void = {}) {
         Task {
             var itemsAutoUpload = 0
-            let account = NCDomain.shared.getActiveAccount()
+            let account = NCDomain.shared.getActiveDomain().account
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) start handle")
 
@@ -323,7 +323,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         var findAccount: Bool = false
 
         if let accountPush = data["account"] as? String {
-            if accountPush == NCDomain.shared.getActiveAccount() {
+            if accountPush == NCDomain.shared.getActiveDomain().account {
                 findAccount = true
             } else {
                 let accounts = NCManageDatabase.shared.getAllAccount()
@@ -420,7 +420,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     @objc private func checkErrorNetworking(_ notification: NSNotification) {
-        let account = NCDomain.shared.getActiveAccount()
+        let account = NCDomain.shared.getActiveDomain().account
         guard !self.timerErrorNetworkingDisabled,
               !account.isEmpty,
               NCKeychain().getPassword(account: account).isEmpty else { return }
@@ -501,7 +501,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func changeAccount(_ account: String,
                        userProfile: NKUserProfile?,
                        completion: () -> Void) {
-        let previusActiveAccount = NCDomain.shared.getActiveAccount()
+        let previusActiveAccount = NCDomain.shared.getActiveDomain().account
 
         NCNetworking.shared.cancelAllQueue()
         NCNetworking.shared.cancelDataTask()

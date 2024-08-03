@@ -40,7 +40,7 @@ extension NCCollectionViewCommon {
         let applicationHandle = NCApplicationHandle()
         var iconHeader: UIImage!
 
-        if metadata.directory, let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", NCDomain.shared.getActiveAccount(), serverUrl)) {
+        if metadata.directory, let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", NCDomain.shared.getActiveDomain().account, serverUrl)) {
             isOffline = directory.offline
         } else if let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
             isOffline = localFile.offline

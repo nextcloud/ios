@@ -26,7 +26,7 @@ import RealmSwift
 
 extension NCTrash {
     @objc func loadListingTrash() {
-        NextcloudKit.shared.listingTrash(filename: filename, showHiddenFiles: false, account: NCDomain.shared.getActiveAccount()) { task in
+        NextcloudKit.shared.listingTrash(filename: filename, showHiddenFiles: false, account: NCDomain.shared.getActiveDomain().account) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()
         } completion: { account, items, _, error in

@@ -47,7 +47,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         super.viewDidLoad()
 
         listLayout.itemHeight = 105
-        NCManageDatabase.shared.setLayoutForView(account: NCDomain.shared.getActiveAccount(), key: layoutKey, serverUrl: serverUrl, layout: NCGlobal.shared.layoutList)
+        NCManageDatabase.shared.setLayoutForView(account: NCDomain.shared.getActiveDomain().account, key: layoutKey, serverUrl: serverUrl, layout: NCGlobal.shared.layoutList)
         self.navigationItem.title = titleCurrentFolder
     }
 
@@ -148,7 +148,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
         guard let metadata = metadataTemp,
               let hudView = self.tabBarController?.view,
-              NCDomain.shared.getActiveAccount() == metadata.account else { return }
+              NCDomain.shared.getActiveDomain().account == metadata.account else { return }
 
         let cameraRoll = NCCameraRoll()
         cameraRoll.extractCameraRoll(from: metadata) { metadatas in
@@ -241,7 +241,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             cell.labelStatus.text = ""
             cell.labelInfo.text = ""
         }
-        if NCDomain.shared.getActiveAccount() != metadata.account {
+        if NCDomain.shared.getActiveDomain().account != metadata.account {
             cell.labelInfo.text = NSLocalizedString("_waiting_for_", comment: "") + " " + NSLocalizedString("_user_", comment: "").lowercased() + " \(metadata.userId) " + NSLocalizedString("_in_", comment: "") + " \(metadata.urlBase)"
         }
         let isWiFi = NCNetworking.shared.networkReachability == .reachableEthernetOrWiFi
@@ -265,7 +265,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         super.queryDB()
 
         let metadatas: [tableMetadata] = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal), sorted: "sessionDate", ascending: true) ?? []
-        self.dataSource = NCDataSource(metadatas: metadatas, account: NCDomain.shared.getActiveAccount(), layoutForView: layoutForView)
+        self.dataSource = NCDataSource(metadatas: metadatas, account: NCDomain.shared.getActiveDomain().account, layoutForView: layoutForView)
     }
 
     override func reloadDataSource(withQueryDB: Bool = true) {

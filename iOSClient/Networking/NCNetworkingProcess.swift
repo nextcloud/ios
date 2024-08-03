@@ -42,7 +42,7 @@ class NCNetworkingProcess: NSObject {
     func startTimer(scene: UIScene) {
         self.timerProcess?.invalidate()
         self.timerProcess = Timer.scheduledTimer(withTimeInterval: 2, repeats: true, block: { _ in
-            let account = NCDomain.shared.getActiveAccount()
+            let account = NCDomain.shared.getActiveDomain().account
             guard !account.isEmpty,
                   !self.pauseProcess else { return }
 
@@ -257,7 +257,7 @@ class NCNetworkingProcess: NSObject {
     // MARK: -
 
     func verifyZombie() async {
-        let nkSession = NextcloudKit.shared.nkCommonInstance.getSession(account: NCDomain.shared.getActiveAccount())
+        let nkSession = NextcloudKit.shared.nkCommonInstance.getSession(account: NCDomain.shared.getActiveDomain().account)
 
         // selectorUploadFileShareExtension (FOREGROUND)
         if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "session == %@ AND sessionSelector == %@", NextcloudKit.shared.nkCommonInstance.identifierSessionUpload, NCGlobal.shared.selectorUploadFileShareExtension)) {

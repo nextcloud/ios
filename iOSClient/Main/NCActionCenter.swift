@@ -52,7 +52,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
               let selector = userInfo["selector"] as? String,
               let error = userInfo["error"] as? NKError,
               let account = userInfo["account"] as? String,
-              account == NCDomain.shared.getActiveAccount()
+              account == NCDomain.shared.getActiveDomain().account
         else { return }
 
         guard error == .success else {
@@ -253,7 +253,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         guard let userInfo = notification.userInfo as NSDictionary?,
               let error = userInfo["error"] as? NKError,
               let account = userInfo["account"] as? String,
-              account == NCDomain.shared.getActiveAccount()
+              account == NCDomain.shared.getActiveDomain().account
         else { return }
 
         if error != .success, error.errorCode != NSURLErrorCancelled, error.errorCode != NCGlobal.shared.errorRequestExplicityCancelled {

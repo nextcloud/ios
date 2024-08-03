@@ -72,7 +72,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             UIApplication.shared.allSceneSessionDestructionExceptFirst()
             return
         }
-        if NCDomain.shared.getActiveAccount().isEmpty { return }
+        guard NCDomain.shared.isActiveValid() else { return }
 
         hidePrivacyProtectionWindow()
         if let window = SceneManager.shared.getWindow(scene: scene), let controller = SceneManager.shared.getController(scene: scene) {
@@ -101,7 +101,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         hidePrivacyProtectionWindow()
 
-        NCService().startRequestServicesServer(account: NCDomain.shared.getActiveAccount())
+        NCService().startRequestServicesServer(account: NCDomain.shared.getActiveDomain().account)
 
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
@@ -110,7 +110,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func sceneWillResignActive(_ scene: UIScene) {
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Scene will resign active")
-        if NCDomain.shared.getActiveAccount().isEmpty { return }
+        guard NCDomain.shared.isActiveValid() else { return }
 
         // STOP TIMER UPLOAD PROCESS
         NCNetworkingProcess.shared.stopTimer()

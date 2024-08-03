@@ -67,7 +67,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
 
     /// Triggered when the view appears.
     func onViewAppear() {
-        let groups = NCManageDatabase.shared.getAccountGroups(account: NCDomain.shared.getActiveAccount())
+        let groups = NCManageDatabase.shared.getAccountGroups(account: NCDomain.shared.getActiveDomain().account)
         isAdminGroup = groups.contains(NCGlobal.shared.groupAdmin)
         showHiddenFiles = keychain.showHiddenFiles
         mostCompatible = keychain.formatCompatibility

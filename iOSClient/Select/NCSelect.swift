@@ -206,7 +206,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     }
 
     func createFolderButtonPressed(_ sender: UIButton) {
-        let alertController = UIAlertController.createFolder(serverUrl: serverUrl, account: NCDomain.shared.getActiveAccount())
+        let alertController = UIAlertController.createFolder(serverUrl: serverUrl, account: NCDomain.shared.getActiveDomain().account)
         self.present(alertController, animated: true, completion: nil)
     }
 
@@ -540,7 +540,7 @@ extension NCSelect {
 
     func loadFolder() {
 
-        NCNetworking.shared.readFolder(serverUrl: serverUrl, account: NCDomain.shared.getActiveAccount()) { task in
+        NCNetworking.shared.readFolder(serverUrl: serverUrl, account: NCDomain.shared.getActiveDomain().account) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()
         } completion: { _, _, _, _, _, error in

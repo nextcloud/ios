@@ -41,7 +41,7 @@ struct NCAccountSettingsView: View {
             Form {
                 Section(content: {
                     TabView(selection: $model.indexActiveAccount) {
-                        let account = NCDomain.shared.getActiveAccount()
+                        let account = NCDomain.shared.getActiveDomain().account
                         ForEach(0..<model.accounts.count, id: \.self) { index in
                             let status = model.getUserStatus()
                             let avatar = NCUtility().loadUserImage(for: model.accounts[index].user, displayName: model.accounts[index].displayName, account: account)
