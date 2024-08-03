@@ -75,13 +75,6 @@ public class NCDomain: NSObject {
         return Domain(account: "", urlBase: "", user: "", userId: "", sceneIdentifier: "")
     }
 
-    public func getActiveAccount() -> String {
-        if let domain = self.domain.filter({ $0.account == self.activeTableAccount.account }).first {
-            return domain.account
-        }
-        return ""
-    }
-
     public func isActiveValid() -> Bool {
         return !getActiveDomain().account.isEmpty
     }

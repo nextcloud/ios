@@ -97,7 +97,7 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
         let configLink = NCDomain.shared.getActiveDomain().urlBase + NCBrandOptions.shared.mobileconfig
         let configServer = NCConfigServer()
         if let url = URL(string: configLink) {
-            configServer.startService(url: url, account: NCDomain.shared.getActiveAccount())
+            configServer.startService(url: url, account: NCDomain.shared.getActiveDomain().account)
         }
     }
 

@@ -59,7 +59,7 @@ import NextcloudKit
             return NCContentPresenter().showError(error: error)
         }
 
-        if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", NCDomain.shared.getActiveAccount(), serverUrl, NCGlobal.shared.fileNameRichWorkspace.lowercased())) {
+        if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", NCDomain.shared.getActiveDomain().account, serverUrl, NCGlobal.shared.fileNameRichWorkspace.lowercased())) {
 
             if metadata.url.isEmpty {
                 let domain = NCDomain.shared.getDomain(account: metadata.account)

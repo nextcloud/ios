@@ -133,7 +133,7 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
         if typeReachability == NKCommon.TypeReachability.reachableCellular || typeReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi {
             if !lastReachability {
 #if !EXTENSION
-                NCService().startRequestServicesServer(account: NCDomain.shared.getActiveAccount())
+                NCService().startRequestServicesServer(account: NCDomain.shared.getActiveDomain().account)
 #endif
             }
             lastReachability = true
@@ -320,7 +320,7 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
 
     private func getActiveAccountCertificate() {
         if NCDomain.shared.isActiveValid() {
-            (self.p12Data, self.p12Password) = NCKeychain().getClientCertificate(account: NCDomain.shared.getActiveAccount())
+            (self.p12Data, self.p12Password) = NCKeychain().getClientCertificate(account: NCDomain.shared.getActiveDomain().account)
         }
     }
 }

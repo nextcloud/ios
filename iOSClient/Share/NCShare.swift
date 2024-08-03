@@ -274,7 +274,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         dropDown.customCellConfiguration = { (index: Index, _, cell: DropDownCell) -> Void in
             guard let cell = cell as? NCSearchUserDropDownCell else { return }
             let sharee = sharees[index]
-            cell.setupCell(sharee: sharee, account: NCDomain.shared.getActiveAccount())
+            cell.setupCell(sharee: sharee, account: NCDomain.shared.getActiveDomain().account)
         }
 
         dropDown.selectionAction = { index, _ in

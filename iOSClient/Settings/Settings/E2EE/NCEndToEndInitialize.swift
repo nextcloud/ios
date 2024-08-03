@@ -45,19 +45,19 @@ class NCEndToEndInitialize: NSObject {
         self.metadata = metadata
 
         // Clear all keys
-        NCKeychain().clearAllKeysEndToEnd(account: NCDomain.shared.getActiveAccount())
+        NCKeychain().clearAllKeysEndToEnd(account: NCDomain.shared.getActiveDomain().account)
         self.getPublicKey()
     }
 
     func statusOfService(completion: @escaping (_ error: NKError?) -> Void) {
-        NextcloudKit.shared.getE2EECertificate(account: NCDomain.shared.getActiveAccount()) { _, _, _, _, error in
+        NextcloudKit.shared.getE2EECertificate(account: NCDomain.shared.getActiveDomain().account) { _, _, _, _, error in
             completion(error)
         }
     }
 
     func getPublicKey() {
 
-        NextcloudKit.shared.getE2EECertificate(account: NCDomain.shared.getActiveAccount()) { account, certificate, _, _, error in
+        NextcloudKit.shared.getE2EECertificate(account: NCDomain.shared.getActiveDomain().account) { account, certificate, _, _, error in
             if error == .success, let certificate {
                 NCKeychain().setEndToEndCertificate(account: account, certificate: certificate)
                 self.extractedPublicKey = NCEndToEndEncryption.shared().extractPublicKey(fromCertificate: certificate)
@@ -113,7 +113,7 @@ class NCEndToEndInitialize: NSObject {
 
     func getPrivateKeyCipher() {
         // Request PrivateKey chiper to Server
-        NextcloudKit.shared.getE2EEPrivateKey(account: NCDomain.shared.getActiveAccount()) { account, privateKeyChiper, _, error in
+        NextcloudKit.shared.getE2EEPrivateKey(account: NCDomain.shared.getActiveDomain().account) { account, privateKeyChiper, _, error in
             if error == .success {
                 // request Passphrase
                 var passphraseTextField: UITextField?
@@ -210,7 +210,7 @@ class NCEndToEndInitialize: NSObject {
         // privateKeyChiper
         print(privateKeyCipher)
 
-        NextcloudKit.shared.storeE2EEPrivateKey(privateKey: privateKeyCipher, account: NCDomain.shared.getActiveAccount()) { account, _, _, error in
+        NextcloudKit.shared.storeE2EEPrivateKey(privateKey: privateKeyCipher, account: NCDomain.shared.getActiveDomain().account) { account, _, _, error in
             if error == .success, let privateKey = privateKeyString {
 
                 NCKeychain().setEndToEndPrivateKey(account: account, privateKey: String(privateKey))

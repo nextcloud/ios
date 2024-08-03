@@ -56,7 +56,7 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
         voiceRecordHUD.fillColor = UIColor.green
 
         Task {
-            self.fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + ".m4a", account: NCDomain.shared.getActiveAccount(), serverUrl: self.serverUrl)
+            self.fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + ".m4a", account: NCDomain.shared.getActiveDomain().account, serverUrl: self.serverUrl)
             recording = NCAudioRecorder(to: self.fileName)
             recording.delegate = self
             do {

@@ -96,7 +96,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
                let file = json["file"] as? [String: Any],
                file["type"] as? String == "file" {
                 if let id = file["id"] {
-                    NCActionCenter.shared.viewerFile(account: NCDomain.shared.getActiveAccount(), fileId: ("\(id)"), viewController: self)
+                    NCActionCenter.shared.viewerFile(account: NCDomain.shared.getActiveDomain().account, fileId: ("\(id)"), viewController: self)
                 }
             }
         } catch {
@@ -133,14 +133,14 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
             cell.avatar.isHidden = false
             cell.avatarLeadingMargin.constant = 50
 
-            let fileName = NCDomain.shared.getFileName(account: NCDomain.shared.getActiveAccount(), user: user)
+            let fileName = NCDomain.shared.getFileName(account: NCDomain.shared.getActiveDomain().account, user: user)
             let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
 
             if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                 cell.avatar.image = image
             } else if !FileManager.default.fileExists(atPath: fileNameLocalPath) {
                 cell.fileUser = user
-                NCNetworking.shared.downloadAvatar(user: user, dispalyName: json["user"]?["name"].string, fileName: fileName, account: NCDomain.shared.getActiveAccount(), cell: cell, view: tableView)
+                NCNetworking.shared.downloadAvatar(user: user, dispalyName: json["user"]?["name"].string, fileName: fileName, account: NCDomain.shared.getActiveDomain().account, cell: cell, view: tableView)
             }
         }
 
@@ -230,7 +230,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
 
     func tapRemove(with notification: NKNotifications) {
 
-        NextcloudKit.shared.setNotification(serverUrl: nil, idNotification: notification.idNotification, method: "DELETE", account: NCDomain.shared.getActiveAccount()) { _, error in
+        NextcloudKit.shared.setNotification(serverUrl: nil, idNotification: notification.idNotification, method: "DELETE", account: NCDomain.shared.getActiveDomain().account) { _, error in
             if error == .success {
                 if let index = self.notifications
                     .firstIndex(where: { $0.idNotification == notification.idNotification }) {
@@ -262,7 +262,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
                 return
             }
 
-            NextcloudKit.shared.setNotification(serverUrl: serverUrl, idNotification: 0, method: method, account: NCDomain.shared.getActiveAccount()) { _, error in
+            NextcloudKit.shared.setNotification(serverUrl: serverUrl, idNotification: 0, method: method, account: NCDomain.shared.getActiveDomain().account) { _, error in
                 if error == .success {
                     if let index = self.notifications.firstIndex(where: { $0.idNotification == notification.idNotification }) {
                         self.notifications.remove(at: index)
@@ -290,7 +290,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
    @objc func getNetwokingNotification() {
 
        self.tableView.reloadData()
-       NextcloudKit.shared.getNotifications(account: NCDomain.shared.getActiveAccount()) { task in
+       NextcloudKit.shared.getNotifications(account: NCDomain.shared.getActiveDomain().account) { task in
            self.dataSourceTask = task
            self.tableView.reloadData()
        } completion: { account, notifications, _, error in
