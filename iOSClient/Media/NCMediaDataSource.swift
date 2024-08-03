@@ -26,8 +26,7 @@ import NextcloudKit
 
 extension NCMedia {
     func reloadDataSource() {
-        let domain = NCDomain.shared.getActiveDomain()
-        self.metadatas = imageCache.getMediaMetadatas(predicate: self.getPredicate(domain: domain), domain: domain)
+        self.metadatas = imageCache.getMediaMetadatas(predicate: self.getPredicate(), domain: NCDomain.shared.getActiveDomain())
         self.collectionViewReloadData()
     }
 
@@ -121,17 +120,18 @@ extension NCMedia {
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Media not reload datasource network with the application in background")
             return(lessDate, greaterDate, 0, false, NKError())
         }
-        let domain = NCDomain.shared.getDomain(account: activeAccount.account)
+        let domain = NCDomain.shared.getActiveDomain()
+        let activeTableAccount = NCDomain.shared.getActiveTableAccount()
         NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate)")
         let options = NKRequestOptions(timeout: timeout, taskDescription: self.taskDescriptionRetrievesProperties, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-        let results = await NCNetworking.shared.searchMedia(path: activeAccount.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: NCKeychain().showHiddenFiles, includeHiddenFiles: [], account: activeAccount.account, options: options)
-        if results.account != self.activeAccount.account {
+        let results = await NCNetworking.shared.searchMedia(path: activeTableAccount.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: NCKeychain().showHiddenFiles, includeHiddenFiles: [], account: domain.account, options: options)
+        if activeTableAccount.account != NCDomain.shared.getActiveAccount() {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "User changed")
             return(lessDate, greaterDate, 0, false, error)
         } else if results.error == .success, let files = results.files {
             let metadatas = await NCManageDatabase.shared.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false).metadatas
             var predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-            predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, getPredicate(showAll: true, domain: domain)])
+            predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, getPredicate(showAll: true)])
             let resultsUpdate = NCManageDatabase.shared.updateMetadatas(metadatas, predicate: predicate)
             let isChaged: Bool = (resultsUpdate.metadatasDifferentCount != 0 || resultsUpdate.metadatasModified != 0)
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] End searchMedia UpdateMetadatas with differentCount \(resultsUpdate.metadatasDifferentCount), modified \(resultsUpdate.metadatasModified)")
@@ -141,17 +141,19 @@ extension NCMedia {
         }
     }
 
-    private func getPredicate(showAll: Bool = false, domain: NCDomain.Domain) -> NSPredicate {
-        let startServerUrl = NCUtilityFileSystem().getHomeServer(domain: domain) + activeAccount.mediaPath
+    private func getPredicate(showAll: Bool = false) -> NSPredicate {
+        let activeTableAccount = NCDomain.shared.getActiveTableAccount()
+        let domain = NCDomain.shared.getActiveDomain()
+        let startServerUrl = NCUtilityFileSystem().getHomeServer(domain: domain) + activeTableAccount.mediaPath
 
         if showAll {
-            return NSPredicate(format: imageCache.showAllPredicateMediaString, activeAccount.account, startServerUrl)
+            return NSPredicate(format: imageCache.showAllPredicateMediaString, domain.account, startServerUrl)
         } else if showOnlyImages {
-            return NSPredicate(format: imageCache.showOnlyPredicateMediaString, activeAccount.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue)
+            return NSPredicate(format: imageCache.showOnlyPredicateMediaString, domain.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue)
         } else if showOnlyVideos {
-            return NSPredicate(format: imageCache.showOnlyPredicateMediaString, activeAccount.account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)
+            return NSPredicate(format: imageCache.showOnlyPredicateMediaString, domain.account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)
         } else {
-            return NSPredicate(format: imageCache.showBothPredicateMediaString, activeAccount.account, startServerUrl)
+            return NSPredicate(format: imageCache.showBothPredicateMediaString, domain.account, startServerUrl)
         }
     }
 }
