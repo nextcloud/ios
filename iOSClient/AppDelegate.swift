@@ -420,10 +420,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     @objc private func checkErrorNetworking(_ notification: NSNotification) {
-        let account = NCDomain.shared.getActiveDomain().account
         guard !self.timerErrorNetworkingDisabled,
-              !account.isEmpty,
-              NCKeychain().getPassword(account: account).isEmpty else { return }
+              NCDomain.shared.isActiveDomainValid(),
+              NCKeychain().getPassword(account: NCDomain.shared.getActiveDomain().account).isEmpty else { return }
         openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: true)
     }
 
