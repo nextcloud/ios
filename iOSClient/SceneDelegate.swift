@@ -37,7 +37,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
               let appDelegate else { return }
         self.window = UIWindow(windowScene: windowScene)
 
-        if NCManageDatabase.shared.getActiveAccount() != nil {
+        if NCDomain.shared.isActiveValid() {
             if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
                 SceneManager.shared.register(scene: scene, withRootViewController: controller)
                 window?.rootViewController = controller
@@ -136,10 +136,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func sceneDidEnterBackground(_ scene: UIScene) {
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Scene did enter in background")
-        guard let appDelegate,
-              !NCDomain.shared.getActiveAccount().isEmpty else { return }
+        guard NCDomain.shared.isActiveValid() else { return }
 
-        if let autoUpload = NCManageDatabase.shared.getActiveAccount()?.autoUpload, autoUpload {
+        if NCDomain.shared.getActiveTableAccount().autoUpload {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Auto upload: true")
             if UIApplication.shared.backgroundRefreshStatus == .available {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Auto upload in background: true")
@@ -150,12 +149,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Auto upload: false")
         }
 
-        if let error = appDelegate.updateShareAccounts() {
+        if let error = appDelegate?.updateShareAccounts() {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Create share accounts \(error.localizedDescription)")
         }
 
-        appDelegate.scheduleAppRefresh()
-        appDelegate.scheduleAppProcessing()
+        appDelegate?.scheduleAppRefresh()
+        appDelegate?.scheduleAppProcessing()
 
         NCNetworking.shared.cancelAllQueue()
         NCNetworking.shared.cancelDataTask()
@@ -172,8 +171,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
               let url = URLContexts.first?.url,
               let appDelegate else { return }
         let sceneIdentifier = controller.sceneIdentifier
-        let domain = NCDomain.shared.getActiveDomain()
-        let account = domain.account
         let scheme = url.scheme
         let action = url.host
 
@@ -200,10 +197,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
          Example: nextcloud://open-action?action=create-voice-memo&&user=marinofaggiana&url=https://cloud.nextcloud.com
          */
 
-        if !account.isEmpty && scheme == NCGlobal.shared.appScheme && action == "open-action" {
+        if NCDomain.shared.isActiveValid() && scheme == NCGlobal.shared.appScheme && action == "open-action" {
 
             if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
-
                 let queryItems = urlComponents.queryItems
                 guard let actionScheme = queryItems?.filter({ $0.name == "action" }).first?.value,
                       let userScheme = queryItems?.filter({ $0.name == "user" }).first?.value,
@@ -222,7 +218,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
                     NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: controller) { hasPermission in
                         if hasPermission {
-                            NCPhotosPickerViewController(controller: controller, maxSelectedAssets: 0, singleSelectedMode: false, domain: domain)
+                            NCPhotosPickerViewController(controller: controller, maxSelectedAssets: 0, singleSelectedMode: false, domain: NCDomain.shared.getActiveDomain())
                         }
                     }
 
@@ -233,12 +229,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 case NCGlobal.shared.actionTextDocument:
 
                     let domain = NCDomain.shared.getActiveDomain()
-                    let directEditingCreators = NCManageDatabase.shared.getDirectEditingCreators(account: account)
+                    let directEditingCreators = NCManageDatabase.shared.getDirectEditingCreators(account: domain.account)
                     let directEditingCreator = directEditingCreators!.first(where: { $0.editor == NCGlobal.shared.editorText})!
                     let serverUrl = controller.currentServerUrl()
 
                     Task {
-                        let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + ".md", account: account, serverUrl: serverUrl)
+                        let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + ".md", account: domain.account, serverUrl: serverUrl)
                         let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: serverUrl, domain: domain)
 
                         NCCreateDocument().createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: NCGlobal.shared.editorText, creatorId: directEditingCreator.identifier, templateId: NCGlobal.shared.templateDocument, account: domain.account)
@@ -268,7 +264,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
          Example: nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
          */
 
-        else if !account.isEmpty && scheme == NCGlobal.shared.appScheme && action == "open-file" {
+        else if NCDomain.shared.isActiveValid() && scheme == NCGlobal.shared.appScheme && action == "open-file" {
 
             if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
 
@@ -310,7 +306,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
          Example: nextcloud://open-and-switch-account?user=marinofaggiana&url=https://cloud.nextcloud.com
          */
 
-        } else if !account.isEmpty && scheme == NCGlobal.shared.appScheme && action == "open-and-switch-account" {
+        } else if NCDomain.shared.isActiveValid() && scheme == NCGlobal.shared.appScheme && action == "open-and-switch-account" {
             guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return }
             let queryItems = urlComponents.queryItems
             guard let userScheme = queryItems?.filter({ $0.name == "user" }).first?.value,
@@ -321,7 +317,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
             // Otherwise open the app and switch accounts
             return
-        } else if !account.isEmpty, let action {
+        } else if NCDomain.shared.isActiveValid(), let action {
             if DeepLink(rawValue: action) != nil {
                 NCDeepLinkHandler().parseDeepLink(url, controller: controller)
             }
@@ -359,8 +355,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 extension SceneDelegate: NCPasscodeDelegate {
     func requestedAccount(viewController: UIViewController?) {
         let accounts = NCManageDatabase.shared.getAllAccount()
+
         if accounts.count > 1, let accountRequestVC = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
-            accountRequestVC.activeAccount = NCManageDatabase.shared.getActiveAccount()
+            accountRequestVC.activeAccount = NCDomain.shared.getActiveTableAccount()
             accountRequestVC.accounts = accounts
             accountRequestVC.enableTimerProgress = true
             accountRequestVC.enableAddAccount = false

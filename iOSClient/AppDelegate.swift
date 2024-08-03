@@ -238,9 +238,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func handleAppRefreshProcessingTask(taskText: String, completion: @escaping () -> Void = {}) {
-        var account = NCDomain.shared.getActiveAccount()
         Task {
             var itemsAutoUpload = 0
+            let account = NCDomain.shared.getActiveAccount()
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) start handle")
 
