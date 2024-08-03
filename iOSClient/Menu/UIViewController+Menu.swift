@@ -44,7 +44,7 @@ extension UIViewController {
 
         case "spreed":
             guard
-                let talkUrl = URL(string: "nextcloudtalk://open-conversation?server=\(NCDomain.shared.getActiveUrlBase())&user=\(NCDomain.shared.getActiveUserId())&withUser=\(userId)"),
+                let talkUrl = URL(string: "nextcloudtalk://open-conversation?server=\(NCDomain.shared.getActiveDomain().urlBase)&user=\(NCDomain.shared.getActiveUserId())&withUser=\(userId)"),
                 UIApplication.shared.canOpenURL(talkUrl)
             else { fallthrough /* default: open web link in browser */ }
             UIApplication.shared.open(talkUrl)

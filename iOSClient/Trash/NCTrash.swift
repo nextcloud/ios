@@ -228,7 +228,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
     func getFilePath() -> String {
         if filePath.isEmpty {
             guard let userId = (NCDomain.shared.getActiveUserId() as NSString).addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlFragmentAllowed) else { return "" }
-            let filePath = NCDomain.shared.getActiveUrlBase() + "/" + NextcloudKit.shared.nkCommonInstance.dav + "/trashbin/" + userId + "/trash"
+            let filePath = NCDomain.shared.getActiveDomain().urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav + "/trashbin/" + userId + "/trash"
             return filePath + "/"
         } else {
             return filePath + "/"

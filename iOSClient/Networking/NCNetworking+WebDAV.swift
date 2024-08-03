@@ -650,7 +650,7 @@ extension NCNetworking {
                      account: String,
                      taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
                      completion: @escaping (_ metadatas: [tableMetadata]?, _ error: NKError) -> Void) {
-        NextcloudKit.shared.searchLiteral(serverUrl: NCDomain.shared.getActiveUrlBase(),
+        NextcloudKit.shared.searchLiteral(serverUrl: NCDomain.shared.getActiveDomain().urlBase,
                                           depth: "infinity",
                                           literal: literal,
                                           showHiddenFiles: NCKeychain().showHiddenFiles,

@@ -382,7 +382,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     web?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
                     showLoginViewController(web)
                 } else {
-                    activeLogin?.urlBase = NCDomain.shared.getActiveUrlBase()
+                    activeLogin?.urlBase = NCDomain.shared.getActiveDomain().urlBase
                     showLoginViewController(activeLogin)
                 }
             }
@@ -397,7 +397,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             // Used also for reinsert the account (change passwd)
             if activeLogin?.view.window == nil {
                 activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
-                activeLogin?.urlBase = NCDomain.shared.getActiveUrlBase()
+                activeLogin?.urlBase = NCDomain.shared.getActiveDomain().urlBase
                 activeLogin?.disableUrlField = true
                 activeLogin?.disableCloseButton = true
                 showLoginViewController(activeLogin)
@@ -428,7 +428,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func trustCertificateError(host: String) {
-        guard let currentHost = URL(string: NCDomain.shared.getActiveUrlBase())?.host,
+        guard let currentHost = URL(string: NCDomain.shared.getActiveDomain().urlBase)?.host,
               let pushNotificationServerProxyHost = URL(string: NCBrandOptions.shared.pushNotificationServerProxy)?.host,
               host != pushNotificationServerProxyHost,
               host == currentHost
