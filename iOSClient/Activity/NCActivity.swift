@@ -229,7 +229,7 @@ extension NCActivity: UITableViewDataSource {
         cell.labelMessage.text = comment.message
         cell.labelMessage.textColor = NCBrandColor.shared.textColor
         // Button Menu
-        if comment.actorId == NCDomain.shared.getActiveUserId() {
+        if comment.actorId == NCDomain.shared.getActiveDomain().userId {
             cell.buttonMenu.isHidden = false
         } else {
             cell.buttonMenu.isHidden = true

@@ -286,7 +286,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     return
                 }
 
-                let davFiles = NextcloudKit.shared.nkCommonInstance.dav + "/files/" + NCDomain.shared.getActiveUserId()
+                let davFiles = NextcloudKit.shared.nkCommonInstance.dav + "/files/" + NCDomain.shared.getActiveDomain().userId
 
                 if pathScheme.contains("/") {
                     fileName = (pathScheme as NSString).lastPathComponent
