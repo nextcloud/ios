@@ -144,8 +144,8 @@ class NCShareExtension: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        guard serverUrl.isEmpty else { return }
-        guard let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount(),
+        if NCManageDatabase.shared.getActiveTableAccount() == nil { return }
+        guard serverUrl.isEmpty,
               !NCPasscode.shared.isPasscodeReset else {
             return showAlert(description: "_no_active_account_") {
                 self.cancel(with: .noAccount)
