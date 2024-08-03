@@ -217,7 +217,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
         labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
 
-
         // ITEM : External
         if NCBrandOptions.shared.disable_more_external_site == false {
             if let externalSites = NCManageDatabase.shared.getAllExternalSites(account: NCDomain.shared.getActiveAccount()) {

@@ -183,7 +183,6 @@ class NCMainTabBar: UITabBar {
         centerButton.action(for: .touchUpInside) { _ in
 
             if let controller = self.window?.rootViewController as? NCMainTabBarController {
-                let userBaseUrl = self.appDelegate
                 let serverUrl = controller.currentServerUrl()
                 if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", NCDomain.shared.getActiveAccount(), serverUrl)) {
                     if !directory.permissions.contains("CK") {

@@ -133,7 +133,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
             cell.avatar.isHidden = false
             cell.avatarLeadingMargin.constant = 50
 
-            let fileName = NCDomain.shared.getStore(account: NCDomain.shared.getActiveAccount()) + "-" + user + ".png"
+            let fileName = NCDomain.shared.getFileName(account: NCDomain.shared.getActiveAccount(), user: user)
             let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
 
             if let image = UIImage(contentsOfFile: fileNameLocalPath) {
@@ -230,7 +230,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
 
     func tapRemove(with notification: NKNotifications) {
 
-        NextcloudKit.shared.setNotification(serverUrl: nil, idNotification: notification.idNotification, method: "DELETE", account: NCDomain.shared.getActiveAccount()) { account, error in
+        NextcloudKit.shared.setNotification(serverUrl: nil, idNotification: notification.idNotification, method: "DELETE", account: NCDomain.shared.getActiveAccount()) { _, error in
             if error == .success {
                 if let index = self.notifications
                     .firstIndex(where: { $0.idNotification == notification.idNotification }) {

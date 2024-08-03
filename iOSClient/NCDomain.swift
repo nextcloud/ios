@@ -5,7 +5,6 @@
 //  Created by Marino Faggiana on 02/08/24.
 //  Copyright © 2024 Marino Faggiana. All rights reserved.
 //
-//
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
 //  This program is free software: you can redistribute it and/or modify
@@ -67,11 +66,6 @@ public class NCDomain: NSObject {
         return Domain(account: "", urlBase: "", user: "", userId: "", sceneIdentifier: "")
     }
 
-    public func getStore(account: String) -> String {
-        guard let domain = self.domain.filter({ $0.account == account }).first else { return "" }
-        return domain.user + "@" + (URL(string: domain.urlBase)?.host ?? "localhost")
-    }
-
     /// ACTIVE DOMAIN
     ///
     public func getActiveDomain() -> Domain {
@@ -106,5 +100,12 @@ public class NCDomain: NSObject {
 
     func getActiveTableAccount() -> tableAccount {
         return activeTableAccount
+    }
+
+    /// UTILITY
+    ///
+    public func getFileName(account: String, user: String) -> String {
+        guard let domain = self.domain.filter({ $0.account == account }).first else { return "" }
+        return domain.user + "@" + (URL(string: domain.urlBase)?.host ?? "localhost") + "-" + user + ".png"
     }
 }

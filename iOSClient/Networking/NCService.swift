@@ -142,7 +142,7 @@ class NCService: NSObject {
 
     func getAvatar(account: String) {
         let domain = NCDomain.shared.getDomain(account: account)
-        let fileName =  NCDomain.shared.getStore(account: account) + "-" + domain.user + ".png"
+        let fileName = NCDomain.shared.getFileName(account: account, user: domain.user)
         let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
         let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
 
@@ -207,7 +207,7 @@ class NCService: NSObject {
 
             // User Status
             if NCGlobal.shared.capabilityUserStatusEnabled {
-                NextcloudKit.shared.getUserStatus(account: account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, userId, _, error in
+                NextcloudKit.shared.getUserStatus(account: account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, _, _, error in
                     if error == .success {
                         NCManageDatabase.shared.setAccountUserStatus(userStatusClearAt: clearAt, userStatusIcon: icon, userStatusMessage: message, userStatusMessageId: messageId, userStatusMessageIsPredefined: messageIsPredefined, userStatusStatus: status, userStatusStatusIsUserDefined: statusIsUserDefined, account: account)
                     }

@@ -113,13 +113,11 @@ extension NCEndToEndMetadata {
         var counter: Int = 1
 
         func addUser(userId: String?, certificate: String?, key: Data) {
-
             guard let userId, let certificate else { return }
 
             if let metadataKeyEncrypted = NCEndToEndEncryption.shared().encryptAsymmetricData(key, certificate: certificate) {
                 let encryptedMetadataKey = metadataKeyEncrypted.base64EncodedString()
-
-                NCManageDatabase.shared.addE2EUsers(account: domain.account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, userId: domain.userId, certificate: certificate, encryptedMetadataKey: encryptedMetadataKey, metadataKey: key)
+                NCManageDatabase.shared.addE2EUsers(account: domain.account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, userId: userId, certificate: certificate, encryptedMetadataKey: encryptedMetadataKey, metadataKey: key)
             }
         }
 

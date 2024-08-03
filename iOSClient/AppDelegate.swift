@@ -570,7 +570,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         for account in tableAccount {
             let name = account.alias.isEmpty ? account.displayName : account.alias
-            let avatarFileName = NCDomain.shared.getStore(account: account.user) + "-\(account.user).png"
+            let avatarFileName = NCDomain.shared.getFileName(account: account.user, user: account.user)
             let pathAvatarFileName = NCUtilityFileSystem().directoryUserData + "/" + avatarFileName
             let image = UIImage(contentsOfFile: pathAvatarFileName)
             accounts.append(NKShareAccounts.DataAccounts(withUrl: account.urlBase, user: account.user, name: name, image: image))
