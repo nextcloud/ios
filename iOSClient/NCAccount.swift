@@ -66,6 +66,7 @@ class NCAccount: NSObject {
                        userProfile: NKUserProfile?,
                        completion: () -> Void) {
         let previusActiveAccount = NCDomain.shared.getActiveDomain().account
+        guard let tableActiveAccount = NCManageDatabase.shared.setAccountActive(account) else { return completion() }
 
         NCNetworking.shared.cancelAllQueue()
         NCNetworking.shared.cancelDataTask()
@@ -84,6 +85,25 @@ class NCAccount: NSObject {
         }
 
         NCManageDatabase.shared.setCapabilities(account: account)
+
+        /* -- SINGLE DOMAIN -- */
+        NCDomain.shared.removeDomain(account: previusActiveAccount)
+        NCDomain.shared.appendDomain(account: account,
+                                     urlBase: tableActiveAccount.urlBase,
+                                     user: tableActiveAccount.user,
+                                     userId: tableActiveAccount.userId,
+                                     sceneIdentifier: "")
+
+        NextcloudKit.shared.deleteCookieStorageForAccount(previusActiveAccount)
+        NextcloudKit.shared.updateAccount(previusActiveAccount,
+                                          urlBase: tableActiveAccount.urlBase,
+                                          user: tableActiveAccount.user,
+                                          userId: tableActiveAccount.userId,
+                                          password: NCKeychain().getPassword(account: account),
+                                          userAgent: userAgent,
+                                          nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
+                                          replaceWithAccount: account)
+        /* -- SINGLE DOMAIN -- */
 
         if let userProfile {
             NCManageDatabase.shared.setAccountUserProfile(account: account, userProfile: userProfile)
