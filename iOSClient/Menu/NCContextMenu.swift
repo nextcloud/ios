@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import UIKit
 import Alamofire
 import NextcloudKit
 import JGProgressHUD
