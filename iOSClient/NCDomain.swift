@@ -99,7 +99,7 @@ public class NCDomain: NSObject {
     ///
     public func getFileName(urlBase: String, user: String) -> String {
         let url = (URL(string: urlBase)?.host) ?? "localhost"
-        let fileName = user + "@" + url + "-" + user + ".png"
+        let fileName = user + "@" + url + ".png"
         return fileName
     }
 }
