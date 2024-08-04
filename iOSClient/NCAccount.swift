@@ -154,9 +154,9 @@ class NCAccount: NSObject {
 
         for account in tableAccount {
             let name = account.alias.isEmpty ? account.displayName : account.alias
-            let avatarFileName = NCDomain.shared.getFileName(account: account.user, user: account.user)
-            let pathAvatarFileName = NCUtilityFileSystem().directoryUserData + "/" + avatarFileName
-            let image = UIImage(contentsOfFile: pathAvatarFileName)
+            let fileName = NCDomain.shared.getFileName(urlBase: account.urlBase, user: account.user)
+            let fileNamePath = NCUtilityFileSystem().directoryUserData + "/" + fileName
+            let image = UIImage(contentsOfFile: fileNamePath)
             accounts.append(NKShareAccounts.DataAccounts(withUrl: account.urlBase, user: account.user, name: name, image: image))
         }
         return NKShareAccounts().putShareAccounts(at: dirGroupApps, app: NCGlobal.shared.appScheme, dataAccounts: accounts)

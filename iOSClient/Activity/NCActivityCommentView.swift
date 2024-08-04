@@ -35,7 +35,7 @@ class NCActivityCommentView: UIView, UITextFieldDelegate {
         newCommentField.placeholder = NSLocalizedString("_new_comment_", comment: "")
         newCommentField.delegate = self
 
-        let fileName = NCDomain.shared.getFileName(account: account, user: domain.user)
+        let fileName = NCDomain.shared.getFileName(urlBase: domain.urlBase, user: domain.user)
         let fileNameLocalPath = NCUtilityFileSystem().directoryUserData + "/" + fileName
         if let image = UIImage(contentsOfFile: fileNameLocalPath) {
             imageItem.image = image

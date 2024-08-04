@@ -593,7 +593,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func setNavigationLeftItems() {
         guard layoutKey == NCGlobal.shared.layoutViewFiles else { return }
         let activeTableAccount = NCDomain.shared.getActiveTableAccount()
-        let image = utility.loadUserImage(for: activeTableAccount.user, displayName: activeTableAccount.displayName, account: activeTableAccount.account)
+        let image = utility.loadUserImage(for: activeTableAccount.user, displayName: activeTableAccount.displayName, urlBase: activeTableAccount.urlBase)
         let accountButton = AccountSwitcherButton(type: .custom)
         let accounts = NCManageDatabase.shared.getAllAccountOrderAlias()
         var childrenAccountSubmenu: [UIMenuElement] = []
@@ -605,7 +605,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         if !accounts.isEmpty {
             let accountActions: [UIAction] = accounts.map { account in
-                let image = utility.loadUserImage(for: account.user, displayName: account.displayName, account: account.account)
+                let image = utility.loadUserImage(for: account.user, displayName: account.displayName, urlBase: account.urlBase)
                 var name: String = ""
                 var url: String = ""
 

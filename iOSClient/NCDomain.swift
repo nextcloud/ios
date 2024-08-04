@@ -97,8 +97,9 @@ public class NCDomain: NSObject {
 
     /// UTILITY
     ///
-    public func getFileName(account: String, user: String) -> String {
-        guard let domain = self.domain.filter({ $0.account == account }).first else { return "" }
-        return domain.user + "@" + (URL(string: domain.urlBase)?.host ?? "localhost") + "-" + user + ".png"
+    public func getFileName(urlBase: String, user: String) -> String {
+        let url = (URL(string: urlBase)?.host) ?? "localhost"
+        let fileName = user + "@" + url + "-" + user + ".png"
+        return fileName
     }
 }
