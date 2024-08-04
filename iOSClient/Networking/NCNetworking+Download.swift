@@ -279,7 +279,7 @@ extension NCNetworking {
             return
         }
 
-        cell.fileAvatarImageView?.image = utility.loadUserImage(for: user, displayName: dispalyName, account: NCDomain.shared.getActiveDomain().account)
+        cell.fileAvatarImageView?.image = utility.loadUserImage(for: user, displayName: dispalyName, urlBase: NCDomain.shared.getActiveDomain().urlBase)
 
         for case let operation as NCOperationDownloadAvatar in downloadAvatarQueue.operations where operation.fileName == fileName { return }
         downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: user, fileName: fileName, fileNameLocalPath: fileNameLocalPath, account: account, cell: cell, view: view))

@@ -223,7 +223,7 @@ class NCShareExtension: UIViewController {
             }
         }
 
-        let image = utility.loadUserImage(for: activeAccount.user, displayName: activeAccount.displayName, account: activeAccount.account)
+        let image = utility.loadUserImage(for: activeAccount.user, displayName: activeAccount.displayName, urlBase: activeAccount.urlBase)
         let profileButton = UIButton(type: .custom)
         profileButton.setImage(image, for: .normal)
 

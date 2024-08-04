@@ -139,17 +139,14 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         searchFieldTopConstraint.constant = 45
         sharedWithYouByView.isHidden = false
         sharedWithYouByLabel.text = NSLocalizedString("_shared_with_you_by_", comment: "") + " " + metadata.ownerDisplayName
-        sharedWithYouByImage.image = utility.loadUserImage(
-            for: metadata.ownerId,
-            displayName: metadata.ownerDisplayName,
-            account: domain.account)
+        sharedWithYouByImage.image = utility.loadUserImage(for: metadata.ownerId, displayName: metadata.ownerDisplayName, urlBase: domain.urlBase)
         sharedWithYouByLabel.accessibilityHint = NSLocalizedString("_show_profile_", comment: "")
 
         let shareAction = UITapGestureRecognizer(target: self, action: #selector(openShareProfile))
         sharedWithYouByImage.addGestureRecognizer(shareAction)
         let shareLabelAction = UITapGestureRecognizer(target: self, action: #selector(openShareProfile))
         sharedWithYouByLabel.addGestureRecognizer(shareLabelAction)
-        let fileName = NCDomain.shared.getFileName(account: domain.account, user: metadata.ownerId)
+        let fileName = NCDomain.shared.getFileName(urlBase: domain.urlBase, user: metadata.ownerId)
 
         if NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) == nil {
             let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
@@ -273,7 +270,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         dropDown.customCellConfiguration = { (index: Index, _, cell: DropDownCell) -> Void in
             guard let cell = cell as? NCSearchUserDropDownCell else { return }
             let sharee = sharees[index]
-            cell.setupCell(sharee: sharee, account: NCDomain.shared.getActiveDomain().account)
+            cell.setupCell(sharee: sharee, domain: NCDomain.shared.getActiveDomain())
         }
 
         dropDown.selectionAction = { index, _ in
@@ -368,7 +365,7 @@ extension NCShare: UITableViewDataSource {
                 cell.tableShare = tableShare
                 cell.delegate = self
                 cell.setupCellUI(userId: domain.userId)
-                let fileName = NCDomain.shared.getFileName(account: domain.account, user: tableShare.shareWith)
+                let fileName = NCDomain.shared.getFileName(urlBase: domain.urlBase, user: tableShare.shareWith)
                 NCNetworking.shared.downloadAvatar(user: tableShare.shareWith, dispalyName: tableShare.shareWithDisplayname, fileName: fileName, account: metadata.account, cell: cell, view: tableView)
                 return cell
             }
