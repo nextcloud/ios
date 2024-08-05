@@ -28,6 +28,13 @@ class NCMainTabBarController: UITabBarController {
     var documentPickerViewController: NCDocumentPickerViewController?
     let filesServerUrl = ThreadSafeDictionary<String, NCFiles>()
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    private var previousIndex: Int?
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        delegate = self
+        previousIndex = selectedIndex
+    }
 
     func currentViewController() -> UIViewController? {
         return (selectedViewController as? UINavigationController)?.topViewController
@@ -47,4 +54,29 @@ class NCMainTabBarController: UITabBarController {
         }
         return serverUrl
     }
+
+//    override func tabBar(_ tabBar: UITabBar, didSelect item: UITabBarItem) {
+//        let currentIndex = tabBar.items?.firstIndex(of: item)
+//        if selectedIndex == currentIndex {
+//            print("WORKS")
+//        }
+//    }
+}
+
+extension NCMainTabBarController: UITabBarControllerDelegate {
+    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
+            if previousIndex == tabBarController.selectedIndex {
+                scrollToTop(viewController: viewController)
+            }
+            previousIndex = tabBarController.selectedIndex
+        }
+
+        private func scrollToTop(viewController: UIViewController) {
+            guard let navigationController = viewController as? UINavigationController,
+                  let topViewController = navigationController.topViewController else { return }
+
+            if let scrollView = topViewController.view.subviews.compactMap({ $0 as? UIScrollView }).first {
+                scrollView.setContentOffset(CGPoint(x: 0, y: -scrollView.adjustedContentInset.top), animated: true)
+            }
+        }
 }
