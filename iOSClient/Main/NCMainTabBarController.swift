@@ -23,10 +23,16 @@
 
 import UIKit
 
+struct NavigationCollectionViewCommon {
+    var serverUrl: String
+    var navigationController: UINavigationController?
+    var viewController: NCCollectionViewCommon
+}
+
 class NCMainTabBarController: UITabBarController {
     var sceneIdentifier: String = UUID().uuidString
     var documentPickerViewController: NCDocumentPickerViewController?
-    let filesServerUrl = ThreadSafeDictionary<String, NCFiles>()
+    let navigationCollectionViewCommon = ThreadSafeArray<NavigationCollectionViewCommon>()
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
     func currentViewController() -> UIViewController? {
