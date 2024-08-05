@@ -37,12 +37,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
               let appDelegate else { return }
         self.window = UIWindow(windowScene: windowScene)
 
-        if NCDomain.shared.isActiveDomainValid() {
-            if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+        if NCDomain.shared.isActiveDomainValid(),
+           let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
                 SceneManager.shared.register(scene: scene, withRootViewController: controller)
                 window?.rootViewController = controller
                 window?.makeKeyAndVisible()
-            }
+            NCDomain.shared.setScene(account: NCDomain.shared.getActiveDomain().account, scene: scene)
         } else {
             if NCBrandOptions.shared.disable_intro {
                 appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false, windowForRootViewController: window)

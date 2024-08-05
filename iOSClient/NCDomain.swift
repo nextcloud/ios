@@ -32,7 +32,7 @@ public class NCDomain: NSObject {
         var urlBase: String
         var user: String
         var userId: String
-        var scene: UIScene? = nil
+        var scene: UIScene?
     }
     private var domain: ThreadSafeArray<Domain> = ThreadSafeArray()
     private var activeTableAccount = tableAccount()
@@ -62,6 +62,12 @@ public class NCDomain: NSObject {
             return domain
         }
         return Domain(account: "", urlBase: "", user: "", userId: "")
+    }
+
+    public func setScene(account: String, scene: UIScene?) {
+        if var domain = self.domain.filter({ $0.account == account }).first {
+            domain.scene = scene
+        }
     }
 
     /// ACTIVE DOMAIN
