@@ -161,7 +161,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         navigationController?.setNavigationBarAppearance()
         navigationController?.navigationBar.prefersLargeTitles = true
-        navigationController?.setNavigationBarHidden(false, animated: true)
+        navigationController?.setNavigationBarHidden(false, animated: false)
         navigationItem.title = titleCurrentFolder
 
         isEditMode = false
