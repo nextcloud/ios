@@ -109,8 +109,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             searchController?.delegate = self
             searchController?.searchBar.delegate = self
             searchController?.searchBar.autocapitalizationType = .none
-            navigationItem.searchController = searchController
-            navigationItem.hidesSearchBarWhenScrolling = true
+            searchController?.hidesNavigationBarDuringPresentation = false
+            searchController?.automaticallyShowsCancelButton = false
+            navigationItem.titleView = searchController?.searchBar
         }
 
         // Cell
@@ -156,7 +157,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         super.viewWillAppear(animated)
 
         navigationController?.setNavigationBarAppearance()
-        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationController?.navigationBar.prefersLargeTitles = false
         navigationController?.setNavigationBarHidden(false, animated: true)
         navigationItem.title = titleCurrentFolder
 
@@ -587,25 +588,34 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - Layout
 
     func setNavigationLeftItems() {
+        if isSearchingMode {
+            navigationItem.leftBarButtonItems = nil
+            return
+        }
+        
         if layoutKey == NCGlobal.shared.layoutViewFiles {
             navigationItem.leftItemsSupplementBackButton = true
             if navigationController?.viewControllers.count == 1 {
-                navigationItem.setLeftBarButtonItems([UIBarButtonItem(image: UIImage(systemName: "line.3.horizontal"),
-                                                                      style: .plain,
-                                                                      action: { [weak self] in
+                let burgerMenuItem = UIBarButtonItem(image: UIImage(systemName: "line.3.horizontal"),
+                                                     style: .plain,
+                                                     action: { [weak self] in
                     self?.showBurgerMenu()
-                })], animated: true)
+                })
+                burgerMenuItem.tintColor = NCBrandColor.shared.iconImageColor
+                navigationItem.setLeftBarButtonItems([burgerMenuItem], animated: true)
             }
         } else if (layoutKey == NCGlobal.shared.layoutViewRecent) ||
                     (layoutKey == NCGlobal.shared.layoutViewTrash) ||
                     (layoutKey == NCGlobal.shared.layoutViewOffline) {
             navigationItem.leftItemsSupplementBackButton = true
             if navigationController?.viewControllers.count == 1 {
-                navigationItem.setLeftBarButtonItems([UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""),
-                                                                      style: .plain,
-                                                                      action: { [weak self] in
+                let closeButton = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""),
+                                                  style: .plain,
+                                                  action: { [weak self] in
                     self?.dismiss(animated: true)
-                })], animated: true)
+                })
+                closeButton.tintColor = NCBrandColor.shared.iconImageColor
+                navigationItem.setLeftBarButtonItems([closeButton], animated: true)
             }
         }
 
@@ -621,6 +631,20 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func setNavigationRightItems() {
+        if isSearchingMode {
+            let cancelButton = UIBarButtonItem()
+            cancelButton.title = NSLocalizedString("_cancel_", comment: "")
+            cancelButton.target = self
+            cancelButton.action = #selector(cancelSearchButtonTapped)
+            navigationItem.rightBarButtonItem = cancelButton
+            return
+        }
+        
+        if layoutKey == NCGlobal.shared.layoutViewFiles {
+            navigationItem.rightBarButtonItems = [createAccountButton()]
+            return
+        }
+
         guard layoutKey != NCGlobal.shared.layoutViewTransfers else { return }
         let isTabBarHidden = self.tabBarController?.tabBar.isHidden ?? true
         let isTabBarSelectHidden = tabBarSelect.isHidden()
@@ -738,6 +762,62 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             self.tabBarController?.tabBar.isHidden = true
         }
     }
+    
+    private func createAccountButton() -> UIBarButtonItem {
+        let activeAccount = NCManageDatabase.shared.getActiveAccount()
+        let image = utility.loadUserImage(for: appDelegate.user, displayName: activeAccount?.displayName, userBaseUrl: appDelegate)
+        let accountButton = AccountSwitcherButton(type: .custom)
+
+        accountButton.setImage(image, for: .normal)
+        accountButton.setImage(image, for: .highlighted)
+        accountButton.semanticContentAttribute = .forceLeftToRight
+        accountButton.sizeToFit()
+
+        let accounts = NCManageDatabase.shared.getAllAccountOrderAlias()
+
+        if !accounts.isEmpty, !NCBrandOptions.shared.disable_multiaccount, !NCBrandOptions.shared.disable_manage_account {
+            let accountActions: [UIAction] = accounts.map { account in
+                let image = utility.loadUserImage(for: account.user, displayName: account.displayName, userBaseUrl: account)
+
+                var name: String = ""
+                var url: String = ""
+
+                if account.alias.isEmpty {
+                    name = account.displayName
+                    url = (URL(string: account.urlBase)?.host ?? "")
+                } else {
+                    name = account.alias
+                }
+
+                let action = UIAction(title: name, image: image, state: account.active ? .on : .off) { _ in
+                    if !account.active {
+                        self.appDelegate.changeAccount(account.account, userProfile: nil)
+                        self.setEditMode(false)
+                    }
+                }
+
+                action.subtitle = url
+
+                return action
+            }
+
+            let addAccountAction = UIAction(title: NSLocalizedString("_add_account_", comment: ""), image: utility.loadImage(named: "person.crop.circle.badge.plus", colors: NCBrandColor.shared.iconImageMultiColors)) { _ in
+                self.appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
+            }
+
+            let addAccountSubmenu = UIMenu(title: "", options: .displayInline, children: [addAccountAction])
+
+            let menu = UIMenu(children: accountActions + [addAccountSubmenu])
+
+            accountButton.menu = menu
+            accountButton.showsMenuAsPrimaryAction = true
+
+            accountButton.onMenuOpened = {
+                self.dismissTip()
+            }
+        }
+        return UIBarButtonItem(customView: accountButton)
+    }
 
     func getNavigationTitle() -> String {
 
@@ -772,6 +852,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.collectionView.reloadData()
         // TIP
         dismissTip()
+        setNavigationLeftItems()
+        setNavigationRightItems()
     }
 
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
@@ -779,11 +861,21 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             reloadDataSourceNetwork()
         }
     }
-
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+    
+    @objc func cancelSearchButtonTapped() {
+        searchController?.searchBar.text = nil
+        searchController?.searchBar.resignFirstResponder()
+        searchController?.dismiss(animated: true, completion: { [weak self] in
+            self?.onSearchCancelled()
+        })
+    }
+    
+    func onSearchCancelled() {
+        self.isSearchingMode = false
+        self.setNavigationLeftItems()
+        self.setNavigationRightItems()
         DispatchQueue.global().async {
             NCNetworking.shared.cancelUnifiedSearchFiles()
-            self.isSearchingMode = false
             self.literalSearch = ""
             self.providers?.removeAll()
             self.dataSource.clearDataSource()

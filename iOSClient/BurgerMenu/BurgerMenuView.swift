@@ -30,7 +30,7 @@ struct BurgerMenuView: View {
                                 Image(systemName: "chevron.backward")
                                 Text(NSLocalizedString("_back_", comment: ""))
                             }
-                            .foregroundStyle(Color(UIColor.label))
+                            .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
                         })
                         BurgerMenuViewButton(image: Image(systemName: "clock"),
                                              title: NSLocalizedString("_recent_", 
