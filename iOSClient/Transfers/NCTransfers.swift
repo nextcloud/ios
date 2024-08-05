@@ -68,37 +68,30 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     // MARK: - NotificationCenter
 
     override func downloadStartFile(_ notification: NSNotification) {
-
         notificationReloadDataSource += 1
     }
 
     override func downloadedFile(_ notification: NSNotification) {
-
         notificationReloadDataSource += 1
     }
 
     override func downloadCancelFile(_ notification: NSNotification) {
-
         reloadDataSource()
     }
 
     override func uploadStartFile(_ notification: NSNotification) {
-
         notificationReloadDataSource += 1
     }
 
     override func uploadedFile(_ notification: NSNotification) {
-
         notificationReloadDataSource += 1
     }
 
     override func uploadedLivePhoto(_ notification: NSNotification) {
-
         notificationReloadDataSource += 1
     }
 
     override func uploadCancelFile(_ notification: NSNotification) {
-
         reloadDataSource()
     }
 
@@ -113,7 +106,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     }
 
     override func longPressMoreListItem(with objectId: String, namedButtonMore: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
-
         if gestureRecognizer.state != .began { return }
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .alert)
 
@@ -129,7 +121,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     }
 
     override func longPressListItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
-
         if gestureRecognizer.state != .began { return }
 
         if let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId) {
@@ -145,12 +136,11 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     override func longPressCollecationView(_ gestureRecognizer: UILongPressGestureRecognizer) { }
 
     @objc func startTask(_ notification: Any) {
-
         guard let metadata = metadataTemp,
               let hudView = self.tabBarController?.view,
               NCDomain.shared.getActiveDomain().account == metadata.account else { return }
-
         let cameraRoll = NCCameraRoll()
+
         cameraRoll.extractCameraRoll(from: metadata) { metadatas in
             for metadata in metadatas {
                 if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusUploading) {
@@ -162,7 +152,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     }
 
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
-
         if action != #selector(startTask(_:)) { return false }
         guard let metadata = metadataTemp else { return false }
         if metadata.isDirectoryE2EE { return false }
