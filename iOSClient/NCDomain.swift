@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import UIKit
 
 public class NCDomain: NSObject {
     static let shared = NCDomain()
@@ -31,7 +32,7 @@ public class NCDomain: NSObject {
         var urlBase: String
         var user: String
         var userId: String
-        var sceneIdentifier: String
+        var scene: UIScene? = nil
     }
     private var domain: ThreadSafeArray<Domain> = ThreadSafeArray()
     private var activeTableAccount = tableAccount()
@@ -40,18 +41,15 @@ public class NCDomain: NSObject {
     ///
     public func appendDomain(account: String, urlBase: String, user: String, userId: String, sceneIdentifier: String) {
         if self.domain.filter({ $0.account == account }).first != nil {
-            return updateDomain(account, userId: userId, sceneIdentifier: sceneIdentifier)
+            return updateDomain(account, userId: userId)
         }
-        self.domain.append(Domain(account: account, urlBase: urlBase, user: user, userId: userId, sceneIdentifier: sceneIdentifier))
+        self.domain.append(Domain(account: account, urlBase: urlBase, user: user, userId: userId))
     }
 
-    public func updateDomain(_ account: String, userId: String? = nil, sceneIdentifier: String? = nil) {
+    public func updateDomain(_ account: String, userId: String? = nil) {
         guard var domain = self.domain.filter({ $0.account == account }).first else { return }
         if let userId {
             domain.userId = userId
-        }
-        if let sceneIdentifier {
-            domain.sceneIdentifier = sceneIdentifier
         }
     }
 
@@ -63,7 +61,7 @@ public class NCDomain: NSObject {
         if let domain = self.domain.filter({ $0.account == account }).first {
             return domain
         }
-        return Domain(account: "", urlBase: "", user: "", userId: "", sceneIdentifier: "")
+        return Domain(account: "", urlBase: "", user: "", userId: "")
     }
 
     /// ACTIVE DOMAIN
@@ -72,7 +70,7 @@ public class NCDomain: NSObject {
         if let domain = self.domain.filter({ $0.account == self.activeTableAccount.account }).first {
             return domain
         }
-        return Domain(account: "", urlBase: "", user: "", userId: "", sceneIdentifier: "")
+        return Domain(account: "", urlBase: "", user: "", userId: "")
     }
 
     public func isActiveDomainValid() -> Bool {

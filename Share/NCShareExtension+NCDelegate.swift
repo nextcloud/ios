@@ -63,7 +63,7 @@ extension NCShareExtension: NCAccountRequestDelegate {
             return
         }
         self.activeAccount = activeAccount
-        let domain = NCDomain.Domain(account: self.activeAccount.account, urlBase: self.activeAccount.urlBase, user: self.activeAccount.user, userId: self.activeAccount.userId, sceneIdentifier: "")
+        let domain = NCDomain.Domain(account: self.activeAccount.account, urlBase: self.activeAccount.urlBase, user: self.activeAccount.user, userId: self.activeAccount.userId)
 
         // CAPABILITIES
         NCManageDatabase.shared.setCapabilities(account: account)

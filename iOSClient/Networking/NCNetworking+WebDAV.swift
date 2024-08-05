@@ -583,7 +583,7 @@ extension NCNetworking {
 
     private func favoriteMetadataPlain(_ metadata: tableMetadata,
                                        completion: @escaping (_ error: NKError) -> Void) {
-        let domain = NCDomain.Domain(account: metadata.account, urlBase: metadata.urlBase, user: metadata.user, userId: metadata.userId, sceneIdentifier: "")
+        let domain = NCDomain.Domain(account: metadata.account, urlBase: metadata.urlBase, user: metadata.user, userId: metadata.userId)
         let fileName = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, domain: domain)
         let favorite = !metadata.favorite
         let ocId = metadata.ocId
