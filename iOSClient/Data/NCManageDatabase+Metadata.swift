@@ -254,7 +254,7 @@ extension tableMetadata {
     }
 
     @objc var isDirectoryE2EE: Bool {
-        let domain = NCDomain.Domain(account: account, urlBase: urlBase, user: user, userId: userId, sceneIdentifier: "")
+        let domain = NCDomain.Domain(account: account, urlBase: urlBase, user: user, userId: userId)
         return NCUtilityFileSystem().isDirectoryE2EE(domain: domain, serverUrl: serverUrl)
     }
 

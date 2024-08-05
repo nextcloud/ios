@@ -207,7 +207,7 @@ class NCUtilityFileSystem: NSObject {
     }
 
     func isDirectoryE2EE(file: NKFile) -> Bool {
-        let domain = NCDomain.Domain(account: file.account, urlBase: file.urlBase, user: file.user, userId: file.userId, sceneIdentifier: "")
+        let domain = NCDomain.Domain(account: file.account, urlBase: file.urlBase, user: file.user, userId: file.userId)
         return isDirectoryE2EE(domain: domain, serverUrl: file.serverUrl)
     }
 
