@@ -183,7 +183,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     for account in accounts {
                         let urlBase = URL(string: account.urlBase)
                         if url.contains(urlBase?.host ?? "") && userId == account.userId {
-                            NCAccount().changeAccount(account.account, userProfile: nil) { }
+                            NCAccount().changeAccount(account.account, userProfile: nil, sceneIdentifier: sceneIdentifier) { }
                             return account
                         }
                     }

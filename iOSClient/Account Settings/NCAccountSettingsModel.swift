@@ -168,7 +168,6 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
             /// Change active account
             timerChangeAccount?.invalidate()
             timerChangeAccount = Timer.scheduledTimer(timeInterval: 1.5, target: self, selector: #selector(changeAccount), userInfo: nil, repeats: false)
-
         }
     }
 
