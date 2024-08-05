@@ -82,8 +82,7 @@ class fileProviderData: NSObject {
             NCDomain.shared.appendDomain(account: activeTableAccount.account,
                                          urlBase: activeTableAccount.urlBase,
                                          user: activeTableAccount.user,
-                                         userId: activeTableAccount.userId,
-                                         sceneIdentifier: "")
+                                         userId: activeTableAccount.userId)
 
             NextcloudKit.shared.setup(delegate: NCNetworking.shared)
             NextcloudKit.shared.appendAccount(activeTableAccount.account,

@@ -64,6 +64,7 @@ class NCAccount: NSObject {
 
     func changeAccount(_ account: String,
                        userProfile: NKUserProfile?,
+                       sceneIdentifier: String? = nil,
                        completion: () -> Void) {
         let previusActiveAccount = NCDomain.shared.getActiveDomain().account
         guard let tableActiveAccount = NCManageDatabase.shared.setAccountActive(account) else { return completion() }
@@ -91,8 +92,8 @@ class NCAccount: NSObject {
         NCDomain.shared.appendDomain(account: account,
                                      urlBase: tableActiveAccount.urlBase,
                                      user: tableActiveAccount.user,
-                                     userId: tableActiveAccount.userId,
-                                     sceneIdentifier: "")
+                                     userId: tableActiveAccount.userId)
+        NCDomain.shared.setSceneIdentifier(account: account, sceneIdentifier: sceneIdentifier)
 
         NextcloudKit.shared.deleteCookieStorageForAccount(previusActiveAccount)
         NextcloudKit.shared.updateAccount(previusActiveAccount,

@@ -103,8 +103,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NCDomain.shared.appendDomain(account: activeTableAccount.account,
                                          urlBase: activeTableAccount.urlBase,
                                          user: activeTableAccount.user,
-                                         userId: activeTableAccount.userId,
-                                         sceneIdentifier: "")
+                                         userId: activeTableAccount.userId)
 
             NextcloudKit.shared.appendAccount(activeTableAccount.account,
                                               urlBase: activeTableAccount.urlBase,
