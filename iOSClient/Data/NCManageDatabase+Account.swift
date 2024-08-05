@@ -96,7 +96,7 @@ extension NCManageDatabase {
                 tableAccount.userId = userId
                 realm.add(tableAccount, update: .all)
             }
-            NCDomain.shared.appendDomain(account: account, urlBase: urlBase, user: user, userId: userId, sceneIdentifier: "")
+            NCDomain.shared.appendDomain(account: account, urlBase: urlBase, user: user, userId: userId)
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
