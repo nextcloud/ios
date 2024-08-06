@@ -91,7 +91,7 @@ extension NCManageDatabase {
             let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
             for windowScene in windowScenes {
                 if let controller = windowScene.keyWindow?.rootViewController as? NCMainTabBarController {
-                    controller.filesServerUrl.removeValue(forKey: serverUrl)
+                    controller.navigationCollectionViewCommon.remove(where: { $0.serverUrl == serverUrl})
                 }
             }
         }

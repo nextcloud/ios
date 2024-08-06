@@ -484,7 +484,6 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
               let navigationController = controller.viewControllers?.first as? UINavigationController
         else { return }
         var serverUrlPush = self.utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-        let filesServerUrl = controller.filesServerUrl
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             navigationController.popToRootViewController(animated: false)
@@ -504,7 +503,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 guard let dir = subDirs.first else { return }
                 serverUrlPush = serverUrlPush + "/" + dir
 
-                if let viewController = filesServerUrl[serverUrlPush], viewController.isViewLoaded {
+                if let viewController = controller.navigationCollectionViewCommon.first(where: { $0.navigationController == navigationController && $0.serverUrl == serverUrlPush})?.viewController as? NCFiles, viewController.isViewLoaded {
                     viewController.fileNameBlink = fileNameBlink
                     viewController.fileNameOpen = fileNameOpen
                     navigationController.pushViewController(viewController, animated: false)
@@ -514,7 +513,9 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                         viewController.serverUrl = serverUrlPush
                         viewController.titleCurrentFolder = String(dir)
                         viewController.navigationItem.backButtonTitle = viewController.titleCurrentFolder
-                        filesServerUrl[serverUrlPush] = viewController
+
+                        controller.navigationCollectionViewCommon.append(NavigationCollectionViewCommon(serverUrl: serverUrlPush, navigationController: navigationController, viewController: viewController))
+
                         if serverUrlPush == serverUrl {
                             viewController.fileNameBlink = fileNameBlink
                             viewController.fileNameOpen = fileNameOpen

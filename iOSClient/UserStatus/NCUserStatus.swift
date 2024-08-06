@@ -71,7 +71,6 @@ class NCUserStatus: UIViewController {
     private let borderColorButton: CGColor = NCBrandColor.shared.brandElement.cgColor
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
-
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
