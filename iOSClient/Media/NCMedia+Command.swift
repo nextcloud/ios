@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import UIKit
 import NextcloudKit
 
 extension NCMedia {
@@ -137,8 +138,10 @@ extension NCMedia {
         let viewLayoutMenu = UIAction(title: layoutTitle, image: layoutImage) { _ in
             if layout == NCGlobal.shared.mediaLayoutRatio {
                 NCManageDatabase.shared.setLayoutForView(account: self.appDelegate.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", layout: NCGlobal.shared.mediaLayoutSquare)
+                self.layoutType = NCGlobal.shared.mediaLayoutSquare
             } else {
                 NCManageDatabase.shared.setLayoutForView(account: self.appDelegate.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", layout: NCGlobal.shared.mediaLayoutRatio)
+                self.layoutType = NCGlobal.shared.mediaLayoutRatio
             }
             self.createMenu()
             self.collectionViewReloadData()

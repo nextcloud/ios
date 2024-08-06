@@ -37,6 +37,7 @@ class NCMedia: UIViewController {
     @IBOutlet weak var gradientView: UIView!
 
     let layout = NCMediaLayout()
+    var layoutType = NCGlobal.shared.mediaLayoutRatio
     var activeAccount = tableAccount()
     var documentPickerViewController: NCDocumentPickerViewController?
     var tabBarSelect: NCMediaSelectTabBar!
@@ -73,6 +74,7 @@ class NCMedia: UIViewController {
         super.viewDidLoad()
 
         view.backgroundColor = .systemBackground
+        activeAccount = NCManageDatabase.shared.getActiveAccount() ?? tableAccount()
 
         collectionView.register(UINib(nibName: "NCSectionFirstHeaderEmptyData", bundle: nil), forSupplementaryViewOfKind: mediaSectionHeader, withReuseIdentifier: "sectionFirstHeaderEmptyData")
         collectionView.register(UINib(nibName: "NCGridMediaCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
@@ -88,6 +90,7 @@ class NCMedia: UIViewController {
 
         layout.sectionInset = UIEdgeInsets(top: 0, left: 2, bottom: 0, right: 2)
         collectionView.collectionViewLayout = layout
+        layoutType = NCManageDatabase.shared.getLayoutForView(account: activeAccount.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")?.layout ?? NCGlobal.shared.mediaLayoutRatio
 
         tabBarSelect = NCMediaSelectTabBar(tabBarController: self.tabBarController, delegate: self)
 
@@ -116,8 +119,6 @@ class NCMedia: UIViewController {
         gradient.colors = [UIColor.black.withAlphaComponent(UIAccessibility.isReduceTransparencyEnabled ? 0.8 : 0.4).cgColor, UIColor.clear.cgColor]
         gradientView.layer.insertSublayer(gradient, at: 0)
 
-        activeAccount = NCManageDatabase.shared.getActiveAccount() ?? tableAccount()
-
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
             DispatchQueue.global(qos: .userInteractive).async {
@@ -128,6 +129,7 @@ class NCMedia: UIViewController {
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
             self.activeAccount = NCManageDatabase.shared.getActiveAccount() ?? tableAccount()
+            self.layoutType = NCManageDatabase.shared.getLayoutForView(account: self.activeAccount.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")?.layout ?? NCGlobal.shared.mediaLayoutRatio
             if let metadatas = self.metadatas,
                let metadata = metadatas.first {
                 if metadata.account != self.activeAccount.account {
@@ -147,6 +149,7 @@ class NCMedia: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
 
         navigationController?.setMediaAppreance()
     }
