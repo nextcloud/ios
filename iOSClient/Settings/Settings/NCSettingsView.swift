@@ -156,7 +156,6 @@ struct NCSettingsView: View {
                     VStack(alignment: .leading) {
                         Text(NSLocalizedString("_calendar_contacts_footer_warning_", comment: ""))
                             .font(.system(size: 12))
-                            .foregroundStyle(.red)
                         Spacer()
                         Text(NSLocalizedString("_calendar_contacts_footer_", comment: ""))
                             .font(.system(size: 12))
