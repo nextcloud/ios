@@ -58,7 +58,6 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             pushMetadata(metadata)
         } else {
             let imageIcon = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
-
             if !metadata.isDirectoryE2EE && (metadata.isImage || metadata.isAudioOrVideo) {
                 var metadatas: [tableMetadata] = []
                 for metadata in dataSource.getMetadataSourceForAllSections() {
@@ -66,9 +65,8 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                         metadatas.append(metadata)
                     }
                 }
-                NCViewer().view(viewController: self, metadata: metadata, metadatas: metadatas, imageIcon: imageIcon)
-                return
-            } else if metadata.isAvailableEditorView || utilityFileSystem.fileProviderStorageExists(metadata) {
+                return NCViewer().view(viewController: self, metadata: metadata, metadatas: metadatas, imageIcon: imageIcon)
+            } else if (metadata.isAvailableEditorView || utilityFileSystem.fileProviderStorageExists(metadata)), !metadata.isPDF {
                 NCViewer().view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon)
             } else if NextcloudKit.shared.isNetworkReachable(),
                       let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
