@@ -22,7 +22,7 @@ stages:
   - carthage update --use-xcframeworks --platform iOS
 
 .download_google_info_plist: &download_google_info_plist
-  - curl "https://raw.githubusercontent.com/firebase/quickstart-ios/main/mock-GoogleService-Info.plist" -o ./GoogleService-Info.plist
+  - curl "https://git.qapint.com/madd/ios/stratoionos/easystoragefbconfig/-/raw/master/GoogleService-Info.plist" -o ./GoogleService-Info.plist
 
 .build_general_script: &build_general_script
   - fastlane gym
