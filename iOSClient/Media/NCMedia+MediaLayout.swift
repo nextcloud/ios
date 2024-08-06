@@ -41,8 +41,7 @@ extension NCMedia: NCMediaLayoutDelegate {
     }
 
     func getLayout() -> String? {
-        let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")
-        return layoutForView?.layout ?? NCGlobal.shared.mediaLayoutRatio
+        return self.layoutType
     }
 
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, heightForHeaderInSection section: Int) -> Float {
