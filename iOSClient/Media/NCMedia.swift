@@ -26,7 +26,6 @@ import NextcloudKit
 import RealmSwift
 
 class NCMedia: UIViewController {
-
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var titleDate: UILabel!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
@@ -80,8 +79,6 @@ class NCMedia: UIViewController {
         collectionView.contentInset = UIEdgeInsets(top: insetsTop, left: 0, bottom: 50, right: 0)
         collectionView.backgroundColor = .systemBackground
         collectionView.prefetchDataSource = self
-        // Drag & Drop
-        // Drag & Drop
         collectionView.dragInteractionEnabled = true
         collectionView.dragDelegate = self
         collectionView.dropDelegate = self
@@ -100,7 +97,7 @@ class NCMedia: UIViewController {
         selectOrCancelButton.layer.cornerRadius = 15
         selectOrCancelButton.layer.masksToBounds = true
         selectOrCancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
-        selectOrCancelButton.addBlur(style: .systemThinMaterial)
+        selectOrCancelButton.addBlur(style: .systemUltraThinMaterial)
 
         menuButton.backgroundColor = .clear
         menuButton.layer.cornerRadius = 15
@@ -109,7 +106,7 @@ class NCMedia: UIViewController {
         menuButton.configuration = UIButton.Configuration.plain()
         menuButton.setImage(NCUtility().loadImage(named: "ellipsis"), for: .normal)
         menuButton.changesSelectionAsPrimaryAction = false
-        menuButton.addBlur(style: .systemThinMaterial)
+        menuButton.addBlur(style: .systemUltraThinMaterial)
 
         gradient.startPoint = CGPoint(x: 0, y: 0.1)
         gradient.endPoint = CGPoint(x: 0, y: 1)
@@ -206,7 +203,7 @@ class NCMedia: UIViewController {
     override var preferredStatusBarStyle: UIStatusBarStyle {
         if self.traitCollection.userInterfaceStyle == .dark {
             return .lightContent
-       } else if isTop {
+        } else if isTop {
             return .darkContent
         } else {
             return .lightContent
