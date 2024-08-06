@@ -277,7 +277,9 @@ extension tableMetadata {
     }
 
     var isAvailableEditorView: Bool {
-        guard (classFile == NKCommon.TypeClassFile.document.rawValue) && NextcloudKit.shared.isNetworkReachable() else { return false }
+        guard !isPDF,
+              classFile == NKCommon.TypeClassFile.document.rawValue,
+              NextcloudKit.shared.isNetworkReachable() else { return false }
         let utility = NCUtility()
         let directEditingEditors = utility.editorsDirectEditing(account: account, contentType: contentType)
         let richDocumentEditor = utility.isTypeFileRichDocument(self)
