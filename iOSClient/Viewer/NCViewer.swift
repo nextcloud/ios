@@ -83,7 +83,7 @@ class NCViewer: NSObject {
             // Set Last Opening Date
             NCManageDatabase.shared.setLastOpeningDate(metadata: metadata)
             // PDF
-            if metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf" {
+            if metadata.isPDF {
                 if let navigationController = viewController.navigationController,
                    let viewController: NCViewerPDF = UIStoryboard(name: "NCViewerPDF", bundle: nil).instantiateInitialViewController() as? NCViewerPDF {
                     viewController.metadata = metadata

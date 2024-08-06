@@ -206,7 +206,7 @@ extension tableMetadata {
         if directory || isDocumentViewableOnly || isDirectoryE2EE {
             return false
         }
-        return contentType == "com.adobe.pdf" || contentType == "application/pdf" || classFile == NKCommon.TypeClassFile.image.rawValue
+        return isPDF || classFile == NKCommon.TypeClassFile.image.rawValue
     }
 
     var isDeletable: Bool {
