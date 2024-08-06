@@ -155,7 +155,7 @@ class NCMainTabBar: UITabBar {
         // Favorite
         if let item = items?[4] {
             item.title = NSLocalizedString("_favorites_", comment: "")
-            item.image = UIImage(systemName: "star.fill")
+            item.image = UIImage(named: "favorites")
             item.selectedImage = item.image
         }
 
