@@ -206,7 +206,7 @@ extension tableMetadata {
         if directory || isDocumentViewableOnly || isDirectoryE2EE {
             return false
         }
-        return isPDF || classFile == NKCommon.TypeClassFile.image.rawValue
+        return isPDF || isImage
     }
 
     var isDeletable: Bool {
