@@ -1256,10 +1256,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - Header size
 
     func isHeaderMenuTransferViewEnabled() -> Bool {
-        if headerMenuTransferView,
-           let metadata = NCManageDatabase.shared.getMetadataFromOcId(NCNetworking.shared.transferInForegorund?.ocId),
-           metadata.isTransferInForeground {
-            return true
+        if headerMenuTransferView {
+            return NCManageDatabase.shared.getResultMetadataFromOcId(NCNetworking.shared.transferInForegorund?.ocId)?.isTransferInForeground ?? false
         }
         return false
     }
