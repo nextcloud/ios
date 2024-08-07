@@ -607,7 +607,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 navigationItem.setLeftBarButtonItems([burgerMenuItem], animated: true)
             }
         } else if (layoutKey == NCGlobal.shared.layoutViewRecent) ||
-                    (layoutKey == NCGlobal.shared.layoutViewTrash) ||
                     (layoutKey == NCGlobal.shared.layoutViewOffline) {
             navigationItem.leftItemsSupplementBackButton = true
             if navigationController?.viewControllers.count == 1 {
