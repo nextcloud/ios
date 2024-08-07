@@ -99,25 +99,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NCManageDatabase.shared.setCapabilities(account: activeTableAccount.account)
             NCBrandColor.shared.settingThemingColor(account: activeTableAccount.account)
 
-            /* -- SINGLE DOMAIN -- */
-            NCDomain.shared.appendDomain(account: activeTableAccount.account,
-                                         urlBase: activeTableAccount.urlBase,
-                                         user: activeTableAccount.user,
-                                         userId: activeTableAccount.userId)
-
-            NextcloudKit.shared.appendAccount(activeTableAccount.account,
-                                              urlBase: activeTableAccount.urlBase,
-                                              user: activeTableAccount.user,
-                                              userId: activeTableAccount.userId,
-                                              password: NCKeychain().getPassword(account: activeTableAccount.account),
-                                              userAgent: userAgent,
-                                              nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
-                                              groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
-            /* -- SINGLE DOMAIN -- */
-
-            /*
             for account in NCManageDatabase.shared.getAllAccount() {
-                NCDomain.shared.appendDomain(account: account.account, urlBase: account.urlBase, user: account.user, userId: account.userId, sceneIdentifier: "")
+                NCDomain.shared.appendDomain(account: account.account, urlBase: account.urlBase, user: account.user, userId: account.userId)
                 NextcloudKit.shared.appendAccount(account.account,
                                                   urlBase: account.urlBase,
                                                   user: account.user,
@@ -127,7 +110,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                                                   nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
                                                   groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
             }
-            */
 
             DispatchQueue.global().async {
                 let domain = NCDomain.shared.getActiveDomain()
