@@ -109,9 +109,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             searchController?.delegate = self
             searchController?.searchBar.delegate = self
             searchController?.searchBar.autocapitalizationType = .none
-            searchController?.hidesNavigationBarDuringPresentation = false
-            searchController?.automaticallyShowsCancelButton = false
-            navigationItem.titleView = searchController?.searchBar
+            navigationItem.searchController = searchController
+            navigationItem.hidesSearchBarWhenScrolling = true
+            if #available(iOS 16.0, *) {
+                navigationItem.preferredSearchBarPlacement = .inline
+            }
         }
 
         // Cell
@@ -157,7 +159,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         super.viewWillAppear(animated)
 
         navigationController?.setNavigationBarAppearance()
-        navigationController?.navigationBar.prefersLargeTitles = layoutKey != NCGlobal.shared.layoutViewFiles
+        navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.setNavigationBarHidden(false, animated: true)
         navigationItem.title = titleCurrentFolder
 
@@ -588,7 +590,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - Layout
 
     func setNavigationLeftItems() {
-        if isSearchingMode {
+        if isSearchingMode && (UIDevice.current.userInterfaceIdiom == .phone) {
             navigationItem.leftBarButtonItems = nil
             return
         }
@@ -631,17 +633,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func setNavigationRightItems() {
-        if isSearchingMode {
-            let cancelButton = UIBarButtonItem()
-            cancelButton.title = NSLocalizedString("_cancel_", comment: "")
-            cancelButton.target = self
-            cancelButton.action = #selector(cancelSearchButtonTapped)
-            navigationItem.rightBarButtonItem = cancelButton
-            return
-        }
-        
-        if layoutKey == NCGlobal.shared.layoutViewFiles {
-            navigationItem.rightBarButtonItems = [createAccountButton()]
+        if isSearchingMode && (UIDevice.current.userInterfaceIdiom == .phone) {
+            navigationItem.rightBarButtonItems = nil
             return
         }
 
@@ -750,7 +743,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     }
                 }
                 notification.tintColor = NCBrandColor.shared.iconImageColor
-                navigationItem.rightBarButtonItems = [menuButton, notification]
+                navigationItem.rightBarButtonItems = [createAccountButton(), menuButton, notification]
             } else {
                 navigationItem.rightBarButtonItems = [menuButton]
             }
@@ -852,8 +845,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.collectionView.reloadData()
         // TIP
         dismissTip()
-        setNavigationLeftItems()
-        setNavigationRightItems()
     }
 
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
@@ -861,26 +852,26 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             reloadDataSourceNetwork()
         }
     }
-    
-    @objc func cancelSearchButtonTapped() {
-        searchController?.searchBar.text = nil
-        searchController?.searchBar.resignFirstResponder()
-        searchController?.dismiss(animated: true, completion: { [weak self] in
-            self?.onSearchCancelled()
-        })
-    }
-    
-    func onSearchCancelled() {
-        self.isSearchingMode = false
-        self.setNavigationLeftItems()
-        self.setNavigationRightItems()
+
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         DispatchQueue.global().async {
             NCNetworking.shared.cancelUnifiedSearchFiles()
+            self.isSearchingMode = false
             self.literalSearch = ""
             self.providers?.removeAll()
             self.dataSource.clearDataSource()
             self.reloadDataSource()
         }
+    }
+    
+    func willPresentSearchController(_ searchController: UISearchController) {
+        setNavigationLeftItems()
+        setNavigationRightItems()
+    }
+    
+    func didDismissSearchController(_ searchController: UISearchController) {
+        setNavigationLeftItems()
+        setNavigationRightItems()
     }
 
     // MARK: - TAP EVENT
