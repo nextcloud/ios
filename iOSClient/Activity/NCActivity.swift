@@ -82,7 +82,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
         commentView = Bundle.main.loadNibNamed("NCActivityCommentView", owner: self, options: nil)?.first as? NCActivityCommentView
         commentView?.setup(urlBase: appDelegate, account: activeAccount) { newComment in
             guard let newComment = newComment, !newComment.isEmpty, let metadata = self.metadata else { return }
-            NextcloudKit.shared.putComments(fileId: metadata.fileId, message: newComment) { _, error in
+            NextcloudKit.shared.putComments(fileId: metadata.fileId, message: newComment, account: self.appDelegate.account) { _, error in
                 if error == .success {
                     self.commentView?.newCommentField.text?.removeAll()
                     self.loadComments()
@@ -264,7 +264,7 @@ extension NCActivity: UITableViewDataSource {
                     cell.icon.image = image.withTintColor(NCBrandColor.shared.textColor, renderingMode: .alwaysOriginal)
                 }
             } else {
-                NextcloudKit.shared.downloadContent(serverUrl: activity.icon) { _, data, error in
+                NextcloudKit.shared.downloadContent(serverUrl: activity.icon, account: appDelegate.account) { _, data, error in
                     if error == .success {
                         do {
                             try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
@@ -393,7 +393,7 @@ extension NCActivity {
         guard showComments, let metadata = metadata else { return }
         disptachGroup?.enter()
 
-        NextcloudKit.shared.getComments(fileId: metadata.fileId) { _, comments, _, error in
+        NextcloudKit.shared.getComments(fileId: metadata.fileId, account: metadata.account) { _, comments, _, error in
             if error == .success, let comments = comments {
                 NCManageDatabase.shared.addComments(comments, account: metadata.account, objectId: metadata.fileId)
             } else if error.errorCode != NCGlobal.shared.errorResourceNotFound {
@@ -422,7 +422,8 @@ extension NCActivity {
             limit: 1,
             objectId: nil,
             objectType: objectType,
-            previews: true) { task in
+            previews: true,
+            account: appDelegate.account) { task in
                 self.dataSourceTask = task
             } completion: { account, _, activityFirstKnown, activityLastGiven, _, error in
                 defer { disptachGroup.leave() }
@@ -450,7 +451,8 @@ extension NCActivity {
             limit: min(limit, 200),
             objectId: metadata?.fileId,
             objectType: objectType,
-            previews: true) { task in
+            previews: true,
+            account: appDelegate.account) { task in
                 self.dataSourceTask = task
             } completion: { account, activities, activityFirstKnown, activityLastGiven, _, error in
                 defer { disptachGroup.leave() }
@@ -507,7 +509,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
                     alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
                         guard let message = alert.textFields?.first?.text, !message.isEmpty else { return }
 
-                        NextcloudKit.shared.updateComments(fileId: metadata.fileId, messageId: tableComments.messageId, message: message) { _, error in
+                        NextcloudKit.shared.updateComments(fileId: metadata.fileId, messageId: tableComments.messageId, message: message, account: self.appDelegate.account) { _, error in
                             if error == .success {
                                 self.loadComments()
                             } else {
@@ -529,7 +531,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
                 action: { _ in
                     guard let metadata = self.metadata, let tableComments = tableComments else { return }
 
-                    NextcloudKit.shared.deleteComments(fileId: metadata.fileId, messageId: tableComments.messageId) { _, error in
+                    NextcloudKit.shared.deleteComments(fileId: metadata.fileId, messageId: tableComments.messageId, account: metadata.account) { _, error in
                         if error == .success {
                             self.loadComments()
                         } else {

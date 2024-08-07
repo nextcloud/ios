@@ -38,6 +38,7 @@ extension NCNetworking {
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
                                              depth: "infinity",
                                              showHiddenFiles: NCKeychain().showHiddenFiles,
+                                             account: account,
                                              options: options) { resultAccount, files, _, error in
             guard account == resultAccount else { return }
             var metadatasDirectory: [tableMetadata] = []

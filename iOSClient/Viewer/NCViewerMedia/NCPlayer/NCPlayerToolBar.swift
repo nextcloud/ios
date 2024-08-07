@@ -492,7 +492,7 @@ extension NCPlayerToolBar: NCSelectDelegate {
                 }
                 hud.show(in: viewerMediaPage.view)
 
-                NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { request in
+                NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account ,requestHandler: { request in
                     downloadRequest = request
                 }, taskHandler: { _ in
                 }, progressHandler: { progress in

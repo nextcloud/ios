@@ -57,6 +57,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var listLayout = NCListLayout()
     var gridLayout = NCGridLayout()
     var mediaLayout = NCMediaLayout()
+    var layoutType = NCGlobal.shared.layoutList
     var literalSearch: String?
     var tabBarSelect: NCCollectionViewCommonSelectTabBar!
     var timerNotificationCenter: Timer?
@@ -171,10 +172,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl)
         if layoutForView?.layout == NCGlobal.shared.layoutList {
             collectionView?.collectionViewLayout = listLayout
+            self.layoutType = NCGlobal.shared.layoutList
         } else if layoutForView?.layout == NCGlobal.shared.layoutGrid {
             collectionView?.collectionViewLayout = gridLayout
-        } else if layoutForView?.layout == NCGlobal.shared.layoutPhotoRatio || layoutForView?.layout == NCGlobal.shared.layoutPhotoSquare {
+            self.layoutType = NCGlobal.shared.layoutGrid
+        } else if layoutForView?.layout == NCGlobal.shared.layoutPhotoRatio {
             collectionView?.collectionViewLayout = mediaLayout
+            self.layoutType = NCGlobal.shared.layoutPhotoRatio
+        } else if layoutForView?.layout == NCGlobal.shared.layoutPhotoSquare {
+            collectionView?.collectionViewLayout = mediaLayout
+            self.layoutType = NCGlobal.shared.layoutPhotoSquare
         }
 
         // FIXME: iPAD PDF landscape mode iOS 16
@@ -700,6 +707,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: utility.loadImage(named: "list.bullet"), state: layoutForView.layout == NCGlobal.shared.layoutList ? .on : .off) { _ in
                 layoutForView.layout = NCGlobal.shared.layoutList
                 self.layoutForView = NCManageDatabase.shared.setLayoutForView(layoutForView: layoutForView)
+                self.layoutType = NCGlobal.shared.layoutList
 
                 self.collectionView.reloadData()
                 self.collectionView.collectionViewLayout.invalidateLayout()
@@ -711,6 +719,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             let grid = UIAction(title: NSLocalizedString("_icons_", comment: ""), image: utility.loadImage(named: "square.grid.2x2"), state: layoutForView.layout == NCGlobal.shared.layoutGrid ? .on : .off) { _ in
                 layoutForView.layout = NCGlobal.shared.layoutGrid
                 self.layoutForView = NCManageDatabase.shared.setLayoutForView(layoutForView: layoutForView)
+                self.layoutType = NCGlobal.shared.layoutGrid
 
                 self.collectionView.reloadData()
                 self.collectionView.collectionViewLayout.invalidateLayout()
@@ -723,6 +732,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 UIAction(title: NSLocalizedString("_media_square_", comment: ""), image: utility.loadImage(named: "square.grid.3x3"), state: layoutForView.layout == NCGlobal.shared.layoutPhotoSquare ? .on : .off) { _ in
                     layoutForView.layout = NCGlobal.shared.layoutPhotoSquare
                     self.layoutForView = NCManageDatabase.shared.setLayoutForView(layoutForView: layoutForView)
+                    self.layoutType = NCGlobal.shared.layoutPhotoSquare
 
                     self.collectionView.reloadData()
                     self.collectionView.collectionViewLayout.invalidateLayout()
@@ -734,6 +744,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 UIAction(title: NSLocalizedString("_media_ratio_", comment: ""), image: utility.loadImage(named: "rectangle.grid.3x2"), state: layoutForView.layout == NCGlobal.shared.layoutPhotoRatio ? .on : .off) { _ in
                     layoutForView.layout = NCGlobal.shared.layoutPhotoRatio
                     self.layoutForView = NCManageDatabase.shared.setLayoutForView(layoutForView: layoutForView)
+                    self.layoutType = NCGlobal.shared.layoutPhotoRatio
 
                     self.collectionView.reloadData()
                     self.collectionView.collectionViewLayout.invalidateLayout()
@@ -1126,7 +1137,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func pasteFilesMenu() {
-        NCActionCenter.shared.pastePasteboard(serverUrl: serverUrl, hudView: tabBarController?.view)
+        NCActionCenter.shared.pastePasteboard(serverUrl: serverUrl, account: appDelegate.account, hudView: tabBarController?.view)
     }
 
     // MARK: - DataSource + NC Endpoint
@@ -1182,7 +1193,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.collectionView.reloadData()
             }
         } else {
-            NCNetworking.shared.searchFiles(urlBase: appDelegate, literal: literalSearch) { task in
+            NCNetworking.shared.searchFiles(urlBase: appDelegate, literal: literalSearch, account: appDelegate.account) { task in
                 self.dataSourceTask = task
                 self.collectionView.reloadData()
             } completion: { metadatas, error in
@@ -1223,10 +1234,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - Push metadata
 
     func pushMetadata(_ metadata: tableMetadata) {
-        guard let filesServerUrl = (tabBarController as? NCMainTabBarController)?.filesServerUrl else { return }
+        guard let navigationCollectionViewCommon = (tabBarController as? NCMainTabBarController)?.navigationCollectionViewCommon else { return }
         let serverUrlPush = utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
 
-        if let viewController = filesServerUrl[serverUrlPush], viewController.isViewLoaded {
+        if let viewController = navigationCollectionViewCommon.first(where: { $0.navigationController == self.navigationController && $0.serverUrl == serverUrlPush})?.viewController, viewController.isViewLoaded {
             navigationController?.pushViewController(viewController, animated: true)
         } else {
             if let viewController: NCFiles = UIStoryboard(name: "NCFiles", bundle: nil).instantiateInitialViewController() as? NCFiles {
@@ -1234,7 +1245,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 viewController.serverUrl = serverUrlPush
                 viewController.titlePreviusFolder = navigationItem.title
                 viewController.titleCurrentFolder = metadata.fileNameView
-                filesServerUrl[serverUrlPush] = viewController
+
+                navigationCollectionViewCommon.append(NavigationCollectionViewCommon(serverUrl: serverUrlPush, navigationController: self.navigationController, viewController: viewController))
+
                 navigationController?.pushViewController(viewController, animated: true)
             }
         }
@@ -1243,10 +1256,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - Header size
 
     func isHeaderMenuTransferViewEnabled() -> Bool {
-        if headerMenuTransferView,
-           let metadata = NCManageDatabase.shared.getMetadataFromOcId(NCNetworking.shared.transferInForegorund?.ocId),
-           metadata.isTransferInForeground {
-            return true
+        if headerMenuTransferView {
+            return NCManageDatabase.shared.getResultMetadataFromOcId(NCNetworking.shared.transferInForegorund?.ocId)?.isTransferInForeground ?? false
         }
         return false
     }

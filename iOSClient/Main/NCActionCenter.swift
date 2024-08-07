@@ -209,7 +209,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         }
         hud.show(in: hudView)
 
-        NextcloudKit.shared.getFileFromFileId(fileId: fileId) { account, file, _, error in
+        NextcloudKit.shared.getFileFromFileId(fileId: fileId, account: account) { account, file, _, error in
 
             hud.dismiss()
             if error != .success {
@@ -227,7 +227,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                     NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
                 } else {
                     hud.show(in: hudView)
-                    NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, requestHandler: { request in
+                    NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: account, requestHandler: { request in
                         downloadRequest = request
                     }, taskHandler: { _ in
                     }, progressHandler: { progress in
@@ -269,7 +269,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         var page = page
 
         NCActivityIndicator.shared.start(backgroundView: viewController.view)
-        NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, queue: .main) { _, metadata, error in
+        NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: metadata.account, queue: .main) { _, metadata, error in
 
             NCActivityIndicator.shared.stop()
 
@@ -428,12 +428,12 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     // MARK: - Copy & Paste
 
-    func pastePasteboard(serverUrl: String, hudView: UIView?) {
+    func pastePasteboard(serverUrl: String, account: String, hudView: UIView?) {
         var fractionCompleted: Float = 0
         let processor = ParallelWorker(n: 5, titleKey: "_uploading_", totalTasks: nil, hudView: hudView)
 
         func uploadPastePasteboard(fileName: String, serverUrlFileName: String, fileNameLocalPath: String, serverUrl: String, completion: @escaping () -> Void) {
-            NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath) { request in
+            NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: account) { request in
                 NCNetworking.shared.uploadRequest[fileNameLocalPath] = request
             } progressHandler: { progress in
                 if Float(progress.fractionCompleted) > fractionCompleted || fractionCompleted == 0 {
@@ -484,7 +484,6 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
               let navigationController = controller.viewControllers?.first as? UINavigationController
         else { return }
         var serverUrlPush = self.utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-        let filesServerUrl = controller.filesServerUrl
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             navigationController.popToRootViewController(animated: false)
@@ -504,7 +503,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 guard let dir = subDirs.first else { return }
                 serverUrlPush = serverUrlPush + "/" + dir
 
-                if let viewController = filesServerUrl[serverUrlPush], viewController.isViewLoaded {
+                if let viewController = controller.navigationCollectionViewCommon.first(where: { $0.navigationController == navigationController && $0.serverUrl == serverUrlPush})?.viewController as? NCFiles, viewController.isViewLoaded {
                     viewController.fileNameBlink = fileNameBlink
                     viewController.fileNameOpen = fileNameOpen
                     navigationController.pushViewController(viewController, animated: false)
@@ -514,7 +513,9 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                         viewController.serverUrl = serverUrlPush
                         viewController.titleCurrentFolder = String(dir)
                         viewController.navigationItem.backButtonTitle = viewController.titleCurrentFolder
-                        filesServerUrl[serverUrlPush] = viewController
+
+                        controller.navigationCollectionViewCommon.append(NavigationCollectionViewCommon(serverUrl: serverUrlPush, navigationController: navigationController, viewController: viewController))
+
                         if serverUrlPush == serverUrl {
                             viewController.fileNameBlink = fileNameBlink
                             viewController.fileNameOpen = fileNameOpen

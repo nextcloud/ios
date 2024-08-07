@@ -106,7 +106,7 @@ extension AppDelegate {
         actions.append(
             NCMenuAction(title: titleCreateFolder,
                          icon: imageCreateFolder, action: { _ in
-                             let alertController = UIAlertController.createFolder(serverUrl: serverUrl, urlBase: appDelegate, sceneIdentifier: controller.sceneIdentifier)
+                             let alertController = UIAlertController.createFolder(serverUrl: serverUrl, userBaseUrl: appDelegate, sceneIdentifier: controller.sceneIdentifier)
                              controller.present(alertController, animated: true, completion: nil)
                          }
                         )
@@ -118,7 +118,7 @@ extension AppDelegate {
                 NCMenuAction(title: NSLocalizedString("_create_folder_e2ee_", comment: ""),
                              icon: NCImageCache.images.folderEncrypted,
                              action: { _ in
-                                 let alertController = UIAlertController.createFolder(serverUrl: serverUrl, urlBase: appDelegate, markE2ee: true, sceneIdentifier: controller.sceneIdentifier)
+                                 let alertController = UIAlertController.createFolder(serverUrl: serverUrl, userBaseUrl: appDelegate, markE2ee: true, sceneIdentifier: controller.sceneIdentifier)
                                  controller.present(alertController, animated: true, completion: nil)
                              })
             )

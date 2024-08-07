@@ -152,7 +152,7 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
         set { user = newValue ?? "" }
     }
 
-    func setupCell(sharee: NKSharee, baseUrl: NCUserBaseUrl) {
+    func setupCell(sharee: NKSharee, userBaseUrl: NCUserBaseUrl) {
         let utility = NCUtility()
         imageItem.image = NCShareCommon().getImageShareType(shareType: sharee.shareType)
         imageShareeType.image = NCShareCommon().getImageShareType(shareType: sharee.shareType)
@@ -173,9 +173,9 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
         imageItem.image = utility.loadUserImage(
             for: sharee.shareWith,
                displayName: nil,
-               userBaseUrl: baseUrl)
+               userBaseUrl: userBaseUrl)
 
-        let fileName = baseUrl.userBaseUrl + "-" + sharee.shareWith + ".png"
+        let fileName = userBaseUrl.userBaseUrl + "-" + sharee.shareWith + ".png"
         if NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) == nil {
             let fileNameLocalPath = NCUtilityFileSystem().directoryUserData + "/" + fileName
             let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
@@ -185,7 +185,7 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
                 fileNameLocalPath: fileNameLocalPath,
                 sizeImage: NCGlobal.shared.avatarSize,
                 avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
-                etag: etag) { _, imageAvatar, _, etag, error in
+                etag: etag, account: userBaseUrl.account) { _, imageAvatar, _, etag, error in
 
                     if error == .success, let etag = etag, let imageAvatar = imageAvatar {
                         NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)

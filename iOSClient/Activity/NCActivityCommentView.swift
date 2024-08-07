@@ -55,6 +55,4 @@ extension NCActivityCommentView: UISearchBarDelegate {
         searchBar.resignFirstResponder()
         completionHandler?(searchBar.text)
     }
-
-    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) { }
 }
