@@ -37,6 +37,8 @@ public class NCDomain: NSObject {
     private var domain: ThreadSafeArray<Domain> = ThreadSafeArray()
     private var activeTableAccount = tableAccount()
 
+    override private init() {}
+
     /// DOMAIN
     ///
     public func appendDomain(account: String, urlBase: String, user: String, userId: String) {
