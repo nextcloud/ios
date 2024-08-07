@@ -67,12 +67,16 @@ class NCAccount: NSObject {
                        sceneIdentifier: String? = nil,
                        completion: () -> Void) {
         let previusActiveAccount = NCDomain.shared.getActiveDomain().account
-        guard let tableActiveAccount = NCManageDatabase.shared.setAccountActive(account) else { return completion() }
+        if NCManageDatabase.shared.setAccountActive(account) == nil {
+            return completion()
+        }
 
+        /*
         NCNetworking.shared.cancelAllQueue()
         NCNetworking.shared.cancelDataTask()
         NCNetworking.shared.cancelDownloadTasks()
         NCNetworking.shared.cancelUploadTasks()
+        */
 
         if account != previusActiveAccount {
             DispatchQueue.global().async {

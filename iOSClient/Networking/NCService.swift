@@ -56,6 +56,7 @@ class NCService: NSObject {
     // MARK: -
 
     func addInternalTypeIdentifier() {
+        // TODO: OLD compatibility InternalTypeIdentifier
         // txt
         NextcloudKit.shared.nkCommonInstance.addInternalTypeIdentifier(typeIdentifier: "text/plain", classFile: NKCommon.TypeClassFile.document.rawValue, editor: NCGlobal.shared.editorText, iconName: NKCommon.TypeIconFile.document.rawValue, name: "markdown")
 
