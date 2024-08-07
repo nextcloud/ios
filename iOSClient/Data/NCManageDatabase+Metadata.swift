@@ -206,7 +206,7 @@ extension tableMetadata {
         if directory || isDocumentViewableOnly || isDirectoryE2EE {
             return false
         }
-        return contentType == "com.adobe.pdf" || contentType == "application/pdf" || classFile == NKCommon.TypeClassFile.image.rawValue
+        return isPDF || isImage
     }
 
     var isDeletable: Bool {
@@ -277,7 +277,9 @@ extension tableMetadata {
     }
 
     var isAvailableEditorView: Bool {
-        guard (classFile == NKCommon.TypeClassFile.document.rawValue) && NextcloudKit.shared.isNetworkReachable() else { return false }
+        guard !isPDF,
+              classFile == NKCommon.TypeClassFile.document.rawValue,
+              NextcloudKit.shared.isNetworkReachable() else { return false }
         let utility = NCUtility()
         let directEditingEditors = utility.editorsDirectEditing(account: account, contentType: contentType)
         let richDocumentEditor = utility.isTypeFileRichDocument(self)
@@ -309,6 +311,10 @@ extension tableMetadata {
             return true
         }
         return false
+    }
+
+    var isPDF: Bool {
+        return (contentType == "application/pdf" || contentType == "com.adobe.pdf")
     }
 
     /// Returns false if the user is lokced out of the file. I.e. The file is locked but by somone else
@@ -831,6 +837,18 @@ extension NCManageDatabase {
             if let result = realm.objects(tableMetadata.self).filter("ocIdTemp == %@", ocId).first {
                 return tableMetadata(value: result)
             }
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
+        }
+        return nil
+    }
+
+    func getResultMetadataFromOcId(_ ocId: String?) -> tableMetadata? {
+        guard let ocId else { return nil }
+
+        do {
+            let realm = try Realm()
+            return realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
