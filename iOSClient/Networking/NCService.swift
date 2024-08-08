@@ -32,7 +32,8 @@ class NCService: NSObject {
     // MARK: -
 
     public func startRequestServicesServer(account: String) {
-        guard !account.isEmpty, UIApplication.shared.applicationState != .background else {
+        guard !account.isEmpty,
+              UIApplication.shared.applicationState != .background else {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Service not start request service server with the application in background")
             return
         }
