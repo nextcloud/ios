@@ -68,7 +68,7 @@ class NCShareLinkCell: UITableViewCell {
             }
 
             imageItem.image = NCUtility().loadImage(named: "link.circle.fill", colors: [NCBrandColor.shared.brandElement])
-            menuButton.setImage(NCUtility().loadImage(named: menuImageName, colors: [NCBrandColor.shared.iconImageColor]), for: .normal)
+            menuButton.setImage(NCUtility().loadImage(named: menuImageName, colors: [NCBrandColor.shared.brandElement]), for: .normal)
         }
 
         labelTitle.textColor = NCBrandColor.shared.textColor

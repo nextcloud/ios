@@ -102,7 +102,7 @@ extension NCMenuAction {
     static func deleteAction(selectedMetadatas: [tableMetadata], indexPaths: [IndexPath], metadataFolder: tableMetadata? = nil, viewController: UIViewController, order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
         var titleDelete = NSLocalizedString("_delete_", comment: "")
         var message = NSLocalizedString("_want_delete_", comment: "")
-        var icon = "trash"
+        var icon = "delete"
         var destructive = false
         var color = NCBrandColor.shared.iconImageColor
 
@@ -172,7 +172,10 @@ extension NCMenuAction {
     static func setAvailableOfflineAction(selectedMetadatas: [tableMetadata], isAnyOffline: Bool, viewController: UIViewController, order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
         NCMenuAction(
             title: isAnyOffline ? NSLocalizedString("_remove_available_offline_", comment: "") : NSLocalizedString("_set_available_offline_", comment: ""),
-            icon: NCUtility().loadImage(named: "icloud.and.arrow.down", colors: [NCBrandColor.shared.iconImageColor]),
+            icon: NCUtility().loadImage(
+                named: isAnyOffline ? "synced" : "offline",
+                colors: !isAnyOffline ? [NCBrandColor.shared.iconImageColor] : nil
+            ),
             order: order,
             action: { _ in
                 if !isAnyOffline, selectedMetadatas.count > 3 {
@@ -197,7 +200,7 @@ extension NCMenuAction {
     static func moveOrCopyAction(selectedMetadatas: [tableMetadata], viewController: UIViewController, indexPath: [IndexPath], order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
         NCMenuAction(
             title: NSLocalizedString("_move_or_copy_", comment: ""),
-            icon: NCUtility().loadImage(named: "rectangle.portrait.and.arrow.right", colors: [NCBrandColor.shared.iconImageColor]),
+            icon: NCUtility().loadImage(named: "moveOrCopy", colors: [NCBrandColor.shared.iconImageColor]),
             order: order,
             action: { _ in
                 let mainTabBarController = viewController.tabBarController as? NCMainTabBarController

@@ -79,7 +79,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_details_", comment: ""),
-                    icon: utility.loadImage(named: "info.circle", colors: [NCBrandColor.shared.iconImageColor]),
+                    icon: utility.loadImage(named: "info", colors: [NCBrandColor.shared.iconImageColor]),
                     order: 10,
                     action: { _ in
                         NCActionCenter.shared.openShare(viewController: self, metadata: metadata, page: .activity)
@@ -199,7 +199,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
-                    icon: utility.loadImage(named: metadata.favorite ? "star.slash" : "star", colors: [NCBrandColor.shared.yellowFavorite]),
+                    icon: utility.loadImage(named: metadata.favorite ? "star.fill" : "star", colors: [NCBrandColor.shared.iconImageColor]),
                     order: 50,
                     action: { _ in
                         NCNetworking.shared.favoriteMetadata(metadata) { error in
@@ -315,7 +315,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_rename_", comment: ""),
-                    icon: utility.loadImage(named: "text.cursor", colors: [NCBrandColor.shared.iconImageColor]),
+                    icon: utility.loadImage(named: "rename", colors: [NCBrandColor.shared.iconImageColor]),
                     order: 120,
                     action: { _ in
 
@@ -365,27 +365,6 @@ extension NCCollectionViewCommon {
                                                                                                            selector: NCGlobal.shared.selectorLoadFileQuickLook,
                                                                                                            sceneIdentifier: sceneIdentifier) else { return }
                             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
-                        }
-                    }
-                )
-            )
-        }
-
-        //
-        // COLOR FOLDER
-        //
-        if self is NCFiles, metadata.directory {
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_change_color_", comment: ""),
-                    icon: utility.loadImage(named: "paintpalette", colors: [NCBrandColor.shared.iconImageColor]),
-                    order: 160,
-                    action: { _ in
-                        if let picker = UIStoryboard(name: "NCColorPicker", bundle: nil).instantiateInitialViewController() as? NCColorPicker {
-                            picker.metadata = metadata
-                            let popup = NCPopupViewController(contentController: picker, popupWidth: 200, popupHeight: 320)
-                            popup.backgroundAlpha = 0
-                            self.present(popup, animated: true)
                         }
                     }
                 )

@@ -44,7 +44,7 @@ class BurgerMenuViewModel: ObservableObject {
     
     func hideMenu() {
         isVisible = false
-        DispatchQueue.main.asyncAfter(deadline: .now().advanced(by: .milliseconds(Int(appearingAnimationIntervalInSec*500)))) {
+        DispatchQueue.main.asyncAfter(deadline: .now().advanced(by: .milliseconds(Int(appearingAnimationIntervalInSec*1000)))) {
             self.delegate?.burgerMenuViewModelDidHideMenu(self)
         }
     }
