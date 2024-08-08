@@ -46,7 +46,7 @@ class NCNetworkingE2EEUpload: NSObject {
     func upload(metadata: tableMetadata, uploadE2EEDelegate: uploadE2EEDelegate? = nil, hudView: UIView?, hud: JGProgressHUD?) async -> NKError {
         var metadata = metadata
         let ocIdTemp = metadata.ocId
-        let domain = NCDomain.shared.getDomain(account: metadata.account)
+        let session = NCSession.shared.getSession(account: metadata.account)
 
         if let result = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "serverUrl == %@ AND fileNameView == %@ AND ocId != %@", metadata.serverUrl, metadata.fileNameView, metadata.ocId)) {
             metadata.fileName = result.fileName
@@ -76,7 +76,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
             // DOWNLOAD METADATA
             //
-            let errorDownloadMetadata = await networkingE2EE.downloadMetadata(serverUrl: metadata.serverUrl, fileId: fileId, e2eToken: e2eToken, domain: domain)
+            let errorDownloadMetadata = await networkingE2EE.downloadMetadata(serverUrl: metadata.serverUrl, fileId: fileId, e2eToken: e2eToken, session: session)
             if errorDownloadMetadata == .success {
                 method = "PUT"
             } else if errorDownloadMetadata.errorCode != NCGlobal.shared.errorResourceNotFound {
@@ -112,7 +112,7 @@ class NCNetworkingE2EEUpload: NSObject {
                                                                           fileId: fileId,
                                                                           e2eToken: e2eToken,
                                                                           method: method,
-                                                                          domain: domain)
+                                                                          session: session)
 
             return uploadMetadataError
         }

@@ -166,14 +166,14 @@ extension NCLoginProvider: WKNavigationDelegate {
         let account: String = "\(username) \(urlBase)"
         let user = username
 
-        NextcloudKit.shared.appendDomain(account: account,
-                                         urlBase: urlBase,
-                                         user: user,
-                                         userId: user,
-                                         password: password,
-                                         userAgent: userAgent,
-                                         nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
-                                         groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+        NextcloudKit.shared.appendSession(account: account,
+                                          urlBase: urlBase,
+                                          user: user,
+                                          userId: user,
+                                          password: password,
+                                          userAgent: userAgent,
+                                          nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
+                                          groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
         NextcloudKit.shared.getUserProfile(account: account) { account, userProfile, _, error in
             if error == .success, let userProfile {

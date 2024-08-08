@@ -111,7 +111,7 @@ class FileProviderExtension: NSFileProviderExtension {
 
     override func item(for identifier: NSFileProviderItemIdentifier) throws -> NSFileProviderItem {
         if identifier == .rootContainer {
-            let session = NCSession.shared.get(account: fileProviderData.shared.account)
+            let session = NCSession.shared.getSession(account: fileProviderData.shared.account)
             let metadata = tableMetadata()
             metadata.account = fileProviderData.shared.account
             metadata.directory = true
@@ -281,7 +281,7 @@ class FileProviderExtension: NSFileProviderExtension {
     override func importDocument(at fileURL: URL, toParentItemIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
         DispatchQueue.main.async {
             autoreleasepool {
-                let session = NCSession.shared.get(account: fileProviderData.shared.account)
+                let session = NCSession.shared.getSession(account: fileProviderData.shared.account)
                 guard let tableDirectory = self.providerUtility.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: session.account, homeServerUrl: self.utilityFileSystem.getHomeServer(session: session)) else {
                     return completionHandler(nil, NSFileProviderError(.noSuchItem))
                 }
@@ -309,7 +309,7 @@ class FileProviderExtension: NSFileProviderExtension {
 
                 fileURL.stopAccessingSecurityScopedResource()
 
-                let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: ocIdTemp, serverUrl: tableDirectory.serverUrl, url: "", contentType: "", domain: domain)
+                let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: ocIdTemp, serverUrl: tableDirectory.serverUrl, url: "", contentType: "", session: session)
                 metadata.session = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundExt
                 metadata.size = size
                 metadata.status = NCGlobal.shared.metadataStatusUploading

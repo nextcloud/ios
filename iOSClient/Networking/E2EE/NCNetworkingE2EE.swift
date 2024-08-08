@@ -91,15 +91,15 @@ class NCNetworkingE2EE: NSObject {
                         addUserId: String? = nil,
                         removeUserId: String? = nil,
                         updateVersionV1V2: Bool = false,
-                        domain: NCDomain.Domain) async -> NKError {
+                        session: NCSession.Session) async -> NKError {
         var addCertificate: String?
         var method = "POST"
-        guard let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", domain.account, serverUrl)) else {
+        guard let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl)) else {
             return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_")
         }
 
         if let addUserId {
-            let results = await NCNetworking.shared.getE2EECertificate(user: addUserId, account: domain.account, options: NCNetworkingE2EE().getOptions())
+            let results = await NCNetworking.shared.getE2EECertificate(user: addUserId, account: session.account, options: NCNetworkingE2EE().getOptions())
             if results.error == .success, let certificateUser = results.certificateUser {
                 addCertificate = certificateUser
             } else {
@@ -109,7 +109,7 @@ class NCNetworkingE2EE: NSObject {
 
         // LOCK
         //
-        let resultsLock = await lock(account: domain.account, serverUrl: serverUrl)
+        let resultsLock = await lock(account: session.account, serverUrl: serverUrl)
         guard resultsLock.error == .success, let e2eToken = resultsLock.e2eToken, let fileId = resultsLock.fileId else {
             return resultsLock.error
         }
@@ -119,7 +119,7 @@ class NCNetworkingE2EE: NSObject {
         if updateVersionV1V2 {
             method = "PUT"
         } else {
-            let resultsGetE2EEMetadata = await getMetadata(fileId: fileId, e2eToken: e2eToken, account: domain.account)
+            let resultsGetE2EEMetadata = await getMetadata(fileId: fileId, e2eToken: e2eToken, account: session.account)
             if resultsGetE2EEMetadata.error == .success {
                 method = "PUT"
             } else if resultsGetE2EEMetadata.error.errorCode != NCGlobal.shared.errorResourceNotFound {
@@ -137,16 +137,16 @@ class NCNetworkingE2EE: NSObject {
                                                        addUserId: addUserId,
                                                        addCertificate: addCertificate,
                                                        removeUserId: removeUserId,
-                                                       domain: domain)
+                                                       session: session)
 
         guard uploadMetadataError == .success else {
-            await unlock(account: domain.account, serverUrl: serverUrl)
+            await unlock(account: session.account, serverUrl: serverUrl)
             return uploadMetadataError
         }
 
         // UNLOCK
         //
-        await unlock(account: domain.account, serverUrl: serverUrl)
+        await unlock(account: session.account, serverUrl: serverUrl)
 
         return NKError()
     }
@@ -159,15 +159,15 @@ class NCNetworkingE2EE: NSObject {
                         addUserId: String? = nil,
                         addCertificate: String? = nil,
                         removeUserId: String? = nil,
-                        domain: NCDomain.Domain) async -> NKError {
-        let resultsEncodeMetadata = NCEndToEndMetadata().encodeMetadata(serverUrl: serverUrl, addUserId: addUserId, addCertificate: addCertificate, removeUserId: removeUserId, domain: domain)
+                        session: NCSession.Session) async -> NKError {
+        let resultsEncodeMetadata = NCEndToEndMetadata().encodeMetadata(serverUrl: serverUrl, addUserId: addUserId, addCertificate: addCertificate, removeUserId: removeUserId, session: session)
         guard resultsEncodeMetadata.error == .success, let e2eMetadata = resultsEncodeMetadata.metadata else {
             // Client Diagnostic
-            NCManageDatabase.shared.addDiagnostic(account: domain.account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)
+            NCManageDatabase.shared.addDiagnostic(account: session.account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)
             return resultsEncodeMetadata.error
         }
 
-        let putE2EEMetadataResults = await NCNetworking.shared.putE2EEMetadata(fileId: fileId, e2eToken: e2eToken, e2eMetadata: e2eMetadata, signature: resultsEncodeMetadata.signature, method: method, account: domain.account, options: NCNetworkingE2EE().getOptions())
+        let putE2EEMetadataResults = await NCNetworking.shared.putE2EEMetadata(fileId: fileId, e2eToken: e2eToken, e2eMetadata: e2eMetadata, signature: resultsEncodeMetadata.signature, method: method, account: session.account, options: NCNetworkingE2EE().getOptions())
         guard putE2EEMetadataResults.error == .success else {
             return putE2EEMetadataResults.error
         }
@@ -175,7 +175,7 @@ class NCNetworkingE2EE: NSObject {
         // COUNTER
         //
         if NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
-            NCManageDatabase.shared.updateCounterE2eMetadata(account: domain.account, ocIdServerUrl: ocIdServerUrl, counter: resultsEncodeMetadata.counter)
+            NCManageDatabase.shared.updateCounterE2eMetadata(account: session.account, ocIdServerUrl: ocIdServerUrl, counter: resultsEncodeMetadata.counter)
         }
 
         return NKError()
@@ -186,16 +186,16 @@ class NCNetworkingE2EE: NSObject {
     func downloadMetadata(serverUrl: String,
                           fileId: String,
                           e2eToken: String,
-                          domain: NCDomain.Domain) async -> NKError {
-        let resultsGetE2EEMetadata = await getMetadata(fileId: fileId, e2eToken: e2eToken, account: domain.account)
+                          session: NCSession.Session) async -> NKError {
+        let resultsGetE2EEMetadata = await getMetadata(fileId: fileId, e2eToken: e2eToken, account: session.account)
         guard resultsGetE2EEMetadata.error == .success, let e2eMetadata = resultsGetE2EEMetadata.e2eMetadata else {
             return resultsGetE2EEMetadata.error
         }
 
-        let resultsDecodeMetadataError = NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: resultsGetE2EEMetadata.signature, serverUrl: serverUrl, domain: domain)
+        let resultsDecodeMetadataError = NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: resultsGetE2EEMetadata.signature, serverUrl: serverUrl, session: session)
         guard resultsDecodeMetadataError == .success else {
             // Client Diagnostic
-            NCManageDatabase.shared.addDiagnostic(account: domain.account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)
+            NCManageDatabase.shared.addDiagnostic(account: session.account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)
             return resultsDecodeMetadataError
         }
 

@@ -159,6 +159,7 @@ extension NCViewer {
                             vcRename.disableChangeExt = true
                             vcRename.imagePreview = imageIcon
                             vcRename.indexPath = indexPath
+                            vcRename.account = metadata.account
 
                             let popup = NCPopupViewController(contentController: vcRename, popupWidth: vcRename.width, popupHeight: vcRename.height)
 

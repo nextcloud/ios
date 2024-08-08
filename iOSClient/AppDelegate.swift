@@ -89,7 +89,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
-            NCDomain.shared.setActiveTableAccount(activeTableAccount)
+            NCSession.shared.setActiveTableAccount(activeTableAccount)
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Account active \(activeTableAccount.account)")
 
             if NCKeychain().getPassword(account: activeTableAccount.account).isEmpty {
@@ -100,20 +100,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NCBrandColor.shared.settingThemingColor(account: activeTableAccount.account)
 
             for account in NCManageDatabase.shared.getAllAccount() {
-                NCDomain.shared.appendDomain(account: account.account, urlBase: account.urlBase, user: account.user, userId: account.userId)
-                NextcloudKit.shared.appendDomain(account: account.account,
-                                                 urlBase: account.urlBase,
-                                                 user: account.user,
-                                                 userId: account.userId,
-                                                 password: NCKeychain().getPassword(account: account.account),
-                                                 userAgent: userAgent,
-                                                 nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
-                                                 groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+                NCSession.shared.appendSession(account: account.account, urlBase: account.urlBase, user: account.user, userId: account.userId)
+                NextcloudKit.shared.appendSession(account: account.account,
+                                                  urlBase: account.urlBase,
+                                                  user: account.user,
+                                                  userId: account.userId,
+                                                  password: NCKeychain().getPassword(account: account.account),
+                                                  userAgent: userAgent,
+                                                  nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
+                                                  groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
             }
 
             DispatchQueue.global().async {
-                let domain = NCDomain.shared.getActiveDomain()
-                NCImageCache.shared.createMediaCache(withCacheSize: true, domain: domain)
+                let session = NCSession.shared.getActiveSession()
+                NCImageCache.shared.createMediaCache(withCacheSize: true, session: session)
             }
         } else {
             NCKeychain().removeAll()
@@ -228,7 +228,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func handleAppRefreshProcessingTask(taskText: String, completion: @escaping () -> Void = {}) {
         Task {
             var itemsAutoUpload = 0
-            let account = NCDomain.shared.getActiveDomain().account
+            let account = NCSession.shared.getActiveSession().account
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) start handle")
 
@@ -311,7 +311,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         var findAccount: Bool = false
 
         if let accountPush = data["account"] as? String {
-            if accountPush == NCDomain.shared.getActiveDomain().account {
+            if accountPush == NCSession.shared.getActiveSession().account {
                 findAccount = true
             } else {
                 let accounts = NCManageDatabase.shared.getAllAccount()
@@ -370,7 +370,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     web?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
                     showLoginViewController(web)
                 } else {
-                    activeLogin?.urlBase = NCDomain.shared.getActiveDomain().urlBase
+                    activeLogin?.urlBase = NCSession.shared.getActiveSession().urlBase
                     showLoginViewController(activeLogin)
                 }
             }
@@ -385,7 +385,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             // Used also for reinsert the account (change passwd)
             if activeLogin?.view.window == nil {
                 activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
-                activeLogin?.urlBase = NCDomain.shared.getActiveDomain().urlBase
+                activeLogin?.urlBase = NCSession.shared.getActiveSession().urlBase
                 activeLogin?.disableUrlField = true
                 activeLogin?.disableCloseButton = true
                 showLoginViewController(activeLogin)
@@ -409,13 +409,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     @objc private func checkErrorNetworking(_ notification: NSNotification) {
         guard !self.timerErrorNetworkingDisabled,
-              NCDomain.shared.isActiveDomainValid(),
-              NCKeychain().getPassword(account: NCDomain.shared.getActiveDomain().account).isEmpty else { return }
+              NCSession.shared.isActiveSessionValid(),
+              NCKeychain().getPassword(account: NCSession.shared.getActiveSession().account).isEmpty else { return }
         openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: true)
     }
 
     func trustCertificateError(host: String) {
-        guard let currentHost = URL(string: NCDomain.shared.getActiveDomain().urlBase)?.host,
+        guard let currentHost = URL(string: NCSession.shared.getActiveSession().urlBase)?.host,
               let pushNotificationServerProxyHost = URL(string: NCBrandOptions.shared.pushNotificationServerProxy)?.host,
               host != pushNotificationServerProxyHost,
               host == currentHost

@@ -28,7 +28,7 @@ class NCNetworkingE2EEDelete: NSObject {
     let networkingE2EE = NCNetworkingE2EE()
 
     func delete(metadata: tableMetadata) async -> NKError {
-        let domain = NCDomain.shared.getDomain(account: metadata.account)
+        let session = NCSession.shared.getSession(account: metadata.account)
         guard let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
             return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_")
         }
@@ -54,7 +54,7 @@ class NCNetworkingE2EEDelete: NSObject {
 
         // DOWNLOAD METADATA
         //
-        let errorDownloadMetadata = await networkingE2EE.downloadMetadata(serverUrl: metadata.serverUrl, fileId: fileId, e2eToken: e2eToken, domain: domain)
+        let errorDownloadMetadata = await networkingE2EE.downloadMetadata(serverUrl: metadata.serverUrl, fileId: fileId, e2eToken: e2eToken, session: session)
         guard errorDownloadMetadata == .success else {
             await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
             return errorDownloadMetadata
@@ -71,7 +71,7 @@ class NCNetworkingE2EEDelete: NSObject {
                                                                       fileId: fileId,
                                                                       e2eToken: e2eToken,
                                                                       method: "PUT",
-                                                                      domain: domain)
+                                                                      session: session)
         guard uploadMetadataError == .success else {
             await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
             return uploadMetadataError

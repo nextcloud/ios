@@ -43,7 +43,7 @@ class NCCameraRoll: NSObject {
         guard !metadataSource.assetLocalIdentifier.isEmpty else {
             let filePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadataSource.ocId, fileNameView: metadataSource.fileName)
             metadataSource.size = utilityFileSystem.getFileSize(filePath: filePath)
-            let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: metadataSource.fileNameView, mimeType: metadataSource.contentType, directory: false)
+            let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: metadataSource.fileNameView, mimeType: metadataSource.contentType, directory: false, account: metadataSource.account)
             metadataSource.contentType = results.mimeType
             metadataSource.iconName = results.iconName
             metadataSource.classFile = results.classFile
@@ -261,14 +261,14 @@ class NCCameraRoll: NSObject {
             self.utilityFileSystem.removeFile(atPath: fileNamePath)
             PHAssetResourceManager.default().writeData(for: videoResource, toFile: URL(fileURLWithPath: fileNamePath), options: nil) { error in
                 guard error == nil else { return completion(nil) }
-                let domain = NCDomain.shared.getDomain(account: metadata.account)
+                let session = NCSession.shared.getSession(account: metadata.account)
                 let metadataLivePhoto = NCManageDatabase.shared.createMetadata(fileName: fileName,
                                                                                fileNameView: fileName,
                                                                                ocId: ocId,
                                                                                serverUrl: metadata.serverUrl,
                                                                                url: "",
                                                                                contentType: "",
-                                                                               domain: domain)
+                                                                               session: session)
                 metadataLivePhoto.livePhotoFile = metadata.fileName
                 metadataLivePhoto.classFile = NKCommon.TypeClassFile.video.rawValue
                 metadataLivePhoto.isExtractFile = true

@@ -35,7 +35,7 @@ class NCViewer: NSObject {
     func view(viewController: UIViewController, metadata: tableMetadata, metadatas: [tableMetadata], imageIcon: UIImage?) {
         self.metadata = metadata
         self.metadatas = metadatas
-        let domain = NCDomain.shared.getDomain(account: metadata.account)
+        let session = NCSession.shared.getSession(account: metadata.account)
 
         // URL
         if metadata.classFile == NKCommon.TypeClassFile.url.rawValue {
@@ -45,7 +45,7 @@ class NCViewer: NSObject {
                 if pathComponents.contains("call") {
                     let talkComponents = pathComponents.last?.components(separatedBy: "#")
                     if let roomToken = talkComponents?.first {
-                        let urlString = "nextcloudtalk://open-conversation?server=\(NCDomain.shared.getActiveDomain().urlBase)&user=\(NCDomain.shared.getActiveDomain().userId)&withRoomToken=\(roomToken)"
+                        let urlString = "nextcloudtalk://open-conversation?server=\(session.urlBase)&user=\(session.userId)&withRoomToken=\(roomToken)"
                         if let url = URL(string: urlString), UIApplication.shared.canOpenURL(url) {
                             UIApplication.shared.open(url)
                             return
@@ -135,7 +135,7 @@ class NCViewer: NSObject {
                     options = NKRequestOptions(customUserAgent: utility.getCustomUserAgentOnlyOffice())
                 }
                 if metadata.url.isEmpty {
-                    let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, domain: domain)
+                    let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
                     NCActivityIndicator.shared.start(backgroundView: viewController.view)
                     NextcloudKit.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: editor, account: metadata.account, options: options) { _, url, _, error in
                         NCActivityIndicator.shared.stop()

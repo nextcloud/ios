@@ -42,7 +42,7 @@ struct PreviewStore {
 class NCUploadAssetsModel: NSObject, ObservableObject, NCCreateFormUploadConflictDelegate {
     @Published var serverUrl: String
     @Published var assets: [TLPHAsset]
-    @Published var domain: NCDomain.Domain
+    @Published var session: NCSession.Session
     @Published var previewStore: [PreviewStore] = []
     @Published var dismissView = false
     @Published var hiddenSave = true
@@ -57,10 +57,10 @@ class NCUploadAssetsModel: NSObject, ObservableObject, NCCreateFormUploadConflic
     var metadatasUploadInConflict: [tableMetadata] = []
     var timer: Timer?
 
-    init(assets: [TLPHAsset], serverUrl: String, controller: NCMainTabBarController?, domain: NCDomain.Domain) {
+    init(assets: [TLPHAsset], serverUrl: String, controller: NCMainTabBarController?, session: NCSession.Session) {
         self.assets = assets
         self.serverUrl = serverUrl
-        self.domain = domain
+        self.session = session
         self.controller = controller
         self.showHUD = true
         super.init()
@@ -79,7 +79,7 @@ class NCUploadAssetsModel: NSObject, ObservableObject, NCCreateFormUploadConflic
     }
 
     func getTextServerUrl() -> String {
-        if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", domain.account, serverUrl)), let metadata = NCManageDatabase.shared.getMetadataFromOcId(directory.ocId) {
+        if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl)), let metadata = NCManageDatabase.shared.getMetadataFromOcId(directory.ocId) {
             return (metadata.fileNameView)
         } else {
             return (serverUrl as NSString).lastPathComponent
@@ -162,7 +162,7 @@ class NCUploadAssetsModel: NSObject, ObservableObject, NCCreateFormUploadConflic
         if useAutoUploadFolder {
             DispatchQueue.global().async {
                 let assets = self.assets.compactMap { $0.phAsset }
-                let result = NCNetworking.shared.createFolder(assets: assets, useSubFolder: self.useAutoUploadSubFolder, withPush: false, domain: self.domain)
+                let result = NCNetworking.shared.createFolder(assets: assets, useSubFolder: self.useAutoUploadSubFolder, withPush: false, session: self.session)
                 DispatchQueue.main.async {
                     self.showHUD = false
                     self.uploadInProgress.toggle()
@@ -183,7 +183,7 @@ class NCUploadAssetsModel: NSObject, ObservableObject, NCCreateFormUploadConflic
         let utilityFileSystem = NCUtilityFileSystem()
         var metadatasNOConflict: [tableMetadata] = []
         var metadatasUploadInConflict: [tableMetadata] = []
-        let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(domain: self.domain)
+        let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(session: self.session)
         var serverUrl = useAutoUploadFolder ? autoUploadPath : serverUrl
 
         for tlAsset in assets {
@@ -207,11 +207,11 @@ class NCUploadAssetsModel: NSObject, ObservableObject, NCCreateFormUploadConflic
             }
 
             // Check if is in upload
-            if let results = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@ AND session != ''", domain.account, serverUrl, fileName), sorted: "fileName", ascending: false), !results.isEmpty {
+            if let results = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@ AND session != ''", session.account, serverUrl, fileName), sorted: "fileName", ascending: false), !results.isEmpty {
                 continue
             }
 
-            let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: serverUrl, url: "", contentType: "", domain: domain)
+            let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: serverUrl, url: "", contentType: "", session: session)
 
             if livePhoto {
                 metadata.livePhotoFile = (metadata.fileName as NSString).deletingPathExtension + ".mov"
@@ -240,7 +240,7 @@ class NCUploadAssetsModel: NSObject, ObservableObject, NCCreateFormUploadConflic
                 } catch {  }
             }
 
-            if let result = NCManageDatabase.shared.getMetadataConflict(account: domain.account, serverUrl: serverUrl, fileNameView: fileName) {
+            if let result = NCManageDatabase.shared.getMetadataConflict(account: session.account, serverUrl: serverUrl, fileNameView: fileName) {
                 metadata.fileName = result.fileName
                 metadatasUploadInConflict.append(metadata)
             } else {

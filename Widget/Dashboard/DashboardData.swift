@@ -133,14 +133,14 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
     let password = NCKeychain().getPassword(account: activeTableAccount.account)
 
     NextcloudKit.shared.setup(delegate: NCNetworking.shared)
-    NextcloudKit.shared.appendDomain(account: activeTableAccount.account,
-                                     urlBase: activeTableAccount.urlBase,
-                                     user: activeTableAccount.user,
-                                     userId: activeTableAccount.userId,
-                                     password: password,
-                                     userAgent: userAgent,
-                                     nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
-                                     groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+    NextcloudKit.shared.appendSession(account: activeTableAccount.account,
+                                      urlBase: activeTableAccount.urlBase,
+                                      user: activeTableAccount.user,
+                                      userId: activeTableAccount.userId,
+                                      password: password,
+                                      userAgent: userAgent,
+                                      nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
+                                      groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
     // LOG
     let levelLog = NCKeychain().logLevel

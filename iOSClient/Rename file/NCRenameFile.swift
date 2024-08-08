@@ -25,16 +25,15 @@ import UIKit
 import NextcloudKit
 
 public protocol NCRenameFileDelegate: AnyObject {
-    func rename(fileName: String, fileNameNew: String)
+    func rename(fileName: String, fileNameNew: String, account: String)
 }
 
 // optional func
 public extension NCRenameFileDelegate {
-    func rename(fileName: String, fileNameNew: String) {}
+    func rename(fileName: String, fileNameNew: String, account: String) {}
 }
 
 class NCRenameFile: UIViewController, UITextFieldDelegate {
-
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var previewFile: UIImageView!
     @IBOutlet weak var fileNameNoExtension: UITextField!
@@ -48,6 +47,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
     let height: CGFloat = 310
 
     var metadata: tableMetadata?
+    var account: String?
     var indexPath: IndexPath = IndexPath()
     var fileName: String?
     var imagePreview: UIImage?
@@ -148,12 +148,10 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
     // MARK: - Action
 
     @IBAction func cancel(_ sender: Any) {
-
         dismiss(animated: true)
     }
 
     @IBAction func renameFile(_ sender: Any) {
-
         var fileNameNoExtensionNew = ""
         var extNew = ""
         var fileNameNew = ""
@@ -217,7 +215,9 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
 
             fileNameNew = (fileNameNoExtension.text ?? "") + "." + (ext.text ?? "")
             self.dismiss(animated: true) {
-                self.delegate?.rename(fileName: fileName, fileNameNew: fileNameNew)
+                if let account = self.account {
+                    self.delegate?.rename(fileName: fileName, fileNameNew: fileNameNew, account: account)
+                }
             }
         }
     }

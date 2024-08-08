@@ -63,7 +63,7 @@ extension NCShareExtension: NCAccountRequestDelegate {
             return
         }
         self.activeAccount = activeAccount
-        let domain = NCDomain.Domain(account: self.activeAccount.account, urlBase: self.activeAccount.urlBase, user: self.activeAccount.user, userId: self.activeAccount.userId)
+        let session = NCSession.Session(account: self.activeAccount.account, urlBase: self.activeAccount.urlBase, user: self.activeAccount.user, userId: self.activeAccount.userId)
 
         // CAPABILITIES
         NCManageDatabase.shared.setCapabilities(account: account)
@@ -75,20 +75,20 @@ extension NCShareExtension: NCAccountRequestDelegate {
 
         // NETWORKING
         NextcloudKit.shared.setup(delegate: NCNetworking.shared)
-        NextcloudKit.shared.appendDomain(account: activeAccount.account,
-                                         urlBase: activeAccount.urlBase,
-                                         user: activeAccount.user,
-                                         userId: activeAccount.userId,
-                                         password: NCKeychain().getPassword(account: activeAccount.account),
-                                         userAgent: userAgent,
-                                         nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
-                                         groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+        NextcloudKit.shared.appendSession(account: activeAccount.account,
+                                          urlBase: activeAccount.urlBase,
+                                          user: activeAccount.user,
+                                          userId: activeAccount.userId,
+                                          password: NCKeychain().getPassword(account: activeAccount.account),
+                                          userAgent: userAgent,
+                                          nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
+                                          groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()
-        autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(domain: domain)
+        autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(session: session)
 
-        serverUrl = utilityFileSystem.getHomeServer(domain: domain)
+        serverUrl = utilityFileSystem.getHomeServer(session: session)
 
         layoutForView = NCManageDatabase.shared.getLayoutForView(account: activeAccount.account, key: keyLayout, serverUrl: serverUrl)
 
@@ -110,10 +110,10 @@ extension NCShareExtension: NCShareCellDelegate, NCRenameFileDelegate, NCListCel
         }
     }
 
-    func renameFile(named fileName: String) {
+    func renameFile(named fileName: String, account: String) {
         guard let vcRename = UIStoryboard(name: "NCRenameFile", bundle: nil).instantiateInitialViewController() as? NCRenameFile else { return }
 
-        let resultInternalType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false)
+        let resultInternalType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false, account: account)
         vcRename.delegate = self
         vcRename.fileName = fileName
         vcRename.indexPath = IndexPath()

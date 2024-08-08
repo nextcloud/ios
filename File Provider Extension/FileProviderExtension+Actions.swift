@@ -143,7 +143,7 @@ extension FileProviderExtension {
         NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNamePathFrom, serverUrlFileNameDestination: fileNamePathTo, overwrite: false, account: metadata.account) { account, error in
             if error == .success {
                 // Rename metadata
-                NCManageDatabase.shared.renameMetadata(fileNameTo: itemName, ocId: ocId)
+                NCManageDatabase.shared.renameMetadata(fileNameTo: itemName, ocId: ocId, account: account)
 
                 guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else {
                     return completionHandler(nil, NSFileProviderError(.noSuchItem))

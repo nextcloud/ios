@@ -29,7 +29,7 @@ class NCNetworkingE2EERename: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
 
     func rename(metadata: tableMetadata, fileNameNew: String, indexPath: IndexPath) async -> NKError {
-        let domain = NCDomain.shared.getDomain(account: metadata.account)
+        let session = NCSession.shared.getSession(account: metadata.account)
         // verify if exists the new fileName
         if NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameNew)) != nil {
             return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_file_already_exists_")
@@ -51,7 +51,7 @@ class NCNetworkingE2EERename: NSObject {
 
         // DOWNLOAD METADATA
         //
-        let errorDownloadMetadata = await networkingE2EE.downloadMetadata(serverUrl: metadata.serverUrl, fileId: fileId, e2eToken: e2eToken, domain: domain)
+        let errorDownloadMetadata = await networkingE2EE.downloadMetadata(serverUrl: metadata.serverUrl, fileId: fileId, e2eToken: e2eToken, session: session)
         guard errorDownloadMetadata == .success else {
             await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
             return errorDownloadMetadata
@@ -59,7 +59,7 @@ class NCNetworkingE2EERename: NSObject {
 
         // DB RENAME
         //
-        let newFileNamePath = utilityFileSystem.getFileNamePath(fileNameNew, serverUrl: metadata.serverUrl, domain: domain)
+        let newFileNamePath = utilityFileSystem.getFileNamePath(fileNameNew, serverUrl: metadata.serverUrl, session: session)
         NCManageDatabase.shared.renameFileE2eEncryption(account: metadata.account, serverUrl: metadata.serverUrl, fileNameIdentifier: metadata.fileName, newFileName: fileNameNew, newFileNamePath: newFileNamePath)
 
         // UPLOAD METADATA
@@ -69,7 +69,7 @@ class NCNetworkingE2EERename: NSObject {
                                                                       fileId: fileId,
                                                                       e2eToken: e2eToken,
                                                                       method: "PUT",
-                                                                      domain: domain)
+                                                                      session: session)
         guard uploadMetadataError == .success else {
             await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
             return uploadMetadataError

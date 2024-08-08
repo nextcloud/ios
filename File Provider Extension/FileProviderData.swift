@@ -85,14 +85,14 @@ class fileProviderData: NSObject {
                                            userId: activeTableAccount.userId)
 
             NextcloudKit.shared.setup(delegate: NCNetworking.shared)
-            NextcloudKit.shared.appendDomain(account: activeTableAccount.account,
-                                             urlBase: activeTableAccount.urlBase,
-                                             user: activeTableAccount.user,
-                                             userId: activeTableAccount.userId,
-                                             password: NCKeychain().getPassword(account: activeTableAccount.account),
-                                             userAgent: userAgent,
-                                             nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
-                                             groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+            NextcloudKit.shared.appendSession(account: activeTableAccount.account,
+                                              urlBase: activeTableAccount.urlBase,
+                                              user: activeTableAccount.user,
+                                              userId: activeTableAccount.userId,
+                                              password: NCKeychain().getPassword(account: activeTableAccount.account),
+                                              userAgent: userAgent,
+                                              nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
+                                              groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
             NCNetworking.shared.delegate = providerExtension as? NCNetworkingDelegate
 
             return tableAccount.init(value: activeTableAccount)

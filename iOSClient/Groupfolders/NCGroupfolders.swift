@@ -54,23 +54,23 @@ class NCGroupfolders: NCCollectionViewCommon {
     override func queryDB() {
         super.queryDB()
         var metadatas: [tableMetadata] = []
-        let domain = NCDomain.shared.getActiveDomain()
+        let session = NCSession.shared.getActiveSession()
 
         if self.serverUrl.isEmpty {
-            metadatas = NCManageDatabase.shared.getMetadatasFromGroupfolders(domain: domain)
+            metadatas = NCManageDatabase.shared.getMetadatasFromGroupfolders(session: session)
         } else {
-            metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", domain.account, self.serverUrl))
+            metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, self.serverUrl))
         }
 
-        self.dataSource = NCDataSource(metadatas: metadatas, account: domain.account, layoutForView: layoutForView, providers: self.providers, searchResults: self.searchResults)
+        self.dataSource = NCDataSource(metadatas: metadatas, account: session.account, layoutForView: layoutForView, providers: self.providers, searchResults: self.searchResults)
     }
 
     override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
         super.reloadDataSourceNetwork()
-        let domain = NCDomain.shared.getActiveDomain()
-        let homeServerUrl = utilityFileSystem.getHomeServer(domain: domain)
+        let session = NCSession.shared.getActiveSession()
+        let homeServerUrl = utilityFileSystem.getHomeServer(session: session)
 
-        NextcloudKit.shared.getGroupfolders(account: domain.account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
+        NextcloudKit.shared.getGroupfolders(account: session.account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()
         } completion: { account, results, _, error in

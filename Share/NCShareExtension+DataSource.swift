@@ -176,7 +176,7 @@ extension NCShareExtension: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard !uploadStarted else { return }
         let fileName = filesName[indexPath.row]
-        renameFile(named: fileName)
+        renameFile(named: fileName, account: activeAccount.account)
     }
 }
 
@@ -189,7 +189,7 @@ extension NCShareExtension: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? NCShareCell else { return UITableViewCell() }
         let fileName = filesName[indexPath.row]
-        cell.setup(fileName: fileName)
+        cell.setup(fileName: fileName, account: activeAccount.account)
         cell.delegate = self
         return cell
     }

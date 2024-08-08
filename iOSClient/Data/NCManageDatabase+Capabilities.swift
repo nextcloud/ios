@@ -304,7 +304,7 @@ extension NCManageDatabase {
             global.capabilityServerVersionMajor = data.version.major
 
             if global.capabilityServerVersionMajor > 0 {
-                NextcloudKit.shared.updateDomain(account: account, nextcloudVersion: global.capabilityServerVersionMajor)
+                NextcloudKit.shared.updateSession(account: account, nextcloudVersion: global.capabilityServerVersionMajor)
             }
 
             global.capabilityFileSharingApiEnabled = data.capabilities.filessharing?.apienabled ?? false
