@@ -34,26 +34,24 @@ class NCAccount: NSObject {
         if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
         let account: String = "\(user) \(urlBase)"
 
-        NextcloudKit.shared.appendAccount(account,
-                                          urlBase: urlBase,
-                                          user: user,
-                                          userId: user,
-                                          password: password,
-                                          userAgent: userAgent,
-                                          nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
-                                          groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
-
         NextcloudKit.shared.getUserProfile(account: account) { account, userProfile, _, error in
             if error == .success, let userProfile {
+                NextcloudKit.shared.appendAccount(account,
+                                                  urlBase: urlBase,
+                                                  user: user,
+                                                  userId: user,
+                                                  password: password,
+                                                  userAgent: userAgent,
+                                                  nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
+                                                  groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
                 NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
                 NCKeychain().setClientCertificate(account: account, p12Data: NCNetworking.shared.p12Data, p12Password: NCNetworking.shared.p12Password)
                 NextcloudKit.shared.updateAccount(account, userId: userProfile.userId)
-
+                /// change -> account
                 self.changeAccount(account, userProfile: userProfile) {
                     completion(error)
                 }
             } else {
-                NextcloudKit.shared.removeAccount(account)
                 let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
                 UIApplication.shared.firstWindow?.rootViewController?.present(alertController, animated: true)
