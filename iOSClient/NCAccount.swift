@@ -66,32 +66,34 @@ class NCAccount: NSObject {
                        userProfile: NKUserProfile?,
                        sceneIdentifier: String? = nil,
                        completion: () -> Void) {
+        /// Set new account in DB
         let previusActiveAccount = NCDomain.shared.getActiveDomain().account
         if NCManageDatabase.shared.setAccountActive(account) == nil {
             return completion()
         }
+        let domain = NCDomain.shared.getActiveDomain()
 
-        if account != previusActiveAccount {
-            DispatchQueue.global().async {
-                let domain = NCDomain.shared.getActiveDomain()
-                if NCManageDatabase.shared.getAccounts()?.count == 1 {
-                    NCImageCache.shared.createMediaCache(withCacheSize: true, domain: domain)
-                } else {
-                    NCImageCache.shared.createMediaCache(withCacheSize: false, domain: domain)
-                }
+        /// Create Media Cache
+        DispatchQueue.global().async {
+            if NCManageDatabase.shared.getAccounts()?.count == 1 {
+                NCImageCache.shared.createMediaCache(withCacheSize: true, domain: domain)
+            } else {
+                NCImageCache.shared.createMediaCache(withCacheSize: false, domain: domain)
             }
         }
-
+        /// Set capabilities
         NCManageDatabase.shared.setCapabilities(account: account)
+        /// Set scene identifier in Domain
         NCDomain.shared.setSceneIdentifier(account: account, sceneIdentifier: sceneIdentifier)
-
+        /// Set User Profile
         if let userProfile {
             NCManageDatabase.shared.setAccountUserProfile(account: account, userProfile: userProfile)
         }
-
+        /// Start Push Notification
         NCPushNotification.shared.pushNotification()
+        /// Start the service
         NCService().startRequestServicesServer(account: account)
-
+        /// Start the auto upload
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
         }
