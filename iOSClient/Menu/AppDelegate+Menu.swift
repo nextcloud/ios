@@ -40,7 +40,7 @@ extension AppDelegate {
 
         actions.append(
             NCMenuAction(
-                title: NSLocalizedString("_upload_photos_videos_", comment: ""), icon: utility.loadImage(named: "photo", colors: [NCBrandColor.shared.iconImageColor]), action: { _ in
+                title: NSLocalizedString("_upload_photos_videos_", comment: ""), icon: utility.loadImage(named: "upload_photos_or_videos", colors: [NCBrandColor.shared.iconImageColor]), action: { _ in
                     NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: mainTabBarController) { hasPermission in
                         if hasPermission {NCPhotosPickerViewController(mainTabBarController: mainTabBarController, maxSelectedAssets: 0, singleSelectedMode: false)
                         }
@@ -51,47 +51,16 @@ extension AppDelegate {
 
         actions.append(
             NCMenuAction(
-                title: NSLocalizedString("_upload_file_", comment: ""), icon: utility.loadImage(named: "doc", colors: [NCBrandColor.shared.iconImageColor]), action: { _ in
+                title: NSLocalizedString("_upload_file_", comment: ""), icon: utility.loadImage(named: "uploadFile", colors: [NCBrandColor.shared.iconImageColor]), action: { _ in
                     mainTabBarController.documentPickerViewController = NCDocumentPickerViewController(mainTabBarController: mainTabBarController, isViewerMedia: false, allowsMultipleSelection: true)
                 }
             )
         )
 
-        if NextcloudKit.shared.isNetworkReachable() && directEditingCreators != nil && directEditingCreators!.contains(where: { $0.editor == NCGlobal.shared.editorText}) && !isDirectoryE2EE {
-            actions.append(
-                NCMenuAction(title: NSLocalizedString("_create_nextcloudtext_document_", comment: ""), icon: utility.loadImage(named: "doc.text", colors: [NCBrandColor.shared.iconImageColor]), action: { _ in
-                    let directEditingCreator = directEditingCreators!.first(where: { $0.editor == NCGlobal.shared.editorText})!
-
-                    Task {
-                        let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + ".md", account: appDelegate.account, serverUrl: serverUrl)
-                        let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-                        self.createTextDocument(mainTabBarController: mainTabBarController, fileNamePath: fileNamePath, fileName: String(describing: fileName), creatorId: directEditingCreator.identifier)
-                    }
-                })
-            )
-        }
-
         actions.append(
             NCMenuAction(
-                title: NSLocalizedString("_scans_document_", comment: ""), icon: utility.loadImage(named: "doc.text.viewfinder", colors: [NCBrandColor.shared.iconImageColor]), action: { _ in
+                title: NSLocalizedString("_scans_document_", comment: ""), icon: utility.loadImage(named: "scan", colors: [NCBrandColor.shared.iconImageColor]), action: { _ in
                     NCDocumentCamera.shared.openScannerDocument(viewController: mainTabBarController)
-                }
-            )
-        )
-
-        actions.append(
-            NCMenuAction(
-                title: NSLocalizedString("_create_voice_memo_", comment: ""), icon: utility.loadImage(named: "mic", colors: [NCBrandColor.shared.iconImageColor]), action: { _ in
-                    NCAskAuthorization().askAuthorizationAudioRecord(viewController: mainTabBarController) { hasPermission in
-                        if hasPermission {
-                            if let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as? NCAudioRecorderViewController {
-                                viewController.serverUrl = serverUrl
-                                viewController.modalTransitionStyle = .crossDissolve
-                                viewController.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
-                                mainTabBarController.present(viewController, animated: true, completion: nil)
-                            }
-                        }
-                    }
                 }
             )
         )
@@ -125,23 +94,6 @@ extension AppDelegate {
 
         if NCKeychain().isEndToEndEnabled(account: appDelegate.account) {
             actions.append(.seperator(order: 0))
-        }
-
-        if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion18 && directory?.richWorkspace == nil && !isDirectoryE2EE && NextcloudKit.shared.isNetworkReachable() {
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_add_folder_info_", comment: ""), icon: NCUtility().loadImage(named: "list.dash.header.rectangle", colors: [NCBrandColor.shared.iconImageColor]), action: { _ in
-                        let richWorkspaceCommon = NCRichWorkspaceCommon()
-                        if let viewController = mainTabBarController.currentViewController() {
-                            if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", appDelegate.account, serverUrl, NCGlobal.shared.fileNameRichWorkspace.lowercased())) == nil {
-                                richWorkspaceCommon.createViewerNextcloudText(serverUrl: serverUrl, viewController: viewController)
-                            } else {
-                                richWorkspaceCommon.openViewerNextcloudText(serverUrl: serverUrl, viewController: viewController)
-                            }
-                        }
-                    }
-                )
-            )
         }
 
         if NextcloudKit.shared.isNetworkReachable() && directEditingCreators != nil && directEditingCreators!.contains(where: { $0.editor == NCGlobal.shared.editorOnlyoffice && $0.identifier == NCGlobal.shared.onlyofficeDocx}) && !isDirectoryE2EE {
