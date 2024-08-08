@@ -71,13 +71,6 @@ class NCAccount: NSObject {
             return completion()
         }
 
-        /*
-        NCNetworking.shared.cancelAllQueue()
-        NCNetworking.shared.cancelDataTask()
-        NCNetworking.shared.cancelDownloadTasks()
-        NCNetworking.shared.cancelUploadTasks()
-        */
-
         if account != previusActiveAccount {
             DispatchQueue.global().async {
                 let domain = NCDomain.shared.getActiveDomain()
@@ -108,12 +101,13 @@ class NCAccount: NSObject {
     }
 
     func deleteAccount(_ account: String) {
+        /// Remove all Scene except the one first
         UIApplication.shared.allSceneSessionDestructionExceptFirst()
-
+        /// Unsubscribing Push Notification
         if let account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) {
             NCPushNotification.shared.unsubscribingNextcloudServerPushNotification(account: account.account, urlBase: account.urlBase, user: account.user, withSubscribing: false)
         }
-
+        /// Remove al local files
         let results = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "account == %@", account), sorted: "ocId", ascending: false)
         let utilityFileSystem = NCUtilityFileSystem()
         for result in results {
@@ -121,10 +115,12 @@ class NCAccount: NSObject {
         }
         /// Remove account in all database
         NCManageDatabase.shared.clearDatabase(account: account, removeAccount: true)
-
+        /// Remov e account in NextcloudKit
+        NextcloudKit.shared.removeAccount(account)
+        /// Remove keychain security
+        NCKeychain().setPassword(account: account, password: nil)
         NCKeychain().clearAllKeysEndToEnd(account: account)
         NCKeychain().clearAllKeysPushNotification(account: account)
-        NCKeychain().setPassword(account: account, password: nil)
     }
 
     func deleteAllAccounts() {
