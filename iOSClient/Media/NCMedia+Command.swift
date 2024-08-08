@@ -101,8 +101,8 @@ extension NCMedia {
     }
 
     func createMenu() {
-        let domain = NCDomain.shared.getActiveDomain()
-        let layoutForView = NCManageDatabase.shared.getLayoutForView(account: domain.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")
+        let session = NCSession.shared.getActiveSession()
+        let layoutForView = NCManageDatabase.shared.getLayoutForView(account: session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")
         let columnPhoto = layoutForView?.columnPhoto ?? 3
         let layout = layoutForView?.layout ?? NCGlobal.shared.mediaLayoutRatio
         let layoutTitle = (layout == NCGlobal.shared.mediaLayoutRatio) ? NSLocalizedString("_media_square_", comment: "") : NSLocalizedString("_media_ratio_", comment: "")
@@ -138,9 +138,9 @@ extension NCMedia {
         ])
         let viewLayoutMenu = UIAction(title: layoutTitle, image: layoutImage) { _ in
             if layout == NCGlobal.shared.mediaLayoutRatio {
-                NCManageDatabase.shared.setLayoutForView(account: domain.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", layout: NCGlobal.shared.mediaLayoutSquare)
+                NCManageDatabase.shared.setLayoutForView(account: session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", layout: NCGlobal.shared.mediaLayoutSquare)
             } else {
-                NCManageDatabase.shared.setLayoutForView(account: domain.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", layout: NCGlobal.shared.mediaLayoutRatio)
+                NCManageDatabase.shared.setLayoutForView(account: session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", layout: NCGlobal.shared.mediaLayoutRatio)
             }
             self.createMenu()
             self.collectionViewReloadData()
@@ -151,7 +151,7 @@ extension NCMedia {
                 UIAction(title: NSLocalizedString("_zoom_out_", comment: ""), image: utility.loadImage(named: "minus.magnifyingglass"), attributes: self.attributesZoomOut) { _ in
                     UIView.animate(withDuration: 0.0, animations: {
                         let column = columnPhoto + 1
-                        NCManageDatabase.shared.setLayoutForView(account: domain.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: column)
+                        NCManageDatabase.shared.setLayoutForView(account: session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: column)
                         self.createMenu()
                         self.collectionViewReloadData()
                     })
@@ -159,7 +159,7 @@ extension NCMedia {
                 UIAction(title: NSLocalizedString("_zoom_in_", comment: ""), image: utility.loadImage(named: "plus.magnifyingglass"), attributes: self.attributesZoomIn) { _ in
                     UIView.animate(withDuration: 0.0, animations: {
                         let column = columnPhoto - 1
-                        NCManageDatabase.shared.setLayoutForView(account: domain.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: column)
+                        NCManageDatabase.shared.setLayoutForView(account: session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: column)
                         self.createMenu()
                         self.collectionViewReloadData()
                     })
@@ -178,7 +178,7 @@ extension NCMedia {
 
         let playFile = UIAction(title: NSLocalizedString("_play_from_files_", comment: ""), image: utility.loadImage(named: "play.circle")) { _ in
             guard let controller = self.tabBarController as? NCMainTabBarController else { return }
-            self.documentPickerViewController = NCDocumentPickerViewController(controller: controller, isViewerMedia: true, allowsMultipleSelection: false, viewController: self, domain: domain)
+            self.documentPickerViewController = NCDocumentPickerViewController(controller: controller, isViewerMedia: true, allowsMultipleSelection: false, viewController: self, session: session)
         }
 
         let playURL = UIAction(title: NSLocalizedString("_play_from_url_", comment: ""), image: utility.loadImage(named: "link")) { _ in
@@ -190,7 +190,7 @@ extension NCMedia {
             alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
                 guard let stringUrl = alert.textFields?.first?.text, !stringUrl.isEmpty, let url = URL(string: stringUrl) else { return }
                 let fileName = url.lastPathComponent
-                let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: "", url: stringUrl, contentType: "", domain: domain)
+                let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: "", url: stringUrl, contentType: "", session: session)
                 NCManageDatabase.shared.addMetadata(metadata)
                 NCViewer().view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: nil)
             }))

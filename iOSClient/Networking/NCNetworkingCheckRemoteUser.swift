@@ -27,18 +27,18 @@ import NextcloudKit
 class NCNetworkingCheckRemoteUser {
     func checkRemoteUser(account: String, error: NKError) {
         let token = NCKeychain().getPassword(account: account)
-        let domain = NCDomain.shared.getDomain(account: account)
-        guard !token.isEmpty, NCDomain.shared.isDomainValid(account: account) else { return }
+        let session = NCSession.shared.getSession(account: account)
+        guard !token.isEmpty, NCSession.shared.isValidSession(account: account) else { return }
 
         NCNetworking.shared.cancelAllTask()
 
         if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion17 {
-            NextcloudKit.shared.getRemoteWipeStatus(serverUrl: domain.urlBase, token: token, account: account) { account, wipe, _, error in
+            NextcloudKit.shared.getRemoteWipeStatus(serverUrl: session.urlBase, token: token, account: account) { account, wipe, _, error in
                 if wipe {
                     NCAccount().deleteAccount(account)
                     let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_wipe_account_")
-                    NCContentPresenter().messageNotification(domain.user, error: error, delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, priority: .max)
-                    NextcloudKit.shared.setRemoteWipeCompletition(serverUrl: domain.urlBase, token: token, account: domain.account) { _, _ in print("wipe") }
+                    NCContentPresenter().messageNotification(session.user, error: error, delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, priority: .max)
+                    NextcloudKit.shared.setRemoteWipeCompletition(serverUrl: session.urlBase, token: token, account: session.account) { _, _ in print("wipe") }
                     let accounts = NCManageDatabase.shared.getAccounts()
                     if accounts?.count ?? 0 > 0 {
                         if let newAccount = accounts?.first {
@@ -50,7 +50,7 @@ class NCNetworkingCheckRemoteUser {
                     }
                 } else {
                     if UIApplication.shared.applicationState == .active && NextcloudKit.shared.isNetworkReachable() {
-                        let description = String.localizedStringWithFormat(NSLocalizedString("_error_check_remote_user_", comment: ""), domain.user, domain.urlBase)
+                        let description = String.localizedStringWithFormat(NSLocalizedString("_error_check_remote_user_", comment: ""), session.user, session.urlBase)
                         let error = NKError(errorCode: error.errorCode, errorDescription: description)
                         NCContentPresenter().showError(error: error, priority: .max)
                         NCKeychain().setPassword(account: account, password: nil)
@@ -60,7 +60,7 @@ class NCNetworkingCheckRemoteUser {
             }
         } else {
             if UIApplication.shared.applicationState == .active && NextcloudKit.shared.isNetworkReachable() {
-                let description = String.localizedStringWithFormat(NSLocalizedString("_error_check_remote_user_", comment: ""), domain.user, domain.urlBase)
+                let description = String.localizedStringWithFormat(NSLocalizedString("_error_check_remote_user_", comment: ""), session.user, session.urlBase)
                 let error = NKError(errorCode: error.errorCode, errorDescription: description)
                 NCContentPresenter().showError(error: error, priority: .max)
                 NCKeychain().setPassword(account: account, password: nil)

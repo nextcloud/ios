@@ -82,7 +82,7 @@ class NCAutoUpload: NSObject {
     }
 
     private func uploadAssetsNewAndFull(viewController: UIViewController?, selector: String, log: String, completion: @escaping (_ items: Int) -> Void) {
-        let domain = NCDomain.shared.getActiveDomain()
+        let domain = NCSession.shared.getActiveSession()
         let activeTableAccount = NCDomain.shared.getActiveTableAccount()
         let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(domain: domain)
         var metadatas: [tableMetadata] = []
@@ -169,7 +169,7 @@ class NCAutoUpload: NSObject {
                     }
                     if selector == NCGlobal.shared.selectorUploadAutoUpload {
                         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Automatic upload added \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier)")
-                        NCManageDatabase.shared.addPhotoLibrary([asset], account: NCDomain.shared.getActiveDomain().account)
+                        NCManageDatabase.shared.addPhotoLibrary([asset], account: NCSession.shared.getActiveSession().account)
                     }
                     metadatas.append(metadata)
                 }
@@ -186,10 +186,10 @@ class NCAutoUpload: NSObject {
 
     @objc func alignPhotoLibrary(viewController: UIViewController?) {
         getCameraRollAssets(viewController: viewController, selector: NCGlobal.shared.selectorUploadAutoUploadAll, alignPhotoLibrary: true) { assets in
-            NCManageDatabase.shared.clearTable(tablePhotoLibrary.self, account: NCDomain.shared.getActiveDomain().account)
+            NCManageDatabase.shared.clearTable(tablePhotoLibrary.self, account: NCSession.shared.getActiveSession().account)
             guard let assets = assets else { return }
 
-            NCManageDatabase.shared.addPhotoLibrary(assets, account: NCDomain.shared.getActiveDomain().account)
+            NCManageDatabase.shared.addPhotoLibrary(assets, account: NCSession.shared.getActiveSession().account)
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Align Photo Library \(assets.count)")
         }
     }

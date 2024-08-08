@@ -219,7 +219,7 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
 
     fileprivate func saveModifiedFile(override: Bool) {
         guard let metadata = self.metadata else { return }
-        let domain = NCDomain.shared.getDomain(account: metadata.account)
+        let session = NCSession.shared.getSession(account: metadata.account)
         if !uploadMetadata {
             return self.dismiss(animated: true)
         }
@@ -241,7 +241,7 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
                                                                        serverUrl: metadata.serverUrl,
                                                                        url: url.path,
                                                                        contentType: "",
-                                                                       domain: domain)
+                                                                       session: session)
 
         metadataForUpload.session = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground
         if override {

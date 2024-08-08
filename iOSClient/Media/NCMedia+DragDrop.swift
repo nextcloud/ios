@@ -48,8 +48,8 @@ extension NCMedia: UICollectionViewDropDelegate {
     func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
         DragDropHover.shared.cleanPushDragDropHover()
         DragDropHover.shared.sourceMetadatas = nil
-        let domain = NCDomain.shared.getActiveDomain()
-        let serverUrl = NCUtilityFileSystem().getHomeServer(domain: domain) + NCDomain.shared.getActiveTableAccount().mediaPath
+        let session = NCSession.shared.getActiveSession()
+        let serverUrl = NCUtilityFileSystem().getHomeServer(session: session) + NCSession.shared.getActiveTableAccount().mediaPath
 
         if let metadatas = NCDragDrop().performDrop(collectionView, performDropWith: coordinator, serverUrl: serverUrl, isImageVideo: true) {
             DragDropHover.shared.sourceMetadatas = metadatas
@@ -78,16 +78,16 @@ extension NCMedia: UICollectionViewDropDelegate {
 
     @objc func copyMenuFile() {
         guard let sourceMetadatas = DragDropHover.shared.sourceMetadatas else { return }
-        let domain = NCDomain.shared.getActiveDomain()
-        let serverUrl = NCUtilityFileSystem().getHomeServer(domain: domain) + NCDomain.shared.getActiveTableAccount().mediaPath
+        let session = NCSession.shared.getActiveSession()
+        let serverUrl = NCUtilityFileSystem().getHomeServer(session: session) + NCSession.shared.getActiveTableAccount().mediaPath
 
         NCDragDrop().copyFile(metadatas: sourceMetadatas, serverUrl: serverUrl)
     }
 
     @objc func moveMenuFile() {
         guard let sourceMetadatas = DragDropHover.shared.sourceMetadatas else { return }
-        let domain = NCDomain.shared.getActiveDomain()
-        let serverUrl = NCUtilityFileSystem().getHomeServer(domain: domain) + NCDomain.shared.getActiveTableAccount().mediaPath
+        let session = NCSession.shared.getActiveSession()
+        let serverUrl = NCUtilityFileSystem().getHomeServer(session: session) + NCSession.shared.getActiveTableAccount().mediaPath
 
         NCDragDrop().moveFile(metadatas: sourceMetadatas, serverUrl: serverUrl)
     }

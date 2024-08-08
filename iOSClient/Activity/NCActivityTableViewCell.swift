@@ -117,7 +117,7 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
             guard let activitySubjectRich = NCManageDatabase.shared.getActivitySubjectRich(account: activityPreview.account, idActivity: activityPreview.idActivity, id: String(activityPreview.fileId)) else {
                 return
             }
-            NCActionCenter.shared.viewerFile(account: NCDomain.shared.getActiveDomain().account, fileId: activitySubjectRich.id, viewController: viewController)
+            NCActionCenter.shared.viewerFile(account: NCSession.shared.getActiveSession().account, fileId: activitySubjectRich.id, viewController: viewController)
         }
     }
 }
@@ -136,7 +136,7 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
         guard let cell: NCActivityCollectionViewCell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionCell", for: indexPath) as? NCActivityCollectionViewCell else {
             return UICollectionViewCell()
         }
-        let domain = NCDomain.shared.getActiveDomain()
+        let domain = NCSession.shared.getActiveSession()
 
         cell.imageView.image = nil
         cell.indexPath = indexPath

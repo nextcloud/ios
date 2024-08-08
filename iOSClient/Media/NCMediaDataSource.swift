@@ -26,7 +26,7 @@ import NextcloudKit
 
 extension NCMedia {
     func reloadDataSource() {
-        self.metadatas = imageCache.getMediaMetadatas(predicate: self.getPredicate(), domain: NCDomain.shared.getActiveDomain())
+        self.metadatas = imageCache.getMediaMetadatas(predicate: self.getPredicate(), session: NCSession.shared.getActiveSession())
         self.collectionViewReloadData()
     }
 
@@ -120,12 +120,12 @@ extension NCMedia {
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Media not reload datasource network with the application in background")
             return(lessDate, greaterDate, 0, false, NKError())
         }
-        let domain = NCDomain.shared.getActiveDomain()
-        let activeTableAccount = NCDomain.shared.getActiveTableAccount()
+        let domain = NCSession.shared.getActiveSession()
+        let activeTableAccount = NCSession.shared.getActiveTableAccount()
         NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate)")
         let options = NKRequestOptions(timeout: timeout, taskDescription: self.taskDescriptionRetrievesProperties, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
         let results = await NCNetworking.shared.searchMedia(path: activeTableAccount.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: NCKeychain().showHiddenFiles, includeHiddenFiles: [], account: domain.account, options: options)
-        if activeTableAccount.account != NCDomain.shared.getActiveDomain().account {
+        if activeTableAccount.account != NCSession.shared.getActiveSession().account {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "User changed")
             return(lessDate, greaterDate, 0, false, error)
         } else if results.error == .success, let files = results.files {
@@ -142,18 +142,18 @@ extension NCMedia {
     }
 
     private func getPredicate(showAll: Bool = false) -> NSPredicate {
-        let activeTableAccount = NCDomain.shared.getActiveTableAccount()
-        let domain = NCDomain.shared.getActiveDomain()
-        let startServerUrl = NCUtilityFileSystem().getHomeServer(domain: domain) + activeTableAccount.mediaPath
+        let activeTableAccount = NCSession.shared.getActiveTableAccount()
+        let session = NCSession.shared.getActiveSession()
+        let startServerUrl = NCUtilityFileSystem().getHomeServer(session: session) + activeTableAccount.mediaPath
 
         if showAll {
-            return NSPredicate(format: imageCache.showAllPredicateMediaString, domain.account, startServerUrl)
+            return NSPredicate(format: imageCache.showAllPredicateMediaString, session.account, startServerUrl)
         } else if showOnlyImages {
-            return NSPredicate(format: imageCache.showOnlyPredicateMediaString, domain.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue)
+            return NSPredicate(format: imageCache.showOnlyPredicateMediaString, session.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue)
         } else if showOnlyVideos {
-            return NSPredicate(format: imageCache.showOnlyPredicateMediaString, domain.account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)
+            return NSPredicate(format: imageCache.showOnlyPredicateMediaString, session.account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)
         } else {
-            return NSPredicate(format: imageCache.showBothPredicateMediaString, domain.account, startServerUrl)
+            return NSPredicate(format: imageCache.showBothPredicateMediaString, session.account, startServerUrl)
         }
     }
 }

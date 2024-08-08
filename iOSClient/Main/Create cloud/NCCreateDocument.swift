@@ -29,7 +29,7 @@ class NCCreateDocument: NSObject {
     let utility = NCUtility()
 
     func createDocument(controller: NCMainTabBarController, fileNamePath: String, fileName: String, editorId: String, creatorId: String? = nil, templateId: String, account: String) {
-        let domain = NCDomain.shared.getDomain(account: account)
+        let session = NCSession.shared.getSession(account: account)
         guard let viewController = controller.currentViewController() else { return }
         var UUID = NSUUID().uuidString
         UUID = "TEMP" + UUID.replacingOccurrences(of: "-", with: "")
@@ -48,8 +48,8 @@ class NCCreateDocument: NSObject {
                     return NCContentPresenter().showError(error: error)
                 }
                 if account == returnedAccount {
-                    let contentType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false).mimeType
-                    let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: UUID, serverUrl: serverUrl, url: url, contentType: contentType, domain: domain)
+                    let contentType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false, account: session.account).mimeType
+                    let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: UUID, serverUrl: serverUrl, url: url, contentType: contentType, session: session)
 
                     NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
                 }
@@ -62,8 +62,8 @@ class NCCreateDocument: NSObject {
                     return NCContentPresenter().showError(error: error)
                 }
                 if account == returnedAccount {
-                    let contentType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false).mimeType
-                    let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: UUID, serverUrl: serverUrl, url: url, contentType: contentType, domain: domain)
+                    let contentType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false, account: session.account).mimeType
+                    let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: UUID, serverUrl: serverUrl, url: url, contentType: contentType, session: session)
 
                     NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
                 }

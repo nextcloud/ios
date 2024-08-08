@@ -29,7 +29,7 @@ class NCCapabilitiesModel: ObservableObject, ViewOnAppearHandling {
 
     /// Triggered when the view appears.
     func onViewAppear() {
-        let domain = NCDomain.shared.getActiveDomain()
+        let session = NCSession.shared.getActiveSession()
         var textEditor = false
         var onlyofficeEditors = false
 
@@ -53,7 +53,7 @@ class NCCapabilitiesModel: ObservableObject, ViewOnAppearHandling {
         image = utility.loadImage(named: "trash")
         capabililies.append(Capability(text: "Deleted files", image: image, resize: false, available: NCGlobal.shared.capabilityFilesUndelete))
 
-        if let editors = NCManageDatabase.shared.getDirectEditingEditors(account: domain.account) {
+        if let editors = NCManageDatabase.shared.getDirectEditingEditors(account: session.account) {
             for editor in editors {
                 if editor.editor == NCGlobal.shared.editorText {
                     textEditor = true
@@ -83,6 +83,6 @@ class NCCapabilitiesModel: ObservableObject, ViewOnAppearHandling {
 
         capabililies.append(Capability(text: "Assistant", image: utility.loadImage(named: "sparkles"), resize: false, available: NCGlobal.shared.capabilityAssistantEnabled))
 
-        homeServer = utilityFileSystem.getHomeServer(domain: domain) + "/"
+        homeServer = utilityFileSystem.getHomeServer(session: session) + "/"
     }
 }

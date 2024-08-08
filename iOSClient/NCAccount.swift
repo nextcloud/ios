@@ -36,14 +36,14 @@ class NCAccount: NSObject {
 
         NextcloudKit.shared.getUserProfile(account: account) { account, userProfile, _, error in
             if error == .success, let userProfile {
-                NextcloudKit.shared.appendDomain(account: account,
-                                                 urlBase: urlBase,
-                                                 user: user,
-                                                 userId: userProfile.userId,
-                                                 password: password,
-                                                 userAgent: userAgent,
-                                                 nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
-                                                 groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+                NextcloudKit.shared.appendSession(account: account,
+                                                  urlBase: urlBase,
+                                                  user: user,
+                                                  userId: userProfile.userId,
+                                                  password: password,
+                                                  userAgent: userAgent,
+                                                  nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
+                                                  groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
                 NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
                 NCKeychain().setClientCertificate(account: account, p12Data: NCNetworking.shared.p12Data, p12Password: NCNetworking.shared.p12Password)
                 /// change -> account
@@ -67,20 +67,20 @@ class NCAccount: NSObject {
         if NCManageDatabase.shared.setAccountActive(account) == nil {
             return completion()
         }
-        let domain = NCDomain.shared.getActiveDomain()
+        let session = NCSession.shared.getActiveSession()
 
         /// Create Media Cache
         DispatchQueue.global().async {
             if NCManageDatabase.shared.getAccounts()?.count == 1 {
-                NCImageCache.shared.createMediaCache(withCacheSize: true, domain: domain)
+                NCImageCache.shared.createMediaCache(withCacheSize: true, session: session)
             } else {
-                NCImageCache.shared.createMediaCache(withCacheSize: false, domain: domain)
+                NCImageCache.shared.createMediaCache(withCacheSize: false, session: session)
             }
         }
         /// Set capabilities
         NCManageDatabase.shared.setCapabilities(account: account)
         /// Set scene identifier in Domain
-        NCDomain.shared.setSceneIdentifier(account: account, sceneIdentifier: sceneIdentifier)
+        NCSession.shared.setSceneIdentifier(account: account, sceneIdentifier: sceneIdentifier)
         /// Set User Profile
         if let userProfile {
             NCManageDatabase.shared.setAccountUserProfile(account: account, userProfile: userProfile)
@@ -114,7 +114,7 @@ class NCAccount: NSObject {
         /// Remove account in all database
         NCManageDatabase.shared.clearDatabase(account: account, removeAccount: true)
         /// Remove domain in NextcloudKit
-        NextcloudKit.shared.removeDomain(account: account)
+        NextcloudKit.shared.removeSession(account: account)
         /// Remove keychain security
         NCKeychain().setPassword(account: account, password: nil)
         NCKeychain().clearAllKeysEndToEnd(account: account)
@@ -135,7 +135,7 @@ class NCAccount: NSObject {
 
         for account in tableAccount {
             let name = account.alias.isEmpty ? account.displayName : account.alias
-            let fileName = NCDomain.shared.getFileName(urlBase: account.urlBase, user: account.user)
+            let fileName = NCSession.shared.getFileName(urlBase: account.urlBase, user: account.user)
             let fileNamePath = NCUtilityFileSystem().directoryUserData + "/" + fileName
             let image = UIImage(contentsOfFile: fileNamePath)
             accounts.append(NKShareAccounts.DataAccounts(withUrl: account.urlBase, user: account.user, name: name, image: image))

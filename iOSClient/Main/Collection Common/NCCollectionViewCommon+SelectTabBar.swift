@@ -32,7 +32,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
         } else {
             selectOcId = dataSource.getMetadataSourceForAllSections().compactMap({ $0.ocId })
         }
-        tabBarSelect.update(selectOcId: selectOcId, metadatas: getSelectedMetadatas(), userId: NCDomain.shared.getActiveDomain().userId)
+        tabBarSelect.update(selectOcId: selectOcId, metadatas: getSelectedMetadatas(), userId: NCSession.shared.getActiveSession().userId)
         collectionView.reloadData()
     }
 

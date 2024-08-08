@@ -73,7 +73,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
 
     func setupComments() {
         // Display Name & Quota
-        let account = NCDomain.shared.getActiveDomain().account
+        let account = NCSession.shared.getActiveSession().account
         tableView.register(UINib(nibName: "NCShareCommentsCell", bundle: nil), forCellReuseIdentifier: "cell")
         commentView = Bundle.main.loadNibNamed("NCActivityCommentView", owner: self, options: nil)?.first as? NCActivityCommentView
         commentView?.setup(account: account) { newComment in
@@ -208,7 +208,7 @@ extension NCActivity: UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? NCShareCommentsCell else {
             return UITableViewCell()
         }
-        let domain = NCDomain.shared.getActiveDomain()
+        let session = NCSession.shared.getActiveSession()
 
         cell.indexPath = indexPath
         cell.tableComments = comment
@@ -216,7 +216,7 @@ extension NCActivity: UITableViewDataSource {
         cell.sizeToFit()
 
         // Image
-        let fileName = NCDomain.shared.getFileName(urlBase: domain.urlBase, user: comment.actorId)
+        let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: comment.actorId)
         NCNetworking.shared.downloadAvatar(user: comment.actorId, dispalyName: comment.actorDisplayName, fileName: fileName, account: comment.account, cell: cell, view: tableView)
         // Username
         cell.labelUser.text = comment.actorDisplayName
@@ -228,7 +228,7 @@ extension NCActivity: UITableViewDataSource {
         cell.labelMessage.text = comment.message
         cell.labelMessage.textColor = NCBrandColor.shared.textColor
         // Button Menu
-        if comment.actorId == NCDomain.shared.getActiveDomain().userId {
+        if comment.actorId == NCSession.shared.getActiveSession().userId {
             cell.buttonMenu.isHidden = false
         } else {
             cell.buttonMenu.isHidden = true
@@ -242,7 +242,7 @@ extension NCActivity: UITableViewDataSource {
             return UITableViewCell()
         }
         var orderKeysId: [String] = []
-        let domain = NCDomain.shared.getActiveDomain()
+        let session = NCSession.shared.getActiveSession()
 
         cell.idActivity = activity.idActivity
         cell.indexPath = indexPath
@@ -262,7 +262,7 @@ extension NCActivity: UITableViewDataSource {
                     cell.icon.image = image.withTintColor(NCBrandColor.shared.textColor, renderingMode: .alwaysOriginal)
                 }
             } else {
-                NextcloudKit.shared.downloadContent(serverUrl: activity.icon, account: domain.account) { _, data, error in
+                NextcloudKit.shared.downloadContent(serverUrl: activity.icon, account: session.account) { _, data, error in
                     if error == .success {
                         do {
                             try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
@@ -274,11 +274,11 @@ extension NCActivity: UITableViewDataSource {
         }
 
         // avatar
-        if !activity.user.isEmpty && activity.user != domain.userId {
+        if !activity.user.isEmpty && activity.user != session.userId {
             cell.avatar.isHidden = false
             cell.fileUser = activity.user
-            let fileName = NCDomain.shared.getFileName(urlBase: domain.urlBase, user: activity.user)
-            NCNetworking.shared.downloadAvatar(user: activity.user, dispalyName: nil, fileName: fileName, account: domain.account, cell: cell, view: tableView)
+            let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: activity.user)
+            NCNetworking.shared.downloadAvatar(user: activity.user, dispalyName: nil, fileName: fileName, account: session.account, cell: cell, view: tableView)
             cell.subjectLeadingConstraint.constant = 15
         } else {
             cell.subjectLeadingConstraint.constant = -30
@@ -298,7 +298,7 @@ extension NCActivity: UITableViewDataSource {
             }
 
             for key in keys {
-                if let result = NCManageDatabase.shared.getActivitySubjectRich(account: domain.account, idActivity: activity.idActivity, key: key) {
+                if let result = NCManageDatabase.shared.getActivitySubjectRich(account: session.account, idActivity: activity.idActivity, key: key) {
                     orderKeysId.append(result.id)
                     subject = subject.replacingOccurrences(of: "{\(key)}", with: "<bold>" + result.name + "</bold>")
                 }
@@ -370,12 +370,12 @@ extension NCActivity {
         var newItems = [DateCompareable]()
 
         if showComments, let metadata = metadata {
-            let comments = NCManageDatabase.shared.getComments(account: NCDomain.shared.getActiveDomain().account, objectId: metadata.fileId)
+            let comments = NCManageDatabase.shared.getComments(account: NCSession.shared.getActiveSession().account, objectId: metadata.fileId)
             newItems += comments
         }
 
         let activities = NCManageDatabase.shared.getActivity(
-            predicate: NSPredicate(format: "account == %@", NCDomain.shared.getActiveDomain().account),
+            predicate: NSPredicate(format: "account == %@", NCSession.shared.getActiveSession().account),
             filterFileId: metadata?.fileId)
         newItems += activities.filter
 
@@ -408,7 +408,7 @@ extension NCActivity {
 
     /// Check if most recent activivities are loaded, if not trigger reload
     func checkRecentActivity(disptachGroup: DispatchGroup) {
-        let domain = NCDomain.shared.getActiveDomain()
+        let domain = NCSession.shared.getActiveSession()
         guard let result = NCManageDatabase.shared.getLatestActivityId(account: domain.account), metadata == nil, hasActivityToLoad else {
             return self.loadActivity(idActivity: 0, disptachGroup: disptachGroup)
         }
@@ -443,7 +443,7 @@ extension NCActivity {
     func loadActivity(idActivity: Int, limit: Int = 200, disptachGroup: DispatchGroup) {
         guard hasActivityToLoad else { return }
         var resultActivityId = 0
-        let domain = NCDomain.shared.getActiveDomain()
+        let domain = NCSession.shared.getActiveSession()
 
         disptachGroup.enter()
         NextcloudKit.shared.getActivity(

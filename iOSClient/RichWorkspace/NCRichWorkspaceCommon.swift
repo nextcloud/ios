@@ -28,18 +28,18 @@ import NextcloudKit
     let utilityFileSystem = NCUtilityFileSystem()
 
     @objc func createViewerNextcloudText(serverUrl: String, viewController: UIViewController) {
-        let domain = NCDomain.shared.getActiveDomain()
+        let session = NCSession.shared.getActiveSession()
         if !NextcloudKit.shared.isNetworkReachable() {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_go_online_")
             NCContentPresenter().showError(error: error)
             return
         }
-        guard let directEditingCreator = NCManageDatabase.shared.getDirectEditingCreators(predicate: NSPredicate(format: "account == %@ AND editor == 'text'", domain.account))?.first else { return }
+        guard let directEditingCreator = NCManageDatabase.shared.getDirectEditingCreators(predicate: NSPredicate(format: "account == %@ AND editor == 'text'", session.account))?.first else { return }
 
         NCActivityIndicator.shared.start(backgroundView: viewController.view)
 
-        let fileNamePath = utilityFileSystem.getFileNamePath(NCGlobal.shared.fileNameRichWorkspace, serverUrl: serverUrl, domain: domain)
-        NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: directEditingCreator.editor, creatorId: directEditingCreator.identifier, templateId: "", account: domain.account) { _, url, _, error in
+        let fileNamePath = utilityFileSystem.getFileNamePath(NCGlobal.shared.fileNameRichWorkspace, serverUrl: serverUrl, session: session)
+        NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: directEditingCreator.editor, creatorId: directEditingCreator.identifier, templateId: "", account: session.account) { _, url, _, error in
             NCActivityIndicator.shared.stop()
             if error == .success {
                 if let viewerRichWorkspaceWebView = UIStoryboard(name: "NCViewerRichWorkspace", bundle: nil).instantiateViewController(withIdentifier: "NCViewerRichWorkspaceWebView") as? NCViewerRichWorkspaceWebView {
@@ -59,13 +59,13 @@ import NextcloudKit
             return NCContentPresenter().showError(error: error)
         }
 
-        if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", NCDomain.shared.getActiveDomain().account, serverUrl, NCGlobal.shared.fileNameRichWorkspace.lowercased())) {
+        if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", NCSession.shared.getActiveSession().account, serverUrl, NCGlobal.shared.fileNameRichWorkspace.lowercased())) {
 
             if metadata.url.isEmpty {
-                let domain = NCDomain.shared.getDomain(account: metadata.account)
+                let session = NCSession.shared.getSession(account: metadata.account)
                 NCActivityIndicator.shared.start(backgroundView: viewController.view)
 
-                let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, domain: domain)
+                let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
                 NextcloudKit.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: "text", account: metadata.account) { _, url, _, error in
                     NCActivityIndicator.shared.stop()
                     if error == .success {

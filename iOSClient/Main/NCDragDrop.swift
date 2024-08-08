@@ -98,14 +98,14 @@ class NCDragDrop: NSObject {
         do {
             let data = try Data(contentsOf: url)
             Task {
-                let domain = NCDomain.shared.getActiveDomain()
+                let session = NCSession.shared.getActiveSession()
                 let ocId = NSUUID().uuidString
-                let fileName = await NCNetworking.shared.createFileName(fileNameBase: url.lastPathComponent, account: domain.account, serverUrl: serverUrl)
+                let fileName = await NCNetworking.shared.createFileName(fileNameBase: url.lastPathComponent, account: session.account, serverUrl: serverUrl)
                 let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
 
                 try data.write(to: URL(fileURLWithPath: fileNamePath))
 
-                let metadataForUpload = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, url: "", contentType: "", domain: domain)
+                let metadataForUpload = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, url: "", contentType: "", session: session)
                 metadataForUpload.session = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground
                 metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
                 metadataForUpload.size = utilityFileSystem.getFileSize(filePath: fileNamePath)

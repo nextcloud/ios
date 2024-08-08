@@ -53,7 +53,7 @@ class NCShares: NCCollectionViewCommon {
 
     override func queryDB() {
         super.queryDB()
-        let domain = NCDomain.shared.getActiveDomain()
+        let domain = NCSession.shared.getActiveSession()
         var metadatas: [tableMetadata] = []
 
         func reload() {
@@ -92,16 +92,16 @@ class NCShares: NCCollectionViewCommon {
 
     override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
         super.reloadDataSourceNetwork()
-        let domain = NCDomain.shared.getActiveDomain()
+        let session = NCSession.shared.getActiveSession()
 
-        NextcloudKit.shared.readShares(parameters: NKShareParameter(), account: domain.account) { task in
+        NextcloudKit.shared.readShares(parameters: NKShareParameter(), account: session.account) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()
         } completion: { account, shares, _, error in
             if error == .success {
                 NCManageDatabase.shared.deleteTableShare(account: account)
                 if let shares = shares, !shares.isEmpty {
-                    let home = self.utilityFileSystem.getHomeServer(domain: domain)
+                    let home = self.utilityFileSystem.getHomeServer(session: session)
                     NCManageDatabase.shared.addShare(account: account, home: home, shares: shares)
                 }
                 self.reloadDataSource()

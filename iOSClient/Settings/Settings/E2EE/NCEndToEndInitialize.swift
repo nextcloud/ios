@@ -44,19 +44,19 @@ class NCEndToEndInitialize: NSObject {
         self.metadata = metadata
 
         // Clear all keys
-        NCKeychain().clearAllKeysEndToEnd(account: NCDomain.shared.getActiveDomain().account)
+        NCKeychain().clearAllKeysEndToEnd(account: NCSession.shared.getActiveSession().account)
         self.getPublicKey()
     }
 
     func statusOfService(completion: @escaping (_ error: NKError?) -> Void) {
-        NextcloudKit.shared.getE2EECertificate(account: NCDomain.shared.getActiveDomain().account) { _, _, _, _, error in
+        NextcloudKit.shared.getE2EECertificate(account: NCSession.shared.getActiveSession().account) { _, _, _, _, error in
             completion(error)
         }
     }
 
     func getPublicKey() {
 
-        NextcloudKit.shared.getE2EECertificate(account: NCDomain.shared.getActiveDomain().account) { account, certificate, _, _, error in
+        NextcloudKit.shared.getE2EECertificate(account: NCSession.shared.getActiveSession().account) { account, certificate, _, _, error in
             if error == .success, let certificate {
                 NCKeychain().setEndToEndCertificate(account: account, certificate: certificate)
                 self.extractedPublicKey = NCEndToEndEncryption.shared().extractPublicKey(fromCertificate: certificate)
@@ -68,7 +68,7 @@ class NCEndToEndInitialize: NSObject {
                     let error = NKError(errorCode: error.errorCode, errorDescription: "Bad request: internal error")
                     NCContentPresenter().messageNotification("E2E get publicKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
                 case NCGlobal.shared.errorResourceNotFound:
-                    guard let csr = NCEndToEndEncryption.shared().createCSR(NCDomain.shared.getActiveDomain().userId, directory: self.utilityFileSystem.directoryUserData) else {
+                    guard let csr = NCEndToEndEncryption.shared().createCSR(NCSession.shared.getActiveSession().userId, directory: self.utilityFileSystem.directoryUserData) else {
                         let error = NKError(errorCode: error.errorCode, errorDescription: "Error creating CSR")
                         NCContentPresenter().messageNotification("E2E Csr", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
 
@@ -112,7 +112,7 @@ class NCEndToEndInitialize: NSObject {
 
     func getPrivateKeyCipher() {
         // Request PrivateKey chiper to Server
-        NextcloudKit.shared.getE2EEPrivateKey(account: NCDomain.shared.getActiveDomain().account) { account, privateKeyChiper, _, error in
+        NextcloudKit.shared.getE2EEPrivateKey(account: NCSession.shared.getActiveSession().account) { account, privateKeyChiper, _, error in
             if error == .success {
                 // request Passphrase
                 var passphraseTextField: UITextField?
@@ -200,7 +200,7 @@ class NCEndToEndInitialize: NSObject {
 
     func createNewE2EE(e2ePassphrase: String, error: NKError, copyPassphrase: Bool) {
         var privateKeyString: NSString?
-        guard let privateKeyCipher = NCEndToEndEncryption.shared().encryptPrivateKey(NCDomain.shared.getActiveDomain().userId, directory: utilityFileSystem.directoryUserData, passphrase: e2ePassphrase, privateKey: &privateKeyString, iterationCount: 1024) else {
+        guard let privateKeyCipher = NCEndToEndEncryption.shared().encryptPrivateKey(NCSession.shared.getActiveSession().userId, directory: utilityFileSystem.directoryUserData, passphrase: e2ePassphrase, privateKey: &privateKeyString, iterationCount: 1024) else {
             let error = NKError(errorCode: error.errorCode, errorDescription: "Error creating private key cipher")
             NCContentPresenter().messageNotification("E2E privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
             return
@@ -209,7 +209,7 @@ class NCEndToEndInitialize: NSObject {
         // privateKeyChiper
         print(privateKeyCipher)
 
-        NextcloudKit.shared.storeE2EEPrivateKey(privateKey: privateKeyCipher, account: NCDomain.shared.getActiveDomain().account) { account, _, _, error in
+        NextcloudKit.shared.storeE2EEPrivateKey(privateKey: privateKeyCipher, account: NCSession.shared.getActiveSession().account) { account, _, _, error in
             if error == .success, let privateKey = privateKeyString {
 
                 NCKeychain().setEndToEndPrivateKey(account: account, privateKey: String(privateKey))

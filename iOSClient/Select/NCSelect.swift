@@ -143,16 +143,16 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         self.navigationItem.title = titleCurrentFolder
-        let domain = NCDomain.shared.getActiveDomain()
+        let session = NCSession.shared.getActiveSession()
 
         // set the serverUrl
         if serverUrl.isEmpty {
-            serverUrl = utilityFileSystem.getHomeServer(domain: domain)
+            serverUrl = utilityFileSystem.getHomeServer(session: session)
         }
 
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()
-        autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(domain: domain)
+        autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(session: session)
 
         loadDatasource(withLoadFolder: true)
     }
@@ -205,7 +205,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     }
 
     func createFolderButtonPressed(_ sender: UIButton) {
-        let alertController = UIAlertController.createFolder(serverUrl: serverUrl, account: NCDomain.shared.getActiveDomain().account)
+        let alertController = UIAlertController.createFolder(serverUrl: serverUrl, account: NCSession.shared.getActiveSession().account)
         self.present(alertController, animated: true, completion: nil)
     }
 
@@ -504,7 +504,7 @@ extension NCSelect {
 
     @objc func loadDatasource(withLoadFolder: Bool) {
         var predicate: NSPredicate?
-        let domain = NCDomain.shared.getActiveDomain()
+        let domain = NCSession.shared.getActiveSession()
 
         if includeDirectoryE2EEncryption {
             if includeImages {
@@ -539,7 +539,7 @@ extension NCSelect {
 
     func loadFolder() {
 
-        NCNetworking.shared.readFolder(serverUrl: serverUrl, account: NCDomain.shared.getActiveDomain().account) { task in
+        NCNetworking.shared.readFolder(serverUrl: serverUrl, account: NCSession.shared.getActiveSession().account) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()
         } completion: { _, _, _, _, _, error in

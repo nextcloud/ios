@@ -29,8 +29,8 @@ import Photos
 import PDFKit
 
 class NCHostingUploadScanDocumentView: NSObject {
-    func makeShipDetailsUI(images: [UIImage], serverUrl: String, domain: NCDomain.Domain) -> UIViewController {
-        let uploadScanDocument = NCUploadScanDocument(images: images, domain: domain, serverUrl: serverUrl)
+    func makeShipDetailsUI(images: [UIImage], serverUrl: String, session: NCSession.Session) -> UIViewController {
+        let uploadScanDocument = NCUploadScanDocument(images: images, session: session, serverUrl: serverUrl)
         let details = UploadScanDocumentView(uploadScanDocument: uploadScanDocument)
         let vc = UIHostingController(rootView: details)
         vc.title = NSLocalizedString("_save_", comment: "")
@@ -41,7 +41,7 @@ class NCHostingUploadScanDocumentView: NSObject {
 // MARK: - Class
 
 class NCUploadScanDocument: ObservableObject {
-    internal var domain: NCDomain.Domain
+    internal var session: NCSession.Session
     internal var metadata = tableMetadata()
     internal var images: [UIImage]
     internal var password: String = ""
@@ -53,9 +53,9 @@ class NCUploadScanDocument: ObservableObject {
     @Published var serverUrl: String
     @Published var showHUD: Bool = false
 
-    init(images: [UIImage], domain: NCDomain.Domain, serverUrl: String) {
+    init(images: [UIImage], session: NCSession.Session, serverUrl: String) {
         self.images = images
-        self.domain = domain
+        self.session = session
         self.serverUrl = serverUrl
     }
 
@@ -65,13 +65,13 @@ class NCUploadScanDocument: ObservableObject {
         self.quality = quality
         self.removeAllFiles = removeAllFiles
 
-        metadata = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: UUID().uuidString, serverUrl: serverUrl, url: "", contentType: "", domain: domain)
+        metadata = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: UUID().uuidString, serverUrl: serverUrl, url: "", contentType: "", session: session)
         metadata.session = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground
         metadata.sessionSelector = NCGlobal.shared.selectorUploadFile
         metadata.status = NCGlobal.shared.metadataStatusWaitUpload
         metadata.sessionDate = Date()
 
-        if NCManageDatabase.shared.getMetadataConflict(account: domain.account, serverUrl: serverUrl, fileNameView: fileName) != nil {
+        if NCManageDatabase.shared.getMetadataConflict(account: session.account, serverUrl: serverUrl, fileNameView: fileName) != nil {
             completion(true, false)
         } else {
             createPDF(metadata: metadata) { error in
@@ -328,7 +328,7 @@ struct UploadScanDocumentView: View {
     }
 
     func getTextServerUrl(_ serverUrl: String) -> String {
-        if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", uploadScanDocument.domain.account, serverUrl)), let metadata = NCManageDatabase.shared.getMetadataFromOcId(directory.ocId) {
+        if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", uploadScanDocument.session.account, serverUrl)), let metadata = NCManageDatabase.shared.getMetadataFromOcId(directory.ocId) {
             return (metadata.fileNameView)
         } else {
             return (serverUrl as NSString).lastPathComponent
@@ -342,7 +342,7 @@ struct UploadScanDocumentView: View {
                     Section(header: Text(NSLocalizedString("_file_creation_", comment: ""))) {
                         HStack {
                             Label {
-                                if NCUtilityFileSystem().getHomeServer(domain: uploadScanDocument.domain) == uploadScanDocument.serverUrl {
+                                if NCUtilityFileSystem().getHomeServer(session: uploadScanDocument.session) == uploadScanDocument.serverUrl {
                                     Text("/")
                                         .frame(maxWidth: .infinity, alignment: .trailing)
                                 } else {
@@ -494,7 +494,7 @@ struct PDFKitRepresentedView: UIViewRepresentable {
 
 struct UploadScanDocumentView_Previews: PreviewProvider {
     static var previews: some View {
-        let uploadScanDocument = NCUploadScanDocument(images: [], domain: NCDomain.shared.getActiveDomain(), serverUrl: "ABCD")
+        let uploadScanDocument = NCUploadScanDocument(images: [], session: NCSession.shared.getActiveSession(), serverUrl: "ABCD")
         UploadScanDocumentView(uploadScanDocument: uploadScanDocument)
     }
 }

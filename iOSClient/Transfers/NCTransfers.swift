@@ -47,7 +47,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         super.viewDidLoad()
 
         listLayout.itemHeight = 105
-        NCManageDatabase.shared.setLayoutForView(account: NCDomain.shared.getActiveDomain().account, key: layoutKey, serverUrl: serverUrl, layout: NCGlobal.shared.layoutList)
+        NCManageDatabase.shared.setLayoutForView(account: NCSession.shared.getActiveSession().account, key: layoutKey, serverUrl: serverUrl, layout: NCGlobal.shared.layoutList)
         self.navigationItem.title = titleCurrentFolder
     }
 
@@ -138,7 +138,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     @objc func startTask(_ notification: Any) {
         guard let metadata = metadataTemp,
               let hudView = self.tabBarController?.view,
-              NCDomain.shared.getActiveDomain().account == metadata.account else { return }
+              NCSession.shared.getActiveSession().account == metadata.account else { return }
         let cameraRoll = NCCameraRoll()
 
         cameraRoll.extractCameraRoll(from: metadata) { metadatas in
@@ -178,7 +178,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
               let metadata = dataSource.cellForItemAt(indexPath: indexPath) else {
             return NCTransferCell()
         }
-        let domain = NCDomain.shared.getDomain(account: metadata.account)
+        let session = NCSession.shared.getSession(account: metadata.account)
 
         cell.delegate = self
 
@@ -190,7 +190,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         cell.imageItem.backgroundColor = nil
         cell.labelTitle.text = metadata.fileNameView
         cell.labelTitle.textColor = NCBrandColor.shared.textColor
-        let serverUrlHome = utilityFileSystem.getHomeServer(domain: domain)
+        let serverUrlHome = utilityFileSystem.getHomeServer(session: session)
         var pathText = metadata.serverUrl.replacingOccurrences(of: serverUrlHome, with: "")
         if pathText.isEmpty { pathText = "/" }
         cell.labelPath.text = pathText
@@ -230,7 +230,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             cell.labelStatus.text = ""
             cell.labelInfo.text = ""
         }
-        if NCDomain.shared.getActiveDomain().account != metadata.account {
+        if NCSession.shared.getActiveSession().account != metadata.account {
             cell.labelInfo.text = NSLocalizedString("_waiting_for_", comment: "") + " " + NSLocalizedString("_user_", comment: "").lowercased() + " \(metadata.userId) " + NSLocalizedString("_in_", comment: "") + " \(metadata.urlBase)"
         }
         let isWiFi = NCNetworking.shared.networkReachability == .reachableEthernetOrWiFi
@@ -254,7 +254,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         super.queryDB()
 
         let metadatas: [tableMetadata] = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal), sorted: "sessionDate", ascending: true) ?? []
-        self.dataSource = NCDataSource(metadatas: metadatas, account: NCDomain.shared.getActiveDomain().account, layoutForView: layoutForView)
+        self.dataSource = NCDataSource(metadatas: metadatas, account: NCSession.shared.getActiveSession().account, layoutForView: layoutForView)
     }
 
     override func reloadDataSource(withQueryDB: Bool = true) {

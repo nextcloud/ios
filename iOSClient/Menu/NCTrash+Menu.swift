@@ -29,7 +29,7 @@ import NextcloudKit
 
 extension NCTrash {
     func toggleMenuMore(with objectId: String, image: UIImage?, isGridCell: Bool) {
-        guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: objectId, account: NCDomain.shared.getActiveDomain().account) else { return }
+        guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: objectId, account: NCSession.shared.getActiveSession().account) else { return }
         guard isGridCell else {
             let alert = UIAlertController(title: NSLocalizedString("_want_delete_", comment: ""), message: tableTrash.trashbinFileName, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("_delete_", comment: ""), style: .destructive, handler: { _ in

@@ -194,7 +194,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
 
         // Display Name user & Quota
-        let activeTableAccount = NCDomain.shared.getActiveTableAccount()
+        let activeTableAccount = NCSession.shared.getActiveTableAccount()
 
         if activeTableAccount.quotaRelative > 0 {
             progressQuota.progress = Float(activeTableAccount.quotaRelative) / 100
@@ -218,7 +218,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
         // ITEM : External
         if NCBrandOptions.shared.disable_more_external_site == false {
-            if let externalSites = NCManageDatabase.shared.getAllExternalSites(account: NCDomain.shared.getActiveDomain().account) {
+            if let externalSites = NCManageDatabase.shared.getAllExternalSites(account: NCSession.shared.getActiveSession().account) {
                 for externalSite in externalSites {
                     if !externalSite.name.isEmpty, !externalSite.url.isEmpty, let urlEncoded = externalSite.url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
                         item = NKExternalSite()

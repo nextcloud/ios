@@ -42,7 +42,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 SceneManager.shared.register(scene: scene, withRootViewController: controller)
                 window?.rootViewController = controller
                 window?.makeKeyAndVisible()
-            NCDomain.shared.setSceneIdentifier(account: NCDomain.shared.getActiveDomain().account, sceneIdentifier: controller.sceneIdentifier)
+            NCDomain.shared.setSceneIdentifier(account: NCSession.shared.getActiveSession().account, sceneIdentifier: controller.sceneIdentifier)
         } else {
             if NCBrandOptions.shared.disable_intro {
                 appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false, windowForRootViewController: window)
@@ -101,7 +101,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         hidePrivacyProtectionWindow()
 
-        NCService().startRequestServicesServer(account: NCDomain.shared.getActiveDomain().account)
+        NCService().startRequestServicesServer(account: NCSession.shared.getActiveSession().account)
 
         NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
@@ -217,7 +217,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
                     NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: controller) { hasPermission in
                         if hasPermission {
-                            NCPhotosPickerViewController(controller: controller, maxSelectedAssets: 0, singleSelectedMode: false, domain: NCDomain.shared.getActiveDomain())
+                            NCPhotosPickerViewController(controller: controller, maxSelectedAssets: 0, singleSelectedMode: false, domain: NCSession.shared.getActiveSession())
                         }
                     }
 
@@ -227,7 +227,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
                 case NCGlobal.shared.actionTextDocument:
 
-                    let domain = NCDomain.shared.getActiveDomain()
+                    let domain = NCSession.shared.getActiveSession()
                     let directEditingCreators = NCManageDatabase.shared.getDirectEditingCreators(account: domain.account)
                     let directEditingCreator = directEditingCreators!.first(where: { $0.editor == NCGlobal.shared.editorText})!
                     let serverUrl = controller.currentServerUrl()
@@ -285,7 +285,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     return
                 }
 
-                let davFiles = NextcloudKit.shared.nkCommonInstance.dav + "/files/" + NCDomain.shared.getActiveDomain().userId
+                let davFiles = NextcloudKit.shared.nkCommonInstance.dav + "/files/" + NCSession.shared.getActiveSession().userId
 
                 if pathScheme.contains("/") {
                     fileName = (pathScheme as NSString).lastPathComponent

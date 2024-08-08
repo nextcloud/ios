@@ -144,13 +144,13 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
 
     @IBAction func saveAction(sender: UIBarButtonItem) {
         guard !imagesDestination.isEmpty else { return }
-        let domain = NCDomain.shared.getActiveDomain()
+        let session = NCSession.shared.getActiveSession()
         var images: [UIImage] = []
         for image in imagesDestination {
             images.append(filter(image: image)!)
         }
-        let serverUrl = self.serverUrl ?? utilityFileSystem.getHomeServer(domain: domain)
-        let vc = NCHostingUploadScanDocumentView().makeShipDetailsUI(images: images, serverUrl: serverUrl, domain: domain)
+        let serverUrl = self.serverUrl ?? utilityFileSystem.getHomeServer(session: session)
+        let vc = NCHostingUploadScanDocumentView().makeShipDetailsUI(images: images, serverUrl: serverUrl, session: session)
 
         self.navigationController?.pushViewController(vc, animated: true)
     }

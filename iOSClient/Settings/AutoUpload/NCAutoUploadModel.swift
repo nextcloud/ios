@@ -68,7 +68,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
 
     /// Triggered when the view appears.
     func onViewAppear() {
-        let domain = NCDomain.shared.getActiveDomain()
+        let domain = NCSession.shared.getActiveSession()
         let activeTableAccount = NCDomain.shared.getActiveTableAccount()
         autoUpload = activeTableAccount.autoUpload
         autoUploadImage = activeTableAccount.autoUploadImage
@@ -107,7 +107,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
 
     /// Updates the auto-upload setting.
     func handleAutoUploadChange(newValue: Bool) {
-        let domain = NCDomain.shared.getActiveDomain()
+        let domain = NCSession.shared.getActiveSession()
         if newValue {
             requestAuthorization { value in
                 self.autoUpload = value
@@ -155,7 +155,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         if newValue {
             NCAutoUpload.shared.autoUploadFullPhotos(viewController: self.controller, log: "Auto upload full")
         } else {
-            NCManageDatabase.shared.clearMetadatasUpload(account: NCDomain.shared.getActiveDomain().account)
+            NCManageDatabase.shared.clearMetadatasUpload(account: NCSession.shared.getActiveSession().account)
         }
     }
 
@@ -180,7 +180,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     ///
     /// - Returns: The path for auto-upload.
     func returnPath() -> String {
-        let domain = NCDomain.shared.getActiveDomain()
+        let domain = NCSession.shared.getActiveSession()
         let autoUploadPath = manageDatabase.getAccountAutoUploadDirectory(domain: domain) + "/" + manageDatabase.getAccountAutoUploadFileName()
         let homeServer = NCUtilityFileSystem().getHomeServer(domain: domain)
         let path = autoUploadPath.replacingOccurrences(of: homeServer, with: "")
@@ -193,7 +193,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     /// serverUrl: The server URL to set as the auto-upload directory.
     func setAutoUploadDirectory(serverUrl: String?) {
         guard let serverUrl else { return }
-        let domain = NCDomain.shared.getActiveDomain()
+        let domain = NCSession.shared.getActiveSession()
         let home = NCUtilityFileSystem().getHomeServer(domain: domain)
         if home != serverUrl {
             let fileName = (serverUrl as NSString).lastPathComponent

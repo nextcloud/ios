@@ -111,7 +111,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 }
                 if !metadata.iconUrl.isEmpty {
                     if let ownerId = getAvatarFromIconUrl(metadata: metadata) {
-                        let fileName = NCDomain.shared.getFileName(urlBase: metadata.urlBase, user: ownerId)
+                        let fileName = NCSession.shared.getFileName(urlBase: metadata.urlBase, user: ownerId)
                         downloadAvatar(fileName: fileName, user: ownerId, dispalyName: nil)
                     }
                 }
@@ -121,7 +121,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         if !metadata.ownerId.isEmpty,
            metadata.ownerId != metadata.userId {
            // appDelegate.account == metadata.account {
-            let fileName = NCDomain.shared.getFileName(urlBase: metadata.urlBase, user: metadata.ownerId)
+            let fileName = NCSession.shared.getFileName(urlBase: metadata.urlBase, user: metadata.ownerId)
             downloadAvatar(fileName: fileName, user: metadata.ownerId, dispalyName: metadata.ownerDisplayName)
         }
     }
