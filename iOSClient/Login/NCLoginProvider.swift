@@ -175,7 +175,7 @@ extension NCLoginProvider: WKNavigationDelegate {
                                          nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
                                          groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
-        NextcloudKit.shared.getUserProfile(account: account) { _, userProfile, _, error in
+        NextcloudKit.shared.getUserProfile(account: account) { account, userProfile, _, error in
             if error == .success, let userProfile {
                 NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
                 NCAccount().changeAccount(account, userProfile: userProfile) { }

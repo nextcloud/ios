@@ -96,7 +96,7 @@ extension NCManageDatabase {
                 tableAccount.userId = userId
                 realm.add(tableAccount, update: .all)
             }
-            NCDomain.shared.appendDomain(account: account, urlBase: urlBase, user: user, userId: userId)
+            NCSession.shared.appendSession(account: account, urlBase: urlBase, user: user, userId: userId)
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
@@ -108,7 +108,7 @@ extension NCManageDatabase {
             try realm.write {
                 realm.add(account, update: .all)
             }
-            NCDomain.shared.updateTableAccount(tableAccount.init(value: account))
+            NCSession.shared.updateTableAccount(tableAccount.init(value: account))
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
@@ -198,16 +198,16 @@ extension NCManageDatabase {
         return ""
     }
 
-    func getAccountAutoUploadDirectory(domain: NCDomain.Domain) -> String {
+    func getAccountAutoUploadDirectory(session: NCSession.Session) -> String {
         do {
             let realm = try Realm()
             guard let result = realm.objects(tableAccount.self).filter("active == true").first else { return "" }
             if result.autoUploadDirectory.isEmpty {
-                return utilityFileSystem.getHomeServer(domain: domain)
+                return utilityFileSystem.getHomeServer(session: session)
             } else {
                 // FIX change webdav -> /dav/files/
                 if result.autoUploadDirectory.contains("/webdav") {
-                    return utilityFileSystem.getHomeServer(domain: domain)
+                    return utilityFileSystem.getHomeServer(session: session)
                 } else {
                     return result.autoUploadDirectory
                 }
@@ -218,9 +218,9 @@ extension NCManageDatabase {
         return ""
     }
 
-    func getAccountAutoUploadPath(domain: NCDomain.Domain) -> String {
+    func getAccountAutoUploadPath(session: NCSession.Session) -> String {
         let cameraFileName = self.getAccountAutoUploadFileName()
-        let cameraDirectory = self.getAccountAutoUploadDirectory(domain: domain)
+        let cameraDirectory = self.getAccountAutoUploadDirectory(session: session)
         let folderPhotos = utilityFileSystem.stringAppendServerUrl(cameraDirectory, addFileName: cameraFileName)
         return folderPhotos
     }
@@ -256,7 +256,7 @@ extension NCManageDatabase {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
             return nil
         }
-        NCDomain.shared.setActiveTableAccount(tableAccount.init(value: accountReturn))
+        NCSession.shared.setActiveTableAccount(tableAccount.init(value: accountReturn))
         return tableAccount.init(value: accountReturn)
     }
 
@@ -314,7 +314,7 @@ extension NCManageDatabase {
         }
     }
 
-    func setAccountAutoUploadDirectory(_ serverUrl: String?, domain: NCDomain.Domain) {
+    func setAccountAutoUploadDirectory(_ serverUrl: String?, session: NCSession.Session) {
         do {
             let realm = try Realm()
             try realm.write {
@@ -322,7 +322,7 @@ extension NCManageDatabase {
                     if let serverUrl = serverUrl {
                         result.autoUploadDirectory = serverUrl
                     } else {
-                        result.autoUploadDirectory = self.getAccountAutoUploadDirectory(domain: domain)
+                        result.autoUploadDirectory = self.getAccountAutoUploadDirectory(session: session)
                     }
                 }
             }

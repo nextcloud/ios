@@ -111,14 +111,14 @@ class FileProviderExtension: NSFileProviderExtension {
 
     override func item(for identifier: NSFileProviderItemIdentifier) throws -> NSFileProviderItem {
         if identifier == .rootContainer {
-            let domain = NCDomain.shared.getDomain(account: fileProviderData.shared.account)
+            let session = NCSession.shared.get(account: fileProviderData.shared.account)
             let metadata = tableMetadata()
             metadata.account = fileProviderData.shared.account
             metadata.directory = true
             metadata.ocId = NSFileProviderItemIdentifier.rootContainer.rawValue
             metadata.fileName = "root"
             metadata.fileNameView = "root"
-            metadata.serverUrl = utilityFileSystem.getHomeServer(domain: domain)
+            metadata.serverUrl = utilityFileSystem.getHomeServer(session: session)
             metadata.classFile = NKCommon.TypeClassFile.directory.rawValue
             return FileProviderItem(metadata: metadata, parentItemIdentifier: NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue))
         } else {
@@ -281,8 +281,8 @@ class FileProviderExtension: NSFileProviderExtension {
     override func importDocument(at fileURL: URL, toParentItemIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
         DispatchQueue.main.async {
             autoreleasepool {
-                let domain = NCDomain.shared.getDomain(account: fileProviderData.shared.account)
-                guard let tableDirectory = self.providerUtility.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: domain.account, homeServerUrl: self.utilityFileSystem.getHomeServer(domain: domain)) else {
+                let session = NCSession.shared.get(account: fileProviderData.shared.account)
+                guard let tableDirectory = self.providerUtility.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: session.account, homeServerUrl: self.utilityFileSystem.getHomeServer(session: session)) else {
                     return completionHandler(nil, NSFileProviderError(.noSuchItem))
                 }
                 var size = 0 as Int64

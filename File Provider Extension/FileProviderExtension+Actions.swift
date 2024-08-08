@@ -27,8 +27,8 @@ import NextcloudKit
 
 extension FileProviderExtension {
     override func createDirectory(withName directoryName: String, inParentItemIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
-        let domain = NCDomain.shared.getDomain(account: fileProviderData.shared.account)
-        guard let tableDirectory = providerUtility.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: domain.account, homeServerUrl: utilityFileSystem.getHomeServer(domain: domain)) else {
+        let session = NCSession.shared.getSession(account: fileProviderData.shared.account)
+        guard let tableDirectory = providerUtility.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: session.account, homeServerUrl: utilityFileSystem.getHomeServer(session: session)) else {
             return completionHandler(nil, NSFileProviderError(.noSuchItem))
         }
         let directoryName = utilityFileSystem.createFileName(directoryName, serverUrl: tableDirectory.serverUrl, account: fileProviderData.shared.account)
@@ -102,8 +102,8 @@ extension FileProviderExtension {
         let ocIdFrom = metadataFrom.ocId
         let serverUrlFrom = metadataFrom.serverUrl
         let fileNameFrom = serverUrlFrom + "/" + itemFrom.filename
-        let domain = NCDomain.shared.getDomain(account: fileProviderData.shared.account)
-        guard let tableDirectoryTo = providerUtility.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: domain.account, homeServerUrl: utilityFileSystem.getHomeServer(domain: domain)) else {
+        let session = NCSession.shared.getSession(account: fileProviderData.shared.account)
+        guard let tableDirectoryTo = providerUtility.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: session.account, homeServerUrl: utilityFileSystem.getHomeServer(session: session)) else {
             return completionHandler(nil, NSFileProviderError(.noSuchItem))
         }
         let serverUrlTo = tableDirectoryTo.serverUrl
@@ -170,7 +170,7 @@ extension FileProviderExtension {
     }
 
     override func setFavoriteRank(_ favoriteRank: NSNumber?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
-        let domain = NCDomain.shared.getDomain(account: fileProviderData.shared.account)
+        let session = NCSession.shared.getSession(account: fileProviderData.shared.account)
         guard let metadata = providerUtility.getTableMetadataFromItemIdentifier(itemIdentifier) else {
             return completionHandler(nil, NSFileProviderError(.noSuchItem))
         }
@@ -187,7 +187,7 @@ extension FileProviderExtension {
         }
 
         if (favorite == true && metadata.favorite == false) || (favorite == false && metadata.favorite == true) {
-            let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, domain: domain)
+            let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
             NextcloudKit.shared.setFavorite(fileName: fileNamePath, favorite: favorite, account: metadata.account) { _, error in
                 if error == .success {
                     guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else {

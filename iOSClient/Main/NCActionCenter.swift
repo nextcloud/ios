@@ -178,7 +178,6 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     }
 
     func viewerFile(account: String, fileId: String, viewController: UIViewController) {
-
         guard let hudView = viewController.tabBarController?.view else { return }
         var downloadRequest: DownloadRequest?
 
@@ -209,12 +208,11 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         hud.show(in: hudView)
 
         NextcloudKit.shared.getFileFromFileId(fileId: fileId, account: account) { account, file, _, error in
-
             hud.dismiss()
+
             if error != .success {
                 NCContentPresenter().showError(error: error)
-            } else if let file = file {
-
+            } else if let file {
                 let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
                 let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
                 NCManageDatabase.shared.addMetadata(metadata)

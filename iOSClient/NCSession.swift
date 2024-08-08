@@ -1,5 +1,5 @@
 //
-//  NCDomain.swift
+//  NCSession.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 02/08/24.
@@ -24,65 +24,69 @@
 import Foundation
 import UIKit
 
-public class NCDomain: NSObject {
-    static let shared = NCDomain()
+public class NCSession: NSObject {
+    static let shared = NCSession()
 
-    public struct Domain {
+    public struct Session {
         var account: String
         var urlBase: String
         var user: String
         var userId: String
         var sceneIdentifier: String?
     }
-    private var domain: ThreadSafeArray<Domain> = ThreadSafeArray()
+    private var session: ThreadSafeArray<Session> = ThreadSafeArray()
     private var activeTableAccount = tableAccount()
 
     override private init() {}
 
-    /// DOMAIN
+    /// SESSION
     ///
-    public func appendDomain(account: String, urlBase: String, user: String, userId: String) {
-        if self.domain.filter({ $0.account == account }).first != nil {
-            return updateDomain(account, userId: userId)
+    public func appendSession(account: String, urlBase: String, user: String, userId: String) {
+        if self.session.filter({ $0.account == account }).first != nil {
+            return updateSession(account, userId: userId)
         }
-        self.domain.append(Domain(account: account, urlBase: urlBase, user: user, userId: userId))
+        self.session.append(Session(account: account, urlBase: urlBase, user: user, userId: userId))
     }
 
-    public func updateDomain(_ account: String, userId: String? = nil) {
-        guard var domain = self.domain.filter({ $0.account == account }).first else { return }
+    public func updateSession(_ account: String, userId: String? = nil) {
+        guard var session = self.session.filter({ $0.account == account }).first else { return }
         if let userId {
-            domain.userId = userId
+            session.userId = userId
         }
     }
 
-    public func removeDomain(account: String) {
-        self.domain.remove(where: { $0.account == account })
+    public func removeSession(account: String) {
+        self.session.remove(where: { $0.account == account })
     }
 
-    public func getDomain(account: String) -> Domain {
-        if let domain = self.domain.filter({ $0.account == account }).first {
+    public func getSession(account: String) -> Session {
+        if let domain = self.session.filter({ $0.account == account }).first {
             return domain
         }
-        return Domain(account: "", urlBase: "", user: "", userId: "")
+        return Session(account: "", urlBase: "", user: "", userId: "")
+    }
+
+    public func isValidSession(account: String) -> Bool {
+        return !getSession(account: account).account.isEmpty
     }
 
     public func setSceneIdentifier(account: String, sceneIdentifier: String?) {
-        if var domain = self.domain.filter({ $0.account == account }).first {
-            domain.sceneIdentifier = sceneIdentifier
+        if var session = self.session.filter({ $0.account == account }).first {
+            session.sceneIdentifier = sceneIdentifier
         }
     }
 
-    /// ACTIVE DOMAIN
+    /// ACTIVE SESSION
     ///
-    public func getActiveDomain() -> Domain {
-        if let domain = self.domain.filter({ $0.account == self.activeTableAccount.account }).first {
-            return domain
+    public func getActiveSession() -> Session {
+        if let session = self.session.filter({ $0.account == self.activeTableAccount.account }).first {
+            return session
         }
-        return Domain(account: "", urlBase: "", user: "", userId: "")
+        return Session(account: "", urlBase: "", user: "", userId: "")
     }
 
-    public func isActiveDomainValid() -> Bool {
-        return !getActiveDomain().account.isEmpty
+    public func isActiveSessionValid() -> Bool {
+        return !getActiveSession().account.isEmpty
     }
 
     /// ACTIVE TABLE ACCOUNT

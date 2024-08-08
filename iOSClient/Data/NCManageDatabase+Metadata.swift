@@ -254,8 +254,8 @@ extension tableMetadata {
     }
 
     @objc var isDirectoryE2EE: Bool {
-        let domain = NCDomain.Domain(account: account, urlBase: urlBase, user: user, userId: userId)
-        return NCUtilityFileSystem().isDirectoryE2EE(domain: domain, serverUrl: serverUrl)
+        let session = NCSession.Session(account: account, urlBase: urlBase, user: user, userId: userId)
+        return NCUtilityFileSystem().isDirectoryE2EE(session: session, serverUrl: serverUrl)
     }
 
     var isDirectoryE2EETop: Bool {
@@ -454,7 +454,7 @@ extension NCManageDatabase {
         })
     }
 
-    func createMetadata(fileName: String, fileNameView: String, ocId: String, serverUrl: String, url: String, contentType: String, isUrl: Bool = false, name: String = NCGlobal.shared.appName, subline: String? = nil, iconName: String? = nil, iconUrl: String? = nil, domain: NCDomain.Domain) -> tableMetadata {
+    func createMetadata(fileName: String, fileNameView: String, ocId: String, serverUrl: String, url: String, contentType: String, isUrl: Bool = false, name: String = NCGlobal.shared.appName, subline: String? = nil, iconName: String? = nil, iconUrl: String? = nil, session: NCSession.Session) -> tableMetadata {
         let metadata = tableMetadata()
 
         if isUrl {
@@ -482,7 +482,7 @@ extension NCManageDatabase {
 
         let fileName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        metadata.account = domain.account
+        metadata.account = session.account
         metadata.creationDate = Date() as NSDate
         metadata.date = Date() as NSDate
         metadata.hasPreview = true
@@ -497,9 +497,9 @@ extension NCManageDatabase {
         metadata.subline = subline
         metadata.uploadDate = Date() as NSDate
         metadata.url = url
-        metadata.urlBase = domain.urlBase
-        metadata.user = domain.user
-        metadata.userId = domain.userId
+        metadata.urlBase = session.urlBase
+        metadata.user = session.user
+        metadata.userId = session.userId
 
         if !metadata.urlBase.isEmpty, metadata.serverUrl.hasPrefix(metadata.urlBase) {
             metadata.path = String(metadata.serverUrl.dropFirst(metadata.urlBase.count)) + "/"
@@ -895,10 +895,10 @@ extension NCManageDatabase {
         return nil
     }
 
-    func getMetadataFolder(domain: NCDomain.Domain, serverUrl: String) -> tableMetadata? {
+    func getMetadataFolder(session: NCSession.Session, serverUrl: String) -> tableMetadata? {
         var serverUrl = serverUrl
         var fileName = ""
-        let serverUrlHome = utilityFileSystem.getHomeServer(domain: domain)
+        let serverUrlHome = utilityFileSystem.getHomeServer(session: session)
 
         if serverUrlHome == serverUrl {
             fileName = "."
@@ -913,7 +913,7 @@ extension NCManageDatabase {
         do {
             let realm = try Realm()
             realm.refresh()
-            guard let result = realm.objects(tableMetadata.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@", domain.account, serverUrl, fileName).first else { return nil }
+            guard let result = realm.objects(tableMetadata.self).filter("account == %@ AND serverUrl == %@ AND fileName == %@", session.account, serverUrl, fileName).first else { return nil }
             return tableMetadata(value: result)
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
@@ -1064,18 +1064,18 @@ extension NCManageDatabase {
         return nil
     }
 
-    func getMetadatasFromGroupfolders(domain: NCDomain.Domain) -> [tableMetadata] {
+    func getMetadatasFromGroupfolders(session: NCSession.Session) -> [tableMetadata] {
         var metadatas: [tableMetadata] = []
-        let homeServerUrl = utilityFileSystem.getHomeServer(domain: domain)
+        let homeServerUrl = utilityFileSystem.getHomeServer(session: session)
 
         do {
             let realm = try Realm()
             realm.refresh()
-            let groupfolders = realm.objects(TableGroupfolders.self).filter("account == %@", domain.account)
+            let groupfolders = realm.objects(TableGroupfolders.self).filter("account == %@", session.account)
             for groupfolder in groupfolders {
                 let mountPoint = groupfolder.mountPoint.hasPrefix("/") ? groupfolder.mountPoint : "/" + groupfolder.mountPoint
                 let serverUrlFileName = homeServerUrl + mountPoint
-                if let directory = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", domain.account, serverUrlFileName).first,
+                if let directory = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", session.account, serverUrlFileName).first,
                    let metadata = realm.objects(tableMetadata.self).filter("ocId == %@", directory.ocId).first {
                     metadatas.append(tableMetadata(value: metadata))
                 }

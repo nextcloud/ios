@@ -36,8 +36,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     init(enumeratedItemIdentifier: NSFileProviderItemIdentifier) {
         self.enumeratedItemIdentifier = enumeratedItemIdentifier
         if enumeratedItemIdentifier == .rootContainer {
-            let domain = NCDomain.shared.getDomain(account: fileProviderData.shared.account)
-            serverUrl = NCUtilityFileSystem().getHomeServer(domain: domain)
+            let session = NCSession.shared.getSession(account: fileProviderData.shared.account)
+            serverUrl = NCUtilityFileSystem().getHomeServer(session: session)
         } else {
             if let metadata = providerUtility.getTableMetadataFromItemIdentifier(enumeratedItemIdentifier),
                let directorySource = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {

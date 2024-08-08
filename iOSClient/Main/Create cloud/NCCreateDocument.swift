@@ -43,28 +43,30 @@ class NCCreateDocument: NSObject {
                 options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentNCText())
             }
 
-            NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateId, account: account, options: options) { account, url, _, error in
-                guard error == .success, account == account, let url = url else {
-                    NCContentPresenter().showError(error: error)
-                    return
+            NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateId, account: account, options: options) { returnedAccount, url, _, error in
+                guard error == .success, let url else {
+                    return NCContentPresenter().showError(error: error)
                 }
-                let contentType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false).mimeType
-                let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: UUID, serverUrl: serverUrl, url: url, contentType: contentType, domain: domain)
+                if account == returnedAccount {
+                    let contentType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false).mimeType
+                    let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: UUID, serverUrl: serverUrl, url: url, contentType: contentType, domain: domain)
 
-                NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+                    NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+                }
             }
 
         } else if editorId == NCGlobal.shared.editorCollabora {
 
-            NextcloudKit.shared.createRichdocuments(path: fileNamePath, templateId: templateId, account: account) { account, url, _, error in
-                guard error == .success, account == account, let url = url else {
-                    NCContentPresenter().showError(error: error)
-                    return
+            NextcloudKit.shared.createRichdocuments(path: fileNamePath, templateId: templateId, account: account) { returnedAccount, url, _, error in
+                guard error == .success, let url else {
+                    return NCContentPresenter().showError(error: error)
                 }
-                let contentType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false).mimeType
-                let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: UUID, serverUrl: serverUrl, url: url, contentType: contentType, domain: domain)
+                if account == returnedAccount {
+                    let contentType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false).mimeType
+                    let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: UUID, serverUrl: serverUrl, url: url, contentType: contentType, domain: domain)
 
-                NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+                    NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+                }
             }
         }
     }

@@ -57,7 +57,8 @@ class NCService: NSObject {
     // MARK: -
 
     func addInternalTypeIdentifier() {
-        // TODO: OLD compatibility InternalTypeIdentifier
+        NextcloudKit.shared.nkCommonInstance.clearInternalTypeIdentifier()
+
         // txt
         NextcloudKit.shared.nkCommonInstance.addInternalTypeIdentifier(typeIdentifier: "text/plain", classFile: NKCommon.TypeClassFile.document.rawValue, editor: NCGlobal.shared.editorText, iconName: NKCommon.TypeIconFile.document.rawValue, name: "markdown")
 
@@ -165,7 +166,7 @@ class NCService: NSObject {
 
     private func requestServerCapabilities(account: String) {
         NextcloudKit.shared.getCapabilities(account: account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, data, error in
-            guard error == .success, let data = data else {
+            guard error == .success, let data else {
                 NCBrandColor.shared.settingThemingColor(account: account)
                 NCImageCache.shared.createImagesBrandCache()
                 return

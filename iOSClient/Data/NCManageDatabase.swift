@@ -162,7 +162,7 @@ class NCManageDatabase: NSObject {
     func clearDatabase(account: String, removeAccount: Bool) {
         if removeAccount {
             self.clearTable(tableAccount.self, account: account)
-            NCDomain.shared.removeDomain(account: account)
+            NCSession.shared.removeSession(account: account)
         }
 
         self.clearTable(tableActivity.self, account: account)
