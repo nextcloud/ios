@@ -281,7 +281,7 @@ extension NCCollectionViewCommon {
                     icon: utility.loadImage(named: "text.cursor", colors: [NCBrandColor.shared.iconImageColor]),
                     order: 120,
                     action: { _ in
-                        self.present(UIAlertController.renameFile(oldName: metadata.fileName), animated: true)
+                        self.present(UIAlertController.renameFile(metadata: metadata, indexPath: indexPath), animated: true)
                     }
                 )
             )

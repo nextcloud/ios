@@ -153,11 +153,28 @@ extension UIAlertController {
         return alertController
     }
 
-    static func renameFile(oldName: String, completion: ((_ error: NKError) -> Void)? = nil) -> UIAlertController {
+    static func renameFile(metadata: tableMetadata, indexPath: IndexPath, completion: ((_ error: NKError) -> Void)? = nil) -> UIAlertController {
         let alertController = UIAlertController(title: NSLocalizedString("_rename_", comment: ""), message: nil, preferredStyle: .alert)
 
         let okAction = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default, handler: { _ in
-            guard let fileNameFolder = alertController.textFields?.first?.text else { return }
+            guard let newFileName = alertController.textFields?.first?.text else { return }
+
+            // verify if already exists
+            if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, newFileName)) != nil {
+                NCContentPresenter().showError(error: NKError(errorCode: 0, errorDescription: "_rename_already_exists_"))
+                return
+            }
+
+            NCActivityIndicator.shared.start()
+
+            NCNetworking.shared.renameMetadata(metadata, fileNameNew: newFileName, indexPath: indexPath) { error in
+
+                NCActivityIndicator.shared.stop()
+
+                if error != .success {
+                    NCContentPresenter().showError(error: error)
+                }
+            }
         })
 
         // text field is initially empty, no action
@@ -165,7 +182,7 @@ extension UIAlertController {
         let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel)
 
         alertController.addTextField { textField in
-            textField.text = oldName
+            textField.text = metadata.fileName
             textField.autocapitalizationType = .words
         }
 
@@ -195,6 +212,16 @@ extension UIAlertController {
 
         alertController.addAction(cancelAction)
         alertController.addAction(okAction)
+        return alertController
+    }
+
+    static func warning(title: String? = nil, message: String? = nil) -> UIAlertController {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+
+        let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default)
+
+        alertController.addAction(okAction)
+
         return alertController
     }
 }

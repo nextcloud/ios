@@ -93,6 +93,13 @@ extension NCShareExtension: NCAccountRequestDelegate {
 
         reloadDatasource(withLoadFolder: true)
         setNavigationBar(navigationTitle: NCBrandOptions.shared.brand)
+
+        FileNameValidator.shared.setup(
+            forbiddenFileNames: NCGlobal.shared.capabilityForbiddenFileNames,
+            forbiddenFileNameBasenames: NCGlobal.shared.capabilityForbiddenFileNameBasenames,
+            forbiddenFileNameCharacters: NCGlobal.shared.capabilityForbiddenFileNameCharacters,
+            forbiddenFileNameExtensions: NCGlobal.shared.capabilityForbiddenFileNameExtensions
+        )
     }
 }
 

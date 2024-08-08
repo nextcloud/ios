@@ -1017,6 +1017,7 @@
 "_add_audio_"               = "Add an external audio";
 "_maintenance_mode_"        = "Server is currently in maintenance mode";
 "_upload_foreground_msg_"   = "Do not close %@ to complete the transfer …";
+"_please_rename_file_"      = "Please rename the file or folder.";
 
 // Tip
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails.";
@@ -1091,10 +1092,10 @@
 "_poll_desc_"                    = "Please complete the log in process in your browser";
 
 // MARK: File name validator
-"_file_name_validator_error_upload_invalid_name_" = "Some files could not be uploaded as they contain forbidden names or invalid characters";
-"_file_name_validator_error_file_invalid_name_" = "File or folder name contains forbidden names or invalid characters";
-"_file_name_validator_error_folder_invalid_name_" = "Folder path contains forbidden names or invalid characters";
-"_file_name_validator_error_ends_with_space_period_" = "File or folder name ends with a space or a period";
-"_file_name_validator_error_reserved_name_" = "%@ is a reserved name";
-"_file_name_validator_error_forbidden_file_extension_" = ".%@ is a forbidden file extension";
-"_file_name_validator_error_invalid_character_" = "File or folder name contains an invalid character: %@";
+//"_file_name_validator_error_upload_invalid_name_" = "Some files could not be uploaded as they contain forbidden names or invalid characters.";
+"_file_name_validator_error_file_invalid_name_" = "Name contains forbidden names or invalid characters.";
+"_file_name_validator_error_folder_invalid_name_" = "Folder path contains forbidden names or invalid characters.";
+"_file_name_validator_error_ends_with_space_period_" = "Name ends with a space or a period.";
+"_file_name_validator_error_reserved_name_" = "%@ is a forbidden name.";
+"_file_name_validator_error_forbidden_file_extension_" = ".%@ is a forbidden file extension.";
+"_file_name_validator_error_invalid_character_" = "File or folder name contains an invalid character: %@.";

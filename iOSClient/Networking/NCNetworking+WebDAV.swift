@@ -412,7 +412,6 @@ extension NCNetworking {
     func renameMetadata(_ metadata: tableMetadata,
                         fileNameNew: String,
                         indexPath: IndexPath,
-                        viewController: UIViewController?,
                         completion: @escaping (_ error: NKError) -> Void) {
         let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
         let fileNameNew = fileNameNew.trimmingCharacters(in: .whitespacesAndNewlines)

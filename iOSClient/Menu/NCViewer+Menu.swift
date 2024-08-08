@@ -152,7 +152,7 @@ extension NCViewer {
                     title: NSLocalizedString("_rename_", comment: ""),
                     icon: utility.loadImage(named: "text.cursor", colors: [NCBrandColor.shared.iconImageColor]),
                     action: { _ in
-                        viewController.present(UIAlertController.renameFile(oldName: metadata.fileName), animated: true)
+                        viewController.present(UIAlertController.renameFile(metadata: metadata, indexPath: indexPath), animated: true)
                     }
                 )
             )
