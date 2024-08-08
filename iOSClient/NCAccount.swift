@@ -130,7 +130,7 @@ class NCAccount: NSObject {
         })
     }
 
-    func updateShareAccounts() -> Error? {
+    func updateAppsShareAccounts() -> Error? {
         guard let dirGroupApps = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupApps) else { return nil }
         let tableAccount = NCManageDatabase.shared.getAllAccount()
         var accounts = [NKShareAccounts.DataAccounts]()

@@ -149,8 +149,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Auto upload: false")
         }
 
-        if let error = NCAccount().updateShareAccounts() {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Create share accounts \(error.localizedDescription)")
+        if let error = NCAccount().updateAppsShareAccounts() {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Create Apps share accounts \(error.localizedDescription)")
         }
 
         appDelegate?.scheduleAppRefresh()
