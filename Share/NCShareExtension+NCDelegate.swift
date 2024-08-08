@@ -75,14 +75,14 @@ extension NCShareExtension: NCAccountRequestDelegate {
 
         // NETWORKING
         NextcloudKit.shared.setup(delegate: NCNetworking.shared)
-        NextcloudKit.shared.appendAccount(activeAccount.account,
-                                          urlBase: activeAccount.urlBase,
-                                          user: activeAccount.user,
-                                          userId: activeAccount.userId,
-                                          password: NCKeychain().getPassword(account: activeAccount.account),
-                                          userAgent: userAgent,
-                                          nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
-                                          groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+        NextcloudKit.shared.appendDomain(account: activeAccount.account,
+                                         urlBase: activeAccount.urlBase,
+                                         user: activeAccount.user,
+                                         userId: activeAccount.userId,
+                                         password: NCKeychain().getPassword(account: activeAccount.account),
+                                         userAgent: userAgent,
+                                         nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
+                                         groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()

@@ -36,17 +36,16 @@ class NCAccount: NSObject {
 
         NextcloudKit.shared.getUserProfile(account: account) { account, userProfile, _, error in
             if error == .success, let userProfile {
-                NextcloudKit.shared.appendAccount(account,
-                                                  urlBase: urlBase,
-                                                  user: user,
-                                                  userId: user,
-                                                  password: password,
-                                                  userAgent: userAgent,
-                                                  nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
-                                                  groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+                NextcloudKit.shared.appendDomain(account: account,
+                                                 urlBase: urlBase,
+                                                 user: user,
+                                                 userId: userProfile.userId,
+                                                 password: password,
+                                                 userAgent: userAgent,
+                                                 nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
+                                                 groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
                 NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
                 NCKeychain().setClientCertificate(account: account, p12Data: NCNetworking.shared.p12Data, p12Password: NCNetworking.shared.p12Password)
-                NextcloudKit.shared.updateAccount(account, userId: userProfile.userId)
                 /// change -> account
                 self.changeAccount(account, userProfile: userProfile) {
                     completion(error)
@@ -65,7 +64,6 @@ class NCAccount: NSObject {
                        sceneIdentifier: String? = nil,
                        completion: () -> Void) {
         /// Set new account in DB
-        let previusActiveAccount = NCDomain.shared.getActiveDomain().account
         if NCManageDatabase.shared.setAccountActive(account) == nil {
             return completion()
         }
@@ -115,8 +113,8 @@ class NCAccount: NSObject {
         }
         /// Remove account in all database
         NCManageDatabase.shared.clearDatabase(account: account, removeAccount: true)
-        /// Remov e account in NextcloudKit
-        NextcloudKit.shared.removeAccount(account)
+        /// Remove domain in NextcloudKit
+        NextcloudKit.shared.removeDomain(account: account)
         /// Remove keychain security
         NCKeychain().setPassword(account: account, password: nil)
         NCKeychain().clearAllKeysEndToEnd(account: account)

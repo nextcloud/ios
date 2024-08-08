@@ -67,14 +67,14 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, fami
     let password = NCKeychain().getPassword(account: account.account)
 
     NextcloudKit.shared.setup(delegate: NCNetworking.shared)
-    NextcloudKit.shared.appendAccount(account.account,
-                                      urlBase: account.urlBase,
-                                      user: account.user,
-                                      userId: account.userId,
-                                      password: password,
-                                      userAgent: userAgent,
-                                      nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
-                                      groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+    NextcloudKit.shared.appendDomain(account: account.account,
+                                     urlBase: account.urlBase,
+                                     user: account.user,
+                                     userId: account.userId,
+                                     password: password,
+                                     userAgent: userAgent,
+                                     nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
+                                     groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
     let options = NKRequestOptions(timeout: 90, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
     if #available(iOSApplicationExtension 16.0, *) {

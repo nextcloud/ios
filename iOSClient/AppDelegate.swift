@@ -101,14 +101,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
             for account in NCManageDatabase.shared.getAllAccount() {
                 NCDomain.shared.appendDomain(account: account.account, urlBase: account.urlBase, user: account.user, userId: account.userId)
-                NextcloudKit.shared.appendAccount(account.account,
-                                                  urlBase: account.urlBase,
-                                                  user: account.user,
-                                                  userId: account.userId,
-                                                  password: NCKeychain().getPassword(account: account.account),
-                                                  userAgent: userAgent,
-                                                  nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
-                                                  groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+                NextcloudKit.shared.appendDomain(account: account.account,
+                                                 urlBase: account.urlBase,
+                                                 user: account.user,
+                                                 userId: account.userId,
+                                                 password: NCKeychain().getPassword(account: account.account),
+                                                 userAgent: userAgent,
+                                                 nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
+                                                 groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
             }
 
             DispatchQueue.global().async {
