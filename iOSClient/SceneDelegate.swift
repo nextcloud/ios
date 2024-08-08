@@ -37,12 +37,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
               let appDelegate else { return }
         self.window = UIWindow(windowScene: windowScene)
 
-        if NCDomain.shared.isActiveDomainValid(),
+        if NCSession.shared.isActiveSessionValid(),
            let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
                 SceneManager.shared.register(scene: scene, withRootViewController: controller)
                 window?.rootViewController = controller
                 window?.makeKeyAndVisible()
-            NCDomain.shared.setSceneIdentifier(account: NCSession.shared.getActiveSession().account, sceneIdentifier: controller.sceneIdentifier)
+            NCSession.shared.setSceneIdentifier(account: NCSession.shared.getActiveSession().account, sceneIdentifier: controller.sceneIdentifier)
         } else {
             if NCBrandOptions.shared.disable_intro {
                 appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false, windowForRootViewController: window)
@@ -72,7 +72,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             UIApplication.shared.allSceneSessionDestructionExceptFirst()
             return
         }
-        guard NCDomain.shared.isActiveDomainValid() else { return }
+        guard NCSession.shared.isActiveSessionValid() else { return }
 
         hidePrivacyProtectionWindow()
         if let window = SceneManager.shared.getWindow(scene: scene), let controller = SceneManager.shared.getController(scene: scene) {
@@ -110,7 +110,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func sceneWillResignActive(_ scene: UIScene) {
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Scene will resign active")
-        guard NCDomain.shared.isActiveDomainValid() else { return }
+        guard NCSession.shared.isActiveSessionValid() else { return }
 
         // STOP TIMER UPLOAD PROCESS
         NCNetworkingProcess.shared.stopTimer()
@@ -136,9 +136,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func sceneDidEnterBackground(_ scene: UIScene) {
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Scene did enter in background")
-        guard NCDomain.shared.isActiveDomainValid() else { return }
+        guard NCSession.shared.isActiveSessionValid() else { return }
 
-        if NCDomain.shared.getActiveTableAccount().autoUpload {
+        if NCSession.shared.getActiveTableAccount().autoUpload {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Auto upload: true")
             if UIApplication.shared.backgroundRefreshStatus == .available {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Auto upload in background: true")
@@ -196,7 +196,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
          Example: nextcloud://open-action?action=create-voice-memo&&user=marinofaggiana&url=https://cloud.nextcloud.com
          */
 
-        if NCDomain.shared.isActiveDomainValid() && scheme == NCGlobal.shared.appScheme && action == "open-action" {
+        if NCSession.shared.isActiveSessionValid() && scheme == NCGlobal.shared.appScheme && action == "open-action" {
 
             if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
                 let queryItems = urlComponents.queryItems
@@ -217,7 +217,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
                     NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: controller) { hasPermission in
                         if hasPermission {
-                            NCPhotosPickerViewController(controller: controller, maxSelectedAssets: 0, singleSelectedMode: false, domain: NCSession.shared.getActiveSession())
+                            NCPhotosPickerViewController(controller: controller, maxSelectedAssets: 0, singleSelectedMode: false, session: NCSession.shared.getActiveSession())
                         }
                     }
 
@@ -227,16 +227,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
                 case NCGlobal.shared.actionTextDocument:
 
-                    let domain = NCSession.shared.getActiveSession()
-                    let directEditingCreators = NCManageDatabase.shared.getDirectEditingCreators(account: domain.account)
+                    let session = NCSession.shared.getActiveSession()
+                    let directEditingCreators = NCManageDatabase.shared.getDirectEditingCreators(account: session.account)
                     let directEditingCreator = directEditingCreators!.first(where: { $0.editor == NCGlobal.shared.editorText})!
                     let serverUrl = controller.currentServerUrl()
 
                     Task {
-                        let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + ".md", account: domain.account, serverUrl: serverUrl)
-                        let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: serverUrl, domain: domain)
+                        let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + ".md", account: session.account, serverUrl: serverUrl)
+                        let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: serverUrl, session: session)
 
-                        NCCreateDocument().createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: NCGlobal.shared.editorText, creatorId: directEditingCreator.identifier, templateId: NCGlobal.shared.templateDocument, account: domain.account)
+                        NCCreateDocument().createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: NCGlobal.shared.editorText, creatorId: directEditingCreator.identifier, templateId: NCGlobal.shared.templateDocument, account: session.account)
                     }
 
                 case NCGlobal.shared.actionVoiceMemo:
@@ -263,7 +263,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
          Example: nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
          */
 
-        else if NCDomain.shared.isActiveDomainValid() && scheme == NCGlobal.shared.appScheme && action == "open-file" {
+        else if NCSession.shared.isActiveSessionValid() && scheme == NCGlobal.shared.appScheme && action == "open-file" {
 
             if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
 
@@ -305,7 +305,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
          Example: nextcloud://open-and-switch-account?user=marinofaggiana&url=https://cloud.nextcloud.com
          */
 
-        } else if NCDomain.shared.isActiveDomainValid() && scheme == NCGlobal.shared.appScheme && action == "open-and-switch-account" {
+        } else if NCSession.shared.isActiveSessionValid() && scheme == NCGlobal.shared.appScheme && action == "open-and-switch-account" {
             guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return }
             let queryItems = urlComponents.queryItems
             guard let userScheme = queryItems?.filter({ $0.name == "user" }).first?.value,
@@ -316,7 +316,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
             // Otherwise open the app and switch accounts
             return
-        } else if NCDomain.shared.isActiveDomainValid(), let action {
+        } else if NCSession.shared.isActiveSessionValid(), let action {
             if DeepLink(rawValue: action) != nil {
                 NCDeepLinkHandler().parseDeepLink(url, controller: controller)
             }
@@ -356,7 +356,7 @@ extension SceneDelegate: NCPasscodeDelegate {
         let accounts = NCManageDatabase.shared.getAllAccount()
 
         if accounts.count > 1, let accountRequestVC = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
-            accountRequestVC.activeAccount = NCDomain.shared.getActiveTableAccount()
+            accountRequestVC.activeAccount = NCSession.shared.getActiveTableAccount()
             accountRequestVC.accounts = accounts
             accountRequestVC.enableTimerProgress = true
             accountRequestVC.enableAddAccount = false

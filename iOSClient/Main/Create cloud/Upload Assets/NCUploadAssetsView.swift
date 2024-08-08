@@ -118,7 +118,7 @@ struct NCUploadAssetsView: View {
                         if !model.useAutoUploadFolder {
                             HStack {
                                 Label {
-                                    if utilityFileSystem.getHomeServer(domain: model.domain) == model.serverUrl {
+                                    if utilityFileSystem.getHomeServer(session: model.session) == model.serverUrl {
                                         Text("/")
                                             .font(.system(size: 15))
                                             .frame(maxWidth: .infinity, alignment: .trailing)
