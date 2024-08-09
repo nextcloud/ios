@@ -92,6 +92,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func sceneDidBecomeActive(_ scene: UIScene) {
         let controller = SceneManager.shared.getController(scene: scene) as? NCMainTabBarController
+        let account = NCSession.shared.getActiveSession(controller: controller).account
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Scene did become active")
 
         NCSettingsBundleHelper.setVersionAndBuildNumber()
@@ -102,9 +103,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         hidePrivacyProtectionWindow()
 
-        NCService().startRequestServicesServer(account: NCSession.shared.getActiveSession(controller: controller).account)
+        NCService().startRequestServicesServer(account: account)
 
-        NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
+        NCAutoUpload.shared.initAutoUpload(viewController: nil, account: account) { items in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
         }
     }

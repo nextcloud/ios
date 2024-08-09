@@ -37,9 +37,10 @@ class NCAutoUpload: NSObject {
 
     // MARK: -
 
-    @objc func initAutoUpload(viewController: UIViewController?, completion: @escaping (_ items: Int) -> Void) {
-        guard NCSession.shared.isActiveSessionValid(),
-              NCSession.shared.getActiveTableAccount().autoUpload else {
+    @objc func initAutoUpload(viewController: UIViewController?, account: String, completion: @escaping (_ items: Int) -> Void) {
+        let session = NCSession.shared.getSession(account: account)
+        guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)),
+              tableAccount.autoUpload else {
             return completion(0)
         }
         applicationState = UIApplication.shared.applicationState
@@ -50,22 +51,22 @@ class NCAutoUpload: NSObject {
                 return completion(0)
             }
             DispatchQueue.global(qos: .userInteractive).async {
-                self.uploadAssetsNewAndFull(viewController: viewController, selector: NCGlobal.shared.selectorUploadAutoUpload, log: "Init Auto Upload") { items in
+                self.uploadAssetsNewAndFull(viewController: viewController, selector: NCGlobal.shared.selectorUploadAutoUpload, log: "Init Auto Upload", account: account) { items in
                     completion(items)
                 }
             }
         }
     }
 
-    func initAutoUpload(viewController: UIViewController? = nil) async -> Int {
+    func initAutoUpload(viewController: UIViewController? = nil, account: String) async -> Int {
         await withUnsafeContinuation({ continuation in
-            initAutoUpload(viewController: viewController) { items in
+            initAutoUpload(viewController: viewController, account: account) { items in
                 continuation.resume(returning: items)
             }
         })
     }
 
-    @objc func autoUploadFullPhotos(viewController: UIViewController?, log: String) {
+    @objc func autoUploadFullPhotos(viewController: UIViewController?, log: String, account: String) {
         applicationState = UIApplication.shared.applicationState
 
         NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
@@ -74,21 +75,22 @@ class NCAutoUpload: NSObject {
             NCContentPresenter().showWarning(error: error, priority: .max)
             NCActivityIndicator.shared.start()
             DispatchQueue.global(qos: .userInteractive).async {
-                self.uploadAssetsNewAndFull(viewController: viewController, selector: NCGlobal.shared.selectorUploadAutoUploadAll, log: log) { _ in
+                self.uploadAssetsNewAndFull(viewController: viewController, selector: NCGlobal.shared.selectorUploadAutoUploadAll, log: log, account: account) { _ in
                     NCActivityIndicator.shared.stop()
                 }
             }
         }
     }
 
-    private func uploadAssetsNewAndFull(viewController: UIViewController?, selector: String, log: String, completion: @escaping (_ items: Int) -> Void) {
-        let session = NCSession.shared.getActiveSession()
-        let activeTableAccount = NCSession.shared.getActiveTableAccount()
+    private func uploadAssetsNewAndFull(viewController: UIViewController?, selector: String, log: String, account: String, completion: @escaping (_ items: Int) -> Void) {
+        guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else {
+            return completion(0)
+        }
+        let session = NCSession.shared.getSession(account: account)
         let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(session: session)
         var metadatas: [tableMetadata] = []
 
         self.getCameraRollAssets(viewController: viewController, selector: selector, alignPhotoLibrary: false) { assets in
-
             guard let assets, !assets.isEmpty else {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Automatic upload, no new assets found [" + log + "]")
                 return completion(0)
@@ -96,7 +98,7 @@ class NCAutoUpload: NSObject {
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Automatic upload, new \(assets.count) assets found [" + log + "]")
             // Create the folder for auto upload & if request the subfolders
-            if !NCNetworking.shared.createFolder(assets: assets, useSubFolder: activeTableAccount.autoUploadCreateSubfolder, withPush: false, session: session) {
+            if !NCNetworking.shared.createFolder(assets: assets, useSubFolder: tableAccount.autoUploadCreateSubfolder, withPush: false, session: session) {
                 if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
                     let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_error_createsubfolders_upload_")
                     NCContentPresenter().showError(error: error, priority: .max)
@@ -114,7 +116,7 @@ class NCAutoUpload: NSObject {
                 var serverUrl: String = ""
                 let fileName = NCUtilityFileSystem().createFileName(asset.originalFilename as String, fileDate: assetDate, fileType: assetMediaType)
 
-                if activeTableAccount.autoUploadCreateSubfolder {
+                if tableAccount.autoUploadCreateSubfolder {
                     serverUrl = NCUtilityFileSystem().createGranularityPath(asset: asset, serverUrl: autoUploadPath)
                 } else {
                     serverUrl = autoUploadPath
@@ -127,13 +129,13 @@ class NCAutoUpload: NSObject {
                 if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
                     uploadSession = NextcloudKit.shared.nkCommonInstance.identifierSessionUpload
                 } else {
-                    if assetMediaType == PHAssetMediaType.image && activeTableAccount.autoUploadWWAnPhoto == false {
+                    if assetMediaType == PHAssetMediaType.image && tableAccount.autoUploadWWAnPhoto == false {
                         uploadSession = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground
-                    } else if assetMediaType == PHAssetMediaType.video && activeTableAccount.autoUploadWWAnVideo == false {
+                    } else if assetMediaType == PHAssetMediaType.video && tableAccount.autoUploadWWAnVideo == false {
                         uploadSession = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground
-                    } else if assetMediaType == PHAssetMediaType.image && activeTableAccount.autoUploadWWAnPhoto {
+                    } else if assetMediaType == PHAssetMediaType.image && tableAccount.autoUploadWWAnPhoto {
                         uploadSession = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundWWan
-                    } else if assetMediaType == PHAssetMediaType.video && activeTableAccount.autoUploadWWAnVideo {
+                    } else if assetMediaType == PHAssetMediaType.video && tableAccount.autoUploadWWAnVideo {
                         uploadSession = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundWWan
                     } else {
                         uploadSession = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground
@@ -184,9 +186,9 @@ class NCAutoUpload: NSObject {
 
     // MARK: -
 
-    @objc func alignPhotoLibrary(viewController: UIViewController?) {
-        getCameraRollAssets(viewController: viewController, selector: NCGlobal.shared.selectorUploadAutoUploadAll, alignPhotoLibrary: true) { assets in
-            NCManageDatabase.shared.clearTable(tablePhotoLibrary.self, account: NCSession.shared.getActiveSession().account)
+    @objc func alignPhotoLibrary(viewController: UIViewController?, account: String) {
+        getCameraRollAssets(viewController: viewController, selector: NCGlobal.shared.selectorUploadAutoUploadAll, alignPhotoLibrary: true, account: account) { assets in
+            NCManageDatabase.shared.clearTable(tablePhotoLibrary.self, account: account)
             guard let assets = assets else { return }
 
             NCManageDatabase.shared.addPhotoLibrary(assets, account: NCSession.shared.getActiveSession().account)
@@ -194,10 +196,12 @@ class NCAutoUpload: NSObject {
         }
     }
 
-    private func getCameraRollAssets(viewController: UIViewController?, selector: String, alignPhotoLibrary: Bool, completion: @escaping (_ assets: [PHAsset]?) -> Void) {
-        let activeTableAccount = NCSession.shared.getActiveTableAccount()
+    private func getCameraRollAssets(viewController: UIViewController?, selector: String, alignPhotoLibrary: Bool, account: String, completion: @escaping (_ assets: [PHAsset]?) -> Void) {
         NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
-            guard hasPermission else { return completion(nil) }
+            guard hasPermission,
+                  let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else {
+                return completion(nil)
+            }
             let assetCollection = PHAssetCollection.fetchAssetCollections(with: PHAssetCollectionType.smartAlbum, subtype: PHAssetCollectionSubtype.smartAlbumUserLibrary, options: nil)
             guard let assetCollection = assetCollection.firstObject else { return completion(nil) }
             let predicateImage = NSPredicate(format: "mediaType == %i", PHAssetMediaType.image.rawValue)
@@ -206,11 +210,11 @@ class NCAutoUpload: NSObject {
             let fetchOptions = PHFetchOptions()
             var newAssets: [PHAsset] = []
 
-            if alignPhotoLibrary || (activeTableAccount.autoUploadImage && activeTableAccount.autoUploadVideo) {
+            if alignPhotoLibrary || (tableAccount.autoUploadImage && tableAccount.autoUploadVideo) {
                 predicate = NSCompoundPredicate(orPredicateWithSubpredicates: [predicateImage, predicateVideo])
-            } else if activeTableAccount.autoUploadImage {
+            } else if tableAccount.autoUploadImage {
                 predicate = predicateImage
-            } else if activeTableAccount.autoUploadVideo {
+            } else if tableAccount.autoUploadVideo {
                 predicate = predicateVideo
             } else {
                 return completion(nil)
@@ -220,13 +224,13 @@ class NCAutoUpload: NSObject {
             let assets: PHFetchResult<PHAsset> = PHAsset.fetchAssets(in: assetCollection, options: fetchOptions)
 
             if selector == NCGlobal.shared.selectorUploadAutoUpload {
-                let idAssets = NCManageDatabase.shared.getPhotoLibraryIdAsset(image: activeTableAccount.autoUploadImage, video: activeTableAccount.autoUploadVideo, account: activeTableAccount.account)
+                let idAssets = NCManageDatabase.shared.getPhotoLibraryIdAsset(image: tableAccount.autoUploadImage, video: tableAccount.autoUploadVideo, account: account)
                 assets.enumerateObjects { asset, _, _ in
                     var creationDateString = ""
                     if let creationDate = asset.creationDate {
                         creationDateString = String(describing: creationDate)
                     }
-                    let idAsset = activeTableAccount.account + asset.localIdentifier + creationDateString
+                    let idAsset = account + asset.localIdentifier + creationDateString
                     if !(idAssets?.contains(idAsset) ?? false) {
                         newAssets.append(asset)
                     }
