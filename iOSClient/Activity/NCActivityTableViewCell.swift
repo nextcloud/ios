@@ -51,7 +51,9 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
     var idActivity: Int = 0
     var activityPreviews: [tableActivityPreview] = []
     var didSelectItemEnable: Bool = true
-    var viewController = UIViewController()
+    var viewController = NCActivity()
+    var account: String = ""
+
     let utility = NCUtility()
 
     var indexPath: IndexPath {
@@ -117,7 +119,7 @@ extension NCActivityTableViewCell: UICollectionViewDelegate {
             guard let activitySubjectRich = NCManageDatabase.shared.getActivitySubjectRich(account: activityPreview.account, idActivity: activityPreview.idActivity, id: String(activityPreview.fileId)) else {
                 return
             }
-            NCActionCenter.shared.viewerFile(account: NCSession.shared.getActiveSession().account, fileId: activitySubjectRich.id, viewController: viewController)
+            NCActionCenter.shared.viewerFile(account: account, fileId: activitySubjectRich.id, viewController: viewController)
         }
     }
 }
@@ -136,7 +138,6 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
         guard let cell: NCActivityCollectionViewCell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionCell", for: indexPath) as? NCActivityCollectionViewCell else {
             return UICollectionViewCell()
         }
-        let domain = NCSession.shared.getActiveSession()
 
         cell.imageView.image = nil
         cell.indexPath = indexPath
@@ -148,7 +149,7 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
         if activityPreview.view == "trashbin" {
             let source = activityPreview.source
 
-            utility.convertSVGtoPNGWriteToUserData(svgUrlString: source, width: 100, rewrite: false, account: domain.account, id: idActivity) { imageNamePath, id in
+            utility.convertSVGtoPNGWriteToUserData(svgUrlString: source, width: 100, rewrite: false, account: account, id: idActivity) { imageNamePath, id in
                 if let imageNamePath = imageNamePath, id == self.idActivity, let image = UIImage(contentsOfFile: imageNamePath) {
                     cell.imageView.image = image
                 } else {
@@ -159,7 +160,7 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
             if activityPreview.isMimeTypeIcon {
                 let source = activityPreview.source
 
-                utility.convertSVGtoPNGWriteToUserData(svgUrlString: source, width: 150, rewrite: false, account: domain.account, id: idActivity) { imageNamePath, id in
+                utility.convertSVGtoPNGWriteToUserData(svgUrlString: source, width: 150, rewrite: false, account: account, id: idActivity) { imageNamePath, id in
                     if let imageNamePath = imageNamePath, id == self.idActivity, let image = UIImage(contentsOfFile: imageNamePath) {
                         cell.imageView.image = image
                     } else {
@@ -179,7 +180,7 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
                         cell.fileId = fileId
                         if !FileManager.default.fileExists(atPath: fileNamePath) {
                             if NCNetworking.shared.downloadThumbnailActivityQueue.operations.filter({ ($0 as? NCOperationDownloadThumbnailActivity)?.fileId == fileId }).isEmpty {
-                                NCNetworking.shared.downloadThumbnailActivityQueue.addOperation(NCOperationDownloadThumbnailActivity(fileId: fileId, fileNamePreviewLocalPath: fileNamePath, account: domain.account, cell: cell, collectionView: collectionView))
+                                NCNetworking.shared.downloadThumbnailActivityQueue.addOperation(NCOperationDownloadThumbnailActivity(fileId: fileId, fileNamePreviewLocalPath: fileNamePath, account: account, cell: cell, collectionView: collectionView))
                             }
                         }
                     }

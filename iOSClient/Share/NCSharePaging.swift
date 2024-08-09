@@ -193,6 +193,7 @@ extension NCSharePaging: PagingViewControllerDataSource {
             viewController.didSelectItemEnable = false
             viewController.metadata = metadata
             viewController.objectType = "files"
+            viewController.session = NCSession.shared.getSession(account: metadata.account)
             return viewController
         } else if pages[index] == .sharing {
             guard let viewController = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "sharing") as? NCShare else {

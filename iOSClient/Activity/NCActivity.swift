@@ -45,6 +45,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
     var insets = UIEdgeInsets(top: 8, left: 0, bottom: 0, right: 0)
     var didSelectItemEnable: Bool = true
     var objectType: String?
+    var session: NCSession.Session?
 
     var isFetchingActivity = false
     var hasActivityToLoad = true {
@@ -73,12 +74,12 @@ class NCActivity: UIViewController, NCSharePagingContent {
 
     func setupComments() {
         // Display Name & Quota
-        let account = NCSession.shared.getActiveSession().account
+        guard let metadata else { return }
         tableView.register(UINib(nibName: "NCShareCommentsCell", bundle: nil), forCellReuseIdentifier: "cell")
         commentView = Bundle.main.loadNibNamed("NCActivityCommentView", owner: self, options: nil)?.first as? NCActivityCommentView
-        commentView?.setup(account: account) { newComment in
+        commentView?.setup(account: metadata.account) { newComment in
             guard let newComment = newComment, !newComment.isEmpty, let metadata = self.metadata else { return }
-            NextcloudKit.shared.putComments(fileId: metadata.fileId, message: newComment, account: account) { _, error in
+            NextcloudKit.shared.putComments(fileId: metadata.fileId, message: newComment, account: metadata.account) { _, error in
                 if error == .success {
                     self.commentView?.newCommentField.text?.removeAll()
                     self.loadComments()
@@ -92,6 +93,9 @@ class NCActivity: UIViewController, NCSharePagingContent {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
+        if session == nil {
+            self.session = NCSession.shared.getActiveSession(controller: self.tabBarController)
+        }
         navigationController?.setNavigationBarAppearance()
         fetchAll(isInitial: true)
     }
@@ -205,10 +209,10 @@ extension NCActivity: UITableViewDataSource {
     }
 
     func makeCommentCell(_ comment: tableComments, for indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? NCShareCommentsCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? NCShareCommentsCell,
+              let metadata else {
             return UITableViewCell()
         }
-        let session = NCSession.shared.getActiveSession()
 
         cell.indexPath = indexPath
         cell.tableComments = comment
@@ -216,7 +220,7 @@ extension NCActivity: UITableViewDataSource {
         cell.sizeToFit()
 
         // Image
-        let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: comment.actorId)
+        let fileName = NCSession.shared.getFileName(urlBase: metadata.urlBase, user: comment.actorId)
         NCNetworking.shared.downloadAvatar(user: comment.actorId, dispalyName: comment.actorDisplayName, fileName: fileName, account: comment.account, cell: cell, view: tableView)
         // Username
         cell.labelUser.text = comment.actorDisplayName
@@ -228,7 +232,7 @@ extension NCActivity: UITableViewDataSource {
         cell.labelMessage.text = comment.message
         cell.labelMessage.textColor = NCBrandColor.shared.textColor
         // Button Menu
-        if comment.actorId == NCSession.shared.getActiveSession().userId {
+        if comment.actorId == metadata.userId {
             cell.buttonMenu.isHidden = false
         } else {
             cell.buttonMenu.isHidden = true
@@ -242,9 +246,10 @@ extension NCActivity: UITableViewDataSource {
             return UITableViewCell()
         }
         var orderKeysId: [String] = []
-        let session = NCSession.shared.getActiveSession()
+        let session = NCSession.shared.getSession(account: activity.account)
 
         cell.idActivity = activity.idActivity
+        cell.account = activity.account
         cell.indexPath = indexPath
         cell.avatar.image = nil
         cell.avatar.isHidden = true
@@ -262,7 +267,7 @@ extension NCActivity: UITableViewDataSource {
                     cell.icon.image = image.withTintColor(NCBrandColor.shared.textColor, renderingMode: .alwaysOriginal)
                 }
             } else {
-                NextcloudKit.shared.downloadContent(serverUrl: activity.icon, account: session.account) { _, data, error in
+                NextcloudKit.shared.downloadContent(serverUrl: activity.icon, account: activity.account) { _, data, error in
                     if error == .success {
                         do {
                             try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
@@ -367,15 +372,16 @@ extension NCActivity {
     }
 
     func loadDataSource() {
+        guard let session else { return }
         var newItems = [DateCompareable]()
 
-        if showComments, let metadata = metadata {
-            let comments = NCManageDatabase.shared.getComments(account: NCSession.shared.getActiveSession().account, objectId: metadata.fileId)
+        if showComments, let metadata {
+            let comments = NCManageDatabase.shared.getComments(account: metadata.account, objectId: metadata.fileId)
             newItems += comments
         }
 
         let activities = NCManageDatabase.shared.getActivity(
-            predicate: NSPredicate(format: "account == %@", NCSession.shared.getActiveSession().account),
+            predicate: NSPredicate(format: "account == %@", session.account),
             filterFileId: metadata?.fileId)
         newItems += activities.filter
 
@@ -408,8 +414,8 @@ extension NCActivity {
 
     /// Check if most recent activivities are loaded, if not trigger reload
     func checkRecentActivity(disptachGroup: DispatchGroup) {
-        let domain = NCSession.shared.getActiveSession()
-        guard let result = NCManageDatabase.shared.getLatestActivityId(account: domain.account), metadata == nil, hasActivityToLoad else {
+        guard let session else { return }
+        guard let result = NCManageDatabase.shared.getLatestActivityId(account: session.account), metadata == nil, hasActivityToLoad else {
             return self.loadActivity(idActivity: 0, disptachGroup: disptachGroup)
         }
         let resultActivityId = max(result.activityFirstKnown, result.activityLastGiven)
@@ -422,14 +428,14 @@ extension NCActivity {
             objectId: nil,
             objectType: objectType,
             previews: true,
-            account: domain.account) { task in
+            account: session.account) { task in
                 self.dataSourceTask = task
             } completion: { account, _, activityFirstKnown, activityLastGiven, _, error in
                 defer { disptachGroup.leave() }
 
                 let largestActivityId = max(activityFirstKnown, activityLastGiven)
                 guard error == .success,
-                      account == domain.account,
+                      account == session.account,
                       largestActivityId > resultActivityId
                 else {
                     self.hasActivityToLoad = error.errorCode == NCGlobal.shared.errorNotModified ? false : self.hasActivityToLoad
@@ -441,9 +447,8 @@ extension NCActivity {
     }
 
     func loadActivity(idActivity: Int, limit: Int = 200, disptachGroup: DispatchGroup) {
-        guard hasActivityToLoad else { return }
+        guard hasActivityToLoad, let session else { return }
         var resultActivityId = 0
-        let domain = NCSession.shared.getActiveSession()
 
         disptachGroup.enter()
         NextcloudKit.shared.getActivity(
@@ -452,12 +457,12 @@ extension NCActivity {
             objectId: metadata?.fileId,
             objectType: objectType,
             previews: true,
-            account: domain.account) { task in
+            account: session.account) { task in
                 self.dataSourceTask = task
             } completion: { account, activities, activityFirstKnown, activityLastGiven, _, error in
                 defer { disptachGroup.leave() }
                 guard error == .success,
-                      account == domain.account,
+                      account == session.account,
                       !activities.isEmpty
                 else {
                     self.hasActivityToLoad = error.errorCode == NCGlobal.shared.errorNotModified ? false : self.hasActivityToLoad
@@ -467,7 +472,7 @@ extension NCActivity {
 
                 // update most recently loaded activity only when all activities are loaded (not filtered)
                 let largestActivityId = max(activityFirstKnown, activityLastGiven)
-                if let result = NCManageDatabase.shared.getLatestActivityId(account: domain.account) {
+                if let result = NCManageDatabase.shared.getLatestActivityId(account: session.account) {
                     resultActivityId = max(result.activityFirstKnown, result.activityLastGiven)
                 }
                 if self.metadata == nil, largestActivityId > resultActivityId {
