@@ -39,6 +39,9 @@ class NCMainTabBarController: UITabBarController {
     }
 
     func currentViewController() -> UIViewController? {
+        if let navVC = self.presentedViewController as? UINavigationController {
+            return navVC.viewControllers.first
+        }
         return (selectedViewController as? UINavigationController)?.topViewController
     }
 
