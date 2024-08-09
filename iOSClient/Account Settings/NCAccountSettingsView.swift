@@ -41,10 +41,9 @@ struct NCAccountSettingsView: View {
             Form {
                 Section(content: {
                     TabView(selection: $model.indexActiveAccount) {
-                        let session = NCSession.shared.getActiveSession()
                         ForEach(0..<model.accounts.count, id: \.self) { index in
                             let status = model.getUserStatus()
-                            let avatar = NCUtility().loadUserImage(for: model.accounts[index].user, displayName: model.accounts[index].displayName, urlBase: session.urlBase)
+                            let avatar = NCUtility().loadUserImage(for: model.accounts[index].user, displayName: model.accounts[index].displayName, urlBase: model.accounts[index].urlBase)
                             ///
                             /// User
                             VStack {
