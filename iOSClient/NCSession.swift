@@ -102,14 +102,14 @@ public class NCSession: NSObject {
         if let session = sessions.filter({ $0.sceneIdentifier == sceneIdentifier }).first {
             return session
         }
-        return Session(account: "", urlBase: "", user: "", userId: "")
+        return getActiveSession()
     }
     public func getActiveSession(controller: UIViewController?) -> Session {
         if let sceneIdentifier = (controller as? NCMainTabBarController)?.sceneIdentifier,
            let session = sessions.filter({ $0.sceneIdentifier == sceneIdentifier }).first {
             return session
         }
-        return Session(account: "", urlBase: "", user: "", userId: "")
+        return getActiveSession()
     }
 #endif
 

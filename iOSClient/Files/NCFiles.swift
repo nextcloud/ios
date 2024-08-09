@@ -288,9 +288,10 @@ class NCFiles: NCCollectionViewCommon {
     // MARK: - NCAccountSettingsModelDelegate
 
     override func accountSettingsDidDismiss(tableAccount: tableAccount?, controller: NCMainTabBarController?) {
+        let currentAccount = NCSession.shared.getActiveSession(controller: controller).account
         if NCManageDatabase.shared.getAllAccount().isEmpty {
             appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
-        } else if let account = tableAccount?.account, account != NCSession.shared.getActiveSession().account {
+        } else if let account = tableAccount?.account, account != currentAccount {
             NCAccount().changeAccount(account, userProfile: nil, sceneIdentifier: controller?.sceneIdentifier) { }
         } else if isRoot {
             titleCurrentFolder = getNavigationTitle()
