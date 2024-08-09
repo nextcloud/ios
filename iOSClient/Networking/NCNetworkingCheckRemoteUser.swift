@@ -42,7 +42,7 @@ class NCNetworkingCheckRemoteUser {
                     let accounts = NCManageDatabase.shared.getAccounts()
                     if accounts?.count ?? 0 > 0 {
                         if let newAccount = accounts?.first {
-                            NCAccount().changeAccount(newAccount, userProfile: nil) { }
+                            NCAccount().changeAccount(newAccount, userProfile: nil, sceneIdentifier: nil) { }
                         } else {
                             let appDelegate = UIApplication.shared.delegate as? AppDelegate
                             appDelegate?.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)

@@ -89,7 +89,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
-            NCSession.shared.setActiveTableAccount(activeTableAccount)
+            NCSession.shared.setActiveTableAccount(activeTableAccount, sceneIdentifier: nil)
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Account active \(activeTableAccount.account)")
 
             if NCKeychain().getPassword(account: activeTableAccount.account).isEmpty {
@@ -317,7 +317,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 let accounts = NCManageDatabase.shared.getAllAccount()
                 for account in accounts {
                     if account.account == accountPush {
-                        NCAccount().changeAccount(account.account, userProfile: nil) {
+                        NCAccount().changeAccount(account.account, userProfile: nil, sceneIdentifier: nil) {
                             findAccount = true
                         }
                     }

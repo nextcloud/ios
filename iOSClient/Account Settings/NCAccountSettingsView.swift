@@ -279,7 +279,7 @@ struct NCAccountSettingsView: View {
             }
         }
         .onDisappear {
-            model.delegate?.accountSettingsDidDismiss(tableAccount: model.activeAccount)
+            model.delegate?.accountSettingsDidDismiss(tableAccount: model.activeAccount, controller: model.controller)
         }
     }
 }

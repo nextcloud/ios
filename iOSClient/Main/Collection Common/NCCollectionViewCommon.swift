@@ -872,7 +872,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         return alias
     }
 
-    func accountSettingsDidDismiss(tableAccount: tableAccount?) { }
+    func accountSettingsDidDismiss(tableAccount: tableAccount?, controller: NCMainTabBarController?) { }
 
     // MARK: - SEARCH
 

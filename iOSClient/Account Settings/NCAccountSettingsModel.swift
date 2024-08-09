@@ -27,7 +27,7 @@ import RealmSwift
 
 /// Protocol for know when the Account Settings has dimissed
 protocol NCAccountSettingsModelDelegate: AnyObject {
-    func accountSettingsDidDismiss(tableAccount: tableAccount?)
+    func accountSettingsDidDismiss(tableAccount: tableAccount?, controller: NCMainTabBarController?)
 }
 
 /// A model that allows the user to configure the account

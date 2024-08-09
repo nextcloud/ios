@@ -385,7 +385,7 @@ extension SceneDelegate: NCAccountRequestDelegate {
     func accountRequestAddAccount() { }
 
     func accountRequestChangeAccount(account: String) {
-        NCAccount().changeAccount(account, userProfile: nil) { }
+        NCAccount().changeAccount(account, userProfile: nil, sceneIdentifier: nil) { }
     }
 }
 

@@ -42,7 +42,7 @@ public class NCSession: NSObject {
             self.sceneIdentifier = sceneIdentifier
         }
     }
-    private var session: ThreadSafeArray<Session> = ThreadSafeArray()
+    private var sessions: ThreadSafeArray<Session> = ThreadSafeArray()
     private var activeTableAccount = tableAccount()
 
     override private init() {}
@@ -50,25 +50,25 @@ public class NCSession: NSObject {
     /// SESSION
     ///
     public func appendSession(account: String, urlBase: String, user: String, userId: String) {
-        if self.session.filter({ $0.account == account }).first != nil {
+        if sessions.filter({ $0.account == account }).first != nil {
             return updateSession(account, userId: userId)
         }
-        self.session.append(Session(account: account, urlBase: urlBase, user: user, userId: userId))
+        self.sessions.append(Session(account: account, urlBase: urlBase, user: user, userId: userId))
     }
 
     public func updateSession(_ account: String, userId: String? = nil) {
-        guard let session = self.session.filter({ $0.account == account }).first else { return }
+        guard let session = sessions.filter({ $0.account == account }).first else { return }
         if let userId {
             session.userId = userId
         }
     }
 
     public func removeSession(account: String) {
-        self.session.remove(where: { $0.account == account })
+        sessions.remove(where: { $0.account == account })
     }
 
     public func getSession(account: String) -> Session {
-        if let domain = self.session.filter({ $0.account == account }).first {
+        if let domain = sessions.filter({ $0.account == account }).first {
             return domain
         }
         return Session(account: "", urlBase: "", user: "", userId: "")
@@ -79,7 +79,7 @@ public class NCSession: NSObject {
     }
 
     public func setSceneIdentifier(account: String, sceneIdentifier: String?) {
-        if let session = self.session.filter({ $0.account == account }).first {
+        if let session = sessions.filter({ $0.account == account }).first {
             session.sceneIdentifier = sceneIdentifier
         }
     }
@@ -87,7 +87,7 @@ public class NCSession: NSObject {
     /// ACTIVE SESSION
     ///
     public func getActiveSession() -> Session {
-        if let session = self.session.filter({ $0.account == self.activeTableAccount.account }).first {
+        if let session = sessions.filter({ $0.account == self.activeTableAccount.account }).first {
             return session
         }
         return Session(account: "", urlBase: "", user: "", userId: "")
@@ -99,14 +99,14 @@ public class NCSession: NSObject {
 
 #if !EXTENSION
     public func getActiveSession(sceneIdentifier: String) -> Session {
-        if let session = self.session.filter({ $0.sceneIdentifier == sceneIdentifier }).first {
+        if let session = sessions.filter({ $0.sceneIdentifier == sceneIdentifier }).first {
             return session
         }
         return Session(account: "", urlBase: "", user: "", userId: "")
     }
     public func getActiveSession(controller: UIViewController?) -> Session {
         if let sceneIdentifier = (controller as? NCMainTabBarController)?.sceneIdentifier,
-           let session = self.session.filter({ $0.sceneIdentifier == sceneIdentifier }).first {
+           let session = sessions.filter({ $0.sceneIdentifier == sceneIdentifier }).first {
             return session
         }
         return Session(account: "", urlBase: "", user: "", userId: "")
@@ -115,8 +115,16 @@ public class NCSession: NSObject {
 
     /// ACTIVE TABLE ACCOUNT
     ///
-    func setActiveTableAccount(_ activeTableAccount: tableAccount) {
+    func setActiveTableAccount(_ activeTableAccount: tableAccount, sceneIdentifier: String?) {
         self.activeTableAccount = activeTableAccount
+        sessions.forEach { session in
+            if session.sceneIdentifier == sceneIdentifier {
+                session.sceneIdentifier = nil
+            }
+            if session.account == activeTableAccount.account {
+                session.sceneIdentifier = sceneIdentifier
+            }
+        }
     }
 
     func updateTableAccount(_ tableAccount: tableAccount) {

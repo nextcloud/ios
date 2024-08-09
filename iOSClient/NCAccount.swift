@@ -47,7 +47,7 @@ class NCAccount: NSObject {
                 NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
                 NCKeychain().setClientCertificate(account: account, p12Data: NCNetworking.shared.p12Data, p12Password: NCNetworking.shared.p12Password)
                 /// change -> account
-                self.changeAccount(account, userProfile: userProfile) {
+                self.changeAccount(account, userProfile: userProfile, sceneIdentifier: nil) {
                     completion(error)
                 }
             } else {
@@ -61,10 +61,10 @@ class NCAccount: NSObject {
 
     func changeAccount(_ account: String,
                        userProfile: NKUserProfile?,
-                       sceneIdentifier: String? = nil,
+                       sceneIdentifier: String?,
                        completion: () -> Void) {
         /// Set new account in DB
-        if NCManageDatabase.shared.setAccountActive(account) == nil {
+        if NCManageDatabase.shared.setAccountActive(account, sceneIdentifier: sceneIdentifier) == nil {
             return completion()
         }
         var session = NCSession.shared.getActiveSession()
