@@ -121,11 +121,13 @@ extension NCMedia {
             return(lessDate, greaterDate, 0, false, NKError())
         }
         let session = NCSession.shared.getActiveSession(controller: self.tabBarController)
-        let activeTableAccount = NCSession.shared.getActiveTableAccount()
+        guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
+            return(lessDate, greaterDate, 0, false, NKError())
+        }
         NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate)")
         let options = NKRequestOptions(timeout: timeout, taskDescription: self.taskDescriptionRetrievesProperties, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-        let results = await NCNetworking.shared.searchMedia(path: activeTableAccount.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: NCKeychain().showHiddenFiles, includeHiddenFiles: [], account: session.account, options: options)
-        if activeTableAccount.account != NCSession.shared.getActiveSession(controller: self.tabBarController).account {
+        let results = await NCNetworking.shared.searchMedia(path: tableAccount.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: NCKeychain().showHiddenFiles, includeHiddenFiles: [], account: session.account, options: options)
+        if tableAccount.account != NCSession.shared.getActiveSession(controller: self.tabBarController).account {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "User changed")
             return(lessDate, greaterDate, 0, false, error)
         } else if results.error == .success, let files = results.files {
@@ -142,9 +144,9 @@ extension NCMedia {
     }
 
     private func getPredicate(showAll: Bool = false) -> NSPredicate {
-        let activeTableAccount = NCSession.shared.getActiveTableAccount()
         let session = NCSession.shared.getActiveSession(controller: self.tabBarController)
-        let startServerUrl = NCUtilityFileSystem().getHomeServer(session: session) + activeTableAccount.mediaPath
+        guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", session.account)) else { return NSPredicate() }
+        let startServerUrl = NCUtilityFileSystem().getHomeServer(session: session) + tableAccount.mediaPath
 
         if showAll {
             return NSPredicate(format: imageCache.showAllPredicateMediaString, session.account, startServerUrl)

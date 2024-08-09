@@ -133,7 +133,7 @@ public class NCSession: NSObject {
         }
     }
 
-    func getActiveTableAccount() -> tableAccount {
+    private func getActiveTableAccount() -> tableAccount {
         return activeTableAccount
     }
 
