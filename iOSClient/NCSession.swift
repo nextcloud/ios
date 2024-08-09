@@ -27,12 +27,20 @@ import UIKit
 public class NCSession: NSObject {
     static let shared = NCSession()
 
-    public struct Session {
+    public class Session {
         var account: String
         var urlBase: String
         var user: String
         var userId: String
         var sceneIdentifier: String?
+
+        init(account: String, urlBase: String, user: String, userId: String, sceneIdentifier: String? = nil) {
+            self.account = account
+            self.urlBase = urlBase
+            self.user = user
+            self.userId = userId
+            self.sceneIdentifier = sceneIdentifier
+        }
     }
     private var session: ThreadSafeArray<Session> = ThreadSafeArray()
     private var activeTableAccount = tableAccount()
@@ -49,7 +57,7 @@ public class NCSession: NSObject {
     }
 
     public func updateSession(_ account: String, userId: String? = nil) {
-        guard var session = self.session.filter({ $0.account == account }).first else { return }
+        guard let session = self.session.filter({ $0.account == account }).first else { return }
         if let userId {
             session.userId = userId
         }
@@ -71,7 +79,7 @@ public class NCSession: NSObject {
     }
 
     public func setSceneIdentifier(account: String, sceneIdentifier: String?) {
-        if var session = self.session.filter({ $0.account == account }).first {
+        if let session = self.session.filter({ $0.account == account }).first {
             session.sceneIdentifier = sceneIdentifier
         }
     }
@@ -88,6 +96,16 @@ public class NCSession: NSObject {
     public func isActiveSessionValid() -> Bool {
         return !getActiveSession().account.isEmpty
     }
+
+#if !EXTENSION
+    public func getActiveSession(controller: UIViewController?) -> Session {
+        if let sceneIdentifier = (controller as? NCMainTabBarController)?.sceneIdentifier,
+           let session = self.session.filter({ $0.sceneIdentifier == sceneIdentifier }).first {
+            return session
+        }
+        return Session(account: "", urlBase: "", user: "", userId: "")
+    }
+#endif
 
     /// ACTIVE TABLE ACCOUNT
     ///
