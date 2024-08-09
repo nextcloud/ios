@@ -238,5 +238,5 @@ struct NCUploadAssetsView: View {
 }
 
 #Preview {
-    NCUploadAssetsView(model: NCUploadAssetsModel(assets: [], serverUrl: "/", controller: nil, session: NCSession.shared.getActiveSession()))
+    NCUploadAssetsView(model: NCUploadAssetsModel(assets: [], serverUrl: "/", controller: nil, session: NCSession.shared.getActiveSession(controller: nil)))
 }

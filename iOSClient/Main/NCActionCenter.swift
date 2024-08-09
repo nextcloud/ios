@@ -50,8 +50,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
               let ocId = userInfo["ocId"] as? String,
               let selector = userInfo["selector"] as? String,
               let error = userInfo["error"] as? NKError,
-              let account = userInfo["account"] as? String,
-              account == NCSession.shared.getActiveSession().account
+              let account = userInfo["account"] as? String
         else { return }
 
         guard error == .success else {
@@ -249,8 +248,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     @objc func uploadedFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let error = userInfo["error"] as? NKError,
-              let account = userInfo["account"] as? String,
-              account == NCSession.shared.getActiveSession().account
+              let account = userInfo["account"] as? String
         else { return }
 
         if error != .success, error.errorCode != NSURLErrorCancelled, error.errorCode != NCGlobal.shared.errorRequestExplicityCancelled {
@@ -476,10 +474,10 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     // MARK: -
 
     func openFileViewInFolder(serverUrl: String, fileNameBlink: String?, fileNameOpen: String?, sceneIdentifier: String) {
-        let session = NCSession.shared.getActiveSession()
         guard let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier),
               let navigationController = controller.viewControllers?.first as? UINavigationController
         else { return }
+        let session = NCSession.shared.getActiveSession(controller: controller)
         var serverUrlPush = self.utilityFileSystem.getHomeServer(session: session)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -564,7 +562,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     }
 
     func openSelectView(items: [tableMetadata], controller: NCMainTabBarController?) {
-        let session = NCSession.shared.getActiveSession()
+        let session = NCSession.shared.getActiveSession(controller: controller)
         let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as? UINavigationController
         let topViewController = navigationController?.topViewController as? NCSelect
         var listViewController = [NCSelect]()
