@@ -33,7 +33,7 @@ import RealmSwift
 
 extension NCMedia: NCMediaLayoutDelegate {
     func getColumnCount() -> Int {
-        let layoutForView = NCManageDatabase.shared.getLayoutForView(account: NCSession.shared.getActiveSession().account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")
+        let layoutForView = NCManageDatabase.shared.getLayoutForView(account: NCSession.shared.getActiveSession(controller: self.tabBarController).account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")
         if let column = layoutForView?.columnPhoto, column > 0 {
             return column
         }
@@ -41,7 +41,7 @@ extension NCMedia: NCMediaLayoutDelegate {
     }
 
     func getLayout() -> String? {
-        let layoutForView = NCManageDatabase.shared.getLayoutForView(account: NCSession.shared.getActiveSession().account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")
+        let layoutForView = NCManageDatabase.shared.getLayoutForView(account: NCSession.shared.getActiveSession(controller: self.tabBarController).account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")
         return layoutForView?.layout ?? NCGlobal.shared.mediaLayoutRatio
     }
 
