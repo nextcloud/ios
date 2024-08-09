@@ -125,7 +125,7 @@ class NCMedia: UIViewController {
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
             if let metadatas = self.metadatas,
                let metadata = metadatas.first {
-                if metadata.account != NCSession.shared.getActiveSession().account {
+                if metadata.account != NCSession.shared.getActiveSession(controller: self.tabBarController).account {
                     self.metadatas = nil
                     self.collectionViewReloadData()
                 }
@@ -182,7 +182,8 @@ class NCMedia: UIViewController {
 
         // Cancel Queue & Retrieves Properties
         NCNetworking.shared.downloadThumbnailQueue.cancelAll()
-        if let nkSession = NextcloudKit.shared.nkCommonInstance.getSession(account: NCSession.shared.getActiveSession().account) {
+        let account = NCSession.shared.getActiveSession(controller: self.tabBarController).account
+        if let nkSession = NextcloudKit.shared.nkCommonInstance.getSession(account: account) {
             nkSession.sessionData.session.getTasksWithCompletionHandler { dataTasks, _, _ in
                 dataTasks.forEach {
                     if $0.taskDescription == self.taskDescriptionRetrievesProperties {
@@ -360,12 +361,11 @@ extension NCMedia: UIScrollViewDelegate {
 // MARK: -
 
 extension NCMedia: NCSelectDelegate {
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool, session: NCSession.Session) {
         guard let serverUrl else { return }
-        let session = NCSession.shared.getActiveSession()
         let home = utilityFileSystem.getHomeServer(session: session)
         let mediaPath = serverUrl.replacingOccurrences(of: home, with: "")
-        NCManageDatabase.shared.setAccountMediaPath(mediaPath, account: NCSession.shared.getActiveSession().account)
+        NCManageDatabase.shared.setAccountMediaPath(mediaPath, account: session.account)
         reloadDataSource()
         startTimer()
     }

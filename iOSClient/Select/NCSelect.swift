@@ -25,8 +25,8 @@ import UIKit
 import SwiftUI
 import NextcloudKit
 
-@objc protocol NCSelectDelegate {
-    @objc func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool)
+protocol NCSelectDelegate: AnyObject {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool, session: NCSession.Session)
 }
 
 class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresentationControllerDelegate, NCListCellDelegate, NCSectionFirstHeaderDelegate {
@@ -47,7 +47,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     }
 
     // ------ external settings ------------------------------------
-    weak var delegate: NCSelectDelegate?
+    var delegate: NCSelectDelegate?
     var typeOfCommandView: selectType = .select
 
     var includeDirectoryE2EEncryption = false
@@ -58,6 +58,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
     var titleCurrentFolder = NCBrandOptions.shared.brand
     var serverUrl = ""
+    var session: NCSession.Session = NCSession.shared.getActiveSession()
     // -------------------------------------------------------------
 
     private var dataSourceTask: URLSessionTask?
@@ -190,17 +191,17 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     }
 
     func selectButtonPressed(_ sender: UIButton) {
-        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, items: items, overwrite: overwrite, copy: false, move: false)
+        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, items: items, overwrite: overwrite, copy: false, move: false, session: session)
         self.dismiss(animated: true, completion: nil)
     }
 
     func copyButtonPressed(_ sender: UIButton) {
-        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, items: items, overwrite: overwrite, copy: true, move: false)
+        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, items: items, overwrite: overwrite, copy: true, move: false, session: session)
         self.dismiss(animated: true, completion: nil)
     }
 
     func moveButtonPressed(_ sender: UIButton) {
-        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, items: items, overwrite: overwrite, copy: false, move: true)
+        delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadataFolder, type: type, items: items, overwrite: overwrite, copy: false, move: true, session: session)
         self.dismiss(animated: true, completion: nil)
     }
 
@@ -247,6 +248,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         viewController.items = items
         viewController.titleCurrentFolder = metadata.fileNameView
         viewController.serverUrl = serverUrlPush
+        viewController.session = session
 
         self.navigationController?.pushViewController(viewController, animated: true)
     }
@@ -266,7 +268,7 @@ extension NCSelect: UICollectionViewDelegate {
 
         } else {
 
-            delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadata, type: type, items: items, overwrite: overwrite, copy: false, move: false)
+            delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadata, type: type, items: items, overwrite: overwrite, copy: false, move: false, session: session)
             self.dismiss(animated: true, completion: nil)
         }
     }
@@ -628,9 +630,9 @@ class NCSelectCommandView: UIView {
 // MARK: - UIViewControllerRepresentable
 
 struct NCSelectViewControllerRepresentable: UIViewControllerRepresentable {
-
     typealias UIViewControllerType = UINavigationController
     var delegate: NCSelectDelegate
+    var session: NCSession.Session
 
     func makeUIViewController(context: Context) -> UINavigationController {
 
@@ -641,6 +643,7 @@ struct NCSelectViewControllerRepresentable: UIViewControllerRepresentable {
         viewController?.delegate = delegate
         viewController?.typeOfCommandView = .selectCreateFolder
         viewController?.includeDirectoryE2EEncryption = true
+        viewController?.session = session
 
         return navigationController!
     }
@@ -650,6 +653,7 @@ struct NCSelectViewControllerRepresentable: UIViewControllerRepresentable {
 
 struct SelectView: UIViewControllerRepresentable {
     @Binding var serverUrl: String
+    var session: NCSession.Session
 
     class Coordinator: NSObject, NCSelectDelegate {
         var parent: SelectView
@@ -658,7 +662,7 @@ struct SelectView: UIViewControllerRepresentable {
             self.parent = parent
         }
 
-        func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
+        func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool, session: NCSession.Session) {
             if let serverUrl = serverUrl {
                 self.parent.serverUrl = serverUrl
             }
@@ -673,6 +677,7 @@ struct SelectView: UIViewControllerRepresentable {
         viewController?.delegate = context.coordinator
         viewController?.typeOfCommandView = .selectCreateFolder
         viewController?.includeDirectoryE2EEncryption = true
+        viewController?.session = session
 
         return navigationController!
     }

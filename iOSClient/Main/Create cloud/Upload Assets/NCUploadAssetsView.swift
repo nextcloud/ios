@@ -179,7 +179,7 @@ struct NCUploadAssetsView: View {
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .sheet(isPresented: $showSelect) {
-            SelectView(serverUrl: $model.serverUrl)
+            SelectView(serverUrl: $model.serverUrl, session: NCSession.shared.getActiveSession(controller: model.controller))
         }
         .sheet(isPresented: $showUploadConflict) {
             UploadConflictView(delegate: model, serverUrl: model.serverUrl, metadatasUploadInConflict: model.metadatasUploadInConflict, metadatasNOConflict: model.metadatasNOConflict)

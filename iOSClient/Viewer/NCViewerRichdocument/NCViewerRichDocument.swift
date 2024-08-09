@@ -160,15 +160,12 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
     // MARK: -
 
     public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-
         if message.name == "RichDocumentsMobileInterface" {
-
             if message.body as? String == "close" {
                 viewUnload()
             }
 
             if message.body as? String == "insertGraphic" {
-
                 let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
                 if let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController,
                    let viewController = navigationController.topViewController as? NCSelect {
@@ -178,6 +175,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                     viewController.enableSelectFile = true
                     viewController.includeImages = true
                     viewController.type = ""
+                    viewController.session = NCSession.shared.getSession(account: metadata.account)
 
                     self.present(navigationController, animated: true, completion: nil)
                 }
@@ -197,7 +195,6 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                         let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + (metadata.fileName as NSString).deletingPathExtension
 
                         if type == "slideshow" {
-
                             if let browserWebVC = UIStoryboard(name: "NCBrowserWeb", bundle: nil).instantiateInitialViewController() as? NCBrowserWeb {
 
                                 browserWebVC.urlBase = urlString
@@ -205,25 +202,15 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                                 self.present(browserWebVC, animated: true)
                             }
                             return
-
                         } else {
-
                             // TYPE PRINT - DOWNLOAD
-
                             NCActivityIndicator.shared.start(backgroundView: view)
-
                             NextcloudKit.shared.download(serverUrlFileName: url, fileNameLocalPath: fileNameLocalPath, account: self.metadata.account, requestHandler: { _ in
-
                             }, taskHandler: { _ in
-
                             }, progressHandler: { _ in
-
                             }, completionHandler: { account, _, _, _, allHeaderFields, _, error in
-
                                 NCActivityIndicator.shared.stop()
-
                                 if error == .success && account == self.metadata.account {
-
                                     var item = fileNameLocalPath
 
                                     if let allHeaderFields = allHeaderFields {
@@ -297,7 +284,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
     // MARK: -
 
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool, session: NCSession.Session) {
         if let serverUrl, let metadata {
             let session = NCSession.shared.getSession(account: metadata.account)
             let path = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: serverUrl, session: session)
@@ -353,7 +340,6 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
 }
 
 extension NCViewerRichDocument: UINavigationControllerDelegate {
-
     override func didMove(toParent parent: UIViewController?) {
         super.didMove(toParent: parent)
 

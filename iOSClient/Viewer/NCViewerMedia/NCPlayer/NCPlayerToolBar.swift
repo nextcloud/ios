@@ -387,6 +387,7 @@ extension NCPlayerToolBar {
                         viewController.enableSelectFile = true
                         viewController.type = "subtitle"
                         viewController.serverUrl = metadata.serverUrl
+                        viewController.session = NCSession.shared.getSession(account: metadata.account)
 
                         self.viewerMediaPage?.present(navigationController, animated: true, completion: nil)
                     }
@@ -453,6 +454,7 @@ extension NCPlayerToolBar {
                         viewController.enableSelectFile = true
                         viewController.type = "audio"
                         viewController.serverUrl = metadata.serverUrl
+                        viewController.session = NCSession.shared.getSession(account: metadata.account)
 
                         self.viewerMediaPage?.present(navigationController, animated: true, completion: nil)
                     }
@@ -466,7 +468,7 @@ extension NCPlayerToolBar {
 
 extension NCPlayerToolBar: NCSelectDelegate {
 
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool, session: NCSession.Session) {
 
         if let metadata = metadata, let viewerMediaPage = viewerMediaPage {
 

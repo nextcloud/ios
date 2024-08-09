@@ -286,7 +286,7 @@ class NCUploadScanDocument: ObservableObject {
 // MARK: - Delegate
 
 extension NCUploadScanDocument: NCSelectDelegate {
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool, session: NCSession.Session) {
         if let serverUrl = serverUrl {
             self.serverUrl = serverUrl
         }
@@ -452,7 +452,7 @@ struct UploadScanDocumentView: View {
         }
         .background(Color(UIColor.systemGroupedBackground))
         .sheet(isPresented: $isPresentedSelect) {
-            NCSelectViewControllerRepresentable(delegate: uploadScanDocument)
+            NCSelectViewControllerRepresentable(delegate: uploadScanDocument, session: uploadScanDocument.session)
         }
         .sheet(isPresented: $isPresentedUploadConflict) {
             UploadConflictView(delegate: uploadScanDocument, serverUrl: uploadScanDocument.serverUrl, metadatasUploadInConflict: [uploadScanDocument.metadata], metadatasNOConflict: [])

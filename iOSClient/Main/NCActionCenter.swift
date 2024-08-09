@@ -525,7 +525,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     // MARK: - NCSelect + Delegate
 
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool, session: NCSession.Session) {
         if let serverUrl, !items.isEmpty {
             if copy {
                 Task {
@@ -594,6 +594,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             vc.typeOfCommandView = .copyMove
             vc.items = copyItems
             vc.serverUrl = serverUrl
+            vc.session = session
 
             vc.navigationItem.backButtonTitle = vc.titleCurrentFolder
             listViewController.insert(vc, at: 0)

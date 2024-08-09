@@ -78,7 +78,7 @@ struct NCAutoUploadView: View {
             Text("\(NSLocalizedString("_autoupload_current_folder_", comment: "")): \(model.returnPath())")
         })
         .sheet(isPresented: $model.autoUploadFolder) {
-            SelectView(serverUrl: $model.serverUrl)
+            SelectView(serverUrl: $model.serverUrl, session: NCSession.shared.getActiveSession(controller: model.controller))
                 .onDisappear {
                     model.setAutoUploadDirectory(serverUrl: model.serverUrl)
                 }
