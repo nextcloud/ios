@@ -31,7 +31,7 @@ extension AppDelegate {
 
     func toggleMenu(controller: NCMainTabBarController) {
         var actions: [NCMenuAction] = []
-        let session = NCSession.shared.getActiveSession()
+        let session = NCSession.shared.getActiveSession(controller: controller)
         let directEditingCreators = NCManageDatabase.shared.getDirectEditingCreators(account: session.account)
         let serverUrl = controller.currentServerUrl()
         let isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, account: session.account)
@@ -87,6 +87,7 @@ extension AppDelegate {
                         if hasPermission {
                             if let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as? NCAudioRecorderViewController {
                                 viewController.serverUrl = serverUrl
+                                viewController.session = session
                                 viewController.modalTransitionStyle = .crossDissolve
                                 viewController.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
                                 controller.present(viewController, animated: true, completion: nil)
