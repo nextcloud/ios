@@ -27,8 +27,8 @@ stages:
     --fail 
     --location 
     --request GET 
-    --url "https://git.qapint.com/api/v4/projects/18344/repository/files/GoogleService-Info.plist?ref=master" 
-    --header "Authorization:Bearer c4aFxSDq5MKbARhbSod6"  | jq -r '.content' | base64 --decode >> "./GoogleService-Info.plist"
+    --url $FB_PLIST_PATH 
+    --header "Authorization:Bearer ${FB_PLIST_PROJECT_TOKEN}"  | jq -r '.content' | base64 --decode >> "./GoogleService-Info.plist"
   
 
 .build_general_script: &build_general_script
