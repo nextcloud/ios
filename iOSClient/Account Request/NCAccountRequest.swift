@@ -26,7 +26,7 @@ import NextcloudKit
 
 public protocol NCAccountRequestDelegate: AnyObject {
     func accountRequestAddAccount()
-    func accountRequestChangeAccount(account: String)
+    func accountRequestChangeAccount(account: String, sceneIdentifier: String?)
 }
 
 class NCAccountRequest: UIViewController {
@@ -40,6 +40,7 @@ class NCAccountRequest: UIViewController {
     public var enableTimerProgress: Bool = true
     public var enableAddAccount: Bool = false
     public var dismissDidEnterBackground: Bool = false
+    public var sceneIdentifier: String?
     public weak var delegate: NCAccountRequestDelegate?
     let utility = NCUtility()
     private var timer: Timer?
@@ -136,7 +137,7 @@ extension NCAccountRequest: UITableViewDelegate {
             let account = accounts[indexPath.row]
             if account.account != activeAccount?.account {
                 dismiss(animated: true) {
-                    self.delegate?.accountRequestChangeAccount(account: account.account)
+                    self.delegate?.accountRequestChangeAccount(account: account.account, sceneIdentifier: self.sceneIdentifier)
                 }
             } else {
                 dismiss(animated: true)

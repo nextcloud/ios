@@ -82,7 +82,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     NCPasscode.shared.enableTouchFaceID()
                 }
             } else if NCKeychain().accountRequest {
-                requestedAccount(viewController: controller)
+                requestedAccount(controller: controller)
             }
         }
 
@@ -353,11 +353,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 // MARK: - Extension
 
 extension SceneDelegate: NCPasscodeDelegate {
-    func requestedAccount(viewController: UIViewController?) {
+    func requestedAccount(controller: UIViewController?) {
         let accounts = NCManageDatabase.shared.getAllAccount()
+        let sceneIdentifier = (controller as? NCMainTabBarController)?.sceneIdentifier
 
         if accounts.count > 1, let accountRequestVC = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
             accountRequestVC.activeAccount = NCSession.shared.getActiveTableAccount()
+            accountRequestVC.sceneIdentifier = sceneIdentifier
             accountRequestVC.accounts = accounts
             accountRequestVC.enableTimerProgress = true
             accountRequestVC.enableAddAccount = false
@@ -372,7 +374,7 @@ extension SceneDelegate: NCPasscodeDelegate {
             let popup = NCPopupViewController(contentController: accountRequestVC, popupWidth: 300, popupHeight: height + 20)
             popup.backgroundAlpha = 0.8
 
-            viewController?.present(popup, animated: true)
+            controller?.present(popup, animated: true)
         }
     }
 
@@ -384,8 +386,8 @@ extension SceneDelegate: NCPasscodeDelegate {
 extension SceneDelegate: NCAccountRequestDelegate {
     func accountRequestAddAccount() { }
 
-    func accountRequestChangeAccount(account: String) {
-        NCAccount().changeAccount(account, userProfile: nil, sceneIdentifier: nil) { }
+    func accountRequestChangeAccount(account: String, sceneIdentifier: String?) {
+        NCAccount().changeAccount(account, userProfile: nil, sceneIdentifier: sceneIdentifier) { }
     }
 }
 

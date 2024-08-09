@@ -151,7 +151,7 @@ class NCShareExtension: UIViewController {
                 self.cancel(with: .noAccount)
             }
         }
-        accountRequestChangeAccount(account: activeAccount.account)
+        accountRequestChangeAccount(account: activeAccount.account, sceneIdentifier: nil)
         guard let inputItems = extensionContext?.inputItems as? [NSExtensionItem] else {
             cancel(with: .noFiles)
             return
