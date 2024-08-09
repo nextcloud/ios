@@ -19,10 +19,15 @@ class NCAssistantTask: ObservableObject {
     @Published var hasError: Bool = false
     @Published var isLoading: Bool = false
 
+    private var session = NCSession.shared.getActiveSession()
     private var tasks: [NKTextProcessingTask] = []
     private let excludedTypeIds = ["OCA\\ContextChat\\TextProcessing\\ContextChatTaskType"]
 
-    init() {
+    init(controller: NCMainTabBarController?) {
+        if let controller {
+            session = NCSession.shared.getActiveSession(controller: controller)
+        }
+
         load()
     }
 
@@ -50,7 +55,7 @@ class NCAssistantTask: ObservableObject {
         guard let id = task.id else { return }
         isLoading = true
 
-        NextcloudKit.shared.textProcessingGetTask(taskId: id, account: NCSession.shared.getActiveSession().account) { _, task, _, error in
+        NextcloudKit.shared.textProcessingGetTask(taskId: id, account: session.account) { _, task, _, error in
             self.isLoading = false
 
             if error != .success {
@@ -65,7 +70,7 @@ class NCAssistantTask: ObservableObject {
     func scheduleTask(input: String) {
         isLoading = true
 
-        NextcloudKit.shared.textProcessingSchedule(input: input, typeId: selectedType?.id ?? "", identifier: "assistant", account: NCSession.shared.getActiveSession().account) { _, task, _, error in
+        NextcloudKit.shared.textProcessingSchedule(input: input, typeId: selectedType?.id ?? "", identifier: "assistant", account: session.account) { _, task, _, error in
             self.isLoading = false
 
             if error != .success {
@@ -86,7 +91,7 @@ class NCAssistantTask: ObservableObject {
         guard let id = task.id else { return }
         isLoading = true
 
-        NextcloudKit.shared.textProcessingDeleteTask(taskId: id, account: NCSession.shared.getActiveSession().account) { _, task, _, error in
+        NextcloudKit.shared.textProcessingDeleteTask(taskId: id, account: session.account) { _, task, _, error in
             self.isLoading = false
 
             if error != .success {
@@ -105,7 +110,7 @@ class NCAssistantTask: ObservableObject {
     private func loadAllTypes() {
         isLoading = true
 
-        NextcloudKit.shared.textProcessingGetTypes(account: NCSession.shared.getActiveSession().account) { _, types, _, error in
+        NextcloudKit.shared.textProcessingGetTypes(account: session.account) { _, types, _, error in
             self.isLoading = false
 
             if error != .success {
@@ -130,7 +135,7 @@ class NCAssistantTask: ObservableObject {
     private func loadAllTasks(appId: String = "assistant") {
         isLoading = true
 
-        NextcloudKit.shared.textProcessingTaskList(appId: appId, account: NCSession.shared.getActiveSession().account) { _, tasks, _, error in
+        NextcloudKit.shared.textProcessingTaskList(appId: appId, account: session.account) { _, tasks, _, error in
             self.isLoading = false
 
             if error != .success {

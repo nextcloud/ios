@@ -81,7 +81,7 @@ struct NCAssistant: View {
 }
 
 #Preview {
-    let model = NCAssistantTask()
+    let model = NCAssistantTask(controller: nil)
 
     return NCAssistant()
         .environmentObject(model)
