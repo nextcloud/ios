@@ -67,7 +67,15 @@ class NCAccount: NSObject {
         if NCManageDatabase.shared.setAccountActive(account) == nil {
             return completion()
         }
-        let session = NCSession.shared.getActiveSession()
+        let session: NCSession.Session?
+        if let sceneIdentifier {
+            session = NCSession.shared.getActiveSession(sceneIdentifier: sceneIdentifier)
+        } else {
+            session = NCSession.shared.getActiveSession()
+        }
+        guard let session else { 
+            return completion()
+        }
 
         /// Create Media Cache
         DispatchQueue.global().async {
