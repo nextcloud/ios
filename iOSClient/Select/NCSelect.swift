@@ -255,7 +255,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         viewController.serverUrl = serverUrlPush
 
         if let fileNameError = FileNameValidator.shared.checkFileName(metadata.fileNameView) {
-            present(UIAlertController.warning(message: fileNameError.errorDescription), animated: true, completion: nil)
+            present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
         } else {
             navigationController?.pushViewController(viewController, animated: true)
         }
