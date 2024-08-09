@@ -83,7 +83,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         navigationController?.setNavigationBarAppearance()
         navigationItem.title = titleCurrentFolder
 
-        layoutForView = NCManageDatabase.shared.getLayoutForView(account: NCSession.shared.getActiveSession().account, key: NCGlobal.shared.layoutViewTrash, serverUrl: "")
+        layoutForView = NCManageDatabase.shared.getLayoutForView(account: NCSession.shared.getActiveSession(controller: self.tabBarController).account, key: NCGlobal.shared.layoutViewTrash, serverUrl: "")
 
         if layoutForView?.layout == NCGlobal.shared.layoutList {
             collectionView.collectionViewLayout = listLayout
@@ -126,7 +126,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
     func setNavigationRightItems() {
         func createMenuActions() -> [UIMenuElement] {
-            guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: NCSession.shared.getActiveSession().account, key: layoutKey, serverUrl: "") else { return [] }
+            guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: NCSession.shared.getActiveSession(controller: tabBarController).account, key: layoutKey, serverUrl: "") else { return [] }
             let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: utility.loadImage(named: "checkmark.circle", colors: [NCBrandColor.shared.iconImageColor]), attributes: self.datasource.isEmpty ? .disabled : []) { _ in
                 self.setEditMode(true)
             }
@@ -202,7 +202,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
     @objc func reloadDataSource(withQueryDB: Bool = true) {
 
-        datasource = NCManageDatabase.shared.getTrash(filePath: getFilePath(), account: NCSession.shared.getActiveSession().account)
+        datasource = NCManageDatabase.shared.getTrash(filePath: getFilePath(), account: NCSession.shared.getActiveSession(controller: tabBarController).account)
         collectionView.reloadData()
         setNavigationRightItems()
 
@@ -226,8 +226,8 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
     func getFilePath() -> String {
         if filePath.isEmpty {
-            guard let userId = (NCSession.shared.getActiveSession().userId as NSString).addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlFragmentAllowed) else { return "" }
-            let filePath = NCSession.shared.getActiveSession().urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav + "/trashbin/" + userId + "/trash"
+            guard let userId = (NCSession.shared.getActiveSession(controller: tabBarController).userId as NSString).addingPercentEncoding(withAllowedCharacters: NSCharacterSet.urlFragmentAllowed) else { return "" }
+            let filePath = NCSession.shared.getActiveSession(controller: tabBarController).urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav + "/trashbin/" + userId + "/trash"
             return filePath + "/"
         } else {
             return filePath + "/"

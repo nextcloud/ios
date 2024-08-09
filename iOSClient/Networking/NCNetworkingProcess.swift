@@ -42,9 +42,10 @@ class NCNetworkingProcess: NSObject {
     func startTimer(scene: UIScene) {
         self.timerProcess?.invalidate()
         self.timerProcess = Timer.scheduledTimer(withTimeInterval: 2, repeats: true, block: { _ in
-            guard NCSession.shared.isActiveSessionValid(),
-                  !self.pauseProcess else { return }
-            let account = NCSession.shared.getActiveSession().account
+            guard let controller = SceneManager.shared.getController(scene: scene) as? NCMainTabBarController else {
+                return
+            }
+            let account = NCSession.shared.getActiveSession(controller: controller).account
 
             // In Downloading or Uploading [TEST]
             /*

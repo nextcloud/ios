@@ -409,7 +409,7 @@ extension NCManageDatabase {
         if isDirectoryE2EE || file.e2eEncrypted {
             if let tableE2eEncryption = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", file.account, file.serverUrl, file.fileName)) {
                 metadata.fileNameView = tableE2eEncryption.fileName
-                let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: metadata.fileNameView, mimeType: file.contentType, directory: file.directory,account: file.account)
+                let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: metadata.fileNameView, mimeType: file.contentType, directory: file.directory, account: file.account)
                 metadata.contentType = results.mimeType
                 metadata.iconName = results.iconName
                 metadata.classFile = results.classFile

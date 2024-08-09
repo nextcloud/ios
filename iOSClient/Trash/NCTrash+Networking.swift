@@ -26,7 +26,7 @@ import RealmSwift
 
 extension NCTrash {
     @objc func loadListingTrash() {
-        NextcloudKit.shared.listingTrash(filename: filename, showHiddenFiles: false, account: NCSession.shared.getActiveSession().account) { task in
+        NextcloudKit.shared.listingTrash(filename: filename, showHiddenFiles: false, account: NCSession.shared.getActiveSession(controller: tabBarController).account) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()
         } completion: { account, items, _, error in
@@ -43,7 +43,7 @@ extension NCTrash {
     }
 
     func restoreItem(with fileId: String) {
-        let domain = NCSession.shared.getActiveSession()
+        let domain = NCSession.shared.getActiveSession(controller: tabBarController)
         guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: fileId, account: domain.account) else { return }
         let fileNameFrom = tableTrash.filePath + tableTrash.fileName
         let fileNameTo = domain.urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav + "/trashbin/" + domain.userId + "/restore/" + tableTrash.fileName
@@ -59,7 +59,7 @@ extension NCTrash {
     }
 
     func emptyTrash() {
-        let domain = NCSession.shared.getActiveSession()
+        let domain = NCSession.shared.getActiveSession(controller: tabBarController)
         let serverUrlFileName = domain.urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav + "/trashbin/" + domain.userId + "/trash"
 
         NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: domain.account) { account, error in
@@ -73,7 +73,7 @@ extension NCTrash {
     }
 
     func deleteItem(with fileId: String) {
-        let domain = NCSession.shared.getActiveSession()
+        let domain = NCSession.shared.getActiveSession(controller: tabBarController)
         guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: fileId, account: domain.account) else { return }
         let serverUrlFileName = tableTrash.filePath + tableTrash.fileName
 
