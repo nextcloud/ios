@@ -27,7 +27,7 @@ import EasyTipView
 
 extension NCCollectionViewCommon: EasyTipViewDelegate {
     func showTip() {
-        let session = NCSession.shared.getActiveSession()
+        let session = NCSession.shared.getActiveSession(controller: self.tabBarController)
         guard NCSession.shared.isActiveSessionValid(),
               self is NCFiles,
               self.view.window != nil,
