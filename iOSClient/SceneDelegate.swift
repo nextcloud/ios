@@ -138,9 +138,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func sceneDidEnterBackground(_ scene: UIScene) {
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Scene did enter in background")
-        guard NCSession.shared.isActiveSessionValid() else { return }
+        let controller = SceneManager.shared.getController(scene: scene) as? NCMainTabBarController
+        let account = NCSession.shared.getActiveSession(controller: controller).account
+        guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else {
+            return
+        }
 
-        if NCSession.shared.getActiveTableAccount().autoUpload {
+        if tableAccount.autoUpload {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Auto upload: true")
             if UIApplication.shared.backgroundRefreshStatus == .available {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Auto upload in background: true")
@@ -360,8 +364,11 @@ extension SceneDelegate: NCPasscodeDelegate {
         let sceneIdentifier = (controller as? NCMainTabBarController)?.sceneIdentifier
 
         if accounts.count > 1, let accountRequestVC = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
-            accountRequestVC.activeAccount = NCSession.shared.getActiveTableAccount()
+
             accountRequestVC.sceneIdentifier = sceneIdentifier
+            if let sceneIdentifier {
+                accountRequestVC.activeAccount = NCSession.shared.getActiveSession(sceneIdentifier: sceneIdentifier).account
+            }
             accountRequestVC.accounts = accounts
             accountRequestVC.enableTimerProgress = true
             accountRequestVC.enableAddAccount = false

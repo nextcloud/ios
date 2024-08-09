@@ -38,7 +38,7 @@ extension NCShareExtension: NCAccountRequestDelegate {
             account.active = account.account == self.activeAccount.account
         }
 
-        vcAccountRequest.activeAccount = self.activeAccount
+        vcAccountRequest.activeAccount = self.activeAccount.account
         vcAccountRequest.accounts = accounts.sorted { sorg, dest -> Bool in
             return sorg.active && !dest.active
         }

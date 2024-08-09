@@ -591,9 +591,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - Layout
 
     func setNavigationLeftItems() {
-        guard layoutKey == NCGlobal.shared.layoutViewFiles else { return }
-        let activeTableAccount = NCSession.shared.getActiveTableAccount()
-        let image = utility.loadUserImage(for: activeTableAccount.user, displayName: activeTableAccount.displayName, urlBase: activeTableAccount.urlBase)
+        let session = NCSession.shared.getActiveSession(controller: self.tabBarController)
+        guard layoutKey == NCGlobal.shared.layoutViewFiles,
+              let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
+            return }
+        let image = utility.loadUserImage(for: tableAccount.user, displayName: tableAccount.displayName, urlBase: tableAccount.urlBase)
         let accountButton = AccountSwitcherButton(type: .custom)
         let accounts = NCManageDatabase.shared.getAllAccountOrderAlias()
         var childrenAccountSubmenu: [UIMenuElement] = []
@@ -865,11 +867,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func getNavigationTitle() -> String {
-        let alias = NCSession.shared.getActiveTableAccount().alias
-        if alias.isEmpty {
-            return NCBrandOptions.shared.brand
+        let session = NCSession.shared.getActiveSession(controller: self.tabBarController)
+        let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", session.account))
+        if let tableAccount,
+           !tableAccount.alias.isEmpty {
+            return tableAccount.alias
         }
-        return alias
+        return NCBrandOptions.shared.brand
     }
 
     func accountSettingsDidDismiss(tableAccount: tableAccount?, controller: NCMainTabBarController?) { }

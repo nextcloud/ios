@@ -49,7 +49,8 @@ extension NCMedia: UICollectionViewDropDelegate {
         DragDropHover.shared.cleanPushDragDropHover()
         DragDropHover.shared.sourceMetadatas = nil
         let session = NCSession.shared.getActiveSession(controller: self.tabBarController)
-        let serverUrl = NCUtilityFileSystem().getHomeServer(session: session) + NCSession.shared.getActiveTableAccount().mediaPath
+        guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", session.account)) else { return }
+        let serverUrl = NCUtilityFileSystem().getHomeServer(session: session) + tableAccount.mediaPath
 
         if let metadatas = NCDragDrop().performDrop(collectionView, performDropWith: coordinator, serverUrl: serverUrl, isImageVideo: true) {
             DragDropHover.shared.sourceMetadatas = metadatas
@@ -79,16 +80,20 @@ extension NCMedia: UICollectionViewDropDelegate {
     @objc func copyMenuFile() {
         guard let sourceMetadatas = DragDropHover.shared.sourceMetadatas else { return }
         let session = NCSession.shared.getActiveSession(controller: self.tabBarController)
-        let serverUrl = NCUtilityFileSystem().getHomeServer(session: session) + NCSession.shared.getActiveTableAccount().mediaPath
 
-        NCDragDrop().copyFile(metadatas: sourceMetadatas, serverUrl: serverUrl)
+        if let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", session.account)) {
+            let serverUrl = NCUtilityFileSystem().getHomeServer(session: session) + tableAccount.mediaPath
+            NCDragDrop().copyFile(metadatas: sourceMetadatas, serverUrl: serverUrl)
+        }
     }
 
     @objc func moveMenuFile() {
         guard let sourceMetadatas = DragDropHover.shared.sourceMetadatas else { return }
         let session = NCSession.shared.getActiveSession(controller: self.tabBarController)
-        let serverUrl = NCUtilityFileSystem().getHomeServer(session: session) + NCSession.shared.getActiveTableAccount().mediaPath
 
-        NCDragDrop().moveFile(metadatas: sourceMetadatas, serverUrl: serverUrl)
+        if let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", session.account)) {
+            let serverUrl = NCUtilityFileSystem().getHomeServer(session: session) + tableAccount.mediaPath
+            NCDragDrop().moveFile(metadatas: sourceMetadatas, serverUrl: serverUrl)
+        }
     }
 }

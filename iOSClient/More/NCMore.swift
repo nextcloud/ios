@@ -83,6 +83,10 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     // MARK: -
 
     func loadItems() {
+        let session = NCSession.shared.getActiveSession(controller: self.tabBarController)
+        guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
+            return
+        }
         var item = NKExternalSite()
         var quota: String = ""
 
@@ -194,15 +198,13 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
 
         // Display Name user & Quota
-        let activeTableAccount = NCSession.shared.getActiveTableAccount()
-
-        if activeTableAccount.quotaRelative > 0 {
-            progressQuota.progress = Float(activeTableAccount.quotaRelative) / 100
+        if tableAccount.quotaRelative > 0 {
+            progressQuota.progress = Float(tableAccount.quotaRelative) / 100
         } else {
             progressQuota.progress = 0
         }
 
-        switch activeTableAccount.quotaTotal {
+        switch tableAccount.quotaTotal {
         case -1:
             quota = "0"
         case -2:
@@ -210,15 +212,15 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         case -3:
             quota = NSLocalizedString("_quota_space_unlimited_", comment: "")
         default:
-            quota = utilityFileSystem.transformedSize(activeTableAccount.quotaTotal)
+            quota = utilityFileSystem.transformedSize(tableAccount.quotaTotal)
         }
-        let quotaUsed: String = utilityFileSystem.transformedSize(activeTableAccount.quotaUsed)
+        let quotaUsed: String = utilityFileSystem.transformedSize(tableAccount.quotaUsed)
 
         labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
 
         // ITEM : External
         if NCBrandOptions.shared.disable_more_external_site == false {
-            if let externalSites = NCManageDatabase.shared.getAllExternalSites(account: NCSession.shared.getActiveSession().account) {
+            if let externalSites = NCManageDatabase.shared.getAllExternalSites(account: session.account) {
                 for externalSite in externalSites {
                     if !externalSite.name.isEmpty, !externalSite.url.isEmpty, let urlEncoded = externalSite.url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
                         item = NKExternalSite()

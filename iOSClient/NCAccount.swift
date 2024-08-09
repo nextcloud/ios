@@ -92,7 +92,7 @@ class NCAccount: NSObject {
         /// Start the service
         NCService().startRequestServicesServer(account: account)
         /// Start the auto upload
-        NCAutoUpload.shared.initAutoUpload(viewController: nil) { items in
+        NCAutoUpload.shared.initAutoUpload(viewController: nil, account: account) { items in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
         }
 

@@ -68,16 +68,17 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
 
     /// Triggered when the view appears.
     func onViewAppear() {
-        let session = NCSession.shared.getActiveSession()
-        let activeTableAccount = NCSession.shared.getActiveTableAccount()
-        autoUpload = activeTableAccount.autoUpload
-        autoUploadImage = activeTableAccount.autoUploadImage
-        autoUploadWWAnPhoto = activeTableAccount.autoUploadWWAnPhoto
-        autoUploadVideo = activeTableAccount.autoUploadVideo
-        autoUploadWWAnVideo = activeTableAccount.autoUploadWWAnVideo
-        autoUploadFull = activeTableAccount.autoUploadFull
-        autoUploadCreateSubfolder = activeTableAccount.autoUploadCreateSubfolder
-        autoUploadSubfolderGranularity = Granularity(rawValue: activeTableAccount.autoUploadSubfolderGranularity) ?? .monthly
+        let session = NCSession.shared.getActiveSession(controller: controller)
+        if let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", session.account)) {
+            autoUpload = tableAccount.autoUpload
+            autoUploadImage = tableAccount.autoUploadImage
+            autoUploadWWAnPhoto = tableAccount.autoUploadWWAnPhoto
+            autoUploadVideo = tableAccount.autoUploadVideo
+            autoUploadWWAnVideo = tableAccount.autoUploadWWAnVideo
+            autoUploadFull = tableAccount.autoUploadFull
+            autoUploadCreateSubfolder = tableAccount.autoUploadCreateSubfolder
+            autoUploadSubfolderGranularity = Granularity(rawValue: tableAccount.autoUploadSubfolderGranularity) ?? .monthly
+        }
         serverUrl = NCUtilityFileSystem().getHomeServer(session: session)
         if autoUpload {
             requestAuthorization { value in
@@ -107,14 +108,14 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
 
     /// Updates the auto-upload setting.
     func handleAutoUploadChange(newValue: Bool) {
-        let session = NCSession.shared.getActiveSession()
+        let session = NCSession.shared.getActiveSession(controller: controller)
         if newValue {
             requestAuthorization { value in
                 self.autoUpload = value
                 self.updateAccountProperty(\.autoUpload, value: value)
                 NCManageDatabase.shared.setAccountAutoUploadFileName("")
                 NCManageDatabase.shared.setAccountAutoUploadDirectory("", session: session)
-                NCAutoUpload.shared.alignPhotoLibrary(viewController: self.controller)
+                NCAutoUpload.shared.alignPhotoLibrary(viewController: self.controller, account: session.account)
             }
         } else {
             updateAccountProperty(\.autoUpload, value: newValue)
@@ -127,7 +128,8 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     func handleAutoUploadImageChange(newValue: Bool) {
         updateAccountProperty(\.autoUploadImage, value: newValue)
         if newValue {
-            NCAutoUpload.shared.alignPhotoLibrary(viewController: controller)
+            let session = NCSession.shared.getActiveSession(controller: controller)
+            NCAutoUpload.shared.alignPhotoLibrary(viewController: controller, account: session.account)
         }
     }
 
@@ -140,7 +142,8 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     func handleAutoUploadVideoChange(newValue: Bool) {
         updateAccountProperty(\.autoUploadVideo, value: newValue)
         if newValue {
-            NCAutoUpload.shared.alignPhotoLibrary(viewController: controller)
+            let session = NCSession.shared.getActiveSession(controller: controller)
+            NCAutoUpload.shared.alignPhotoLibrary(viewController: controller, account: session.account)
         }
     }
 
@@ -152,10 +155,11 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     /// Updates the auto-upload full content setting.
     func handleAutoUploadFullChange(newValue: Bool) {
         updateAccountProperty(\.autoUploadFull, value: newValue)
+        let session = NCSession.shared.getActiveSession(controller: controller)
         if newValue {
-            NCAutoUpload.shared.autoUploadFullPhotos(viewController: self.controller, log: "Auto upload full")
+            NCAutoUpload.shared.autoUploadFullPhotos(viewController: self.controller, log: "Auto upload full", account: session.account)
         } else {
-            NCManageDatabase.shared.clearMetadatasUpload(account: NCSession.shared.getActiveSession().account)
+            NCManageDatabase.shared.clearMetadatasUpload(account: session.account)
         }
     }
 

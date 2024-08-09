@@ -38,7 +38,6 @@ class NCAutoUpload: NSObject {
     // MARK: -
 
     @objc func initAutoUpload(viewController: UIViewController?, account: String, completion: @escaping (_ items: Int) -> Void) {
-        let session = NCSession.shared.getSession(account: account)
         guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)),
               tableAccount.autoUpload else {
             return completion(0)
@@ -90,7 +89,7 @@ class NCAutoUpload: NSObject {
         let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(session: session)
         var metadatas: [tableMetadata] = []
 
-        self.getCameraRollAssets(viewController: viewController, selector: selector, alignPhotoLibrary: false) { assets in
+        self.getCameraRollAssets(viewController: viewController, selector: selector, alignPhotoLibrary: false, account: account) { assets in
             guard let assets, !assets.isEmpty else {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Automatic upload, no new assets found [" + log + "]")
                 return completion(0)

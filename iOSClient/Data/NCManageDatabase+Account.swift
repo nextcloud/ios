@@ -108,7 +108,6 @@ extension NCManageDatabase {
             try realm.write {
                 realm.add(account, update: .all)
             }
-            NCSession.shared.updateTableAccount(tableAccount.init(value: account))
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }

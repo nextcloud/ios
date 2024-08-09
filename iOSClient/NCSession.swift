@@ -127,16 +127,6 @@ public class NCSession: NSObject {
         }
     }
 
-    func updateTableAccount(_ tableAccount: tableAccount) {
-        if self.activeTableAccount.account == tableAccount.account {
-            self.activeTableAccount = tableAccount
-        }
-    }
-
-    private func getActiveTableAccount() -> tableAccount {
-        return activeTableAccount
-    }
-
     /// UTILITY
     ///
     public func getFileName(urlBase: String, user: String) -> String {
