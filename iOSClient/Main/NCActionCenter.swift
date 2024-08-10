@@ -49,8 +49,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               let selector = userInfo["selector"] as? String,
-              let error = userInfo["error"] as? NKError,
-              let account = userInfo["account"] as? String
+              let error = userInfo["error"] as? NKError
         else { return }
 
         guard error == .success else {

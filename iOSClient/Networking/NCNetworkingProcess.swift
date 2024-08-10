@@ -42,10 +42,7 @@ class NCNetworkingProcess: NSObject {
     func startTimer(scene: UIScene) {
         self.timerProcess?.invalidate()
         self.timerProcess = Timer.scheduledTimer(withTimeInterval: 2, repeats: true, block: { _ in
-            guard let controller = SceneManager.shared.getController(scene: scene) as? NCMainTabBarController else {
-                return
-            }
-            let account = NCSession.shared.getSession(controller: controller).account
+            let session = SceneManager.shared.getSession(scene: scene)
 
             // In Downloading or Uploading [TEST]
             /*
@@ -56,7 +53,7 @@ class NCNetworkingProcess: NSObject {
             }
             */
 
-            guard let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND status != %d", account, NCGlobal.shared.metadataStatusNormal)) else { return }
+            guard let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND status != %d", session.account, NCGlobal.shared.metadataStatusNormal)) else { return }
 
             if results.isEmpty {
                 //
@@ -64,22 +61,22 @@ class NCNetworkingProcess: NSObject {
                 //
                 if NCKeychain().removePhotoCameraRoll,
                    UIApplication.shared.applicationState == .active,
-                   let localIdentifiers = NCManageDatabase.shared.getAssetLocalIdentifiersUploaded(account: account),
+                   let localIdentifiers = NCManageDatabase.shared.getAssetLocalIdentifiersUploaded(account: session.account),
                    !localIdentifiers.isEmpty {
                     self.pauseProcess = true
                     PHPhotoLibrary.shared().performChanges({
                         PHAssetChangeRequest.deleteAssets(PHAsset.fetchAssets(withLocalIdentifiers: localIdentifiers, options: nil) as NSFastEnumeration)
                     }, completionHandler: { _, _ in
-                        NCManageDatabase.shared.clearAssetLocalIdentifiers(localIdentifiers, account: account)
+                        NCManageDatabase.shared.clearAssetLocalIdentifiers(localIdentifiers, account: session.account)
                         self.pauseProcess = false
                     })
                 }
                 NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil, userInfo: ["counterDownload": 0, "counterUpload": 0])
             } else {
                 Task {
-                    let results = await self.start(scene: scene, account: account)
-                    let counterDownload = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND session == %@ AND (status == %d || status == %d)", account, NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground, NCGlobal.shared.metadataStatusWaitDownload, NCGlobal.shared.metadataStatusDownloading))?.count ?? 0
-                    let counterUpload = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND session == %@ AND (status == %d || status == %d)", account, NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground, NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusUploading))?.count ?? 0
+                    let results = await self.start(scene: scene, account: session.account)
+                    let counterDownload = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND session == %@ AND (status == %d || status == %d)", session.account, NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground, NCGlobal.shared.metadataStatusWaitDownload, NCGlobal.shared.metadataStatusDownloading))?.count ?? 0
+                    let counterUpload = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND session == %@ AND (status == %d || status == %d)", session.account, NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground, NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusUploading))?.count ?? 0
                     print("[INFO] PROCESS Download: \(results.counterDownloading)/\(counterDownload) Upload: \(results.counterUploading)/\(counterUpload)")
                     NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil, userInfo: ["counterDownload": counterDownload, "counterUpload": counterUpload])
                 }

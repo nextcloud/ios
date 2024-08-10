@@ -1141,8 +1141,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func queryDB() { }
 
     @objc func reloadDataSource(withQueryDB: Bool = true) {
-        guard NCSession.shared.isActiveSessionValid(), !self.isSearchingMode else { return }
         let session = NCSession.shared.getSession(controller: tabBarController)
+        guard NCSession.shared.isValidSession(session), !self.isSearchingMode else { return }
 
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()
@@ -1167,7 +1167,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func networkSearch() {
-        guard NCSession.shared.isActiveSessionValid(),
+        guard NCSession.shared.isValidSession(NCSession.shared.getSession(controller: tabBarController)),
               let literalSearch = literalSearch,
               !literalSearch.isEmpty else {
             return self.refreshControl.endRefreshing()

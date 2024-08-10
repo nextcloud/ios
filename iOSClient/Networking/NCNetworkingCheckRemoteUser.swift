@@ -28,7 +28,7 @@ class NCNetworkingCheckRemoteUser {
     func checkRemoteUser(account: String, error: NKError) {
         let token = NCKeychain().getPassword(account: account)
         let session = NCSession.shared.getSession(account: account)
-        guard !token.isEmpty, NCSession.shared.isValidSession(account: account) else { return }
+        guard !token.isEmpty, !account.isEmpty else { return }
 
         NCNetworking.shared.cancelAllTask()
 

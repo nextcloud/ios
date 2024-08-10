@@ -91,8 +91,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidBecomeActive(_ scene: UIScene) {
-        let controller = SceneManager.shared.getController(scene: scene) as? NCMainTabBarController
-        let account = NCSession.shared.getSession(controller: controller).account
+        let session = SceneManager.shared.getSession(scene: scene)
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Scene did become active")
 
         NCSettingsBundleHelper.setVersionAndBuildNumber()
@@ -103,16 +102,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         hidePrivacyProtectionWindow()
 
-        NCService().startRequestServicesServer(account: account)
+        NCService().startRequestServicesServer(account: session.account)
 
-        NCAutoUpload.shared.initAutoUpload(viewController: nil, account: account) { items in
+        NCAutoUpload.shared.initAutoUpload(viewController: nil, account: session.account) { items in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
         }
     }
 
     func sceneWillResignActive(_ scene: UIScene) {
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Scene will resign active")
-        guard NCSession.shared.isActiveSessionValid() else { return }
+        let session = SceneManager.shared.getSession(scene: scene)
+        guard NCSession.shared.isValidSession(session) else { return }
 
         // STOP TIMER UPLOAD PROCESS
         NCNetworkingProcess.shared.stopTimer()
@@ -138,9 +138,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func sceneDidEnterBackground(_ scene: UIScene) {
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Scene did enter in background")
-        let controller = SceneManager.shared.getController(scene: scene) as? NCMainTabBarController
-        let account = NCSession.shared.getSession(controller: controller).account
-        guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else {
+        let session = SceneManager.shared.getSession(scene: scene)
+        guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
             return
         }
 
@@ -447,5 +446,10 @@ class SceneManager {
             results.append(controller.sceneIdentifier)
         }
         return results
+    }
+
+    func getSession(scene: UIScene?) -> NCSession.Session {
+        let controller = SceneManager.shared.getController(scene: scene) as? NCMainTabBarController
+        return NCSession.shared.getSession(controller: controller)
     }
 }

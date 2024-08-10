@@ -90,8 +90,8 @@ public class NCSession: NSObject {
     }
 #endif
 
-    public func isValidSession(account: String) -> Bool {
-        return !getSession(account: account).account.isEmpty
+    public func isValidSession(_ session : NCSession.Session) -> Bool {
+        return !session.account.isEmpty
     }
 
     public func setSceneIdentifier(account: String, sceneIdentifier: String?) {
