@@ -56,7 +56,7 @@ class NCRecent: NCCollectionViewCommon {
         layoutForView?.ascending = false
         layoutForView?.directoryOnTop = false
 
-        self.dataSource = NCDataSource(metadatas: metadatas, account: session.account, layoutForView: layoutForView, favoriteOnTop: false, providers: self.providers, searchResults: self.searchResults)
+        self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: layoutForView, favoriteOnTop: false, providers: self.providers, searchResults: self.searchResults)
     }
 
     override func reloadDataSourceNetwork(withQueryDB: Bool = false) {

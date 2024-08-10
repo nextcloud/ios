@@ -46,7 +46,6 @@ class NCDataSource: NSObject {
     }
 
     init(metadatas: [tableMetadata],
-         account: String,
          directory: tableDirectory? = nil,
          layoutForView: NCDBLayoutForView?,
          favoriteOnTop: Bool = true,

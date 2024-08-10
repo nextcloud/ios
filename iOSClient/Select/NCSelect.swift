@@ -524,7 +524,7 @@ extension NCSelect {
         }
 
         let metadatas = NCManageDatabase.shared.getMetadatas(predicate: predicate!)
-        self.dataSource = NCDataSource(metadatas: metadatas, account: domain.account, layoutForView: nil)
+        self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: nil)
 
         if withLoadFolder {
             loadFolder()
