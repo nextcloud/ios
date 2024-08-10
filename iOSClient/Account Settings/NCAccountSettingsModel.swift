@@ -37,7 +37,7 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     /// Root View Controller
     var controller: NCMainTabBarController?
     /// All account
-    var accounts: [tableAccount] = []
+    var tableAccounts: [tableAccount] = []
     /// Delegate
     weak var delegate: NCAccountSettingsModelDelegate?
     /// Timer change user
@@ -96,10 +96,10 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     /// Triggered when the view appears.
     func onViewAppear() {
         var indexActiveAccount = 0
-        let accounts = NCManageDatabase.shared.getAllAccount()
+        let tableAccounts = NCManageDatabase.shared.getAllTableAccount()
         var alias = ""
 
-        for (index, account) in accounts.enumerated() {
+        for (index, account) in tableAccounts.enumerated() {
             if account.active {
                 activeAccount = account
                 indexActiveAccount = index
@@ -108,7 +108,7 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
         }
 
         self.indexActiveAccount = indexActiveAccount
-        self.accounts = accounts
+        self.tableAccounts = tableAccounts
         self.activeAccount = activeAccount
         self.alias = alias
     }
@@ -181,7 +181,7 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     func deleteAccount() {
         if let activeAccount {
             NCAccount().deleteAccount(activeAccount.account)
-            if let account = NCManageDatabase.shared.getAllAccount().first?.account {
+            if let account = NCManageDatabase.shared.getAllTableAccount().first?.account {
                 NCAccount().changeAccount(account, userProfile: nil, sceneIdentifier: self.controller?.sceneIdentifier) {
                     onViewAppear()
                 }

@@ -188,12 +188,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 if url.contains(urlBase?.host ?? "") && userId == activeTableAccount.userId {
                    return activeTableAccount
                 } else {
-                    let accounts = NCManageDatabase.shared.getAllAccount()
-                    for account in accounts {
-                        let urlBase = URL(string: account.urlBase)
-                        if url.contains(urlBase?.host ?? "") && userId == account.userId {
-                            NCAccount().changeAccount(account.account, userProfile: nil, sceneIdentifier: sceneIdentifier) { }
-                            return account
+                    for tableAccount in NCManageDatabase.shared.getAllTableAccount() {
+                        let urlBase = URL(string: tableAccount.urlBase)
+                        if url.contains(urlBase?.host ?? "") && userId == tableAccount.userId {
+                            NCAccount().changeAccount(tableAccount.account, userProfile: nil, sceneIdentifier: sceneIdentifier) { }
+                            return tableAccount
                         }
                     }
                 }
@@ -362,15 +361,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 extension SceneDelegate: NCPasscodeDelegate {
     func requestedAccount(controller: UIViewController?) {
-        let accounts = NCManageDatabase.shared.getAllAccount()
+        let tableAccounts = NCManageDatabase.shared.getAllTableAccount()
         let sceneIdentifier = (controller as? NCMainTabBarController)?.sceneIdentifier
 
-        if accounts.count > 1, let accountRequestVC = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
+        if tableAccounts.count > 1, let accountRequestVC = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
             accountRequestVC.sceneIdentifier = sceneIdentifier
             if let sceneIdentifier {
                 accountRequestVC.activeAccount = NCSession.shared.getSession(sceneIdentifier: sceneIdentifier).account
             }
-            accountRequestVC.accounts = accounts
+            accountRequestVC.accounts = tableAccounts
             accountRequestVC.enableTimerProgress = true
             accountRequestVC.enableAddAccount = false
             accountRequestVC.dismissDidEnterBackground = false
@@ -378,7 +377,7 @@ extension SceneDelegate: NCPasscodeDelegate {
             accountRequestVC.startTimer()
 
             let screenHeighMax = UIScreen.main.bounds.height - (UIScreen.main.bounds.height / 5)
-            let numberCell = accounts.count
+            let numberCell = tableAccounts.count
             let height = min(CGFloat(numberCell * Int(accountRequestVC.heightCell) + 45), screenHeighMax)
 
             let popup = NCPopupViewController(contentController: accountRequestVC, popupWidth: 300, popupHeight: height + 20)

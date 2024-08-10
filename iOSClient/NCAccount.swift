@@ -132,10 +132,9 @@ class NCAccount: NSObject {
 
     func updateAppsShareAccounts() -> Error? {
         guard let dirGroupApps = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupApps) else { return nil }
-        let tableAccount = NCManageDatabase.shared.getAllAccount()
         var accounts = [NKShareAccounts.DataAccounts]()
 
-        for account in tableAccount {
+        for account in NCManageDatabase.shared.getAllTableAccount() {
             let name = account.alias.isEmpty ? account.displayName : account.alias
             let fileName = NCSession.shared.getFileName(urlBase: account.urlBase, user: account.user)
             let fileNamePath = NCUtilityFileSystem().directoryUserData + "/" + fileName

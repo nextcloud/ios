@@ -18,7 +18,7 @@ class NCPushNotification {
 
     func pushNotification() {
         if pushKitToken.isEmpty { return }
-        for tblAccount in NCManageDatabase.shared.getAllAccount() {
+        for tblAccount in NCManageDatabase.shared.getAllTableAccount() {
             let token = keychain.getPushNotificationToken(account: tblAccount.account)
             if token != pushKitToken {
                 if token != nil {
@@ -32,7 +32,7 @@ class NCPushNotification {
 
     func applicationdidReceiveRemoteNotification(userInfo: [AnyHashable: Any], completion: @escaping (_ result: UIBackgroundFetchResult) -> Void) {
         if let message = userInfo["subject"] as? String {
-            for tblAccount in NCManageDatabase.shared.getAllAccount() {
+            for tblAccount in NCManageDatabase.shared.getAllTableAccount() {
                 if let privateKey = keychain.getPushNotificationPrivateKey(account: tblAccount.account),
                    let decryptedMessage = NCPushNotificationEncryption.shared().decryptPushNotification(message, withDevicePrivateKey: privateKey),
                    let jsonData = decryptedMessage.data(using: .utf8) {

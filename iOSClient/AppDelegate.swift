@@ -99,13 +99,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NCManageDatabase.shared.setCapabilities(account: activeTableAccount.account)
             NCBrandColor.shared.settingThemingColor(account: activeTableAccount.account)
 
-            for account in NCManageDatabase.shared.getAllAccount() {
-                NCSession.shared.appendSession(account: account.account, urlBase: account.urlBase, user: account.user, userId: account.userId)
-                NextcloudKit.shared.appendSession(account: account.account,
-                                                  urlBase: account.urlBase,
-                                                  user: account.user,
-                                                  userId: account.userId,
-                                                  password: NCKeychain().getPassword(account: account.account),
+            for tableAccount in NCManageDatabase.shared.getAllTableAccount() {
+                NCSession.shared.appendSession(account: tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId)
+                NextcloudKit.shared.appendSession(account: tableAccount.account,
+                                                  urlBase: tableAccount.urlBase,
+                                                  user: tableAccount.user,
+                                                  userId: tableAccount.userId,
+                                                  password: NCKeychain().getPassword(account: tableAccount.account),
                                                   userAgent: userAgent,
                                                   nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
                                                   groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
@@ -314,8 +314,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             if accountPush == NCSession.shared.getActiveSession().account {
                 findAccount = accountPush
             } else {
-                let tableAccounts = NCManageDatabase.shared.getAllAccount()
-                for tableAccount in tableAccounts {
+                for tableAccount in NCManageDatabase.shared.getAllTableAccount() {
                     if tableAccount.account == accountPush {
                         NCAccount().changeAccount(tableAccount.account, userProfile: nil, sceneIdentifier: nil) {
                             findAccount = tableAccount.account
@@ -412,6 +411,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         guard !self.timerErrorNetworkingDisabled,
               NCSession.shared.isActiveSessionValid(),
               NCKeychain().getPassword(account: NCSession.shared.getActiveSession().account).isEmpty else { return }
+
+       // let sessions = NCManageDatabase.shared.getAllAccount() 
+
         openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: true)
     }
 

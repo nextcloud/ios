@@ -30,7 +30,7 @@ class IntentHandler: INExtension, DashboardIntentHandling, AccountIntentHandling
 
     func provideAccountsOptionsCollection(for intent: AccountIntent, with completion: @escaping (INObjectCollection<Accounts>?, Error?) -> Void) {
         var accounts: [Accounts] = []
-        let results = NCManageDatabase.shared.getAllAccount()
+        let results = NCManageDatabase.shared.getAllTableAccount()
 
         accounts.append(Accounts(identifier: "active", display: "Active account"))
 
@@ -96,7 +96,7 @@ class IntentHandler: INExtension, DashboardIntentHandling, AccountIntentHandling
     // Account
     func provideAccountsOptionsCollection(for intent: DashboardIntent, with completion: @escaping (INObjectCollection<Accounts>?, Error?) -> Void) {
         var accounts: [Accounts] = []
-        let results = NCManageDatabase.shared.getAllAccount()
+        let results = NCManageDatabase.shared.getAllTableAccount()
 
         accounts.append(Accounts(identifier: "active", display: "Active account"))
 

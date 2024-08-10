@@ -41,9 +41,9 @@ struct NCAccountSettingsView: View {
             Form {
                 Section(content: {
                     TabView(selection: $model.indexActiveAccount) {
-                        ForEach(0..<model.accounts.count, id: \.self) { index in
+                        ForEach(0..<model.tableAccounts.count, id: \.self) { index in
                             let status = model.getUserStatus()
-                            let avatar = NCUtility().loadUserImage(for: model.accounts[index].user, displayName: model.accounts[index].displayName, urlBase: model.accounts[index].urlBase)
+                            let avatar = NCUtility().loadUserImage(for: model.tableAccounts[index].user, displayName: model.tableAccounts[index].displayName, urlBase: model.tableAccounts[index].urlBase)
                             ///
                             /// User
                             VStack {
@@ -130,7 +130,7 @@ struct NCAccountSettingsView: View {
                     .animation(.easeIn(duration: 0.3), value: animation)
                     .onChange(of: model.indexActiveAccount) { index in
                         animation.toggle()
-                        model.setAccount(account: model.accounts[index].account)
+                        model.setAccount(account: model.tableAccounts[index].account)
                     }
                     ///
                     /// Change alias

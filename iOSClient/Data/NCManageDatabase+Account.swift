@@ -158,7 +158,7 @@ extension NCManageDatabase {
         return nil
     }
 
-    func getAllAccount() -> [tableAccount] {
+    func getAllTableAccount() -> [tableAccount] {
         do {
             let realm = try Realm()
             let sorted = [SortDescriptor(keyPath: "active", ascending: false), SortDescriptor(keyPath: "user", ascending: true)]
