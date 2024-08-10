@@ -99,7 +99,7 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
         let account = NCSession.shared.getSession(controller: controller).account
         switch self.passcodeType {
         case "startE2E":
-            endToEndInitialize.initEndToEndEncryption(viewController: controller, metadata: nil)
+            endToEndInitialize.initEndToEndEncryption(viewController: controller, metadata: nil, session: NCSession.shared.getSession(controller: controller))
         case "readPassphrase":
             if let e2ePassphrase = NCKeychain().getEndToEndPassphrase(account: account) {
                 print("[INFO]Passphrase: " + e2ePassphrase)
