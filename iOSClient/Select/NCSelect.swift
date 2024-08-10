@@ -205,7 +205,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     }
 
     func createFolderButtonPressed(_ sender: UIButton) {
-        let alertController = UIAlertController.createFolder(serverUrl: serverUrl, account: NCSession.shared.getActiveSession().account)
+        let alertController = UIAlertController.createFolder(serverUrl: serverUrl, account: session.account)
         self.present(alertController, animated: true, completion: nil)
     }
 
@@ -505,21 +505,20 @@ extension NCSelect {
 
     @objc func loadDatasource(withLoadFolder: Bool) {
         var predicate: NSPredicate?
-        let domain = NCSession.shared.getActiveSession()
 
         if includeDirectoryE2EEncryption {
             if includeImages {
-                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND (directory == true OR classFile == 'image')", domain.account, serverUrl)
+                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND (directory == true OR classFile == 'image')", session.account, serverUrl)
             } else {
-                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", domain.account, serverUrl)
+                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", session.account, serverUrl)
             }
         } else {
             if includeImages {
-                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND e2eEncrypted == false AND (directory == true OR classFile == 'image')", domain.account, serverUrl)
+                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND e2eEncrypted == false AND (directory == true OR classFile == 'image')", session.account, serverUrl)
             } else if enableSelectFile {
-                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND e2eEncrypted == false", domain.account, serverUrl)
+                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND e2eEncrypted == false", session.account, serverUrl)
             } else {
-                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND e2eEncrypted == false AND directory == true", domain.account, serverUrl)
+                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND e2eEncrypted == false AND directory == true", session.account, serverUrl)
             }
         }
 
@@ -530,7 +529,7 @@ extension NCSelect {
             loadFolder()
         }
 
-        let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", domain.account, serverUrl))
+        let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl))
         richWorkspaceText = directory?.richWorkspace
 
         DispatchQueue.main.async {
@@ -540,7 +539,7 @@ extension NCSelect {
 
     func loadFolder() {
 
-        NCNetworking.shared.readFolder(serverUrl: serverUrl, account: NCSession.shared.getActiveSession().account) { task in
+        NCNetworking.shared.readFolder(serverUrl: serverUrl, account: session.account) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()
         } completion: { _, _, _, _, _, error in

@@ -127,7 +127,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
 
     // Shared with you by ...
     func checkSharedWithYou() {
-        let session = NCSession.shared.getActiveSession()
+        let session = NCSession.shared.getSession(controller: tabBarController)
         guard let metadata = metadata, !metadata.ownerId.isEmpty, metadata.ownerId != session.userId else { return }
 
         if !canReshare {
@@ -270,7 +270,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         dropDown.customCellConfiguration = { (index: Index, _, cell: DropDownCell) -> Void in
             guard let cell = cell as? NCSearchUserDropDownCell else { return }
             let sharee = sharees[index]
-            cell.setupCell(sharee: sharee, session: NCSession.shared.getActiveSession())
+            cell.setupCell(sharee: sharee, session: NCSession.shared.getSession(controller: self.tabBarController))
         }
 
         dropDown.selectionAction = { index, _ in
@@ -328,7 +328,7 @@ extension NCShare: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let session = NCSession.shared.getActiveSession()
+        let session = NCSession.shared.getSession(controller: tabBarController)
         // Setup default share cells
         guard indexPath.section != 0 else {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "cellLink", for: indexPath) as? NCShareLinkCell, let metadata = self.metadata
