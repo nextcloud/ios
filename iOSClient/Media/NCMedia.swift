@@ -182,7 +182,7 @@ class NCMedia: UIViewController {
 
         // Cancel Queue & Retrieves Properties
         NCNetworking.shared.downloadThumbnailQueue.cancelAll()
-        let account = NCSession.shared.getSession(controller: self.tabBarController).account
+        let account = NCSession.shared.getSession(controller: tabBarController).account
         if let nkSession = NextcloudKit.shared.nkCommonInstance.getSession(account: account) {
             nkSession.sessionData.session.getTasksWithCompletionHandler { dataTasks, _, _ in
                 dataTasks.forEach {

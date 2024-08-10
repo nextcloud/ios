@@ -48,7 +48,7 @@ extension NCMedia: UICollectionViewDropDelegate {
     func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
         DragDropHover.shared.cleanPushDragDropHover()
         DragDropHover.shared.sourceMetadatas = nil
-        let session = NCSession.shared.getSession(controller: self.tabBarController)
+        let session = NCSession.shared.getSession(controller: tabBarController)
         guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", session.account)) else { return }
         let serverUrl = NCUtilityFileSystem().getHomeServer(session: session) + tableAccount.mediaPath
 
@@ -79,7 +79,7 @@ extension NCMedia: UICollectionViewDropDelegate {
 
     @objc func copyMenuFile() {
         guard let sourceMetadatas = DragDropHover.shared.sourceMetadatas else { return }
-        let session = NCSession.shared.getSession(controller: self.tabBarController)
+        let session = NCSession.shared.getSession(controller: tabBarController)
 
         if let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", session.account)) {
             let serverUrl = NCUtilityFileSystem().getHomeServer(session: session) + tableAccount.mediaPath
@@ -89,7 +89,7 @@ extension NCMedia: UICollectionViewDropDelegate {
 
     @objc func moveMenuFile() {
         guard let sourceMetadatas = DragDropHover.shared.sourceMetadatas else { return }
-        let session = NCSession.shared.getSession(controller: self.tabBarController)
+        let session = NCSession.shared.getSession(controller: tabBarController)
 
         if let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", session.account)) {
             let serverUrl = NCUtilityFileSystem().getHomeServer(session: session) + tableAccount.mediaPath

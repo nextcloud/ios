@@ -83,7 +83,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         navigationController?.setNavigationBarAppearance()
         navigationItem.title = titleCurrentFolder
 
-        layoutForView = NCManageDatabase.shared.getLayoutForView(account: NCSession.shared.getSession(controller: self.tabBarController).account, key: NCGlobal.shared.layoutViewTrash, serverUrl: "")
+        layoutForView = NCManageDatabase.shared.getLayoutForView(account: NCSession.shared.getSession(controller: tabBarController).account, key: NCGlobal.shared.layoutViewTrash, serverUrl: "")
 
         if layoutForView?.layout == NCGlobal.shared.layoutList {
             collectionView.collectionViewLayout = listLayout

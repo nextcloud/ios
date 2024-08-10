@@ -26,7 +26,7 @@ import NextcloudKit
 
 extension NCMedia {
     func reloadDataSource() {
-        self.metadatas = imageCache.getMediaMetadatas(predicate: self.getPredicate(), session: NCSession.shared.getSession(controller: self.tabBarController))
+        self.metadatas = imageCache.getMediaMetadatas(predicate: self.getPredicate(), session: NCSession.shared.getSession(controller: tabBarController))
         self.collectionViewReloadData()
     }
 
@@ -120,14 +120,14 @@ extension NCMedia {
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Media not reload datasource network with the application in background")
             return(lessDate, greaterDate, 0, false, NKError())
         }
-        let session = NCSession.shared.getSession(controller: self.tabBarController)
+        let session = NCSession.shared.getSession(controller: tabBarController)
         guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
             return(lessDate, greaterDate, 0, false, NKError())
         }
         NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate)")
         let options = NKRequestOptions(timeout: timeout, taskDescription: self.taskDescriptionRetrievesProperties, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
         let results = await NCNetworking.shared.searchMedia(path: tableAccount.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: NCKeychain().showHiddenFiles, includeHiddenFiles: [], account: session.account, options: options)
-        if tableAccount.account != NCSession.shared.getSession(controller: self.tabBarController).account {
+        if tableAccount.account != NCSession.shared.getSession(controller: tabBarController).account {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "User changed")
             return(lessDate, greaterDate, 0, false, error)
         } else if results.error == .success, let files = results.files {
@@ -144,7 +144,7 @@ extension NCMedia {
     }
 
     private func getPredicate(showAll: Bool = false) -> NSPredicate {
-        let session = NCSession.shared.getSession(controller: self.tabBarController)
+        let session = NCSession.shared.getSession(controller: tabBarController)
         guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", session.account)) else { return NSPredicate() }
         let startServerUrl = NCUtilityFileSystem().getHomeServer(session: session) + tableAccount.mediaPath
 

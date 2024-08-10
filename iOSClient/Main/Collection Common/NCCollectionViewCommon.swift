@@ -168,7 +168,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         setNavigationLeftItems()
         setNavigationRightItems()
 
-        layoutForView = NCManageDatabase.shared.getLayoutForView(account: NCSession.shared.getSession(controller: self.tabBarController).account, key: layoutKey, serverUrl: serverUrl)
+        layoutForView = NCManageDatabase.shared.getLayoutForView(account: NCSession.shared.getSession(controller: tabBarController).account, key: layoutKey, serverUrl: serverUrl)
         if layoutForView?.layout == NCGlobal.shared.layoutList {
             collectionView?.collectionViewLayout = listLayout
         } else if layoutForView?.layout == NCGlobal.shared.layoutGrid {
@@ -387,7 +387,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func renameFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let account = userInfo["account"] as? String,
-              account == NCSession.shared.getSession(controller: self.tabBarController).account
+              account == NCSession.shared.getSession(controller: tabBarController).account
         else { return }
 
         reloadDataSource()
@@ -399,7 +399,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let serverUrl = userInfo["serverUrl"] as? String,
               serverUrl == self.serverUrl,
               let account = userInfo["account"] as? String,
-              account == NCSession.shared.getSession(controller: self.tabBarController).account,
+              account == NCSession.shared.getSession(controller: tabBarController).account,
               let withPush = userInfo["withPush"] as? Bool
         else { return }
 
@@ -434,7 +434,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let serverUrl = userInfo["serverUrl"] as? String,
               serverUrl == self.serverUrl || self.serverUrl.isEmpty,
               let account = userInfo["account"] as? String,
-              account == NCSession.shared.getSession(controller: self.tabBarController).account
+              account == NCSession.shared.getSession(controller: tabBarController).account
         else { return }
 
         self.notificationReloadDataSource += 1
@@ -445,7 +445,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let serverUrl = userInfo["serverUrl"] as? String,
               serverUrl == self.serverUrl || self.serverUrl.isEmpty,
               let account = userInfo["account"] as? String,
-              account == NCSession.shared.getSession(controller: self.tabBarController).account,
+              account == NCSession.shared.getSession(controller: tabBarController).account,
               let error = userInfo["error"] as? NKError
         else { return }
 
@@ -461,7 +461,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let serverUrl = userInfo["serverUrl"] as? String,
               serverUrl == self.serverUrl || self.serverUrl.isEmpty,
               let account = userInfo["account"] as? String,
-              account == NCSession.shared.getSession(controller: self.tabBarController).account
+              account == NCSession.shared.getSession(controller: tabBarController).account
         else { return }
 
         reloadDataSource()
@@ -482,7 +482,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             DispatchQueue.main.async { self.collectionView?.reloadData() }
         }
 
-        if serverUrl == self.serverUrl, account == NCSession.shared.getSession(controller: self.tabBarController).account {
+        if serverUrl == self.serverUrl, account == NCSession.shared.getSession(controller: tabBarController).account {
             notificationReloadDataSource += 1
         }
     }
@@ -499,7 +499,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             DispatchQueue.main.async { self.collectionView?.reloadData() }
         }
 
-        if account == NCSession.shared.getSession(controller: self.tabBarController).account, serverUrl == self.serverUrl {
+        if account == NCSession.shared.getSession(controller: tabBarController).account, serverUrl == self.serverUrl {
             notificationReloadDataSource += 1
         }
     }
@@ -509,7 +509,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let serverUrl = userInfo["serverUrl"] as? String,
               serverUrl == self.serverUrl,
               let account = userInfo["account"] as? String,
-              account == NCSession.shared.getSession(controller: self.tabBarController).account
+              account == NCSession.shared.getSession(controller: tabBarController).account
         else { return }
 
         notificationReloadDataSource += 1
@@ -527,7 +527,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             DispatchQueue.main.async { self.collectionView?.reloadData() }
         }
 
-        if account == NCSession.shared.getSession(controller: self.tabBarController).account, serverUrl == self.serverUrl {
+        if account == NCSession.shared.getSession(controller: tabBarController).account, serverUrl == self.serverUrl {
             reloadDataSource()
         }
     }
@@ -591,7 +591,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - Layout
 
     func setNavigationLeftItems() {
-        let session = NCSession.shared.getSession(controller: self.tabBarController)
+        let session = NCSession.shared.getSession(controller: tabBarController)
         guard layoutKey == NCGlobal.shared.layoutViewFiles,
               let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
             return }
@@ -673,7 +673,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         let isTabBarSelectHidden = tabBarSelect.isHidden()
 
         func createMenuActions() -> [UIMenuElement] {
-            let session = NCSession.shared.getSession(controller: self.tabBarController)
+            let session = NCSession.shared.getSession(controller: tabBarController)
             guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl) else { return [] }
             let columnPhoto = self.layoutForView?.columnPhoto ?? 3
 
@@ -836,7 +836,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
 
         if isEditMode {
-            tabBarSelect.update(selectOcId: selectOcId, metadatas: getSelectedMetadatas(), userId: NCSession.shared.getSession(controller: self.tabBarController).userId)
+            tabBarSelect.update(selectOcId: selectOcId, metadatas: getSelectedMetadatas(), userId: NCSession.shared.getSession(controller: tabBarController).userId)
             tabBarSelect.show()
             let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) {
                 self.setEditMode(false)
@@ -867,7 +867,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func getNavigationTitle() -> String {
-        let session = NCSession.shared.getSession(controller: self.tabBarController)
+        let session = NCSession.shared.getSession(controller: tabBarController)
         let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", session.account))
         if let tableAccount,
            !tableAccount.alias.isEmpty {
@@ -1132,7 +1132,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func pasteFilesMenu() {
-        NCActionCenter.shared.pastePasteboard(serverUrl: serverUrl, account: NCSession.shared.getSession(controller: self.tabBarController).account, hudView: tabBarController?.view)
+        NCActionCenter.shared.pastePasteboard(serverUrl: serverUrl, account: NCSession.shared.getSession(controller: tabBarController).account, hudView: tabBarController?.view)
     }
 
     // MARK: - DataSource + NC Endpoint
@@ -1141,7 +1141,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @objc func reloadDataSource(withQueryDB: Bool = true) {
         guard NCSession.shared.isActiveSessionValid(), !self.isSearchingMode else { return }
-        let session = NCSession.shared.getSession(controller: self.tabBarController)
+        let session = NCSession.shared.getSession(controller: tabBarController)
 
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()
@@ -1171,7 +1171,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               !literalSearch.isEmpty else {
             return self.refreshControl.endRefreshing()
         }
-        let session = NCSession.shared.getSession(controller: self.tabBarController)
+        let session = NCSession.shared.getSession(controller: tabBarController)
 
         self.dataSource.clearDataSource()
         self.refreshControl.beginRefreshing()
@@ -1209,7 +1209,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func unifiedSearchMore(metadataForSection: NCMetadataForSection?) {
         guard let metadataForSection = metadataForSection, let lastSearchResult = metadataForSection.lastSearchResult, let cursor = lastSearchResult.cursor, let term = literalSearch else { return }
-        let session = NCSession.shared.getSession(controller: self.tabBarController)
+        let session = NCSession.shared.getSession(controller: tabBarController)
 
         metadataForSection.unifiedSearchInProgress = true
         self.collectionView?.reloadData()

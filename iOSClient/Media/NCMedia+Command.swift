@@ -101,7 +101,7 @@ extension NCMedia {
     }
 
     func createMenu() {
-        let session = NCSession.shared.getSession(controller: self.tabBarController)
+        let session = NCSession.shared.getSession(controller: tabBarController)
         let layoutForView = NCManageDatabase.shared.getLayoutForView(account: session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")
         let columnPhoto = layoutForView?.columnPhoto ?? 3
         let layout = layoutForView?.layout ?? NCGlobal.shared.mediaLayoutRatio

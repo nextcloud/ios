@@ -83,7 +83,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     // MARK: -
 
     func loadItems() {
-        let session = NCSession.shared.getSession(controller: self.tabBarController)
+        let session = NCSession.shared.getSession(controller: tabBarController)
         guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
             return
         }
