@@ -563,6 +563,7 @@ extension NCUserStatus: UITableViewDataSource {
 
 struct UserStatusView: UIViewControllerRepresentable {
     @Binding var showUserStatus: Bool
+    var account: String
 
     class Coordinator: NSObject {
         var parent: UserStatusView

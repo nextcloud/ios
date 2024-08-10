@@ -278,7 +278,7 @@ class NCShareExtension: UIViewController {
     }
 
     @objc func actionCreateFolder() {
-        let alertController = UIAlertController.createFolder(serverUrl: serverUrl, account: NCSession.shared.getActiveSession().account) { error in
+        let alertController = UIAlertController.createFolder(serverUrl: serverUrl, account: activeAccount.account) { error in
             guard error != .success else { return }
             self.showAlert(title: "_error_createsubfolders_upload_", description: error.errorDescription)
         }
@@ -331,7 +331,7 @@ extension NCShareExtension {
         guard uploadStarted else { return }
         guard uploadMetadata.count > counterUploaded else { return DispatchQueue.main.async { self.finishedUploading() } }
         let metadata = uploadMetadata[counterUploaded]
-        let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false, account: NCSession.shared.getActiveSession().account)
+        let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false, account: activeAccount.account)
         metadata.contentType = results.mimeType
         metadata.iconName = results.iconName
         metadata.classFile = results.classFile

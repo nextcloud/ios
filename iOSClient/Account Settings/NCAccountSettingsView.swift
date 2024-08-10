@@ -175,7 +175,9 @@ struct NCAccountSettingsView: View {
                             .font(.system(size: 14))
                         })
                         .sheet(isPresented: $showUserStatus) {
-                            UserStatusView(showUserStatus: $showUserStatus)
+                            if let account = model.activeAccount?.account {
+                                UserStatusView(showUserStatus: $showUserStatus, account: account)
+                            }
                         }
                         .onChange(of: showUserStatus) { _ in }
                     }
