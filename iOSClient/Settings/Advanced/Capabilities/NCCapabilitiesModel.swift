@@ -20,16 +20,19 @@ class NCCapabilitiesModel: ObservableObject, ViewOnAppearHandling {
     }
     @Published var capabililies: [Capability] = []
     @Published var homeServer = ""
+    /// Root View Controller
+    @Published var controller: NCMainTabBarController?
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
 
-    init() {
+    init(controller: NCMainTabBarController?) {
+        self.controller = controller
         onViewAppear()
     }
 
     /// Triggered when the view appears.
     func onViewAppear() {
-        let session = NCSession.shared.getActiveSession()
+        let session = NCSession.shared.getSession(controller: controller)
         var textEditor = false
         var onlyofficeEditors = false
 

@@ -91,5 +91,5 @@ struct NCCapabilitiesView: View {
 }
 
 #Preview {
-    return NCCapabilitiesView(model: NCCapabilitiesModel())
+    return NCCapabilitiesView(model: NCCapabilitiesModel(controller: nil))
 }

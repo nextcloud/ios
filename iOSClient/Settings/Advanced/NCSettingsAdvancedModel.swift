@@ -65,7 +65,8 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
 
     /// Triggered when the view appears.
     func onViewAppear() {
-        let groups = NCManageDatabase.shared.getAccountGroups(account: NCSession.shared.getActiveSession().account)
+        let session = NCSession.shared.getSession(controller: controller)
+        let groups = NCManageDatabase.shared.getAccountGroups(account: session.account)
         isAdminGroup = groups.contains(NCGlobal.shared.groupAdmin)
         showHiddenFiles = keychain.showHiddenFiles
         mostCompatible = keychain.formatCompatibility
@@ -131,7 +132,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
         // Cancel all networking tasks
         NCNetworking.shared.cancelAllTask()
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            let session = NCSession.shared.getActiveSession()
+            let session = NCSession.shared.getSession(controller: self.controller)
             URLCache.shared.memoryCapacity = 0
             URLCache.shared.diskCapacity = 0
 

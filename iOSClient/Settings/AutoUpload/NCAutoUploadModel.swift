@@ -184,7 +184,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     ///
     /// - Returns: The path for auto-upload.
     func returnPath() -> String {
-        let session = NCSession.shared.getActiveSession()
+        let session = NCSession.shared.getSession(controller: controller)
         let autoUploadPath = manageDatabase.getAccountAutoUploadDirectory(session: session) + "/" + manageDatabase.getAccountAutoUploadFileName()
         let homeServer = NCUtilityFileSystem().getHomeServer(session: session)
         let path = autoUploadPath.replacingOccurrences(of: homeServer, with: "")
@@ -197,7 +197,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     /// serverUrl: The server URL to set as the auto-upload directory.
     func setAutoUploadDirectory(serverUrl: String?) {
         guard let serverUrl else { return }
-        let session = NCSession.shared.getActiveSession()
+        let session = NCSession.shared.getSession(controller: controller)
         let home = NCUtilityFileSystem().getHomeServer(session: session)
         if home != serverUrl {
             let fileName = (serverUrl as NSString).lastPathComponent

@@ -494,7 +494,7 @@ struct PDFKitRepresentedView: UIViewRepresentable {
 
 struct UploadScanDocumentView_Previews: PreviewProvider {
     static var previews: some View {
-        let uploadScanDocument = NCUploadScanDocument(images: [], session: NCSession.shared.getActiveSession(), serverUrl: "ABCD")
+        let uploadScanDocument = NCUploadScanDocument(images: [], session: NCSession.Session(account: "", urlBase: "", user: "", userId: ""), serverUrl: "ABCD")
         UploadScanDocumentView(uploadScanDocument: uploadScanDocument)
     }
 }

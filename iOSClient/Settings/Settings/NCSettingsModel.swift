@@ -94,10 +94,11 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
     /// This function initiates a service call to download the configuration files
     /// using the URL provided in the `configLink` property.
     func getConfigFiles() {
-        let configLink = NCSession.shared.getActiveSession().urlBase + NCBrandOptions.shared.mobileconfig
+        let session = NCSession.shared.getSession(controller: controller)
+        let configLink = session.urlBase + NCBrandOptions.shared.mobileconfig
         let configServer = NCConfigServer()
         if let url = URL(string: configLink) {
-            configServer.startService(url: url, account: NCSession.shared.getActiveSession().account)
+            configServer.startService(url: url, account: session.account)
         }
     }
 

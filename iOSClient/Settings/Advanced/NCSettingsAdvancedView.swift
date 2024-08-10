@@ -185,7 +185,7 @@ struct NCSettingsAdvancedView: View {
                 if model.isAdminGroup {
                     Section(content: {
                         NavigationLink(destination: LazyView {
-                            NCCapabilitiesView(model: NCCapabilitiesModel())
+                            NCCapabilitiesView(model: NCCapabilitiesModel(controller: model.controller))
                         }) {
                             HStack {
                                 Image(systemName: "list.bullet")
