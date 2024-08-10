@@ -94,7 +94,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
                let file = json["file"] as? [String: Any],
                file["type"] as? String == "file" {
                 if let id = file["id"] {
-                    NCActionCenter.shared.viewerFile(account: NCSession.shared.getActiveSession().account, fileId: ("\(id)"), viewController: self)
+                    NCActionCenter.shared.viewerFile(account: session.account, fileId: ("\(id)"), viewController: self)
                 }
             }
         } catch {
@@ -131,14 +131,14 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
             cell.avatar.isHidden = false
             cell.avatarLeadingMargin.constant = 50
 
-            let fileName = NCSession.shared.getFileName(urlBase: NCSession.shared.getActiveSession().urlBase, user: user)
+            let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: user)
             let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
 
             if let image = UIImage(contentsOfFile: fileNameLocalPath) {
                 cell.avatar.image = image
             } else if !FileManager.default.fileExists(atPath: fileNameLocalPath) {
                 cell.fileUser = user
-                NCNetworking.shared.downloadAvatar(user: user, dispalyName: json["user"]?["name"].string, fileName: fileName, account: NCSession.shared.getActiveSession().account, cell: cell, view: tableView)
+                NCNetworking.shared.downloadAvatar(user: user, dispalyName: json["user"]?["name"].string, fileName: fileName, account: session.account, cell: cell, view: tableView)
             }
         }
 
@@ -228,7 +228,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
 
     func tapRemove(with notification: NKNotifications) {
 
-        NextcloudKit.shared.setNotification(serverUrl: nil, idNotification: notification.idNotification, method: "DELETE", account: NCSession.shared.getActiveSession().account) { _, error in
+        NextcloudKit.shared.setNotification(serverUrl: nil, idNotification: notification.idNotification, method: "DELETE", account: session.account) { _, error in
             if error == .success {
                 if let index = self.notifications
                     .firstIndex(where: { $0.idNotification == notification.idNotification }) {
@@ -246,7 +246,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
     func tapAction(with notification: NKNotifications, label: String) {
         if notification.app == NCGlobal.shared.spreedName,
            let roomToken = notification.objectId.split(separator: "/").first,
-           let talkUrl = URL(string: "nextcloudtalk://open-conversation?server=\(NCSession.shared.getActiveSession().urlBase)&user=\(NCSession.shared.getActiveSession().userId)&withRoomToken=\(roomToken)"),
+           let talkUrl = URL(string: "nextcloudtalk://open-conversation?server=\(session.urlBase)&user=\(session.userId)&withRoomToken=\(roomToken)"),
            UIApplication.shared.canOpenURL(talkUrl) {
             UIApplication.shared.open(talkUrl)
         } else if let actions = notification.actions,
@@ -260,7 +260,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
                 return
             }
 
-            NextcloudKit.shared.setNotification(serverUrl: serverUrl, idNotification: 0, method: method, account: NCSession.shared.getActiveSession().account) { _, error in
+            NextcloudKit.shared.setNotification(serverUrl: serverUrl, idNotification: 0, method: method, account: session.account) { _, error in
                 if error == .success {
                     if let index = self.notifications.firstIndex(where: { $0.idNotification == notification.idNotification }) {
                         self.notifications.remove(at: index)
@@ -288,7 +288,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
    @objc func getNetwokingNotification() {
 
        self.tableView.reloadData()
-       NextcloudKit.shared.getNotifications(account: NCSession.shared.getActiveSession().account) { task in
+       NextcloudKit.shared.getNotifications(account: session.account) { task in
            self.dataSourceTask = task
            self.tableView.reloadData()
        } completion: { account, notifications, _, error in
