@@ -414,10 +414,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             let password = NCKeychain().getPassword(account: tableAccount.account)
             if password.isEmpty {
                 let session = NCSession.shared.getSession(account: tableAccount.account)
+                /*
                 if let sceneIdentifier = session.sceneIdentifier,
                    !sceneIdentifier.isEmpty {
                     openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: true)
                 }
+                */
             }
         }
     }

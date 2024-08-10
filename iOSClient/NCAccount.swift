@@ -82,7 +82,9 @@ class NCAccount: NSObject {
         /// Set capabilities
         NCManageDatabase.shared.setCapabilities(account: account)
         /// Set scene identifier in Domain
-        NCSession.shared.setSceneIdentifier(account: account, sceneIdentifier: sceneIdentifier)
+        if let sceneIdentifier {
+            NCSession.shared.setSceneIdentifier(account: account, sceneIdentifier: sceneIdentifier)
+        }
         /// Set User Profile
         if let userProfile {
             NCManageDatabase.shared.setAccountUserProfile(account: account, userProfile: userProfile)

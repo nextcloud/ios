@@ -32,18 +32,17 @@ public class NCSession: NSObject {
         var urlBase: String
         var user: String
         var userId: String
-        var sceneIdentifier: String?
 
-        init(account: String, urlBase: String, user: String, userId: String, sceneIdentifier: String? = nil) {
+        init(account: String, urlBase: String, user: String, userId: String) {
             self.account = account
             self.urlBase = urlBase
             self.user = user
             self.userId = userId
-            self.sceneIdentifier = sceneIdentifier
         }
     }
     private var sessions: ThreadSafeArray<Session> = ThreadSafeArray()
     private var activeTableAccount = tableAccount()
+    private var sceneIdentifierAccount: [String: String] = [:]
 
     override private init() {}
 
@@ -76,28 +75,31 @@ public class NCSession: NSObject {
 
 #if !EXTENSION
     public func getSession(sceneIdentifier: String) -> Session {
-        if let session = sessions.filter({ $0.sceneIdentifier == sceneIdentifier }).first {
-            return session
+        if let account = sceneIdentifierAccount[sceneIdentifier] {
+            return getSession(account: account)
         }
         return getActiveSession()
     }
     public func getSession(controller: UIViewController?) -> Session {
         if let sceneIdentifier = (controller as? NCMainTabBarController)?.sceneIdentifier,
-           let session = sessions.filter({ $0.sceneIdentifier == sceneIdentifier }).first {
-            return session
+           let account = sceneIdentifierAccount[sceneIdentifier] {
+            return getSession(account: account)
         }
         return getActiveSession()
     }
 #endif
 
-    public func isValidSession(_ session : NCSession.Session) -> Bool {
+    public func isValidSession(_ session: NCSession.Session) -> Bool {
         return !session.account.isEmpty
     }
 
-    public func setSceneIdentifier(account: String, sceneIdentifier: String?) {
-        if let session = sessions.filter({ $0.account == account }).first {
-            session.sceneIdentifier = sceneIdentifier
-        }
+    public func setSceneIdentifier(account: String, sceneIdentifier: String) {
+        sceneIdentifierAccount[sceneIdentifier] = account
+    }
+
+    public func removeSceneIdentifier(sceneIdentifier: String) {
+        sceneIdentifierAccount[sceneIdentifier] = nil
+
     }
 
     /// ACTIVE SESSION
@@ -113,17 +115,12 @@ public class NCSession: NSObject {
         return !getActiveSession().account.isEmpty
     }
 
-    /// ACTIVE TABLE ACCOUNT
+    /// ACTIVE TABLE ACCOUNT / SCENEIDENTIFIER
     ///
     func setActiveTableAccount(_ activeTableAccount: tableAccount, sceneIdentifier: String?) {
         self.activeTableAccount = activeTableAccount
-        sessions.forEach { session in
-            if session.sceneIdentifier == sceneIdentifier {
-                session.sceneIdentifier = nil
-            }
-            if session.account == activeTableAccount.account {
-                session.sceneIdentifier = sceneIdentifier
-            }
+        if let sceneIdentifier {
+            sceneIdentifierAccount[sceneIdentifier] = activeTableAccount.account
         }
     }
 

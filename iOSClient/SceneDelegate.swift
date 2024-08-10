@@ -61,6 +61,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func sceneDidDisconnect(_ scene: UIScene) {
         print("[DEBUG] Scene did disconnect")
+        if let controller = SceneManager.shared.getController(scene: scene) as? NCMainTabBarController {
+            NCSession.shared.removeSceneIdentifier(sceneIdentifier: controller.sceneIdentifier)
+        }
     }
 
     func sceneWillEnterForeground(_ scene: UIScene) {
