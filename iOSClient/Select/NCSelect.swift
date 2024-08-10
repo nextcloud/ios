@@ -58,7 +58,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
     var titleCurrentFolder = NCBrandOptions.shared.brand
     var serverUrl = ""
-    var session: NCSession.Session = NCSession.shared.getActiveSession()
+    var session: NCSession.Session!
     // -------------------------------------------------------------
 
     private var dataSourceTask: URLSessionTask?

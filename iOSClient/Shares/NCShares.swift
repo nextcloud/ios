@@ -53,7 +53,7 @@ class NCShares: NCCollectionViewCommon {
 
     override func queryDB() {
         super.queryDB()
-        let domain = NCSession.shared.getActiveSession()
+        let session = NCSession.shared.getSession(controller: tabBarController)
         var metadatas: [tableMetadata] = []
 
         func reload() {
@@ -64,15 +64,15 @@ class NCShares: NCCollectionViewCommon {
             }
         }
 
-        let sharess = NCManageDatabase.shared.getTableShares(account: domain.account)
+        let sharess = NCManageDatabase.shared.getTableShares(account: session.account)
         for share in sharess {
-            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", domain.account, share.serverUrl, share.fileName)) {
+            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", session.account, share.serverUrl, share.fileName)) {
                 if !(metadatas.contains { $0.ocId == metadata.ocId }) {
                     metadatas.append(metadata)
                 }
             } else {
                 let serverUrlFileName = share.serverUrl + "/" + share.fileName
-                NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: domain.account) { task in
+                NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: session.account) { task in
                     self.dataSourceTask = task
                     self.collectionView.reloadData()
                 } completion: { _, metadata, _ in
@@ -92,7 +92,7 @@ class NCShares: NCCollectionViewCommon {
 
     override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
         super.reloadDataSourceNetwork()
-        let session = NCSession.shared.getActiveSession()
+        let session = NCSession.shared.getSession(controller: tabBarController)
 
         NextcloudKit.shared.readShares(parameters: NKShareParameter(), account: session.account) { task in
             self.dataSourceTask = task

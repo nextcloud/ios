@@ -19,7 +19,7 @@ class NCAssistantTask: ObservableObject {
     @Published var hasError: Bool = false
     @Published var isLoading: Bool = false
 
-    private var session = NCSession.shared.getActiveSession()
+    private var session: NCSession.Session!
     private var tasks: [NKTextProcessingTask] = []
     private let excludedTypeIds = ["OCA\\ContextChat\\TextProcessing\\ContextChatTaskType"]
 

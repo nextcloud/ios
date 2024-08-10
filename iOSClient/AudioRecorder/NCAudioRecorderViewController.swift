@@ -35,7 +35,7 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
     var startDate: Date = Date()
     var fileName: String = ""
     var serverUrl = ""
-    var session: NCSession.Session = NCSession.shared.getActiveSession()
+    var session: NCSession.Session!
 
     @IBOutlet weak var contentContainerView: UIView!
     @IBOutlet weak var durationLabel: UILabel!
