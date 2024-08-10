@@ -54,7 +54,7 @@ class NCDragDrop: NSObject {
         return dragItems
     }
 
-    func performDrop(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator, serverUrl: String, isImageVideo: Bool) -> [tableMetadata]? {
+    func performDrop(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator, serverUrl: String, isImageVideo: Bool, session: NCSession.Session) -> [tableMetadata]? {
         var serverUrl = serverUrl
         var metadatas: [tableMetadata] = []
         DragDropHover.shared.cleanPushDragDropHover()
@@ -81,7 +81,7 @@ class NCDragDrop: NSObject {
                         if let destinationMetadata = DragDropHover.shared.destinationMetadata, destinationMetadata.directory {
                             serverUrl = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
                         }
-                        self.uploadFile(url: url, serverUrl: serverUrl)
+                        self.uploadFile(url: url, serverUrl: serverUrl, session: session)
                     }
                 }
             }
@@ -94,11 +94,10 @@ class NCDragDrop: NSObject {
         }
     }
 
-    func uploadFile(url: URL, serverUrl: String) {
+    func uploadFile(url: URL, serverUrl: String, session: NCSession.Session) {
         do {
             let data = try Data(contentsOf: url)
             Task {
-                let session = NCSession.shared.getActiveSession()
                 let ocId = NSUUID().uuidString
                 let fileName = await NCNetworking.shared.createFileName(fileNameBase: url.lastPathComponent, account: session.account, serverUrl: serverUrl)
                 let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)

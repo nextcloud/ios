@@ -364,7 +364,6 @@ extension SceneDelegate: NCPasscodeDelegate {
         let sceneIdentifier = (controller as? NCMainTabBarController)?.sceneIdentifier
 
         if accounts.count > 1, let accountRequestVC = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
-
             accountRequestVC.sceneIdentifier = sceneIdentifier
             if let sceneIdentifier {
                 accountRequestVC.activeAccount = NCSession.shared.getSession(sceneIdentifier: sceneIdentifier).account
