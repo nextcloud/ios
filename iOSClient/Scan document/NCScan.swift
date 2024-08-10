@@ -37,6 +37,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     @IBOutlet weak var segmentControlFilter: UISegmentedControl!
 
     public var serverUrl: String?
+    public var session: NCSession.Session!
 
     // Data Source for collectionViewSource
     internal var itemsSource: [String] = []
@@ -144,7 +145,6 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
 
     @IBAction func saveAction(sender: UIBarButtonItem) {
         guard !imagesDestination.isEmpty else { return }
-        let session = NCSession.shared.getActiveSession()
         var images: [UIImage] = []
         for image in imagesDestination {
             images.append(filter(image: image)!)

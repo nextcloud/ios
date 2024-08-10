@@ -131,11 +131,6 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
 
     func networkReachabilityObserver(_ typeReachability: NKCommon.TypeReachability) {
         if typeReachability == NKCommon.TypeReachability.reachableCellular || typeReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi {
-            if !lastReachability {
-#if !EXTENSION
-                NCService().startRequestServicesServer(account: NCSession.shared.getActiveSession().account)
-#endif
-            }
             lastReachability = true
         } else {
             if lastReachability {
