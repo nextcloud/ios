@@ -408,13 +408,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     @objc private func checkErrorNetworking(_ notification: NSNotification) {
-        guard !self.timerErrorNetworkingDisabled,
-              NCSession.shared.isActiveSessionValid(),
-              NCKeychain().getPassword(account: NCSession.shared.getActiveSession().account).isEmpty else { return }
+        guard !self.timerErrorNetworkingDisabled else { return }
 
-       // let sessions = NCManageDatabase.shared.getAllAccount() 
-
-        openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: true)
+        for tableAccount in NCManageDatabase.shared.getAllTableAccount() {
+            let password = NCKeychain().getPassword(account: tableAccount.account)
+            if password.isEmpty {
+                let session = NCSession.shared.getSession(account: tableAccount.account)
+                if let sceneIdentifier = session.sceneIdentifier,
+                   !sceneIdentifier.isEmpty {
+                    openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: true)
+                }
+            }
+        }
     }
 
     func trustCertificateError(host: String) {
