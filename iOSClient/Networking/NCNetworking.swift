@@ -114,10 +114,14 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
     override init() {
         super.init()
 
-        getActiveAccountCertificate()
+        getActiveAccountCertificate(account: NCSession.shared.getActiveSession().account)
 
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
-            self.getActiveAccountCertificate()
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { notification in
+            if let userInfo = notification.userInfo {
+                if let account = userInfo["account"] as? String {
+                    self.getActiveAccountCertificate(account: account)
+                }
+            }
         }
     }
 
@@ -313,9 +317,7 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
         }
     }
 
-    private func getActiveAccountCertificate() {
-        if NCSession.shared.isActiveSessionValid() {
-            (self.p12Data, self.p12Password) = NCKeychain().getClientCertificate(account: NCSession.shared.getActiveSession().account)
-        }
+    private func getActiveAccountCertificate(account: String) {
+        (self.p12Data, self.p12Password) = NCKeychain().getClientCertificate(account: account)
     }
 }
