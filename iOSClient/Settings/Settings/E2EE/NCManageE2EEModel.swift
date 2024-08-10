@@ -46,7 +46,7 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
     /// Triggered when the view appears.
     func onViewAppear() {
         if NCGlobal.shared.capabilityE2EEEnabled && NCGlobal.shared.e2eeVersions.contains(NCGlobal.shared.capabilityE2EEApiVersion) {
-            isEndToEndEnabled = NCKeychain().isEndToEndEnabled(account: NCSession.shared.getActiveSession().account)
+            isEndToEndEnabled = NCKeychain().isEndToEndEnabled(account: NCSession.shared.getSession(controller: controller).account)
             if isEndToEndEnabled {
                 statusOfService = NSLocalizedString("_status_e2ee_configured_", comment: "")
             } else {
@@ -96,7 +96,7 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
     }
 
     @objc func correctPasscode() {
-        let account = NCSession.shared.getActiveSession().account
+        let account = NCSession.shared.getSession(controller: controller).account
         switch self.passcodeType {
         case "startE2E":
             endToEndInitialize.initEndToEndEncryption(viewController: controller, metadata: nil)
