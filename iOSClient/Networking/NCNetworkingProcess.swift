@@ -257,9 +257,7 @@ class NCNetworkingProcess: NSObject {
 
     // MARK: -
 
-    func verifyZombie() async {
-        let nkSession = NextcloudKit.shared.nkCommonInstance.getSession(account: NCSession.shared.getActiveSession().account)
-
+    func verifyZombie(nkSession: NKSession) async {
         // selectorUploadFileShareExtension (FOREGROUND)
         if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "session == %@ AND sessionSelector == %@", NextcloudKit.shared.nkCommonInstance.identifierSessionUpload, NCGlobal.shared.selectorUploadFileShareExtension)) {
             for metadata in results {
@@ -297,9 +295,9 @@ class NCNetworkingProcess: NSObject {
             var taskUpload: URLSessionTask?
             var session: URLSession?
             if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground {
-                session = nkSession?.sessionUploadBackground
+                session = nkSession.sessionUploadBackground
             } else if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundWWan {
-                session = nkSession?.sessionUploadBackgroundWWan
+                session = nkSession.sessionUploadBackgroundWWan
             }
             if let tasks = await session?.allTasks {
                 for task in tasks {
@@ -318,16 +316,58 @@ class NCNetworkingProcess: NSObject {
         let resultsDownload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "session == %@ AND status == %d", NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground, NCGlobal.shared.metadataStatusDownloading))
         for metadata in resultsDownload {
             var taskDownload: URLSessionTask?
-            let session: URLSession? = nkSession?.sessionDownloadBackground
+            let session: URLSession? = nkSession.sessionDownloadBackground
             if let tasks = await session?.allTasks {
                 for task in tasks {
                     if task.taskIdentifier == metadata.sessionTaskIdentifier { taskDownload = task }
                 }
                 if taskDownload == nil, let metadata = NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "ocId == %@ AND status == %d", metadata.ocId, NCGlobal.shared.metadataStatusDownloading)) {
                     NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                               session: NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground,
+                                                               session: "",
                                                                sessionError: "",
-                                                               status: NCGlobal.shared.metadataStatusWaitDownload)
+                                                               selector: "",
+                                                               status: NCGlobal.shared.metadataStatusNormal)
+                }
+            }
+
+            // metadataStatusUploading (BACKGROUND)
+            let resultsUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "(session == %@ OR session == %@ OR session == %@) AND status == %d", NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground, NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundWWan, NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundExt, NCGlobal.shared.metadataStatusUploading))
+            for metadata in resultsUpload {
+                var taskUpload: URLSessionTask?
+                var session: URLSession?
+                if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground {
+                    session = nkSession.sessionUploadBackground
+                } else if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundWWan {
+                    session = nkSession.sessionUploadBackgroundWWan
+                }
+                if let tasks = await session?.allTasks {
+                    for task in tasks {
+                        if task.taskIdentifier == metadata.sessionTaskIdentifier { taskUpload = task }
+                    }
+                    if taskUpload == nil, let metadata = NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "ocId == %@ AND status == %d", metadata.ocId, NCGlobal.shared.metadataStatusUploading)) {
+                        NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                                   session: NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground,
+                                                                   sessionError: "",
+                                                                   status: NCGlobal.shared.metadataStatusWaitUpload)
+                    }
+                }
+            }
+
+            // metadataStatusDowloading (BACKGROUND)
+            let resultsDownload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "session == %@ AND status == %d", NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground, NCGlobal.shared.metadataStatusDownloading))
+            for metadata in resultsDownload {
+                var taskDownload: URLSessionTask?
+                let session: URLSession? = nkSession.sessionDownloadBackground
+                if let tasks = await session?.allTasks {
+                    for task in tasks {
+                        if task.taskIdentifier == metadata.sessionTaskIdentifier { taskDownload = task }
+                    }
+                    if taskDownload == nil, let metadata = NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "ocId == %@ AND status == %d", metadata.ocId, NCGlobal.shared.metadataStatusDownloading)) {
+                        NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                                   session: NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground,
+                                                                   sessionError: "",
+                                                                   status: NCGlobal.shared.metadataStatusWaitDownload)
+                    }
                 }
             }
         }

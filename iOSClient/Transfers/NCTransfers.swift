@@ -56,7 +56,11 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
         reloadDataSource()
         Task {
-            await NCNetworkingProcess.shared.verifyZombie()
+            if let nkSessions = NextcloudKit.shared.nkCommonInstance.nksessions.getArray() {
+                for nksession in nkSessions {
+                    await NCNetworkingProcess.shared.verifyZombie(nkSession: nksession)
+                }
+            }
         }
     }
 
@@ -262,8 +266,12 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
         Task {
-            await NCNetworkingProcess.shared.verifyZombie()
-            super.reloadDataSource(withQueryDB: true)
+            if let nkSessions = NextcloudKit.shared.nkCommonInstance.nksessions.getArray() {
+                for nksession in nkSessions {
+                    await NCNetworkingProcess.shared.verifyZombie(nkSession: nksession)
+                    super.reloadDataSource(withQueryDB: true)
+                }
+            }
         }
     }
 }
