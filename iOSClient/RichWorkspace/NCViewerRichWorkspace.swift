@@ -60,8 +60,9 @@ import MarkdownKit
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        let session = NCSession.shared.getSession(controller: self.delegate?.tabBarController)
 
-        NCNetworking.shared.readFile(serverUrlFileName: self.serverUrl, account: NCSession.shared.getActiveSession().account, queue: .main) { _ in
+        NCNetworking.shared.readFile(serverUrlFileName: self.serverUrl, account: session.account, queue: .main) { _ in
         } completion: { account, metadata, error in
             if error == .success, let metadata {
                 NCManageDatabase.shared.setDirectory(serverUrl: self.serverUrl, richWorkspace: metadata.richWorkspace, account: account)
@@ -83,6 +84,7 @@ import MarkdownKit
     }
 
     @IBAction func editItemAction(_ sender: Any) {
-        richWorkspaceCommon.openViewerNextcloudText(serverUrl: serverUrl, viewController: self)
+        let session = NCSession.shared.getSession(controller: self.delegate)
+        richWorkspaceCommon.openViewerNextcloudText(serverUrl: serverUrl, viewController: self, session: session)
     }
 }

@@ -136,9 +136,9 @@ extension AppDelegate {
                         let richWorkspaceCommon = NCRichWorkspaceCommon()
                         if let viewController = controller.currentViewController() {
                             if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", session.account, serverUrl, NCGlobal.shared.fileNameRichWorkspace.lowercased())) == nil {
-                                richWorkspaceCommon.createViewerNextcloudText(serverUrl: serverUrl, viewController: viewController)
+                                richWorkspaceCommon.createViewerNextcloudText(serverUrl: serverUrl, viewController: viewController, session: session)
                             } else {
-                                richWorkspaceCommon.openViewerNextcloudText(serverUrl: serverUrl, viewController: viewController)
+                                richWorkspaceCommon.openViewerNextcloudText(serverUrl: serverUrl, viewController: viewController, session: session)
                             }
                         }
                     }

@@ -24,11 +24,10 @@
 import UIKit
 import NextcloudKit
 
-@objc class NCRichWorkspaceCommon: NSObject {
+class NCRichWorkspaceCommon: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
 
-    @objc func createViewerNextcloudText(serverUrl: String, viewController: UIViewController) {
-        let session = NCSession.shared.getActiveSession()
+    func createViewerNextcloudText(serverUrl: String, viewController: UIViewController, session: NCSession.Session) {
         if !NextcloudKit.shared.isNetworkReachable() {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_go_online_")
             NCContentPresenter().showError(error: error)
@@ -53,13 +52,13 @@ import NextcloudKit
         }
     }
 
-    @objc func openViewerNextcloudText(serverUrl: String, viewController: UIViewController) {
+    func openViewerNextcloudText(serverUrl: String, viewController: UIViewController, session: NCSession.Session) {
         if !NextcloudKit.shared.isNetworkReachable() {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_go_online_")
             return NCContentPresenter().showError(error: error)
         }
 
-        if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", NCSession.shared.getActiveSession().account, serverUrl, NCGlobal.shared.fileNameRichWorkspace.lowercased())) {
+        if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", session.account, serverUrl, NCGlobal.shared.fileNameRichWorkspace.lowercased())) {
 
             if metadata.url.isEmpty {
                 let session = NCSession.shared.getSession(account: metadata.account)
