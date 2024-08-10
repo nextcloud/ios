@@ -32,6 +32,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
     let utility = NCUtility()
     var notifications: [NKNotifications] = []
     var dataSourceTask: URLSessionTask?
+    var session: NCSession.Session!
 
     // MARK: - View Life Cycle
 

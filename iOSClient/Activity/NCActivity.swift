@@ -45,7 +45,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
     var insets = UIEdgeInsets(top: 8, left: 0, bottom: 0, right: 0)
     var didSelectItemEnable: Bool = true
     var objectType: String?
-    var session: NCSession.Session?
+    var session: NCSession.Session!
 
     var isFetchingActivity = false
     var hasActivityToLoad = true {
@@ -547,6 +547,6 @@ extension NCActivity: NCShareCommentsCellDelegate {
             )
         )
 
-        presentMenu(with: actions)
+        presentMenu(with: actions, session: session)
     }
 }

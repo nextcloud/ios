@@ -849,6 +849,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             if layoutKey == NCGlobal.shared.layoutViewFiles {
                 let notification = UIBarButtonItem(image: utility.loadImage(named: "bell"), style: .plain) {
                     if let viewController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? NCNotification {
+                        viewController.session = NCSession.shared.getSession(controller: self.tabBarController)
                         self.navigationController?.pushViewController(viewController, animated: true)
                     }
                 }
