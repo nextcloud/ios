@@ -36,8 +36,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene),
               let appDelegate else { return }
         self.window = UIWindow(windowScene: windowScene)
+        let session = SceneManager.shared.getSession(scene: scene)
 
-        if NCSession.shared.isActiveSessionValid(),
+        if NCSession.shared.isValidSession(session),
            let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
                 SceneManager.shared.register(scene: scene, withRootViewController: controller)
                 window?.rootViewController = controller
@@ -64,6 +65,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func sceneWillEnterForeground(_ scene: UIScene) {
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Scene will enter in foreground")
+        let session = SceneManager.shared.getSession(scene: scene)
         guard let appDelegate else { return }
 
         // In Login mode is possible ONLY 1 window
@@ -72,7 +74,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             UIApplication.shared.allSceneSessionDestructionExceptFirst()
             return
         }
-        guard NCSession.shared.isActiveSessionValid() else { return }
+        guard NCSession.shared.isValidSession(session) else { return }
 
         hidePrivacyProtectionWindow()
         if let window = SceneManager.shared.getWindow(scene: scene), let controller = SceneManager.shared.getController(scene: scene) {
@@ -177,7 +179,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let sceneIdentifier = controller.sceneIdentifier
         let scheme = url.scheme
         let action = url.host
-        let session = NCSession.shared.getSession(controller: controller)
+        let session = SceneManager.shared.getSession(scene: scene)
+        guard NCSession.shared.isValidSession(session) else { return }
 
         func getMatchedAccount(userId: String, url: String) -> tableAccount? {
             if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
@@ -202,7 +205,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
          Example: nextcloud://open-action?action=create-voice-memo&&user=marinofaggiana&url=https://cloud.nextcloud.com
          */
 
-        if NCSession.shared.isActiveSessionValid() && scheme == NCGlobal.shared.appScheme && action == "open-action" {
+        if scheme == NCGlobal.shared.appScheme && action == "open-action" {
 
             if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
                 let queryItems = urlComponents.queryItems
@@ -269,7 +272,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
          Example: nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
          */
 
-        else if NCSession.shared.isActiveSessionValid() && scheme == NCGlobal.shared.appScheme && action == "open-file" {
+        else if scheme == NCGlobal.shared.appScheme && action == "open-file" {
 
             if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
 
@@ -311,7 +314,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
          Example: nextcloud://open-and-switch-account?user=marinofaggiana&url=https://cloud.nextcloud.com
          */
 
-        } else if NCSession.shared.isActiveSessionValid() && scheme == NCGlobal.shared.appScheme && action == "open-and-switch-account" {
+        } else if scheme == NCGlobal.shared.appScheme && action == "open-and-switch-account" {
             guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return }
             let queryItems = urlComponents.queryItems
             guard let userScheme = queryItems?.filter({ $0.name == "user" }).first?.value,
@@ -322,7 +325,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
             // Otherwise open the app and switch accounts
             return
-        } else if NCSession.shared.isActiveSessionValid(), let action {
+        } else if let action {
             if DeepLink(rawValue: action) != nil {
                 NCDeepLinkHandler().parseDeepLink(url, controller: controller)
             }
