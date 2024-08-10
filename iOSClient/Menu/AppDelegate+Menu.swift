@@ -31,7 +31,7 @@ extension AppDelegate {
 
     func toggleMenu(controller: NCMainTabBarController) {
         var actions: [NCMenuAction] = []
-        let session = NCSession.shared.getActiveSession(controller: controller)
+        let session = NCSession.shared.getSession(controller: controller)
         let directEditingCreators = NCManageDatabase.shared.getDirectEditingCreators(account: session.account)
         let serverUrl = controller.currentServerUrl()
         let isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, account: session.account)

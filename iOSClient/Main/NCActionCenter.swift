@@ -477,7 +477,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         guard let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier),
               let navigationController = controller.viewControllers?.first as? UINavigationController
         else { return }
-        let session = NCSession.shared.getActiveSession(controller: controller)
+        let session = NCSession.shared.getSession(controller: controller)
         var serverUrlPush = self.utilityFileSystem.getHomeServer(session: session)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
@@ -562,7 +562,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     }
 
     func openSelectView(items: [tableMetadata], controller: NCMainTabBarController?) {
-        let session = NCSession.shared.getActiveSession(controller: controller)
+        let session = NCSession.shared.getSession(controller: controller)
         let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as? UINavigationController
         let topViewController = navigationController?.topViewController as? NCSelect
         var listViewController = [NCSelect]()

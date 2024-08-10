@@ -25,7 +25,7 @@ class NCAssistantTask: ObservableObject {
 
     init(controller: NCMainTabBarController?) {
         if let controller {
-            session = NCSession.shared.getActiveSession(controller: controller)
+            session = NCSession.shared.getSession(controller: controller)
         }
 
         load()

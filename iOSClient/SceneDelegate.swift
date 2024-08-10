@@ -92,7 +92,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func sceneDidBecomeActive(_ scene: UIScene) {
         let controller = SceneManager.shared.getController(scene: scene) as? NCMainTabBarController
-        let account = NCSession.shared.getActiveSession(controller: controller).account
+        let account = NCSession.shared.getSession(controller: controller).account
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Scene did become active")
 
         NCSettingsBundleHelper.setVersionAndBuildNumber()
@@ -139,7 +139,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneDidEnterBackground(_ scene: UIScene) {
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Scene did enter in background")
         let controller = SceneManager.shared.getController(scene: scene) as? NCMainTabBarController
-        let account = NCSession.shared.getActiveSession(controller: controller).account
+        let account = NCSession.shared.getSession(controller: controller).account
         guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else {
             return
         }
@@ -178,7 +178,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let sceneIdentifier = controller.sceneIdentifier
         let scheme = url.scheme
         let action = url.host
-        let session = NCSession.shared.getActiveSession(controller: controller)
+        let session = NCSession.shared.getSession(controller: controller)
 
         func getMatchedAccount(userId: String, url: String) -> tableAccount? {
             if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
@@ -367,7 +367,7 @@ extension SceneDelegate: NCPasscodeDelegate {
 
             accountRequestVC.sceneIdentifier = sceneIdentifier
             if let sceneIdentifier {
-                accountRequestVC.activeAccount = NCSession.shared.getActiveSession(sceneIdentifier: sceneIdentifier).account
+                accountRequestVC.activeAccount = NCSession.shared.getSession(sceneIdentifier: sceneIdentifier).account
             }
             accountRequestVC.accounts = accounts
             accountRequestVC.enableTimerProgress = true

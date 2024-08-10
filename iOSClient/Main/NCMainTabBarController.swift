@@ -51,7 +51,7 @@ class NCMainTabBarController: UITabBarController {
     }
 
     func currentServerUrl() -> String {
-        let session = NCSession.shared.getActiveSession(controller: self)
+        let session = NCSession.shared.getSession(controller: self)
         var serverUrl = NCUtilityFileSystem().getHomeServer(session: session)
         let viewController = currentViewController()
         if let collectionViewCommon = viewController as? NCCollectionViewCommon {

@@ -94,7 +94,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
         super.viewWillAppear(animated)
 
         if session == nil {
-            self.session = NCSession.shared.getActiveSession(controller: self.tabBarController)
+            self.session = NCSession.shared.getSession(controller: self.tabBarController)
         }
         navigationController?.setNavigationBarAppearance()
         fetchAll(isInitial: true)

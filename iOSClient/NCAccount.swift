@@ -69,7 +69,7 @@ class NCAccount: NSObject {
         }
         var session = NCSession.shared.getActiveSession()
         if let sceneIdentifier {
-            session = NCSession.shared.getActiveSession(sceneIdentifier: sceneIdentifier)
+            session = NCSession.shared.getSession(sceneIdentifier: sceneIdentifier)
         }
         /// Create Media Cache
         DispatchQueue.global().async {

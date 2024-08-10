@@ -51,7 +51,7 @@ class NCOffline: NCCollectionViewCommon {
 
     override func queryDB() {
         super.queryDB()
-        let session = NCSession.shared.getActiveSession()
+        let session = NCSession.shared.getSession(controller: tabBarController)
         var ocIds: [String] = []
         var metadatas: [tableMetadata] = []
 

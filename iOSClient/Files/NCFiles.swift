@@ -49,7 +49,7 @@ class NCFiles: NCCollectionViewCommon {
 
         if isRoot {
             NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
-                let session = NCSession.shared.getActiveSession(controller: self.tabBarController)
+                let session = NCSession.shared.getSession(controller: self.tabBarController)
                 self.navigationController?.popToRootViewController(animated: false)
                 self.serverUrl = self.utilityFileSystem.getHomeServer(session: session)
                 self.isSearchingMode = false
@@ -76,7 +76,7 @@ class NCFiles: NCCollectionViewCommon {
 
     override func viewWillAppear(_ animated: Bool) {
         if isRoot {
-            let session = NCSession.shared.getActiveSession(controller: self.tabBarController)
+            let session = NCSession.shared.getSession(controller: self.tabBarController)
             serverUrl = utilityFileSystem.getHomeServer(session: session)
             titleCurrentFolder = getNavigationTitle()
         }
@@ -99,7 +99,7 @@ class NCFiles: NCCollectionViewCommon {
 
     override func queryDB() {
         super.queryDB()
-        let session = NCSession.shared.getActiveSession(controller: self.tabBarController)
+        let session = NCSession.shared.getSession(controller: self.tabBarController)
         var metadatas: [tableMetadata] = []
 
         if NCKeychain().getPersonalFilesOnly(account: session.account) {
@@ -175,7 +175,7 @@ class NCFiles: NCCollectionViewCommon {
 
     private func networkReadFolder(completion: @escaping(_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ metadatasDifferentCount: Int, _ metadatasModified: Int, _ error: NKError) -> Void) {
         var tableDirectory: tableDirectory?
-        let session = NCSession.shared.getActiveSession(controller: self.tabBarController)
+        let session = NCSession.shared.getSession(controller: self.tabBarController)
 
         NCNetworking.shared.readFile(serverUrlFileName: serverUrl, account: session.account) { task in
             self.dataSourceTask = task
@@ -255,7 +255,7 @@ class NCFiles: NCCollectionViewCommon {
     }
 
     func blinkCell(fileName: String?) {
-        if let fileName = fileName, let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", NCSession.shared.getActiveSession(controller: self.tabBarController).account, self.serverUrl, fileName)) {
+        if let fileName = fileName, let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", NCSession.shared.getSession(controller: self.tabBarController).account, self.serverUrl, fileName)) {
             let (indexPath, _) = self.dataSource.getIndexPathMetadata(ocId: metadata.ocId)
             if let indexPath = indexPath {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -275,7 +275,7 @@ class NCFiles: NCCollectionViewCommon {
     }
 
     func openFile(fileName: String?) {
-        if let fileName = fileName, let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", NCSession.shared.getActiveSession(controller: self.tabBarController).account, self.serverUrl, fileName)) {
+        if let fileName = fileName, let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", NCSession.shared.getSession(controller: self.tabBarController).account, self.serverUrl, fileName)) {
             let (indexPath, _) = self.dataSource.getIndexPathMetadata(ocId: metadata.ocId)
             if let indexPath = indexPath {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -288,7 +288,7 @@ class NCFiles: NCCollectionViewCommon {
     // MARK: - NCAccountSettingsModelDelegate
 
     override func accountSettingsDidDismiss(tableAccount: tableAccount?, controller: NCMainTabBarController?) {
-        let currentAccount = NCSession.shared.getActiveSession(controller: controller).account
+        let currentAccount = NCSession.shared.getSession(controller: controller).account
         if NCManageDatabase.shared.getAllAccount().isEmpty {
             appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
         } else if let account = tableAccount?.account, account != currentAccount {

@@ -45,7 +45,7 @@ class NCNetworkingProcess: NSObject {
             guard let controller = SceneManager.shared.getController(scene: scene) as? NCMainTabBarController else {
                 return
             }
-            let account = NCSession.shared.getActiveSession(controller: controller).account
+            let account = NCSession.shared.getSession(controller: controller).account
 
             // In Downloading or Uploading [TEST]
             /*

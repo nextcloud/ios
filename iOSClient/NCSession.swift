@@ -74,6 +74,22 @@ public class NCSession: NSObject {
         return Session(account: "", urlBase: "", user: "", userId: "")
     }
 
+#if !EXTENSION
+    public func getSession(sceneIdentifier: String) -> Session {
+        if let session = sessions.filter({ $0.sceneIdentifier == sceneIdentifier }).first {
+            return session
+        }
+        return getActiveSession()
+    }
+    public func getSession(controller: UIViewController?) -> Session {
+        if let sceneIdentifier = (controller as? NCMainTabBarController)?.sceneIdentifier,
+           let session = sessions.filter({ $0.sceneIdentifier == sceneIdentifier }).first {
+            return session
+        }
+        return getActiveSession()
+    }
+#endif
+
     public func isValidSession(account: String) -> Bool {
         return !getSession(account: account).account.isEmpty
     }
@@ -96,22 +112,6 @@ public class NCSession: NSObject {
     public func isActiveSessionValid() -> Bool {
         return !getActiveSession().account.isEmpty
     }
-
-#if !EXTENSION
-    public func getActiveSession(sceneIdentifier: String) -> Session {
-        if let session = sessions.filter({ $0.sceneIdentifier == sceneIdentifier }).first {
-            return session
-        }
-        return getActiveSession()
-    }
-    public func getActiveSession(controller: UIViewController?) -> Session {
-        if let sceneIdentifier = (controller as? NCMainTabBarController)?.sceneIdentifier,
-           let session = sessions.filter({ $0.sceneIdentifier == sceneIdentifier }).first {
-            return session
-        }
-        return getActiveSession()
-    }
-#endif
 
     /// ACTIVE TABLE ACCOUNT
     ///
