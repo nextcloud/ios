@@ -42,7 +42,7 @@ public class NCSession: NSObject {
     }
     private var sessions: ThreadSafeArray<Session> = ThreadSafeArray()
     private var activeTableAccount = tableAccount()
-    private var sceneIdentifierAccount: [String: String] = [:]
+    private var sceneIdentifierAccount: ThreadSafeDictionary<String, String> = ThreadSafeDictionary()
 
     override private init() {}
 
@@ -122,6 +122,16 @@ public class NCSession: NSObject {
         if let sceneIdentifier {
             sceneIdentifierAccount[sceneIdentifier] = activeTableAccount.account
         }
+    }
+
+    func getSceneIdentifier(account: String) -> String? {
+        var sceneIdentifier: String?
+        sceneIdentifierAccount.forEach { keySceneIdentifier, valueAccount in
+            if account == valueAccount {
+                sceneIdentifier = keySceneIdentifier
+            }
+        }
+        return sceneIdentifier
     }
 
     /// UTILITY

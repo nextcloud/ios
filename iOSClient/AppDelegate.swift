@@ -413,13 +413,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         for tableAccount in NCManageDatabase.shared.getAllTableAccount() {
             let password = NCKeychain().getPassword(account: tableAccount.account)
             if password.isEmpty {
-                let session = NCSession.shared.getSession(account: tableAccount.account)
-                /*
-                if let sceneIdentifier = session.sceneIdentifier,
-                   !sceneIdentifier.isEmpty {
+                if let sessionIdentifier = NCSession.shared.getSceneIdentifier(account: tableAccount.account) {
                     openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: true)
                 }
-                */
             }
         }
     }
