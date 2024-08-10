@@ -28,7 +28,7 @@ import NextcloudKit
 extension NCShare {
     func toggleShareMenu(for share: tableShare) {
         var actions = [NCMenuAction]()
-        let session = NCSession.shared.getActiveSession()
+        let session = NCSession.shared.getActiveSession(controller: tabBarController)
 
         if share.shareType == 3, canReshare {
             actions.append(

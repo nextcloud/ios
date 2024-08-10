@@ -144,7 +144,6 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         self.navigationItem.title = titleCurrentFolder
-        let session = NCSession.shared.getActiveSession()
 
         // set the serverUrl
         if serverUrl.isEmpty {

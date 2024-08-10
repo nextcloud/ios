@@ -49,7 +49,7 @@ class NCRecent: NCCollectionViewCommon {
 
     override func queryDB() {
         super.queryDB()
-        let session = NCSession.shared.getActiveSession()
+        let session = NCSession.shared.getActiveSession(controller: tabBarController)
         let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@", session.account), numItems: 200, sorted: "date", ascending: false)
 
         layoutForView?.sort = "date"
@@ -61,7 +61,7 @@ class NCRecent: NCCollectionViewCommon {
 
     override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
         super.reloadDataSourceNetwork()
-        let session = NCSession.shared.getActiveSession()
+        let session = NCSession.shared.getActiveSession(controller: tabBarController)
         let requestBodyRecent =
         """
         <?xml version=\"1.0\"?>

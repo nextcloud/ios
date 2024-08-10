@@ -170,7 +170,7 @@ class NCAutoUpload: NSObject {
                     }
                     if selector == NCGlobal.shared.selectorUploadAutoUpload {
                         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Automatic upload added \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier)")
-                        NCManageDatabase.shared.addPhotoLibrary([asset], account: NCSession.shared.getActiveSession().account)
+                        NCManageDatabase.shared.addPhotoLibrary([asset], account: account)
                     }
                     metadatas.append(metadata)
                 }
@@ -190,7 +190,7 @@ class NCAutoUpload: NSObject {
             NCManageDatabase.shared.clearTable(tablePhotoLibrary.self, account: account)
             guard let assets = assets else { return }
 
-            NCManageDatabase.shared.addPhotoLibrary(assets, account: NCSession.shared.getActiveSession().account)
+            NCManageDatabase.shared.addPhotoLibrary(assets, account: account)
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Align Photo Library \(assets.count)")
         }
     }
