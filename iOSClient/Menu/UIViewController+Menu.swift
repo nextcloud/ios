@@ -28,7 +28,7 @@ import SVGKit
 import NextcloudKit
 
 extension UIViewController {
-    fileprivate func handleProfileAction(_ action: NKHovercard.Action, for userId: String) {
+    fileprivate func handleProfileAction(_ action: NKHovercard.Action, for userId: String, session: NCSession.Session) {
         switch action.appId {
         case "email":
             guard
@@ -44,7 +44,7 @@ extension UIViewController {
 
         case "spreed":
             guard
-                let talkUrl = URL(string: "nextcloudtalk://open-conversation?server=\(NCSession.shared.getActiveSession().urlBase)&user=\(NCSession.shared.getActiveSession().userId)&withUser=\(userId)"),
+                let talkUrl = URL(string: "nextcloudtalk://open-conversation?server=\(session.urlBase)&user=\(session.userId)&withUser=\(userId)"),
                 UIApplication.shared.canOpenURL(talkUrl)
             else { fallthrough /* default: open web link in browser */ }
             UIApplication.shared.open(talkUrl)
@@ -59,7 +59,7 @@ extension UIViewController {
         }
     }
 
-    func showProfileMenu(userId: String) {
+    func showProfileMenu(userId: String, session: NCSession.Session) {
         guard NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion23 else { return }
         let session = NCSession.shared.getActiveSession()
 
@@ -81,7 +81,7 @@ extension UIViewController {
                 return NCMenuAction(
                     title: action.title,
                     icon: image,
-                    action: { _ in self.handleProfileAction(action, for: userId) })
+                    action: { _ in self.handleProfileAction(action, for: userId, session: session) })
             }
 
             let allActions = [personHeader] + actions

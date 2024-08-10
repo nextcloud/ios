@@ -56,13 +56,13 @@ extension NCShare: NCShareLinkCellDelegate, NCShareUserCellDelegate {
     }
 
     func showProfile(with tableShare: tableShare?, sender: Any) {
-        guard let tableShare = tableShare else { return }
-        showProfileMenu(userId: tableShare.shareWith)
+        guard let tableShare else { return }
+        showProfileMenu(userId: tableShare.shareWith, session: NCSession.shared.getSession(account: tableShare.account))
     }
 
     func quickStatus(with tableShare: tableShare?, sender: Any) {
-        guard let tableShare = tableShare,
-              let metadata = metadata,
+        guard let tableShare,
+              let metadata,
               tableShare.shareType != NCPermissions().permissionDefaultFileRemoteShareNoSupportShareOption else { return }
         self.toggleUserPermissionMenu(isDirectory: metadata.directory, tableShare: tableShare)
     }

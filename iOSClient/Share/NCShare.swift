@@ -44,7 +44,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
 
     weak var appDelegate = UIApplication.shared.delegate as? AppDelegate
 
-    public var metadata: tableMetadata?
+    public var metadata: tableMetadata!
     public var sharingEnabled = true
     public var height: CGFloat = 0
     let shareCommon = NCShareCommon()
@@ -52,7 +52,6 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
     let utility = NCUtility()
 
     var canReshare: Bool {
-        guard let metadata = metadata else { return true }
         return ((metadata.sharePermissionsCollaborationServices & NCPermissions().permissionShareShare) != 0)
     }
 
@@ -85,7 +84,6 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
 
         NotificationCenter.default.addObserver(self, selector: #selector(reloadData), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataNCShare), object: nil)
 
-        guard let metadata else { return }
         let session = NCSession.shared.getSession(account: metadata.account)
 
         if metadata.e2eEncrypted {
@@ -115,11 +113,10 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
     func makeNewLinkShare() {
         guard
             let advancePermission = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "NCShareAdvancePermission") as? NCShareAdvancePermission,
-            let navigationController = self.navigationController,
-            let metadata = self.metadata else { return }
+            let navigationController = self.navigationController else { return }
         self.checkEnforcedPassword(shareType: shareCommon.SHARE_TYPE_LINK) { password in
             advancePermission.networking = self.networking
-            advancePermission.share = NCTableShareOptions.shareLink(metadata: metadata, password: password)
+            advancePermission.share = NCTableShareOptions.shareLink(metadata: self.metadata, password: password)
             advancePermission.metadata = self.metadata
             navigationController.pushViewController(advancePermission, animated: true)
         }
@@ -128,7 +125,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
     // Shared with you by ...
     func checkSharedWithYou() {
         let session = NCSession.shared.getSession(controller: tabBarController)
-        guard let metadata = metadata, !metadata.ownerId.isEmpty, metadata.ownerId != session.userId else { return }
+        guard !metadata.ownerId.isEmpty, metadata.ownerId != session.userId else { return }
 
         if !canReshare {
             searchField.isUserInteractionEnabled = false
@@ -172,16 +169,13 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
     // MARK: - Notification Center
 
     @objc func openShareProfile() {
-        guard let metadata = metadata else { return }
-        self.showProfileMenu(userId: metadata.ownerId)
+        self.showProfileMenu(userId: metadata.ownerId, session: NCSession.shared.getSession(account: metadata.account))
     }
 
     // MARK: -
 
     @objc func reloadData() {
-        if let metadata = metadata {
-            shares = NCManageDatabase.shared.getTableShares(metadata: metadata)
-        }
+        shares = NCManageDatabase.shared.getTableShares(metadata: metadata)
         tableView.reloadData()
     }
 
@@ -277,13 +271,12 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
             let sharee = sharees[index]
             guard
                 let advancePermission = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "NCShareAdvancePermission") as? NCShareAdvancePermission,
-                let navigationController = self.navigationController,
-                let metadata = self.metadata else { return }
+                let navigationController = self.navigationController else { return }
             self.checkEnforcedPassword(shareType: sharee.shareType) { password in
-                let shareOptions = NCTableShareOptions(sharee: sharee, metadata: metadata, password: password)
+                let shareOptions = NCTableShareOptions(sharee: sharee, metadata: self.metadata, password: password)
                 advancePermission.share = shareOptions
                 advancePermission.networking = self.networking
-                advancePermission.metadata = metadata
+                advancePermission.metadata = self.metadata
                 navigationController.pushViewController(advancePermission, animated: true)
             }
         }
@@ -314,7 +307,6 @@ extension NCShare: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard let metadata = self.metadata else { return 0}
         var numRows = shares.share?.count ?? 0
         if section == 0 {
             if metadata.e2eEncrypted && NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV12 {
@@ -331,7 +323,7 @@ extension NCShare: UITableViewDataSource {
         let session = NCSession.shared.getSession(controller: tabBarController)
         // Setup default share cells
         guard indexPath.section != 0 else {
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: "cellLink", for: indexPath) as? NCShareLinkCell, let metadata = self.metadata
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "cellLink", for: indexPath) as? NCShareLinkCell
             else { return UITableViewCell() }
             cell.delegate = self
             if metadata.e2eEncrypted && NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV12 {
@@ -347,7 +339,7 @@ extension NCShare: UITableViewDataSource {
             return cell
         }
 
-        guard let tableShare = shares.share?[indexPath.row], let metadata else { return UITableViewCell() }
+        guard let tableShare = shares.share?[indexPath.row] else { return UITableViewCell() }
 
         // LINK
         if tableShare.shareType == shareCommon.SHARE_TYPE_LINK {

@@ -52,7 +52,7 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
     var activityPreviews: [tableActivityPreview] = []
     var didSelectItemEnable: Bool = true
     var viewController = NCActivity()
-    var account: String = ""
+    var account: String!
 
     let utility = NCUtility()
 
@@ -77,7 +77,7 @@ class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {
 
     @objc func tapAvatarImage() {
         guard let fileUser = fileUser else { return }
-        viewController.showProfileMenu(userId: fileUser)
+        viewController.showProfileMenu(userId: fileUser, session: NCSession.shared.getSession(account: account))
     }
 }
 
