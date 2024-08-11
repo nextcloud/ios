@@ -69,7 +69,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     /// Triggered when the view appears.
     func onViewAppear() {
         let session = NCSession.shared.getSession(controller: controller)
-        if let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", session.account)) {
+        if let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) {
             autoUpload = tableAccount.autoUpload
             autoUploadImage = tableAccount.autoUploadImage
             autoUploadWWAnPhoto = tableAccount.autoUploadWWAnPhoto

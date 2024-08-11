@@ -31,7 +31,7 @@ extension NCShareExtension: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return showAlert(description: "_invalid_url_") }
         let serverUrl = utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
-        if metadata.e2eEncrypted && !NCKeychain().isEndToEndEnabled(account: activeAccount.account) {
+        if metadata.e2eEncrypted && !NCKeychain().isEndToEndEnabled(account: activeTableAccount.account) {
             showAlert(title: "_info_", description: "_e2e_goto_settings_for_enable_")
         }
 
@@ -156,7 +156,7 @@ extension NCShareExtension: UICollectionViewDataSource {
         cell.labelInfo.text = utility.dateDiff(metadata.date as Date)
 
         let lockServerUrl = utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
-        let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", activeAccount.account, lockServerUrl))
+        let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", activeTableAccount.account, lockServerUrl))
 
         // Local image: offline
         if tableDirectory != nil && tableDirectory!.offline {
@@ -176,7 +176,7 @@ extension NCShareExtension: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard !uploadStarted else { return }
         let fileName = filesName[indexPath.row]
-        renameFile(named: fileName, account: activeAccount.account)
+        renameFile(named: fileName, account: activeTableAccount.account)
     }
 }
 
@@ -189,7 +189,7 @@ extension NCShareExtension: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? NCShareCell else { return UITableViewCell() }
         let fileName = filesName[indexPath.row]
-        cell.setup(fileName: fileName, account: activeAccount.account)
+        cell.setup(fileName: fileName, account: activeTableAccount.account)
         cell.delegate = self
         return cell
     }

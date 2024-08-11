@@ -133,7 +133,7 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     func getUserStatus() -> (statusImage: UIImage?, statusMessage: String, descriptionMessage: String) {
         guard let activeAccount else { return (UIImage(), "", "") }
         if NCGlobal.shared.capabilityUserStatusEnabled,
-           let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", activeAccount.account)) {
+           let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", activeAccount.account)) {
             return NCUtility().getUserStatus(userIcon: tableAccount.userStatusIcon, userStatus: tableAccount.userStatusStatus, userMessage: tableAccount.userStatusMessage)
         }
         return (nil, "", "")
@@ -151,7 +151,7 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
         guard let activeAccount else { return 0 }
         var height: CGFloat = NCGlobal.shared.capabilityUserStatusEnabled ? 190 : 220
         if NCGlobal.shared.capabilityUserStatusEnabled,
-           let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", activeAccount.account)) {
+           let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", activeAccount.account)) {
             if !tableAccount.email.isEmpty { height += 30 }
             if !tableAccount.phone.isEmpty { height += 30 }
             if !tableAccount.address.isEmpty { height += 30 }
@@ -162,7 +162,7 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
 
     /// Function to change account after 1.5 sec of change
     func setAccount(account: String) {
-        if let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)), self.activeAccount?.account != tableAccount.account {
+        if let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account)), self.activeAccount?.account != tableAccount.account {
             self.activeAccount = tableAccount
             self.alias = tableAccount.alias
             /// Change active account

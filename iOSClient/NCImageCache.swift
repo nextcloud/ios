@@ -175,7 +175,7 @@ class NCImageCache: NSObject {
     }
 
     func getMediaMetadatas(predicate: NSPredicate? = nil, session: NCSession.Session) -> ThreadSafeArray<tableMetadata>? {
-        guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", session.account)) else { return nil }
+        guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else { return nil }
         let startServerUrl = NCUtilityFileSystem().getHomeServer(session: session) + tableAccount.mediaPath
         let predicateBoth = NSPredicate(format: showBothPredicateMediaString, session.account, startServerUrl)
         return NCManageDatabase.shared.getMediaMetadatas(predicate: predicate ?? predicateBoth)

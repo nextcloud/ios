@@ -64,7 +64,7 @@ class NCShareExtension: UIViewController {
     var autoUploadFileName = ""
     var autoUploadDirectory = ""
     let refreshControl = UIRefreshControl()
-    var activeAccount: tableAccount!
+    var activeTableAccount: tableAccount!
     var progress: CGFloat = 0
     var counterUploaded: Int = 0
     var uploadErrors: [tableMetadata] = []
@@ -151,7 +151,7 @@ class NCShareExtension: UIViewController {
                 self.cancel(with: .noAccount)
             }
         }
-        accountRequestChangeAccount(account: activeAccount.account, controller: nil)
+        accountRequestChangeAccount(account: activeTableAccount.account, controller: nil)
         guard let inputItems = extensionContext?.inputItems as? [NSExtensionItem] else {
             cancel(with: .noFiles)
             return
@@ -197,7 +197,7 @@ class NCShareExtension: UIViewController {
     }
 
     func setNavigationBar(navigationTitle: String) {
-        let session = NCSession.Session(account: self.activeAccount.account, urlBase: self.activeAccount.urlBase, user: self.activeAccount.user, userId: self.activeAccount.userId)
+        let session = NCSession.Session(account: self.activeTableAccount.account, urlBase: self.activeTableAccount.urlBase, user: self.activeTableAccount.user, userId: self.activeTableAccount.userId)
         navigationItem.title = navigationTitle
         cancelButton.title = NSLocalizedString("_cancel_", comment: "")
 
@@ -223,17 +223,17 @@ class NCShareExtension: UIViewController {
             }
         }
 
-        let image = utility.loadUserImage(for: activeAccount.user, displayName: activeAccount.displayName, urlBase: activeAccount.urlBase)
+        let image = utility.loadUserImage(for: activeTableAccount.user, displayName: activeTableAccount.displayName, urlBase: activeTableAccount.urlBase)
         let profileButton = UIButton(type: .custom)
         profileButton.setImage(image, for: .normal)
 
         if serverUrl == utilityFileSystem.getHomeServer(session: session) {
 
             var title = "  "
-            if let userAlias = activeAccount?.alias, !userAlias.isEmpty {
+            if let userAlias = activeTableAccount?.alias, !userAlias.isEmpty {
                 title += userAlias
             } else {
-                title += activeAccount?.displayName ?? ""
+                title += activeTableAccount?.displayName ?? ""
             }
 
             profileButton.setTitle(title, for: .normal)
@@ -278,7 +278,7 @@ class NCShareExtension: UIViewController {
     }
 
     @objc func actionCreateFolder() {
-        let alertController = UIAlertController.createFolder(serverUrl: serverUrl, account: activeAccount.account) { error in
+        let alertController = UIAlertController.createFolder(serverUrl: serverUrl, account: activeTableAccount.account) { error in
             guard error != .success else { return }
             self.showAlert(title: "_error_createsubfolders_upload_", description: error.errorDescription)
         }
@@ -299,7 +299,7 @@ extension NCShareExtension {
         var conflicts: [tableMetadata] = []
         for fileName in filesName {
             let ocId = NSUUID().uuidString
-            let session = NCSession.shared.getSession(account: activeAccount.account)
+            let session = NCSession.shared.getSession(account: activeTableAccount.account)
             let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
             guard utilityFileSystem.copyFile(atPath: (NSTemporaryDirectory() + fileName), toPath: toPath) else { continue }
             let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, url: "", contentType: "", session: session)
@@ -308,7 +308,7 @@ extension NCShareExtension {
             metadata.size = utilityFileSystem.getFileSize(filePath: toPath)
             metadata.status = NCGlobal.shared.metadataStatusWaitUpload
             metadata.sessionDate = Date()
-            if NCManageDatabase.shared.getMetadataConflict(account: activeAccount.account, serverUrl: serverUrl, fileNameView: fileName) != nil {
+            if NCManageDatabase.shared.getMetadataConflict(account: activeTableAccount.account, serverUrl: serverUrl, fileNameView: fileName) != nil {
                 conflicts.append(metadata)
             } else {
                 uploadMetadata.append(metadata)
@@ -331,7 +331,7 @@ extension NCShareExtension {
         guard uploadStarted else { return }
         guard uploadMetadata.count > counterUploaded else { return DispatchQueue.main.async { self.finishedUploading() } }
         let metadata = uploadMetadata[counterUploaded]
-        let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false, account: activeAccount.account)
+        let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false, account: activeTableAccount.account)
         metadata.contentType = results.mimeType
         metadata.iconName = results.iconName
         metadata.classFile = results.classFile

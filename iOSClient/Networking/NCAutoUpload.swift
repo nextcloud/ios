@@ -38,7 +38,7 @@ class NCAutoUpload: NSObject {
     // MARK: -
 
     @objc func initAutoUpload(viewController: UIViewController?, account: String, completion: @escaping (_ items: Int) -> Void) {
-        guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)),
+        guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
               tableAccount.autoUpload else {
             return completion(0)
         }
@@ -82,7 +82,7 @@ class NCAutoUpload: NSObject {
     }
 
     private func uploadAssetsNewAndFull(viewController: UIViewController?, selector: String, log: String, account: String, completion: @escaping (_ items: Int) -> Void) {
-        guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else {
+        guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) else {
             return completion(0)
         }
         let session = NCSession.shared.getSession(account: account)
@@ -198,7 +198,7 @@ class NCAutoUpload: NSObject {
     private func getCameraRollAssets(viewController: UIViewController?, selector: String, alignPhotoLibrary: Bool, account: String, completion: @escaping (_ assets: [PHAsset]?) -> Void) {
         NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
             guard hasPermission,
-                  let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else {
+                  let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) else {
                 return completion(nil)
             }
             let assetCollection = PHAssetCollection.fetchAssetCollections(with: PHAssetCollectionType.smartAlbum, subtype: PHAssetCollectionSubtype.smartAlbumUserLibrary, options: nil)

@@ -121,7 +121,7 @@ extension NCMedia {
             return(lessDate, greaterDate, 0, false, NKError())
         }
         let session = NCSession.shared.getSession(controller: tabBarController)
-        guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
+        guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
             return(lessDate, greaterDate, 0, false, NKError())
         }
         NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate)")
@@ -145,7 +145,7 @@ extension NCMedia {
 
     private func getPredicate(showAll: Bool = false) -> NSPredicate {
         let session = NCSession.shared.getSession(controller: tabBarController)
-        guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", session.account)) else { return NSPredicate() }
+        guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else { return NSPredicate() }
         let startServerUrl = NCUtilityFileSystem().getHomeServer(session: session) + tableAccount.mediaPath
 
         if showAll {

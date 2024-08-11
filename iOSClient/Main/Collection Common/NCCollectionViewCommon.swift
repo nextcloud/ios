@@ -593,7 +593,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func setNavigationLeftItems() {
         let session = NCSession.shared.getSession(controller: tabBarController)
         guard layoutKey == NCGlobal.shared.layoutViewFiles,
-              let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
+              let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
             return }
         let image = utility.loadUserImage(for: tableAccount.user, displayName: tableAccount.displayName, urlBase: tableAccount.urlBase)
         let accountButton = AccountSwitcherButton(type: .custom)
@@ -868,7 +868,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func getNavigationTitle() -> String {
         let session = NCSession.shared.getSession(controller: tabBarController)
-        let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", session.account))
+        let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account))
         if let tableAccount,
            !tableAccount.alias.isEmpty {
             return tableAccount.alias

@@ -35,10 +35,10 @@ extension NCShareExtension: NCAccountRequestDelegate {
 
         // Only here change the active account
         for account in accounts {
-            account.active = account.account == self.activeAccount.account
+            account.active = account.account == self.activeTableAccount.account
         }
 
-        vcAccountRequest.activeAccount = self.activeAccount.account
+        vcAccountRequest.activeAccount = self.activeTableAccount.account
         vcAccountRequest.accounts = accounts.sorted { sorg, dest -> Bool in
             return sorg.active && !dest.active
         }
@@ -58,28 +58,28 @@ extension NCShareExtension: NCAccountRequestDelegate {
     func accountRequestAddAccount() { }
 
     func accountRequestChangeAccount(account: String, controller: UIViewController?) {
-        guard let activeAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else {
+        guard let activeTableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) else {
             cancel(with: NCShareExtensionError.noAccount)
             return
         }
-        self.activeAccount = activeAccount
-        let session = NCSession.Session(account: self.activeAccount.account, urlBase: self.activeAccount.urlBase, user: self.activeAccount.user, userId: self.activeAccount.userId)
+        self.activeTableAccount = activeTableAccount
+        let session = NCSession.Session(account: activeTableAccount.account, urlBase: activeTableAccount.urlBase, user: activeTableAccount.user, userId: activeTableAccount.userId)
 
         // CAPABILITIES
         NCManageDatabase.shared.setCapabilities(account: account)
 
         // COLORS
-        NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
+        NCBrandColor.shared.settingThemingColor(account: activeTableAccount.account)
         NCBrandColor.shared.createUserColors()
         NCImageCache.shared.createImagesBrandCache()
 
         // NETWORKING
         NextcloudKit.shared.setup(delegate: NCNetworking.shared)
-        NextcloudKit.shared.appendSession(account: activeAccount.account,
-                                          urlBase: activeAccount.urlBase,
-                                          user: activeAccount.user,
-                                          userId: activeAccount.userId,
-                                          password: NCKeychain().getPassword(account: activeAccount.account),
+        NextcloudKit.shared.appendSession(account: activeTableAccount.account,
+                                          urlBase: activeTableAccount.urlBase,
+                                          user: activeTableAccount.user,
+                                          userId: activeTableAccount.userId,
+                                          password: NCKeychain().getPassword(account: activeTableAccount.account),
                                           userAgent: userAgent,
                                           nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
                                           groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
@@ -90,7 +90,7 @@ extension NCShareExtension: NCAccountRequestDelegate {
 
         serverUrl = utilityFileSystem.getHomeServer(session: session)
 
-        layoutForView = NCManageDatabase.shared.getLayoutForView(account: activeAccount.account, key: keyLayout, serverUrl: serverUrl)
+        layoutForView = NCManageDatabase.shared.getLayoutForView(account: activeTableAccount.account, key: keyLayout, serverUrl: serverUrl)
 
         reloadDatasource(withLoadFolder: true)
         setNavigationBar(navigationTitle: NCBrandOptions.shared.brand)

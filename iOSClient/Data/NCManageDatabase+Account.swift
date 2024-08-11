@@ -123,16 +123,6 @@ extension NCManageDatabase {
         return nil
     }
 
-    func getActiveStringAccount() -> String? {
-        do {
-            let realm = try Realm()
-            return realm.objects(tableAccount.self).filter("active == true").first?.account
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
-        }
-        return nil
-    }
-
     func getAccounts() -> [String]? {
         do {
             let realm = try Realm()
@@ -146,7 +136,7 @@ extension NCManageDatabase {
         return nil
     }
 
-    func getAccount(predicate: NSPredicate) -> tableAccount? {
+    func getTableAccount(predicate: NSPredicate) -> tableAccount? {
         do {
             let realm = try Realm()
             guard let result = realm.objects(tableAccount.self).filter(predicate).first else { return nil }

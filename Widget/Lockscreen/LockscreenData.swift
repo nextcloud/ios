@@ -38,7 +38,7 @@ struct LockscreenData: TimelineEntry {
 
 func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, family: WidgetFamily, completion: @escaping (_ entry: LockscreenData) -> Void) {
     let utilityFileSystem = NCUtilityFileSystem()
-    var account: tableAccount?
+    var activeTableAccount: tableAccount?
     var quotaRelative: Float = 0
 
     if isPreview {
@@ -47,30 +47,30 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, fami
 
     let accountIdentifier: String = configuration?.accounts?.identifier ?? "active"
     if accountIdentifier == "active" {
-        account = NCManageDatabase.shared.getActiveTableAccount()
+        activeTableAccount = NCManageDatabase.shared.getActiveTableAccount()
     } else {
-        account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", accountIdentifier))
+        activeTableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", accountIdentifier))
     }
 
-    guard let account = account else {
+    guard let activeTableAccount else {
         return completion(LockscreenData(date: Date(), isPlaceholder: true, activity: "", link: URL(string: "https://")!, quotaRelative: 0, quotaUsed: "", quotaTotal: "", error: false))
     }
 
     // Capabilities
-    NCManageDatabase.shared.setCapabilities(account: account.account)
+    NCManageDatabase.shared.setCapabilities(account: activeTableAccount.account)
 
     if NCGlobal.shared.capabilityServerVersionMajor < NCGlobal.shared.nextcloudVersion25 {
         completion(LockscreenData(date: Date(), isPlaceholder: false, activity: NSLocalizedString("_widget_available_nc25_", comment: ""), link: URL(string: "https://")!, quotaRelative: 0, quotaUsed: "", quotaTotal: "", error: true))
     }
 
     // NETWORKING
-    let password = NCKeychain().getPassword(account: account.account)
+    let password = NCKeychain().getPassword(account: activeTableAccount.account)
 
     NextcloudKit.shared.setup(delegate: NCNetworking.shared)
-    NextcloudKit.shared.appendSession(account: account.account,
-                                      urlBase: account.urlBase,
-                                      user: account.user,
-                                      userId: account.userId,
+    NextcloudKit.shared.appendSession(account: activeTableAccount.account,
+                                      urlBase: activeTableAccount.urlBase,
+                                      user: activeTableAccount.user,
+                                      userId: activeTableAccount.userId,
                                       password: password,
                                       userAgent: userAgent,
                                       nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
@@ -79,7 +79,7 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, fami
     let options = NKRequestOptions(timeout: 90, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
     if #available(iOSApplicationExtension 16.0, *) {
         if family == .accessoryCircular {
-            NextcloudKit.shared.getUserProfile(account: account.account, options: options) { _, userProfile, _, error in
+            NextcloudKit.shared.getUserProfile(account: activeTableAccount.account, options: options) { _, userProfile, _, error in
                 if error == .success, let userProfile = userProfile {
                     if userProfile.quotaRelative > 0 {
                         quotaRelative = Float(userProfile.quotaRelative) / 100
@@ -103,7 +103,7 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, fami
                 }
             }
         } else if family == .accessoryRectangular {
-            NextcloudKit.shared.getDashboardWidgetsApplication("activity", account: account.account, options: options) { _, results, _, error in
+            NextcloudKit.shared.getDashboardWidgetsApplication("activity", account: activeTableAccount.account, options: options) { _, results, _, error in
                 var activity: String = NSLocalizedString("_no_data_available_", comment: "")
                 var link = URL(string: "https://")!
                 if error == .success, let result = results?.first {

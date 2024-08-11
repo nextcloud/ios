@@ -84,7 +84,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     func loadItems() {
         let session = NCSession.shared.getSession(controller: tabBarController)
-        guard let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
+        guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
             return
         }
         var item = NKExternalSite()

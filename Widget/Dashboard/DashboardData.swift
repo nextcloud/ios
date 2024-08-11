@@ -111,7 +111,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
     if accountIdentifier == "active" {
         activeTableAccount = NCManageDatabase.shared.getActiveTableAccount()
     } else {
-        activeTableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", accountIdentifier))
+        activeTableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", accountIdentifier))
     }
 
     guard let activeTableAccount else {

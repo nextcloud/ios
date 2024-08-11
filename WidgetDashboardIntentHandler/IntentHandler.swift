@@ -67,7 +67,7 @@ class IntentHandler: INExtension, DashboardIntentHandling, AccountIntentHandling
         if accountIdentifier == "active" {
             activeTableAccount = NCManageDatabase.shared.getActiveTableAccount()
         } else {
-            activeTableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", accountIdentifier))
+            activeTableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", accountIdentifier))
         }
 
         guard let activeTableAccount else {
