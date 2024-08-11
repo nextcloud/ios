@@ -75,24 +75,15 @@ public class NCSession: NSObject {
     public func getSession(controller: UIViewController?) -> Session {
         if let account = (controller as? NCMainTabBarController)?.account {
             return getSession(account: account)
+        } else if let tableAccount = NCManageDatabase.shared.getActiveTableAccount() {
+            return getSession(account: account)
         }
-        return getActiveSession()
+        return Session(account: "", urlBase: "", user: "", userId: "")
     }
 #endif
 
     public func isValidSession(_ session: NCSession.Session) -> Bool {
         return !session.account.isEmpty
-    }
-
-    /// ACTIVE SESSION
-    ///
-    public func getActiveSession() -> Session {
-        let tableAccount = NCManageDatabase.shared.getActiveTableAccount()
-        return getSession(account: tableAccount?.account)
-    }
-
-    public func isActiveSessionValid() -> Bool {
-        return !getActiveSession().account.isEmpty
     }
 
     /// UTILITY

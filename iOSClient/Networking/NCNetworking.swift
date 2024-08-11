@@ -114,7 +114,9 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
     override init() {
         super.init()
 
-        getActiveAccountCertificate(account: NCSession.shared.getActiveSession().account)
+        if let account = NCManageDatabase.shared.getActiveTableAccount()?.account {
+            getActiveAccountCertificate(account: account)
+        }
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { notification in
             if let userInfo = notification.userInfo {

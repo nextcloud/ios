@@ -111,7 +111,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
 
             DispatchQueue.global().async {
-                let session = NCSession.shared.getActiveSession()
+                let session = NCSession.shared.getSession(account: activeTableAccount.account)
                 NCImageCache.shared.createMediaCache(withCacheSize: true, session: session)
             }
         } else {
@@ -227,7 +227,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func handleAppRefreshProcessingTask(taskText: String, completion: @escaping () -> Void = {}) {
         Task {
             var itemsAutoUpload = 0
-            let account = NCSession.shared.getActiveSession().account
+            guard let account = NCManageDatabase.shared.getActiveTableAccount()?.account else {
+                return
+            }
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) start handle")
 
@@ -340,6 +342,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: - Login
 
     func openLogin(selector: Int, openLoginWeb: Bool, windowForRootViewController: UIWindow? = nil) {
+        let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount()
+
         func showLoginViewController(_ viewController: UIViewController?) {
             guard let viewController else { return }
             let navigationController = NCLoginNavigationController(rootViewController: viewController)
@@ -369,7 +373,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     web?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
                     showLoginViewController(web)
                 } else {
-                    activeLogin?.urlBase = NCSession.shared.getActiveSession().urlBase
+                    activeLogin?.urlBase = activeTableAccount?.urlBase ?? ""
                     showLoginViewController(activeLogin)
                 }
             }
@@ -384,7 +388,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             // Used also for reinsert the account (change passwd)
             if activeLogin?.view.window == nil {
                 activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
-                activeLogin?.urlBase = NCSession.shared.getActiveSession().urlBase
+                activeLogin?.urlBase = activeTableAccount?.urlBase ?? ""
                 activeLogin?.disableUrlField = true
                 activeLogin?.disableCloseButton = true
                 showLoginViewController(activeLogin)
@@ -422,7 +426,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func trustCertificateError(host: String) {
-        guard let currentHost = URL(string: NCSession.shared.getActiveSession().urlBase)?.host,
+        guard let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount(),
+              let currentHost = URL(string: activeTableAccount.urlBase)?.host,
               let pushNotificationServerProxyHost = URL(string: NCBrandOptions.shared.pushNotificationServerProxy)?.host,
               host != pushNotificationServerProxyHost,
               host == currentHost
