@@ -109,8 +109,10 @@ class NCAccount: NSObject {
         }
         /// Remove account in all database
         NCManageDatabase.shared.clearDatabase(account: account, removeAccount: true)
-        /// Remove domain in NextcloudKit
+        /// Remove session in NextcloudKit
         NextcloudKit.shared.removeSession(account: account)
+        /// Remove session
+        NCSession.shared.removeSession(account: account)
         /// Remove keychain security
         NCKeychain().setPassword(account: account, password: nil)
         NCKeychain().clearAllKeysEndToEnd(account: account)
