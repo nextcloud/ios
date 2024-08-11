@@ -89,7 +89,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
 
         if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
-            NCSession.shared.setActiveTableAccount(activeTableAccount, sceneIdentifier: nil)
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Account active \(activeTableAccount.account)")
 
             if NCKeychain().getPassword(account: activeTableAccount.account).isEmpty {

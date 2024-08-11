@@ -43,7 +43,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 SceneManager.shared.register(scene: scene, withRootViewController: controller)
                 window?.rootViewController = controller
                 window?.makeKeyAndVisible()
-            NCSession.shared.setSceneIdentifier(account: NCSession.shared.getActiveSession().account, sceneIdentifier: controller.sceneIdentifier)
         } else {
             if NCBrandOptions.shared.disable_intro {
                 appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false, windowForRootViewController: window)

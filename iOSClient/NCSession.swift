@@ -41,8 +41,6 @@ public class NCSession: NSObject {
         }
     }
     private var sessions: ThreadSafeArray<Session> = ThreadSafeArray()
-    private var activeTableAccount = tableAccount()
-    private var sceneIdentifierAccount: ThreadSafeDictionary<String, String> = ThreadSafeDictionary()
 
     override private init() {}
 
@@ -66,23 +64,16 @@ public class NCSession: NSObject {
         sessions.remove(where: { $0.account == account })
     }
 
-    public func getSession(account: String) -> Session {
-        if let domain = sessions.filter({ $0.account == account }).first {
-            return domain
+    public func getSession(account: String?) -> Session {
+        if let session = sessions.filter({ $0.account == account }).first {
+            return session
         }
         return Session(account: "", urlBase: "", user: "", userId: "")
     }
 
 #if !EXTENSION
-    public func getSession(sceneIdentifier: String) -> Session {
-        if let account = sceneIdentifierAccount[sceneIdentifier] {
-            return getSession(account: account)
-        }
-        return getActiveSession()
-    }
     public func getSession(controller: UIViewController?) -> Session {
-        if let sceneIdentifier = (controller as? NCMainTabBarController)?.sceneIdentifier,
-           let account = sceneIdentifierAccount[sceneIdentifier] {
+        if let account = (controller as? NCMainTabBarController)?.account {
             return getSession(account: account)
         }
         return getActiveSession()
@@ -93,40 +84,15 @@ public class NCSession: NSObject {
         return !session.account.isEmpty
     }
 
-    public func setSceneIdentifier(account: String, sceneIdentifier: String) {
-        sceneIdentifierAccount[sceneIdentifier] = account
-    }
-
     /// ACTIVE SESSION
     ///
     public func getActiveSession() -> Session {
-        if let session = sessions.filter({ $0.account == self.activeTableAccount.account }).first {
-            return session
-        }
-        return Session(account: "", urlBase: "", user: "", userId: "")
+        let tableAccount = NCManageDatabase.shared.getActiveTableAccount()
+        return getSession(account: tableAccount?.account)
     }
 
     public func isActiveSessionValid() -> Bool {
         return !getActiveSession().account.isEmpty
-    }
-
-    /// ACTIVE TABLE ACCOUNT / SCENEIDENTIFIER
-    ///
-    func setActiveTableAccount(_ activeTableAccount: tableAccount, sceneIdentifier: String?) {
-        self.activeTableAccount = activeTableAccount
-        if let sceneIdentifier {
-            sceneIdentifierAccount[sceneIdentifier] = activeTableAccount.account
-        }
-    }
-
-    func getSceneIdentifier(account: String) -> String? {
-        var sceneIdentifier: String?
-        sceneIdentifierAccount.forEach { keySceneIdentifier, valueAccount in
-            if account == valueAccount {
-                sceneIdentifier = keySceneIdentifier
-            }
-        }
-        return sceneIdentifier
     }
 
     /// UTILITY
