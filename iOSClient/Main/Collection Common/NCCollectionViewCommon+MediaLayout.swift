@@ -35,7 +35,7 @@ extension NCCollectionViewCommon: NCMediaLayoutDelegate {
     }
 
     func getLayout() -> String? {
-        return NCManageDatabase.shared.getLayoutForView(account: NCSession.shared.getSession(controller: tabBarController).account, key: NCGlobal.shared.layoutViewFiles, serverUrl: serverUrl)?.layout
+        return NCManageDatabase.shared.getLayoutForView(account: session.account, key: NCGlobal.shared.layoutViewFiles, serverUrl: serverUrl)?.layout
     }
 
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, heightForHeaderInSection section: Int) -> Float {

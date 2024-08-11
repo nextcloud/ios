@@ -82,7 +82,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
                 return UICollectionViewDropProposal(operation: .forbidden)
             }
         } else {
-            if serverUrl.isEmpty || NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, account: NCSession.shared.getSession(controller: tabBarController).account) {
+            if serverUrl.isEmpty || NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, account: self.session.account) {
                 DragDropHover.shared.cleanPushDragDropHover()
                 return UICollectionViewDropProposal(operation: .forbidden)
             }
@@ -112,7 +112,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
         DragDropHover.shared.cleanPushDragDropHover()
         DragDropHover.shared.sourceMetadatas = nil
 
-        if let metadatas = NCDragDrop().performDrop(collectionView, performDropWith: coordinator, serverUrl: self.serverUrl, isImageVideo: false, session: NCSession.shared.getSession(controller: tabBarController)) {
+        if let metadatas = NCDragDrop().performDrop(collectionView, performDropWith: coordinator, serverUrl: self.serverUrl, isImageVideo: false, session: session) {
             DragDropHover.shared.sourceMetadatas = metadatas
             openMenu(collectionView: collectionView, location: coordinator.session.location(in: collectionView))
         }

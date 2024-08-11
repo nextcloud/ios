@@ -39,7 +39,6 @@ extension NCCollectionViewCommon {
         var isOffline: Bool = false
         let applicationHandle = NCApplicationHandle()
         var iconHeader: UIImage!
-        let session = NCSession.shared.getSession(controller: tabBarController)
 
         if metadata.directory, let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl)) {
             isOffline = directory.offline
@@ -288,7 +287,7 @@ extension NCCollectionViewCommon {
                             vcRename.metadata = metadata
                             vcRename.imagePreview = imageIcon
                             vcRename.indexPath = indexPath
-                            vcRename.account = session.account
+                            vcRename.account = self.session.account
 
                             let popup = NCPopupViewController(contentController: vcRename, popupWidth: vcRename.width, popupHeight: vcRename.height)
 

@@ -53,7 +53,6 @@ class NCFavorite: NCCollectionViewCommon {
 
     override func queryDB() {
         super.queryDB()
-        let session = NCSession.shared.getSession(controller: tabBarController)
         var metadatas: [tableMetadata] = []
 
         if self.serverUrl.isEmpty {
@@ -67,7 +66,6 @@ class NCFavorite: NCCollectionViewCommon {
 
     override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
         super.reloadDataSourceNetwork()
-        let session = NCSession.shared.getSession(controller: tabBarController)
 
         NextcloudKit.shared.listingFavorites(showHiddenFiles: NCKeychain().showHiddenFiles, account: session.account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
             self.dataSourceTask = task

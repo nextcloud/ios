@@ -47,7 +47,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         super.viewDidLoad()
 
         listLayout.itemHeight = 105
-        NCManageDatabase.shared.setLayoutForView(account: NCSession.shared.getSession(controller: tabBarController).account, key: layoutKey, serverUrl: serverUrl, layout: NCGlobal.shared.layoutList)
+        NCManageDatabase.shared.setLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl, layout: NCGlobal.shared.layoutList)
         self.navigationItem.title = titleCurrentFolder
     }
 
@@ -177,10 +177,8 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
               let metadata = dataSource.cellForItemAt(indexPath: indexPath) else {
             return NCTransferCell()
         }
-        let session = NCSession.shared.getSession(account: metadata.account)
 
         cell.delegate = self
-
         cell.fileObjectId = metadata.ocId
         cell.indexPath = indexPath
         cell.fileUser = metadata.ownerId
@@ -229,7 +227,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             cell.labelStatus.text = ""
             cell.labelInfo.text = ""
         }
-        if NCSession.shared.getSession(controller: tabBarController).account != metadata.account {
+        if session.account != metadata.account {
             cell.labelInfo.text = NSLocalizedString("_waiting_for_", comment: "") + " " + NSLocalizedString("_user_", comment: "").lowercased() + " \(metadata.userId) " + NSLocalizedString("_in_", comment: "") + " \(metadata.urlBase)"
         }
         let isWiFi = NCNetworking.shared.networkReachability == .reachableEthernetOrWiFi

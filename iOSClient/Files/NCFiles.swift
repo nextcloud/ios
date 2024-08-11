@@ -49,14 +49,13 @@ class NCFiles: NCCollectionViewCommon {
 
         if isRoot {
             NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
-                let session = NCSession.shared.getSession(controller: self.tabBarController)
                 self.navigationController?.popToRootViewController(animated: false)
-                self.serverUrl = self.utilityFileSystem.getHomeServer(session: session)
+                self.serverUrl = self.utilityFileSystem.getHomeServer(session: self.session)
                 self.isSearchingMode = false
                 self.isEditMode = false
                 self.selectOcId.removeAll()
 
-                self.layoutForView = NCManageDatabase.shared.getLayoutForView(account: session.account, key: self.layoutKey, serverUrl: self.serverUrl)
+                self.layoutForView = NCManageDatabase.shared.getLayoutForView(account: self.session.account, key: self.layoutKey, serverUrl: self.serverUrl)
                 if self.layoutForView?.layout == NCGlobal.shared.layoutList {
                     self.collectionView?.collectionViewLayout = self.listLayout
                 } else if self.layoutForView?.layout == NCGlobal.shared.layoutGrid {
@@ -76,7 +75,6 @@ class NCFiles: NCCollectionViewCommon {
 
     override func viewWillAppear(_ animated: Bool) {
         if isRoot {
-            let session = NCSession.shared.getSession(controller: tabBarController)
             serverUrl = utilityFileSystem.getHomeServer(session: session)
             titleCurrentFolder = getNavigationTitle()
         }
@@ -99,7 +97,6 @@ class NCFiles: NCCollectionViewCommon {
 
     override func queryDB() {
         super.queryDB()
-        let session = NCSession.shared.getSession(controller: tabBarController)
         var metadatas: [tableMetadata] = []
 
         if NCKeychain().getPersonalFilesOnly(account: session.account) {
@@ -175,7 +172,6 @@ class NCFiles: NCCollectionViewCommon {
 
     private func networkReadFolder(completion: @escaping(_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ metadatasDifferentCount: Int, _ metadatasModified: Int, _ error: NKError) -> Void) {
         var tableDirectory: tableDirectory?
-        let session = NCSession.shared.getSession(controller: tabBarController)
 
         NCNetworking.shared.readFile(serverUrlFileName: serverUrl, account: session.account) { task in
             self.dataSourceTask = task
@@ -208,14 +204,14 @@ class NCFiles: NCCollectionViewCommon {
                         let lock = NCManageDatabase.shared.getE2ETokenLock(account: account, serverUrl: self.serverUrl)
                         NCNetworkingE2EE().getMetadata(fileId: metadataFolder.ocId, e2eToken: lock?.e2eToken, account: account) { account, version, e2eMetadata, signature, _, error in
                             if error == .success, let e2eMetadata = e2eMetadata {
-                                let error = NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: signature, serverUrl: self.serverUrl, session: session)
+                                let error = NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: signature, serverUrl: self.serverUrl, session: self.session)
                                 if error == .success {
                                     if version == "v1", NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
                                         NextcloudKit.shared.nkCommonInstance.writeLog("[E2EE] Conversion v1 to v2")
                                         NCActivityIndicator.shared.start()
                                         Task {
                                             let serverUrl = metadataFolder.serverUrl + "/" + metadataFolder.fileName
-                                            let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, updateVersionV1V2: true, session: session)
+                                            let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, updateVersionV1V2: true, session: self.session)
                                             if error != .success {
                                                 NCContentPresenter().showError(error: error)
                                             }
@@ -234,7 +230,7 @@ class NCFiles: NCCollectionViewCommon {
                                 // no metadata found, send a new metadata
                                 Task {
                                     let serverUrl = metadataFolder.serverUrl + "/" + metadataFolder.fileName
-                                    let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, session: session)
+                                    let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, session: self.session)
                                     if error != .success {
                                         NCContentPresenter().showError(error: error)
                                     }
@@ -255,7 +251,7 @@ class NCFiles: NCCollectionViewCommon {
     }
 
     func blinkCell(fileName: String?) {
-        if let fileName = fileName, let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", NCSession.shared.getSession(controller: tabBarController).account, self.serverUrl, fileName)) {
+        if let fileName = fileName, let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", session.account, self.serverUrl, fileName)) {
             let (indexPath, _) = self.dataSource.getIndexPathMetadata(ocId: metadata.ocId)
             if let indexPath = indexPath {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -275,7 +271,7 @@ class NCFiles: NCCollectionViewCommon {
     }
 
     func openFile(fileName: String?) {
-        if let fileName = fileName, let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", NCSession.shared.getSession(controller: tabBarController).account, self.serverUrl, fileName)) {
+        if let fileName = fileName, let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", session.account, self.serverUrl, fileName)) {
             let (indexPath, _) = self.dataSource.getIndexPathMetadata(ocId: metadata.ocId)
             if let indexPath = indexPath {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -288,7 +284,7 @@ class NCFiles: NCCollectionViewCommon {
     // MARK: - NCAccountSettingsModelDelegate
 
     override func accountSettingsDidDismiss(tableAccount: tableAccount?, controller: NCMainTabBarController?) {
-        let currentAccount = NCSession.shared.getSession(controller: controller).account
+        let currentAccount = session.account
         if NCManageDatabase.shared.getAllTableAccount().isEmpty {
             appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
         } else if let account = tableAccount?.account, account != currentAccount {

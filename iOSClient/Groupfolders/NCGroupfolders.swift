@@ -54,7 +54,6 @@ class NCGroupfolders: NCCollectionViewCommon {
     override func queryDB() {
         super.queryDB()
         var metadatas: [tableMetadata] = []
-        let session = NCSession.shared.getSession(controller: tabBarController)
 
         if self.serverUrl.isEmpty {
             metadatas = NCManageDatabase.shared.getMetadatasFromGroupfolders(session: session)
@@ -67,7 +66,6 @@ class NCGroupfolders: NCCollectionViewCommon {
 
     override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
         super.reloadDataSourceNetwork()
-        let session = NCSession.shared.getSession(controller: tabBarController)
         let homeServerUrl = utilityFileSystem.getHomeServer(session: session)
 
         NextcloudKit.shared.getGroupfolders(account: session.account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
