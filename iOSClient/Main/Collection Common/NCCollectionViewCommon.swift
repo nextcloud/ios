@@ -78,7 +78,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var emptyDescription: String = ""
     var emptyDataPortaitOffset: CGFloat = 0
     var emptyDataLandscapeOffset: CGFloat = -20
-    var session: NCSession.Session = NCSession.Session(account: "", urlBase: "", user: "", userId: "")
+
+    var session: NCSession.Session {
+        NCSession.shared.getSession(controller: tabBarController)
+    }
 
     var showDescription: Bool {
         !headerRichWorkspaceDisable && NCKeychain().showDescription
@@ -135,7 +138,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
             self.dataSource.clearDirectory()
-            NCManageDatabase.shared.cleanEtagDirectory(serverUrl: self.serverUrl, account: NCSession.shared.getSession(controller: self.tabBarController).account)
+            NCManageDatabase.shared.cleanEtagDirectory(serverUrl: self.serverUrl, account: self.session.account)
             self.reloadDataSourceNetwork()
         }
 
@@ -159,7 +162,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.session = NCSession.shared.getSession(controller: tabBarController)
 
         navigationController?.setNavigationBarAppearance()
         navigationController?.navigationBar.prefersLargeTitles = true
