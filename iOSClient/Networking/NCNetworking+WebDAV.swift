@@ -587,7 +587,7 @@ extension NCNetworking {
         let favorite = !metadata.favorite
         let ocId = metadata.ocId
 
-        NextcloudKit.shared.setFavorite(fileName: fileName, favorite: favorite, account: metadata.account) { account, error in
+        NextcloudKit.shared.setFavorite(fileName: fileName, favorite: favorite, account: metadata.account) { _, error in
             if error == .success {
                 metadata.favorite = favorite
                 NCManageDatabase.shared.addMetadata(metadata)

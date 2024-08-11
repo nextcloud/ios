@@ -141,8 +141,6 @@ class NCNetworkingProcess: NSObject {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] PROCESS (UPLOAD) find \(metadatasWaitUpload.count) items")
             }
             for metadata in metadatasWaitUpload where counterUploading < maxConcurrentOperationUpload {
-                // Is already in upload background? skipped
-                let fileNameLocalPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
                 // Session Extension ? skipped
                 if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundExt {
                     continue

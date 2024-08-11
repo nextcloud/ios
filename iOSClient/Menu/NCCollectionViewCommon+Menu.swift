@@ -39,7 +39,7 @@ extension NCCollectionViewCommon {
         var isOffline: Bool = false
         let applicationHandle = NCApplicationHandle()
         var iconHeader: UIImage!
-        var session = NCSession.shared.getSession(controller: tabBarController)
+        let session = NCSession.shared.getSession(controller: tabBarController)
 
         if metadata.directory, let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl)) {
             isOffline = directory.offline
