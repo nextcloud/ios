@@ -39,10 +39,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let session = SceneManager.shared.getSession(scene: scene)
 
         if NCSession.shared.isValidSession(session),
-           let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+           let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController,
+           let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
                 SceneManager.shared.register(scene: scene, withRootViewController: controller)
                 window?.rootViewController = controller
                 window?.makeKeyAndVisible()
+            controller.account = activeTableAccount.account
         } else {
             if NCBrandOptions.shared.disable_intro {
                 appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false, windowForRootViewController: window)

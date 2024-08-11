@@ -242,19 +242,6 @@ extension NCManageDatabase {
         }
     }
 
-    func removePasswordAccount(_ account: String) {
-        do {
-            let realm = try Realm()
-            try realm.write {
-                if let result = realm.objects(tableAccount.self).filter("account == %@", account).first {
-                    result.password = "********"
-                }
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
-        }
-    }
-
     func setAccountAutoUploadProperty(_ property: String, state: Bool) {
         do {
             let realm = try Realm()

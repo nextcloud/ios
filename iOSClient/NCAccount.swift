@@ -46,7 +46,7 @@ class NCAccount: NSObject {
                                                   groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
                 NCSession.shared.appendSession(account: account, urlBase: urlBase, user: user, userId: userProfile.userId)
                 NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
-                self.changeAccount(account, userProfile: userProfile, controller: nil) {
+                self.changeAccount(account, userProfile: userProfile) {
                     completion(error)
 
                 NCKeychain().setClientCertificate(account: account, p12Data: NCNetworking.shared.p12Data, p12Password: NCNetworking.shared.p12Password)
@@ -69,7 +69,7 @@ class NCAccount: NSObject {
         NCManageDatabase.shared.setAccountActive(account)
         /// Create Media Cache
         DispatchQueue.global().async {
-            var session = NCSession.shared.getSession(account: account)
+            let session = NCSession.shared.getSession(account: account)
             if NCManageDatabase.shared.getAccounts()?.count == 1 {
                 NCImageCache.shared.createMediaCache(withCacheSize: true, session: session)
             } else {

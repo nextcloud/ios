@@ -91,10 +91,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Account active \(activeTableAccount.account)")
 
-            if NCKeychain().getPassword(account: activeTableAccount.account).isEmpty {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] PASSWORD NOT FOUND for \(activeTableAccount.account)")
-            }
-
             NCManageDatabase.shared.setCapabilities(account: activeTableAccount.account)
             NCBrandColor.shared.settingThemingColor(account: activeTableAccount.account)
 
