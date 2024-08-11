@@ -166,19 +166,20 @@ extension NCLoginProvider: WKNavigationDelegate {
         let account: String = "\(username) \(urlBase)"
         let user = username
 
-        NextcloudKit.shared.appendSession(account: account,
-                                          urlBase: urlBase,
-                                          user: user,
-                                          userId: user,
-                                          password: password,
-                                          userAgent: userAgent,
-                                          nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
-                                          groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
-
         NextcloudKit.shared.getUserProfile(account: account) { account, userProfile, _, error in
             if error == .success, let userProfile {
+                NextcloudKit.shared.appendSession(account: account,
+                                                  urlBase: urlBase,
+                                                  user: user,
+                                                  userId: user,
+                                                  password: password,
+                                                  userAgent: userAgent,
+                                                  nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
+                                                  groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+                NCSession.shared.appendSession(account: account, urlBase: urlBase, user: user, userId: userProfile.userId)
                 NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
                 NCAccount().changeAccount(account, userProfile: userProfile) { }
+
                 let window = UIApplication.shared.firstWindow
                 if window?.rootViewController is NCMainTabBarController {
                     self.dismiss(animated: true)

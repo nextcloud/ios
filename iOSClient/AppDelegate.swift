@@ -99,7 +99,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NCBrandColor.shared.settingThemingColor(account: activeTableAccount.account)
 
             for tableAccount in NCManageDatabase.shared.getAllTableAccount() {
-                NCSession.shared.appendSession(account: tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId)
                 NextcloudKit.shared.appendSession(account: tableAccount.account,
                                                   urlBase: tableAccount.urlBase,
                                                   user: tableAccount.user,
@@ -108,6 +107,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                                                   userAgent: userAgent,
                                                   nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
                                                   groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+                NCSession.shared.appendSession(account: tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId)
             }
 
             DispatchQueue.global().async {

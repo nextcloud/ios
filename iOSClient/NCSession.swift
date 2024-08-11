@@ -76,7 +76,7 @@ public class NCSession: NSObject {
         if let account = (controller as? NCMainTabBarController)?.account {
             return getSession(account: account)
         } else if let tableAccount = NCManageDatabase.shared.getActiveTableAccount() {
-            return getSession(account: account)
+            return getSession(account: tableAccount.account)
         }
         return Session(account: "", urlBase: "", user: "", userId: "")
     }

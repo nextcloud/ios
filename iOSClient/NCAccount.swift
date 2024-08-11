@@ -44,11 +44,12 @@ class NCAccount: NSObject {
                                                   userAgent: userAgent,
                                                   nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
                                                   groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+                NCSession.shared.appendSession(account: account, urlBase: urlBase, user: user, userId: userProfile.userId)
                 NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
-                NCKeychain().setClientCertificate(account: account, p12Data: NCNetworking.shared.p12Data, p12Password: NCNetworking.shared.p12Password)
-                /// change -> account
                 self.changeAccount(account, userProfile: userProfile, controller: nil) {
                     completion(error)
+
+                NCKeychain().setClientCertificate(account: account, p12Data: NCNetworking.shared.p12Data, p12Password: NCNetworking.shared.p12Password)
                 }
             } else {
                 let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
