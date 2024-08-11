@@ -97,11 +97,6 @@ public class NCSession: NSObject {
         sceneIdentifierAccount[sceneIdentifier] = account
     }
 
-    public func removeSceneIdentifier(sceneIdentifier: String) {
-        sceneIdentifierAccount[sceneIdentifier] = nil
-
-    }
-
     /// ACTIVE SESSION
     ///
     public func getActiveSession() -> Session {

@@ -173,7 +173,7 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
 
     @objc func changeAccount() {
         if let activeAccount {
-            NCAccount().changeAccount(activeAccount.account, userProfile: nil, sceneIdentifier: self.controller?.sceneIdentifier) { }
+            NCAccount().changeAccount(activeAccount.account, userProfile: nil, controller: self.controller) { }
         }
     }
 
@@ -182,7 +182,7 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
         if let activeAccount {
             NCAccount().deleteAccount(activeAccount.account)
             if let account = NCManageDatabase.shared.getAllTableAccount().first?.account {
-                NCAccount().changeAccount(account, userProfile: nil, sceneIdentifier: self.controller?.sceneIdentifier) {
+                NCAccount().changeAccount(account, userProfile: nil, controller: self.controller) {
                     onViewAppear()
                 }
             } else {

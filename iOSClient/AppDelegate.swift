@@ -311,13 +311,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         var findAccount: String?
 
         if let accountPush = data["account"] as? String {
-            if accountPush == NCSession.shared.getActiveSession().account {
-                findAccount = accountPush
-            } else {
-                for tableAccount in NCManageDatabase.shared.getAllTableAccount() {
-                    if tableAccount.account == accountPush {
-                        NCAccount().changeAccount(tableAccount.account, userProfile: nil, sceneIdentifier: nil) {
-                            findAccount = tableAccount.account
+            for tableAccount in NCManageDatabase.shared.getAllTableAccount() {
+                if tableAccount.account == accountPush {
+                    for controller in SceneManager.shared.getControllers() {
+                        if controller.account == accountPush {
+                            NCAccount().changeAccount(tableAccount.account, userProfile: nil, controller: controller) {
+                                findAccount = tableAccount.account
+                            }
                         }
                     }
                 }
@@ -413,8 +413,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         for tableAccount in NCManageDatabase.shared.getAllTableAccount() {
             let password = NCKeychain().getPassword(account: tableAccount.account)
             if password.isEmpty {
-                if let sessionIdentifier = NCSession.shared.getSceneIdentifier(account: tableAccount.account) {
-                    openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: true)
+                for controller in SceneManager.shared.getControllers() {
+                    if controller.account == tableAccount.account {
+                        openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: true)
+                    }
                 }
             }
         }

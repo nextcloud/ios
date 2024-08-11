@@ -620,8 +620,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
                 let action = UIAction(title: name, image: image, state: account.active ? .on : .off) { _ in
                     if !account.active {
-                        let sceneIdentifier = (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier
-                        NCAccount().changeAccount(account.account, userProfile: nil, sceneIdentifier: sceneIdentifier) { }
+                        NCAccount().changeAccount(account.account, userProfile: nil, controller: self.tabBarController as? NCMainTabBarController) { }
                         self.setEditMode(false)
                     }
                 }

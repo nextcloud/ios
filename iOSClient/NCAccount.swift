@@ -47,7 +47,7 @@ class NCAccount: NSObject {
                 NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
                 NCKeychain().setClientCertificate(account: account, p12Data: NCNetworking.shared.p12Data, p12Password: NCNetworking.shared.p12Password)
                 /// change -> account
-                self.changeAccount(account, userProfile: userProfile, sceneIdentifier: nil) {
+                self.changeAccount(account, userProfile: userProfile, controller: nil) {
                     completion(error)
                 }
             } else {
@@ -61,18 +61,14 @@ class NCAccount: NSObject {
 
     func changeAccount(_ account: String,
                        userProfile: NKUserProfile?,
-                       sceneIdentifier: String?,
+                       controller: NCMainTabBarController? = nil,
                        completion: () -> Void) {
-        /// Set new account in DB
-        if NCManageDatabase.shared.setAccountActive(account, sceneIdentifier: sceneIdentifier) == nil {
-            return completion()
-        }
-        var session = NCSession.shared.getActiveSession()
-        if let sceneIdentifier {
-            session = NCSession.shared.getSession(sceneIdentifier: sceneIdentifier)
-        }
+        /// Set account
+        controller?.account = account
+        NCManageDatabase.shared.setAccountActive(account)
         /// Create Media Cache
         DispatchQueue.global().async {
+            var session = NCSession.shared.getSession(account: account)
             if NCManageDatabase.shared.getAccounts()?.count == 1 {
                 NCImageCache.shared.createMediaCache(withCacheSize: true, session: session)
             } else {
@@ -81,10 +77,6 @@ class NCAccount: NSObject {
         }
         /// Set capabilities
         NCManageDatabase.shared.setCapabilities(account: account)
-        /// Set scene identifier in Domain
-        if let sceneIdentifier {
-            NCSession.shared.setSceneIdentifier(account: account, sceneIdentifier: sceneIdentifier)
-        }
         /// Set User Profile
         if let userProfile {
             NCManageDatabase.shared.setAccountUserProfile(account: account, userProfile: userProfile)

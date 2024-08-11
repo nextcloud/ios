@@ -61,9 +61,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func sceneDidDisconnect(_ scene: UIScene) {
         print("[DEBUG] Scene did disconnect")
-        if let controller = SceneManager.shared.getController(scene: scene) as? NCMainTabBarController {
-            NCSession.shared.removeSceneIdentifier(sceneIdentifier: controller.sceneIdentifier)
-        }
     }
 
     func sceneWillEnterForeground(_ scene: UIScene) {
@@ -179,7 +176,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         guard let controller = SceneManager.shared.getController(scene: scene) as? NCMainTabBarController,
               let url = URLContexts.first?.url else { return }
-        let sceneIdentifier = controller.sceneIdentifier
         let scheme = url.scheme
         let action = url.host
         let session = SceneManager.shared.getSession(scene: scene)
@@ -194,7 +190,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     for tableAccount in NCManageDatabase.shared.getAllTableAccount() {
                         let urlBase = URL(string: tableAccount.urlBase)
                         if url.contains(urlBase?.host ?? "") && userId == tableAccount.userId {
-                            NCAccount().changeAccount(tableAccount.account, userProfile: nil, sceneIdentifier: sceneIdentifier) { }
+                            NCAccount().changeAccount(tableAccount.account, userProfile: nil, controller: controller) { }
                             return tableAccount
                         }
                     }
@@ -307,7 +303,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 }
 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    NCActionCenter.shared.openFileViewInFolder(serverUrl: serverUrl, fileNameBlink: nil, fileNameOpen: fileName, sceneIdentifier: sceneIdentifier)
+                    NCActionCenter.shared.openFileViewInFolder(serverUrl: serverUrl, fileNameBlink: nil, fileNameOpen: fileName, sceneIdentifier: controller.sceneIdentifier)
                 }
             }
             return
@@ -365,13 +361,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 extension SceneDelegate: NCPasscodeDelegate {
     func requestedAccount(controller: UIViewController?) {
         let tableAccounts = NCManageDatabase.shared.getAllTableAccount()
-        let sceneIdentifier = (controller as? NCMainTabBarController)?.sceneIdentifier
 
         if tableAccounts.count > 1, let accountRequestVC = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
-            accountRequestVC.sceneIdentifier = sceneIdentifier
-            if let sceneIdentifier {
-                accountRequestVC.activeAccount = NCSession.shared.getSession(sceneIdentifier: sceneIdentifier).account
-            }
+            accountRequestVC.controller = controller
+            accountRequestVC.activeAccount = (controller as? NCMainTabBarController)?.account
             accountRequestVC.accounts = tableAccounts
             accountRequestVC.enableTimerProgress = true
             accountRequestVC.enableAddAccount = false
@@ -398,8 +391,8 @@ extension SceneDelegate: NCPasscodeDelegate {
 extension SceneDelegate: NCAccountRequestDelegate {
     func accountRequestAddAccount() { }
 
-    func accountRequestChangeAccount(account: String, sceneIdentifier: String?) {
-        NCAccount().changeAccount(account, userProfile: nil, sceneIdentifier: sceneIdentifier) { }
+    func accountRequestChangeAccount(account: String, controller: UIViewController?) {
+        NCAccount().changeAccount(account, userProfile: nil, controller: controller as? NCMainTabBarController) { }
     }
 }
 

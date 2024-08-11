@@ -235,9 +235,7 @@ extension NCManageDatabase {
         return NCGlobal.shared.subfolderGranularityMonthly
     }
 
-    func setAccountActive(_ account: String, sceneIdentifier: String?) -> tableAccount? {
-        var accountReturn = tableAccount()
-
+    func setAccountActive(_ account: String) {
         do {
             let realm = try Realm()
             try realm.write {
@@ -245,7 +243,6 @@ extension NCManageDatabase {
                 for result in results {
                     if result.account == account {
                         result.active = true
-                        accountReturn = result
                     } else {
                         result.active = false
                     }
@@ -253,10 +250,7 @@ extension NCManageDatabase {
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
-            return nil
         }
-        NCSession.shared.setActiveTableAccount(tableAccount.init(value: accountReturn), sceneIdentifier: sceneIdentifier)
-        return tableAccount.init(value: accountReturn)
     }
 
     func removePasswordAccount(_ account: String) {
