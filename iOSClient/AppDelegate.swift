@@ -407,6 +407,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         guard !self.timerErrorNetworkingDisabled,
               !account.isEmpty,
               NCKeychain().getPassword(account: account).isEmpty else { return }
+
+        let description = String.localizedStringWithFormat(NSLocalizedString("_error_check_remote_user_", comment: ""))
+        let error = NKError(errorCode: NCKeychain().getPassword(account: account).isEmpty ? NCGlobal.shared.errorUnauthorized997 : NCGlobal.shared.errorInternalServerError, errorDescription: description)
+        NCContentPresenter().showError(error: error, priority: .max)
+
+//        deleteAccount(account)
+
         openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: true)
     }
 
