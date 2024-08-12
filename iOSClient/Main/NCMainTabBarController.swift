@@ -37,9 +37,13 @@ class NCMainTabBarController: UITabBarController {
     func showBurgerMenu() {
         burgerMenuController?.showMenu()
     }
+    
+    func presentedNavigationController() -> UINavigationController? {
+        return presentedViewController as? UINavigationController
+    }
 
     func currentViewController() -> UIViewController? {
-        if let navVC = self.presentedViewController as? UINavigationController {
+        if let navVC = presentedNavigationController() {
             return navVC.topViewController
         }
         return (selectedViewController as? UINavigationController)?.topViewController

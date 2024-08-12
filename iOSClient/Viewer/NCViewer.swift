@@ -237,6 +237,8 @@ class NCViewer: NSObject {
         // Document Interaction Controller
             if let mainTabBarController = viewController.tabBarController as? NCMainTabBarController {
                 NCActionCenter.shared.openDocumentController(metadata: metadata, mainTabBarController: mainTabBarController)
+            } else {
+                NCActionCenter.shared.openDocumentController(metadata: metadata, viewController: viewController)
             }
         }
     }

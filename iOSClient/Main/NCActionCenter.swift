@@ -318,13 +318,27 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     // MARK: - Open in ...
 
     func openDocumentController(metadata: tableMetadata, mainTabBarController: NCMainTabBarController?) {
-
         guard let mainTabBarController,
               let mainTabBar = mainTabBarController.tabBar as? NCMainTabBar else { return }
+        
+        if let presentedNavigationController = mainTabBarController.presentedNavigationController() {
+            openDocumentController(metadata: metadata, viewController: presentedNavigationController)
+        } else {
+            openDocumentController(metadata: metadata, viewToPresentOn: mainTabBar, rectToPresentFrom: mainTabBar.menuRect)
+        }
+    }
+    
+    func openDocumentController(metadata: tableMetadata, viewController: UIViewController?) {
+        guard let viewController, let viewToPresentOn = viewController.view else { return }
+        let rectToPresentFrom = CGRect(origin: CGPoint(x: viewToPresentOn.center.x, y: viewToPresentOn.bounds.height), size: CGSizeZero)
+        openDocumentController(metadata: metadata, viewToPresentOn: viewToPresentOn, rectToPresentFrom: rectToPresentFrom)
+    }
+    
+    private func openDocumentController(metadata: tableMetadata, viewToPresentOn: UIView, rectToPresentFrom: CGRect) {
         let fileURL = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-
+        
         documentController = UIDocumentInteractionController(url: fileURL)
-        documentController?.presentOptionsMenu(from: mainTabBar.menuRect, in: mainTabBar, animated: true)
+        documentController?.presentOptionsMenu(from: rectToPresentFrom, in: viewToPresentOn, animated: true)
     }
 
     func openActivityViewController(selectedMetadata: [tableMetadata], mainTabBarController: NCMainTabBarController?) {
