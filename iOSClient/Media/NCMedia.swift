@@ -65,6 +65,10 @@ class NCMedia: UIViewController {
     var photoImage = UIImage()
     var videoImage = UIImage()
 
+    var session: NCSession.Session {
+        NCSession.shared.getSession(controller: tabBarController)
+    }
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -125,7 +129,7 @@ class NCMedia: UIViewController {
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
             if let metadatas = self.metadatas,
                let metadata = metadatas.first {
-                if metadata.account != NCSession.shared.getSession(controller: self.tabBarController).account {
+                if metadata.account != self.session.account {
                     self.metadatas = nil
                     self.collectionViewReloadData()
                 }
@@ -182,8 +186,7 @@ class NCMedia: UIViewController {
 
         // Cancel Queue & Retrieves Properties
         NCNetworking.shared.downloadThumbnailQueue.cancelAll()
-        let account = NCSession.shared.getSession(controller: tabBarController).account
-        if let nkSession = NextcloudKit.shared.nkCommonInstance.getSession(account: account) {
+        if let nkSession = NextcloudKit.shared.nkCommonInstance.getSession(account: session.account) {
             nkSession.sessionData.session.getTasksWithCompletionHandler { dataTasks, _, _ in
                 dataTasks.forEach {
                     if $0.taskDescription == self.taskDescriptionRetrievesProperties {
