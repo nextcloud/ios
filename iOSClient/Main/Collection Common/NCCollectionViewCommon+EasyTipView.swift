@@ -27,7 +27,7 @@ import EasyTipView
 
 extension NCCollectionViewCommon: EasyTipViewDelegate {
     func showTip() {
-        guard NCSession.shared.isValidSession(session),
+        guard !session.account.isEmpty,
               self is NCFiles,
               self.view.window != nil,
               !NCBrandOptions.shared.disable_multiaccount,

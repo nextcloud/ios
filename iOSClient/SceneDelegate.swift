@@ -38,7 +38,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.window = UIWindow(windowScene: windowScene)
         let session = SceneManager.shared.getSession(scene: scene)
 
-        if NCSession.shared.isValidSession(session),
+        if !session.account.isEmpty,
            let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController,
            let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
                 SceneManager.shared.register(scene: scene, withRootViewController: controller)
@@ -75,7 +75,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             UIApplication.shared.allSceneSessionDestructionExceptFirst()
             return
         }
-        guard NCSession.shared.isValidSession(session) else { return }
+        guard !session.account.isEmpty else { return }
 
         hidePrivacyProtectionWindow()
         if let window = SceneManager.shared.getWindow(scene: scene), let controller = SceneManager.shared.getController(scene: scene) {
@@ -115,7 +115,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneWillResignActive(_ scene: UIScene) {
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Scene will resign active")
         let session = SceneManager.shared.getSession(scene: scene)
-        guard NCSession.shared.isValidSession(session) else { return }
+        guard !session.account.isEmpty else { return }
 
         // STOP TIMER UPLOAD PROCESS
         NCNetworkingProcess.shared.stopTimer()
@@ -180,7 +180,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let scheme = url.scheme
         let action = url.host
         let session = SceneManager.shared.getSession(scene: scene)
-        guard NCSession.shared.isValidSession(session) else { return }
+        guard !session.account.isEmpty else { return }
 
         func getMatchedAccount(userId: String, url: String) -> tableAccount? {
             if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {

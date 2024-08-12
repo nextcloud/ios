@@ -82,10 +82,6 @@ public class NCSession: NSObject {
     }
 #endif
 
-    public func isValidSession(_ session: NCSession.Session) -> Bool {
-        return !session.account.isEmpty
-    }
-
     /// UTILITY
     ///
     public func getFileName(urlBase: String, user: String) -> String {
