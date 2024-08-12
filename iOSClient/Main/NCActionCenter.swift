@@ -318,12 +318,11 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     // MARK: - Open in ...
 
     func openDocumentController(metadata: tableMetadata, mainTabBarController: NCMainTabBarController?) {
-        guard let mainTabBarController,
-              let mainTabBar = mainTabBarController.tabBar as? NCMainTabBar else { return }
+        guard let mainTabBarController else { return }
         
         if let presentedNavigationController = mainTabBarController.presentedNavigationController() {
             openDocumentController(metadata: metadata, viewController: presentedNavigationController)
-        } else {
+        } else if let mainTabBar = mainTabBarController.tabBar as? NCMainTabBar {
             openDocumentController(metadata: metadata, viewToPresentOn: mainTabBar, rectToPresentFrom: mainTabBar.menuRect)
         }
     }
