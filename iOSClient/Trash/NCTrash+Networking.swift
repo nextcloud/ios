@@ -26,7 +26,7 @@ import RealmSwift
 
 extension NCTrash {
     @objc func loadListingTrash() {
-        NextcloudKit.shared.listingTrash(filename: filename, showHiddenFiles: false, account: NCSession.shared.getSession(controller: tabBarController).account) { task in
+        NextcloudKit.shared.listingTrash(filename: filename, showHiddenFiles: false, account: session.account) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()
         } completion: { account, items, _, error in
@@ -43,12 +43,11 @@ extension NCTrash {
     }
 
     func restoreItem(with fileId: String) {
-        let domain = NCSession.shared.getSession(controller: tabBarController)
-        guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: fileId, account: domain.account) else { return }
+        guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: fileId, account: session.account) else { return }
         let fileNameFrom = tableTrash.filePath + tableTrash.fileName
-        let fileNameTo = domain.urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav + "/trashbin/" + domain.userId + "/restore/" + tableTrash.fileName
+        let fileNameTo = session.urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav + "/trashbin/" + session.userId + "/restore/" + tableTrash.fileName
 
-        NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: true, account: domain.account) { account, error in
+        NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: true, account: session.account) { account, error in
             guard error == .success else {
                 NCContentPresenter().showError(error: error)
                 return
@@ -59,10 +58,9 @@ extension NCTrash {
     }
 
     func emptyTrash() {
-        let domain = NCSession.shared.getSession(controller: tabBarController)
-        let serverUrlFileName = domain.urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav + "/trashbin/" + domain.userId + "/trash"
+        let serverUrlFileName = session.urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav + "/trashbin/" + session.userId + "/trash"
 
-        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: domain.account) { account, error in
+        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: session.account) { account, error in
             guard error == .success else {
                 NCContentPresenter().showError(error: error)
                 return
@@ -73,11 +71,10 @@ extension NCTrash {
     }
 
     func deleteItem(with fileId: String) {
-        let domain = NCSession.shared.getSession(controller: tabBarController)
-        guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: fileId, account: domain.account) else { return }
+        guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: fileId, account: session.account) else { return }
         let serverUrlFileName = tableTrash.filePath + tableTrash.fileName
 
-        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: domain.account) { account, error in
+        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: session.account) { account, error in
             guard error == .success else {
                 NCContentPresenter().showError(error: error)
                 return
