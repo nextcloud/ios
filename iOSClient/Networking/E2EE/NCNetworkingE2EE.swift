@@ -91,9 +91,10 @@ class NCNetworkingE2EE: NSObject {
                         addUserId: String? = nil,
                         removeUserId: String? = nil,
                         updateVersionV1V2: Bool = false,
-                        session: NCSession.Session) async -> NKError {
+                        account: String) async -> NKError {
         var addCertificate: String?
         var method = "POST"
+        let session = NCSession.shared.getSession(account: account)
         guard let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl)) else {
             return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_")
         }

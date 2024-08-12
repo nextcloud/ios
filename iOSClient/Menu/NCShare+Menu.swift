@@ -28,7 +28,6 @@ import NextcloudKit
 extension NCShare {
     func toggleShareMenu(for share: tableShare) {
         var actions = [NCMenuAction]()
-        let session = NCSession.shared.getSession(controller: tabBarController)
 
         if share.shareType == 3, canReshare {
             actions.append(
@@ -72,7 +71,7 @@ extension NCShare {
                                 let error = NKError(errorCode: NCGlobal.shared.errorE2EEUploadInProgress, errorDescription: NSLocalizedString("_e2e_in_upload_", comment: ""))
                                 return NCContentPresenter().showInfo(error: error)
                             }
-                            let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, addUserId: nil, removeUserId: share.shareWith, session: session)
+                            let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, addUserId: nil, removeUserId: share.shareWith, account: metadata.account)
                             if error != .success {
                                 return NCContentPresenter().showError(error: error)
                             }

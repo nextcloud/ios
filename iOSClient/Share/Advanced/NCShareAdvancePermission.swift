@@ -55,7 +55,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
                         return NCContentPresenter().showInfo(error: error)
                     }
                     let session = NCSession.shared.getSession(account: metadata.account)
-                    let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, addUserId: share.shareWith, removeUserId: nil, session: session)
+                    let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, addUserId: share.shareWith, removeUserId: nil, account: metadata.account)
                     if error != .success {
                         return NCContentPresenter().showError(error: error)
                     }

@@ -211,7 +211,7 @@ class NCFiles: NCCollectionViewCommon {
                                         NCActivityIndicator.shared.start()
                                         Task {
                                             let serverUrl = metadataFolder.serverUrl + "/" + metadataFolder.fileName
-                                            let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, updateVersionV1V2: true, session: self.session)
+                                            let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, updateVersionV1V2: true, account: account)
                                             if error != .success {
                                                 NCContentPresenter().showError(error: error)
                                             }
@@ -230,7 +230,7 @@ class NCFiles: NCCollectionViewCommon {
                                 // no metadata found, send a new metadata
                                 Task {
                                     let serverUrl = metadataFolder.serverUrl + "/" + metadataFolder.fileName
-                                    let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, session: self.session)
+                                    let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, account: account)
                                     if error != .success {
                                         NCContentPresenter().showError(error: error)
                                     }
