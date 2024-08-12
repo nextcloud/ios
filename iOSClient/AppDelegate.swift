@@ -386,14 +386,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             if activeLogin?.view.window == nil {
                 activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
                 activeLogin?.urlBase = urlBase
-                activeLogin?.disableUrlField = true
-                activeLogin?.disableCloseButton = true
                 showLoginViewController(activeLogin)
             }
         } else {
             if activeLogin?.view.window == nil {
-                activeLogin?.disableCloseButton = true
-
                 activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
                 showLoginViewController(activeLogin)
             }
