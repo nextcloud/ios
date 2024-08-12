@@ -56,6 +56,10 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
     @Published var footerTitle: String = ""
     /// Root View Controller
     @Published var controller: NCMainTabBarController?
+    /// Get session
+    var session: NCSession.Session {
+        NCSession.shared.getSession(controller: controller)
+    }
 
     /// Initializes the view model with default values.
     init(controller: NCMainTabBarController?) {
@@ -65,7 +69,6 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
 
     /// Triggered when the view appears.
     func onViewAppear() {
-        let session = NCSession.shared.getSession(controller: controller)
         let groups = NCManageDatabase.shared.getAccountGroups(account: session.account)
         isAdminGroup = groups.contains(NCGlobal.shared.groupAdmin)
         showHiddenFiles = keychain.showHiddenFiles
@@ -132,11 +135,10 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
         // Cancel all networking tasks
         NCNetworking.shared.cancelAllTask()
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            let session = NCSession.shared.getSession(controller: self.controller)
             URLCache.shared.memoryCapacity = 0
             URLCache.shared.diskCapacity = 0
 
-            NCManageDatabase.shared.clearDatabase(account: session.account, removeAccount: false)
+            NCManageDatabase.shared.clearDatabase(account: self.session.account, removeAccount: false)
 
             let ufs = NCUtilityFileSystem()
             ufs.removeGroupDirectoryProviderStorage()
@@ -145,8 +147,8 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
             ufs.removeTemporaryDirectory()
             ufs.createDirectoryStandard()
 
-            NCAutoUpload.shared.alignPhotoLibrary(viewController: self.controller, account: session.account)
-            NCImageCache.shared.createMediaCache(withCacheSize: true, session: session)
+            NCAutoUpload.shared.alignPhotoLibrary(viewController: self.controller, account: self.session.account)
+            NCImageCache.shared.createMediaCache(withCacheSize: true, session: self.session)
 
             NCActivityIndicator.shared.stop()
             self.calculateSize()

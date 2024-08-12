@@ -59,6 +59,10 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     var controller: NCMainTabBarController?
     /// A variable user for change the auto upload directory
     var serverUrl: String = ""
+    /// Get session
+    var session: NCSession.Session {
+        NCSession.shared.getSession(controller: controller)
+    }
 
     /// Initialization code to set up the ViewModel with the active account
     init(controller: NCMainTabBarController?) {
@@ -68,7 +72,6 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
 
     /// Triggered when the view appears.
     func onViewAppear() {
-        let session = NCSession.shared.getSession(controller: controller)
         if let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) {
             autoUpload = tableAccount.autoUpload
             autoUploadImage = tableAccount.autoUploadImage
@@ -108,14 +111,13 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
 
     /// Updates the auto-upload setting.
     func handleAutoUploadChange(newValue: Bool) {
-        let session = NCSession.shared.getSession(controller: controller)
         if newValue {
             requestAuthorization { value in
                 self.autoUpload = value
                 self.updateAccountProperty(\.autoUpload, value: value)
                 NCManageDatabase.shared.setAccountAutoUploadFileName("")
-                NCManageDatabase.shared.setAccountAutoUploadDirectory("", session: session)
-                NCAutoUpload.shared.alignPhotoLibrary(viewController: self.controller, account: session.account)
+                NCManageDatabase.shared.setAccountAutoUploadDirectory("", session: self.session)
+                NCAutoUpload.shared.alignPhotoLibrary(viewController: self.controller, account: self.session.account)
             }
         } else {
             updateAccountProperty(\.autoUpload, value: newValue)
@@ -128,7 +130,6 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     func handleAutoUploadImageChange(newValue: Bool) {
         updateAccountProperty(\.autoUploadImage, value: newValue)
         if newValue {
-            let session = NCSession.shared.getSession(controller: controller)
             NCAutoUpload.shared.alignPhotoLibrary(viewController: controller, account: session.account)
         }
     }
@@ -142,7 +143,6 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     func handleAutoUploadVideoChange(newValue: Bool) {
         updateAccountProperty(\.autoUploadVideo, value: newValue)
         if newValue {
-            let session = NCSession.shared.getSession(controller: controller)
             NCAutoUpload.shared.alignPhotoLibrary(viewController: controller, account: session.account)
         }
     }
@@ -155,7 +155,6 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     /// Updates the auto-upload full content setting.
     func handleAutoUploadFullChange(newValue: Bool) {
         updateAccountProperty(\.autoUploadFull, value: newValue)
-        let session = NCSession.shared.getSession(controller: controller)
         if newValue {
             NCAutoUpload.shared.autoUploadFullPhotos(viewController: self.controller, log: "Auto upload full", account: session.account)
         } else {
@@ -184,7 +183,6 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     ///
     /// - Returns: The path for auto-upload.
     func returnPath() -> String {
-        let session = NCSession.shared.getSession(controller: controller)
         let autoUploadPath = manageDatabase.getAccountAutoUploadDirectory(session: session) + "/" + manageDatabase.getAccountAutoUploadFileName()
         let homeServer = NCUtilityFileSystem().getHomeServer(session: session)
         let path = autoUploadPath.replacingOccurrences(of: homeServer, with: "")
@@ -197,7 +195,6 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     /// serverUrl: The server URL to set as the auto-upload directory.
     func setAutoUploadDirectory(serverUrl: String?) {
         guard let serverUrl else { return }
-        let session = NCSession.shared.getSession(controller: controller)
         let home = NCUtilityFileSystem().getHomeServer(session: session)
         if home != serverUrl {
             let fileName = (serverUrl as NSString).lastPathComponent

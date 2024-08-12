@@ -22,6 +22,10 @@ class NCCapabilitiesModel: ObservableObject, ViewOnAppearHandling {
     @Published var homeServer = ""
     /// Root View Controller
     @Published var controller: NCMainTabBarController?
+    /// Get session
+    var session: NCSession.Session {
+        NCSession.shared.getSession(controller: controller)
+    }
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
 
@@ -32,7 +36,6 @@ class NCCapabilitiesModel: ObservableObject, ViewOnAppearHandling {
 
     /// Triggered when the view appears.
     func onViewAppear() {
-        let session = NCSession.shared.getSession(controller: controller)
         var textEditor = false
         var onlyofficeEditors = false
 

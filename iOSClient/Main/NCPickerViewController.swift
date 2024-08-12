@@ -46,7 +46,7 @@ class NCPhotosPickerViewController: NSObject {
         self.openPhotosPickerViewController { assets in
             if !assets.isEmpty {
                 let serverUrl = controller.currentServerUrl()
-                let view = NCUploadAssetsView(model: NCUploadAssetsModel(assets: assets, serverUrl: serverUrl, controller: controller, session: session))
+                let view = NCUploadAssetsView(model: NCUploadAssetsModel(assets: assets, serverUrl: serverUrl, controller: controller))
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                     controller.present(UIHostingController(rootView: view), animated: true, completion: nil)
                 }

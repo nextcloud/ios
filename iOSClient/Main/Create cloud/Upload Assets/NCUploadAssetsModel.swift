@@ -42,7 +42,6 @@ struct PreviewStore {
 class NCUploadAssetsModel: NSObject, ObservableObject, NCCreateFormUploadConflictDelegate {
     @Published var serverUrl: String
     @Published var assets: [TLPHAsset]
-    @Published var session: NCSession.Session
     @Published var previewStore: [PreviewStore] = []
     @Published var dismissView = false
     @Published var hiddenSave = true
@@ -52,15 +51,17 @@ class NCUploadAssetsModel: NSObject, ObservableObject, NCCreateFormUploadConflic
     @Published var uploadInProgress = false
     /// Root View Controller
     @Published var controller: NCMainTabBarController?
-
+    /// Session
+    var session: NCSession.Session {
+        NCSession.shared.getSession(controller: controller)
+    }
     var metadatasNOConflict: [tableMetadata] = []
     var metadatasUploadInConflict: [tableMetadata] = []
     var timer: Timer?
 
-    init(assets: [TLPHAsset], serverUrl: String, controller: NCMainTabBarController?, session: NCSession.Session) {
+    init(assets: [TLPHAsset], serverUrl: String, controller: NCMainTabBarController?) {
         self.assets = assets
         self.serverUrl = serverUrl
-        self.session = session
         self.controller = controller
         self.showHUD = true
         super.init()

@@ -35,6 +35,10 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
     @Published var isEndToEndEnabled: Bool = false
     @Published var statusOfService: String = NSLocalizedString("_status_in_progress_", comment: "")
     @Published var navigateBack: Bool = false
+    /// Get session
+    var session: NCSession.Session {
+        NCSession.shared.getSession(controller: controller)
+    }
 
     init(controller: UITabBarController?) {
         super.init()
@@ -46,7 +50,7 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
     /// Triggered when the view appears.
     func onViewAppear() {
         if NCGlobal.shared.capabilityE2EEEnabled && NCGlobal.shared.e2eeVersions.contains(NCGlobal.shared.capabilityE2EEApiVersion) {
-            isEndToEndEnabled = NCKeychain().isEndToEndEnabled(account: NCSession.shared.getSession(controller: controller).account)
+            isEndToEndEnabled = NCKeychain().isEndToEndEnabled(account: session.account)
             if isEndToEndEnabled {
                 statusOfService = NSLocalizedString("_status_e2ee_configured_", comment: "")
             } else {
@@ -96,12 +100,11 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
     }
 
     @objc func correctPasscode() {
-        let account = NCSession.shared.getSession(controller: controller).account
         switch self.passcodeType {
         case "startE2E":
-            endToEndInitialize.initEndToEndEncryption(viewController: controller, metadata: nil, session: NCSession.shared.getSession(controller: controller))
+            endToEndInitialize.initEndToEndEncryption(viewController: controller, metadata: nil, session: session)
         case "readPassphrase":
-            if let e2ePassphrase = NCKeychain().getEndToEndPassphrase(account: account) {
+            if let e2ePassphrase = NCKeychain().getEndToEndPassphrase(account: session.account) {
                 print("[INFO]Passphrase: " + e2ePassphrase)
                 let message = "\n" + NSLocalizedString("_e2e_settings_the_passphrase_is_", comment: "") + "\n\n\n" + e2ePassphrase
                 let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
@@ -114,8 +117,8 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
         case "removeLocallyEncryption":
             let alertController = UIAlertController(title: NSLocalizedString("_e2e_settings_remove_", comment: ""), message: NSLocalizedString("_e2e_settings_remove_message_", comment: ""), preferredStyle: .alert)
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_", comment: ""), style: .default, handler: { _ in
-                NCKeychain().clearAllKeysEndToEnd(account: account)
-                self.isEndToEndEnabled = NCKeychain().isEndToEndEnabled(account: account)
+                NCKeychain().clearAllKeysEndToEnd(account: self.session.account)
+                self.isEndToEndEnabled = NCKeychain().isEndToEndEnabled(account: self.session.account)
             }))
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .default, handler: { _ in }))
             controller?.present(alertController, animated: true)

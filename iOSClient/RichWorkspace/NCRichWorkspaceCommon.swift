@@ -61,7 +61,6 @@ class NCRichWorkspaceCommon: NSObject {
         if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", session.account, serverUrl, NCGlobal.shared.fileNameRichWorkspace.lowercased())) {
 
             if metadata.url.isEmpty {
-                let session = NCSession.shared.getSession(account: metadata.account)
                 NCActivityIndicator.shared.start(backgroundView: viewController.view)
 
                 let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)

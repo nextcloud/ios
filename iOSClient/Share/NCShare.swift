@@ -55,6 +55,10 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         return ((metadata.sharePermissionsCollaborationServices & NCPermissions().permissionShareShare) != 0)
     }
 
+    var session: NCSession.Session {
+        NCSession.shared.getSession(account: metadata.account)
+    }
+
     var shares: (firstShareLink: tableShare?, share: [tableShare]?) = (nil, nil)
 
     private var dropDown = DropDown()
@@ -83,8 +87,6 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         tableView.register(UINib(nibName: "NCShareUserCell", bundle: nil), forCellReuseIdentifier: "cellUser")
 
         NotificationCenter.default.addObserver(self, selector: #selector(reloadData), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataNCShare), object: nil)
-
-        let session = NCSession.shared.getSession(account: metadata.account)
 
         if metadata.e2eEncrypted {
             let direcrory = NCManageDatabase.shared.getTableDirectory(account: metadata.account, serverUrl: metadata.serverUrl)
@@ -124,7 +126,6 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
 
     // Shared with you by ...
     func checkSharedWithYou() {
-        let session = NCSession.shared.getSession(controller: tabBarController)
         guard !metadata.ownerId.isEmpty, metadata.ownerId != session.userId else { return }
 
         if !canReshare {
@@ -169,7 +170,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
     // MARK: - Notification Center
 
     @objc func openShareProfile() {
-        self.showProfileMenu(userId: metadata.ownerId, session: NCSession.shared.getSession(account: metadata.account))
+        self.showProfileMenu(userId: metadata.ownerId, session: session)
     }
 
     // MARK: -
@@ -264,7 +265,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         dropDown.customCellConfiguration = { (index: Index, _, cell: DropDownCell) -> Void in
             guard let cell = cell as? NCSearchUserDropDownCell else { return }
             let sharee = sharees[index]
-            cell.setupCell(sharee: sharee, session: NCSession.shared.getSession(controller: self.tabBarController))
+            cell.setupCell(sharee: sharee, session: self.session)
         }
 
         dropDown.selectionAction = { index, _ in
@@ -320,7 +321,6 @@ extension NCShare: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let session = NCSession.shared.getSession(controller: tabBarController)
         // Setup default share cells
         guard indexPath.section != 0 else {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "cellLink", for: indexPath) as? NCShareLinkCell
