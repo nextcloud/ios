@@ -45,13 +45,21 @@ class NCActivity: UIViewController, NCSharePagingContent {
     var insets = UIEdgeInsets(top: 8, left: 0, bottom: 0, right: 0)
     var didSelectItemEnable: Bool = true
     var objectType: String?
-    var session: NCSession.Session!
+    var account: String = ""
 
     var isFetchingActivity = false
     var hasActivityToLoad = true {
         didSet { tableView.tableFooterView?.isHidden = hasActivityToLoad }
     }
     var dateAutomaticFetch: Date?
+
+    var session: NCSession.Session {
+        if account.isEmpty {
+            NCSession.shared.getSession(controller: tabBarController)
+        } else {
+            NCSession.shared.getSession(account: account)
+        }
+    }
 
     // MARK: - View Life Cycle
 
@@ -93,9 +101,6 @@ class NCActivity: UIViewController, NCSharePagingContent {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        if session == nil {
-            self.session = NCSession.shared.getSession(controller: tabBarController)
-        }
         navigationController?.setNavigationBarAppearance()
         fetchAll(isInitial: true)
     }
@@ -246,7 +251,6 @@ extension NCActivity: UITableViewDataSource {
             return UITableViewCell()
         }
         var orderKeysId: [String] = []
-        let session = NCSession.shared.getSession(account: activity.account)
 
         cell.idActivity = activity.idActivity
         cell.account = activity.account
@@ -372,7 +376,6 @@ extension NCActivity {
     }
 
     func loadDataSource() {
-        guard let session else { return }
         var newItems = [DateCompareable]()
 
         if showComments, let metadata {
@@ -414,7 +417,6 @@ extension NCActivity {
 
     /// Check if most recent activivities are loaded, if not trigger reload
     func checkRecentActivity(disptachGroup: DispatchGroup) {
-        guard let session else { return }
         guard let result = NCManageDatabase.shared.getLatestActivityId(account: session.account), metadata == nil, hasActivityToLoad else {
             return self.loadActivity(idActivity: 0, disptachGroup: disptachGroup)
         }
@@ -435,7 +437,7 @@ extension NCActivity {
 
                 let largestActivityId = max(activityFirstKnown, activityLastGiven)
                 guard error == .success,
-                      account == session.account,
+                      account == self.session.account,
                       largestActivityId > resultActivityId
                 else {
                     self.hasActivityToLoad = error.errorCode == NCGlobal.shared.errorNotModified ? false : self.hasActivityToLoad
@@ -447,7 +449,7 @@ extension NCActivity {
     }
 
     func loadActivity(idActivity: Int, limit: Int = 200, disptachGroup: DispatchGroup) {
-        guard hasActivityToLoad, let session else { return }
+        guard hasActivityToLoad else { return }
         var resultActivityId = 0
 
         disptachGroup.enter()
@@ -462,7 +464,7 @@ extension NCActivity {
             } completion: { account, activities, activityFirstKnown, activityLastGiven, _, error in
                 defer { disptachGroup.leave() }
                 guard error == .success,
-                      account == session.account,
+                      account == self.session.account,
                       !activities.isEmpty
                 else {
                     self.hasActivityToLoad = error.errorCode == NCGlobal.shared.errorNotModified ? false : self.hasActivityToLoad
@@ -472,7 +474,7 @@ extension NCActivity {
 
                 // update most recently loaded activity only when all activities are loaded (not filtered)
                 let largestActivityId = max(activityFirstKnown, activityLastGiven)
-                if let result = NCManageDatabase.shared.getLatestActivityId(account: session.account) {
+                if let result = NCManageDatabase.shared.getLatestActivityId(account: self.session.account) {
                     resultActivityId = max(result.activityFirstKnown, result.activityLastGiven)
                 }
                 if self.metadata == nil, largestActivityId > resultActivityId {

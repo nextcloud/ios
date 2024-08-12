@@ -34,6 +34,10 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
     var metadata: tableMetadata = tableMetadata()
     var imageIcon: UIImage?
 
+    var session: NCSession.Session {
+        NCSession.shared.getSession(account: metadata.account)
+    }
+
     // MARK: - View Life Cycle
 
     required init?(coder: NSCoder) {
@@ -175,7 +179,7 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                     viewController.enableSelectFile = true
                     viewController.includeImages = true
                     viewController.type = ""
-                    viewController.session = NCSession.shared.getSession(account: metadata.account)
+                    viewController.session = session
 
                     self.present(navigationController, animated: true, completion: nil)
                 }
@@ -286,7 +290,6 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
 
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool, session: NCSession.Session) {
         if let serverUrl, let metadata {
-            let session = NCSession.shared.getSession(account: metadata.account)
             let path = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: serverUrl, session: session)
 
             NextcloudKit.shared.createAssetRichdocuments(path: path, account: metadata.account) { _, url, _, error in
@@ -301,7 +304,6 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
     }
 
     func select(_ metadata: tableMetadata!, serverUrl: String!) {
-        let session = NCSession.shared.getSession(account: metadata.account)
         let path = utilityFileSystem.getFileNamePath(metadata!.fileName, serverUrl: serverUrl!, session: session)
 
         NextcloudKit.shared.createAssetRichdocuments(path: path, account: metadata.account) { _, url, _, error in

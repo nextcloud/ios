@@ -70,7 +70,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         utilityFileSystem.emptyTemporaryDirectory()
         utilityFileSystem.clearCacheDirectory("com.limit-point.LivePhoto")
 
-        // NextcloudKit
         NextcloudKit.shared.setup(delegate: NCNetworking.shared)
         NextcloudKit.shared.nkCommonInstance.pathLog = utilityFileSystem.directoryGroup
 

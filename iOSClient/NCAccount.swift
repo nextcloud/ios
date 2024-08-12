@@ -69,11 +69,10 @@ class NCAccount: NSObject {
         NCManageDatabase.shared.setAccountActive(account)
         /// Create Media Cache
         DispatchQueue.global().async {
-            let session = NCSession.shared.getSession(account: account)
             if NCManageDatabase.shared.getAccounts()?.count == 1 {
-                NCImageCache.shared.createMediaCache(withCacheSize: true, session: session)
+                NCImageCache.shared.createMediaCache(withCacheSize: true, session: NCSession.shared.getSession(account: account))
             } else {
-                NCImageCache.shared.createMediaCache(withCacheSize: false, session: session)
+                NCImageCache.shared.createMediaCache(withCacheSize: false, session: NCSession.shared.getSession(account: account))
             }
         }
         /// Set capabilities
