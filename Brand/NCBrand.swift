@@ -31,7 +31,7 @@ let userAgent: String = {
 
 @objc class NCBrandOptions: NSObject {
     @objc static let shared: NCBrandOptions = {
-        let instance = NCBrandOptions()
+        let instance = NCBrandOptionsIONOS()
         return instance
     }()
 

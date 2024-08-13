@@ -8,8 +8,7 @@
 	<true/>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.com.nextcloud.apps</string>
-		<string>group.it.twsweb.Crypto-Cloud</string>
+		<string>group.com.viseven.ionos.easystorage</string>
 	</array>
 	<key>com.apple.security.device.audio-input</key>
 	<true/>
@@ -23,7 +22,7 @@
 	<true/>
 	<key>keychain-access-groups</key>
 	<array>
-		<string>$(AppIdentifierPrefix)it.twsweb.Crypto-Cloud</string>
+		<string>$(AppIdentifierPrefix)com.viseven.ionos.easystorage</string>
 	</array>
 </dict>
 </plist>
