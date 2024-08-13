@@ -19,14 +19,14 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Realm
 import UIKit
 import NextcloudKit
 import Queuer
+import RealmSwift
 
 extension NCTrash {
     @objc func loadListingTrash() {
-        NextcloudKit.shared.listingTrash(filename: filename, showHiddenFiles: false) { task in
+        NextcloudKit.shared.listingTrash(filename: filename, showHiddenFiles: false, account: appDelegate.account) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()
         } completion: { account, items, _, error in
@@ -47,7 +47,7 @@ extension NCTrash {
         let fileNameFrom = tableTrash.filePath + tableTrash.fileName
         let fileNameTo = appDelegate.urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav + "/trashbin/" + appDelegate.userId + "/restore/" + tableTrash.fileName
 
-        NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: true) { account, error in
+        NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: true, account: appDelegate.account) { account, error in
             guard error == .success, account == self.appDelegate.account else {
                 NCContentPresenter().showError(error: error)
                 return
@@ -60,7 +60,7 @@ extension NCTrash {
     func emptyTrash() {
         let serverUrlFileName = appDelegate.urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav + "/trashbin/" + appDelegate.userId + "/trash"
 
-        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName) { account, error in
+        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: appDelegate.account) { account, error in
             guard error == .success, account == self.appDelegate.account else {
                 NCContentPresenter().showError(error: error)
                 return
@@ -74,7 +74,7 @@ extension NCTrash {
         guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: fileId, account: appDelegate.account) else { return }
         let serverUrlFileName = tableTrash.filePath + tableTrash.fileName
 
-        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName) { account, error in
+        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: appDelegate.account) { account, error in
             guard error == .success, account == self.appDelegate.account else {
                 NCContentPresenter().showError(error: error)
                 return
@@ -91,10 +91,12 @@ class NCOperationDownloadThumbnailTrash: ConcurrentOperation {
     var fileId: String
     var collectionView: UICollectionView?
     var cell: NCTrashCellProtocol?
+    var account: String
 
-    init(tableTrash: tableTrash, fileId: String, cell: NCTrashCellProtocol?, collectionView: UICollectionView?) {
+    init(tableTrash: tableTrash, fileId: String, account: String, cell: NCTrashCellProtocol?, collectionView: UICollectionView?) {
         self.tableTrash = tableTrash
         self.fileId = fileId
+        self.account = account
         self.cell = cell
         self.collectionView = collectionView
     }
@@ -104,15 +106,14 @@ class NCOperationDownloadThumbnailTrash: ConcurrentOperation {
         let fileNamePreviewLocalPath = NCUtilityFileSystem().getDirectoryProviderStoragePreviewOcId(tableTrash.fileId, etag: tableTrash.fileName)
         let fileNameIconLocalPath = NCUtilityFileSystem().getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)
 
-        NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: tableTrash.fileId,
-                                            fileNamePreviewLocalPath: fileNamePreviewLocalPath,
-                                            widthPreview: NCGlobal.shared.sizePreview,
-                                            heightPreview: NCGlobal.shared.sizePreview,
-                                            fileNameIconLocalPath: fileNameIconLocalPath,
-                                            sizeIcon: NCGlobal.shared.sizeIcon,
-                                            etag: nil,
-                                            endpointTrashbin: true,
-                                            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imagePreview, _, _, _, error in
+        NextcloudKit.shared.downloadTrashPreview(fileId: tableTrash.fileId,
+                                                 fileNamePreviewLocalPath: fileNamePreviewLocalPath,
+                                                 fileNameIconLocalPath: fileNameIconLocalPath,
+                                                 widthPreview: NCGlobal.shared.sizePreview,
+                                                 heightPreview: NCGlobal.shared.sizePreview,
+                                                 sizeIcon: NCGlobal.shared.sizeIcon,
+                                                 account: account,
+                                                 options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imagePreview, _, _, _, error in
 
             if error == .success, let imagePreview = imagePreview {
                 DispatchQueue.main.async {

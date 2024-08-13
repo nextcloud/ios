@@ -24,11 +24,8 @@
 import UIKit
 
 class FileProviderDomain: NSObject {
-
     func registerDomains() {
-
         NSFileProviderManager.getDomainsWithCompletionHandler { fileProviderDomain, error in
-
             var domains: [String] = []
             let pathRelativeToDocumentStorage = NSFileProviderManager.default.documentStorageURL.absoluteString
             let accounts = NCManageDatabase.shared.getAllAccount()
@@ -50,10 +47,10 @@ class FileProviderDomain: NSObject {
                     }
                 }
                 if !domainFound {
-                    let domainRawValue = NSFileProviderDomain(identifier: NSFileProviderDomainIdentifier(rawValue: domain), displayName: domain, pathRelativeToDocumentStorage: pathRelativeToDocumentStorage)
-                    NSFileProviderManager.remove(domainRawValue, completionHandler: { error in
-                        if error != nil {
-                            print("Error  domain: \(domainRawValue) error: \(String(describing: error))")
+                    let fileProviderDomain = NSFileProviderDomain(identifier: NSFileProviderDomainIdentifier(rawValue: domain), displayName: domain, pathRelativeToDocumentStorage: pathRelativeToDocumentStorage)
+                    NSFileProviderManager.remove(fileProviderDomain, completionHandler: { error in
+                        if let error {
+                            print("Error  domain: \(fileProviderDomain) error: \(String(describing: error))")
                         }
                     })
                 }
@@ -72,19 +69,14 @@ class FileProviderDomain: NSObject {
                     }
                 }
                 if !domainFound {
-                    let domainRawValue = NSFileProviderDomain(identifier: NSFileProviderDomainIdentifier(rawValue: accountDomain), displayName: accountDomain, pathRelativeToDocumentStorage: pathRelativeToDocumentStorage)
-                    NSFileProviderManager.add(domainRawValue, completionHandler: { error in
-                        if error != nil {
-                            print("Error  domain: \(domainRawValue) error: \(String(describing: error))")
+                    let fileProviderDomain = NSFileProviderDomain(identifier: NSFileProviderDomainIdentifier(rawValue: accountDomain), displayName: accountDomain, pathRelativeToDocumentStorage: pathRelativeToDocumentStorage)
+                    NSFileProviderManager.add(fileProviderDomain, completionHandler: { error in
+                        if let error {
+                            print("Error  domain: \(fileProviderDomain) error: \(String(describing: error))")
                         }
                     })
                 }
             }
         }
-    }
-
-    func removeAllDomains() {
-
-        NSFileProviderManager.removeAllDomains { _ in }
     }
 }

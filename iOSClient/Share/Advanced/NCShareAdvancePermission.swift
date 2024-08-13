@@ -109,7 +109,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
     }
 
     func setupHeaderView() {
-        guard let headerView = (Bundle.main.loadNibNamed("NCShareAdvancePermissionHeader", owner: self, options: nil)?.first as? NCShareAdvancePermissionHeader) else { return }
+        guard let headerView = (Bundle.main.loadNibNamed("NCShareHeader", owner: self, options: nil)?.first as? NCShareHeader) else { return }
         headerView.setupUI(with: metadata)
 
         let container = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 220))
@@ -136,7 +136,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 0 {
             // check reshare permission, if restricted add note
-            let maxPermission = metadata.directory ? NCGlobal.shared.permissionMaxFolderShare : NCGlobal.shared.permissionMaxFileShare
+            let maxPermission = metadata.directory ? NCPermissions().permissionMaxFolderShare : NCPermissions().permissionMaxFileShare
             return shareConfig.resharePermission != maxPermission ? shareConfig.permissions.count + 1 : shareConfig.permissions.count
         } else if section == 1 {
             return shareConfig.advanced.count

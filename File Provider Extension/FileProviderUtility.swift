@@ -24,40 +24,24 @@
 import UIKit
 
 class fileProviderUtility: NSObject {
-
     let fileManager = FileManager()
     let utilityFileSystem = NCUtilityFileSystem()
 
     func getAccountFromItemIdentifier(_ itemIdentifier: NSFileProviderItemIdentifier) -> String? {
-
         let ocId = itemIdentifier.rawValue
         return NCManageDatabase.shared.getMetadataFromOcId(ocId)?.account
     }
 
     func getTableMetadataFromItemIdentifier(_ itemIdentifier: NSFileProviderItemIdentifier) -> tableMetadata? {
-
         let ocId = itemIdentifier.rawValue
         return NCManageDatabase.shared.getMetadataFromOcId(ocId)
     }
 
     func getItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier {
-
         return NSFileProviderItemIdentifier(metadata.ocId)
     }
 
-    func createocIdentifierOnFileSystem(metadata: tableMetadata) {
-
-        let itemIdentifier = getItemIdentifier(metadata: metadata)
-
-        if metadata.directory {
-            _ = utilityFileSystem.getDirectoryProviderStorageOcId(itemIdentifier.rawValue)
-        } else {
-            _ = utilityFileSystem.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: metadata.fileNameView)
-        }
-    }
-
     func getParentItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier? {
-
         let homeServerUrl = utilityFileSystem.getHomeServer(urlBase: metadata.urlBase, userId: metadata.userId)
         if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
             if directory.serverUrl == homeServerUrl {
@@ -70,86 +54,64 @@ class fileProviderUtility: NSObject {
                 }
             }
         }
-
         return nil
     }
 
     func getTableDirectoryFromParentItemIdentifier(_ parentItemIdentifier: NSFileProviderItemIdentifier, account: String, homeServerUrl: String) -> tableDirectory? {
-
         var predicate: NSPredicate
-
         if parentItemIdentifier == .rootContainer {
-
             predicate = NSPredicate(format: "account == %@ AND serverUrl == %@", account, homeServerUrl)
-
         } else {
-
             guard let metadata = getTableMetadataFromItemIdentifier(parentItemIdentifier) else { return nil }
             predicate = NSPredicate(format: "ocId == %@", metadata.ocId)
         }
-
         guard let directory = NCManageDatabase.shared.getTableDirectory(predicate: predicate) else { return nil }
-
         return directory
     }
 
-    // MARK: -
-
-    func copyFile(_ atPath: String, toPath: String) -> Error? {
-
-        var errorResult: Error?
-
-        if !fileManager.fileExists(atPath: atPath) { return NSError(domain: NSCocoaErrorDomain, code: NSFileNoSuchFileError, userInfo: [:]) }
+    func copyFile(_ atPath: String, toPath: String) {
+        if !fileManager.fileExists(atPath: atPath) { return }
 
         do {
             try fileManager.removeItem(atPath: toPath)
         } catch let error {
-            print("error: \(error)")
+            print("Error: \(error.localizedDescription)")
         }
         do {
             try fileManager.copyItem(atPath: atPath, toPath: toPath)
         } catch let error {
-            errorResult = error
+            print("Error: \(error.localizedDescription)")
         }
-
-        return errorResult
     }
 
-    func moveFile(_ atPath: String, toPath: String) -> Error? {
-
-        var errorResult: Error?
-
-        if atPath == toPath { return nil }
-        if !fileManager.fileExists(atPath: atPath) { return NSError(domain: NSCocoaErrorDomain, code: NSFileNoSuchFileError, userInfo: [:]) }
+    func moveFile(_ atPath: String, toPath: String) {
+        if !fileManager.fileExists(atPath: atPath) { return }
 
         do {
             try fileManager.removeItem(atPath: toPath)
         } catch let error {
-            print("error: \(error)")
+            print("Error: \(error.localizedDescription)")
         }
         do {
             try fileManager.moveItem(atPath: atPath, toPath: toPath)
         } catch let error {
-            errorResult = error
+            print("Error: \(error.localizedDescription)")
         }
-
-        return errorResult
     }
 
-    func deleteFile(_ atPath: String) -> Error? {
-
-        var errorResult: Error?
-
+    func getFileSize(from url: URL) -> Int64? {
         do {
-            try fileManager.removeItem(atPath: atPath)
-        } catch let error {
-            errorResult = error
+            let attributes = try fileManager.attributesOfItem(atPath: url.path)
+
+            if let fileSize = attributes[FileAttributeKey.size] as? Int64 {
+                return fileSize
+            } else {
+                print("Failed to retrieve file size.")
+                return nil
+            }
+        } catch {
+            print("Error: \(error.localizedDescription)")
+            return nil
         }
-
-        return errorResult
-    }
-
-    func fileExists(atPath: String) -> Bool {
-        return fileManager.fileExists(atPath: atPath)
     }
 }

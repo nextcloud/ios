@@ -28,56 +28,57 @@
 #import <OpenSSL/OpenSSL.h>
 #import <CommonCrypto/CommonDigest.h>
 #import "NCEndToEndEncryption.h"
-#import "CCUtility.h"
+
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
 @implementation NCPushNotificationEncryption
 
-+ (NCPushNotificationEncryption *)shared
-{
+//Singleton
++ (instancetype)shared {
     static dispatch_once_t once;
     static NCPushNotificationEncryption *shared;
     dispatch_once(&once, ^{
-        shared = [[self alloc] init];
+        shared = [self new];
     });
     return shared;
 }
 
-- (id)init
-{
-    self = [super init];
-    if (self) {
-       
-    }
-    return self;
-}
-
 - (BOOL)generatePushNotificationsKeyPair:(NSString *)account
 {
-    int len;
-    char *keyBytes;
-    
-    EVP_PKEY *pkey = EVP_PKEY_new();
-    BIGNUM *bigNumber = BN_new();
-    int exponent = RSA_F4;
-    RSA *rsa = RSA_new();
-    
-    BN_set_word(bigNumber, exponent);
-    RSA_generate_key_ex(rsa, 2048, bigNumber, NULL);
-    EVP_PKEY_set1_RSA(pkey, rsa);
+    EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, NULL);
+    if (!ctx) {
+        return FALSE;
+    }
+
+    // Generate an new RSA KEY
+    if (EVP_PKEY_keygen_init(ctx) <= 0) {
+        EVP_PKEY_CTX_free(ctx);
+        return FALSE;
+    }
+
+    if (EVP_PKEY_CTX_set_rsa_keygen_bits(ctx, 2048) <= 0) {
+        EVP_PKEY_CTX_free(ctx);
+        return FALSE;
+    }
+
+    EVP_PKEY *pkey = NULL;
+    if (EVP_PKEY_keygen(ctx, &pkey) <= 0) {
+        EVP_PKEY_CTX_free(ctx);
+        return FALSE;
+    }
 
     // PublicKey
     BIO *publicKeyBIO = BIO_new(BIO_s_mem());
     PEM_write_bio_PUBKEY(publicKeyBIO, pkey);
     
-    len = BIO_pending(publicKeyBIO);
-    keyBytes  = malloc(len);
-    
-    BIO_read(publicKeyBIO, keyBytes, len);
-    NSData *ncPNPublicKey = [NSData dataWithBytes:keyBytes length:len];
+    int len = BIO_pending(publicKeyBIO);
+    char *keyBytes = malloc(len);
 
-    [[[NCKeychain alloc] init] setPushNotificationPublicKeyWithAccount:account data:ncPNPublicKey];
-    NSLog(@"Push Notifications Key Pair generated: \n%@", [[NSString alloc] initWithData:ncPNPublicKey encoding:NSUTF8StringEncoding]);
-    
+    BIO_read(publicKeyBIO, keyBytes, len);
+    NSData *publicKey = [NSData dataWithBytes:keyBytes length:len];
+    [[[NCKeychain alloc] init] setPushNotificationPublicKeyWithAccount:account data:publicKey];
+    NSLog(@"Push Notifications public Key generated: \n%@", [[NSString alloc] initWithData:publicKey encoding:NSUTF8StringEncoding]);
+
     // PrivateKey
     BIO *privateKeyBIO = BIO_new(BIO_s_mem());
     PEM_write_bio_PKCS8PrivateKey(privateKeyBIO, pkey, NULL, NULL, 0, NULL, NULL);
@@ -86,13 +87,15 @@
     keyBytes = malloc(len);
     
     BIO_read(privateKeyBIO, keyBytes, len);
-    NSData *ncPNPrivateKey = [NSData dataWithBytes:keyBytes length:len];
-    [[[NCKeychain alloc] init] setPushNotificationPrivateKeyWithAccount:account data:ncPNPrivateKey];
-    
-    RSA_free(rsa);
-    BN_free(bigNumber);
+    NSData *privateKey = [NSData dataWithBytes:keyBytes length:len];
+    [[[NCKeychain alloc] init] setPushNotificationPrivateKeyWithAccount:account data:privateKey];
+    NSLog(@"Push Notifications private Key generated: \n%@", [[NSString alloc] initWithData:privateKey encoding:NSUTF8StringEncoding]);
+
     EVP_PKEY_free(pkey);
-    
+    EVP_PKEY_CTX_free(ctx);
+    BIO_free(publicKeyBIO);
+    BIO_free(privateKeyBIO);
+
     return YES;
 }
 
@@ -108,11 +111,11 @@
     BIO *bio = BIO_new(BIO_s_mem());
     BIO_write(bio, privKey, (int)strlen(privKey));
     
-    EVP_PKEY* pkey = 0;
+    EVP_PKEY *pkey = 0;
     PEM_read_bio_PrivateKey(bio, &pkey, 0, 0);
-    
-    RSA* rsa = EVP_PKEY_get1_RSA(pkey);
-    
+
+    RSA *rsa = EVP_PKEY_get1_RSA(pkey);
+
     // Decrypt the message
     unsigned char *decrypted = (unsigned char *) malloc(4096);
     
@@ -132,6 +135,18 @@
     free(rsa);
     
     return decryptString;
+}
+
+- (NSString *)stringWithDeviceToken:(NSData *)deviceToken
+{
+    const char *data = [deviceToken bytes];
+    NSMutableString *token = [NSMutableString string];
+
+    for (NSUInteger i = 0; i < [deviceToken length]; i++) {
+        [token appendFormat:@"%02.2hhX", data[i]];
+    }
+
+    return [token copy];
 }
 
 @end

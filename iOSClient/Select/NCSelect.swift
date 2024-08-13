@@ -29,7 +29,7 @@ import NextcloudKit
     @objc func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool)
 }
 
-class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresentationControllerDelegate, NCListCellDelegate, NCGridCellDelegate, NCSectionHeaderMenuDelegate {
+class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresentationControllerDelegate, NCListCellDelegate, NCSectionFirstHeaderDelegate {
 
     @IBOutlet private var collectionView: UICollectionView!
     @IBOutlet private var buttonCancel: UIBarButtonItem!
@@ -40,7 +40,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
 
-    @objc enum selectType: Int {
+    enum selectType: Int {
         case select
         case selectCreateFolder
         case copyMove
@@ -48,14 +48,14 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     }
 
     // ------ external settings ------------------------------------
-    @objc weak var delegate: NCSelectDelegate?
-    @objc var typeOfCommandView: selectType = .select
+    weak var delegate: NCSelectDelegate?
+    var typeOfCommandView: selectType = .select
 
-    @objc var includeDirectoryE2EEncryption = false
-    @objc var includeImages = false
-    @objc var enableSelectFile = false
-    @objc var type = ""
-    @objc var items: [tableMetadata] = []
+    var includeDirectoryE2EEncryption = false
+    var includeImages = false
+    var enableSelectFile = false
+    var type = ""
+    var items: [tableMetadata] = []
 
     var titleCurrentFolder = NCBrandOptions.shared.brand
     var serverUrl = ""
@@ -67,7 +67,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     private var overwrite = true
     private var dataSource = NCDataSource()
     internal var richWorkspaceText: String?
-    internal var headerMenu: NCSectionHeaderMenu?
+    internal var headerMenu: NCSectionFirstHeader?
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
     private var backgroundImageView = UIImageView()
@@ -93,8 +93,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         collectionView.collectionViewLayout = NCListLayout()
 
         // Header
-        collectionView.register(UINib(nibName: "NCSectionHeaderEmptyData", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeaderEmptyData")
-        collectionView.register(UINib(nibName: "NCSectionHeaderMenu", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionHeaderMenu")
+        collectionView.register(UINib(nibName: "NCSectionFirstHeaderEmptyData", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionFirstHeaderEmptyData")
+        collectionView.register(UINib(nibName: "NCSectionFirstHeader", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "sectionFirstHeader")
 
         // Footer
         collectionView.register(UINib(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
@@ -209,12 +209,27 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     }
 
     func createFolderButtonPressed(_ sender: UIButton) {
-        let alertController = UIAlertController.createFolder(serverUrl: serverUrl, urlBase: activeAccount)
+        let alertController = UIAlertController.createFolder(serverUrl: serverUrl, userBaseUrl: activeAccount)
         self.present(alertController, animated: true, completion: nil)
     }
 
     @IBAction func valueChangedSwitchOverwrite(_ sender: UISwitch) {
         overwrite = sender.isOn
+    }
+
+    func tapShareListItem(with objectId: String, indexPath: IndexPath, sender: Any) {
+    }
+
+    func tapMoreListItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
+    }
+
+    func longPressListItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
+    }
+
+    func tapButtonTransfer(_ sender: Any) {
+    }
+
+    func tapRichWorkspace(_ sender: Any) {
     }
 
     // MARK: - Push metadata
@@ -297,14 +312,14 @@ extension NCSelect: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell,
               let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return UICollectionViewCell() }
         var isShare = false
         var isMounted = false
+        let permissions = NCPermissions()
 
-        isShare = metadata.permissions.contains(NCGlobal.shared.permissionShared) && !metadataFolder.permissions.contains(NCGlobal.shared.permissionShared)
-        isMounted = metadata.permissions.contains(NCGlobal.shared.permissionMounted) && !metadataFolder.permissions.contains(NCGlobal.shared.permissionMounted)
+        isShare = metadata.permissions.contains(permissions.permissionShared) && !metadataFolder.permissions.contains(permissions.permissionShared)
+        isMounted = metadata.permissions.contains(permissions.permissionMounted) && !metadataFolder.permissions.contains(permissions.permissionMounted)
 
         cell.listCellDelegate = self
 
@@ -369,7 +384,7 @@ extension NCSelect: UICollectionViewDataSource {
         cell.backgroundView = nil
         cell.hideButtonMore(true)
         cell.hideButtonShare(true)
-        cell.selectMode(false)
+        cell.selected(false, isEditMode: false)
 
         // Live Photo
         if metadata.isLivePhoto {
@@ -395,7 +410,7 @@ extension NCSelect: UICollectionViewDataSource {
 
             if dataSource.getMetadataSourceForAllSections().isEmpty {
 
-                guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderEmptyData", for: indexPath) as? NCSectionHeaderEmptyData else { return NCSectionHeaderEmptyData() }
+                guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeaderEmptyData", for: indexPath) as? NCSectionFirstHeaderEmptyData else { return NCSectionFirstHeaderEmptyData() }
                 if self.dataSourceTask?.state == .running {
                     header.emptyImage.image = utility.loadImage(named: "wifi", colors: [NCBrandColor.shared.brandElement])
                     header.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
@@ -413,7 +428,7 @@ extension NCSelect: UICollectionViewDataSource {
 
             } else {
 
-                guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderMenu", for: indexPath) as? NCSectionHeaderMenu else { return NCSectionHeaderMenu() }
+                guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeader", for: indexPath) as? NCSectionFirstHeader else { return NCSectionFirstHeader() }
                 let (_, heightHeaderRichWorkspace, _) = getHeaderHeight(section: indexPath.section)
 
                 self.headerMenu = header
@@ -515,14 +530,8 @@ extension NCSelect {
         }
 
         let metadatas = NCManageDatabase.shared.getMetadatas(predicate: predicate!)
-        self.dataSource = NCDataSource(metadatas: metadatas,
-                                       account: activeAccount.account,
-                                       sort: "fileName",
-                                       ascending: true,
-                                       directoryOnTop: true,
-                                       favoriteOnTop: true,
-                                       groupByField: "none")
-
+        self.dataSource = NCDataSource(metadatas: metadatas, account: activeAccount.account, layoutForView: nil)
+                                     
         if withLoadFolder {
             loadFolder()
         }
@@ -647,13 +656,9 @@ struct NCSelectViewControllerRepresentable: UIViewControllerRepresentable {
 }
 
 struct SelectView: UIViewControllerRepresentable {
-
-    typealias UIViewControllerType = UINavigationController
-
     @Binding var serverUrl: String
 
     class Coordinator: NSObject, NCSelectDelegate {
-
         var parent: SelectView
 
         init(_ parent: SelectView) {
@@ -668,7 +673,6 @@ struct SelectView: UIViewControllerRepresentable {
     }
 
     func makeUIViewController(context: Context) -> UINavigationController {
-
         let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
         let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController
         let viewController = navigationController?.topViewController as? NCSelect

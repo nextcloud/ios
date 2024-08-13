@@ -58,11 +58,12 @@ class NCFiles: NCCollectionViewCommon {
                 self.selectOcId.removeAll()
 
                 self.layoutForView = NCManageDatabase.shared.getLayoutForView(account: self.appDelegate.account, key: self.layoutKey, serverUrl: self.serverUrl)
-                self.gridLayout.itemForLine = CGFloat(self.layoutForView?.itemForLine ?? 3)
                 if self.layoutForView?.layout == NCGlobal.shared.layoutList {
                     self.collectionView?.collectionViewLayout = self.listLayout
-                } else {
+                } else if self.layoutForView?.layout == NCGlobal.shared.layoutGrid {
                     self.collectionView?.collectionViewLayout = self.gridLayout
+                } else if self.layoutForView?.layout == NCGlobal.shared.layoutPhotoSquare || self.layoutForView?.layout == NCGlobal.shared.layoutPhotoRatio {
+                    self.collectionView?.collectionViewLayout = self.mediaLayout
                 }
 
                 self.titleCurrentFolder = self.getNavigationTitle()
@@ -111,17 +112,7 @@ class NCFiles: NCCollectionViewCommon {
         }
 
         self.richWorkspaceText = directory?.richWorkspace
-        self.dataSource = NCDataSource(
-            metadatas: metadatas,
-            account: self.appDelegate.account,
-            directory: directory,
-            sort: self.layoutForView?.sort,
-            ascending: self.layoutForView?.ascending,
-            directoryOnTop: self.layoutForView?.directoryOnTop,
-            favoriteOnTop: true,
-            groupByField: self.groupByField,
-            providers: self.providers,
-            searchResults: self.searchResults)
+        self.dataSource = NCDataSource(metadatas: metadatas, account: self.appDelegate.account, layoutForView: layoutForView, providers: self.providers, searchResults: self.searchResults)
     }
 
     override func reloadDataSource(withQueryDB: Bool = true) {
@@ -161,21 +152,22 @@ class NCFiles: NCCollectionViewCommon {
         super.reloadDataSourceNetwork()
 
         networkReadFolder { tableDirectory, metadatas, metadatasDifferentCount, metadatasModified, error in
-            if error == .success {
-                for metadata in metadatas ?? [] where !metadata.directory && downloadMetadata(metadata) {
-                    if NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
-                        NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile))
+            DispatchQueue.global(qos: .userInteractive).async {
+                if error == .success {
+                    for metadata in metadatas ?? [] where !metadata.directory && downloadMetadata(metadata) {
+                        if NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
+                            NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile))
+                        }
                     }
-                }
-                self.richWorkspaceText = tableDirectory?.richWorkspace
-
-                if metadatasDifferentCount != 0 || metadatasModified != 0 {
-                    self.reloadDataSource()
+                    self.richWorkspaceText = tableDirectory?.richWorkspace
+                    if metadatasDifferentCount != 0 || metadatasModified != 0 {
+                        self.reloadDataSource()
+                    } else {
+                        self.reloadDataSource(withQueryDB: withQueryDB)
+                    }
                 } else {
                     self.reloadDataSource(withQueryDB: withQueryDB)
                 }
-            } else {
-                self.reloadDataSource(withQueryDB: withQueryDB)
             }
         }
     }
@@ -183,7 +175,7 @@ class NCFiles: NCCollectionViewCommon {
     private func networkReadFolder(completion: @escaping(_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ metadatasDifferentCount: Int, _ metadatasModified: Int, _ error: NKError) -> Void) {
         var tableDirectory: tableDirectory?
 
-        NCNetworking.shared.readFile(serverUrlFileName: serverUrl) { task in
+        NCNetworking.shared.readFile(serverUrlFileName: serverUrl, account: appDelegate.account) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()
         } completion: { account, metadata, error in
@@ -212,7 +204,7 @@ class NCFiles: NCCollectionViewCommon {
                        NCKeychain().isEndToEndEnabled(account: account),
                        !NCNetworkingE2EE().isInUpload(account: account, serverUrl: self.serverUrl) {
                         let lock = NCManageDatabase.shared.getE2ETokenLock(account: account, serverUrl: self.serverUrl)
-                        NCNetworkingE2EE().getMetadata(fileId: metadataFolder.ocId, e2eToken: lock?.e2eToken) { account, version, e2eMetadata, signature, _, error in
+                        NCNetworkingE2EE().getMetadata(fileId: metadataFolder.ocId, e2eToken: lock?.e2eToken, account: account) { account, version, e2eMetadata, signature, _, error in
                             if account == self.appDelegate.account, error == .success, let e2eMetadata = e2eMetadata {
                                 let error = NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: signature, serverUrl: self.serverUrl, account: account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
                                 if error == .success {
@@ -288,6 +280,19 @@ class NCFiles: NCCollectionViewCommon {
                     self.collectionView(self.collectionView, didSelectItemAt: indexPath)
                 }
             }
+        }
+    }
+
+    // MARK: - NCAccountSettingsModelDelegate
+
+    override func accountSettingsDidDismiss(tableAccount: tableAccount?) {
+        if NCManageDatabase.shared.getAllAccount().isEmpty {
+            appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
+        } else if let account = tableAccount?.account, account != appDelegate.account {
+            appDelegate.changeAccount(account, userProfile: nil) { }
+        } else if isRoot {
+            titleCurrentFolder = getNavigationTitle()
+            navigationItem.title = titleCurrentFolder
         }
     }
 }

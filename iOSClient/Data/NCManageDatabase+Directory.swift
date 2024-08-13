@@ -26,7 +26,6 @@ import RealmSwift
 import NextcloudKit
 
 class tableDirectory: Object {
-
     @objc dynamic var account = ""
     @objc dynamic var colorFolder: String?
     @objc dynamic var e2eEncrypted: Bool = false
@@ -46,7 +45,6 @@ class tableDirectory: Object {
 }
 
 extension NCManageDatabase {
-
     func addDirectory(e2eEncrypted: Bool, favorite: Bool, ocId: String, fileId: String, etag: String? = nil, permissions: String? = nil, richWorkspace: String? = nil, serverUrl: String, account: String) {
         do {
             let realm = try Realm()
@@ -77,14 +75,23 @@ extension NCManageDatabase {
         }
     }
 
-    func deleteDirectoryAndSubDirectory(serverUrl: String, account: String) {
+    func addDirectory(directory: tableDirectory, metadata: tableMetadata) {
+        directory.account = metadata.account
+        directory.e2eEncrypted = metadata.e2eEncrypted
+        directory.favorite = metadata.favorite
+        directory.fileId = metadata.fileId
+        directory.ocId = metadata.ocId
+        directory.permissions = metadata.permissions
+        directory.richWorkspace = metadata.richWorkspace
+    }
 
+    func deleteDirectoryAndSubDirectory(serverUrl: String, account: String) {
 #if !EXTENSION
         DispatchQueue.main.async {
             let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
             for windowScene in windowScenes {
-                if let mainTabBarController = windowScene.keyWindow?.rootViewController as? NCMainTabBarController {
-                    mainTabBarController.filesServerUrl.removeValue(forKey: serverUrl)
+                if let controller = windowScene.keyWindow?.rootViewController as? NCMainTabBarController {
+                    controller.navigationCollectionViewCommon.remove(where: { $0.serverUrl == serverUrl})
                 }
             }
         }
@@ -174,7 +181,11 @@ extension NCManageDatabase {
         do {
             let realm = try Realm()
             realm.refresh()
-            return realm.objects(tableDirectory.self).filter("ocId == %@", ocId).first
+            if let result = realm.objects(tableDirectory.self).filter("ocId == %@", ocId).first {
+                return tableDirectory(value: result)
+            } else {
+                return nil
+            }
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
@@ -194,7 +205,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return nil
     }
 
@@ -210,12 +220,19 @@ extension NCManageDatabase {
         }
     }
 
-    func setDirectory(serverUrl: String, offline: Bool, account: String) {
+    func setDirectory(serverUrl: String, offline: Bool, metadata: tableMetadata) {
         do {
             let realm = try Realm()
             try realm.write {
-                let result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first
-                result?.offline = offline
+                if let result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", metadata.account, serverUrl).first {
+                    result.offline = offline
+                } else {
+                    let directory = tableDirectory()
+                    directory.serverUrl = serverUrl
+                    directory.offline = offline
+                    addDirectory(directory: directory, metadata: metadata)
+                    realm.add(directory, update: .all)
+                }
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
@@ -255,25 +272,22 @@ extension NCManageDatabase {
         }
     }
 
-    @discardableResult
-    func setDirectory(serverUrl: String, colorFolder: String?, account: String) -> tableDirectory? {
-
-        var result: tableDirectory?
-
+    func setDirectory(serverUrl: String, colorFolder: String?, metadata: tableMetadata) {
         do {
             let realm = try Realm()
             try realm.write {
-                result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first
-                result?.colorFolder = colorFolder
+                if let result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", metadata.account, serverUrl).first {
+                    result.colorFolder = colorFolder
+                } else {
+                    let directory = tableDirectory()
+                    directory.serverUrl = serverUrl
+                    directory.colorFolder = colorFolder
+                    addDirectory(directory: directory, metadata: metadata)
+                    realm.add(directory)
+                }
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
-        }
-
-        if let result = result {
-            return tableDirectory.init(value: result)
-        } else {
-            return nil
         }
     }
 }

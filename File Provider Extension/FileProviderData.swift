@@ -40,36 +40,38 @@ class fileProviderData: NSObject {
     var accountUrlBase = ""
     var homeServerUrl = ""
 
-    // Max item for page
-    let itemForPage = 100
-
-    // Anchor
-    var currentAnchor: UInt64 = 0
-
-    // Rank favorite
     var listFavoriteIdentifierRank: [String: NSNumber] = [:]
 
-    // Item for signalEnumerator
     var fileProviderSignalDeleteContainerItemIdentifier: [NSFileProviderItemIdentifier: NSFileProviderItemIdentifier] = [:]
     var fileProviderSignalUpdateContainerItem: [NSFileProviderItemIdentifier: FileProviderItem] = [:]
     var fileProviderSignalDeleteWorkingSetItemIdentifier: [NSFileProviderItemIdentifier: NSFileProviderItemIdentifier] = [:]
     var fileProviderSignalUpdateWorkingSetItem: [NSFileProviderItemIdentifier: FileProviderItem] = [:]
 
-    // Error
     enum FileProviderError: Error {
         case downloadError
         case uploadError
     }
 
+    enum TypeSignal: String {
+        case delete
+        case update
+        case workingSet
+    }
+
+    struct UploadMetadata {
+        var id: String
+        var metadata: tableMetadata
+        var task: URLSessionUploadTask?
+    }
+
+    var uploadMetadata: [UploadMetadata] = []
+
     // MARK: - 
 
     func setupAccount(domain: NSFileProviderDomain?, providerExtension: NSFileProviderExtension) -> tableAccount? {
-
         self.domain = domain
-        if domain != nil {
-            if let fileProviderManager = NSFileProviderManager(for: domain!) {
-                self.fileProviderManager = fileProviderManager
-            }
+        if let domain, let fileProviderManager = NSFileProviderManager(for: domain) {
+            self.fileProviderManager = fileProviderManager
         }
 
         // LOG
@@ -81,9 +83,7 @@ class fileProviderData: NSObject {
 
         // NO DOMAIN -> Set default account
         if domain == nil {
-
             guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else { return nil }
-
             account = activeAccount.account
             user = activeAccount.user
             userId = activeAccount.userId
@@ -91,8 +91,8 @@ class fileProviderData: NSObject {
             homeServerUrl = utilityFileSystem.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId)
 
             NCManageDatabase.shared.setCapabilities(account: account)
-
-            NextcloudKit.shared.setup(account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId, password: NCKeychain().getPassword(account: activeAccount.account), urlBase: activeAccount.urlBase, userAgent: userAgent, nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor, delegate: NCNetworking.shared)
+            NextcloudKit.shared.setup(account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId, password: NCKeychain().getPassword(account: activeAccount.account), urlBase: activeAccount.urlBase, userAgent: userAgent, nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor, groupIdentifier: NCBrandOptions.shared.capabilitiesGroup, delegate: NCNetworking.shared)
+            NCNetworking.shared.delegate = providerExtension as? NCNetworkingDelegate
 
             return tableAccount.init(value: activeAccount)
         }
@@ -106,7 +106,6 @@ class fileProviderData: NSObject {
             guard let host = url.host else { continue }
             let accountDomain = activeAccount.userId + " (" + host + ")"
             if accountDomain == domain!.identifier.rawValue {
-
                 account = activeAccount.account
                 user = activeAccount.user
                 userId = activeAccount.userId
@@ -115,84 +114,51 @@ class fileProviderData: NSObject {
 
                 NCManageDatabase.shared.setCapabilities(account: account)
 
-                NextcloudKit.shared.setup(account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId, password: NCKeychain().getPassword(account: activeAccount.account), urlBase: activeAccount.urlBase, userAgent: userAgent, nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor, delegate: NCNetworking.shared)
+                NextcloudKit.shared.setup(account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId, password: NCKeychain().getPassword(account: activeAccount.account), urlBase: activeAccount.urlBase, userAgent: userAgent, nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor, groupIdentifier: NCBrandOptions.shared.capabilitiesGroup, delegate: NCNetworking.shared)
+                NCNetworking.shared.delegate = providerExtension as? NCNetworkingDelegate
 
                 return tableAccount.init(value: activeAccount)
             }
         }
-
         return nil
     }
 
     // MARK: -
 
     @discardableResult
-    func signalEnumerator(ocId: String, delete: Bool = false, update: Bool = false) -> FileProviderItem? {
-
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return nil }
-
-        guard let parentItemIdentifier = fileProviderUtility().getParentItemIdentifier(metadata: metadata) else { return nil }
-
+    func signalEnumerator(ocId: String, type: TypeSignal) -> FileProviderItem? {
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId),
+              let parentItemIdentifier = fileProviderUtility().getParentItemIdentifier(metadata: metadata) else { return nil }
         let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
 
-        if delete {
+        if type == .delete {
             fileProviderData.shared.fileProviderSignalDeleteContainerItemIdentifier[item.itemIdentifier] = item.itemIdentifier
             fileProviderData.shared.fileProviderSignalDeleteWorkingSetItemIdentifier[item.itemIdentifier] = item.itemIdentifier
         }
-
-        if update {
+        if type == .update {
             fileProviderData.shared.fileProviderSignalUpdateContainerItem[item.itemIdentifier] = item
             fileProviderData.shared.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
         }
-
-        if !update && !delete {
+        if type == .workingSet {
             fileProviderData.shared.fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
         }
-
-        if update || delete {
-            currentAnchor += 1
+        if type == .delete || type == .update {
             fileProviderManager.signalEnumerator(for: parentItemIdentifier) { _ in }
         }
-
         fileProviderManager.signalEnumerator(for: .workingSet) { _ in }
-
         return item
     }
 
-    /*
-     func updateFavoriteForWorkingSet() {
-         
-         var updateWorkingSet = false
-         let oldListFavoriteIdentifierRank = listFavoriteIdentifierRank
-         listFavoriteIdentifierRank = NCManageDatabase.shared.getTableMetadatasDirectoryFavoriteIdentifierRank(account: account)
-         
-         // (ADD)
-         for (identifier, _) in listFavoriteIdentifierRank {
-             
-             guard let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "ocId == %@", identifier)) else { continue }
-             guard let parentItemIdentifier = fileProviderUtility.sharedInstance.getParentItemIdentifier(metadata: metadata, homeServerUrl: homeServerUrl) else { continue }
-             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
-                 
-             fileProviderSignalUpdateWorkingSetItem[item.itemIdentifier] = item
-             updateWorkingSet = true
-         }
-         
-         // (REMOVE)
-         for (identifier, _) in oldListFavoriteIdentifierRank {
-             
-             if !listFavoriteIdentifierRank.keys.contains(identifier) {
-                 
-                 guard let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "ocId == %@", identifier)) else { continue }
-                 let itemIdentifier = fileProviderUtility.sharedInstance.getItemIdentifier(metadata: metadata)
-                 
-                 fileProviderSignalDeleteWorkingSetItemIdentifier[itemIdentifier] = itemIdentifier
-                 updateWorkingSet = true
-             }
-         }
-         
-         if updateWorkingSet {
-             signalEnumerator(for: [.workingSet])
-         }
-     }
-     */
+    // MARK: -
+
+    func appendUploadMetadata(id: String, metadata: tableMetadata, task: URLSessionUploadTask?) {
+        if let index = uploadMetadata.firstIndex(where: { $0.id == id }) {
+            uploadMetadata.remove(at: index)
+        }
+        uploadMetadata.append(UploadMetadata(id: id, metadata: metadata, task: task))
+    }
+
+    func getUploadMetadata(id: String) -> UploadMetadata? {
+        return uploadMetadata.filter({ $0.id == id }).first
+    }
 }

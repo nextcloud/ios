@@ -31,16 +31,13 @@ import MarqueeLabel
 import ContactsUI
 
 class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent {
-
     @IBOutlet weak var viewContainerConstraint: NSLayoutConstraint!
     @IBOutlet weak var sharedWithYouByView: UIView!
     @IBOutlet weak var sharedWithYouByImage: UIImageView!
     @IBOutlet weak var sharedWithYouByLabel: UILabel!
-    @IBOutlet weak var sharedWithYouByNoteImage: UIImageView!
-    @IBOutlet weak var sharedWithYouByNote: MarqueeLabel!
     @IBOutlet weak var searchFieldTopConstraint: NSLayoutConstraint!
-    @IBOutlet weak var searchField: UITextField!
-    var textField: UITextField? { searchField }
+    @IBOutlet weak var searchField: UISearchBar!
+    var textField: UIView? { searchField }
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var btnContact: UIButton!
@@ -56,7 +53,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
 
     var canReshare: Bool {
         guard let metadata = metadata else { return true }
-        return ((metadata.sharePermissionsCollaborationServices & NCGlobal.shared.permissionShareShare) != 0)
+        return ((metadata.sharePermissionsCollaborationServices & NCPermissions().permissionShareShare) != 0)
     }
 
     var shares: (firstShareLink: tableShare?, share: [tableShare]?) = (nil, nil)
@@ -72,7 +69,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         view.backgroundColor = .systemBackground
 
         viewContainerConstraint.constant = height
-        searchFieldTopConstraint.constant = 10
+        searchFieldTopConstraint.constant = 0
 
         searchField.placeholder = NSLocalizedString("_shareLinksearch_placeholder_", comment: "")
         searchField.autocorrectionType = .no
@@ -81,6 +78,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         tableView.delegate = self
         tableView.allowsSelection = false
         tableView.backgroundColor = .systemBackground
+        tableView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 10, right: 0)
 
         tableView.register(UINib(nibName: "NCShareLinkCell", bundle: nil), forCellReuseIdentifier: "cellLink")
         tableView.register(UINib(nibName: "NCShareUserCell", bundle: nil), forCellReuseIdentifier: "cellUser")
@@ -93,9 +91,9 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
             let direcrory = NCManageDatabase.shared.getTableDirectory(account: metadata.account, serverUrl: metadata.serverUrl)
             if NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV12 ||
                 (NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 && direcrory?.e2eEncrypted ?? false) {
-                // searchField.isEnabled = false
                 searchFieldTopConstraint.constant = -50
-                searchField.isHidden = true
+                searchField.alpha = 0
+                btnContact.alpha = 0
             }
         } else {
             checkSharedWithYou()
@@ -108,6 +106,9 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
             let isVisible = (self.navigationController?.topViewController as? NCSharePaging)?.page == .sharing
             networking?.readShare(showLoadingIndicator: isVisible)
         }
+
+        searchField.searchTextField.font = .systemFont(ofSize: 14)
+        searchField.delegate = self
     }
 
     func makeNewLinkShare() {
@@ -128,11 +129,12 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         guard let appDelegate = self.appDelegate, let metadata = metadata, !metadata.ownerId.isEmpty, metadata.ownerId != appDelegate.userId else { return }
 
         if !canReshare {
-            searchField.isEnabled = false
+            searchField.isUserInteractionEnabled = false
+            searchField.alpha = 0.5
             searchField.placeholder = NSLocalizedString("_share_reshare_disabled_", comment: "")
         }
 
-        searchFieldTopConstraint.constant = 65
+        searchFieldTopConstraint.constant = 45
         sharedWithYouByView.isHidden = false
         sharedWithYouByLabel.text = NSLocalizedString("_shared_with_you_by_", comment: "") + " " + metadata.ownerDisplayName
         sharedWithYouByImage.image = utility.loadUserImage(
@@ -146,19 +148,6 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         let shareLabelAction = UITapGestureRecognizer(target: self, action: #selector(openShareProfile))
         sharedWithYouByLabel.addGestureRecognizer(shareLabelAction)
 
-        if !metadata.note.isEmpty {
-            searchFieldTopConstraint.constant = 95
-            sharedWithYouByNoteImage.isHidden = false
-            sharedWithYouByNoteImage.image = utility.loadImage(named: "note.text", colors: [NCBrandColor.shared.iconImageColor])
-            sharedWithYouByNote.isHidden = false
-            sharedWithYouByNote.text = metadata.note
-            sharedWithYouByNote.textColor = NCBrandColor.shared.textColor
-            sharedWithYouByNote.trailingBuffer = sharedWithYouByNote.frame.width
-        } else {
-            sharedWithYouByNoteImage.isHidden = true
-            sharedWithYouByNote.isHidden = true
-        }
-
         let fileName = appDelegate.userBaseUrl + "-" + metadata.ownerId + ".png"
 
         if NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) == nil {
@@ -170,7 +159,8 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
                 fileNameLocalPath: fileNameLocalPath,
                 sizeImage: NCGlobal.shared.avatarSize,
                 avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
-                etag: etag) { _, imageAvatar, _, etag, error in
+                etag: etag,
+                account: metadata.account) { _, imageAvatar, _, etag, error in
                     if error == .success, let etag = etag, let imageAvatar = imageAvatar {
                         NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
                         self.sharedWithYouByImage.image = imageAvatar
@@ -253,14 +243,18 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         dropDown = DropDown()
         let appearance = DropDown.appearance()
 
+        // Setting up the blur effect
+        let blurEffect = UIBlurEffect(style: .light) // You can choose .dark, .extraLight, or .light
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        blurEffectView.frame = CGRect(x: 0, y: 0, width: 500, height: 20)
+
         appearance.backgroundColor = .systemBackground
         appearance.cornerRadius = 10
-        appearance.shadowColor = UIColor(white: 0.5, alpha: 1)
-        appearance.shadowOpacity = 0.9
-        appearance.shadowRadius = 25
+        appearance.shadowColor = .black
+        appearance.shadowOpacity = 0.2
+        appearance.shadowRadius = 30
         appearance.animationduration = 0.25
         appearance.textColor = .darkGray
-        appearance.setupMaskedCorners([.layerMaxXMaxYCorner, .layerMinXMaxYCorner])
 
         for sharee in sharees {
             var label = sharee.label
@@ -271,15 +265,15 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         }
 
         dropDown.anchorView = searchField
-        dropDown.bottomOffset = CGPoint(x: 0, y: searchField.bounds.height)
-        dropDown.width = searchField.bounds.width
+        dropDown.bottomOffset = CGPoint(x: 10, y: searchField.bounds.height)
+        dropDown.width = searchField.bounds.width - 20
         dropDown.direction = .bottom
 
         dropDown.cellNib = UINib(nibName: "NCSearchUserDropDownCell", bundle: nil)
         dropDown.customCellConfiguration = { (index: Index, _, cell: DropDownCell) -> Void in
             guard let cell = cell as? NCSearchUserDropDownCell else { return }
             let sharee = sharees[index]
-            cell.setupCell(sharee: sharee, baseUrl: appDelegate)
+            cell.setupCell(sharee: sharee, userBaseUrl: appDelegate)
         }
 
         dropDown.selectionAction = { index, _ in
@@ -308,9 +302,9 @@ extension NCShare: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if indexPath.section == 0, indexPath.row == 0 {
             // internal cell has description
-            return 90
+            return 40
         }
-        return 70
+        return 60
     }
 }
 
@@ -345,7 +339,7 @@ extension NCShare: UITableViewDataSource {
             if metadata.e2eEncrypted && NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV12 {
                 cell.tableShare = shares.firstShareLink
             } else {
-                if indexPath.row == 0 {
+                if indexPath.row == 1 {
                     cell.isInternalLink = true
                 } else if shares.firstShareLink?.isInvalidated != true {
                     cell.tableShare = shares.firstShareLink
@@ -390,7 +384,7 @@ extension NCShare: CNContactPickerDelegate {
         if  contact.emailAddresses.count > 1 {
             showEmailList(arrEmail: contact.emailAddresses.map({$0.value as String}))
         } else if let email = contact.emailAddresses.first?.value as? String {
-            textField?.text = email
+            searchField?.text = email
             networking?.getSharees(searchString: email)
         }
     }
@@ -405,7 +399,7 @@ extension NCShare: CNContactPickerDelegate {
                     selected: false,
                     on: false,
                     action: { _ in
-                        self.textField?.text = email
+                        self.searchField?.text = email
                         self.networking?.getSharees(searchString: email)
                     }
                 )
@@ -414,5 +408,30 @@ extension NCShare: CNContactPickerDelegate {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.presentMenu(with: actions)
         }
+    }
+}
+
+extension NCShare: UISearchBarDelegate {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(searchSharees), object: nil)
+
+        if searchText.isEmpty {
+            dropDown.hide()
+        } else {
+            perform(#selector(searchSharees), with: nil, afterDelay: 0.5)
+        }
+    }
+
+    @objc private func searchSharees() {
+        // https://stackoverflow.com/questions/25471114/how-to-validate-an-e-mail-address-in-swift
+        func isValidEmail(_ email: String) -> Bool {
+
+            let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+            let emailPred = NSPredicate(format: "SELF MATCHES %@", emailRegEx)
+            return emailPred.evaluate(with: email)
+        }
+        guard let searchString = searchField.text, !searchString.isEmpty else { return }
+        if searchString.contains("@"), !isValidEmail(searchString) { return }
+        networking?.getSharees(searchString: searchString)
     }
 }

@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import UIKit
 import KeychainAccess
 
 @objc class NCKeychain: NSObject {
@@ -56,7 +57,7 @@ import KeychainAccess
     @objc var passcode: String? {
         get {
             migrate(key: "passcodeBlock")
-            if let value = try? keychain.get("passcodeBlock") {
+            if let value = try? keychain.get("passcodeBlock"), !value.isEmpty {
                 return value
             }
             return nil
@@ -66,7 +67,7 @@ import KeychainAccess
         }
     }
 
-    @objc var resetAppCounterFail: Bool {
+    var resetAppCounterFail: Bool {
         get {
             if let value = try? keychain.get("resetAppCounterFail"), let result = Bool(value) {
                 return result
@@ -102,7 +103,7 @@ import KeychainAccess
         }
     }
 
-    @objc var requestPasscodeAtStart: Bool {
+    var requestPasscodeAtStart: Bool {
         get {
             let keychainOLD = Keychain(service: "Crypto Cloud")
             if let value = keychainOLD["notPasscodeAtStart"], !value.isEmpty {
@@ -125,7 +126,7 @@ import KeychainAccess
         }
     }
 
-    @objc var touchFaceID: Bool {
+    var touchFaceID: Bool {
         get {
             migrate(key: "enableTouchFaceID")
             if let value = try? keychain.get("enableTouchFaceID"), let result = Bool(value) {
@@ -138,11 +139,11 @@ import KeychainAccess
         }
     }
 
-    @objc var presentPasscode: Bool {
+    var presentPasscode: Bool {
         return passcode != nil && requestPasscodeAtStart
     }
 
-    @objc var incrementalNumber: String {
+    var incrementalNumber: String {
         migrate(key: "incrementalnumber")
         var incrementalString = String(format: "%04ld", 0)
         if let value = try? keychain.get("incrementalnumber"), var result = Int(value) {
@@ -153,7 +154,7 @@ import KeychainAccess
         return incrementalString
     }
 
-    @objc var showHiddenFiles: Bool {
+    var showHiddenFiles: Bool {
         get {
             migrate(key: "showHiddenFiles")
             if let value = try? keychain.get("showHiddenFiles"), let result = Bool(value) {
@@ -166,7 +167,7 @@ import KeychainAccess
         }
     }
 
-    @objc var formatCompatibility: Bool {
+    var formatCompatibility: Bool {
         get {
             migrate(key: "formatCompatibility")
             if let value = try? keychain.get("formatCompatibility"), let result = Bool(value) {
@@ -179,7 +180,7 @@ import KeychainAccess
         }
     }
 
-    @objc var disableFilesApp: Bool {
+    var disableFilesApp: Bool {
         get {
             migrate(key: "disablefilesapp")
             if let value = try? keychain.get("disablefilesapp"), let result = Bool(value) {
@@ -192,7 +193,7 @@ import KeychainAccess
         }
     }
 
-    @objc var livePhoto: Bool {
+    var livePhoto: Bool {
         get {
             migrate(key: "livePhoto")
             if let value = try? keychain.get("livePhoto"), let result = Bool(value) {
@@ -205,7 +206,7 @@ import KeychainAccess
         }
     }
 
-    @objc var disableCrashservice: Bool {
+    var disableCrashservice: Bool {
         get {
             migrate(key: "crashservice")
             if let value = try? keychain.get("crashservice"), let result = Bool(value) {
@@ -218,7 +219,7 @@ import KeychainAccess
         }
     }
 
-    @objc var logLevel: Int {
+    var logLevel: Int {
         get {
             migrate(key: "logLevel")
             if let value = try? keychain.get("logLevel"), let result = Int(value) {
@@ -231,7 +232,7 @@ import KeychainAccess
         }
     }
 
-    @objc var accountRequest: Bool {
+    var accountRequest: Bool {
         get {
             migrate(key: "accountRequest")
             if let value = try? keychain.get("accountRequest"), let result = Bool(value) {
@@ -244,7 +245,7 @@ import KeychainAccess
         }
     }
 
-    @objc var removePhotoCameraRoll: Bool {
+    var removePhotoCameraRoll: Bool {
         get {
             migrate(key: "removePhotoCameraRoll")
             if let value = try? keychain.get("removePhotoCameraRoll"), let result = Bool(value) {
@@ -257,7 +258,7 @@ import KeychainAccess
         }
     }
 
-    @objc var privacyScreenEnabled: Bool {
+    var privacyScreenEnabled: Bool {
         get {
             migrate(key: "privacyScreen")
             if let value = try? keychain.get("privacyScreen"), let result = Bool(value) {
@@ -270,7 +271,7 @@ import KeychainAccess
         }
     }
 
-    @objc var cleanUpDay: Int {
+    var cleanUpDay: Int {
         get {
             migrate(key: "cleanUpDay")
             if let value = try? keychain.get("cleanUpDay"), let result = Int(value) {
@@ -280,30 +281,6 @@ import KeychainAccess
         }
         set {
             keychain["cleanUpDay"] = String(newValue)
-        }
-    }
-
-    var mediaColumnCount: Int {
-        get {
-            if let value = try? keychain.get("mediaColumnCount"), let result = Int(value) {
-                return result
-            }
-            return 3
-        }
-        set {
-            keychain["mediaColumnCount"] = String(newValue)
-        }
-    }
-
-    var mediaTypeLayout: String {
-        get {
-            if let value = try? keychain.get("mediaTypeLayout") {
-                return value
-            }
-            return NCGlobal.shared.mediaLayoutRatio
-        }
-        set {
-            keychain["mediaTypeLayout"] = String(newValue)
         }
     }
 
@@ -346,55 +323,86 @@ import KeychainAccess
         }
     }
 
+    var appearanceAutomatic: Bool {
+        get {
+            if let value = try? keychain.get("appearanceAutomatic"), let result = Bool(value) {
+                return result
+            }
+            return true
+        }
+        set {
+            keychain["appearanceAutomatic"] = String(newValue)
+        }
+    }
+
+    var appearanceInterfaceStyle: UIUserInterfaceStyle {
+        get {
+            if let value = try? keychain.get("appearanceInterfaceStyle") {
+                if value == "light" {
+                    return .light
+                } else {
+                    return .dark
+                }
+            }
+            return .light
+        }
+        set {
+            if newValue == .light {
+                keychain["appearanceInterfaceStyle"] = "light"
+            } else {
+                keychain["appearanceInterfaceStyle"] = "dark"
+            }
+        }
+    }
+
+    var fileNameType: Bool {
+        get {
+            if let value = try? keychain.get("fileNameType"), let result = Bool(value) {
+                return result
+            }
+            return false
+        }
+        set {
+            keychain["fileNameType"] = String(newValue)
+        }
+    }
+
+    var fileNameOriginal: Bool {
+        get {
+            if let value = try? keychain.get("fileNameOriginal"), let result = Bool(value) {
+                return result
+            }
+            return false
+        }
+        set {
+            keychain["fileNameOriginal"] = String(newValue)
+        }
+    }
+
+    var fileNameMask: String {
+        get {
+            if let value = try? keychain.get("fileNameMask") {
+                return value
+            }
+            return ""
+        }
+        set {
+            keychain["fileNameMask"] = String(newValue)
+        }
+    }
+
     // MARK: -
 
     @objc func getPassword(account: String) -> String {
         let key = "password" + account
         migrate(key: key)
-        return (try? keychain.get(key)) ?? ""
+        let password = (try? keychain.get(key)) ?? ""
+        return password
     }
 
-    @objc func setPassword(account: String, password: String?) {
+    func setPassword(account: String, password: String?) {
         let key = "password" + account
         keychain[key] = password
-    }
-
-    @objc func getOriginalFileName(key: String) -> Bool {
-        migrate(key: key)
-        if let value = try? keychain.get(key), let result = Bool(value) {
-            return result
-        }
-        return false
-    }
-
-    @objc func setOriginalFileName(key: String, value: Bool) {
-        keychain[key] = String(value)
-    }
-
-    @objc func getFileNameMask(key: String) -> String {
-        migrate(key: key)
-        if let value = try? keychain.get(key) {
-            return value
-        } else {
-            return ""
-        }
-    }
-
-    @objc func setFileNameMask(key: String, mask: String?) {
-        keychain[key] = mask
-    }
-
-    @objc func getFileNameType(key: String) -> Bool {
-        migrate(key: key)
-        if let value = try? keychain.get(key), let result = Bool(value) {
-            return result
-        } else {
-            return false
-        }
-    }
-
-    @objc func setFileNameType(key: String, prefix: Bool) {
-        keychain[key] = String(prefix)
     }
 
     func setPersonalFilesOnly(account: String, value: Bool) {
@@ -475,7 +483,7 @@ import KeychainAccess
 
     // MARK: - PUSHNOTIFICATION
 
-    @objc func getPushNotificationPublicKey(account: String) -> Data? {
+    func getPushNotificationPublicKey(account: String) -> Data? {
         let key = "PNPublicKey" + account
         return try? keychain.getData(key)
     }
@@ -485,7 +493,7 @@ import KeychainAccess
         keychain[data: key] = data
     }
 
-    @objc func getPushNotificationPrivateKey(account: String) -> Data? {
+    func getPushNotificationPrivateKey(account: String) -> Data? {
         let key = "PNPrivateKey" + account
         return try? keychain.getData(key)
     }
@@ -495,53 +503,73 @@ import KeychainAccess
         keychain[data: key] = data
     }
 
-    @objc func getPushNotificationSubscribingPublicKey(account: String) -> String? {
+    func getPushNotificationSubscribingPublicKey(account: String) -> String? {
         let key = "PNSubscribingPublicKey" + account
         return try? keychain.get(key)
     }
 
-    @objc func setPushNotificationSubscribingPublicKey(account: String, publicKey: String?) {
+    func setPushNotificationSubscribingPublicKey(account: String, publicKey: String?) {
         let key = "PNSubscribingPublicKey" + account
         keychain[key] = publicKey
     }
 
-    @objc func getPushNotificationToken(account: String) -> String? {
+    func getPushNotificationToken(account: String) -> String? {
         let key = "PNToken" + account
         return try? keychain.get(key)
     }
 
-    @objc func setPushNotificationToken(account: String, token: String?) {
+    func setPushNotificationToken(account: String, token: String?) {
         let key = "PNToken" + account
         keychain[key] = token
     }
 
-    @objc func getPushNotificationDeviceIdentifier(account: String) -> String? {
+    func getPushNotificationDeviceIdentifier(account: String) -> String? {
         let key = "PNDeviceIdentifier" + account
         return try? keychain.get(key)
     }
 
-    @objc func setPushNotificationDeviceIdentifier(account: String, deviceIdentifier: String?) {
+    func setPushNotificationDeviceIdentifier(account: String, deviceIdentifier: String?) {
         let key = "PNDeviceIdentifier" + account
         keychain[key] = deviceIdentifier
     }
 
-    @objc func getPushNotificationDeviceIdentifierSignature(account: String) -> String? {
+    func getPushNotificationDeviceIdentifierSignature(account: String) -> String? {
         let key = "PNDeviceIdentifierSignature" + account
         return try? keychain.get(key)
     }
 
-    @objc func setPushNotificationDeviceIdentifierSignature(account: String, deviceIdentifierSignature: String?) {
+    func setPushNotificationDeviceIdentifierSignature(account: String, deviceIdentifierSignature: String?) {
         let key = "PNDeviceIdentifierSignature" + account
         keychain[key] = deviceIdentifierSignature
     }
 
-    @objc func clearAllKeysPushNotification(account: String) {
+    func clearAllKeysPushNotification(account: String) {
         setPushNotificationPublicKey(account: account, data: nil)
         setPushNotificationSubscribingPublicKey(account: account, publicKey: nil)
         setPushNotificationPrivateKey(account: account, data: nil)
         setPushNotificationToken(account: account, token: nil)
         setPushNotificationDeviceIdentifier(account: account, deviceIdentifier: nil)
         setPushNotificationDeviceIdentifierSignature(account: account, deviceIdentifierSignature: nil)
+    }
+
+    // MARK: - Certificates
+
+    func setClientCertificate(account: String, p12Data: Data?, p12Password: String?) {
+        var key = "ClientCertificateData" + account
+        keychain[data: key] = p12Data
+
+        key = "ClientCertificatePassword" + account
+        keychain[key] = p12Password
+    }
+
+    func getClientCertificate(account: String) -> (p12Data: Data?, p12Password: String?) {
+        var key = "ClientCertificateData" + account
+        let data = try? keychain.getData(key)
+
+        key = "ClientCertificatePassword" + account
+        let password = keychain[key]
+
+        return (data, password)
     }
 
     // MARK: -
@@ -554,7 +582,7 @@ import KeychainAccess
         }
     }
 
-    @objc func removeAll() {
+    func removeAll() {
         try? keychain.removeAll()
     }
 }

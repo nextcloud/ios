@@ -22,6 +22,8 @@
 //
 
 import UIKit
+import AVFAudio
+import Photos
 
 class NCAskAuthorization: NSObject {
 
