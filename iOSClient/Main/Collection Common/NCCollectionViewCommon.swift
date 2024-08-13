@@ -703,22 +703,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.reloadDataSource()
             }
 
-            let showDescriptionKeychain = NCKeychain().showDescription
-            let showDescription = UIAction(title: NSLocalizedString("_show_description_", comment: ""), image: utility.loadImage(named: "list.dash.header.rectangle"), attributes: richWorkspaceText == nil ? .disabled : [], state: showDescriptionKeychain && richWorkspaceText != nil ? .on : .off) { _ in
-                NCKeychain().showDescription = !showDescriptionKeychain
-                self.collectionView.reloadData()
-                self.setNavigationRightItems()
-            }
-            showDescription.subtitle = richWorkspaceText == nil ? NSLocalizedString("_no_description_available_", comment: "") : ""
-
             if layoutKey == NCGlobal.shared.layoutViewRecent {
                 return [select]
             } else {
                 var additionalSubmenu = UIMenu()
                 if layoutKey == NCGlobal.shared.layoutViewFiles {
-                    additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [foldersOnTop, personalFilesOnlyAction, showDescription])
+                    additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [foldersOnTop, personalFilesOnlyAction])
                 } else {
-                    additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [foldersOnTop, showDescription])
+                    additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [foldersOnTop])
                 }
                 return [select, viewStyleSubmenu, sortSubmenu, additionalSubmenu]
             }
