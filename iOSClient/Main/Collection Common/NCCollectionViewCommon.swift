@@ -731,7 +731,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.setEditMode(false)
             }
             navigationItem.rightBarButtonItems = [select]
-        } else if navigationItem.rightBarButtonItems == nil || (!isEditMode && !tabBarSelect.isHidden()) {
+        } else {
             tabBarSelect.hide()
             let menuButton = UIBarButtonItem(image: utility.loadImage(named: "ellipsis.circle"), menu: UIMenu(children: createMenuActions()))
             menuButton.tintColor = NCBrandColor.shared.iconImageColor
@@ -746,8 +746,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             } else {
                 navigationItem.rightBarButtonItems = [menuButton]
             }
-        } else {
-            navigationItem.rightBarButtonItems?.first?.menu = navigationItem.rightBarButtonItems?.first?.menu?.replacingChildren(createMenuActions())
         }
         // fix, if the tabbar was hidden before the update, set it in hidden
         if isTabBarHidden, isTabBarSelectHidden {
@@ -824,12 +822,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func searchController(enabled: Bool) {
         guard enableSearchBar else { return }
-        searchController?.searchBar.isUserInteractionEnabled = enabled
         if enabled {
-            searchController?.searchBar.alpha = 1
+            navigationItem.searchController = searchController
         } else {
-            searchController?.searchBar.alpha = 0.3
-
+            navigationItem.searchController = nil
         }
     }
 
