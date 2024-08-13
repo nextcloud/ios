@@ -171,7 +171,7 @@ extension NCCollectionViewCommon {
                     icon: utility.loadImage(named: "lock", colors: [NCBrandColor.shared.iconImageColor]),
                     order: 30,
                     action: { _ in
-                        NextcloudKit.shared.markE2EEFolder(fileId: metadata.fileId, delete: true) { _, error in
+                        NextcloudKit.shared.markE2EEFolder(fileId: metadata.fileId, delete: true, account: metadata.account) { _, error in
                             if error == .success {
                                 NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, serverUrl))
                                 NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, encrypted: false, account: metadata.account)

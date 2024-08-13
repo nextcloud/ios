@@ -26,7 +26,6 @@ import NextcloudKit
 import RealmSwift
 
 class NCMedia: UIViewController {
-
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var titleDate: UILabel!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
@@ -37,6 +36,7 @@ class NCMedia: UIViewController {
     @IBOutlet weak var gradientView: UIView!
 
     let layout = NCMediaLayout()
+    var layoutType = NCGlobal.shared.mediaLayoutRatio
     var activeAccount = tableAccount()
     var documentPickerViewController: NCDocumentPickerViewController?
     var tabBarSelect: NCMediaSelectTabBar!
@@ -73,6 +73,7 @@ class NCMedia: UIViewController {
         super.viewDidLoad()
 
         view.backgroundColor = .systemBackground
+        activeAccount = NCManageDatabase.shared.getActiveAccount() ?? tableAccount()
 
         collectionView.register(UINib(nibName: "NCSectionFirstHeaderEmptyData", bundle: nil), forSupplementaryViewOfKind: mediaSectionHeader, withReuseIdentifier: "sectionFirstHeaderEmptyData")
         collectionView.register(UINib(nibName: "NCGridMediaCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
@@ -80,14 +81,13 @@ class NCMedia: UIViewController {
         collectionView.contentInset = UIEdgeInsets(top: insetsTop, left: 0, bottom: 50, right: 0)
         collectionView.backgroundColor = .systemBackground
         collectionView.prefetchDataSource = self
-        // Drag & Drop
-        // Drag & Drop
         collectionView.dragInteractionEnabled = true
         collectionView.dragDelegate = self
         collectionView.dropDelegate = self
 
         layout.sectionInset = UIEdgeInsets(top: 0, left: 2, bottom: 0, right: 2)
         collectionView.collectionViewLayout = layout
+        layoutType = NCManageDatabase.shared.getLayoutForView(account: activeAccount.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")?.layout ?? NCGlobal.shared.mediaLayoutRatio
 
         tabBarSelect = NCMediaSelectTabBar(tabBarController: self.tabBarController, delegate: self)
 
@@ -100,7 +100,7 @@ class NCMedia: UIViewController {
         selectOrCancelButton.layer.cornerRadius = 15
         selectOrCancelButton.layer.masksToBounds = true
         selectOrCancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
-        selectOrCancelButton.addBlur(style: .systemThinMaterial)
+        selectOrCancelButton.addBlur(style: .systemUltraThinMaterial)
 
         menuButton.backgroundColor = .clear
         menuButton.layer.cornerRadius = 15
@@ -109,14 +109,12 @@ class NCMedia: UIViewController {
         menuButton.configuration = UIButton.Configuration.plain()
         menuButton.setImage(NCUtility().loadImage(named: "ellipsis"), for: .normal)
         menuButton.changesSelectionAsPrimaryAction = false
-        menuButton.addBlur(style: .systemThinMaterial)
+        menuButton.addBlur(style: .systemUltraThinMaterial)
 
         gradient.startPoint = CGPoint(x: 0, y: 0.1)
         gradient.endPoint = CGPoint(x: 0, y: 1)
         gradient.colors = [UIColor.black.withAlphaComponent(UIAccessibility.isReduceTransparencyEnabled ? 0.8 : 0.4).cgColor, UIColor.clear.cgColor]
         gradientView.layer.insertSublayer(gradient, at: 0)
-
-        activeAccount = NCManageDatabase.shared.getActiveAccount() ?? tableAccount()
 
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
@@ -128,6 +126,7 @@ class NCMedia: UIViewController {
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
             self.activeAccount = NCManageDatabase.shared.getActiveAccount() ?? tableAccount()
+            self.layoutType = NCManageDatabase.shared.getLayoutForView(account: self.activeAccount.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")?.layout ?? NCGlobal.shared.mediaLayoutRatio
             if let metadatas = self.metadatas,
                let metadata = metadatas.first {
                 if metadata.account != self.activeAccount.account {
@@ -147,6 +146,7 @@ class NCMedia: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
 
         navigationController?.setMediaAppreance()
     }
@@ -206,7 +206,7 @@ class NCMedia: UIViewController {
     override var preferredStatusBarStyle: UIStatusBarStyle {
         if self.traitCollection.userInterfaceStyle == .dark {
             return .lightContent
-       } else if isTop {
+        } else if isTop {
             return .darkContent
         } else {
             return .lightContent

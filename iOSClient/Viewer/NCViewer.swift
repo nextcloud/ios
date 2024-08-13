@@ -83,7 +83,7 @@ class NCViewer: NSObject {
             // Set Last Opening Date
             NCManageDatabase.shared.setLastOpeningDate(metadata: metadata)
             // PDF
-            if metadata.contentType == "application/pdf" || metadata.contentType == "com.adobe.pdf" {
+            if metadata.isPDF {
                 if let navigationController = viewController.navigationController,
                    let viewController: NCViewerPDF = UIStoryboard(name: "NCViewerPDF", bundle: nil).instantiateInitialViewController() as? NCViewerPDF {
                     viewController.metadata = metadata
@@ -97,7 +97,7 @@ class NCViewer: NSObject {
             if metadata.isAvailableRichDocumentEditorView {
                 if metadata.url.isEmpty {
                     NCActivityIndicator.shared.start(backgroundView: viewController.view)
-                    NextcloudKit.shared.createUrlRichdocuments(fileID: metadata.fileId) { account, url, _, error in
+                    NextcloudKit.shared.createUrlRichdocuments(fileID: metadata.fileId, account: metadata.account) { account, url, _, error in
                         NCActivityIndicator.shared.stop()
                         if error == .success && account == self.appDelegate.account && url != nil {
                             if let navigationController = viewController.navigationController,
@@ -137,7 +137,7 @@ class NCViewer: NSObject {
                 if metadata.url.isEmpty {
                     let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
                     NCActivityIndicator.shared.start(backgroundView: viewController.view)
-                    NextcloudKit.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: editor, options: options) { account, url, _, error in
+                    NextcloudKit.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: editor, account: metadata.account, options: options) { account, url, _, error in
                         NCActivityIndicator.shared.stop()
                         if error == .success && account == self.appDelegate.account && url != nil {
                             if let navigationController = viewController.navigationController,

@@ -23,11 +23,28 @@
 
 import UIKit
 
+struct NavigationCollectionViewCommon {
+    var serverUrl: String
+    var navigationController: UINavigationController?
+    var viewController: NCCollectionViewCommon
+}
+
 class NCMainTabBarController: UITabBarController {
     var sceneIdentifier: String = UUID().uuidString
     var documentPickerViewController: NCDocumentPickerViewController?
-    let filesServerUrl = ThreadSafeDictionary<String, NCFiles>()
+    let navigationCollectionViewCommon = ThreadSafeArray<NavigationCollectionViewCommon>()
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    private var previousIndex: Int?
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        delegate = self
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        previousIndex = selectedIndex
+    }
 
     func currentViewController() -> UIViewController? {
         return (selectedViewController as? UINavigationController)?.topViewController
@@ -46,5 +63,23 @@ class NCMainTabBarController: UITabBarController {
             serverUrl = viewerMediaPage.metadatas[viewerMediaPage.currentIndex].serverUrl
         }
         return serverUrl
+    }
+}
+
+extension NCMainTabBarController: UITabBarControllerDelegate {
+    func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
+        if previousIndex == tabBarController.selectedIndex {
+            scrollToTop(viewController: viewController)
+        }
+        previousIndex = tabBarController.selectedIndex
+    }
+
+    private func scrollToTop(viewController: UIViewController) {
+        guard let navigationController = viewController as? UINavigationController,
+              let topViewController = navigationController.topViewController else { return }
+
+        if let scrollView = topViewController.view.subviews.compactMap({ $0 as? UIScrollView }).first {
+            scrollView.setContentOffset(CGPoint(x: 0, y: -scrollView.adjustedContentInset.top), animated: true)
+        }
     }
 }

@@ -278,7 +278,7 @@ class NCShareExtension: UIViewController {
     }
 
     @objc func actionCreateFolder() {
-        let alertController = UIAlertController.createFolder(serverUrl: serverUrl, urlBase: activeAccount) { error in
+        let alertController = UIAlertController.createFolder(serverUrl: serverUrl, userBaseUrl: activeAccount) { error in
             guard error != .success else { return }
             self.showAlert(title: "_error_createsubfolders_upload_", description: error.errorDescription)
         }

@@ -40,7 +40,7 @@ class NCEndToEndInitialize: NSObject {
     // MARK: Initialize
     // --------------------------------------------------------------------------------------------
 
-    @objc func initEndToEndEncryption(viewController: UIViewController?, metadata: tableMetadata?) {
+    func initEndToEndEncryption(viewController: UIViewController?, metadata: tableMetadata?) {
         self.viewController = viewController
         self.metadata = metadata
 
@@ -49,15 +49,15 @@ class NCEndToEndInitialize: NSObject {
         self.getPublicKey()
     }
 
-    @objc func statusOfService(completion: @escaping (_ error: NKError?) -> Void) {
-        NextcloudKit.shared.getE2EECertificate { _, _, _, _, error in
+    func statusOfService(completion: @escaping (_ error: NKError?) -> Void) {
+        NextcloudKit.shared.getE2EECertificate(account: appDelegate.account) { _, _, _, _, error in
             completion(error)
         }
     }
 
     func getPublicKey() {
 
-        NextcloudKit.shared.getE2EECertificate { account, certificate, _, _, error in
+        NextcloudKit.shared.getE2EECertificate(account: appDelegate.account) { account, certificate, _, _, error in
 
             if error == .success, account == self.appDelegate.account, let certificate {
 
@@ -84,7 +84,7 @@ class NCEndToEndInitialize: NSObject {
                         return
                     }
 
-                    NextcloudKit.shared.signE2EECertificate(certificate: csr) { account, certificate, _, error in
+                    NextcloudKit.shared.signE2EECertificate(certificate: csr, account: account) { account, certificate, _, error in
 
                         if error == .success, account == self.appDelegate.account, let certificate {
 
@@ -134,7 +134,7 @@ class NCEndToEndInitialize: NSObject {
     func getPrivateKeyCipher() {
 
         // Request PrivateKey chiper to Server
-        NextcloudKit.shared.getE2EEPrivateKey { account, privateKeyChiper, _, error in
+        NextcloudKit.shared.getE2EEPrivateKey(account: appDelegate.account) { account, privateKeyChiper, _, error in
 
             if error == .success && account == self.appDelegate.account {
 
@@ -166,7 +166,7 @@ class NCEndToEndInitialize: NSObject {
                     NCKeychain().setEndToEndPassphrase(account: self.appDelegate.account, passphrase: passphrase)
 
                     // request server publicKey
-                    NextcloudKit.shared.getE2EEPublicKey { account, publicKey, _, error in
+                    NextcloudKit.shared.getE2EEPublicKey(account: account) { account, publicKey, _, error in
 
                         if error == .success, account == self.appDelegate.account, let publicKey {
 
@@ -262,7 +262,7 @@ class NCEndToEndInitialize: NSObject {
         // privateKeyChiper
         print(privateKeyCipher)
 
-        NextcloudKit.shared.storeE2EEPrivateKey(privateKey: privateKeyCipher) { account, _, _, error in
+        NextcloudKit.shared.storeE2EEPrivateKey(privateKey: privateKeyCipher, account: appDelegate.account) { account, _, _, error in
 
             if error == .success, account == self.appDelegate.account, let privateKey = privateKeyString {
 
@@ -270,7 +270,7 @@ class NCEndToEndInitialize: NSObject {
                 NCKeychain().setEndToEndPassphrase(account: account, passphrase: e2ePassphrase)
 
                 // request server publicKey
-                NextcloudKit.shared.getE2EEPublicKey { account, publicKey, _, error in
+                NextcloudKit.shared.getE2EEPublicKey(account: account) { account, publicKey, _, error in
 
                     if error == .success, account == self.appDelegate.account, let publicKey {
 

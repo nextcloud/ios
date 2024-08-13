@@ -153,9 +153,14 @@ struct NCSettingsView: View {
                 }, header: {
                     Text(NSLocalizedString("_calendar_contacts_", comment: ""))
                 }, footer: {
-                    Text(NSLocalizedString("_calendar_contacts_footer_", comment: ""))
-                        .font(.system(size: 12))
-                        .lineSpacing(1)
+                    VStack(alignment: .leading) {
+                        Text(NSLocalizedString("_calendar_contacts_footer_warning_", comment: ""))
+                            .font(.system(size: 12))
+                        Spacer()
+                        Text(NSLocalizedString("_calendar_contacts_footer_", comment: ""))
+                            .font(.system(size: 12))
+                    }
+
                 })
             }
             /// Users

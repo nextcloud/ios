@@ -82,7 +82,7 @@ extension NCTrash: UICollectionViewDataSource {
         } else {
             if tableTrash.hasPreview && !utilityFileSystem.fileProviderStoragePreviewIconExists(tableTrash.fileId, etag: tableTrash.fileName) {
                 if NCNetworking.shared.downloadThumbnailTrashQueue.operations.filter({ ($0 as? NCOperationDownloadThumbnailTrash)?.fileId == tableTrash.fileId }).isEmpty {
-                    NCNetworking.shared.downloadThumbnailTrashQueue.addOperation(NCOperationDownloadThumbnailTrash(tableTrash: tableTrash, fileId: tableTrash.fileId, cell: cell, collectionView: collectionView))
+                    NCNetworking.shared.downloadThumbnailTrashQueue.addOperation(NCOperationDownloadThumbnailTrash(tableTrash: tableTrash, fileId: tableTrash.fileId, account: appDelegate.account, cell: cell, collectionView: collectionView))
                 }
             }
         }
