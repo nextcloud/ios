@@ -314,8 +314,8 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     // MARK: - Open in ...
 
-    func openDocumentController(metadata: tableMetadata, mainTabBarController: NCMainTabBarController?) {
-        guard let mainTabBarController else { return }
+    func openDocumentController(metadata: tableMetadata, controller: NCMainTabBarController?) {
+        guard let mainTabBarController = controller else { return }
         
         if let presentedNavigationController = mainTabBarController.presentedNavigationController() {
             openDocumentController(metadata: metadata, viewController: presentedNavigationController)
