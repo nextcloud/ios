@@ -26,7 +26,6 @@ import RealmSwift
 import NextcloudKit
 
 extension NCManageDatabase {
-
     func setMetadataSession(ocId: String,
                             newFileName: String? = nil,
                             session: String? = nil,
@@ -80,7 +79,6 @@ extension NCManageDatabase {
     func setMetadataSession(ocId: String,
                             status: Int? = nil,
                             taskIdentifier: Int? = nil) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -160,6 +158,7 @@ extension NCManageDatabase {
     @discardableResult
     func setMetadataStatus(ocId: String, status: Int) -> tableMetadata? {
         var result: tableMetadata?
+
         do {
             let realm = try Realm()
             try realm.write {
@@ -174,5 +173,17 @@ extension NCManageDatabase {
         } else {
             return nil
         }
+    }
+
+    func getMetadata(from url: URL?, sessionTaskIdentifier: Int) -> tableMetadata? {
+        guard let url,
+              var serverUrl = url.deletingLastPathComponent().absoluteString.removingPercentEncoding
+        else { return nil }
+        let fileName = url.lastPathComponent
+
+        if serverUrl.hasSuffix("/") {
+            serverUrl = String(serverUrl.dropLast())
+        }
+        return NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@ AND sessionTaskIdentifier == %d", serverUrl, fileName, sessionTaskIdentifier))
     }
 }

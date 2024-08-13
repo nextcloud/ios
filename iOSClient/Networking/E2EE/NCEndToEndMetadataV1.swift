@@ -103,15 +103,15 @@ extension NCEndToEndMetadata {
         //
         // metadata
         //
-        if e2eEncryptions.isEmpty, let key = NCEndToEndEncryption.sharedManager()?.generateKey() as? NSData {
+        if e2eEncryptions.isEmpty, let key = NCEndToEndEncryption.shared().generateKey() as? NSData {
 
             if let key = key.base64EncodedString().data(using: .utf8)?.base64EncodedString().data(using: .utf8),
-               let metadataKeyEncrypted = NCEndToEndEncryption.sharedManager().encryptAsymmetricData(key, privateKey: privateKey) {
+               let metadataKeyEncrypted = NCEndToEndEncryption.shared().encryptAsymmetricData(key, privateKey: privateKey) {
                 metadataKey = metadataKeyEncrypted.base64EncodedString()
             }
 
         } else if let metadatakey = (e2eEncryptions.first!.metadataKey.data(using: .utf8)?.base64EncodedString().data(using: .utf8)),
-                  let metadataKeyEncrypted = NCEndToEndEncryption.sharedManager().encryptAsymmetricData(metadatakey, privateKey: privateKey) {
+                  let metadataKeyEncrypted = NCEndToEndEncryption.shared().encryptAsymmetricData(metadatakey, privateKey: privateKey) {
 
             metadataKey = metadataKeyEncrypted.base64EncodedString()
         }
@@ -127,7 +127,7 @@ extension NCEndToEndMetadata {
                     // Create "encrypted"
                     var json = try encoder.encode(encrypted)
                     json = json.base64EncodedString().data(using: .utf8)!
-                    if let encrypted = NCEndToEndEncryption.sharedManager().encryptPayloadFile(json, key: e2eEncryption.metadataKey) {
+                    if let encrypted = NCEndToEndEncryption.shared().encryptPayloadFile(json, key: e2eEncryption.metadataKey) {
                         let record = E2eeV12.Files(initializationVector: e2eEncryption.initializationVector, authenticationTag: e2eEncryption.authenticationTag, encrypted: encrypted)
                         files.updateValue(record, forKey: e2eEncryption.fileNameIdentifier)
                     }
@@ -147,7 +147,7 @@ extension NCEndToEndMetadata {
                 var encryptedTag: NSString?
 
                 if let metadataKeyFiledrop = (e2eEncryption.metadataKey.data(using: .utf8)?.base64EncodedString().data(using: .utf8)),
-                   let metadataKeyEncrypted = NCEndToEndEncryption.sharedManager().encryptAsymmetricData(metadataKeyFiledrop, privateKey: privateKey) {
+                   let metadataKeyEncrypted = NCEndToEndEncryption.shared().encryptAsymmetricData(metadataKeyFiledrop, privateKey: privateKey) {
                     encryptedKey = metadataKeyEncrypted.base64EncodedString()
                 }
                 let encrypted = E2eeV12.Encrypted(key: e2eEncryption.key, filename: e2eEncryption.fileName, mimetype: e2eEncryption.mimeType)
@@ -155,7 +155,7 @@ extension NCEndToEndMetadata {
                     // Create "encrypted"
                     var json = try encoder.encode(encrypted)
                     json = json.base64EncodedString().data(using: .utf8)!
-                    if let encrypted = NCEndToEndEncryption.sharedManager().encryptPayloadFile(json, key: e2eEncryption.metadataKey, initializationVector: &encryptedInitializationVector, authenticationTag: &encryptedTag) {
+                    if let encrypted = NCEndToEndEncryption.shared().encryptPayloadFile(json, key: e2eEncryption.metadataKey, initializationVector: &encryptedInitializationVector, authenticationTag: &encryptedTag) {
                         let record = E2eeV12.Filedrop(initializationVector: e2eEncryption.initializationVector, authenticationTag: e2eEncryption.authenticationTag, encrypted: encrypted, encryptedKey: encryptedKey, encryptedTag: encryptedTag as? String, encryptedInitializationVector: encryptedInitializationVector as? String)
                         filedrop.updateValue(record, forKey: e2eEncryption.fileNameIdentifier)
                     }
@@ -168,7 +168,7 @@ extension NCEndToEndMetadata {
         // Create checksum
         let passphrase = NCKeychain().getEndToEndPassphrase(account: account)?.replacingOccurrences(of: " ", with: "") ?? ""
         let dataChecksum = (passphrase + fileNameIdentifiers.sorted().joined() + metadataKey).data(using: .utf8)
-        let checksum = NCEndToEndEncryption.sharedManager().createSHA256(dataChecksum)
+        let checksum = NCEndToEndEncryption.shared().createSHA256(dataChecksum)
 
         // Create Json
         let metadata = E2eeV12.Metadata(metadataKey: metadataKey, version: metadataVersion, checksum: checksum)
@@ -219,7 +219,7 @@ extension NCEndToEndMetadata {
             //
             let data = Data(base64Encoded: metadata.metadataKey)
 
-            if let decrypted = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(data, privateKey: privateKey),
+            if let decrypted = NCEndToEndEncryption.shared().decryptAsymmetricData(data, privateKey: privateKey),
                 let keyData = Data(base64Encoded: decrypted),
                 let key = String(data: keyData, encoding: .utf8) {
                 metadataKey = key
@@ -243,7 +243,7 @@ extension NCEndToEndMetadata {
 
                     fileNameIdentifiers.append(fileNameIdentifier)
 
-                    if let decrypted = NCEndToEndEncryption.sharedManager().decryptPayloadFile(encrypted, key: metadataKey),
+                    if let decrypted = NCEndToEndEncryption.shared().decryptPayloadFile(encrypted, key: metadataKey),
                        let decryptedData = Data(base64Encoded: decrypted) {
                         do {
                             decryptedData.printJson()
@@ -296,12 +296,12 @@ extension NCEndToEndMetadata {
 
                     if let encryptedKey = filedrop.encryptedKey,
                        let data = Data(base64Encoded: encryptedKey),
-                       let decrypted = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(data, privateKey: privateKey) {
+                       let decrypted = NCEndToEndEncryption.shared().decryptAsymmetricData(data, privateKey: privateKey) {
                         let keyData = Data(base64Encoded: decrypted)
                         metadataKeyFiledrop = String(data: keyData!, encoding: .utf8)
                     }
 
-                    if let decrypted = NCEndToEndEncryption.sharedManager().decryptPayloadFile(filedrop.encrypted, key: metadataKeyFiledrop, initializationVector: filedrop.encryptedInitializationVector, authenticationTag: filedrop.encryptedTag),
+                    if let decrypted = NCEndToEndEncryption.shared().decryptPayloadFile(filedrop.encrypted, key: metadataKeyFiledrop, initializationVector: filedrop.encryptedInitializationVector, authenticationTag: filedrop.encryptedTag),
                        let decryptedData = Data(base64Encoded: decrypted) {
                         do {
                             decryptedData.printJson()
@@ -346,7 +346,7 @@ extension NCEndToEndMetadata {
             // verify checksum
             let passphrase = NCKeychain().getEndToEndPassphrase(account: account)?.replacingOccurrences(of: " ", with: "") ?? ""
             let dataChecksum = (passphrase + fileNameIdentifiers.sorted().joined() + metadata.metadataKey).data(using: .utf8)
-            let checksum = NCEndToEndEncryption.sharedManager().createSHA256(dataChecksum)
+            let checksum = NCEndToEndEncryption.shared().createSHA256(dataChecksum)
             if metadata.checksum != checksum {
                 return NKError(errorCode: NCGlobal.shared.errorE2EEKeyChecksums, errorDescription: "_e2e_error_")
             }
@@ -388,7 +388,7 @@ extension NCEndToEndMetadata {
             //
             for metadataKey in metadata.metadataKeys {
                 let data = Data(base64Encoded: metadataKey.value)
-                if let decrypted = NCEndToEndEncryption.sharedManager().decryptAsymmetricData(data, privateKey: privateKey),
+                if let decrypted = NCEndToEndEncryption.shared().decryptAsymmetricData(data, privateKey: privateKey),
                    let keyData = Data(base64Encoded: decrypted) {
                     let key = String(data: keyData, encoding: .utf8)
                     metadataKeys[metadataKey.key] = key
@@ -418,7 +418,7 @@ extension NCEndToEndMetadata {
                     let metadataKeyIndex = files.metadataKey
                     let initializationVector = files.initializationVector
 
-                    if let decrypted = NCEndToEndEncryption.sharedManager().decryptPayloadFile(encrypted, key: metadataKey),
+                    if let decrypted = NCEndToEndEncryption.shared().decryptPayloadFile(encrypted, key: metadataKey),
                        let decryptedData = Data(base64Encoded: decrypted) {
                         do {
                             let encrypted = try decoder.decode(E2eeV1.Encrypted.self, from: decryptedData)

@@ -21,6 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+import UIKit
 import WidgetKit
 import NextcloudKit
 
@@ -36,7 +37,6 @@ struct LockscreenData: TimelineEntry {
 }
 
 func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, family: WidgetFamily, completion: @escaping (_ entry: LockscreenData) -> Void) {
-
     let utilityFileSystem = NCUtilityFileSystem()
     var account: tableAccount?
     var quotaRelative: Float = 0
@@ -52,7 +52,7 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, fami
         account = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", accountIdentifier))
     }
 
-    guard let account = account else {
+    guard let account else {
         return completion(LockscreenData(date: Date(), isPlaceholder: true, activity: "", link: URL(string: "https://")!, quotaRelative: 0, quotaUsed: "", quotaTotal: "", error: false))
     }
 
@@ -78,7 +78,7 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, fami
     let options = NKRequestOptions(timeout: 90, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
     if #available(iOSApplicationExtension 16.0, *) {
         if family == .accessoryCircular {
-            NextcloudKit.shared.getUserProfile(options: options) { _, userProfile, _, error in
+            NextcloudKit.shared.getUserProfile(account: account.account, options: options) { _, userProfile, _, error in
                 if error == .success, let userProfile = userProfile {
                     if userProfile.quotaRelative > 0 {
                         quotaRelative = Float(userProfile.quotaRelative) / 100
@@ -102,7 +102,7 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, fami
                 }
             }
         } else if family == .accessoryRectangular {
-            NextcloudKit.shared.getDashboardWidgetsApplication("activity", options: options) { _, results, _, error in
+            NextcloudKit.shared.getDashboardWidgetsApplication("activity", account: account.account, options: options) { _, results, _, error in
                 var activity: String = NSLocalizedString("_no_data_available_", comment: "")
                 var link = URL(string: "https://")!
                 if error == .success, let result = results?.first {

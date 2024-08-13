@@ -22,11 +22,12 @@
 //
 
 import Foundation
+import UIKit
+import Photos
 import RealmSwift
 import NextcloudKit
 
 class tablePhotoLibrary: Object {
-
     @objc dynamic var account = ""
     @objc dynamic var assetLocalIdentifier = ""
     @objc dynamic var creationDate: NSDate?
@@ -40,10 +41,8 @@ class tablePhotoLibrary: Object {
 }
 
 extension NCManageDatabase {
-
     @discardableResult
     func addPhotoLibrary(_ assets: [PHAsset], account: String) -> Bool {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -68,12 +67,10 @@ extension NCManageDatabase {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
             return false
         }
-
         return true
     }
 
     func getPhotoLibraryIdAsset(image: Bool, video: Bool, account: String) -> [String]? {
-
         var predicate = NSPredicate()
 
         if image && video {
@@ -93,8 +90,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access to database: \(error)")
         }
-
         return nil
     }
-
 }

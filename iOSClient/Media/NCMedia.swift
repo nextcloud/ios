@@ -26,7 +26,6 @@ import NextcloudKit
 import RealmSwift
 
 class NCMedia: UIViewController {
-
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var titleDate: UILabel!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
@@ -37,6 +36,7 @@ class NCMedia: UIViewController {
     @IBOutlet weak var gradientView: UIView!
 
     let layout = NCMediaLayout()
+    var layoutType = NCGlobal.shared.mediaLayoutRatio
     var activeAccount = tableAccount()
     var documentPickerViewController: NCDocumentPickerViewController?
     var tabBarSelect: NCMediaSelectTabBar!
@@ -73,22 +73,21 @@ class NCMedia: UIViewController {
         super.viewDidLoad()
 
         view.backgroundColor = .systemBackground
+        activeAccount = NCManageDatabase.shared.getActiveAccount() ?? tableAccount()
 
-        collectionView.register(UINib(nibName: "NCSectionHeaderEmptyData", bundle: nil), forSupplementaryViewOfKind: collectionViewMediaElementKindSectionHeader, withReuseIdentifier: "sectionHeaderEmptyData")
+        collectionView.register(UINib(nibName: "NCSectionFirstHeaderEmptyData", bundle: nil), forSupplementaryViewOfKind: mediaSectionHeader, withReuseIdentifier: "sectionFirstHeaderEmptyData")
         collectionView.register(UINib(nibName: "NCGridMediaCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
         collectionView.alwaysBounceVertical = true
         collectionView.contentInset = UIEdgeInsets(top: insetsTop, left: 0, bottom: 50, right: 0)
         collectionView.backgroundColor = .systemBackground
         collectionView.prefetchDataSource = self
-        // Drag & Drop
-        // Drag & Drop
         collectionView.dragInteractionEnabled = true
         collectionView.dragDelegate = self
         collectionView.dropDelegate = self
 
         layout.sectionInset = UIEdgeInsets(top: 0, left: 2, bottom: 0, right: 2)
-        layout.mediaViewController = self
         collectionView.collectionViewLayout = layout
+        layoutType = NCManageDatabase.shared.getLayoutForView(account: activeAccount.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")?.layout ?? NCGlobal.shared.mediaLayoutRatio
 
         tabBarSelect = NCMediaSelectTabBar(tabBarController: self.tabBarController, delegate: self)
 
@@ -101,7 +100,7 @@ class NCMedia: UIViewController {
         selectOrCancelButton.layer.cornerRadius = 15
         selectOrCancelButton.layer.masksToBounds = true
         selectOrCancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
-        selectOrCancelButton.addBlur(style: .systemThinMaterial)
+        selectOrCancelButton.addBlur(style: .systemUltraThinMaterial)
 
         menuButton.backgroundColor = .clear
         menuButton.layer.cornerRadius = 15
@@ -110,18 +109,16 @@ class NCMedia: UIViewController {
         menuButton.configuration = UIButton.Configuration.plain()
         menuButton.setImage(NCUtility().loadImage(named: "ellipsis"), for: .normal)
         menuButton.changesSelectionAsPrimaryAction = false
-        menuButton.addBlur(style: .systemThinMaterial)
+        menuButton.addBlur(style: .systemUltraThinMaterial)
 
         gradient.startPoint = CGPoint(x: 0, y: 0.1)
         gradient.endPoint = CGPoint(x: 0, y: 1)
         gradient.colors = [UIColor.black.withAlphaComponent(UIAccessibility.isReduceTransparencyEnabled ? 0.8 : 0.4).cgColor, UIColor.clear.cgColor]
         gradientView.layer.insertSublayer(gradient, at: 0)
 
-        activeAccount = NCManageDatabase.shared.getActiveAccount() ?? tableAccount()
-
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
-            DispatchQueue.global().async {
+            DispatchQueue.global(qos: .userInteractive).async {
                 self.reloadDataSource()
             }
             self.refreshControl.endRefreshing()
@@ -129,6 +126,7 @@ class NCMedia: UIViewController {
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
             self.activeAccount = NCManageDatabase.shared.getActiveAccount() ?? tableAccount()
+            self.layoutType = NCManageDatabase.shared.getLayoutForView(account: self.activeAccount.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")?.layout ?? NCGlobal.shared.mediaLayoutRatio
             if let metadatas = self.metadatas,
                let metadata = metadatas.first {
                 if metadata.account != self.activeAccount.account {
@@ -148,6 +146,7 @@ class NCMedia: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
 
         navigationController?.setMediaAppreance()
     }
@@ -171,7 +170,7 @@ class NCMedia: UIViewController {
             self.metadatas = metadatas
             self.collectionViewReloadData()
         } else {
-            DispatchQueue.global().async {
+            DispatchQueue.global(qos: .userInteractive).async {
                 self.reloadDataSource()
             }
         }
@@ -207,7 +206,7 @@ class NCMedia: UIViewController {
     override var preferredStatusBarStyle: UIStatusBarStyle {
         if self.traitCollection.userInterfaceStyle == .dark {
             return .lightContent
-       } else if isTop {
+        } else if isTop {
             return .darkContent
         } else {
             return .lightContent
@@ -283,15 +282,12 @@ class NCMedia: UIViewController {
     // MARK: - Image
 
     func getImage(metadata: tableMetadata) -> UIImage? {
+        let fileNamePathPreview = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
 
-        if let image = imageCache.getMediaImage(ocId: metadata.ocId, etag: metadata.etag) {
+        if let image = imageCache.getPreviewImageCache(ocId: metadata.ocId, etag: metadata.etag) {
             return image
-        } else if FileManager().fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)),
-                  let image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)) {
-            imageCache.setMediaSize(ocId: metadata.ocId, etag: metadata.etag, size: image.size)
-            if imageCache.hasMediaImageEnoughSpace() {
-                imageCache.setMediaImage(ocId: metadata.ocId, etag: metadata.etag, image: image, date: metadata.date as Date)
-            }
+        } else if FileManager().fileExists(atPath: fileNamePathPreview), let image = UIImage(contentsOfFile: fileNamePathPreview) {
+            imageCache.addPreviewImageCache(metadata: metadata, image: image)
             return image
         } else if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal,
                   (!utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)),
@@ -320,214 +316,9 @@ class NCMedia: UIViewController {
     }
 }
 
-// MARK: - Collection View
-
-extension NCMedia: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        var mediaCell: NCGridMediaCell?
-        if let metadata = self.metadatas?[indexPath.row] {
-            if let visibleCells = self.collectionView?.indexPathsForVisibleItems.compactMap({ self.collectionView?.cellForItem(at: $0) }) {
-                for case let cell as NCGridMediaCell in visibleCells {
-                    if cell.ocId == metadata.ocId {
-                        mediaCell = cell
-                    }
-                }
-            }
-            if isEditMode {
-                if let index = selectOcId.firstIndex(of: metadata.ocId) {
-                    selectOcId.remove(at: index)
-                    mediaCell?.selected(false)
-                } else {
-                    selectOcId.append(metadata.ocId)
-                    mediaCell?.selected(true)
-
-                }
-                tabBarSelect.selectCount = selectOcId.count
-            } else {
-                // ACTIVE SERVERURL
-                serverUrl = metadata.serverUrl
-                if let metadatas = self.metadatas?.getArray() {
-                    NCViewer().view(viewController: self, metadata: metadata, metadatas: metadatas, imageIcon: getImage(metadata: metadata))
-                }
-            }
-        }
-    }
-
-    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        guard let cell = collectionView.cellForItem(at: indexPath) as? NCGridMediaCell,
-              let metadata = self.metadatas?[indexPath.row] else { return nil }
-        let identifier = indexPath as NSCopying
-        let image = cell.imageItem.image
-        self.serverUrl = metadata.serverUrl
-
-        return UIContextMenuConfiguration(identifier: identifier, previewProvider: {
-            return NCViewerProviderContextMenu(metadata: metadata, image: image)
-        }, actionProvider: { _ in
-            return NCContextMenu().viewMenu(ocId: metadata.ocId, viewController: self, image: image)
-        })
-    }
-
-    func collectionView(_ collectionView: UICollectionView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
-        animator.addCompletion {
-            if let indexPath = configuration.identifier as? IndexPath {
-                self.collectionView(collectionView, didSelectItemAt: indexPath)
-            }
-        }
-    }
-}
-
 extension NCMedia: UICollectionViewDataSourcePrefetching {
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
         // print("[INFO] n. " + String(indexPaths.count))
-    }
-}
-
-extension NCMedia: UICollectionViewDataSource {
-    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-        if kind == "collectionViewMediaElementKindSectionHeader" {
-            guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderEmptyData", for: indexPath) as? NCSectionHeaderEmptyData else { return NCSectionHeaderEmptyData() }
-            header.emptyImage.image = utility.loadImage(named: "photo", colors: [NCBrandColor.shared.brandElement])
-            if loadingTask != nil || imageCache.createMediaCacheInProgress {
-                header.emptyTitle.text = NSLocalizedString("_search_in_progress_", comment: "")
-            } else {
-                header.emptyTitle.text = NSLocalizedString("_tutorial_photo_view_", comment: "")
-            }
-            header.emptyDescription.text = ""
-            return header
-        }
-        return UICollectionReusableView()
-    }
-
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        var numberOfItemsInSection = 0
-        if let metadatas { numberOfItemsInSection = metadatas.count }
-        if numberOfItemsInSection == 0 {
-            selectOrCancelButton.isHidden = true
-            menuButton.isHidden = false
-            gradientView.isHidden = true
-            activityIndicatorTrailing.constant = 50
-        } else if isEditMode {
-            selectOrCancelButton.isHidden = false
-            menuButton.isHidden = true
-            activityIndicatorTrailing.constant = 150
-        } else {
-            selectOrCancelButton.isHidden = false
-            menuButton.isHidden = false
-            activityIndicatorTrailing.constant = 150
-        }
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { self.setTitleDate() }
-        return numberOfItemsInSection
-    }
-
-    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let metadatas else { return }
-
-        if !collectionView.indexPathsForVisibleItems.contains(indexPath) && indexPath.row < metadatas.count {
-            guard let metadata = metadatas[indexPath.row] else { return }
-            for case let operation as NCMediaDownloadThumbnaill in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
-                operation.cancel()
-            }
-            for case let operation as NCOperationConvertLivePhoto in NCNetworking.shared.convertLivePhotoQueue.operations where operation.ocId == metadata.ocId {
-                operation.cancel()
-            }
-        }
-    }
-
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridMediaCell,
-              let metadatas = self.metadatas,
-              let metadata = metadatas[indexPath.row]
-        else {
-            return NCGridMediaCell()
-        }
-
-        cell.date = metadata.date as Date
-        cell.ocId = metadata.ocId
-        cell.indexPath = indexPath
-        cell.user = metadata.ownerId
-        cell.imageStatus.image = nil
-        cell.imageItem.contentMode = .scaleAspectFill
-
-        if let image = getImage(metadata: metadata) {
-            cell.imageItem.image = image
-        } else if !metadata.hasPreview {
-            cell.imageItem.backgroundColor = .clear
-            cell.imageItem.contentMode = .center
-            if metadata.isImage {
-                cell.imageItem.image = photoImage
-            } else {
-                cell.imageItem.image = videoImage
-            }
-        }
-
-        // Convert OLD Live Photo
-        if NCGlobal.shared.isLivePhotoServerAvailable, metadata.isLivePhoto, metadata.isNotFlaggedAsLivePhotoByServer {
-            NCNetworking.shared.convertLivePhoto(metadata: metadata)
-        }
-
-        if metadata.isAudioOrVideo {
-           cell.imageStatus.image = playImage
-        } else if metadata.isLivePhoto {
-            cell.imageStatus.image = livePhotoImage
-        } else {
-            cell.imageStatus.image = nil
-        }
-
-        if isEditMode, selectOcId.contains(metadata.ocId) {
-            cell.selected(true)
-        } else {
-            cell.selected(false)
-        }
-
-        return cell
-    }
-}
-
-// MARK: -
-
-extension NCMedia: NCMediaLayoutDelegate {
-    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, heightForHeaderInSection section: Int) -> Float {
-        var height: Double = 0
-        if metadatas?.count ?? 0 == 0 {
-            height = NCGlobal.shared.getHeightHeaderEmptyData(view: view, portraitOffset: 0, landscapeOffset: -20)
-        }
-        return Float(height)
-    }
-
-    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, heightForFooterInSection section: Int) -> Float {
-        return .zero
-    }
-
-    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, insetForSection section: Int) -> UIEdgeInsets {
-        return .zero
-    }
-
-    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, insetForHeaderInSection section: Int) -> UIEdgeInsets {
-        return .zero
-    }
-
-    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, insetForFooterInSection section: Int) -> UIEdgeInsets {
-        return .zero
-    }
-
-    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, minimumInteritemSpacingForSection section: Int) -> Float {
-        return .zero
-    }
-
-    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath, columnCount: Int, mediaLayout: String) -> CGSize {
-        let size = CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
-        if mediaLayout == NCGlobal.shared.mediaLayoutRatio {
-            guard let metadatas = self.metadatas,
-                  let metadata = metadatas[indexPath.row] else { return size }
-
-            if metadata.imageSize != CGSize.zero {
-                return metadata.imageSize
-            } else if let size = imageCache.getMediaSize(ocId: metadata.ocId, etag: metadata.etag) {
-                return size
-            }
-        }
-        return size
     }
 }
 

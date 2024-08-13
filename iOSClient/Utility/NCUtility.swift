@@ -30,10 +30,9 @@ import Photos
 import Alamofire
 
 class NCUtility: NSObject {
-
     let utilityFileSystem = NCUtilityFileSystem()
 
-    @objc func isSimulatorOrTestFlight() -> Bool {
+    func isSimulatorOrTestFlight() -> Bool {
         guard let path = Bundle.main.appStoreReceiptURL?.path else {
             return false
         }
@@ -47,17 +46,16 @@ class NCUtility: NSObject {
         return path.contains("CoreSimulator")
     }
 
-    func isRichDocument(_ metadata: tableMetadata) -> Bool {
-        guard let mimeType = CCUtility.getMimeType(metadata.fileNameView) else {
-            return true
-        }
-
-        // contentype
+    func isTypeFileRichDocument(_ metadata: tableMetadata) -> Bool {
+        guard metadata.fileNameView != "." else { return false }
+        let fileExtension = (metadata.fileNameView as NSString).pathExtension
+        guard !fileExtension.isEmpty else { return false }
+        guard let mimeType = UTType(tag: fileExtension.uppercased(), tagClass: .filenameExtension, conformingTo: nil)?.identifier else { return false }
+        /// contentype
         if !NCGlobal.shared.capabilityRichDocumentsMimetypes.filter({ $0.contains(metadata.contentType) || $0.contains("text/plain") }).isEmpty {
             return true
         }
-
-        // mimetype
+        /// mimetype
         if !NCGlobal.shared.capabilityRichDocumentsMimetypes.isEmpty && mimeType.components(separatedBy: ".").count > 2 {
             let mimeTypeArray = mimeType.components(separatedBy: ".")
             let mimeType = mimeTypeArray[mimeTypeArray.count - 2] + "." + mimeTypeArray[mimeTypeArray.count - 1]
@@ -65,27 +63,20 @@ class NCUtility: NSObject {
                 return true
             }
         }
-
         return false
     }
 
-    func isDirectEditing(account: String, contentType: String) -> [String] {
-
+    func editorsDirectEditing(account: String, contentType: String) -> [String] {
         var editor: [String] = []
-
-        guard let results = NCManageDatabase.shared.getDirectEditingEditors(account: account) else {
-            return editor
-        }
+        guard let results = NCManageDatabase.shared.getDirectEditingEditors(account: account) else { return editor }
 
         for result: tableDirectEditingEditors in results {
             for mimetype in result.mimetypes {
                 if mimetype == contentType {
                     editor.append(result.editor)
                 }
-
                 // HARDCODE
                 // https://github.com/nextcloud/text/issues/913
-
                 if mimetype == "text/markdown" && contentType == "text/x-markdown" {
                     editor.append(result.editor)
                 }
@@ -99,12 +90,10 @@ class NCUtility: NSObject {
                 }
             }
         }
-
         return Array(Set(editor))
     }
 
     func permissionsContainsString(_ metadataPermissions: String, permissions: String) -> Bool {
-
         for char in permissions {
             if metadataPermissions.contains(char) == false {
                 return false
@@ -126,7 +115,6 @@ class NCUtility: NSObject {
     }
 
     func getCustomUserAgentOnlyOffice() -> String {
-
         let appVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString")!
         if UIDevice.current.userInterfaceIdiom == .pad {
             return "Mozilla/5.0 (iPad) Nextcloud-iOS/\(appVersion)"
@@ -135,58 +123,17 @@ class NCUtility: NSObject {
         }
     }
 
-    @objc func isQuickLookDisplayable(metadata: tableMetadata) -> Bool {
+    func isQuickLookDisplayable(metadata: tableMetadata) -> Bool {
         return true
     }
 
-    @objc func ocIdToFileId(ocId: String?) -> String? {
-
+    func ocIdToFileId(ocId: String?) -> String? {
         guard let ocId = ocId else { return nil }
-
         let items = ocId.components(separatedBy: "oc")
+
         if items.count < 2 { return nil }
         guard let intFileId = Int(items[0]) else { return nil }
         return String(intFileId)
-    }
-
-    func getUserStatus(userIcon: String?, userStatus: String?, userMessage: String?) -> (onlineStatus: UIImage?, statusMessage: String, descriptionMessage: String) {
-
-        var onlineStatus: UIImage?
-        var statusMessage: String = ""
-        var descriptionMessage: String = ""
-        var messageUserDefined: String = ""
-
-        if userStatus?.lowercased() == "online" {
-            onlineStatus = UIImage(named: "circle_fill")!.image(color: UIColor(red: 103.0 / 255.0, green: 176.0 / 255.0, blue: 134.0 / 255.0, alpha: 1.0), size: 50)
-            messageUserDefined = NSLocalizedString("_online_", comment: "")
-        }
-        if userStatus?.lowercased() == "away" {
-            onlineStatus = UIImage(named: "userStatusAway")!.image(color: UIColor(red: 233.0 / 255.0, green: 166.0 / 255.0, blue: 75.0 / 255.0, alpha: 1.0), size: 50)
-            messageUserDefined = NSLocalizedString("_away_", comment: "")
-        }
-        if userStatus?.lowercased() == "dnd" {
-            onlineStatus = UIImage(named: "userStatusDnd")?.resizeImage(size: CGSize(width: 100, height: 100), isAspectRation: false)
-            messageUserDefined = NSLocalizedString("_dnd_", comment: "")
-            descriptionMessage = NSLocalizedString("_dnd_description_", comment: "")
-        }
-        if userStatus?.lowercased() == "offline" || userStatus?.lowercased() == "invisible" {
-            onlineStatus = UIImage(named: "userStatusOffline")!.withTintColor(.init(named: "SystemBackgroundInverted")!)
-            messageUserDefined = NSLocalizedString("_invisible_", comment: "")
-            descriptionMessage = NSLocalizedString("_invisible_description_", comment: "")
-        }
-
-        if let userIcon = userIcon {
-            statusMessage = userIcon + " "
-        }
-        if let userMessage = userMessage {
-            statusMessage += userMessage
-        }
-        statusMessage = statusMessage.trimmingCharacters(in: .whitespaces)
-        if statusMessage.isEmpty {
-            statusMessage = messageUserDefined
-        }
-
-        return(onlineStatus, statusMessage, descriptionMessage)
     }
 
     @objc func getVersionApp(withBuild: Bool = true) -> String {
@@ -207,7 +154,6 @@ class NCUtility: NSObject {
      */
 
     func compare(tolerance: Float, expected: Data, observed: Data) throws -> Bool {
-
         enum customError: Error {
             case unableToGetUIImageFromData
             case unableToGetCGImageFromData
@@ -311,12 +257,9 @@ class NCUtility: NSObject {
     // https://stackoverflow.com/questions/27556807/swift-pointer-problems-with-mach-task-basic-info/27559770#27559770
 
     func getMemoryUsedAndDeviceTotalInMegabytes() -> (Float, Float) {
-
         var usedmegabytes: Float = 0
-
         let totalbytes = Float(ProcessInfo.processInfo.physicalMemory)
         let totalmegabytes = totalbytes / 1024.0 / 1024.0
-
         var info = mach_task_basic_info()
         var count = mach_msg_type_number_t(MemoryLayout<mach_task_basic_info>.size) / 4
 
@@ -340,7 +283,6 @@ class NCUtility: NSObject {
     }
 
     func removeForbiddenCharacters(_ fileName: String) -> String {
-
         var fileName = fileName
         for character in NCGlobal.shared.forbiddenCharacters {
             fileName = fileName.replacingOccurrences(of: character, with: "")

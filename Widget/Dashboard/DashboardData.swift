@@ -21,6 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+import UIKit
 import WidgetKit
 import Intents
 import NextcloudKit
@@ -75,7 +76,6 @@ func getDashboardItems(displaySize: CGSize, withButton: Bool) -> Int {
 }
 
 func convertDataToImage(data: Data?, size: CGSize, fileNameToWrite: String?) -> UIImage? {
-
     guard let data = data else { return nil }
     var imageData: UIImage?
 
@@ -97,7 +97,6 @@ func convertDataToImage(data: Data?, size: CGSize, fileNameToWrite: String?) -> 
 }
 
 func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: DashboardDataEntry) -> Void) {
-
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
     let dashboardItems = getDashboardItems(displaySize: displaySize, withButton: false)
@@ -169,8 +168,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
     let titleImage = imagetmp
 
     let options = NKRequestOptions(timeout: 90, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-    NextcloudKit.shared.getDashboardWidgetsApplication(id, options: options) { _, results, data, error in
-
+    NextcloudKit.shared.getDashboardWidgetsApplication(id, account: account.account, options: options) { _, results, data, error in
         Task {
             var datas = [DashboardData]()
             var numberItems = 0
@@ -227,8 +225,9 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
                                     if FileManager().fileExists(atPath: fileNamePath), let image = UIImage(contentsOfFile: fileNamePath) {
                                         icon = image
                                     } else {
-                                        let (_, data, _) = await NextcloudKit.shared.getPreview(url: url)
-                                        if let image = convertDataToImage(data: data, size: CGSize(width: 256, height: 256), fileNameToWrite: fileName) {
+                                        let (_, data, error) = await NCNetworking.shared.downloadPreview(url: url, account: account.account)
+                                        if error == .success,
+                                           let image = convertDataToImage(data: data, size: CGSize(width: 256, height: 256), fileNameToWrite: fileName) {
                                             icon = image
                                         }
                                     }

@@ -23,7 +23,6 @@
 
 #import "NCEndToEndEncryption.h"
 #import "NCBridgeSwift.h"
-#import "CCUtility.h"
 
 #import <CommonCrypto/CommonDigest.h>
 #import <CommonCrypto/CommonKeyDerivation.h>
@@ -62,13 +61,13 @@
 @implementation NCEndToEndEncryption
 
 //Singleton
-+ (instancetype)sharedManager {
-    static NCEndToEndEncryption *NCEndToEndEncryption = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        NCEndToEndEncryption = [self new];
++ (instancetype)shared {
+    static dispatch_once_t once;
+    static NCEndToEndEncryption *shared;
+    dispatch_once(&once, ^{
+        shared = [self new];
     });
-    return NCEndToEndEncryption;
+    return shared;
 }
 
 #
@@ -77,29 +76,30 @@
 
 - (BOOL)generateCertificateX509WithUserId:(NSString *)userId directory:(NSString *)directory
 {
-    OPENSSL_init();
-    
-    int ret;
-    EVP_PKEY * pkey;
-    pkey = EVP_PKEY_new();
-    RSA * rsa;
-    BIGNUM *bignum = BN_new();
-    ret = BN_set_word(bignum, RSA_F4);
-    if (ret != 1) {
-        return NO;
+    EVP_PKEY_CTX *ctx = EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, NULL);
+    if (!ctx) {
+        return FALSE;
     }
 
-    rsa = RSA_new();
-    ret = RSA_generate_key_ex(rsa, 2048, bignum, NULL);
-    if (ret != 1) {
-        return NO;
+    // Generate an new RSA KEY
+    if (EVP_PKEY_keygen_init(ctx) <= 0) {
+        EVP_PKEY_CTX_free(ctx);
+        return FALSE;
     }
-    
-    EVP_PKEY_assign_RSA(pkey, rsa);
-    
-    X509 * x509;
-    x509 = X509_new();
-    
+
+    if (EVP_PKEY_CTX_set_rsa_keygen_bits(ctx, 2048) <= 0) {
+        EVP_PKEY_CTX_free(ctx);
+        return FALSE;
+    }
+
+    EVP_PKEY *pkey = NULL;
+    if (EVP_PKEY_keygen(ctx, &pkey) <= 0) {
+        EVP_PKEY_CTX_free(ctx);
+        return FALSE;
+    }
+
+    X509 *x509 = X509_new();
+
     ASN1_INTEGER_set(X509_get_serialNumber(x509), 1);
     
     long notBefore = [[NSDate date] timeIntervalSinceDate:[NSDate date]];
@@ -1382,22 +1382,6 @@
         [output appendFormat:@"%02x", digest[i]];
     
     return output;
-}
-
-- (NSData *)hashValueMD5OfData:(NSData *)data
-{
-    MD5_CTX md5Ctx;
-    unsigned char hashValue[MD5_DIGEST_LENGTH];
-    if(!MD5_Init(&md5Ctx)) {
-        return nil;
-    }
-    if (!MD5_Update(&md5Ctx, data.bytes, data.length)) {
-        return nil;
-    }
-    if (!MD5_Final(hashValue, &md5Ctx)) {
-        return nil;
-    }
-    return [NSData dataWithBytes:hashValue length:MD5_DIGEST_LENGTH];
 }
 
 - (NSString *)hexadecimalString:(NSData *)input

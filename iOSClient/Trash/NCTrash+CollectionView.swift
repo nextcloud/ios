@@ -21,8 +21,8 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import Realm
 import UIKit
+import RealmSwift
 
 // MARK: UICollectionViewDelegate
 extension NCTrash: UICollectionViewDelegate {
@@ -82,7 +82,7 @@ extension NCTrash: UICollectionViewDataSource {
         } else {
             if tableTrash.hasPreview && !utilityFileSystem.fileProviderStoragePreviewIconExists(tableTrash.fileId, etag: tableTrash.fileName) {
                 if NCNetworking.shared.downloadThumbnailTrashQueue.operations.filter({ ($0 as? NCOperationDownloadThumbnailTrash)?.fileId == tableTrash.fileId }).isEmpty {
-                    NCNetworking.shared.downloadThumbnailTrashQueue.addOperation(NCOperationDownloadThumbnailTrash(tableTrash: tableTrash, fileId: tableTrash.fileId, cell: cell, collectionView: collectionView))
+                    NCNetworking.shared.downloadThumbnailTrashQueue.addOperation(NCOperationDownloadThumbnailTrash(tableTrash: tableTrash, fileId: tableTrash.fileId, account: appDelegate.account, cell: cell, collectionView: collectionView))
                 }
             }
         }
@@ -90,10 +90,7 @@ extension NCTrash: UICollectionViewDataSource {
         cell.indexPath = indexPath
         cell.objectId = tableTrash.fileId
         cell.setupCellUI(tableTrash: tableTrash, image: image)
-        cell.selectMode(isEditMode)
-        if isEditMode {
-            cell.selected(selectOcId.contains(tableTrash.fileId))
-        }
+        cell.selected(selectOcId.contains(tableTrash.fileId), isEditMode: isEditMode)
 
         return cell
     }
@@ -138,8 +135,8 @@ extension NCTrash: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         if kind == UICollectionView.elementKindSectionHeader {
-            guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderEmptyData", for: indexPath) as? NCSectionHeaderEmptyData
-            else { return NCSectionHeaderEmptyData() }
+            guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeaderEmptyData", for: indexPath) as? NCSectionFirstHeaderEmptyData
+            else { return NCSectionFirstHeaderEmptyData() }
             header.emptyImage.image = utility.loadImage(named: "trash", colors: [NCBrandColor.shared.brandElement])
             header.emptyTitle.text = NSLocalizedString("_trash_no_trash_", comment: "")
             header.emptyDescription.text = NSLocalizedString("_trash_no_trash_description_", comment: "")

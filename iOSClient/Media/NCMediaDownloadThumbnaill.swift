@@ -26,10 +26,8 @@ import NextcloudKit
 import Queuer
 
 class NCMediaDownloadThumbnaill: ConcurrentOperation {
-
     var metadata: tableMetadata
     var media: NCMedia
-    var fileNamePath: String
     var fileNamePreviewLocalPath: String
     var fileNameIconLocalPath: String
     let utilityFileSystem = NCUtilityFileSystem()
@@ -37,14 +35,12 @@ class NCMediaDownloadThumbnaill: ConcurrentOperation {
     init(metadata: tableMetadata, media: NCMedia) {
         self.metadata = tableMetadata.init(value: metadata)
         self.media = media
-        self.fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
         self.fileNamePreviewLocalPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
         self.fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
     }
 
     override func start() {
         guard !isCancelled else { return self.finish() }
-
         var etagResource: String?
         let sizePreview = NCUtility().getSizePreview(width: metadata.width, height: metadata.height)
 
@@ -52,32 +48,32 @@ class NCMediaDownloadThumbnaill: ConcurrentOperation {
             etagResource = metadata.etagResource
         }
 
-        NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: fileNamePath,
+        NextcloudKit.shared.downloadPreview(fileId: metadata.fileId,
                                             fileNamePreviewLocalPath: fileNamePreviewLocalPath,
+                                            fileNameIconLocalPath: fileNameIconLocalPath,
                                             widthPreview: Int(sizePreview.width),
                                             heightPreview: Int(sizePreview.height),
-                                            fileNameIconLocalPath: fileNameIconLocalPath,
                                             sizeIcon: NCGlobal.shared.sizeIcon,
                                             etag: etagResource,
+                                            account: metadata.account,
                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imagePreview, _, _, etag, error in
-
-            if error == .success, let image = imagePreview {
+            if error == .success, let imagePreview {
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
                 DispatchQueue.main.async {
                     if let visibleCells = self.media.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.media.collectionView?.cellForItem(at: $0) }) {
                         for case let cell as NCGridMediaCell in visibleCells {
-                            if cell.ocId == self.metadata.ocId, let filePreviewImageView = cell.imageItem {
-                                UIView.transition(with: filePreviewImageView,
+                            if cell.ocId == self.metadata.ocId, let imageItem = cell.imageItem {
+                                UIView.transition(with: imageItem,
                                                   duration: 0.75,
                                                   options: .transitionCrossDissolve,
-                                                  animations: { filePreviewImageView.image = image },
+                                                  animations: { imageItem.image = imagePreview },
                                                   completion: nil)
                                 break
                             }
                         }
                     }
                 }
-                NCImageCache.shared.setMediaSize(ocId: self.metadata.ocId, etag: self.metadata.etag, size: image.size)
+                NCImageCache.shared.addPreviewImageCache(metadata: self.metadata, image: imagePreview)
             }
             self.finish()
         }

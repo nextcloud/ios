@@ -22,8 +22,9 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-import UIKit
 import Foundation
+import UIKit
+import SwiftUI
 import NextcloudKit
 import DropDown
 
@@ -68,6 +69,7 @@ class NCUserStatus: UIViewController {
 
     private let borderWidthButton: CGFloat = 1.5
     private let borderColorButton: CGColor = NCBrandColor.shared.brandElement.cgColor
+    private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
     // MARK: - View Life Cycle
 
@@ -80,13 +82,13 @@ class NCUserStatus: UIViewController {
         view.backgroundColor = .systemBackground
         tableView.backgroundColor = .systemBackground
 
-        buttonCancel.title = NSLocalizedString("_close_", comment: "")
+        buttonCancel.image = utility.loadImage(named: "xmark", colors: [NCBrandColor.shared.iconImageColor])
 
         onlineButton.layer.cornerRadius = 10
         onlineButton.layer.masksToBounds = true
         onlineButton.backgroundColor = .systemGray5
         let onLine = utility.getUserStatus(userIcon: nil, userStatus: "online", userMessage: nil)
-        onlineImage.image = onLine.onlineStatus
+        onlineImage.image = onLine.statusImage
         onlineLabel.text = onLine.statusMessage
         onlineLabel.textColor = NCBrandColor.shared.textColor
 
@@ -94,7 +96,7 @@ class NCUserStatus: UIViewController {
         awayButton.layer.masksToBounds = true
         awayButton.backgroundColor = .systemGray5
         let away = utility.getUserStatus(userIcon: nil, userStatus: "away", userMessage: nil)
-        awayImage.image = away.onlineStatus
+        awayImage.image = away.statusImage
         awayLabel.text = away.statusMessage
         awayLabel.textColor = NCBrandColor.shared.textColor
 
@@ -102,7 +104,7 @@ class NCUserStatus: UIViewController {
         dndButton.layer.masksToBounds = true
         dndButton.backgroundColor = .systemGray5
         let dnd = utility.getUserStatus(userIcon: nil, userStatus: "dnd", userMessage: nil)
-        dndImage.image = dnd.onlineStatus
+        dndImage.image = dnd.statusImage
         dndLabel.text = dnd.statusMessage
         dndLabel.textColor = NCBrandColor.shared.textColor
         dndDescrLabel.text = dnd.descriptionMessage
@@ -112,7 +114,7 @@ class NCUserStatus: UIViewController {
         invisibleButton.layer.masksToBounds = true
         invisibleButton.backgroundColor = .systemGray5
         let invisible = utility.getUserStatus(userIcon: nil, userStatus: "invisible", userMessage: nil)
-        invisibleImage.image = invisible.onlineStatus
+        invisibleImage.image = invisible.statusImage
         invisibleLabel.text = invisible.statusMessage
         invisibleLabel.textColor = NCBrandColor.shared.textColor
         invisibleDescrLabel.text = invisible.descriptionMessage
@@ -171,10 +173,8 @@ class NCUserStatus: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        NextcloudKit.shared.getUserStatus { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, _, _, error in
-
+        NextcloudKit.shared.getUserStatus(account: appDelegate.account) { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, _, _, error in
             if error == .success {
-
                 NCManageDatabase.shared.setAccountUserStatus(userStatusClearAt: clearAt, userStatusIcon: icon, userStatusMessage: message, userStatusMessageId: messageId, userStatusMessageIsPredefined: messageIsPredefined, userStatusStatus: status, userStatusStatusIsUserDefined: statusIsUserDefined, account: account)
             }
         }
@@ -197,7 +197,6 @@ class NCUserStatus: UIViewController {
     }
 
     @IBAction func actionOnline(_ sender: UIButton) {
-
         self.onlineButton.layer.borderWidth = self.borderWidthButton
         self.onlineButton.layer.borderColor = self.borderColorButton
         self.awayButton.layer.borderWidth = 0
@@ -207,13 +206,12 @@ class NCUserStatus: UIViewController {
         self.invisibleButton.layer.borderWidth = 0
         self.invisibleButton.layer.borderColor = nil
 
-        NextcloudKit.shared.setUserStatus(status: "online") { _, error in
+        NextcloudKit.shared.setUserStatus(status: "online", account: appDelegate.account) { _, error in
             self.dismissIfError(error)
         }
     }
 
     @IBAction func actionAway(_ sender: UIButton) {
-
         self.onlineButton.layer.borderWidth = 0
         self.onlineButton.layer.borderColor = nil
         self.awayButton.layer.borderWidth = self.borderWidthButton
@@ -223,13 +221,12 @@ class NCUserStatus: UIViewController {
         self.invisibleButton.layer.borderWidth = 0
         self.invisibleButton.layer.borderColor = nil
 
-        NextcloudKit.shared.setUserStatus(status: "away") { _, error in
+        NextcloudKit.shared.setUserStatus(status: "away", account: appDelegate.account) { _, error in
             self.dismissIfError(error)
         }
     }
 
     @IBAction func actionDnd(_ sender: UIButton) {
-
         self.onlineButton.layer.borderWidth = 0
         self.onlineButton.layer.borderColor = nil
         self.awayButton.layer.borderWidth = 0
@@ -239,13 +236,12 @@ class NCUserStatus: UIViewController {
         self.invisibleButton.layer.borderWidth = 0
         self.invisibleButton.layer.borderColor = nil
 
-        NextcloudKit.shared.setUserStatus(status: "dnd") { _, error in
+        NextcloudKit.shared.setUserStatus(status: "dnd", account: appDelegate.account) { _, error in
             self.dismissIfError(error)
         }
     }
 
     @IBAction func actionInvisible(_ sender: UIButton) {
-
         self.onlineButton.layer.borderWidth = 0
         self.onlineButton.layer.borderColor = nil
         self.awayButton.layer.borderWidth = 0
@@ -255,13 +251,12 @@ class NCUserStatus: UIViewController {
         self.invisibleButton.layer.borderWidth = self.borderWidthButton
         self.invisibleButton.layer.borderColor = self.borderColorButton
 
-        NextcloudKit.shared.setUserStatus(status: "invisible") { _, error in
+        NextcloudKit.shared.setUserStatus(status: "invisible", account: appDelegate.account) { _, error in
             self.dismissIfError(error)
         }
     }
 
     @objc func actionClearStatusMessageAfterText(sender: UITapGestureRecognizer) {
-
         let dropDown = DropDown()
         let appearance = DropDown.appearance()
         let clearStatusMessageAfterTextBackup = clearStatusMessageAfterText.text
@@ -307,9 +302,7 @@ class NCUserStatus: UIViewController {
     }
 
     @IBAction func actionClearStatusMessage(_ sender: UIButton) {
-
-        NextcloudKit.shared.clearMessage { _, error in
-
+        NextcloudKit.shared.clearMessage(account: appDelegate.account) { _, error in
             if error != .success {
                 NCContentPresenter().showError(error: error)
             }
@@ -319,11 +312,9 @@ class NCUserStatus: UIViewController {
     }
 
     @IBAction func actionSetStatusMessage(_ sender: UIButton) {
-
         guard let message = statusMessageTextField.text else { return }
 
-        NextcloudKit.shared.setCustomMessageUserDefined(statusIcon: statusMessageEmojiTextField.text, message: message, clearAt: clearAtTimestamp) { _, error in
-
+        NextcloudKit.shared.setCustomMessageUserDefined(statusIcon: statusMessageEmojiTextField.text, message: message, clearAt: clearAtTimestamp, account: appDelegate.account) { _, error in
             if error != .success {
                 NCContentPresenter().showError(error: error)
             }
@@ -335,19 +326,15 @@ class NCUserStatus: UIViewController {
     // MARK: - Networking
 
     func getStatus() {
-
-        NextcloudKit.shared.getUserStatus { _, clearAt, icon, message, _, _, status, _, _, _, error in
-
+        NextcloudKit.shared.getUserStatus(account: appDelegate.account) { account, clearAt, icon, message, _, _, status, _, _, _, error in
             if error == .success || error.errorCode == NCGlobal.shared.errorResourceNotFound {
 
                 if icon != nil {
                     self.statusMessageEmojiTextField.text = icon
                 }
-
                 if message != nil {
                     self.statusMessageTextField.text = message
                 }
-
                 if clearAt != nil {
                     self.clearStatusMessageAfterText.text = "  " + self.getPredefinedClearStatusText(clearAt: clearAt, clearAtTime: nil, clearAtType: nil)
                 }
@@ -369,10 +356,8 @@ class NCUserStatus: UIViewController {
                     print("No status")
                 }
 
-                NextcloudKit.shared.getUserStatusPredefinedStatuses { _, userStatuses, _, error in
-
+                NextcloudKit.shared.getUserStatusPredefinedStatuses(account: account) { _, userStatuses, _, error in
                     if error == .success {
-
                         if let userStatuses = userStatuses {
                             self.statusPredefinedStatuses = userStatuses
                         }
@@ -392,12 +377,10 @@ class NCUserStatus: UIViewController {
     // MARK: - Algorithms
 
     func getClearAt(_ clearAtString: String) -> Double {
-
         let now = Date()
         let calendar = Calendar.current
         let gregorian = Calendar(identifier: .gregorian)
         let midnight = calendar.startOfDay(for: now)
-
         guard let tomorrow = calendar.date(byAdding: .day, value: 1, to: midnight) else { return 0 }
         guard let startweek = gregorian.date(from: gregorian.dateComponents([.yearForWeekOfYear, .weekOfYear], from: now)) else { return 0 }
         guard let endweek = gregorian.date(byAdding: .day, value: 6, to: startweek) else { return 0 }
@@ -423,14 +406,11 @@ class NCUserStatus: UIViewController {
         }
     }
 
-    func getPredefinedClearStatusText(clearAt: NSDate?, clearAtTime: String?, clearAtType: String?) -> String {
-
+    func getPredefinedClearStatusText(clearAt: Date?, clearAtTime: String?, clearAtType: String?) -> String {
         // Date
-        if clearAt != nil {
-
+        if let clearAt {
             let from = Date()
-            let to = clearAt! as Date
-
+            let to = clearAt
             let day = Calendar.current.dateComponents([.day], from: from, to: to).day ?? 0
             let hour = Calendar.current.dateComponents([.hour], from: from, to: to).hour ?? 0
             let minute = Calendar.current.dateComponents([.minute], from: from, to: to).minute ?? 0
@@ -452,10 +432,8 @@ class NCUserStatus: UIViewController {
                 return "\(minute) " + NSLocalizedString("_minutes_", comment: "")
             }
         }
-
         // Period
-        if clearAtTime != nil && clearAtType == "period" {
-
+        if let clearAtTime, clearAtType == "period" {
             switch clearAtTime {
             case "3600":
                 return NSLocalizedString("_an_hour_", comment: "")
@@ -465,11 +443,9 @@ class NCUserStatus: UIViewController {
                 return NSLocalizedString("_dont_clear_", comment: "")
             }
         }
-
         // End of
-        if clearAtTime != nil && clearAtType == "end-of" {
-
-            return NSLocalizedString(clearAtTime!, comment: "")
+        if let clearAtTime, clearAtType == "end-of" {
+            return NSLocalizedString(clearAtTime, comment: "")
         }
 
         return NSLocalizedString("_dont_clear_", comment: "")
@@ -477,20 +453,15 @@ class NCUserStatus: UIViewController {
 }
 
 extension NCUserStatus: UITextFieldDelegate {
-
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-
         if textField is emojiTextField {
-
             if string.isEmpty {
                 textField.text = "😀"
                 return false
             }
-
             textField.text = string
             textField.endEditing(true)
         }
-
         return true
     }
 
@@ -501,7 +472,6 @@ extension NCUserStatus: UITextFieldDelegate {
 }
 
 class emojiTextField: UITextField {
-
     override var textInputContextIdentifier: String? { "" } // return non-nil to show the Emoji keyboard ¯\_(ツ)_/¯
 
     override var textInputMode: UITextInputMode? {
@@ -515,13 +485,11 @@ class emojiTextField: UITextField {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-
         commonInit()
     }
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-
         commonInit()
     }
 
@@ -541,24 +509,19 @@ class emojiTextField: UITextField {
 }
 
 extension NCUserStatus: UITableViewDelegate {
-
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 45
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-
         guard let cell = tableView.cellForRow(at: indexPath) else { return }
         let status = statusPredefinedStatuses[indexPath.row]
 
         if let messageId = status.id {
-
-            NextcloudKit.shared.setCustomMessagePredefined(messageId: messageId, clearAt: 0) { _, error in
-
+            NextcloudKit.shared.setCustomMessagePredefined(messageId: messageId, clearAt: 0, account: appDelegate.account) { _, error in
                 cell.isSelected = false
 
                 if error == .success {
-
                     let clearAtTimestampString = self.getPredefinedClearStatusText(clearAt: status.clearAt, clearAtTime: status.clearAtTime, clearAtType: status.clearAtType)
 
                     self.statusMessageEmojiTextField.text = status.icon
@@ -574,34 +537,52 @@ extension NCUserStatus: UITableViewDelegate {
 }
 
 extension NCUserStatus: UITableViewDataSource {
-
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return statusPredefinedStatuses.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-        cell.backgroundColor = tableView.backgroundColor
-
         let status = statusPredefinedStatuses[indexPath.row]
-
         let icon = cell.viewWithTag(10) as? UILabel
         let message = cell.viewWithTag(20) as? UILabel
-
-        icon?.text = status.icon
         var timeString = getPredefinedClearStatusText(clearAt: status.clearAt, clearAtTime: status.clearAtTime, clearAtType: status.clearAtType)
 
-        if let messageText = status.message {
+        cell.backgroundColor = tableView.backgroundColor
+        icon?.text = status.icon
 
+        if let messageText = status.message {
             message?.text = messageText
             timeString = " - " + timeString
-
             let attributedString: NSMutableAttributedString = NSMutableAttributedString(string: messageText + timeString)
             attributedString.setColor(color: .lightGray, font: UIFont.systemFont(ofSize: 15), forText: timeString)
             message?.attributedText = attributedString
         }
 
         return cell
+    }
+}
+
+struct UserStatusView: UIViewControllerRepresentable {
+    @Binding var showUserStatus: Bool
+
+    class Coordinator: NSObject {
+        var parent: UserStatusView
+
+        init(_ parent: UserStatusView) {
+            self.parent = parent
+        }
+    }
+
+    func makeUIViewController(context: Context) -> UINavigationController {
+        let storyboard = UIStoryboard(name: "NCUserStatus", bundle: nil)
+        let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController
+        return navigationController!
+    }
+
+    func updateUIViewController(_ uiViewController: UINavigationController, context: Context) { }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
     }
 }

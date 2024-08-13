@@ -26,7 +26,6 @@ import RealmSwift
 import NextcloudKit
 
 class NCDBLayoutForView: Object {
-
     @Persisted(primaryKey: true) var index = ""
     @Persisted var account = ""
     @Persisted var keyStore = ""
@@ -36,14 +35,23 @@ class NCDBLayoutForView: Object {
     @Persisted var groupBy: String = "none"
     @Persisted var directoryOnTop: Bool = true
     @Persisted var titleButtonHeader: String = "_sorted_by_name_a_z_"
-    @Persisted var itemForLine: Int = 3
+    @Persisted var columnGrid: Int = 3
+    @Persisted var columnPhoto: Int = 3
 }
 
 extension NCManageDatabase {
-
     @discardableResult
-    func setLayoutForView(account: String, key: String, serverUrl: String, layout: String? = nil, sort: String? = nil, ascending: Bool? = nil, groupBy: String? = nil, directoryOnTop: Bool? = nil, titleButtonHeader: String? = nil, itemForLine: Int? = nil) -> NCDBLayoutForView? {
-
+    func setLayoutForView(account: String,
+                          key: String,
+                          serverUrl: String,
+                          layout: String? = nil,
+                          sort: String? = nil,
+                          ascending: Bool? = nil,
+                          groupBy: String? = nil,
+                          directoryOnTop: Bool? = nil,
+                          titleButtonHeader: String? = nil,
+                          columnGrid: Int? = nil,
+                          columnPhoto: Int? = nil) -> NCDBLayoutForView? {
         var keyStore = key
         if !serverUrl.isEmpty { keyStore = serverUrl}
         let index = account + " " + keyStore
@@ -59,42 +67,43 @@ extension NCManageDatabase {
                 }
                 addObject.account = account
                 addObject.keyStore = keyStore
-                if let layout = layout {
+                if let layout {
                     addObject.layout = layout
                 }
-                if let sort = sort {
+                if let sort {
                     addObject.sort = sort
                 }
-                if let sort = sort {
+                if let sort {
                     addObject.sort = sort
                 }
-                if let ascending = ascending {
+                if let ascending {
                     addObject.ascending = ascending
                 }
-                if let groupBy = groupBy {
+                if let groupBy {
                     addObject.groupBy = groupBy
                 }
-                if let directoryOnTop = directoryOnTop {
+                if let directoryOnTop {
                     addObject.directoryOnTop = directoryOnTop
                 }
-                if let titleButtonHeader = titleButtonHeader {
+                if let titleButtonHeader {
                     addObject.titleButtonHeader = titleButtonHeader
                 }
-                if let itemForLine = itemForLine {
-                    addObject.itemForLine = itemForLine
+                if let columnGrid {
+                    addObject.columnGrid = columnGrid
+                }
+                if let columnPhoto {
+                    addObject.columnPhoto = columnPhoto
                 }
                 realm.add(addObject, update: .all)
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
-
         return NCDBLayoutForView(value: addObject)
     }
 
     @discardableResult
     func setLayoutForView(layoutForView: NCDBLayoutForView) -> NCDBLayoutForView? {
-
         let result = NCDBLayoutForView(value: layoutForView)
 
         do {
@@ -110,7 +119,6 @@ extension NCManageDatabase {
     }
 
     func getLayoutForView(account: String, key: String, serverUrl: String) -> NCDBLayoutForView? {
-
         var keyStore = key
         if !serverUrl.isEmpty { keyStore = serverUrl}
         let index = account + " " + keyStore
@@ -126,7 +134,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return setLayoutForView(account: account, key: key, serverUrl: serverUrl)
     }
 }

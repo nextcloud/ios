@@ -32,17 +32,18 @@ extension NCNetworking {
                          serverUrl: String,
                          add: Bool,
                          completion: @escaping (_ errorCode: Int, _ items: Int) -> Void = { _, _ in }) {
-
         let startDate = Date()
         let options = NKRequestOptions(timeout: 120, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
                                              depth: "infinity",
                                              showHiddenFiles: NCKeychain().showHiddenFiles,
+                                             account: account,
                                              options: options) { resultAccount, files, _, error in
-
             guard account == resultAccount else { return }
             var metadatasDirectory: [tableMetadata] = []
             var metadatasSynchronizationOffline: [tableMetadata] = []
+
             if !add {
                 if NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "account == %@ AND sessionSelector == %@ AND (status == %d OR status == %d)", account, NCGlobal.shared.selectorSynchronizationOffline, NCGlobal.shared.metadataStatusWaitDownload, NCGlobal.shared.metadataStatusDownloading)) != nil { return }
             }

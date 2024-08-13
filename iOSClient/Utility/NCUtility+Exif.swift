@@ -20,6 +20,7 @@
 //
 
 import Foundation
+import UIKit
 
 public struct ExifData {
     var colorModel: String?

@@ -20,7 +20,6 @@
 //
 
 import UIKit
-import OpenSSL
 import NextcloudKit
 import CFNetwork
 import Alamofire
@@ -69,7 +68,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
                 return errorDownloadMetadata
             }
 
-            NCEndToEndEncryption.sharedManager()?.encodedkey(&key, initializationVector: &initializationVector)
+            NCEndToEndEncryption.shared().encodedkey(&key, initializationVector: &initializationVector)
             guard let key = key as? String, let initializationVector = initializationVector as? String else {
                 return NKError(errorCode: NCGlobal.shared.errorE2EEEncodedKey, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
             }
@@ -80,7 +79,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
                 object.metadataKey = results.metadataKey
                 object.metadataKeyIndex = results.metadataKeyIndex
             } else {
-                guard let key = NCEndToEndEncryption.sharedManager()?.generateKey() as NSData? else {
+                guard let key = NCEndToEndEncryption.shared().generateKey() as NSData? else {
                     return NKError(errorCode: NCGlobal.shared.errorE2EEGenerateKey, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
                 }
                 object.metadataKey = key.base64EncodedString()
@@ -124,7 +123,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
 
         // CREATE FOLDER
         //
-        let resultsCreateFolder = await NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName, options: NKRequestOptions(customHeader: ["e2e-token": e2eToken]))
+        let resultsCreateFolder = await NCNetworking.shared.createFolder(serverUrlFileName: serverUrlFileName, account: account, options: NKRequestOptions(customHeader: ["e2e-token": e2eToken]))
         guard resultsCreateFolder.error == .success, let ocId = resultsCreateFolder.ocId, let fileId = utility.ocIdToFileId(ocId: ocId) else {
             await networkingE2EE.unlock(account: account, serverUrl: serverUrl)
             return resultsCreateFolder.error
@@ -132,7 +131,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
 
         // SET FOLDER AS E2EE
         //
-        let resultsMarkE2EEFolder = await NextcloudKit.shared.markE2EEFolder(fileId: fileId, delete: false, options: NCNetworkingE2EE().getOptions())
+        let resultsMarkE2EEFolder = await NCNetworking.shared.markE2EEFolder(fileId: fileId, delete: false, account: account, options: NCNetworkingE2EE().getOptions())
         guard resultsMarkE2EEFolder.error == .success  else {
             await networkingE2EE.unlock(account: account, serverUrl: serverUrl)
             return resultsMarkE2EEFolder.error
@@ -144,7 +143,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
 
         // WRITE DB (DIRECTORY - METADATA)
         //
-        let resultsReadFileOrFolder = await NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0")
+        let resultsReadFileOrFolder = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", account: account)
         guard resultsReadFileOrFolder.error == .success, let file = resultsReadFileOrFolder.files.first else {
             await networkingE2EE.unlock(account: account, serverUrl: serverUrl)
             return resultsReadFileOrFolder.error
