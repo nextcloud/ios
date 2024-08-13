@@ -107,6 +107,10 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
     func updateAccountRequest() {
         keychain.accountRequest = accountRequest
     }
+    
+    func dismiss() {
+        controller?.dismiss(animated: true)
+    }
 }
 
 struct PasscodeView: UIViewControllerRepresentable {

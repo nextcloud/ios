@@ -54,7 +54,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         } else {
             cell.filePreviewImageView?.contentMode = .scaleAspectFit
         }
-        cell.fileAvatarImageView?.contentMode = .center
+        cell.fileAvatarImageView?.contentMode = .scaleAspectFit
         /// THUMBNAIL
         if !metadata.directory {
             if metadata.hasPreviewBorder {

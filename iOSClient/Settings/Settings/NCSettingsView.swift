@@ -264,6 +264,16 @@ struct NCSettingsView: View {
             })
         }
         .navigationBarTitle(NSLocalizedString("_settings_", comment: ""))
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    model.dismiss()
+                }, label: {
+                    Text(NSLocalizedString("_close_", comment: ""))
+                        .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
+                })
+            }
+        }
         .defaultViewModifier(model)
     }
 }

@@ -7,12 +7,13 @@
 //
 
 import Foundation
+import SwiftUI
 
 class BurgerMenuAttachController {
-    private weak var presentingScreen: UIViewController?
+    private weak var presentingScreen: NCMainTabBarController?
     private var sideMenu: BurgerMenuViewController?
     
-    init(with presentingViewController: UIViewController) {
+    init(with presentingViewController: NCMainTabBarController) {
         self.presentingScreen = presentingViewController
     }
     
@@ -51,8 +52,9 @@ extension BurgerMenuAttachController: BurgerMenuViewModelDelegate {
     
     func burgerMenuViewModelWantsOpenSettings(_ viewModel: BurgerMenuViewModel) {
         sideMenu?.dismiss(animated: false)
-        let storyboard = UIStoryboard(name: "NCSettings", bundle: nil)
-        present(vc: storyboard.instantiateInitialViewController())
+        let settingsView = NCSettingsView(model: NCSettingsModel(controller: presentingScreen))
+        let settingsController = UIHostingController(rootView: settingsView)
+        present(vc: settingsController)
     }
     
     private func present(vc: UIViewController?) {
