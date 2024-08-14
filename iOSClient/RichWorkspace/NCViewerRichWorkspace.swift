@@ -37,6 +37,10 @@ import MarkdownKit
     var serverUrl: String = ""
     var delegate: NCCollectionViewCommon?
 
+    var session: NCSession.Session {
+        NCSession.shared.getSession(controller: self.delegate?.tabBarController)
+    }
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -60,7 +64,6 @@ import MarkdownKit
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        let session = NCSession.shared.getSession(controller: self.delegate?.tabBarController)
 
         NCNetworking.shared.readFile(serverUrlFileName: self.serverUrl, account: session.account, queue: .main) { _ in
         } completion: { account, metadata, error in
@@ -84,7 +87,6 @@ import MarkdownKit
     }
 
     @IBAction func editItemAction(_ sender: Any) {
-        let session = NCSession.shared.getSession(controller: self.delegate)
         richWorkspaceCommon.openViewerNextcloudText(serverUrl: serverUrl, viewController: self, session: session)
     }
 }

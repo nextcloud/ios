@@ -51,6 +51,9 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
     }
     private var sections: [Section] = []
+    private var session: NCSession.Session {
+        NCSession.shared.getSession(controller: tabBarController)
+    }
 
     // MARK: - View Life Cycle
 
@@ -83,7 +86,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     // MARK: -
 
     func loadItems() {
-        let session = NCSession.shared.getSession(controller: tabBarController)
         guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
             return
         }

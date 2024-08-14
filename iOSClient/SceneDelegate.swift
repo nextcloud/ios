@@ -93,11 +93,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneWillEnterForeground(_ scene: UIScene) {
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Scene will enter in foreground")
         let session = SceneManager.shared.getSession(scene: scene)
-        guard let appDelegate else { return }
 
         // In Login mode is possible ONLY 1 window
         if (UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }).count > 1,
-           (appDelegate.activeLogin?.view.window != nil || appDelegate.activeLoginWeb?.view.window != nil) || (UIApplication.shared.firstWindow?.rootViewController is NCLoginNavigationController) {
+           (appDelegate?.activeLogin?.view.window != nil || appDelegate?.activeLoginWeb?.view.window != nil) || (UIApplication.shared.firstWindow?.rootViewController is NCLoginNavigationController) {
             UIApplication.shared.allSceneSessionDestructionExceptFirst()
             return
         }
@@ -157,7 +156,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
 
         // Reload Widget
-        WidgetCenter.shared.reloadAllTimelines()
+        // WidgetCenter.shared.reloadAllTimelines()
 
         // Clear older files
         let days = NCKeychain().cleanUpDay

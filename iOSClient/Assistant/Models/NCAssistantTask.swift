@@ -18,16 +18,16 @@ class NCAssistantTask: ObservableObject {
     @Published var selectedTask: NKTextProcessingTask?
     @Published var hasError: Bool = false
     @Published var isLoading: Bool = false
+    @Published var controller: NCMainTabBarController?
 
-    private var session: NCSession.Session!
     private var tasks: [NKTextProcessingTask] = []
     private let excludedTypeIds = ["OCA\\ContextChat\\TextProcessing\\ContextChatTaskType"]
+    private var session: NCSession.Session {
+        NCSession.shared.getSession(controller: controller)
+    }
 
     init(controller: NCMainTabBarController?) {
-        if let controller {
-            session = NCSession.shared.getSession(controller: controller)
-        }
-
+        self.controller = controller
         load()
     }
 

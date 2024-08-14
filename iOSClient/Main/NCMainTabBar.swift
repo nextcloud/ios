@@ -180,7 +180,6 @@ class NCMainTabBar: UITabBar {
         centerButton.layer.shadowRadius = 3.0
         centerButton.layer.shadowOpacity = 0.5
         centerButton.action(for: .touchUpInside) { _ in
-
             if let controller = self.window?.rootViewController as? NCMainTabBarController {
                 let serverUrl = controller.currentServerUrl()
                 if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", NCSession.shared.getSession(controller: controller).account, serverUrl)) {
