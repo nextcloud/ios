@@ -29,7 +29,7 @@ class NCAccount: NSObject {
     func createAccount(urlBase: String,
                        user: String,
                        password: String,
-                       completion: @escaping (_ error: NKError) -> Void) {
+                       completion: @escaping (_ account: String, _ error: NKError) -> Void) {
         var urlBase = urlBase
         if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
         let account: String = "\(user) \(urlBase)"
@@ -50,14 +50,14 @@ class NCAccount: NSObject {
                 NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
                 self.changeAccount(account, userProfile: userProfile) {
                     NCKeychain().setClientCertificate(account: account, p12Data: NCNetworking.shared.p12Data, p12Password: NCNetworking.shared.p12Password)
-                    completion(error)
+                    completion(account, error)
                 }
             } else {
                 NextcloudKit.shared.removeSession(account: account)
                 let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
                 UIApplication.shared.firstWindow?.rootViewController?.present(alertController, animated: true)
-                completion(error)
+                completion(account, error)
             }
         }
     }

@@ -124,7 +124,7 @@ private class LoginManager: ObservableObject {
         NextcloudKit.shared.getLoginFlowV2Poll(token: self.loginFlowV2Token, endpoint: self.loginFlowV2Endpoint) { server, loginName, appPassword, _, error in
             if error == .success, let urlBase = server, let user = loginName, let appPassword {
                 self.isLoading = true
-                NCAccount().createAccount(urlBase: urlBase, user: user, password: appPassword) { error in
+                NCAccount().createAccount(urlBase: urlBase, user: user, password: appPassword) { account, error in
                     if error == .success {
                         self.pollFinished = true
                     }

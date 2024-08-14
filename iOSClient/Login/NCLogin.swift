@@ -396,7 +396,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         if let host = URL(string: urlBase)?.host {
             NCNetworking.shared.writeCertificate(host: host)
         }
-        NCAccount().createAccount(urlBase: urlBase, user: user, password: password) { error in
+        NCAccount().createAccount(urlBase: urlBase, user: user, password: password) { account, error in
             if error == .success {
                 let window = UIApplication.shared.firstWindow
                 if window?.rootViewController is NCMainTabBarController {
