@@ -29,8 +29,6 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
-    @IBOutlet weak var labelTitle: UILabel!
-    @IBOutlet weak var imageItemBottom: NSLayoutConstraint!
 
     var objectId = ""
     var indexPath = IndexPath()
@@ -47,17 +45,9 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
         get { return imageItem }
         set { imageItem = newValue }
     }
-    var filePreviewImageBottom: NSLayoutConstraint? {
-        get { return imageItemBottom }
-        set { imageItemBottom = newValue}
-    }
     var fileUser: String? {
         get { return user }
         set { user = newValue ?? "" }
-    }
-    var fileTitleLabel: UILabel? {
-        get { return labelTitle }
-        set { labelTitle = newValue }
     }
     var fileInfoLabel: UILabel? {
         get { return nil }

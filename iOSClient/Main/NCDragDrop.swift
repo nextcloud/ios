@@ -68,7 +68,7 @@ class NCDragDrop: NSObject {
                        let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                         if !isImageVideo {
                             metadatas.append(metadata)
-                        } else if isImageVideo, (metadata.isImage || metadata.isVideo) {
+                        } else if isImageVideo, (metadata.isImageOrVideo) {
                             metadatas.append(metadata)
                         }
                     }

@@ -62,7 +62,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.filePreviewImageView?.layer.borderColor = UIColor.lightGray.cgColor
             }
             if metadata.name == NCGlobal.shared.appName {
-                if isLayoutPhoto {
+                if isLayoutPhoto, metadata.isImageOrVideo {
                     if let image = NCImageCache.shared.getPreviewImageCache(ocId: metadata.ocId, etag: metadata.etag) {
                         cell.filePreviewImageView?.image = image
                     } else if let image = UIImage(contentsOfFile: self.utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
@@ -145,7 +145,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         // LAYOUT PHOTO
         if isLayoutPhoto {
-            if metadata.isImage || metadata.isVideo {
+            if metadata.isImageOrVideo {
                 guard let photoCell = collectionView.dequeueReusableCell(withReuseIdentifier: "photoCell", for: indexPath) as? NCPhotoCell else { return NCPhotoCell() }
                 photoCell.photoCellDelegate = self
                 cell = photoCell
@@ -360,17 +360,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             let attributedString = NSMutableAttributedString(string: title, attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 15)])
             attributedString.setAttributes([NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 15), NSAttributedString.Key.foregroundColor: UIColor.systemBlue], range: longestWordRange)
             cell.fileTitleLabel?.attributedText = attributedString
-        }
-
-        // Layout photo
-        if isLayoutPhoto {
-            if metadata.directory {
-                cell.filePreviewImageBottom?.constant = 10
-                cell.fileTitleLabel?.text = metadata.fileNameView
-            } else {
-                cell.filePreviewImageBottom?.constant = 0
-                cell.fileTitleLabel?.text = ""
-            }
         }
 
         // TAGS

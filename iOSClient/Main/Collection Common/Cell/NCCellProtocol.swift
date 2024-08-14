@@ -27,7 +27,6 @@ protocol NCCellProtocol {
     var fileAvatarImageView: UIImageView? { get }
     var fileObjectId: String? { get set }
     var filePreviewImageView: UIImageView? { get set }
-    var filePreviewImageBottom: NSLayoutConstraint? { get set }
     var fileUser: String? { get set }
     var fileTitleLabel: UILabel? { get set }
     var fileInfoLabel: UILabel? { get set }
@@ -63,10 +62,6 @@ extension NCCellProtocol {
         set {}
     }
     var filePreviewImageView: UIImageView? {
-        get { return nil }
-        set {}
-    }
-    var filePreviewImageBottom: NSLayoutConstraint? {
         get { return nil }
         set {}
     }
