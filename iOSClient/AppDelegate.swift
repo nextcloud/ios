@@ -71,7 +71,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NextcloudKit.shared.setup(delegate: NCNetworking.shared)
         NextcloudKit.shared.nkCommonInstance.pathLog = utilityFileSystem.directoryGroup
 
-        /// Activated singleton for receive the NSNotification
+        /// Activation singleton for receive the NSNotification
         _ = NCActionCenter.shared
         _ = NCNetworking.shared
 
