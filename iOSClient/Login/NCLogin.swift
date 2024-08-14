@@ -399,10 +399,12 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         NCAccount().createAccount(urlBase: urlBase, user: user, password: password) { account, error in
             if error == .success {
                 let window = UIApplication.shared.firstWindow
-                if window?.rootViewController is NCMainTabBarController {
+                if let controller = window?.rootViewController as? NCMainTabBarController {
+                    controller.account = account
                     self.dismiss(animated: true)
                 } else {
                     if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+                        controller.account = account
                         controller.modalPresentationStyle = .fullScreen
                         controller.view.alpha = 0
                         window?.rootViewController = controller

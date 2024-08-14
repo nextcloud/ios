@@ -99,18 +99,24 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
         view.backgroundColor = NCBrandColor.shared.customer
         timerAutoScroll = Timer.scheduledTimer(timeInterval: 5, target: self, selector: (#selector(NCIntroViewController.autoScroll)), userInfo: nil, repeats: true)
 
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { notification in
+            guard let userInfo = notification.userInfo,
+                  let account = userInfo["account"] as? String else {
+                return self.dismiss(animated: true)
+            }
             let window = UIApplication.shared.firstWindow
-            if window?.rootViewController is NCMainTabBarController {
+            if let controller = window?.rootViewController as? NCMainTabBarController {
+                controller.account = account
                 self.dismiss(animated: true)
             } else {
-                if let mainTabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
-                    mainTabBarController.modalPresentationStyle = .fullScreen
-                    mainTabBarController.view.alpha = 0
-                    window?.rootViewController = mainTabBarController
+                if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+                    controller.account = account
+                    controller.modalPresentationStyle = .fullScreen
+                    controller.view.alpha = 0
+                    window?.rootViewController = controller
                     window?.makeKeyAndVisible()
                     UIView.animate(withDuration: 0.5) {
-                        mainTabBarController.view.alpha = 1
+                        controller.view.alpha = 1
                     }
                 }
             }

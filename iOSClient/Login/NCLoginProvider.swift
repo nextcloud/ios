@@ -174,10 +174,12 @@ extension NCLoginProvider: WKNavigationDelegate {
                 NCAccount().changeAccount(account, userProfile: userProfile) { }
 
                 let window = UIApplication.shared.firstWindow
-                if window?.rootViewController is NCMainTabBarController {
+                if let controller = window?.rootViewController as? NCMainTabBarController {
+                    controller.account = account
                     self.dismiss(animated: true)
                 } else {
                     if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+                        controller.account = account
                         controller.modalPresentationStyle = .fullScreen
                         controller.view.alpha = 0
                         window?.rootViewController = controller
