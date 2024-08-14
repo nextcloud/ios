@@ -37,15 +37,13 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     /// Root View Controller
     var controller: NCMainTabBarController?
     /// All account
-    var tableAccounts: [tableAccount] = []
+    var tblAccounts: [tableAccount] = []
     /// Delegate
     weak var delegate: NCAccountSettingsModelDelegate?
-    /// Timer change user
-    var timerChangeAccount: Timer?
     /// Token observe tableAccount
     var notificationToken: NotificationToken?
-    /// Account now active
-    @Published var activeAccount: tableAccount?
+    /// Account now
+    @Published var tblAccount: tableAccount?
     /// Index
     @Published var indexActiveAccount: Int = 0
     /// Current alias
@@ -65,8 +63,6 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     }
 
     deinit {
-        timerChangeAccount?.invalidate()
-        timerChangeAccount = nil
         notificationToken?.invalidate()
         notificationToken = nil
     }
@@ -101,39 +97,39 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
 
         for (index, account) in tableAccounts.enumerated() {
             if account.active {
-                activeAccount = account
+                tblAccount = account
                 indexActiveAccount = index
                 alias = account.alias
             }
         }
 
         self.indexActiveAccount = indexActiveAccount
-        self.tableAccounts = tableAccounts
-        self.activeAccount = activeAccount
+        self.tblAccounts = tableAccounts
+        self.tblAccount = tblAccount
         self.alias = alias
     }
 
     /// Func to get the user display name + alias
     func getUserName() -> String {
-        guard let activeAccount else { return "" }
+        guard let tblAccount else { return "" }
         if alias.isEmpty {
-            return activeAccount.displayName
+            return tblAccount.displayName
         } else {
-            return activeAccount.displayName + " (\(alias))"
+            return tblAccount.displayName + " (\(alias))"
         }
     }
 
     /// Func to set alias
     func setAlias(_ value: String) {
-        guard let activeAccount else { return }
-        NCManageDatabase.shared.setAccountAlias(activeAccount.account, alias: alias)
+        guard let tblAccount else { return }
+        NCManageDatabase.shared.setAccountAlias(tblAccount.account, alias: alias)
     }
 
     /// Function to update the user data
     func getUserStatus() -> (statusImage: UIImage?, statusMessage: String, descriptionMessage: String) {
-        guard let activeAccount else { return (UIImage(), "", "") }
+        guard let tblAccount else { return (UIImage(), "", "") }
         if NCGlobal.shared.capabilityUserStatusEnabled,
-           let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", activeAccount.account)) {
+           let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", tblAccount.account)) {
             return NCUtility().getUserStatus(userIcon: tableAccount.userStatusIcon, userStatus: tableAccount.userStatusStatus, userMessage: tableAccount.userStatusMessage)
         }
         return (nil, "", "")
@@ -141,17 +137,17 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
 
     /// Is the user an Admin
     func isAdminGroup() -> Bool {
-        guard let activeAccount else { return false }
-        let groups = NCManageDatabase.shared.getAccountGroups(account: activeAccount.account)
+        guard let tblAccount else { return false }
+        let groups = NCManageDatabase.shared.getAccountGroups(account: tblAccount.account)
         return groups.contains(NCGlobal.shared.groupAdmin)
     }
 
     /// Function to know the height of "account" data
     func getTableViewHeight() -> CGFloat {
-        guard let activeAccount else { return 0 }
+        guard let tblAccount else { return 0 }
         var height: CGFloat = NCGlobal.shared.capabilityUserStatusEnabled ? 190 : 220
         if NCGlobal.shared.capabilityUserStatusEnabled,
-           let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", activeAccount.account)) {
+           let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", tblAccount.account)) {
             if !tableAccount.email.isEmpty { height += 30 }
             if !tableAccount.phone.isEmpty { height += 30 }
             if !tableAccount.address.isEmpty { height += 30 }
@@ -162,25 +158,16 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
 
     /// Function to change account after 1.5 sec of change
     func setAccount(account: String) {
-        if let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account)), self.activeAccount?.account != tableAccount.account {
-            self.activeAccount = tableAccount
+        if let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) {
+            self.tblAccount = tableAccount
             self.alias = tableAccount.alias
-            /// Change active account
-            timerChangeAccount?.invalidate()
-            timerChangeAccount = Timer.scheduledTimer(timeInterval: 1.5, target: self, selector: #selector(changeAccount), userInfo: nil, repeats: false)
-        }
-    }
-
-    @objc func changeAccount() {
-        if let activeAccount {
-            NCAccount().changeAccount(activeAccount.account, userProfile: nil, controller: self.controller) { }
         }
     }
 
     /// Function to delete the current account
     func deleteAccount() {
-        if let activeAccount {
-            NCAccount().deleteAccount(activeAccount.account)
+        if let tblAccount {
+            NCAccount().deleteAccount(tblAccount.account)
             if let account = NCManageDatabase.shared.getAllTableAccount().first?.account {
                 NCAccount().changeAccount(account, userProfile: nil, controller: self.controller) {
                     onViewAppear()
