@@ -28,6 +28,7 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
+    @IBOutlet weak var buttonMore: UIButton!
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
 
     var objectId = ""
@@ -102,8 +103,33 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
         return nil
     }
 
+    @IBAction func touchUpInsideMore(_ sender: Any) {
+        photoCellDelegate?.tapMorePhotoItem(with: objectId, namedButtonMore: namedButtonMore, image: imageItem.image, indexPath: indexPath, sender: sender)
+    }
+
     @objc func longPress(gestureRecognizer: UILongPressGestureRecognizer) {
-        photoCellDelegate?.longPressGridItem(with: objectId, indexPath: indexPath, gestureRecognizer: gestureRecognizer)
+        photoCellDelegate?.longPressPhotoItem(with: objectId, indexPath: indexPath, gestureRecognizer: gestureRecognizer)
+    }
+
+    fileprivate func setA11yActions() {
+        let moreName = namedButtonMore == NCGlobal.shared.buttonMoreStop ? "_cancel_" : "_more_"
+
+        self.accessibilityCustomActions = [
+            UIAccessibilityCustomAction(
+                name: NSLocalizedString(moreName, comment: ""),
+                target: self,
+                selector: #selector(touchUpInsideMore))
+        ]
+    }
+
+    func setButtonMore(named: String, image: UIImage) {
+        namedButtonMore = named
+        buttonMore.setImage(image, for: .normal)
+        setA11yActions()
+    }
+
+    func hideButtonMore(_ status: Bool) {
+        buttonMore.isHidden = status
     }
 
     func selected(_ status: Bool, isEditMode: Bool) {
@@ -131,5 +157,6 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
 }
 
 protocol NCPhotoCellDelegate: AnyObject {
-    func longPressGridItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer)
+    func tapMorePhotoItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any)
+    func longPressPhotoItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer)
 }

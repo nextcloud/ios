@@ -86,7 +86,7 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EJs-Ro-nbe" userLabel="buttonMoreGrid">
-                        <rect key="frame" x="396" y="501" width="20" height="20"/>
+                        <rect key="frame" x="391" y="501" width="20" height="20"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="20" id="4Ba-Uy-pX2"/>
                             <constraint firstAttribute="width" constant="20" id="aRK-GA-Nba"/>
@@ -123,8 +123,8 @@
                 <constraint firstItem="LfR-yV-Xml" firstAttribute="top" secondItem="5Ci-V1-hf5" secondAttribute="top" id="eLX-1I-820"/>
                 <constraint firstItem="12P-pO-DHO" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" constant="25" id="fTQ-Ye-Xj2"/>
                 <constraint firstItem="12P-pO-DHO" firstAttribute="top" secondItem="2po-8g-XeS" secondAttribute="bottom" constant="3" id="hbc-KL-fRj"/>
-                <constraint firstItem="EJs-Ro-nbe" firstAttribute="trailing" secondItem="5Ci-V1-hf5" secondAttribute="trailing" id="l6Z-DK-OZi"/>
-                <constraint firstItem="81G-wH-fjN" firstAttribute="leading" secondItem="5Ci-V1-hf5" secondAttribute="trailing" constant="-25" id="nFH-Pc-end"/>
+                <constraint firstItem="VXh-sQ-LeX" firstAttribute="trailing" secondItem="EJs-Ro-nbe" secondAttribute="trailing" constant="5" id="ntP-en-sy6"/>
+                <constraint firstItem="VXh-sQ-LeX" firstAttribute="trailing" secondItem="81G-wH-fjN" secondAttribute="trailing" constant="5" id="omW-UB-blH"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" id="qT3-WD-iTV"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="top" secondItem="AYs-f2-vve" secondAttribute="bottom" constant="-25" id="rLL-6g-ypv"/>
                 <constraint firstItem="a0p-rj-jnV" firstAttribute="top" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="-25" id="upV-Ov-WWd"/>
