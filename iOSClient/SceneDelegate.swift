@@ -68,7 +68,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 SceneManager.shared.register(scene: scene, withRootViewController: controller)
                 window?.rootViewController = controller
                 window?.makeKeyAndVisible()
-                /// Set the start ACCOUNT
+                /// Set the ACCOUNT
                 controller.account = activeTableAccount.account
             }
         } else {
