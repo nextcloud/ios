@@ -164,7 +164,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         super.viewWillAppear(animated)
 
         navigationController?.setNavigationBarAppearance()
-        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationController?.navigationBar.prefersLargeTitles = false
         navigationController?.setNavigationBarHidden(false, animated: true)
         navigationItem.title = titleCurrentFolder
 
@@ -958,11 +958,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func willPresentSearchController(_ searchController: UISearchController) {
         setNavigationLeftItems()
         setNavigationRightItems()
+        navigationItem.title = nil
     }
     
     func didDismissSearchController(_ searchController: UISearchController) {
         setNavigationLeftItems()
         setNavigationRightItems()
+        navigationItem.title = titleCurrentFolder
     }
 
     // MARK: - TAP EVENT
