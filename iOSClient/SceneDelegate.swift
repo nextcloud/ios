@@ -387,7 +387,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 extension SceneDelegate: NCPasscodeDelegate {
     func requestedAccount(controller: UIViewController?) {
         let tableAccounts = NCManageDatabase.shared.getAllTableAccount()
-
         if tableAccounts.count > 1, let accountRequestVC = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
             accountRequestVC.controller = controller
             accountRequestVC.activeAccount = (controller as? NCMainTabBarController)?.account
