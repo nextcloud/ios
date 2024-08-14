@@ -64,7 +64,7 @@ class NCAccount: NSObject {
 
     func changeAccount(_ account: String,
                        userProfile: NKUserProfile?,
-                       controller: NCMainTabBarController? = nil,
+                       controller: NCMainTabBarController?,
                        completion: () -> Void) {
         /// Set account
         controller?.account = account
