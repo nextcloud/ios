@@ -302,7 +302,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // MARK: - Login
 
-    func openLogin(selector: Int, openLoginWeb: Bool, windowForRootViewController: UIWindow? = nil) {
+    func openLogin(selector: Int, openLoginWeb: Bool, window: UIWindow? = nil) {
         let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount()
 
         func showLoginViewController(_ viewController: UIViewController?) {
@@ -315,7 +315,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             navigationController.navigationBar.barTintColor = NCBrandColor.shared.customer
             navigationController.navigationBar.isTranslucent = false
 
-            if let window = windowForRootViewController {
+            if let window {
                 window.rootViewController = navigationController
                 window.makeKeyAndVisible()
             } else {
