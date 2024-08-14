@@ -356,7 +356,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 window.makeKeyAndVisible()
             } else {
                 UIApplication.shared.allSceneSessionDestructionExceptFirst()
-                UIApplication.shared.firstWindow?.rootViewController?.present(navigationController, animated: true)
+
+                if let rootVC = UIApplication.shared.firstWindow?.rootViewController {
+                    if let presentedVC = rootVC.presentedViewController, !(presentedVC is NCLoginNavigationController) {
+                        presentedVC.dismiss(animated: false) {
+                            rootVC.present(navigationController, animated: true)
+                        }
+                    } else {
+                        rootVC.present(navigationController, animated: true)
+                    }
+                }
             }
         }
 
@@ -374,23 +383,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     showLoginViewController(activeLogin)
                 }
             }
-
-        } else if NCBrandOptions.shared.disable_request_login_url {
-            if activeLogin?.view.window == nil {
-                activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
-                activeLogin?.urlBase = NCBrandOptions.shared.loginBaseUrl
-                showLoginViewController(activeLogin)
-            }
-        } else if openLoginWeb {
-            // Used also for reinsert the account (change passwd)
-            if activeLogin?.view.window == nil {
-                activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
-                activeLogin?.urlBase = urlBase
-                showLoginViewController(activeLogin)
-            }
         } else {
             if activeLogin?.view.window == nil {
                 activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
+                activeLogin?.urlBase = NCBrandOptions.shared.disable_request_login_url ? NCBrandOptions.shared.loginBaseUrl : ""
                 showLoginViewController(activeLogin)
             }
         }
@@ -412,9 +408,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let error = NKError(errorCode: NCKeychain().getPassword(account: account).isEmpty ? NCGlobal.shared.errorUnauthorized997 : NCGlobal.shared.errorInternalServerError, errorDescription: description)
         NCContentPresenter().showError(error: error, priority: .max)
 
-//        deleteAccount(account)
+        deleteAccount(account)
 
-        openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: true)
+        let accounts = NCManageDatabase.shared.getAccounts()
+
+        if accounts?.count ?? 0 > 0, let newAccount = accounts?.first {
+            changeAccount(newAccount, userProfile: nil) { }
+        } else {
+            openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
+        }
     }
 
     func trustCertificateError(host: String) {
@@ -548,12 +550,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         self.user = ""
         self.userId = ""
         self.password = ""
-
-        /*
-        NextcloudKit.shared.deleteAppPassword(serverUrl: urlBase, username: userId, password: password) { _, error in
-            print(error)
-        }
-        */
     }
 
     func deleteAllAccounts() {
