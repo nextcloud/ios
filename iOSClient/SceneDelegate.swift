@@ -59,6 +59,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             let session = NCSession.shared.getSession(account: activeTableAccount.account)
             /// Media cache
             DispatchQueue.global().async {
+                NCBrandColor.shared.createUserColors()
+                NCImageCache.shared.createImagesCache()
                 NCImageCache.shared.createMediaCache(withCacheSize: true, session: session)
             }
             /// Main.storyboard

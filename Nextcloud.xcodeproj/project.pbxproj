@@ -2950,9 +2950,9 @@
 			isa = PBXGroup;
 			children = (
 				F702F2CC25EE5B4F008F8E80 /* AppDelegate.swift */,
+				F794E13E2BBC0F70003693D7 /* SceneDelegate.swift */,
 				F77DD6A72C5CC093009448FB /* NCSession.swift */,
 				F7A8FD512C5E2557006C9CF8 /* NCAccount.swift */,
-				F794E13E2BBC0F70003693D7 /* SceneDelegate.swift */,
 				F76B649B2ADFFAED00014640 /* NCImageCache.swift */,
 				F702F2CE25EE5B5C008F8E80 /* NCGlobal.swift */,
 				F7E402282BA85D1D007E5609 /* PrivacyInfo.xcprivacy */,
