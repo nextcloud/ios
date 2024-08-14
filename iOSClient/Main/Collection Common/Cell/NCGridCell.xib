@@ -86,7 +86,7 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EJs-Ro-nbe" userLabel="buttonMoreGrid">
-                        <rect key="frame" x="396" y="492" width="20" height="20"/>
+                        <rect key="frame" x="396" y="501" width="20" height="20"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="20" id="4Ba-Uy-pX2"/>
                             <constraint firstAttribute="width" constant="20" id="aRK-GA-Nba"/>
@@ -106,6 +106,7 @@
                 <constraint firstItem="AYs-f2-vve" firstAttribute="leading" secondItem="5Ci-V1-hf5" secondAttribute="trailing" constant="-25" id="3e3-0A-NSl"/>
                 <constraint firstItem="2po-8g-XeS" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" constant="25" id="9JI-KS-d7J"/>
                 <constraint firstItem="DHy-Up-3Bh" firstAttribute="top" secondItem="VXh-sQ-LeX" secondAttribute="top" constant="5" id="ESV-qE-tbO"/>
+                <constraint firstItem="VXh-sQ-LeX" firstAttribute="bottom" secondItem="EJs-Ro-nbe" secondAttribute="bottom" constant="8" id="G0O-Kx-3kV"/>
                 <constraint firstAttribute="trailing" secondItem="VRH-IZ-lXO" secondAttribute="trailing" constant="5" id="HAS-uF-AuS"/>
                 <constraint firstItem="2po-8g-XeS" firstAttribute="top" secondItem="VRH-IZ-lXO" secondAttribute="bottom" constant="7" id="OPl-xq-XOx"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="top" secondItem="VXh-sQ-LeX" secondAttribute="top" id="Ouj-ZD-UFm"/>
@@ -124,7 +125,6 @@
                 <constraint firstItem="12P-pO-DHO" firstAttribute="top" secondItem="2po-8g-XeS" secondAttribute="bottom" constant="3" id="hbc-KL-fRj"/>
                 <constraint firstItem="EJs-Ro-nbe" firstAttribute="trailing" secondItem="5Ci-V1-hf5" secondAttribute="trailing" id="l6Z-DK-OZi"/>
                 <constraint firstItem="81G-wH-fjN" firstAttribute="leading" secondItem="5Ci-V1-hf5" secondAttribute="trailing" constant="-25" id="nFH-Pc-end"/>
-                <constraint firstItem="EJs-Ro-nbe" firstAttribute="top" secondItem="VRH-IZ-lXO" secondAttribute="bottom" constant="9" id="o5n-Oi-Uh7"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" id="qT3-WD-iTV"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="top" secondItem="AYs-f2-vve" secondAttribute="bottom" constant="-25" id="rLL-6g-ypv"/>
                 <constraint firstItem="a0p-rj-jnV" firstAttribute="top" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="-25" id="upV-Ov-WWd"/>
