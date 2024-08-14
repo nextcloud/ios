@@ -34,24 +34,26 @@ class NCAccount: NSObject {
         if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
         let account: String = "\(user) \(urlBase)"
 
+        NextcloudKit.shared.appendSession(account: account,
+                                          urlBase: urlBase,
+                                          user: user,
+                                          userId: user,
+                                          password: password,
+                                          userAgent: userAgent,
+                                          nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
+                                          groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+
         NextcloudKit.shared.getUserProfile(account: account) { account, userProfile, _, error in
             if error == .success, let userProfile {
-                NextcloudKit.shared.appendSession(account: account,
-                                                  urlBase: urlBase,
-                                                  user: user,
-                                                  userId: userProfile.userId,
-                                                  password: password,
-                                                  userAgent: userAgent,
-                                                  nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
-                                                  groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+                NextcloudKit.shared.updateSession(account: account, userId: userProfile.userId)
                 NCSession.shared.appendSession(account: account, urlBase: urlBase, user: user, userId: userProfile.userId)
                 NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
                 self.changeAccount(account, userProfile: userProfile) {
+                    NCKeychain().setClientCertificate(account: account, p12Data: NCNetworking.shared.p12Data, p12Password: NCNetworking.shared.p12Password)
                     completion(error)
-
-                NCKeychain().setClientCertificate(account: account, p12Data: NCNetworking.shared.p12Data, p12Password: NCNetworking.shared.p12Password)
                 }
             } else {
+                NextcloudKit.shared.removeSession(account: account)
                 let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
                 UIApplication.shared.firstWindow?.rootViewController?.present(alertController, animated: true)

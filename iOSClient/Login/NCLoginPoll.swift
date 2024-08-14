@@ -67,7 +67,6 @@ struct NCLoginPoll: View {
         .onChange(of: loginManager.pollFinished) { value in
             if value {
                 let window = UIApplication.shared.firstWindow
-
                 if window?.rootViewController is NCMainTabBarController {
                     window?.rootViewController?.dismiss(animated: true, completion: nil)
                 } else {
