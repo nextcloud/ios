@@ -26,7 +26,6 @@
 import UIKit
 
 class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-
     @IBOutlet weak var buttonLogin: UIButton!
     @IBOutlet weak var buttonSignUp: UIButton!
     @IBOutlet weak var buttonHost: UIButton!

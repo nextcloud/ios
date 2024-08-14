@@ -28,7 +28,6 @@ import FloatingPanel
 
 class NCLoginProvider: UIViewController {
     var webView: WKWebView?
-    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utility = NCUtility()
     var titleView: String = ""
     var urlBase = ""
@@ -171,7 +170,7 @@ extension NCLoginProvider: WKNavigationDelegate {
                                                   groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
                 NCSession.shared.appendSession(account: account, urlBase: urlBase, user: user, userId: userProfile.userId)
                 NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
-                NCAccount().changeAccount(account, userProfile: userProfile) { }
+                NCAccount().changeAccount(account, userProfile: userProfile, controller: nil) { }
 
                 let window = UIApplication.shared.firstWindow
                 if let controller = window?.rootViewController as? NCMainTabBarController {

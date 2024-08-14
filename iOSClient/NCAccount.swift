@@ -48,7 +48,7 @@ class NCAccount: NSObject {
                 NextcloudKit.shared.updateSession(account: account, userId: userProfile.userId)
                 NCSession.shared.appendSession(account: account, urlBase: urlBase, user: user, userId: userProfile.userId)
                 NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
-                self.changeAccount(account, userProfile: userProfile) {
+                self.changeAccount(account, userProfile: userProfile, controller: nil) {
                     NCKeychain().setClientCertificate(account: account, p12Data: NCNetworking.shared.p12Data, p12Password: NCNetworking.shared.p12Password)
                     completion(account, error)
                 }
