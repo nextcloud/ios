@@ -87,20 +87,6 @@ struct NCSettingsView: View {
                     .onChange(of: model.enableTouchID) { _ in
                         model.updateTouchIDSetting()
                     }
-                /// Lock no screen
-                Toggle(NSLocalizedString("_lock_protection_no_screen_", comment: ""), isOn: $model.lockScreen)
-                    .tint(Color(NCBrandColor.shared.brandElement))
-                    .font(.system(size: 16))
-                    .onChange(of: model.lockScreen) { _ in
-                        model.updateLockScreenSetting()
-                    }
-                /// Privacy screen
-                Toggle(NSLocalizedString("_privacy_screen_", comment: ""), isOn: $model.privacyScreen)
-                    .tint(Color(NCBrandColor.shared.brandElement))
-                    .font(.system(size: 16))
-                    .onChange(of: model.privacyScreen) { _ in
-                        model.updatePrivacyScreenSetting()
-                    }
                 /// Reset app wrong attempts
                 Toggle(NSLocalizedString("_reset_wrong_passcode_", comment: ""), isOn: $model.resetWrongAttempts)
                     .tint(Color(NCBrandColor.shared.brandElement))
@@ -178,10 +164,6 @@ struct NCSettingsView: View {
                     .font(.system(size: 12))
                     .lineSpacing(1)
             })
-            /// E2EEncryption` Section
-            if NCGlobal.shared.capabilityE2EEEnabled && NCGlobal.shared.e2eeVersions.contains(NCGlobal.shared.capabilityE2EEApiVersion) {
-                E2EESection(model: model)
-            }
             /// `Advanced` Section
             Section {
                 NavigationLink(destination: LazyView {

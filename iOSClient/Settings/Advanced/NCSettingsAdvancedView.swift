@@ -181,29 +181,6 @@ struct NCSettingsAdvancedView: View {
                 }, header: {
                     Text(NSLocalizedString("_diagnostics_", comment: ""))
                 }, footer: { })
-                /// Set Log Level() & Capabilities
-                if model.isAdminGroup {
-                    Section(content: {
-                        NavigationLink(destination: LazyView {
-                            NCCapabilitiesView(model: NCCapabilitiesModel())
-                        }) {
-                            HStack {
-                                Image(systemName: "list.bullet")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .font(Font.system(.body).weight(.light))
-                                    .frame(width: 25, height: 25)
-                                    .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
-                                Text(NSLocalizedString("_capabilities_", comment: ""))
-                            }
-                            .font(.system(size: 16))
-                        }
-                    }, header: {
-                        Text(NSLocalizedString("_capabilities_", comment: ""))
-                    }, footer: {
-                        Text(NSLocalizedString("_capabilities_footer_", comment: ""))
-                    })
-                }
             }
             /// Delete in Cache & Clear Cache
             Section(content: {
