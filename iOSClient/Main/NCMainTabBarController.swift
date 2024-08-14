@@ -39,6 +39,7 @@ class NCMainTabBarController: UITabBarController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        delegate = self
         burgerMenuController = BurgerMenuAttachController(with: self)
     }
     
