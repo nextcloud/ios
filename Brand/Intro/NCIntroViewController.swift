@@ -99,23 +99,22 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
         timerAutoScroll = Timer.scheduledTimer(timeInterval: 5, target: self, selector: (#selector(NCIntroViewController.autoScroll)), userInfo: nil, repeats: true)
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { notification in
-            guard let userInfo = notification.userInfo,
-                  let account = userInfo["account"] as? String else {
-                return self.dismiss(animated: true)
-            }
-            let window = UIApplication.shared.firstWindow
-            if let controller = window?.rootViewController as? NCMainTabBarController {
-                controller.account = account
-                self.dismiss(animated: true)
-            } else {
-                if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+            if let userInfo = notification.userInfo,
+               let account = userInfo["account"] as? String {
+                let window = UIApplication.shared.firstWindow
+                if let controller = window?.rootViewController as? NCMainTabBarController {
                     controller.account = account
-                    controller.modalPresentationStyle = .fullScreen
-                    controller.view.alpha = 0
-                    window?.rootViewController = controller
-                    window?.makeKeyAndVisible()
-                    UIView.animate(withDuration: 0.5) {
-                        controller.view.alpha = 1
+                    self.dismiss(animated: true)
+                } else {
+                    if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+                        controller.account = account
+                        controller.modalPresentationStyle = .fullScreen
+                        controller.view.alpha = 0
+                        window?.rootViewController = controller
+                        window?.makeKeyAndVisible()
+                        UIView.animate(withDuration: 0.5) {
+                            controller.view.alpha = 1
+                        }
                     }
                 }
             }

@@ -126,11 +126,13 @@ class NCMedia: UIViewController {
             self.refreshControl.endRefreshing()
         }
 
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { notification in
             self.layoutType = NCManageDatabase.shared.getLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")?.layout ?? NCGlobal.shared.mediaLayoutRatio
-            if let metadatas = self.metadatas,
+            if let userInfo = notification.userInfo,
+               let account = userInfo["account"] as? String,
+               let metadatas = self.metadatas,
                let metadata = metadatas.first {
-                if metadata.account != self.session.account {
+                if metadata.account != account {
                     self.metadatas = nil
                     self.collectionViewReloadData()
                 }
