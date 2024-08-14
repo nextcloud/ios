@@ -179,6 +179,10 @@ extension tableMetadata {
         return classFile == NKCommon.TypeClassFile.audio.rawValue || classFile == NKCommon.TypeClassFile.video.rawValue
     }
 
+    var isImageOrVideo: Bool {
+        return classFile == NKCommon.TypeClassFile.image.rawValue || classFile == NKCommon.TypeClassFile.video.rawValue
+    }
+
     var isVideo: Bool {
         return classFile == NKCommon.TypeClassFile.video.rawValue
     }

@@ -41,7 +41,7 @@ extension NCCollectionViewCommon: UICollectionViewDragDelegate {
     func collectionView(_ collectionView: UICollectionView, dragPreviewParametersForItemAt indexPath: IndexPath) -> UIDragPreviewParameters? {
         let previewParameters = UIDragPreviewParameters()
 
-        if layoutForView?.layout == NCGlobal.shared.layoutList,
+        if isLayoutList,
             let cell = collectionView.cellForItem(at: indexPath) as? NCListCell {
             let width = (collectionView.frame.width / 3) * 2
             previewParameters.visiblePath = UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: width, height: cell.frame.height), cornerRadius: 10)

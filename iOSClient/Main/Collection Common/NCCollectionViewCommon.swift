@@ -83,6 +83,18 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NCSession.shared.getSession(controller: tabBarController)
     }
 
+    var isLayoutPhoto: Bool {
+        layoutForView?.layout == NCGlobal.shared.layoutPhotoRatio || layoutForView?.layout == NCGlobal.shared.layoutPhotoSquare
+    }
+
+    var isLayoutGrid: Bool {
+        layoutForView?.layout == NCGlobal.shared.layoutGrid
+    }
+
+    var isLayoutList: Bool {
+        layoutForView?.layout == NCGlobal.shared.layoutList
+    }
+
     var showDescription: Bool {
         !headerRichWorkspaceDisable && NCKeychain().showDescription
     }
@@ -173,11 +185,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         setNavigationRightItems()
 
         layoutForView = NCManageDatabase.shared.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl)
-        if layoutForView?.layout == NCGlobal.shared.layoutList {
+        if isLayoutList {
             collectionView?.collectionViewLayout = listLayout
-        } else if layoutForView?.layout == NCGlobal.shared.layoutGrid {
+        } else if isLayoutGrid {
             collectionView?.collectionViewLayout = gridLayout
-        } else if layoutForView?.layout == NCGlobal.shared.layoutPhotoRatio || layoutForView?.layout == NCGlobal.shared.layoutPhotoSquare {
+        } else if isLayoutPhoto {
             collectionView?.collectionViewLayout = mediaLayout
         }
 

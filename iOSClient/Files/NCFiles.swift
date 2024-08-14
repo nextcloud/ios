@@ -54,13 +54,13 @@ class NCFiles: NCCollectionViewCommon {
                 self.isSearchingMode = false
                 self.isEditMode = false
                 self.selectOcId.removeAll()
-
                 self.layoutForView = NCManageDatabase.shared.getLayoutForView(account: self.session.account, key: self.layoutKey, serverUrl: self.serverUrl)
-                if self.layoutForView?.layout == NCGlobal.shared.layoutList {
+
+                if self.isLayoutList {
                     self.collectionView?.collectionViewLayout = self.listLayout
-                } else if self.layoutForView?.layout == NCGlobal.shared.layoutGrid {
+                } else if self.isLayoutGrid {
                     self.collectionView?.collectionViewLayout = self.gridLayout
-                } else if self.layoutForView?.layout == NCGlobal.shared.layoutPhotoSquare || self.layoutForView?.layout == NCGlobal.shared.layoutPhotoRatio {
+                } else if self.isLayoutPhoto {
                     self.collectionView?.collectionViewLayout = self.mediaLayout
                 }
 

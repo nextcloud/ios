@@ -62,7 +62,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.filePreviewImageView?.layer.borderColor = UIColor.lightGray.cgColor
             }
             if metadata.name == NCGlobal.shared.appName {
-                if layoutForView?.layout == NCGlobal.shared.layoutPhotoRatio || layoutForView?.layout == NCGlobal.shared.layoutPhotoSquare {
+                if isLayoutPhoto {
                     if let image = NCImageCache.shared.getPreviewImageCache(ocId: metadata.ocId, etag: metadata.etag) {
                         cell.filePreviewImageView?.image = image
                     } else if let image = UIImage(contentsOfFile: self.utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
@@ -141,13 +141,20 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         var isShare = false
         var isMounted = false
         var a11yValues: [String] = []
+        let metadata = dataSource.cellForItemAt(indexPath: indexPath) ?? tableMetadata()
 
         // LAYOUT PHOTO
-        if layoutForView?.layout == NCGlobal.shared.layoutPhotoRatio || layoutForView?.layout == NCGlobal.shared.layoutPhotoSquare {
-            guard let photoCell = collectionView.dequeueReusableCell(withReuseIdentifier: "photoCell", for: indexPath) as? NCPhotoCell else { return NCPhotoCell() }
-            photoCell.photoCellDelegate = self
-            cell = photoCell
-        } else if layoutForView?.layout == NCGlobal.shared.layoutGrid {
+        if isLayoutPhoto {
+            if metadata.isImage || metadata.isVideo {
+                guard let photoCell = collectionView.dequeueReusableCell(withReuseIdentifier: "photoCell", for: indexPath) as? NCPhotoCell else { return NCPhotoCell() }
+                photoCell.photoCellDelegate = self
+                cell = photoCell
+            } else {
+                guard let gridCell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridCell else { return NCGridCell() }
+                gridCell.gridCellDelegate = self
+                cell = gridCell
+            }
+        } else if isLayoutGrid {
         // LAYOUT GRID
             guard let gridCell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridCell else { return NCGridCell() }
             gridCell.gridCellDelegate = self
@@ -356,7 +363,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         // Layout photo
-        if layoutForView?.layout == NCGlobal.shared.layoutPhotoRatio || layoutForView?.layout == NCGlobal.shared.layoutPhotoSquare {
+        if isLayoutPhoto {
             if metadata.directory {
                 cell.filePreviewImageBottom?.constant = 10
                 cell.fileTitleLabel?.text = metadata.fileNameView
