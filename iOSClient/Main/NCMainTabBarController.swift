@@ -32,6 +32,7 @@ struct NavigationCollectionViewCommon {
 class NCMainTabBarController: UITabBarController {
     var sceneIdentifier: String = UUID().uuidString
     var documentPickerViewController: NCDocumentPickerViewController?
+    let navigationCollectionViewCommon = ThreadSafeArray<NavigationCollectionViewCommon>()
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private var previousIndex: Int?
     private(set) var burgerMenuController: BurgerMenuAttachController?

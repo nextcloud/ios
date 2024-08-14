@@ -87,7 +87,14 @@ extension NCManageDatabase {
 
     func deleteDirectoryAndSubDirectory(serverUrl: String, account: String) {
 #if !EXTENSION
-        FilesServerUrlsHolder.filesServerUrl.removeValue(forKey: serverUrl)
+        DispatchQueue.main.async {
+            let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
+            for windowScene in windowScenes {
+                if let controller = windowScene.keyWindow?.rootViewController as? NCMainTabBarController {
+                    controller.navigationCollectionViewCommon.remove(where: { $0.serverUrl == serverUrl})
+                }
+            }
+        }
 #endif
 
         do {
