@@ -36,16 +36,44 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene),
               let appDelegate else { return }
         self.window = UIWindow(windowScene: windowScene)
-        let session = SceneManager.shared.getSession(scene: scene)
 
-        if !session.account.isEmpty,
-           let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController,
-           let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
+        if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Account active \(activeTableAccount.account)")
+
+            NCManageDatabase.shared.setCapabilities(account: activeTableAccount.account)
+            NCBrandColor.shared.settingThemingColor(account: activeTableAccount.account)
+
+            for tableAccount in NCManageDatabase.shared.getAllTableAccount() {
+                NextcloudKit.shared.appendSession(account: tableAccount.account,
+                                                  urlBase: tableAccount.urlBase,
+                                                  user: tableAccount.user,
+                                                  userId: tableAccount.userId,
+                                                  password: NCKeychain().getPassword(account: tableAccount.account),
+                                                  userAgent: userAgent,
+                                                  nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
+                                                  groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+                NCSession.shared.appendSession(account: tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId)
+            }
+
+            /// START
+            let session = NCSession.shared.getSession(account: activeTableAccount.account)
+            /// Media cache
+            DispatchQueue.global().async {
+                NCImageCache.shared.createMediaCache(withCacheSize: true, session: session)
+            }
+            /// Main.storyboard
+            if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
                 SceneManager.shared.register(scene: scene, withRootViewController: controller)
                 window?.rootViewController = controller
                 window?.makeKeyAndVisible()
-            controller.account = activeTableAccount.account
+                /// Set the start ACCOUNT
+                controller.account = activeTableAccount.account
+            }
         } else {
+            NCKeychain().removeAll()
+            if let bundleID = Bundle.main.bundleIdentifier {
+                UserDefaults.standard.removePersistentDomain(forName: bundleID)
+            }
             if NCBrandOptions.shared.disable_intro {
                 appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false, windowForRootViewController: window)
             } else {
@@ -56,8 +84,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 }
             }
         }
-
-        appDelegate.startTimerErrorNetworking(scene: scene)
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

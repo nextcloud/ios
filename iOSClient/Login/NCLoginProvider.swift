@@ -66,16 +66,9 @@ class NCLoginProvider: UIViewController {
         self.title = titleView
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        // Stop timer error network
-        appDelegate.timerErrorNetworkingDisabled = true
-    }
-
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         NCActivityIndicator.shared.stop()
-        appDelegate.timerErrorNetworkingDisabled = false
     }
 
     func loadWebPage(webView: WKWebView, url: URL) {

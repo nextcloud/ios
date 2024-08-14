@@ -37,8 +37,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     var backgroundSessionCompletionHandler: (() -> Void)?
     var activeLogin: NCLogin?
     var activeLoginWeb: NCLoginProvider?
-    var timerErrorNetworking: Timer?
-    var timerErrorNetworkingDisabled: Bool = false
     var taskAutoUploadDate: Date = Date()
     var isUiTestingEnabled: Bool {
         return ProcessInfo.processInfo.arguments.contains("UI_TESTING")
@@ -73,10 +71,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NextcloudKit.shared.setup(delegate: NCNetworking.shared)
         NextcloudKit.shared.nkCommonInstance.pathLog = utilityFileSystem.directoryGroup
 
-        // Activated singleton
-        _ = NCActionCenter.shared
-        _ = NCNetworking.shared
-
         if NCBrandOptions.shared.disable_log {
             utilityFileSystem.removeFile(atPath: NextcloudKit.shared.nkCommonInstance.filenamePathLog)
             utilityFileSystem.removeFile(atPath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! + "/" + NextcloudKit.shared.nkCommonInstance.filenameLog)
@@ -85,35 +79,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
             NextcloudKit.shared.nkCommonInstance.copyLogToDocumentDirectory = true
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start session with level \(levelLog) " + versionNextcloudiOS)
-        }
-
-        if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Account active \(activeTableAccount.account)")
-
-            NCManageDatabase.shared.setCapabilities(account: activeTableAccount.account)
-            NCBrandColor.shared.settingThemingColor(account: activeTableAccount.account)
-
-            for tableAccount in NCManageDatabase.shared.getAllTableAccount() {
-                NextcloudKit.shared.appendSession(account: tableAccount.account,
-                                                  urlBase: tableAccount.urlBase,
-                                                  user: tableAccount.user,
-                                                  userId: tableAccount.userId,
-                                                  password: NCKeychain().getPassword(account: tableAccount.account),
-                                                  userAgent: userAgent,
-                                                  nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
-                                                  groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
-                NCSession.shared.appendSession(account: tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId)
-            }
-
-            DispatchQueue.global().async {
-                let session = NCSession.shared.getSession(account: activeTableAccount.account)
-                NCImageCache.shared.createMediaCache(withCacheSize: true, session: session)
-            }
-        } else {
-            NCKeychain().removeAll()
-            if let bundleID = Bundle.main.bundleIdentifier {
-                UserDefaults.standard.removePersistentDomain(forName: bundleID)
-            }
         }
 
         NCBrandColor.shared.createUserColors()
@@ -400,6 +365,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // MARK: - Error Networking
 
+    /*
     func startTimerErrorNetworking(scene: UIScene) {
         timerErrorNetworkingDisabled = false
         timerErrorNetworking = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(checkErrorNetworking(_:)), userInfo: nil, repeats: true)
@@ -419,6 +385,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
     }
+    */
 
     func trustCertificateError(host: String) {
         guard let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount(),
