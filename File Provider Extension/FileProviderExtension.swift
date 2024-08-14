@@ -267,7 +267,7 @@ class FileProviderExtension: NSFileProviderExtension {
         let itemIdentifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcIdAndOcIdTemp(itemIdentifier.rawValue) else { return }
         if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionDownload {
-            let session = NextcloudKit.shared.nkCommonInstance.getSession(account: metadata.session)?.sessionUploadBackgroundExt
+            let session = NextcloudKit.shared.nkCommonInstance.getSession(account: metadata.session)?.sessionData.session
             session?.getTasksWithCompletionHandler { _, _, downloadTasks in
                 downloadTasks.forEach { task in
                     if metadata.sessionTaskIdentifier == task.taskIdentifier {

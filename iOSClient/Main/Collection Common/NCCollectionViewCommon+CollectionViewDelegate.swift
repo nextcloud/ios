@@ -66,8 +66,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                         metadatas.append(metadata)
                     }
                 }
-                NCViewer().view(viewController: self, metadata: metadata, metadatas: metadatas, imageIcon: imageIcon)
-                return
+                return NCViewer().view(viewController: self, metadata: metadata, metadatas: metadatas, imageIcon: imageIcon)
             } else if metadata.isAvailableEditorView || utilityFileSystem.fileProviderStorageExists(metadata) {
                 NCViewer().view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon)
             } else if NextcloudKit.shared.isNetworkReachable(),

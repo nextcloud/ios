@@ -86,17 +86,21 @@ extension NCMedia {
 
     func setColor() {
         if isTop {
-            titleDate?.textColor = NCBrandColor.shared.textColor
-            activityIndicator.color = NCBrandColor.shared.textColor
-            selectOrCancelButton.setTitleColor(NCBrandColor.shared.textColor, for: .normal)
-            menuButton.setImage(NCUtility().loadImage(named: "ellipsis", colors: [NCBrandColor.shared.textColor]), for: .normal)
-            gradientView.isHidden = true
+            UIView.animate(withDuration: 0.3) { [self] in
+                gradientView.alpha = 0
+                titleDate?.textColor = NCBrandColor.shared.textColor
+                activityIndicator.color = NCBrandColor.shared.textColor
+                selectOrCancelButton.setTitleColor(NCBrandColor.shared.textColor, for: .normal)
+                menuButton.setImage(NCUtility().loadImage(named: "ellipsis", colors: [NCBrandColor.shared.textColor]), for: .normal)
+            }
         } else {
-            titleDate?.textColor = .white
-            activityIndicator.color = .white
-            selectOrCancelButton.setTitleColor(.white, for: .normal)
-            menuButton.setImage(NCUtility().loadImage(named: "ellipsis", colors: [.white]), for: .normal)
-            gradientView.isHidden = false
+            UIView.animate(withDuration: 0.3) { [self] in
+                gradientView.alpha = 1
+                titleDate?.textColor = .white
+                activityIndicator.color = .white
+                selectOrCancelButton.setTitleColor(.white, for: .normal)
+                menuButton.setImage(NCUtility().loadImage(named: "ellipsis", colors: [.white]), for: .normal)
+            }
         }
     }
 
@@ -138,32 +142,16 @@ extension NCMedia {
         let viewLayoutMenu = UIAction(title: layoutTitle, image: layoutImage) { _ in
             if layout == NCGlobal.shared.mediaLayoutRatio {
                 NCManageDatabase.shared.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", layout: NCGlobal.shared.mediaLayoutSquare)
+                self.layoutType = NCGlobal.shared.mediaLayoutSquare
             } else {
                 NCManageDatabase.shared.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", layout: NCGlobal.shared.mediaLayoutRatio)
+                self.layoutType = NCGlobal.shared.mediaLayoutRatio
             }
             self.createMenu()
             self.collectionViewReloadData()
         }
 
-        let zoomViewMediaFolder = UIMenu(title: "", options: .displayInline, children: [
-            UIMenu(title: NSLocalizedString("_zoom_", comment: ""), children: [
-                UIAction(title: NSLocalizedString("_zoom_out_", comment: ""), image: utility.loadImage(named: "minus.magnifyingglass"), attributes: self.attributesZoomOut) { _ in
-                    UIView.animate(withDuration: 0.0, animations: {
-                        let column = columnPhoto + 1
-                        NCManageDatabase.shared.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: column)
-                        self.createMenu()
-                        self.collectionViewReloadData()
-                    })
-                },
-                UIAction(title: NSLocalizedString("_zoom_in_", comment: ""), image: utility.loadImage(named: "plus.magnifyingglass"), attributes: self.attributesZoomIn) { _ in
-                    UIView.animate(withDuration: 0.0, animations: {
-                        let column = columnPhoto - 1
-                        NCManageDatabase.shared.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: column)
-                        self.createMenu()
-                        self.collectionViewReloadData()
-                    })
-                }
-            ]),
+        let viewOptionsMedia = UIMenu(title: "", options: .displayInline, children: [
             UIMenu(title: NSLocalizedString("_media_view_options_", comment: ""), children: [viewFilterMenu, viewLayoutMenu]),
             UIAction(title: NSLocalizedString("_select_media_folder_", comment: ""), image: utility.loadImage(named: "folder"), handler: { _ in
                 guard let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as? UINavigationController,
@@ -175,6 +163,24 @@ extension NCMedia {
                 self.present(navigationController, animated: true)
             })
         ])
+
+        let zoomOut = UIAction(title: NSLocalizedString("_zoom_out_", comment: ""), image: utility.loadImage(named: "minus.magnifyingglass"), attributes: self.attributesZoomOut) { _ in
+            UIView.animate(withDuration: 0.0, animations: {
+                let column = columnPhoto + 1
+                NCManageDatabase.shared.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: column)
+                self.createMenu()
+                self.collectionViewReloadData()
+            })
+        }
+
+        let zoomIn = UIAction(title: NSLocalizedString("_zoom_in_", comment: ""), image: utility.loadImage(named: "plus.magnifyingglass"), attributes: self.attributesZoomIn) { _ in
+            UIView.animate(withDuration: 0.0, animations: {
+                let column = columnPhoto - 1
+                NCManageDatabase.shared.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: column)
+                self.createMenu()
+                self.collectionViewReloadData()
+            })
+        }
 
         let playFile = UIAction(title: NSLocalizedString("_play_from_files_", comment: ""), image: utility.loadImage(named: "play.circle")) { _ in
             guard let controller = self.tabBarController as? NCMainTabBarController else { return }
@@ -197,7 +203,7 @@ extension NCMedia {
             self.present(alert, animated: true)
         }
 
-        menuButton.menu = UIMenu(title: "", children: [zoomViewMediaFolder, playFile, playURL])
+        menuButton.menu = UIMenu(title: "", children: [zoomOut, zoomIn, viewOptionsMedia, playFile, playURL])
     }
 }
 
