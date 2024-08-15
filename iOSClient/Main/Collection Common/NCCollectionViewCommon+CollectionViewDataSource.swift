@@ -49,10 +49,18 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
         /// CONTENT MODE
         cell.filePreviewImageView?.layer.borderWidth = 0
-        if existsIcon {
-            cell.filePreviewImageView?.contentMode = .scaleAspectFill
+        if isLayoutPhoto {
+            if metadata.isImageOrVideo, existsIcon {
+                cell.filePreviewImageView?.contentMode = .scaleAspectFill
+            } else {
+                cell.filePreviewImageView?.contentMode = .scaleAspectFit
+            }
         } else {
-            cell.filePreviewImageView?.contentMode = .scaleAspectFit
+            if existsIcon {
+                cell.filePreviewImageView?.contentMode = .scaleAspectFill
+            } else {
+                cell.filePreviewImageView?.contentMode = .scaleAspectFit
+            }
         }
         cell.fileAvatarImageView?.contentMode = .center
         /// THUMBNAIL
