@@ -41,7 +41,7 @@ class NCHostingUploadScanDocumentView: NSObject {
 // MARK: - Class
 
 class NCUploadScanDocument: ObservableObject {
-    internal var session: NCSession.Session
+    internal var session: NCSession.Session!
     internal var metadata = tableMetadata()
     internal var images: [UIImage]
     internal var password: String = ""

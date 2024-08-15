@@ -630,7 +630,7 @@ class NCSelectCommandView: UIView {
 struct NCSelectViewControllerRepresentable: UIViewControllerRepresentable {
     typealias UIViewControllerType = UINavigationController
     var delegate: NCSelectDelegate
-    var session: NCSession.Session
+    var session: NCSession.Session!
 
     func makeUIViewController(context: Context) -> UINavigationController {
 
@@ -651,7 +651,7 @@ struct NCSelectViewControllerRepresentable: UIViewControllerRepresentable {
 
 struct SelectView: UIViewControllerRepresentable {
     @Binding var serverUrl: String
-    var session: NCSession.Session
+    var session: NCSession.Session!
 
     class Coordinator: NSObject, NCSelectDelegate {
         var parent: SelectView
