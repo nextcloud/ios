@@ -266,8 +266,9 @@ class NCImageCache: NSObject {
 
         images.file = utility.loadImage(named: "doc", colors: [NCBrandColor.shared.iconImageColor2])
 
-        images.shared = UIImage(resource: .Share.canShare).withTintColor(NCBrandColor.shared.brandElement)
-        images.canShare = UIImage(resource: .Share.canShare).withTintColor(NCBrandColor.shared.brandElement)
+        let canShareImage = UIImage(resource: .Share.canShare).withTintColor(NCBrandColor.shared.brandElement)
+        images.shared = canShareImage
+        images.canShare = canShareImage
         images.shareByLink = UIImage(resource: .Share.shared).withTintColor(NCBrandColor.shared.brandElement)
 
         images.favorite = utility.loadImage(named: "star.fill", colors: [NCBrandColor.shared.brandElement])

@@ -72,7 +72,7 @@
                                         <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                         <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                         <state key="normal">
-                                            <imageReference key="image" image="person.circle" catalog="system" symbolScale="large" renderingMode="hierarchical">
+                                            <imageReference key="image" image="contactsIcon" symbolScale="large" renderingMode="hierarchical">
                                                 <hierarchicalColors>
                                                     <color systemColor="labelColor"/>
                                                     <color systemColor="secondaryLabelColor"/>
@@ -277,7 +277,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="person.circle" catalog="system" width="128" height="123"/>
+        <image name="contactsIcon" width="84" height="84"/>
         <systemColor name="labelColor">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
