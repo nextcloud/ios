@@ -351,6 +351,9 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             let nameStoryboard = item.url.replacingOccurrences(of: "openStoryboard", with: "")
             let storyboard = UIStoryboard(name: nameStoryboard, bundle: nil)
             if let controller = storyboard.instantiateInitialViewController() {
+                if let vc = controller.topMostViewController() as? NCScan {
+                    vc.session = session
+                }
                 controller.modalPresentationStyle = UIModalPresentationStyle.pageSheet
                 present(controller, animated: true, completion: nil)
             }
