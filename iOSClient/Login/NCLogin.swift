@@ -51,8 +51,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     /// The URL that will show up on the URL field when this screen appears
     var urlBase = ""
-    var disableUrlField = false
-    var disableCloseButton = false
 
     // Used for MDM
     var configServerUrl: String?
@@ -95,7 +93,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         baseUrl.rightViewMode = .always
         baseUrl.attributedPlaceholder = NSAttributedString(string: NSLocalizedString("_login_url_", comment: ""), attributes: [NSAttributedString.Key.foregroundColor: textColor.withAlphaComponent(0.5)])
         baseUrl.delegate = self
-        baseUrl.isEnabled = !disableUrlField
+
+        baseUrl.isEnabled = !NCBrandOptions.shared.disable_request_login_url
 
         // Login button
         loginAddressDetail.textColor = textColor
@@ -106,7 +105,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
         // brand
         if NCBrandOptions.shared.disable_request_login_url {
-            baseUrl.text = NCBrandOptions.shared.loginBaseUrl
             baseUrl.isEnabled = false
             baseUrl.isUserInteractionEnabled = false
             baseUrl.alpha = 0.5
@@ -131,7 +129,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         self.navigationController?.view.backgroundColor = NCBrandColor.shared.customer
         self.navigationController?.navigationBar.tintColor = textColor
 
-        if !NCManageDatabase.shared.getAllTableAccount().isEmpty && !disableCloseButton {
+        if !NCManageDatabase.shared.getAllTableAccount().isEmpty {
             let navigationItemCancel = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(self.actionCancel))
             navigationItemCancel.tintColor = textColor
             navigationItem.leftBarButtonItem = navigationItemCancel
@@ -140,7 +138,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         if let dirGroupApps = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupApps) {
             // Nextcloud update share accounts
             if let error = NCAccount().updateAppsShareAccounts() {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Create Apps share accounts \(error.localizedDescription)")
+                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Create share accounts \(error.localizedDescription)")
             }
             // Nextcloud get share accounts
             if let shareAccounts = NKShareAccounts().getShareAccount(at: dirGroupApps, application: UIApplication.shared) {
@@ -399,12 +397,10 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         NCAccount().createAccount(urlBase: urlBase, user: user, password: password) { account, error in
             if error == .success {
                 let window = UIApplication.shared.firstWindow
-                if let controller = window?.rootViewController as? NCMainTabBarController {
-                    controller.account = account
+                if window?.rootViewController is NCMainTabBarController {
                     self.dismiss(animated: true)
                 } else {
                     if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
-                        controller.account = account
                         controller.modalPresentationStyle = .fullScreen
                         controller.view.alpha = 0
                         window?.rootViewController = controller

@@ -183,11 +183,11 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
     }
 
     @IBAction func login(_ sender: Any) {
-        appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
+        appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
     }
 
     @IBAction func signup(_ sender: Any) {
-        appDelegate.openLogin(selector: NCGlobal.shared.introSignup, openLoginWeb: false)
+        appDelegate.openLogin(selector: NCGlobal.shared.introSignup)
     }
 
     @IBAction func host(_ sender: Any) {

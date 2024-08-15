@@ -174,7 +174,7 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
                 }
             } else {
                 dismissView = true
-                appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
+                appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
             }
         }
     }

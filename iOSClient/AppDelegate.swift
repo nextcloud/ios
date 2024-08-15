@@ -302,9 +302,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // MARK: - Login
 
-    func openLogin(selector: Int, openLoginWeb: Bool, window: UIWindow? = nil) {
-        let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount()
-
+    func openLogin(selector: Int) {
         func showLoginViewController(_ viewController: UIViewController?) {
             guard let viewController else { return }
             let navigationController = NCLoginNavigationController(rootViewController: viewController)
@@ -315,12 +313,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             navigationController.navigationBar.barTintColor = NCBrandColor.shared.customer
             navigationController.navigationBar.isTranslucent = false
 
-            if let window {
-                window.rootViewController = navigationController
-                window.makeKeyAndVisible()
-            } else {
-                UIApplication.shared.allSceneSessionDestructionExceptFirst()
-                UIApplication.shared.firstWindow?.rootViewController?.present(navigationController, animated: true)
+            UIApplication.shared.allSceneSessionDestructionExceptFirst()
+
+            if let rootVC = UIApplication.shared.firstWindow?.rootViewController {
+                if let presentedVC = rootVC.presentedViewController, !(presentedVC is NCLoginNavigationController) {
+                    presentedVC.dismiss(animated: false) {
+                        rootVC.present(navigationController, animated: true)
+                    }
+                } else {
+                    rootVC.present(navigationController, animated: true)
+                }
             }
         }
 
@@ -334,59 +336,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     web?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
                     showLoginViewController(web)
                 } else {
-                    activeLogin?.urlBase = activeTableAccount?.urlBase ?? ""
+                    //activeLogin?.urlBase = self.urlBase
                     showLoginViewController(activeLogin)
                 }
             }
-
-        } else if NCBrandOptions.shared.disable_request_login_url {
-            if activeLogin?.view.window == nil {
-                activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
-                activeLogin?.urlBase = NCBrandOptions.shared.loginBaseUrl
-                showLoginViewController(activeLogin)
-            }
-        } else if openLoginWeb {
-            // Used also for reinsert the account (change passwd)
-            if activeLogin?.view.window == nil {
-                activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
-                activeLogin?.urlBase = activeTableAccount?.urlBase ?? ""
-                activeLogin?.disableUrlField = true
-                activeLogin?.disableCloseButton = true
-                showLoginViewController(activeLogin)
-            }
         } else {
             if activeLogin?.view.window == nil {
-                activeLogin?.disableCloseButton = true
-
                 activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
+                activeLogin?.urlBase = NCBrandOptions.shared.disable_request_login_url ? NCBrandOptions.shared.loginBaseUrl : ""
                 showLoginViewController(activeLogin)
             }
         }
     }
 
-    // MARK: - Error Networking
-
-    /*
-    func startTimerErrorNetworking(scene: UIScene) {
-        timerErrorNetworkingDisabled = false
-        timerErrorNetworking = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(checkErrorNetworking(_:)), userInfo: nil, repeats: true)
-    }
-
-    @objc private func checkErrorNetworking(_ notification: NSNotification) {
-        guard !self.timerErrorNetworkingDisabled else { return }
-
-        for tableAccount in NCManageDatabase.shared.getAllTableAccount() {
-            let password = NCKeychain().getPassword(account: tableAccount.account)
-            if password.isEmpty {
-                for controller in SceneManager.shared.getControllers() {
-                    if controller.account == tableAccount.account {
-                        openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: true)
-                    }
-                }
-            }
-        }
-    }
-    */
+    // MARK: -
 
     func trustCertificateError(host: String) {
         guard let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount(),

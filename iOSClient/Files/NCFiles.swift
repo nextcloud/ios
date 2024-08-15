@@ -290,7 +290,7 @@ class NCFiles: NCCollectionViewCommon {
     override func accountSettingsDidDismiss(tableAccount: tableAccount?, controller: NCMainTabBarController?) {
         let currentAccount = session.account
         if NCManageDatabase.shared.getAllTableAccount().isEmpty {
-            appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
+            appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
         } else if let account = tableAccount?.account, account != currentAccount {
             NCAccount().changeAccount(account, userProfile: nil, controller: controller) { }
         } else if isRoot {
