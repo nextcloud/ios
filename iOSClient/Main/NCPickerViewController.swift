@@ -110,11 +110,11 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
     let utilityFileSystem = NCUtilityFileSystem()
     var isViewerMedia: Bool
     var viewController: UIViewController?
-    var mainTabBarController: NCMainTabBarController
+    var controller: NCMainTabBarController
 
     @discardableResult
     init (controller: NCMainTabBarController, isViewerMedia: Bool, allowsMultipleSelection: Bool, viewController: UIViewController? = nil, session: NCSession.Session) {
-        self.mainTabBarController = controller
+        self.controller = controller
         self.isViewerMedia = isViewerMedia
         self.viewController = viewController
         super.init()
@@ -123,14 +123,15 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
 
         documentProviderMenu.modalPresentationStyle = .formSheet
         documentProviderMenu.allowsMultipleSelection = allowsMultipleSelection
-        documentProviderMenu.popoverPresentationController?.sourceView = mainTabBarController.tabBar
-        documentProviderMenu.popoverPresentationController?.sourceRect = mainTabBarController.tabBar.bounds
+        documentProviderMenu.popoverPresentationController?.sourceView = controller.tabBar
+        documentProviderMenu.popoverPresentationController?.sourceRect = controller.tabBar.bounds
         documentProviderMenu.delegate = self
 
-        mainTabBarController.present(documentProviderMenu, animated: true, completion: nil)
+        controller.present(documentProviderMenu, animated: true, completion: nil)
     }
 
-    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL], session: NCSession.Session) {
+    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+        let session = NCSession.shared.getSession(controller: self.controller)
         if isViewerMedia,
             let urlIn = urls.first,
             let url = self.copySecurityScopedResource(url: urlIn, urlOut: FileManager.default.temporaryDirectory.appendingPathComponent(urlIn.lastPathComponent)),
@@ -145,7 +146,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
             NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
 
         } else {
-            let serverUrl = mainTabBarController.currentServerUrl()
+            let serverUrl = self.controller.currentServerUrl()
             var metadatas = [tableMetadata]()
             var metadatasInConflict = [tableMetadata]()
 
@@ -182,7 +183,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                     conflict.serverUrl = serverUrl
                     conflict.metadatasUploadInConflict = metadatasInConflict
 
-                    mainTabBarController.present(conflict, animated: true, completion: nil)
+                    self.controller.present(conflict, animated: true, completion: nil)
                 }
             }
         }
