@@ -50,13 +50,13 @@ class NCEndToEndInitialize: NSObject {
         self.getPublicKey()
     }
 
-    func statusOfService(completion: @escaping (_ error: NKError?) -> Void) {
+    func statusOfService(session: NCSession.Session, completion: @escaping (_ error: NKError?) -> Void) {
         NextcloudKit.shared.getE2EECertificate(account: session.account) { _, _, _, _, error in
             completion(error)
         }
     }
 
-    func getPublicKey() {
+    private func getPublicKey() {
 
         NextcloudKit.shared.getE2EECertificate(account: session.account) { account, certificate, _, _, error in
             if error == .success, let certificate {
@@ -112,7 +112,7 @@ class NCEndToEndInitialize: NSObject {
         }
     }
 
-    func getPrivateKeyCipher() {
+    private func getPrivateKeyCipher() {
         // Request PrivateKey chiper to Server
         NextcloudKit.shared.getE2EEPrivateKey(account: session.account) { account, privateKeyChiper, _, error in
             if error == .success {
@@ -200,7 +200,7 @@ class NCEndToEndInitialize: NSObject {
         }
     }
 
-    func createNewE2EE(e2ePassphrase: String, error: NKError, copyPassphrase: Bool) {
+    private func createNewE2EE(e2ePassphrase: String, error: NKError, copyPassphrase: Bool) {
         var privateKeyString: NSString?
         guard let privateKeyCipher = NCEndToEndEncryption.shared().encryptPrivateKey(session.userId, directory: utilityFileSystem.directoryUserData, passphrase: e2ePassphrase, privateKey: &privateKeyString, iterationCount: 1024) else {
             let error = NKError(errorCode: error.errorCode, errorDescription: "Error creating private key cipher")
@@ -258,5 +258,4 @@ class NCEndToEndInitialize: NSObject {
             }
         }
     }
-
 }
