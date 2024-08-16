@@ -97,8 +97,8 @@ class NCAccount: NSObject {
     }
 
     func deleteAccount(_ account: String) {
-        /// Remove all Scene except the one first
         UIApplication.shared.allSceneSessionDestructionExceptFirst()
+
         /// Unsubscribing Push Notification
         if let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) {
             NCPushNotification.shared.unsubscribingNextcloudServerPushNotification(account: tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, withSubscribing: false)
