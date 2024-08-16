@@ -155,7 +155,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         guard let metadata = metadataTemp else { return false }
         if metadata.isDirectoryE2EE { return false }
 
-        if metadata.status == NCGlobal.shared.metadataStatusWaitUpload || metadata.isUpload {
+        if metadata.isUpload {
             return true
         }
 

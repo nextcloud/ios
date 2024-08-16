@@ -54,7 +54,7 @@ class NCDataSource: NSObject {
         super.init()
 
         self.metadatas = metadatas.filter({
-            !(NCGlobal.shared.includeHiddenFiles.contains($0.fileNameView) || $0.isTransferInForeground)
+            !(NCGlobal.shared.includeHiddenFiles.contains($0.fileNameView) || $0.isUpload)
         })
         self.directory = directory
         self.sort = layoutForView?.sort ?? "none"

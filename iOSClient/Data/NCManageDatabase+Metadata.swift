@@ -254,7 +254,7 @@ extension tableMetadata {
     }
 
     var isUpload: Bool {
-        status == NCGlobal.shared.metadataStatusUploading
+        status == NCGlobal.shared.metadataStatusWaitUpload || status == NCGlobal.shared.metadataStatusUploading
     }
 
     @objc var isDirectoryE2EE: Bool {

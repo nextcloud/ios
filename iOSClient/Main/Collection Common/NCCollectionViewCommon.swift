@@ -496,7 +496,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @objc func uploadedFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocIdTemp = userInfo["ocIdTemp"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
               let account = userInfo["account"] as? String
         else { return }
@@ -536,13 +535,29 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func triggerProgressTask(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let progressNumber = userInfo["progress"] as? NSNumber,
-              let totalBytes = userInfo["totalBytes"] as? Int64,
-              let totalBytesExpected = userInfo["totalBytesExpected"] as? Int64,
               let ocId = userInfo["ocId"] as? String
         else { return }
+
         let chunk: Int = userInfo["chunk"] as? Int ?? 0
         let e2eEncrypted: Bool = userInfo["e2eEncrypted"] as? Bool ?? false
 
+        DispatchQueue.main.async {
+            if self.headerMenuTransferView && (chunk > 0 || e2eEncrypted) {
+                if NCNetworking.shared.transferInForegorund?.ocId == ocId {
+                    NCNetworking.shared.transferInForegorund?.progress = progressNumber.floatValue
+                } else {
+                    NCNetworking.shared.transferInForegorund = NCNetworking.TransferInForegorund(ocId: ocId, progress: progressNumber.floatValue)
+                    self.collectionView.reloadData()
+                }
+                self.sectionFirstHeader?.progressTransfer.progress = progressNumber.floatValue
+                self.sectionFirstHeaderEmptyData?.progressTransfer.progress = progressNumber.floatValue
+            } else {
+                self.sectionFirstHeader?.progressTransfer.progress = 0
+                self.sectionFirstHeaderEmptyData?.progressTransfer.progress = 0
+            }
+        }
+
+        /*
         DispatchQueue.main.async {
             if self.headerMenuTransferView && (chunk > 0 || e2eEncrypted) {
                 if NCNetworking.shared.transferInForegorund?.ocId == ocId {
@@ -587,6 +602,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 }
             }
         }
+        */
     }
 
     // MARK: - Layout
@@ -1261,7 +1277,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func isHeaderMenuTransferViewEnabled() -> Bool {
         if headerMenuTransferView,
-           let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status == %d", NCGlobal.shared.metadataStatusUploading)) {
+           let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status == %d || status == %d", NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusUploading)) {
             if !results.isEmpty {
                 return true
             }
