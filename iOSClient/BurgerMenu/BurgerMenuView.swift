@@ -19,12 +19,11 @@ struct BurgerMenuView: View {
         GeometryReader { geometry in
             let width = geometry.size.width
             ZStack(alignment: .leading) {
-                Button(action: {
-                    viewModel.hideMenu()
-                }, label: {
-                    Color(.BurgerMenu.overlay)
-                })
-                .ignoresSafeArea()
+                Color(.BurgerMenu.overlay)
+                    .ignoresSafeArea()
+                    .onTapGesture {
+                        viewModel.hideMenu()
+                    }
                 HStack(spacing: 0, content: {
                     VStack(alignment: .leading, spacing: 17) {
                         Button(action: {
@@ -41,7 +40,6 @@ struct BurgerMenuView: View {
                             .foregroundStyle(Color(.BurgerMenu.backButton))
                         })
                         .padding(EdgeInsets(top: 3, leading: 2.5, bottom: 3, trailing: 2.5))
-                        Spacer().frame(height: 6)
                         BurgerMenuViewButton(image: .BurgerMenu.recent,
                                              title: NSLocalizedString("_recent_",
                                                                       comment: ""),
@@ -81,6 +79,7 @@ struct BurgerMenuView: View {
                             Text(viewModel.messageUsedSpace)
                                 .font(_Constants.font)
                         })
+                        .padding(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 0))
                         .foregroundStyle(Color(.BurgerMenu.buttonForeground))
                     }
                     .padding(EdgeInsets(top: 0, leading: 19, bottom: 60, trailing: 28))
@@ -109,10 +108,14 @@ private struct BurgerMenuViewButton: View {
                     .buttonIconStyled()
                 Text(title)
                     .font(_Constants.font)
+                Spacer()
             }
+            .makeAllButtonSpaceTappable()
             .foregroundStyle(Color(.BurgerMenu.buttonForeground))
             .frame(height: 51)
+            .padding(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 0))
         })
+        .buttonStyle(CustomBackgroundOnPressButtonStyle())
     }
 }
 
@@ -140,6 +143,29 @@ private extension Image {
             .resizable()
             .aspectRatio(contentMode: .fit)
             .frame(width: 28, height: 28)
+    }
+}
+
+private struct CustomBackgroundOnPressButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        if configuration.isPressed {
+            configuration
+                .label
+                .background {
+                    GeometryReader { geometry in
+                        Color(.BurgerMenu.pressedButton)
+                            .clipShape(RoundedRectangle(cornerRadius: geometry.size.height/2))
+                    }
+                }
+        } else {
+            configuration.label
+        }
+    }
+}
+
+private extension View {
+    func makeAllButtonSpaceTappable() -> some View {
+        self.contentShape(Rectangle())
     }
 }
 
