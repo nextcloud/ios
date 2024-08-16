@@ -35,7 +35,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         layoutKey = NCGlobal.shared.layoutViewTransfers
         enableSearchBar = false
         headerRichWorkspaceDisable = true
-        headerMenuTransferView = true
+        headerMenuTransferView = false
         emptyImage = utility.loadImage(named: "arrow.left.arrow.right", colors: [NCBrandColor.shared.brandElement])
         emptyTitle = "_no_transfer_"
         emptyDescription = "_no_transfer_sub_"
@@ -67,21 +67,17 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     // MARK: - NotificationCenter
 
-    override func downloadStartFile(_ notification: NSNotification) {
-        notificationReloadDataSource += 1
-    }
+    override func downloadStartFile(_ notification: NSNotification) { }
 
     override func downloadedFile(_ notification: NSNotification) {
         notificationReloadDataSource += 1
     }
 
     override func downloadCancelFile(_ notification: NSNotification) {
-        reloadDataSource()
-    }
-
-    override func uploadStartFile(_ notification: NSNotification) {
         notificationReloadDataSource += 1
     }
+
+    override func uploadStartFile(_ notification: NSNotification) { }
 
     override func uploadedFile(_ notification: NSNotification) {
         notificationReloadDataSource += 1
@@ -92,7 +88,39 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     }
 
     override func uploadCancelFile(_ notification: NSNotification) {
-        reloadDataSource()
+        notificationReloadDataSource += 1
+    }
+
+    override func triggerProgressTask(_ notification: NSNotification) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let progressNumber = userInfo["progress"] as? NSNumber,
+              let totalBytes = userInfo["totalBytes"] as? Int64,
+              let totalBytesExpected = userInfo["totalBytesExpected"] as? Int64,
+              let ocId = userInfo["ocId"] as? String
+        else { return }
+
+        DispatchQueue.main.async {
+            guard let indexPath = self.dataSource.getIndexPathMetadata(ocId: ocId).indexPath,
+                  let cell = self.collectionView?.cellForItem(at: indexPath),
+                  let cell = cell as? NCCellProtocol else { return }
+
+            cell.fileProgressView?.isHidden = false
+            cell.fileProgressView?.progress = progressNumber.floatValue
+            cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCImageCache.images.buttonStop)
+            let status = userInfo["status"] as? Int ?? NCGlobal.shared.metadataStatusNormal
+            if status == NCGlobal.shared.metadataStatusDownloading {
+                cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected)
+                cell.fileSubinfoLabel?.text = self.infoLabelsSeparator + "↓ " + self.utilityFileSystem.transformedSize(totalBytes)
+            } else if status == NCGlobal.shared.metadataStatusUploading {
+                if totalBytes > 0 {
+                    cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected)
+                    cell.fileSubinfoLabel?.text = self.infoLabelsSeparator + "↑ " + self.utilityFileSystem.transformedSize(totalBytes)
+                } else {
+                    cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected)
+                    cell.fileSubinfoLabel?.text = self.infoLabelsSeparator + "↑ …"
+                }
+            }
+        }
     }
 
     // MARK: TAP EVENT
@@ -248,7 +276,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         super.queryDB()
 
         let metadatas: [tableMetadata] = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal), sorted: "sessionDate", ascending: true) ?? []
-        self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: layoutForView)
+        self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: layoutForView, filterIsUpload: false)
     }
 
     override func reloadDataSource(withQueryDB: Bool = true) {
