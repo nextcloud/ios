@@ -485,12 +485,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let account = userInfo["account"] as? String
         else { return }
 
-        DispatchQueue.main.async { self.collectionView?.reloadData() }
-
         if account == session.account,
            serverUrl == self.serverUrl,
            !isHeaderMenuTransferViewEnabled() {
             reloadDataSource()
+        } else {
+            DispatchQueue.main.async {
+                self.collectionView?.reloadData()
+            }
         }
     }
 
@@ -506,6 +508,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
            serverUrl == self.serverUrl,
            !isHeaderMenuTransferViewEnabled() {
             reloadDataSource()
+        } else {
+            DispatchQueue.main.async {
+                self.collectionView?.reloadData()
+            }
         }
     }
 
@@ -515,12 +521,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let account = userInfo["account"] as? String
         else { return }
 
-        DispatchQueue.main.async { self.collectionView?.reloadData() }
-
         if account == session.account,
            serverUrl == self.serverUrl,
            !isHeaderMenuTransferViewEnabled() {
             reloadDataSource()
+        } else {
+            DispatchQueue.main.async {
+                self.collectionView?.reloadData()
+            }
         }
     }
 
