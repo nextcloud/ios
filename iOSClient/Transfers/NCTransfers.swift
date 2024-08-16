@@ -55,6 +55,11 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         super.viewWillAppear(animated)
 
         reloadDataSource()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
         Task {
             await NCNetworkingProcess.shared.verifyZombie()
         }
@@ -67,28 +72,32 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     // MARK: - NotificationCenter
 
-    override func downloadStartFile(_ notification: NSNotification) { }
+    override func downloadStartFile(_ notification: NSNotification) {
+        DispatchQueue.main.async { self.collectionView?.reloadData() }
+    }
 
     override func downloadedFile(_ notification: NSNotification) {
-        notificationReloadDataSource += 1
+        DispatchQueue.main.async { self.collectionView?.reloadData() }
     }
 
     override func downloadCancelFile(_ notification: NSNotification) {
-        notificationReloadDataSource += 1
+        DispatchQueue.main.async { self.collectionView?.reloadData() }
     }
 
-    override func uploadStartFile(_ notification: NSNotification) { }
+    override func uploadStartFile(_ notification: NSNotification) {
+        DispatchQueue.main.async { self.collectionView?.reloadData() }
+    }
 
     override func uploadedFile(_ notification: NSNotification) {
-        notificationReloadDataSource += 1
+        DispatchQueue.main.async { self.collectionView?.reloadData() }
     }
 
     override func uploadedLivePhoto(_ notification: NSNotification) {
-        notificationReloadDataSource += 1
+        DispatchQueue.main.async { self.collectionView?.reloadData() }
     }
 
     override func uploadCancelFile(_ notification: NSNotification) {
-        notificationReloadDataSource += 1
+        DispatchQueue.main.async { self.collectionView?.reloadData() }
     }
 
     override func triggerProgressTask(_ notification: NSNotification) {
