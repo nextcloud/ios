@@ -21,19 +21,13 @@ class BurgerMenuViewModel: ObservableObject {
     
     @Published var progressUsedSpace: Double = 0
     @Published var messageUsedSpace: String = ""
-    
-    @Published var brandColor: Color = Color(NCBrandColor.shared.brandElement)
-    
+        
     @Published var isVisible: Bool = false
     
     let appearingAnimationIntervalInSec = 0.5
     
     init(delegate: BurgerMenuViewModelDelegate?) {
         self.delegate = delegate
-        NotificationCenter.default.addObserver(self, 
-                                               selector: #selector(changeTheming),
-                                               name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming),
-                                               object: nil)
     }
     
     func showMenu() {
@@ -94,13 +88,5 @@ class BurgerMenuViewModel: ObservableObject {
             return activeAccount.quotaRelative/100.0
         }
         return 0
-    }
-    
-    @objc private func changeTheming() {
-        brandColor = Color(NCBrandColor.shared.brandElement)
-    }
-    
-    deinit {
-        NotificationCenter.default.removeObserver(self)
     }
 }
