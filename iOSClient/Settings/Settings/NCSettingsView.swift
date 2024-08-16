@@ -56,9 +56,6 @@ struct NCSettingsView: View {
                     }
                     .font(.system(size: 16))
                 }
-            }, header: {
-            }, footer: {
-                Text(NSLocalizedString("_autoupload_description_", comment: ""))
             })
             /// `Privacy` Section
             Section(content: {
@@ -101,23 +98,6 @@ struct NCSettingsView: View {
                     .font(.system(size: 12))
                     .lineSpacing(1)
             })
-            /// Display
-            Section(header: Text(NSLocalizedString("_display_", comment: "")), content: {
-                NavigationLink(destination: LazyView {
-                    NCDisplayView(model: NCDisplayModel(controller: model.controller))
-                }) {
-                    HStack {
-                        Image(systemName: "sun.max.circle")
-                            .resizable()
-                            .scaledToFit()
-                            .font(Font.system(.body).weight(.light))
-                            .frame(width: 20, height: 20)
-                            .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
-                        Text(NSLocalizedString("_display_", comment: ""))
-                    }
-                    .font(.system(size: 16))
-                }
-            })
             /// Calender & Contacts
             if !NCBrandOptions.shared.disable_mobileconfig {
                 Section(content: {
@@ -149,21 +129,6 @@ struct NCSettingsView: View {
 
                 })
             }
-            /// Users
-            Section(content: {
-                Toggle(NSLocalizedString("_settings_account_request_", comment: ""), isOn: $model.accountRequest)
-                    .font(.system(size: 16))
-                    .tint(Color(NCBrandColor.shared.brandElement))
-                    .onChange(of: model.accountRequest, perform: { _ in
-                        model.updateAccountRequest()
-                    })
-            }, header: {
-                Text(NSLocalizedString("_users_", comment: ""))
-            }, footer: {
-                Text(NSLocalizedString("_users_footer_", comment: ""))
-                    .font(.system(size: 12))
-                    .lineSpacing(1)
-            })
             /// `Advanced` Section
             Section {
                 NavigationLink(destination: LazyView {
