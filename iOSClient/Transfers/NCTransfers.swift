@@ -227,9 +227,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             cell.labelStatus.text = ""
             cell.labelInfo.text = ""
         }
-        if session.account != metadata.account {
-            cell.labelInfo.text = NSLocalizedString("_waiting_for_", comment: "") + " " + NSLocalizedString("_user_", comment: "").lowercased() + " \(metadata.userId) " + NSLocalizedString("_in_", comment: "") + " \(metadata.urlBase)"
-        }
         let isWiFi = NCNetworking.shared.networkReachability == .reachableEthernetOrWiFi
         if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundWWan && !isWiFi {
             cell.labelInfo.text = NSLocalizedString("_waiting_for_", comment: "") + " " + NSLocalizedString("_reachable_wifi_", comment: "")
