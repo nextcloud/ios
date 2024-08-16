@@ -491,23 +491,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func uploadStartFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String,
-              let serverUrl = userInfo["serverUrl"] as? String,
-              let account = userInfo["account"] as? String,
-              !isSearchingMode,
-              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
-        else { return }
-
-        // Header view trasfer
-        if metadata.isTransferInForeground {
-            NCNetworking.shared.transferInForegorund = NCNetworking.TransferInForegorund(ocId: ocId, progress: 0)
-            DispatchQueue.main.async { self.collectionView?.reloadData() }
-        }
-
-        if serverUrl == self.serverUrl, account == session.account {
-            notificationReloadDataSource += 1
-        }
+        DispatchQueue.main.async { self.collectionView?.reloadData() }
     }
 
     @objc func uploadedFile(_ notification: NSNotification) {
@@ -517,10 +501,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let account = userInfo["account"] as? String
         else { return }
 
-        if ocIdTemp == NCNetworking.shared.transferInForegorund?.ocId {
-            NCNetworking.shared.transferInForegorund = nil
-            DispatchQueue.main.async { self.collectionView?.reloadData() }
-        }
+        DispatchQueue.main.async { self.collectionView?.reloadData() }
 
         if account == session.account, serverUrl == self.serverUrl {
             notificationReloadDataSource += 1
@@ -545,10 +526,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let account = userInfo["account"] as? String
         else { return }
 
-        if ocId == NCNetworking.shared.transferInForegorund?.ocId {
-            NCNetworking.shared.transferInForegorund = nil
-            DispatchQueue.main.async { self.collectionView?.reloadData() }
-        }
+        DispatchQueue.main.async { self.collectionView?.reloadData() }
 
         if account == session.account, serverUrl == self.serverUrl {
             reloadDataSource()
@@ -1283,9 +1261,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func isHeaderMenuTransferViewEnabled() -> Bool {
         if headerMenuTransferView,
-           let metadata = NCManageDatabase.shared.getMetadataFromOcId(NCNetworking.shared.transferInForegorund?.ocId),
-           metadata.isTransferInForeground {
-            return true
+           let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status == %d", NCGlobal.shared.metadataStatusUploading)) {
+            if !results.isEmpty {
+                return true
+            }
         }
         return false
     }

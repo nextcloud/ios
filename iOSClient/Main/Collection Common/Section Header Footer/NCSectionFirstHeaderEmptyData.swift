@@ -58,18 +58,16 @@ class NCSectionFirstHeaderEmptyData: UICollectionReusableView {
     func initHeader() {
         viewTransferHeightConstraint.constant = 0
         viewTransfer.isHidden = true
-        buttonTransfer.backgroundColor = .clear
-        buttonTransfer.setImage(nil, for: .normal)
-        buttonTransfer.layer.cornerRadius = 6
-        buttonTransfer.layer.masksToBounds = true
-        imageButtonTransfer.image = NCUtility().loadImage(named: "stop.circle")
-        imageButtonTransfer.tintColor = .white
-        labelTransfer.text = ""
+
+        imageButtonTransfer.tintColor = .black
+
         progressTransfer.progress = 0
         progressTransfer.tintColor = NCBrandColor.shared.brandElement
         progressTransfer.trackTintColor = NCBrandColor.shared.brandElement.withAlphaComponent(0.2)
+
         transferSeparatorBottom.backgroundColor = .separator
         transferSeparatorBottomHeightConstraint.constant = 0.5
+
         emptyImage.image = nil
         emptyTitle.text = ""
         emptyDescription.text = ""
@@ -83,26 +81,21 @@ class NCSectionFirstHeaderEmptyData: UICollectionReusableView {
 
     // MARK: - Transfer
 
-    func setViewTransfer(isHidden: Bool, ocId: String? = nil, text: String? = nil, progress: Float? = nil) {
-        labelTransfer.text = text
+    func setViewTransfer(isHidden: Bool, ocId: String? = nil, progress: Float? = nil) {
         viewTransfer.isHidden = isHidden
         progressTransfer.progress = 0
 
         if isHidden {
             viewTransferHeightConstraint.constant = 0
         } else {
-            var image: UIImage?
-            if let ocId,
-               let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                image = NCUtility().getIcon(metadata: metadata)?.darken()
-                if image == nil {
-                    image = NCUtility().loadImage(named: metadata.iconName, useTypeIconFile: true)
-                    buttonTransfer.backgroundColor = .lightGray
-                } else {
-                    buttonTransfer.backgroundColor = .clear
-                }
-            }
             viewTransferHeightConstraint.constant = NCGlobal.shared.heightHeaderTransfer
+            if ocId == nil {
+                imageButtonTransfer.image = NCUtility().loadImage(named: "icloud.and.arrow.up")
+                labelTransfer.text = NSLocalizedString("_upload_background_msg_", comment: "")
+            } else {
+                imageButtonTransfer.image = NCUtility().loadImage(named: "stop.circle")
+                labelTransfer.text = String(format: NSLocalizedString("_upload_foreground_msg_", comment: ""), NCBrandOptions.shared.brand)
+            }
             if let progress {
                 progressTransfer.progress = progress
             }

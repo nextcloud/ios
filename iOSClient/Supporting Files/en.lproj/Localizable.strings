@@ -1018,6 +1018,7 @@
 "_add_audio_"               = "Add an external audio";
 "_maintenance_mode_"        = "Server is currently in maintenance mode";
 "_upload_foreground_msg_"   = "Do not close %@ to complete the transfer …";
+"_upload_background_msg_"   = "Files upload in progress …";
 
 // Tip
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails.";

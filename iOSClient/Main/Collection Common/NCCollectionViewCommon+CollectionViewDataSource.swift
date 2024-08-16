@@ -394,9 +394,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 self.sectionFirstHeaderEmptyData = header
                 header.delegate = self
 
-                if !isSearchingMode, headerMenuTransferView, let ocId = NCNetworking.shared.transferInForegorund?.ocId {
-                    let text = String(format: NSLocalizedString("_upload_foreground_msg_", comment: ""), NCBrandOptions.shared.brand)
-                    header.setViewTransfer(isHidden: false, ocId: ocId, text: text, progress: NCNetworking.shared.transferInForegorund?.progress)
+                if !isSearchingMode, headerMenuTransferView, isHeaderMenuTransferViewEnabled() {
+                    header.setViewTransfer(isHidden: false, ocId: NCNetworking.shared.transferInForegorund?.ocId, progress: NCNetworking.shared.transferInForegorund?.progress)
                 } else {
                     header.setViewTransfer(isHidden: true)
                 }
@@ -434,9 +433,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 self.sectionFirstHeader = header
                 header.delegate = self
 
-                if !isSearchingMode, headerMenuTransferView, let ocId = NCNetworking.shared.transferInForegorund?.ocId {
-                    let text = String(format: NSLocalizedString("_upload_foreground_msg_", comment: ""), NCBrandOptions.shared.brand)
-                    header.setViewTransfer(isHidden: false, ocId: ocId, text: text, progress: NCNetworking.shared.transferInForegorund?.progress)
+                if !isSearchingMode, headerMenuTransferView, isHeaderMenuTransferViewEnabled() {
+                    header.setViewTransfer(isHidden: false, ocId: NCNetworking.shared.transferInForegorund?.ocId, progress: NCNetworking.shared.transferInForegorund?.progress)
                 } else {
                     header.setViewTransfer(isHidden: true)
                 }
