@@ -283,6 +283,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         } else {
             cell.fileSharedImage?.image = NCImageCache.images.canShare
         }
+
         /*
         if appDelegate.account != metadata.account {
             cell.fileSharedImage?.image = NCImageCache.images.shared
@@ -290,7 +291,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         */
 
         // Button More
-        if metadata.isInTransfer || metadata.isWaitingTransfer {
+        if metadata.isDownload {
             cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCImageCache.images.buttonStop)
         } else if metadata.lock == true {
             cell.setButtonMore(named: NCGlobal.shared.buttonMoreLock, image: NCImageCache.images.buttonMoreLock)
@@ -307,14 +308,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         case NCGlobal.shared.metadataStatusDownloading:
             cell.fileInfoLabel?.text = utilityFileSystem.transformedSize(metadata.size)
             cell.fileSubinfoLabel?.text = infoLabelsSeparator + "↓ …"
-        case NCGlobal.shared.metadataStatusWaitUpload:
-            cell.fileInfoLabel?.text = utilityFileSystem.transformedSize(metadata.size)
-            cell.fileSubinfoLabel?.text = infoLabelsSeparator + NSLocalizedString("_status_wait_upload_", comment: "")
-            cell.fileLocalImage?.image = nil
-        case NCGlobal.shared.metadataStatusUploading:
-            cell.fileInfoLabel?.text = utilityFileSystem.transformedSize(metadata.size)
-            cell.fileSubinfoLabel?.text = infoLabelsSeparator + "↑ …"
-            cell.fileLocalImage?.image = nil
         case NCGlobal.shared.metadataStatusUploadError:
             if metadata.sessionError.isEmpty {
                 cell.fileInfoLabel?.text = NSLocalizedString("_status_wait_upload_", comment: "")

@@ -237,20 +237,8 @@ extension tableMetadata {
         return !isDirectoryE2EE && directory && size == 0 && e2eEncrypted && NCKeychain().isEndToEndEnabled(account: account)
     }
 
-    var isWaitingTransfer: Bool {
-        status == NCGlobal.shared.metadataStatusWaitDownload || status == NCGlobal.shared.metadataStatusWaitUpload || status == NCGlobal.shared.metadataStatusUploadError
-    }
-
-    var isInTransfer: Bool {
-        status == NCGlobal.shared.metadataStatusDownloading || status == NCGlobal.shared.metadataStatusUploading
-    }
-
-    var isTransferInForeground: Bool {
-        (status > 0 && (chunk > 0 || e2eEncrypted))
-    }
-
     var isDownload: Bool {
-        status == NCGlobal.shared.metadataStatusDownloading
+        status == NCGlobal.shared.metadataStatusWaitDownload || status == NCGlobal.shared.metadataStatusDownloading
     }
 
     var isUpload: Bool {
