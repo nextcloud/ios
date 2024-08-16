@@ -60,9 +60,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var layoutType = NCGlobal.shared.layoutList
     var literalSearch: String?
     var tabBarSelect: NCCollectionViewCommonSelectTabBar!
-    var timerNotificationCenter: Timer?
-    var notificationReloadDataSource: Int = 0
-    var notificationReloadDataSourceNetwork: Int = 0
     var attributesZoomIn: UIMenuElement.Attributes = []
     var attributesZoomOut: UIMenuElement.Attributes = []
     let maxImageGrid: CGFloat = 7
@@ -209,8 +206,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        timerNotificationCenter = Timer.scheduledTimer(timeInterval: 1.5, target: self, selector: #selector(notificationCenterEvents), userInfo: nil, repeats: true)
-
         NotificationCenter.default.addObserver(self, selector: #selector(applicationWillResignActive(_:)), name: UIApplication.willResignActiveNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(closeRichWorkspaceWebView), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCloseRichWorkspaceWebView), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(changeStatusFolderE2EE(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeStatusFolderE2EE), object: nil)
@@ -252,8 +247,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-
-        timerNotificationCenter?.invalidate()
 
         NotificationCenter.default.removeObserver(self, name: UIApplication.willResignActiveNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCloseRichWorkspaceWebView), object: nil)
@@ -312,14 +305,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     // MARK: - NotificationCenter
 
-    @objc func notificationCenterEvents() {
-        if notificationReloadDataSource > 0 {
-            print("notificationReloadDataSource: \(notificationReloadDataSource)")
-            reloadDataSource()
-            notificationReloadDataSource = 0
-        }
-    }
-
     @objc func applicationWillResignActive(_ notification: NSNotification) {
         self.refreshControl.endRefreshing()
     }
@@ -340,7 +325,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func reloadDataSource(_ notification: NSNotification) {
-        notificationReloadDataSource += 1
+        reloadDataSource()
     }
 
     @objc func reloadDataSourceNetwork(_ notification: NSNotification) {
@@ -357,7 +342,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func changeStatusFolderE2EE(_ notification: NSNotification) {
-        notificationReloadDataSource += 1
+        reloadDataSource()
     }
 
     @objc func closeRichWorkspaceWebView() {
@@ -426,7 +411,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let withPush = userInfo["withPush"] as? Bool
         else { return }
 
-        notificationReloadDataSource += 1
+        reloadDataSource()
 
         if withPush, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
             if let sceneIdentifier = userInfo["sceneIdentifier"] as? String {
@@ -441,7 +426,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @objc func favoriteFile(_ notification: NSNotification) {
         if self is NCFavorite {
-            return notificationReloadDataSource += 1
+            return reloadDataSource()
         }
 
         guard let userInfo = notification.userInfo as NSDictionary?,
@@ -460,7 +445,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               account == session.account
         else { return }
 
-        self.notificationReloadDataSource += 1
+        DispatchQueue.main.async { self.collectionView?.reloadData() }
     }
 
     @objc func downloadedFile(_ notification: NSNotification) {
@@ -476,7 +461,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             NCContentPresenter().showError(error: error)
         }
 
-        notificationReloadDataSource += 1
+        DispatchQueue.main.async { self.collectionView?.reloadData() }
     }
 
     @objc func downloadCancelFile(_ notification: NSNotification) {
@@ -487,7 +472,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               account == session.account
         else { return }
 
-        reloadDataSource()
+        DispatchQueue.main.async { self.collectionView?.reloadData() }
     }
 
     @objc func uploadStartFile(_ notification: NSNotification) {
@@ -502,8 +487,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         DispatchQueue.main.async { self.collectionView?.reloadData() }
 
-        if account == session.account, serverUrl == self.serverUrl {
-            notificationReloadDataSource += 1
+        if account == session.account,
+           serverUrl == self.serverUrl,
+           !isHeaderMenuTransferViewEnabled() {
+            reloadDataSource()
         }
     }
 
@@ -515,7 +502,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               account == session.account
         else { return }
 
-        notificationReloadDataSource += 1
+        if account == session.account,
+           serverUrl == self.serverUrl,
+           !isHeaderMenuTransferViewEnabled() {
+            reloadDataSource()
+        }
     }
 
     @objc func uploadCancelFile(_ notification: NSNotification) {
@@ -526,7 +517,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         DispatchQueue.main.async { self.collectionView?.reloadData() }
 
-        if account == session.account, serverUrl == self.serverUrl {
+        if account == session.account,
+           serverUrl == self.serverUrl,
+           !isHeaderMenuTransferViewEnabled() {
             reloadDataSource()
         }
     }
