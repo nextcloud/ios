@@ -50,10 +50,10 @@ class NCNetworkingCheckRemoteUser {
 
             NextcloudKit.shared.setRemoteWipeCompletition(serverUrl: tableAccount.urlBase, token: token, account: tableAccount.account) { _, _ in print("wipe") }
 
-            let accounts = NCManageDatabase.shared.getAccounts()
-
-            if accounts?.count ?? 0 > 0, let newAccount = accounts?.first {
-                NCAccount().changeAccount(newAccount, userProfile: nil, controller: nil) { }
+            if let accounts = NCManageDatabase.shared.getAccounts(),
+               account.count > 0,
+               let account = accounts.first {
+                NCAccount().changeAccount(account, userProfile: nil, controller: nil) { }
             } else {
                 appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
             }

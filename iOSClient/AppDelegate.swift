@@ -303,6 +303,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: - Login
 
     func openLogin(selector: Int) {
+        UIApplication.shared.allSceneSessionDestructionExceptFirst()
+
         func showLoginViewController(_ viewController: UIViewController?) {
             guard let viewController else { return }
             let navigationController = NCLoginNavigationController(rootViewController: viewController)
@@ -312,8 +314,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             navigationController.navigationBar.tintColor = NCBrandColor.shared.customerText
             navigationController.navigationBar.barTintColor = NCBrandColor.shared.customer
             navigationController.navigationBar.isTranslucent = false
-
-            UIApplication.shared.allSceneSessionDestructionExceptFirst()
 
             if let rootVC = UIApplication.shared.firstWindow?.rootViewController {
                 if let presentedVC = rootVC.presentedViewController, !(presentedVC is NCLoginNavigationController) {
@@ -336,7 +336,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                     web?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
                     showLoginViewController(web)
                 } else {
-                    //activeLogin?.urlBase = self.urlBase
+                    if let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController,
+                       !controller.account.isEmpty {
+                        let session = NCSession.shared.getSession(account: controller.account)
+                        activeLogin?.urlBase = session.urlBase
+                    }
                     showLoginViewController(activeLogin)
                 }
             }

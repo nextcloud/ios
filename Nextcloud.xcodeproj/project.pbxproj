@@ -2603,9 +2603,9 @@
 			children = (
 				F7AC1CAF28AB94490032D99F /* Array+Extension.swift */,
 				F7817CF729801A3500FFBC65 /* Data+Extension.swift */,
+				AFCE353427E4ED5900FEA6C2 /* DateFormatter+Extension.swift */,
 				F70460512499061800BB98A7 /* NotificationCenter+MainThread.swift */,
 				F79B869A265E19D40085C0E0 /* NSMutableAttributedString+Extension.swift */,
-				AFCE353427E4ED5900FEA6C2 /* DateFormatter+Extension.swift */,
 				F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */,
 				F343A4B22A1E01FF00DDA874 /* PHAsset+Extension.swift */,
 				F7A0D1342591FBC5008F8A13 /* String+Extension.swift */,
@@ -2618,13 +2618,13 @@
 				F713FEFE2472764000214AF6 /* UIImage+animatedGIF.h */,
 				F713FEFF2472764100214AF6 /* UIImage+animatedGIF.m */,
 				F7B7504A2397D38E004E13EC /* UIImage+Extension.swift */,
+				F7EE66AC2A20B226009AE765 /* UILabel+Extension.swift */,
 				F77BB7492899857B0090FC19 /* UINavigationController+Extension.swift */,
 				F77BB747289985270090FC19 /* UITabBarController+Extension.swift */,
 				AFCE353227E4ED1900FEA6C2 /* UIToolbar+Extension.swift */,
 				F7E41315294A19B300839300 /* UIView+Extension.swift */,
 				F77BB745289984CA0090FC19 /* UIViewController+Extension.swift */,
 				F7E8A390295DC5E0006CB2D0 /* View+Extension.swift */,
-				F7EE66AC2A20B226009AE765 /* UILabel+Extension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
