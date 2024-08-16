@@ -45,7 +45,7 @@ extension NCTrash {
     func restoreItem(with fileId: String) {
         guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: fileId, account: session.account) else { return }
         let fileNameFrom = tableTrash.filePath + tableTrash.fileName
-        let fileNameTo = session.urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav + "/trashbin/" + session.userId + "/restore/" + tableTrash.fileName
+        let fileNameTo = session.urlBase + "/remote.php/dav/trashbin/" + session.userId + "/restore/" + tableTrash.fileName
 
         NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: true, account: session.account) { account, error in
             guard error == .success else {
@@ -58,7 +58,7 @@ extension NCTrash {
     }
 
     func emptyTrash() {
-        let serverUrlFileName = session.urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav + "/trashbin/" + session.userId + "/trash"
+        let serverUrlFileName = session.urlBase + "/remote.php/dav/trashbin/" + session.userId + "/trash"
 
         NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: session.account) { account, error in
             guard error == .success else {

@@ -320,7 +320,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     return
                 }
 
-                let davFiles = NextcloudKit.shared.nkCommonInstance.dav + "/files/" + session.userId
+                let davFiles = "remote.php/dav/files/" + session.userId
 
                 if pathScheme.contains("/") {
                     fileName = (pathScheme as NSString).lastPathComponent
