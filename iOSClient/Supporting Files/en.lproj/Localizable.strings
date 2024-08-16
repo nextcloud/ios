@@ -91,6 +91,7 @@
 "_photo_"                   = "Photo";
 "_audio_"                   = "Audio";
 "_unknown_"                 = "Unknown";
+"_additional_view_options_" = "Additional view options";
 "_next_"                    = "Next";
 "_success_"                 = "Success";
 "_initialization_"          = "Initialization";
@@ -982,7 +983,7 @@
 "_selected_photo_"          = "selected photo";
 "_selected_photos_"         = "selected photos";
 "_delete_selected_photos_"  = "Delete selected photos";
-"_media_square_"            = "Square photo grid";
+"_media_square_"            = "Square grid";
 "_media_ratio_"             = "Aspect ratio grid";
 "_autoupload_notice_"       = "To ensure the proper functioning of the application, it is necessary to enable Background App Refresh. Otherwise, new photos or videos will not be detected when the application is in the background.\n\nAdditionally, please note that the application will not be able to detect new photos and videos if it is manually terminated. When the app is in the background, data transfer may be slower, and new photos and/or videos will generally be detected every 10 minutes, depending on the device’s battery level.\n\nTo verify that the app is functioning correctly, you can use the log file available in Advanced.";
 "_display_"                 = "Display";
