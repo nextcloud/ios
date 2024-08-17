@@ -30,6 +30,7 @@ extension NCManageDatabase {
     func setMetadataSession(ocId: String,
                             newFileName: String? = nil,
                             session: String? = nil,
+                            sessionTaskIdentifier: Int? = nil,
                             sessionError: String? = nil,
                             selector: String? = nil,
                             status: Int? = nil,
@@ -46,6 +47,9 @@ extension NCManageDatabase {
                     }
                     if let session {
                         result.session = session
+                    }
+                    if let sessionTaskIdentifier {
+                        result.sessionTaskIdentifier = sessionTaskIdentifier
                     }
                     if let sessionError {
                         result.sessionError = sessionError
@@ -79,7 +83,7 @@ extension NCManageDatabase {
 
     func setMetadataSession(ocId: String,
                             status: Int? = nil,
-                            taskIdentifier: Int? = nil) {
+                            sessionTaskIdentifier: Int? = nil) {
         do {
             let realm = try Realm()
             try realm.write {
@@ -92,8 +96,8 @@ extension NCManageDatabase {
                             result.sessionDate = nil
                         }
                     }
-                    if let taskIdentifier {
-                        result.sessionTaskIdentifier = taskIdentifier
+                    if let sessionTaskIdentifier {
+                        result.sessionTaskIdentifier = sessionTaskIdentifier
                     }
                 }
             }

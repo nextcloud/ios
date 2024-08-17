@@ -946,6 +946,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             } else if let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) {
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                            session: "",
+                                                           sessionTaskIdentifier: 0,
                                                            sessionError: "",
                                                            selector: "",
                                                            status: NCGlobal.shared.metadataStatusNormal)
@@ -970,6 +971,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                        session: "",
+                                                       sessionTaskIdentifier: 0,
                                                        sessionError: "",
                                                        selector: "",
                                                        status: NCGlobal.shared.metadataStatusNormal)

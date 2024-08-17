@@ -78,7 +78,7 @@ extension NCNetworking {
         }, taskHandler: { task in
             downloadTask = task
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                       taskIdentifier: task.taskIdentifier)
+                                                       sessionTaskIdentifier: task.taskIdentifier)
             NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadStartFile),
                                             object: nil,
                                             userInfo: ["ocId": metadata.ocId,
@@ -134,7 +134,7 @@ extension NCNetworking {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Download file \(metadata.fileNameView) with task with taskIdentifier \(task.taskIdentifier)")
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                        status: NCGlobal.shared.metadataStatusDownloading,
-                                                       taskIdentifier: task.taskIdentifier)
+                                                       sessionTaskIdentifier: task.taskIdentifier)
             NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadStartFile),
                                             object: nil,
                                             userInfo: ["ocId": metadata.ocId,
@@ -145,6 +145,7 @@ extension NCNetworking {
         } else {
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                        session: "",
+                                                       sessionTaskIdentifier: 0,
                                                        sessionError: "",
                                                        selector: "",
                                                        status: NCGlobal.shared.metadataStatusNormal)
@@ -183,8 +184,6 @@ extension NCNetworking {
             guard let url = task.currentRequest?.url,
                   let metadata = NCManageDatabase.shared.getMetadata(from: url, sessionTaskIdentifier: task.taskIdentifier) else { return }
 
-            self.downloadMetadataInBackground.removeValue(forKey: FileNameServerUrl(fileName: fileName, serverUrl: serverUrl))
-
             if error == .success {
                 self.removeTransferInError(ocId: metadata.ocId)
 #if !EXTENSION
@@ -195,6 +194,7 @@ extension NCNetworking {
                 NCManageDatabase.shared.addLocalFile(metadata: metadata)
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                            session: "",
+                                                           sessionTaskIdentifier: 0,
                                                            sessionError: "",
                                                            status: NCGlobal.shared.metadataStatusNormal,
                                                            etag: etag)
@@ -210,6 +210,7 @@ extension NCNetworking {
                 self.removeTransferInError(ocId: metadata.ocId)
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                            session: "",
+                                                           sessionTaskIdentifier: 0,
                                                            sessionError: "",
                                                            selector: "",
                                                            status: NCGlobal.shared.metadataStatusNormal)
@@ -223,6 +224,7 @@ extension NCNetworking {
                 self.transferInError(ocId: metadata.ocId)
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                            session: "",
+                                                           sessionTaskIdentifier: 0,
                                                            sessionError: "",
                                                            selector: "",
                                                            status: NCGlobal.shared.metadataStatusNormal)
@@ -250,16 +252,7 @@ extension NCNetworking {
         }
 
         DispatchQueue.global(qos: .userInteractive).async {
-            var metadata: tableMetadata?
-
-            if let metadataTmp = self.downloadMetadataInBackground[FileNameServerUrl(fileName: fileName, serverUrl: serverUrl)] {
-                metadata = metadataTmp
-            } else if let metadataTmp = NCManageDatabase.shared.getMetadataFromFileName(fileName, serverUrl: serverUrl) {
-                self.downloadMetadataInBackground[FileNameServerUrl(fileName: fileName, serverUrl: serverUrl)] = metadataTmp
-                metadata = metadataTmp
-            }
-
-            if let metadata {
+            if let metadata = NCManageDatabase.shared.getResultMetadataFromFileName(fileName, serverUrl: serverUrl, sessionTaskIdentifier: task.taskIdentifier) {
                 NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask),
                                                 object: nil,
                                                 userInfo: ["account": metadata.account,

@@ -215,6 +215,7 @@ class NCNetworkingE2EEUpload: NSObject {
             metadata.chunk = 0
 
             metadata.session = ""
+            metadata.sessionTaskIdentifier = 0
             metadata.sessionError = ""
             metadata.status = NCGlobal.shared.metadataStatusNormal
 
@@ -234,6 +235,7 @@ class NCNetworkingE2EEUpload: NSObject {
         } else {
 
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                       sessionTaskIdentifier: 0,
                                                        sessionError: resultsSendFile.error.errorDescription,
                                                        status: NCGlobal.shared.metadataStatusUploadError,
                                                        errorCode: resultsSendFile.error.errorCode)

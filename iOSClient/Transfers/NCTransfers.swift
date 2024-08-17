@@ -105,11 +105,16 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
               let progressNumber = userInfo["progress"] as? NSNumber,
               let totalBytes = userInfo["totalBytes"] as? Int64,
               let totalBytesExpected = userInfo["totalBytesExpected"] as? Int64,
-              let ocId = userInfo["ocId"] as? String
+              let ocId = userInfo["ocId"] as? String,
+              let ocIdTemp = userInfo["ocIdTemp"] as? String
         else { return }
+        var indexPath = self.dataSource.getIndexPathMetadata(ocId: ocId).indexPath
+        if indexPath == nil {
+            indexPath = self.dataSource.getIndexPathMetadata(ocId: ocIdTemp).indexPath
+        }
 
         DispatchQueue.main.async {
-            guard let indexPath = self.dataSource.getIndexPathMetadata(ocId: ocId).indexPath,
+            guard let indexPath,
                   let cell = self.collectionView?.cellForItem(at: indexPath),
                   let cell = cell as? NCCellProtocol else { return }
 

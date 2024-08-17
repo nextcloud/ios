@@ -68,8 +68,6 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
     var networkReachability: NKCommon.TypeReachability?
     let downloadRequest = ThreadSafeDictionary<String, DownloadRequest>()
     let uploadRequest = ThreadSafeDictionary<String, UploadRequest>()
-    let uploadMetadataInBackground = ThreadSafeDictionary<FileNameServerUrl, tableMetadata>()
-    let downloadMetadataInBackground = ThreadSafeDictionary<FileNameServerUrl, tableMetadata>()
     var transferInForegorund: TransferInForegorund?
     weak var delegate: NCNetworkingDelegate?
     weak var certificateDelegate: ClientCertificateDelegate?

@@ -849,32 +849,12 @@ extension NCManageDatabase {
         return nil
     }
 
-    func getMetadataFromFileName(_ fileName: String, serverUrl: String) -> tableMetadata? {
+    func getResultMetadataFromFileName(_ fileName: String, serverUrl: String, sessionTaskIdentifier: Int) -> tableMetadata? {
         do {
             let realm = try Realm()
-            realm.refresh()
-            guard let result = realm.objects(tableMetadata.self).filter("fileName == %@ AND serverUrl == %@", fileName, serverUrl).first else { return nil }
-            return tableMetadata(value: result)
+            return realm.objects(tableMetadata.self).filter("fileName == %@ AND serverUrl == %@ AND sessionTaskIdentifier == %d", fileName, serverUrl, sessionTaskIdentifier).first
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
-        }
-        return nil
-    }
-
-    func getMetadataFromFileNameLocalPath(_ fileNameLocalPath: String?) -> tableMetadata? {
-        let components = fileNameLocalPath?.components(separatedBy: "/")
-
-        if let count = components?.count,
-           components?.count ?? 0 > 2,
-           let ocId = components?[count - 2] {
-            do {
-                let realm = try Realm()
-                realm.refresh()
-                guard let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first else { return nil }
-                return tableMetadata(value: result)
-            } catch let error as NSError {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
-            }
         }
         return nil
     }

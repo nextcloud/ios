@@ -125,7 +125,7 @@ extension NCNetworking {
             requestHandler(request)
         }, taskHandler: { task in
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                       taskIdentifier: task.taskIdentifier)
+                                                       sessionTaskIdentifier: task.taskIdentifier)
 
             NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile),
                                             object: nil,
@@ -201,7 +201,7 @@ extension NCNetworking {
                                                        status: NCGlobal.shared.metadataStatusUploading)
         } taskHandler: { task in
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                       taskIdentifier: task.taskIdentifier)
+                                                       sessionTaskIdentifier: task.taskIdentifier)
         } progressHandler: { totalBytesExpected, totalBytes, fractionCompleted in
             NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask),
                                             object: nil,
@@ -251,7 +251,7 @@ extension NCNetworking {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload file \(metadata.fileNameView) with task with taskIdentifier \(task.taskIdentifier)")
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                            status: NCGlobal.shared.metadataStatusUploading,
-                                                           taskIdentifier: task.taskIdentifier)
+                                                           sessionTaskIdentifier: task.taskIdentifier)
                 NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile),
                                                 object: nil,
                                                 userInfo: ["ocId": metadata.ocId,
@@ -300,8 +300,6 @@ extension NCNetworking {
                 let ocIdTemp = metadata.ocId
                 let selector = metadata.sessionSelector
 
-                self.uploadMetadataInBackground.removeValue(forKey: FileNameServerUrl(fileName: metadata.fileName, serverUrl: metadata.serverUrl))
-
                 if error == .success, let ocId = ocId, size == metadata.size {
                     self.removeTransferInError(ocId: ocIdTemp)
 
@@ -317,6 +315,7 @@ extension NCNetworking {
 
                     metadata.session = ""
                     metadata.sessionError = ""
+                    metadata.sessionTaskIdentifier = 0
                     metadata.status = NCGlobal.shared.metadataStatusNormal
 
                     NCManageDatabase.shared.addMetadata(metadata)
@@ -331,7 +330,7 @@ extension NCNetworking {
 
                     NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload complete " + metadata.serverUrl + "/" + metadata.fileName + ", result: success(\(size) bytes)")
 
-                    let userInfo: [AnyHashable: Any] = ["ocId": metadata.ocId, 
+                    let userInfo: [AnyHashable: Any] = ["ocId": metadata.ocId,
                                                         "ocIdTemp": ocIdTemp,
                                                         "serverUrl": metadata.serverUrl,
                                                         "account": metadata.account,
@@ -383,6 +382,7 @@ extension NCNetworking {
                                 self.utilityFileSystem.moveFile(atPath: atpath, toPath: toPath)
                                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                                            newFileName: newFileName,
+                                                                           sessionTaskIdentifier: 0,
                                                                            sessionError: "",
                                                                            status: NCGlobal.shared.metadataStatusWaitUpload,
                                                                            errorCode: error.errorCode)
@@ -417,6 +417,7 @@ extension NCNetworking {
                     } else {
                         self.transferInError(ocId: metadata.ocId)
                         NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                                   sessionTaskIdentifier: 0,
                                                                    sessionError: error.errorDescription,
                                                                    status: NCGlobal.shared.metadataStatusUploadError,
                                                                    errorCode: error.errorCode)
@@ -453,16 +454,7 @@ extension NCNetworking {
         }
 
         DispatchQueue.global(qos: .userInteractive).async {
-            var metadata: tableMetadata?
-
-            if let metadataTmp = self.uploadMetadataInBackground[FileNameServerUrl(fileName: fileName, serverUrl: serverUrl)] {
-                metadata = metadataTmp
-            } else if let metadataTmp = NCManageDatabase.shared.getMetadataFromFileName(fileName, serverUrl: serverUrl) {
-                self.uploadMetadataInBackground[FileNameServerUrl(fileName: fileName, serverUrl: serverUrl)] = metadataTmp
-                metadata = metadataTmp
-            }
-
-            if let metadata {
+            if let metadata = NCManageDatabase.shared.getResultMetadataFromFileName(fileName, serverUrl: serverUrl, sessionTaskIdentifier: task.taskIdentifier)  {
                 NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask),
                                                 object: nil,
                                                 userInfo: ["account": metadata.account,
