@@ -72,10 +72,8 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     // MARK: - NotificationCenter
 
-    override func downloadStartFile(_ notification: NSNotification) { 
-        DispatchQueue.main.async {
-            self.collectionView.reloadData()
-        }
+    override func downloadStartFile(_ notification: NSNotification) {
+        reloadDataSource()
     }
 
     override func downloadedFile(_ notification: NSNotification) {
@@ -87,9 +85,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     }
 
     override func uploadStartFile(_ notification: NSNotification) {
-        DispatchQueue.main.async {
-            self.collectionView.reloadData()
-        }
+        reloadDataSource()
     }
 
     override func uploadedFile(_ notification: NSNotification) {
@@ -112,30 +108,27 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
               let ocId = userInfo["ocId"] as? String,
               let ocIdTemp = userInfo["ocIdTemp"] as? String
         else { return }
-        var indexPath = self.dataSource.getIndexPathMetadata(ocId: ocId).indexPath
-        if indexPath == nil {
-            indexPath = self.dataSource.getIndexPathMetadata(ocId: ocIdTemp).indexPath
-        }
 
         DispatchQueue.main.async {
-            guard let indexPath,
-                  let cell = self.collectionView?.cellForItem(at: indexPath),
-                  let cell = cell as? NCCellProtocol else { return }
-
-            cell.fileProgressView?.isHidden = false
-            cell.fileProgressView?.progress = progressNumber.floatValue
-            cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCImageCache.images.buttonStop)
-            let status = userInfo["status"] as? Int ?? NCGlobal.shared.metadataStatusNormal
-            if status == NCGlobal.shared.metadataStatusDownloading {
-                cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected)
-                cell.fileSubinfoLabel?.text = self.infoLabelsSeparator + "↓ " + self.utilityFileSystem.transformedSize(totalBytes)
-            } else if status == NCGlobal.shared.metadataStatusUploading {
-                if totalBytes > 0 {
-                    cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected)
-                    cell.fileSubinfoLabel?.text = self.infoLabelsSeparator + "↑ " + self.utilityFileSystem.transformedSize(totalBytes)
-                } else {
-                    cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected)
-                    cell.fileSubinfoLabel?.text = self.infoLabelsSeparator + "↑ …"
+            for cell in self.collectionView.visibleCells {
+                if let cell = cell as? NCCellProtocol,
+                   (cell.fileObjectId == ocId || cell.fileObjectId == ocIdTemp) {
+                    cell.fileProgressView?.isHidden = false
+                    cell.fileProgressView?.progress = progressNumber.floatValue
+                    cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCImageCache.images.buttonStop)
+                    let status = userInfo["status"] as? Int ?? NCGlobal.shared.metadataStatusNormal
+                    if status == NCGlobal.shared.metadataStatusDownloading {
+                        cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected)
+                        cell.fileSubinfoLabel?.text = self.infoLabelsSeparator + "↓ " + self.utilityFileSystem.transformedSize(totalBytes)
+                    } else if status == NCGlobal.shared.metadataStatusUploading {
+                        if totalBytes > 0 {
+                            cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected)
+                            cell.fileSubinfoLabel?.text = self.infoLabelsSeparator + "↑ " + self.utilityFileSystem.transformedSize(totalBytes)
+                        } else {
+                            cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected)
+                            cell.fileSubinfoLabel?.text = self.infoLabelsSeparator + "↑ …"
+                        }
+                    }
                 }
             }
         }
