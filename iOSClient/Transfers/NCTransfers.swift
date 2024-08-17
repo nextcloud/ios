@@ -277,6 +277,9 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
         let metadatas: [tableMetadata] = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal), sorted: "sessionDate", ascending: true) ?? []
         self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: layoutForView, filterIsUpload: false)
+        DispatchQueue.main.async {
+            self.collectionView.reloadData()
+        }
     }
 
     override func reloadDataSource(withQueryDB: Bool = true) {
