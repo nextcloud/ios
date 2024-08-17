@@ -952,6 +952,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile),
                                                 object: nil,
                                                 userInfo: ["ocId": metadata.ocId,
+                                                           "ocIdTemp": metadata.ocIdTemp,
                                                            "serverUrl": metadata.serverUrl,
                                                            "account": metadata.account])
             }
@@ -975,6 +976,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile),
                                             object: nil,
                                             userInfo: ["ocId": metadata.ocId,
+                                                       "ocIdTemp": metadata.ocIdTemp,
                                                        "serverUrl": metadata.serverUrl,
                                                        "account": metadata.account])
         }
@@ -989,6 +991,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
                                             object: nil,
                                             userInfo: ["ocId": metadata.ocId,
+                                                       "ocIdTemp": metadata.ocIdTemp,
                                                        "serverUrl": metadata.serverUrl,
                                                        "account": metadata.account])
             return
@@ -1013,6 +1016,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
                                             object: nil,
                                             userInfo: ["ocId": metadata.ocId,
+                                                       "ocIdTemp": metadata.ocIdTemp,
                                                        "serverUrl": metadata.serverUrl,
                                                        "account": metadata.account])
         }

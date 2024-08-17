@@ -73,7 +73,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     // MARK: - NotificationCenter
 
     override func downloadStartFile(_ notification: NSNotification) {
-        DispatchQueue.main.async { self.collectionView?.reloadData() }
+        //DispatchQueue.main.async { self.collectionView?.reloadData() }
     }
 
     override func downloadedFile(_ notification: NSNotification) {
@@ -85,7 +85,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     }
 
     override func uploadStartFile(_ notification: NSNotification) {
-        DispatchQueue.main.async { self.collectionView?.reloadData() }
+        reloadDataSource()
     }
 
     override func uploadedFile(_ notification: NSNotification) {
@@ -93,7 +93,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     }
 
     override func uploadedLivePhoto(_ notification: NSNotification) {
-        DispatchQueue.main.async { self.collectionView?.reloadData() }
+        //DispatchQueue.main.async { self.collectionView?.reloadData() }
     }
 
     override func uploadCancelFile(_ notification: NSNotification) {

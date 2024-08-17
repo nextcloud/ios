@@ -130,6 +130,7 @@ extension NCNetworking {
             NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile),
                                             object: nil,
                                             userInfo: ["ocId": metadata.ocId,
+                                                       "ocIdTemp": metadata.ocIdTemp,
                                                        "serverUrl": metadata.serverUrl,
                                                        "account": metadata.account,
                                                        "fileName": metadata.fileName,
@@ -140,6 +141,7 @@ extension NCNetworking {
                                             object: nil,
                                             userInfo: ["account": metadata.account,
                                                        "ocId": metadata.ocId,
+                                                       "ocIdTemp": metadata.ocIdTemp,
                                                        "fileName": metadata.fileName,
                                                        "serverUrl": metadata.serverUrl,
                                                        "status": NSNumber(value: NCGlobal.shared.metadataStatusUploading),
@@ -188,6 +190,7 @@ extension NCNetworking {
             NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile),
                                             object: nil,
                                             userInfo: ["ocId": metadata.ocId,
+                                                       "ocIdTemp": metadata.ocIdTemp,
                                                        "serverUrl": metadata.serverUrl,
                                                        "account": metadata.account,
                                                        "fileName": metadata.fileName,
@@ -204,6 +207,7 @@ extension NCNetworking {
                                             object: nil,
                                             userInfo: ["account": metadata.account,
                                                        "ocId": metadata.ocId,
+                                                       "ocIdTemp": metadata.ocIdTemp,
                                                        "fileName": metadata.fileName,
                                                        "serverUrl": metadata.serverUrl,
                                                        "status": NSNumber(value: NCGlobal.shared.metadataStatusUploading),
@@ -251,6 +255,7 @@ extension NCNetworking {
                 NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile),
                                                 object: nil,
                                                 userInfo: ["ocId": metadata.ocId,
+                                                           "ocIdTemp": metadata.ocIdTemp,
                                                            "serverUrl": metadata.serverUrl,
                                                            "account": metadata.account,
                                                            "fileName": metadata.fileName,
@@ -326,7 +331,12 @@ extension NCNetworking {
 
                     NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload complete " + metadata.serverUrl + "/" + metadata.fileName + ", result: success(\(size) bytes)")
 
-                    let userInfo: [AnyHashable: Any] = ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "fileName": metadata.fileName, "ocIdTemp": ocIdTemp, "error": error]
+                    let userInfo: [AnyHashable: Any] = ["ocId": metadata.ocId, 
+                                                        "ocIdTemp": ocIdTemp,
+                                                        "serverUrl": metadata.serverUrl,
+                                                        "account": metadata.account,
+                                                        "fileName": metadata.fileName,
+                                                        "error": error]
                     if metadata.isLivePhoto, NCGlobal.shared.isLivePhotoServerAvailable {
                         self.uploadLivePhoto(metadata: metadata, userInfo: userInfo)
                     } else {
@@ -342,6 +352,7 @@ extension NCNetworking {
                         NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
                                                         object: nil,
                                                         userInfo: ["ocId": metadata.ocId,
+                                                                   "ocIdTemp": ocIdTemp,
                                                                    "serverUrl": metadata.serverUrl,
                                                                    "account": metadata.account])
                     } else if error.errorCode == NCGlobal.shared.errorBadRequest || error.errorCode == NCGlobal.shared.errorUnsupportedMediaType {
@@ -351,6 +362,7 @@ extension NCNetworking {
                         NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
                                                         object: nil,
                                                         userInfo: ["ocId": metadata.ocId,
+                                                                   "ocIdTemp": ocIdTemp,
                                                                    "serverUrl": metadata.serverUrl,
                                                                    "account": metadata.account])
                         if isApplicationStateActive {
@@ -381,6 +393,7 @@ extension NCNetworking {
                                 NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
                                                                 object: nil,
                                                                 userInfo: ["ocId": metadata.ocId,
+                                                                           "ocIdTemp": ocIdTemp,
                                                                            "serverUrl": metadata.serverUrl,
                                                                            "account": metadata.account])
                             }))
@@ -410,10 +423,10 @@ extension NCNetworking {
                         NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile),
                                                         object: nil,
                                                         userInfo: ["ocId": metadata.ocId,
+                                                                   "ocIdTemp": ocIdTemp,
                                                                    "serverUrl": metadata.serverUrl,
                                                                    "account": metadata.account,
                                                                    "fileName": metadata.fileName,
-                                                                   "ocIdTemp": ocIdTemp,
                                                                    "error": error])
 
                         // Client Diagnostic
@@ -454,6 +467,7 @@ extension NCNetworking {
                                                 object: nil,
                                                 userInfo: ["account": metadata.account,
                                                            "ocId": metadata.ocId,
+                                                           "ocIdTemp": metadata.ocIdTemp,
                                                            "fileName": metadata.fileName,
                                                            "serverUrl": serverUrl,
                                                            "status": NSNumber(value: NCGlobal.shared.metadataStatusUploading),

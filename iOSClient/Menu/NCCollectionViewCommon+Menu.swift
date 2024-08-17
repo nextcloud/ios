@@ -256,6 +256,7 @@ extension NCCollectionViewCommon {
                                 name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
                                 object: nil,
                                 userInfo: ["ocId": metadata.ocId,
+                                           "ocIdTemp": metadata.ocIdTemp,
                                            "selector": NCGlobal.shared.selectorSaveAsScan,
                                            "error": NKError(),
                                            "account": metadata.account])
@@ -320,6 +321,7 @@ extension NCCollectionViewCommon {
                                 name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
                                 object: nil,
                                 userInfo: ["ocId": metadata.ocId,
+                                           "ocIdTemp": metadata.ocIdTemp,
                                            "selector": NCGlobal.shared.selectorLoadFileQuickLook,
                                            "error": NKError(),
                                            "account": metadata.account])

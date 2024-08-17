@@ -126,10 +126,10 @@ class NCNetworkingE2EEUpload: NSObject {
                 name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile),
                 object: nil,
                 userInfo: ["ocId": metadata.ocId,
+                           "ocIdTemp": ocIdTemp,
                            "serverUrl": metadata.serverUrl,
                            "account": metadata.account,
                            "fileName": metadata.fileName,
-                           "ocIdTemp": ocIdTemp,
                            "error": NKError(errorCode: NCGlobal.shared.errorE2EELock, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))])
             return NKError(errorCode: NCGlobal.shared.errorE2EELock, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
         }
@@ -153,10 +153,10 @@ class NCNetworkingE2EEUpload: NSObject {
                 name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile),
                 object: nil,
                 userInfo: ["ocId": metadata.ocId,
+                           "ocIdTemp": ocIdTemp,
                            "serverUrl": metadata.serverUrl,
                            "account": metadata.account,
                            "fileName": metadata.fileName,
-                           "ocIdTemp": ocIdTemp,
                            "error": sendE2eeError])
             await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
             return sendE2eeError
@@ -198,10 +198,10 @@ class NCNetworkingE2EEUpload: NSObject {
                 name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile),
                 object: nil,
                 userInfo: ["ocId": metadata.ocId,
+                           "ocIdTemp": ocIdTemp,
                            "serverUrl": metadata.serverUrl,
                            "account": metadata.account,
                            "fileName": metadata.fileName,
-                           "ocIdTemp": ocIdTemp,
                            "error": resultsSendFile.error])
 
         } else if resultsSendFile.error == .success, let ocId = resultsSendFile.ocId {
@@ -225,10 +225,10 @@ class NCNetworkingE2EEUpload: NSObject {
                 name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile),
                 object: nil,
                 userInfo: ["ocId": metadata.ocId,
+                           "ocIdTemp": ocIdTemp,
                            "serverUrl": metadata.serverUrl,
                            "account": metadata.account,
                            "fileName": metadata.fileName,
-                           "ocIdTemp": ocIdTemp,
                            "error": resultsSendFile.error])
 
         } else {
@@ -241,10 +241,10 @@ class NCNetworkingE2EEUpload: NSObject {
                 name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile),
                 object: nil,
                 userInfo: ["ocId": metadata.ocId,
+                           "ocIdTemp": ocIdTemp,
                            "serverUrl": metadata.serverUrl,
                            "account": metadata.account,
                            "fileName": metadata.fileName,
-                           "ocIdTemp": ocIdTemp,
                            "error": resultsSendFile.error])
         }
 
