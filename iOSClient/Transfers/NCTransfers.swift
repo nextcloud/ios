@@ -72,19 +72,37 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     // MARK: - NotificationCenter
 
-    override func downloadStartFile(_ notification: NSNotification) { }
+    override func downloadStartFile(_ notification: NSNotification) { 
+        DispatchQueue.main.async {
+            self.collectionView.reloadData()
+        }
+    }
 
-    override func downloadedFile(_ notification: NSNotification) { reloadDataSource() }
+    override func downloadedFile(_ notification: NSNotification) {
+        reloadDataSource()
+    }
 
-    override func downloadCancelFile(_ notification: NSNotification) { reloadDataSource() }
+    override func downloadCancelFile(_ notification: NSNotification) {
+        reloadDataSource()
+    }
 
-    override func uploadStartFile(_ notification: NSNotification) { }
+    override func uploadStartFile(_ notification: NSNotification) {
+        DispatchQueue.main.async {
+            self.collectionView.reloadData()
+        }
+    }
 
-    override func uploadedFile(_ notification: NSNotification) { reloadDataSource() }
+    override func uploadedFile(_ notification: NSNotification) {
+        reloadDataSource()
+    }
 
-    override func uploadedLivePhoto(_ notification: NSNotification) { reloadDataSource() }
+    override func uploadedLivePhoto(_ notification: NSNotification) {
+        reloadDataSource()
+    }
 
-    override func uploadCancelFile(_ notification: NSNotification) { reloadDataSource() }
+    override func uploadCancelFile(_ notification: NSNotification) {
+        reloadDataSource()
+    }
 
     override func triggerProgressTask(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
