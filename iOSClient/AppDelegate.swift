@@ -73,7 +73,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         /// Activation singleton for receive the NSNotification
         _ = NCActionCenter.shared
-        _ = NCNetworking.shared
 
         if NCBrandOptions.shared.disable_log {
             utilityFileSystem.removeFile(atPath: NextcloudKit.shared.nkCommonInstance.filenamePathLog)

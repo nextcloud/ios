@@ -117,6 +117,7 @@ class NCShareExtension: UIViewController {
         let isSimulatorOrTestFlight = utility.isSimulatorOrTestFlight()
         let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionApp())
 
+        NextcloudKit.shared.setup(delegate: NCNetworking.shared)
         NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
         NextcloudKit.shared.nkCommonInstance.pathLog = utilityFileSystem.directoryGroup
         if isSimulatorOrTestFlight {
@@ -144,14 +145,14 @@ class NCShareExtension: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if NCManageDatabase.shared.getActiveTableAccount() == nil { return }
         guard serverUrl.isEmpty,
+              let account = NCManageDatabase.shared.getActiveTableAccount()?.account,
               !NCPasscode.shared.isPasscodeReset else {
             return showAlert(description: "_no_active_account_") {
                 self.cancel(with: .noAccount)
             }
         }
-        accountRequestChangeAccount(account: activeTableAccount.account, controller: nil)
+        accountRequestChangeAccount(account: account, controller: nil)
         guard let inputItems = extensionContext?.inputItems as? [NSExtensionItem] else {
             cancel(with: .noFiles)
             return
