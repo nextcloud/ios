@@ -118,6 +118,7 @@ extension NCManageDatabase {
                     if let result = realm.objects(tableMetadata.self).filter("ocId == %@", metadata.ocId).first {
                         result.sceneIdentifier = sceneIdentifier
                         result.session = session
+                        result.sessionTaskIdentifier = 0
                         result.sessionError = ""
                         result.sessionSelector = selector
                         result.status = NCGlobal.shared.metadataStatusWaitDownload
@@ -126,6 +127,7 @@ extension NCManageDatabase {
                     } else {
                         metadata.sceneIdentifier = sceneIdentifier
                         metadata.session = session
+                        metadata.sessionTaskIdentifier = 0
                         metadata.sessionError = ""
                         metadata.sessionSelector = selector
                         metadata.status = NCGlobal.shared.metadataStatusWaitDownload
@@ -149,6 +151,7 @@ extension NCManageDatabase {
                 for metadata in metadatas {
                     metadata.sceneIdentifier = nil
                     metadata.session = ""
+                    metadata.sessionTaskIdentifier = 0
                     metadata.sessionError = ""
                     metadata.sessionSelector = ""
                     metadata.sessionDate = nil
