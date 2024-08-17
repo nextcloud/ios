@@ -72,9 +72,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     // MARK: - NotificationCenter
 
-    override func downloadStartFile(_ notification: NSNotification) {
-        reloadDataSource()
-    }
+    override func downloadStartFile(_ notification: NSNotification) { }
 
     override func downloadedFile(_ notification: NSNotification) {
         reloadDataSource()
@@ -84,9 +82,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         reloadDataSource()
     }
 
-    override func uploadStartFile(_ notification: NSNotification) {
-        reloadDataSource()
-    }
+    override func uploadStartFile(_ notification: NSNotification) { }
 
     override func uploadedFile(_ notification: NSNotification) {
         reloadDataSource()
