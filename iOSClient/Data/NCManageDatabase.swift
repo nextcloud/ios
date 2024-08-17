@@ -99,7 +99,8 @@ class NCManageDatabase: NSObject {
                                     tableDirectory.self,
                                     tableTag.self,
                                     tableAccount.self,
-                                    tableCapabilities.self]
+                                    tableCapabilities.self,
+                                    tableE2eEncryption.self]
             }
             do {
                 Realm.Configuration.defaultConfiguration =
