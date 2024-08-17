@@ -79,7 +79,7 @@ import MarkdownKit
     }
 
     public func presentationControllerWillDismiss(_ presentationController: UIPresentationController) {
-        self.viewWillAppear(true)
+        self.viewDidAppear(true)
     }
 
     @objc func closeItemTapped(_ sender: UIBarButtonItem) {
