@@ -4,13 +4,14 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" reuseIdentifier="listCell" id="jxV-Pk-fPt" customClass="NCListCell" customModule="Nextcloud" customModuleProvider="target">
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="listCell" id="jxV-Pk-fPt" customClass="NCListCell" customModule="Nextcloud" customModuleProvider="target">
             <rect key="frame" x="0.0" y="0.0" width="669" height="148"/>
             <autoresizingMask key="autoresizingMask"/>
             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
@@ -184,6 +185,7 @@
                     </label>
                 </subviews>
             </view>
+            <viewLayoutGuide key="safeArea" id="Gu8-oz-zWa"/>
             <constraints>
                 <constraint firstItem="jUe-8q-VJd" firstAttribute="centerY" secondItem="qnc-hI-Z9r" secondAttribute="centerY" id="2Z4-Yh-1lR"/>
                 <constraint firstAttribute="trailing" secondItem="m2p-oJ-j15" secondAttribute="trailing" constant="90" id="2zI-li-v77"/>
@@ -253,10 +255,10 @@
     </objects>
     <designables>
         <designable name="jUe-8q-VJd">
-            <size key="intrinsicContentSize" width="24" height="14.333333333333334"/>
+            <size key="intrinsicContentSize" width="34" height="16.333333333333336"/>
         </designable>
         <designable name="qnc-hI-Z9r">
-            <size key="intrinsicContentSize" width="26" height="14.333333333333334"/>
+            <size key="intrinsicContentSize" width="36" height="16.333333333333336"/>
         </designable>
     </designables>
     <resources>
