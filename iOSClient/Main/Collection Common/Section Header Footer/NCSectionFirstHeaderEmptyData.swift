@@ -59,7 +59,7 @@ class NCSectionFirstHeaderEmptyData: UICollectionReusableView {
         viewTransferHeightConstraint.constant = 0
         viewTransfer.isHidden = true
 
-        imageButtonTransfer.tintColor = .black
+        imageButtonTransfer.tintColor = .label
 
         progressTransfer.progress = 0
         progressTransfer.tintColor = NCBrandColor.shared.brandElement

@@ -78,7 +78,7 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
         labelSection.text = ""
         viewSectionHeightConstraint.constant = 0
 
-        imageButtonTransfer.tintColor = .black
+        imageButtonTransfer.tintColor = .label
 
         progressTransfer.progress = 0
         progressTransfer.tintColor = NCBrandColor.shared.brandElement
