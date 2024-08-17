@@ -75,7 +75,7 @@ class FileProviderExtension: NSFileProviderExtension {
         var maybeEnumerator: NSFileProviderEnumerator?
 
         if containerItemIdentifier != NSFileProviderItemIdentifier.workingSet {
-            if fileProviderData.shared.setupAccount(providerDomain: domain, providerExtension: self) == nil {
+            if fileProviderData.shared.setupAccount(domain: domain, providerExtension: self) == nil {
                 throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo: [:])
             } else if NCKeychain().passcode != nil, NCKeychain().requestPasscodeAtStart {
                 throw NSError(domain: NSFileProviderErrorDomain, code: NSFileProviderError.notAuthenticated.rawValue, userInfo: ["code": NSNumber(value: NCGlobal.shared.errorUnauthorizedFilesPasscode)])

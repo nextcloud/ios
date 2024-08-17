@@ -30,7 +30,7 @@ class fileProviderData: NSObject {
         return instance
     }()
 
-    var providerDomain: NSFileProviderDomain?
+    var domain: NSFileProviderDomain?
     var fileProviderManager: NSFileProviderManager = NSFileProviderManager.default
     let utilityFileSystem = NCUtilityFileSystem()
     var listFavoriteIdentifierRank: [String: NSNumber] = [:]
@@ -61,9 +61,9 @@ class fileProviderData: NSObject {
 
     // MARK: - 
 
-    func setupAccount(providerDomain: NSFileProviderDomain?, providerExtension: NSFileProviderExtension) -> tableAccount? {
-        self.providerDomain = providerDomain
-        if let providerDomain, let fileProviderManager = NSFileProviderManager(for: providerDomain) {
+    func setupAccount(domain: NSFileProviderDomain?, providerExtension: NSFileProviderExtension) -> tableAccount? {
+        self.domain = domain
+        if let domain, let fileProviderManager = NSFileProviderManager(for: domain) {
             self.fileProviderManager = fileProviderManager
         }
 
@@ -75,7 +75,7 @@ class fileProviderData: NSObject {
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start File Provider session with level \(levelLog) " + version + " (File Provider Extension)")
 
         // NO DOMAIN -> Set default account
-        if providerDomain == nil {
+        if domain == nil {
             guard let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() else { return nil }
             self.account = activeTableAccount.account
 
