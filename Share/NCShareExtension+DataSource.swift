@@ -27,7 +27,6 @@ import NextcloudKit
 // MARK: - Collection View (target folder)
 
 extension NCShareExtension: UICollectionViewDelegate {
-
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return showAlert(description: "_invalid_url_") }
         let serverUrl = utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
@@ -70,7 +69,6 @@ extension NCShareExtension: UICollectionViewDelegateFlowLayout {
 }
 
 extension NCShareExtension: UICollectionViewDataSource {
-
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return dataSource.numberOfSections()
     }
@@ -168,7 +166,6 @@ extension NCShareExtension: UICollectionViewDataSource {
 // MARK: - Table View (uploading files)
 
 extension NCShareExtension: UITableViewDelegate {
-
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return heightRowTableView
     }
@@ -181,7 +178,6 @@ extension NCShareExtension: UITableViewDelegate {
 }
 
 extension NCShareExtension: UITableViewDataSource {
-
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         filesName.count
     }
