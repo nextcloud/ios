@@ -78,12 +78,12 @@ class fileProviderData: NSObject {
         if domain == nil {
             guard let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() else { return nil }
             self.account = activeTableAccount.account
-
+            /// Session
             NCSession.shared.appendSession(account: activeTableAccount.account,
                                            urlBase: activeTableAccount.urlBase,
                                            user: activeTableAccount.user,
                                            userId: activeTableAccount.userId)
-
+            /// NextcloudKit Session
             NextcloudKit.shared.setup(delegate: NCNetworking.shared)
             NextcloudKit.shared.appendSession(account: activeTableAccount.account,
                                               urlBase: activeTableAccount.urlBase,
