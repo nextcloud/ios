@@ -26,6 +26,22 @@ import NextcloudKit
 import JGProgressHUD
 
 class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
+    class TransfersProgress {
+        var ocId: String
+        var ocIdTemp: String
+        var progressNumber: NSNumber
+        var totalBytes: Int64
+        var totalBytesExpected: Int64
+
+        init(ocId: String, ocIdTemp: String, progressNumber: NSNumber, totalBytes: Int64, totalBytesExpected: Int64) {
+            self.ocId = ocId
+            self.ocIdTemp = ocIdTemp
+            self.progressNumber = progressNumber
+            self.totalBytes = totalBytes
+            self.totalBytesExpected = totalBytesExpected
+        }
+    }
+    var transfersProgress = ThreadSafeArray<TransfersProgress>()
     var metadataTemp: tableMetadata?
 
     required init?(coder aDecoder: NSCoder) {
@@ -109,26 +125,20 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
               let ocIdTemp = userInfo["ocIdTemp"] as? String
         else { return }
 
+        if let transfersProgress = transfersProgress.filter({ $0.ocIdTemp == ocIdTemp}).first {
+            transfersProgress.progressNumber = progressNumber
+            transfersProgress.totalBytes = totalBytes
+            transfersProgress.totalBytesExpected = totalBytesExpected
+        } else {
+            transfersProgress.append(TransfersProgress(ocId: ocId, ocIdTemp: ocIdTemp, progressNumber: progressNumber, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected))
+        }
+
         DispatchQueue.main.async {
             for cell in self.collectionView.visibleCells {
-                if let cell = cell as? NCCellProtocol,
-                   (cell.fileObjectId == ocId || cell.fileObjectId == ocIdTemp) {
-                    cell.fileProgressView?.isHidden = false
-                    cell.fileProgressView?.progress = progressNumber.floatValue
-                    cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCImageCache.images.buttonStop)
-                    let status = userInfo["status"] as? Int ?? NCGlobal.shared.metadataStatusNormal
-                    if status == NCGlobal.shared.metadataStatusDownloading {
-                        cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected)
-                        cell.fileSubinfoLabel?.text = self.infoLabelsSeparator + "↓ " + self.utilityFileSystem.transformedSize(totalBytes)
-                    } else if status == NCGlobal.shared.metadataStatusUploading {
-                        if totalBytes > 0 {
-                            cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected)
-                            cell.fileSubinfoLabel?.text = self.infoLabelsSeparator + "↑ " + self.utilityFileSystem.transformedSize(totalBytes)
-                        } else {
-                            cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected)
-                            cell.fileSubinfoLabel?.text = self.infoLabelsSeparator + "↑ …"
-                        }
-                    }
+                if let indexPath = self.collectionView.indexPath(for: cell),
+                   let cell = cell as? NCCellProtocol,
+                   cell.fileObjectId == ocIdTemp {
+                    self.collectionView.reloadItems(at: [indexPath])
                 }
             }
         }
@@ -218,7 +228,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         }
 
         cell.delegate = self
-        cell.fileObjectId = metadata.ocId
+        cell.fileObjectId = metadata.ocIdTemp
         cell.indexPath = indexPath
         cell.fileUser = metadata.ownerId
         cell.indexPath = indexPath
