@@ -952,7 +952,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                                                            status: NCGlobal.shared.metadataStatusNormal)
                 NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile),
                                                 object: nil,
-                                                userInfo: ["ocIdTransfer": metadata.ocIdTransfer,
+                                                userInfo: ["ocId": metadata.ocId,
+                                                           "ocIdTransfer": metadata.ocIdTransfer,
                                                            "session": metadata.session,
                                                            "serverUrl": metadata.serverUrl,
                                                            "account": metadata.account])
@@ -977,7 +978,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                                                        status: NCGlobal.shared.metadataStatusNormal)
             NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile),
                                             object: nil,
-                                            userInfo: ["ocIdTransfer": metadata.ocIdTransfer,
+                                            userInfo: ["ocId": metadata.ocId,
+                                                       "ocIdTransfer": metadata.ocIdTransfer,
                                                        "session": metadata.session,
                                                        "serverUrl": metadata.serverUrl,
                                                        "account": metadata.account])
@@ -992,7 +994,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
                                             object: nil,
-                                            userInfo: ["ocIdTransfer": metadata.ocIdTransfer,
+                                            userInfo: ["ocId": metadata.ocId,
+                                                       "ocIdTransfer": metadata.ocIdTransfer,
                                                        "session": metadata.session,
                                                        "serverUrl": metadata.serverUrl,
                                                        "account": metadata.account])
@@ -1017,7 +1020,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
                                             object: nil,
-                                            userInfo: ["ocIdTransfer": metadata.ocIdTransfer,
+                                            userInfo: ["ocId": metadata.ocId,
+                                                       "ocIdTransfer": metadata.ocIdTransfer,
                                                        "session": metadata.session,
                                                        "serverUrl": metadata.serverUrl,
                                                        "account": metadata.account])

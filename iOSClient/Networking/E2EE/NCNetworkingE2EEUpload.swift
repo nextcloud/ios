@@ -45,7 +45,6 @@ class NCNetworkingE2EEUpload: NSObject {
 
     func upload(metadata: tableMetadata, uploadE2EEDelegate: uploadE2EEDelegate? = nil, hudView: UIView?, hud: JGProgressHUD?) async -> NKError {
         var metadata = metadata
-        let ocIdTransfer = metadata.ocId
         let session = NCSession.shared.getSession(account: metadata.account)
 
         if let result = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "serverUrl == %@ AND fileNameView == %@ AND ocId != %@", metadata.serverUrl, metadata.fileNameView, metadata.ocId)) {
@@ -121,11 +120,12 @@ class NCNetworkingE2EEUpload: NSObject {
         //
         let resultsLock = await networkingE2EE.lock(account: metadata.account, serverUrl: metadata.serverUrl)
         guard let e2eToken = resultsLock.e2eToken, let fileId = resultsLock.fileId, resultsLock.error == .success else {
-            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTransfer))
+            //NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTransfer))
             NotificationCenter.default.post(
                 name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile),
                 object: nil,
-                userInfo: ["ocIdTransfer": ocIdTransfer,
+                userInfo: ["ocId": metadata.ocId,
+                           "ocIdTransfer": metadata.ocIdTransfer,
                            "session": metadata.session,
                            "serverUrl": metadata.serverUrl,
                            "account": metadata.account,
@@ -148,11 +148,12 @@ class NCNetworkingE2EEUpload: NSObject {
         let sendE2eeError = await sendE2ee(e2eToken: e2eToken, fileId: fileId)
         guard sendE2eeError == .success else {
             DispatchQueue.main.async { hud?.dismiss() }
-            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTransfer))
+            // NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTransfer))
             NotificationCenter.default.post(
                 name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile),
                 object: nil,
-                userInfo: ["ocIdTransfer": ocIdTransfer,
+                userInfo: ["ocId": metadata.ocId,
+                           "ocIdTransfer": metadata.ocIdTransfer,
                            "session": metadata.session,
                            "serverUrl": metadata.serverUrl,
                            "account": metadata.account,
@@ -197,7 +198,8 @@ class NCNetworkingE2EEUpload: NSObject {
             NotificationCenter.default.post(
                 name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile),
                 object: nil,
-                userInfo: ["ocIdTransfer": ocIdTransfer,
+                userInfo: ["ocId": metadata.ocId,
+                           "ocIdTransfer": metadata.ocIdTransfer,
                            "session": metadata.session,
                            "serverUrl": metadata.serverUrl,
                            "account": metadata.account,
@@ -225,7 +227,8 @@ class NCNetworkingE2EEUpload: NSObject {
             NotificationCenter.default.post(
                 name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile),
                 object: nil,
-                userInfo: ["ocIdTransfer": ocIdTransfer,
+                userInfo: ["ocId": metadata.ocId,
+                           "ocIdTransfer": metadata.ocIdTransfer,
                            "session": metadata.session,
                            "serverUrl": metadata.serverUrl,
                            "account": metadata.account,
@@ -242,7 +245,8 @@ class NCNetworkingE2EEUpload: NSObject {
             NotificationCenter.default.post(
                 name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile),
                 object: nil,
-                userInfo: ["ocIdTransfer": ocIdTransfer,
+                userInfo: ["ocId": metadata.ocId,
+                           "ocIdTransfer": metadata.ocIdTransfer,
                            "session": metadata.session,
                            "serverUrl": metadata.serverUrl,
                            "account": metadata.account,

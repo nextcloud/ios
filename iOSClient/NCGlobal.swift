@@ -334,16 +334,16 @@ class NCGlobal: NSObject {
 
     let notificationCenterChangeStatusFolderE2EE                = "changeStatusFolderE2EE"          // userInfo: serverUrl
 
-    let notificationCenterDownloadStartFile                     = "downloadStartFile"               // userInfo: ocIdTransfer, session, serverUrl, account
-    let notificationCenterDownloadedFile                        = "downloadedFile"                  // userInfo: ocIdTransfer, session, session, serverUrl, account, selector, error
-    let notificationCenterDownloadCancelFile                    = "downloadCancelFile"              // userInfo: ocIdTransfer, session, serverUrl, account
+    let notificationCenterDownloadStartFile                     = "downloadStartFile"               // userInfo: ocId, ocIdTransfer, session, serverUrl, account
+    let notificationCenterDownloadedFile                        = "downloadedFile"                  // userInfo: ocId, ocIdTransfer, session, session, serverUrl, account, selector, error
+    let notificationCenterDownloadCancelFile                    = "downloadCancelFile"              // userInfo: ocId, ocIdTransfer, session, serverUrl, account
 
-    let notificationCenterUploadStartFile                       = "uploadStartFile"                 // userInfo: ocIdTransfer, session, serverUrl, account, fileName, sessionSelector
-    let notificationCenterUploadedFile                          = "uploadedFile"                    // userInfo: ocIdTransfer, session, serverUrl, account, fileName, ocIdTransfer, error
-    let notificationCenterUploadedLivePhoto                     = "uploadedLivePhoto"               // userInfo: ocIdTransfer, session, serverUrl, account, fileName, ocIdTransfer, error
-    let notificationCenterUploadCancelFile                      = "uploadCancelFile"                // userInfo: ocIdTransfer, session, serverUrl, account
+    let notificationCenterUploadStartFile                       = "uploadStartFile"                 // userInfo: ocId, ocIdTransfer, session, serverUrl, account, fileName, sessionSelector
+    let notificationCenterUploadedFile                          = "uploadedFile"                    // userInfo: ocId, ocIdTransfer, session, serverUrl, account, fileName, ocIdTransfer, error
+    let notificationCenterUploadedLivePhoto                     = "uploadedLivePhoto"               // userInfo: ocId, ocIdTransfer, session, serverUrl, account, fileName, ocIdTransfer, error
+    let notificationCenterUploadCancelFile                      = "uploadCancelFile"                // userInfo: ocId, ocIdTransfer, session, serverUrl, account
 
-    let notificationCenterProgressTask                          = "progressTask"                    // userInfo: account, ocIdTransfer, session, serverUrl, status, chunk, e2eEncrypted, progress, totalBytes, totalBytesExpected
+    let notificationCenterProgressTask                          = "progressTask"                    // userInfo: account, ocId, ocIdTransfer, session, serverUrl, status, chunk, e2eEncrypted, progress, totalBytes, totalBytesExpected
 
     let notificationCenterUpdateBadgeNumber                     = "updateBadgeNumber"               // userInfo: counterDownload, counterUpload
 
