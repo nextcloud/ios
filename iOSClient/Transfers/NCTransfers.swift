@@ -27,14 +27,12 @@ import JGProgressHUD
 
 class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     class TransfersProgress {
-        var ocId: String
         var ocIdTemp: String
         var progressNumber: NSNumber
         var totalBytes: Int64
         var totalBytesExpected: Int64
 
-        init(ocId: String, ocIdTemp: String, progressNumber: NSNumber, totalBytes: Int64, totalBytesExpected: Int64) {
-            self.ocId = ocId
+        init(ocIdTemp: String, progressNumber: NSNumber, totalBytes: Int64, totalBytesExpected: Int64) {
             self.ocIdTemp = ocIdTemp
             self.progressNumber = progressNumber
             self.totalBytes = totalBytes
@@ -121,7 +119,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
               let progressNumber = userInfo["progress"] as? NSNumber,
               let totalBytes = userInfo["totalBytes"] as? Int64,
               let totalBytesExpected = userInfo["totalBytesExpected"] as? Int64,
-              let ocId = userInfo["ocId"] as? String,
               let ocIdTemp = userInfo["ocIdTemp"] as? String
         else { return }
 
@@ -130,15 +127,14 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             transfersProgress.totalBytes = totalBytes
             transfersProgress.totalBytesExpected = totalBytesExpected
         } else {
-            transfersProgress.append(TransfersProgress(ocId: ocId, ocIdTemp: ocIdTemp, progressNumber: progressNumber, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected))
+            transfersProgress.append(TransfersProgress(ocIdTemp: ocIdTemp, progressNumber: progressNumber, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected))
         }
 
         DispatchQueue.main.async {
-            for cell in self.collectionView.visibleCells {
-                if let indexPath = self.collectionView.indexPath(for: cell),
-                   let cell = cell as? NCCellProtocol,
-                   cell.fileObjectId == ocIdTemp {
-                    self.collectionView.reloadItems(at: [indexPath])
+            for case let cell as NCCellProtocol in self.collectionView.visibleCells {
+                if cell.fileObjectId == ocIdTemp {
+                    cell.fileProgressView?.progress = progressNumber.floatValue
+                    cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - " + self.utilityFileSystem.transformedSize(totalBytes)
                 }
             }
         }
@@ -241,7 +237,13 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         if pathText.isEmpty { pathText = "/" }
         cell.labelPath.text = pathText
         cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCImageCache.images.buttonStop)
-        cell.progressView.progress = 0.0
+
+        /// Transfer
+        var transfersProgress = TransfersProgress(ocIdTemp: metadata.ocIdTemp, progressNumber: 0, totalBytes: 0, totalBytesExpected: 0)
+        if let resultTransfersProgress = self.transfersProgress.filter({ $0.ocIdTemp == metadata.ocIdTemp}).first {
+            transfersProgress = resultTransfersProgress
+        }
+        cell.progressView.progress = transfersProgress.progressNumber.floatValue
         if let image = utility.getIcon(metadata: metadata) {
             cell.imageItem.image = image
         } else if !metadata.iconName.isEmpty {
@@ -260,15 +262,17 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         case NCGlobal.shared.metadataStatusWaitDownload:
             cell.labelStatus.text = NSLocalizedString("_status_wait_download_", comment: "")
             cell.labelInfo.text = utilityFileSystem.transformedSize(metadata.size)
-        case NCGlobal.shared.metadataStatusDownloading:
-            cell.labelStatus.text = NSLocalizedString("_status_downloading_", comment: "")
-            cell.labelInfo.text = utilityFileSystem.transformedSize(metadata.size) + " - ↓ …"
         case NCGlobal.shared.metadataStatusWaitUpload:
             cell.labelStatus.text = NSLocalizedString("_status_wait_upload_", comment: "")
             cell.labelInfo.text = ""
-        case NCGlobal.shared.metadataStatusUploading:
-            cell.labelStatus.text = NSLocalizedString("_status_uploading_", comment: "")
-            cell.labelInfo.text = utilityFileSystem.transformedSize(metadata.size) + " - ↑ …"
+        case NCGlobal.shared.metadataStatusUploading, NCGlobal.shared.metadataStatusDownloading:
+            if metadata.status == NCGlobal.shared.metadataStatusUploading {
+                cell.labelStatus.text = NSLocalizedString("_status_uploading_", comment: "")
+            } else {
+                cell.labelStatus.text = NSLocalizedString("_status_downloading_", comment: "")
+
+            }
+            cell.labelInfo.text = utilityFileSystem.transformedSize(metadata.size) + " - " + self.utilityFileSystem.transformedSize(transfersProgress.totalBytes)
         case NCGlobal.shared.metadataStatusUploadError:
             cell.labelStatus.text = NSLocalizedString("_status_upload_error_", comment: "")
             cell.labelInfo.text = metadata.sessionError
@@ -296,7 +300,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     override func queryDB() {
         super.queryDB()
 
-        let metadatas: [tableMetadata] = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal), sorted: "sessionDate", ascending: true) ?? []
+        let metadatas: [tableMetadata] = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status != %i AND sessionTaskIdentifier != 0", NCGlobal.shared.metadataStatusNormal), sorted: "sessionDate", ascending: true) ?? []
         self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: layoutForView, filterIsUpload: false)
         DispatchQueue.main.async {
             self.collectionView.reloadData()
