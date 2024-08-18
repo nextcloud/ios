@@ -127,8 +127,8 @@ extension NCViewer {
                             NotificationCenter.default.post(
                                 name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
                                 object: nil,
-                                userInfo: ["ocId": metadata.ocId,
-                                           "ocIdTransfer": metadata.ocIdTransfer,
+                                userInfo: ["ocIdTransfer": metadata.ocIdTransfer,
+                                           "session": metadata.session,
                                            "selector": NCGlobal.shared.selectorSaveAsScan,
                                            "error": NKError(),
                                            "account": metadata.account])
@@ -235,8 +235,8 @@ extension NCViewer {
                             NotificationCenter.default.post(
                                 name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
                                 object: nil,
-                                userInfo: ["ocId": metadata.ocId,
-                                           "ocIdTransfer": metadata.ocIdTransfer,
+                                userInfo: ["ocIdTransfer": metadata.ocIdTransfer,
+                                           "session": metadata.session,
                                            "selector": NCGlobal.shared.selectorLoadFileQuickLook,
                                            "error": NKError(),
                                            "account": metadata.account])

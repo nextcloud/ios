@@ -129,8 +129,8 @@ extension NCNetworking {
 
             NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile),
                                             object: nil,
-                                            userInfo: ["ocId": metadata.ocId,
-                                                       "ocIdTransfer": metadata.ocIdTransfer,
+                                            userInfo: ["ocIdTransfer": metadata.ocIdTransfer,
+                                                       "session": metadata.session,
                                                        "serverUrl": metadata.serverUrl,
                                                        "account": metadata.account,
                                                        "fileName": metadata.fileName,
@@ -140,8 +140,8 @@ extension NCNetworking {
             NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask),
                                             object: nil,
                                             userInfo: ["account": metadata.account,
-                                                       "ocId": metadata.ocId,
                                                        "ocIdTransfer": metadata.ocIdTransfer,
+                                                       "session": metadata.session,
                                                        "fileName": metadata.fileName,
                                                        "serverUrl": metadata.serverUrl,
                                                        "status": NSNumber(value: NCGlobal.shared.metadataStatusUploading),
@@ -189,8 +189,8 @@ extension NCNetworking {
             NCManageDatabase.shared.addChunks(account: metadata.account, ocId: metadata.ocId, chunkFolder: chunkFolder, filesChunk: filesChunk)
             NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile),
                                             object: nil,
-                                            userInfo: ["ocId": metadata.ocId,
-                                                       "ocIdTransfer": metadata.ocIdTransfer,
+                                            userInfo: ["ocIdTransfer": metadata.ocIdTransfer,
+                                                       "session": metadata.session,
                                                        "serverUrl": metadata.serverUrl,
                                                        "account": metadata.account,
                                                        "fileName": metadata.fileName,
@@ -206,8 +206,8 @@ extension NCNetworking {
             NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask),
                                             object: nil,
                                             userInfo: ["account": metadata.account,
-                                                       "ocId": metadata.ocId,
                                                        "ocIdTransfer": metadata.ocIdTransfer,
+                                                       "session": metadata.session,
                                                        "fileName": metadata.fileName,
                                                        "serverUrl": metadata.serverUrl,
                                                        "status": NSNumber(value: NCGlobal.shared.metadataStatusUploading),
@@ -254,8 +254,8 @@ extension NCNetworking {
                                                            sessionTaskIdentifier: task.taskIdentifier)
                 NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile),
                                                 object: nil,
-                                                userInfo: ["ocId": metadata.ocId,
-                                                           "ocIdTransfer": metadata.ocIdTransfer,
+                                                userInfo: ["ocIdTransfer": metadata.ocIdTransfer,
+                                                           "session": metadata.session,
                                                            "serverUrl": metadata.serverUrl,
                                                            "account": metadata.account,
                                                            "fileName": metadata.fileName,
@@ -297,11 +297,10 @@ extension NCNetworking {
             isApplicationStateActive = UIApplication.shared.applicationState == .active
 #endif
             DispatchQueue.global(qos: .userInteractive).async {
-                let ocIdTransfer = metadata.ocId
                 let selector = metadata.sessionSelector
 
                 if error == .success, let ocId = ocId, size == metadata.size {
-                    self.removeTransferInError(ocId: ocIdTransfer)
+                    self.removeTransferInError(ocId: metadata.ocIdTransfer)
 
                     let metadata = tableMetadata.init(value: metadata)
                     metadata.uploadDate = (date as? NSDate) ?? NSDate()
@@ -319,7 +318,6 @@ extension NCNetworking {
                     metadata.status = NCGlobal.shared.metadataStatusNormal
 
                     NCManageDatabase.shared.addMetadata(metadata)
-                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTransfer))
 
                     if selector == NCGlobal.shared.selectorUploadFileNODelete {
                         self.utilityFileSystem.moveFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTransfer), toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
@@ -330,8 +328,8 @@ extension NCNetworking {
 
                     NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload complete " + metadata.serverUrl + "/" + metadata.fileName + ", result: success(\(size) bytes)")
 
-                    let userInfo: [AnyHashable: Any] = ["ocId": metadata.ocId,
-                                                        "ocIdTransfer": ocIdTransfer,
+                    let userInfo: [AnyHashable: Any] = ["ocIdTransfer": metadata.ocIdTransfer,
+                                                        "session": metadata.session,
                                                         "serverUrl": metadata.serverUrl,
                                                         "account": metadata.account,
                                                         "fileName": metadata.fileName,
@@ -350,8 +348,8 @@ extension NCNetworking {
                         NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                         NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
                                                         object: nil,
-                                                        userInfo: ["ocId": metadata.ocId,
-                                                                   "ocIdTransfer": ocIdTransfer,
+                                                        userInfo: ["ocIdTransfer": metadata.ocIdTransfer,
+                                                                   "session": metadata.session,
                                                                    "serverUrl": metadata.serverUrl,
                                                                    "account": metadata.account])
                     } else if error.errorCode == NCGlobal.shared.errorBadRequest || error.errorCode == NCGlobal.shared.errorUnsupportedMediaType {
@@ -360,8 +358,8 @@ extension NCNetworking {
                         NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                         NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
                                                         object: nil,
-                                                        userInfo: ["ocId": metadata.ocId,
-                                                                   "ocIdTransfer": ocIdTransfer,
+                                                        userInfo: ["ocIdTransfer": metadata.ocIdTransfer,
+                                                                   "session": metadata.session,
                                                                    "serverUrl": metadata.serverUrl,
                                                                    "account": metadata.account])
                         if isApplicationStateActive {
@@ -392,8 +390,8 @@ extension NCNetworking {
                                 NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                                 NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
                                                                 object: nil,
-                                                                userInfo: ["ocId": metadata.ocId,
-                                                                           "ocIdTransfer": ocIdTransfer,
+                                                                userInfo: ["ocIdTransfer": metadata.ocIdTransfer,
+                                                                           "session": metadata.session,
                                                                            "serverUrl": metadata.serverUrl,
                                                                            "account": metadata.account])
                             }))
@@ -423,8 +421,8 @@ extension NCNetworking {
                                                                    errorCode: error.errorCode)
                         NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile),
                                                         object: nil,
-                                                        userInfo: ["ocId": metadata.ocId,
-                                                                   "ocIdTransfer": ocIdTransfer,
+                                                        userInfo: ["ocIdTransfer": metadata.ocIdTransfer,
+                                                                   "session": metadata.session,
                                                                    "serverUrl": metadata.serverUrl,
                                                                    "account": metadata.account,
                                                                    "fileName": metadata.fileName,
@@ -458,8 +456,8 @@ extension NCNetworking {
                 NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask),
                                                 object: nil,
                                                 userInfo: ["account": metadata.account,
-                                                           "ocId": metadata.ocId,
                                                            "ocIdTransfer": metadata.ocIdTransfer,
+                                                           "session": metadata.session,
                                                            "fileName": metadata.fileName,
                                                            "serverUrl": serverUrl,
                                                            "status": NSNumber(value: NCGlobal.shared.metadataStatusUploading),
