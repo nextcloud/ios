@@ -146,7 +146,6 @@ class NCManageDatabase: NSObject {
             let realm = try Realm()
             try realm.write {
                 var results: Results<Object>
-
                 if let account = account {
                     results = realm.objects(table).filter("account == %@", account)
                 } else {
@@ -160,7 +159,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    func clearDatabase(account: String, removeAccount: Bool) {
+    func clearDatabase(account: String? = nil, removeAccount: Bool = false) {
         if removeAccount {
             self.clearTable(tableAccount.self, account: account)
         }

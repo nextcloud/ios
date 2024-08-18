@@ -138,7 +138,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
             URLCache.shared.memoryCapacity = 0
             URLCache.shared.diskCapacity = 0
 
-            NCManageDatabase.shared.clearDatabase(account: self.session.account, removeAccount: false)
+            NCManageDatabase.shared.clearDatabase()
 
             let ufs = NCUtilityFileSystem()
             ufs.removeGroupDirectoryProviderStorage()
