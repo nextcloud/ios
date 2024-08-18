@@ -81,7 +81,7 @@ class NCContextMenu: NSObject {
                     name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
                     object: nil,
                     userInfo: ["ocId": metadata.ocId,
-                               "ocIdTemp": metadata.ocIdTemp,
+                               "ocIdTransfer": metadata.ocIdTransfer,
                                "selector": NCGlobal.shared.selectorOpenIn,
                                "error": NKError(),
                                "account": metadata.account])
@@ -129,7 +129,7 @@ class NCContextMenu: NSObject {
                     name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
                     object: nil,
                     userInfo: ["ocId": metadata.ocId,
-                               "ocIdTemp": metadata.ocIdTemp,
+                               "ocIdTransfer": metadata.ocIdTransfer,
                                "selector": NCGlobal.shared.selectorLoadFileQuickLook,
                                "error": NKError(),
                                "account": metadata.account])

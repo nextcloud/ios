@@ -88,7 +88,7 @@ class tableMetadata: Object {
     @objc dynamic var name = "" // for unifiedSearch is the provider.id
     @objc dynamic var note = ""
     @objc dynamic var ocId = ""
-    @objc dynamic var ocIdTemp = ""
+    @objc dynamic var ocIdTransfer = ""
     @objc dynamic var ownerId = ""
     @objc dynamic var ownerDisplayName = ""
     @objc public var lock = false
@@ -355,7 +355,7 @@ extension NCManageDatabase {
         metadata.name = file.name
         metadata.note = file.note
         metadata.ocId = file.ocId
-        metadata.ocIdTemp = file.ocId
+        metadata.ocIdTransfer = file.ocId
         metadata.ownerId = file.ownerId
         metadata.ownerDisplayName = file.ownerDisplayName
         metadata.lock = file.lock
@@ -490,7 +490,7 @@ extension NCManageDatabase {
         metadata.fileNameView = fileName
         metadata.name = name
         metadata.ocId = ocId
-        metadata.ocIdTemp = ocId
+        metadata.ocIdTransfer = ocId
         metadata.permissions = "RGDNVW"
         metadata.serverUrl = serverUrl
         metadata.subline = subline
@@ -820,7 +820,7 @@ extension NCManageDatabase {
         return nil
     }
 
-    func getMetadataFromOcIdAndOcIdTemp(_ ocId: String?) -> tableMetadata? {
+    func getMetadataFromOcIdAndocIdTransfer(_ ocId: String?) -> tableMetadata? {
         guard let ocId else { return nil }
 
         do {
@@ -829,7 +829,7 @@ extension NCManageDatabase {
             if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
                 return tableMetadata(value: result)
             }
-            if let result = realm.objects(tableMetadata.self).filter("ocIdTemp == %@", ocId).first {
+            if let result = realm.objects(tableMetadata.self).filter("ocIdTransfer == %@", ocId).first {
                 return tableMetadata(value: result)
             }
         } catch let error as NSError {

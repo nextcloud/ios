@@ -334,16 +334,16 @@ class NCGlobal: NSObject {
 
     let notificationCenterChangeStatusFolderE2EE                = "changeStatusFolderE2EE"          // userInfo: serverUrl
 
-    let notificationCenterDownloadStartFile                     = "downloadStartFile"               // userInfo: ocId, ocIdTemp, serverUrl, account
-    let notificationCenterDownloadedFile                        = "downloadedFile"                  // userInfo: ocId, ocIdTemp, serverUrl, account, selector, error
-    let notificationCenterDownloadCancelFile                    = "downloadCancelFile"              // userInfo: ocId, ocIdTemp, serverUrl, account
+    let notificationCenterDownloadStartFile                     = "downloadStartFile"               // userInfo: ocId, ocIdTransfer, serverUrl, account
+    let notificationCenterDownloadedFile                        = "downloadedFile"                  // userInfo: ocId, ocIdTransfer, serverUrl, account, selector, error
+    let notificationCenterDownloadCancelFile                    = "downloadCancelFile"              // userInfo: ocId, ocIdTransfer, serverUrl, account
 
-    let notificationCenterUploadStartFile                       = "uploadStartFile"                 // userInfo: ocId, ocIdTemp, serverUrl, account, fileName, sessionSelector
-    let notificationCenterUploadedFile                          = "uploadedFile"                    // userInfo: ocId, ocIdTemp, serverUrl, account, fileName, ocIdTemp, error
-    let notificationCenterUploadedLivePhoto                     = "uploadedLivePhoto"               // userInfo: ocId, ocIdTemp, serverUrl, account, fileName, ocIdTemp, error
-    let notificationCenterUploadCancelFile                      = "uploadCancelFile"                // userInfo: ocId, ocIdTemp, serverUrl, account
+    let notificationCenterUploadStartFile                       = "uploadStartFile"                 // userInfo: ocId, ocIdTransfer, serverUrl, account, fileName, sessionSelector
+    let notificationCenterUploadedFile                          = "uploadedFile"                    // userInfo: ocId, ocIdTransfer, serverUrl, account, fileName, ocIdTransfer, error
+    let notificationCenterUploadedLivePhoto                     = "uploadedLivePhoto"               // userInfo: ocId, ocIdTransfer, serverUrl, account, fileName, ocIdTransfer, error
+    let notificationCenterUploadCancelFile                      = "uploadCancelFile"                // userInfo: ocId, ocIdTransfer, serverUrl, account
 
-    let notificationCenterProgressTask                          = "progressTask"                    // userInfo: account, ocId, ocIdTemp, serverUrl, status, chunk, e2eEncrypted, progress, totalBytes, totalBytesExpected
+    let notificationCenterProgressTask                          = "progressTask"                    // userInfo: account, ocId, ocIdTransfer, serverUrl, status, chunk, e2eEncrypted, progress, totalBytes, totalBytesExpected
 
     let notificationCenterUpdateBadgeNumber                     = "updateBadgeNumber"               // userInfo: counterDownload, counterUpload
 

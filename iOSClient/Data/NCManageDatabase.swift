@@ -41,8 +41,11 @@ class NCManageDatabase: NSObject {
 
     override init() {
         func migrationSchema(_ migration: Migration, _ oldSchemaVersion: UInt64) {
-            if oldSchemaVersion < 354 {
-                migration.deleteData(forType: NCDBLayoutForView.className())
+            if oldSchemaVersion < 357 {
+                migration.deleteData(forType: tableMetadata.className())
+                migration.enumerateObjects(ofType: tableDirectory.className()) { _, newObject in
+                    newObject?["etag"] = ""
+                }
             }
         }
 

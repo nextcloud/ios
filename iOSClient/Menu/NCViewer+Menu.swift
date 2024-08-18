@@ -128,7 +128,7 @@ extension NCViewer {
                                 name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
                                 object: nil,
                                 userInfo: ["ocId": metadata.ocId,
-                                           "ocIdTemp": metadata.ocIdTemp,
+                                           "ocIdTransfer": metadata.ocIdTransfer,
                                            "selector": NCGlobal.shared.selectorSaveAsScan,
                                            "error": NKError(),
                                            "account": metadata.account])
@@ -236,7 +236,7 @@ extension NCViewer {
                                 name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
                                 object: nil,
                                 userInfo: ["ocId": metadata.ocId,
-                                           "ocIdTemp": metadata.ocIdTemp,
+                                           "ocIdTransfer": metadata.ocIdTransfer,
                                            "selector": NCGlobal.shared.selectorLoadFileQuickLook,
                                            "error": NKError(),
                                            "account": metadata.account])

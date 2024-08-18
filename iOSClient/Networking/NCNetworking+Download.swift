@@ -82,7 +82,7 @@ extension NCNetworking {
             NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadStartFile),
                                             object: nil,
                                             userInfo: ["ocId": metadata.ocId,
-                                                       "ocIdTemp": metadata.ocIdTemp,
+                                                       "ocIdTransfer": metadata.ocIdTransfer,
                                                        "serverUrl": metadata.serverUrl,
                                                        "account": metadata.account])
             start()
@@ -91,7 +91,7 @@ extension NCNetworking {
                                             object: nil,
                                             userInfo: ["account": metadata.account,
                                                        "ocId": metadata.ocId,
-                                                       "ocIdTemp": metadata.ocIdTemp,
+                                                       "ocIdTransfer": metadata.ocIdTransfer,
                                                        "fileName": metadata.fileName,
                                                        "serverUrl": metadata.serverUrl,
                                                        "status": NSNumber(value: NCGlobal.shared.metadataStatusDownloading),
@@ -138,7 +138,7 @@ extension NCNetworking {
             NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadStartFile),
                                             object: nil,
                                             userInfo: ["ocId": metadata.ocId,
-                                                       "ocIdTemp": metadata.ocIdTemp,
+                                                       "ocIdTransfer": metadata.ocIdTransfer,
                                                        "serverUrl": metadata.serverUrl,
                                                        "account": metadata.account])
             completion(nil, NKError())
@@ -201,7 +201,7 @@ extension NCNetworking {
                 NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
                                                 object: nil,
                                                 userInfo: ["ocId": metadata.ocId,
-                                                           "ocIdTemp": metadata.ocIdTemp,
+                                                           "ocIdTransfer": metadata.ocIdTransfer,
                                                            "serverUrl": metadata.serverUrl,
                                                            "account": metadata.account,
                                                            "selector": metadata.sessionSelector,
@@ -217,7 +217,7 @@ extension NCNetworking {
                 NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile),
                                                 object: nil,
                                                 userInfo: ["ocId": metadata.ocId,
-                                                           "ocIdTemp": metadata.ocIdTemp,
+                                                           "ocIdTransfer": metadata.ocIdTransfer,
                                                            "serverUrl": metadata.serverUrl,
                                                            "account": metadata.account])
             } else {
@@ -231,7 +231,7 @@ extension NCNetworking {
                 NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
                                                 object: nil,
                                                 userInfo: ["ocId": metadata.ocId,
-                                                           "ocIdTemp": metadata.ocIdTemp,
+                                                           "ocIdTransfer": metadata.ocIdTransfer,
                                                            "serverUrl": metadata.serverUrl,
                                                            "account": metadata.account,
                                                            "selector": metadata.sessionSelector,
@@ -257,7 +257,7 @@ extension NCNetworking {
                                                 object: nil,
                                                 userInfo: ["account": metadata.account,
                                                            "ocId": metadata.ocId,
-                                                           "ocIdTemp": metadata.ocIdTemp,
+                                                           "ocIdTransfer": metadata.ocIdTransfer,
                                                            "fileName": metadata.fileName,
                                                            "serverUrl": metadata.serverUrl,
                                                            "status": NSNumber(value: NCGlobal.shared.metadataStatusDownloading),

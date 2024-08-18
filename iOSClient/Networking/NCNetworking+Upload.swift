@@ -130,7 +130,7 @@ extension NCNetworking {
             NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile),
                                             object: nil,
                                             userInfo: ["ocId": metadata.ocId,
-                                                       "ocIdTemp": metadata.ocIdTemp,
+                                                       "ocIdTransfer": metadata.ocIdTransfer,
                                                        "serverUrl": metadata.serverUrl,
                                                        "account": metadata.account,
                                                        "fileName": metadata.fileName,
@@ -141,7 +141,7 @@ extension NCNetworking {
                                             object: nil,
                                             userInfo: ["account": metadata.account,
                                                        "ocId": metadata.ocId,
-                                                       "ocIdTemp": metadata.ocIdTemp,
+                                                       "ocIdTransfer": metadata.ocIdTransfer,
                                                        "fileName": metadata.fileName,
                                                        "serverUrl": metadata.serverUrl,
                                                        "status": NSNumber(value: NCGlobal.shared.metadataStatusUploading),
@@ -190,7 +190,7 @@ extension NCNetworking {
             NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile),
                                             object: nil,
                                             userInfo: ["ocId": metadata.ocId,
-                                                       "ocIdTemp": metadata.ocIdTemp,
+                                                       "ocIdTransfer": metadata.ocIdTransfer,
                                                        "serverUrl": metadata.serverUrl,
                                                        "account": metadata.account,
                                                        "fileName": metadata.fileName,
@@ -207,7 +207,7 @@ extension NCNetworking {
                                             object: nil,
                                             userInfo: ["account": metadata.account,
                                                        "ocId": metadata.ocId,
-                                                       "ocIdTemp": metadata.ocIdTemp,
+                                                       "ocIdTransfer": metadata.ocIdTransfer,
                                                        "fileName": metadata.fileName,
                                                        "serverUrl": metadata.serverUrl,
                                                        "status": NSNumber(value: NCGlobal.shared.metadataStatusUploading),
@@ -255,7 +255,7 @@ extension NCNetworking {
                 NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile),
                                                 object: nil,
                                                 userInfo: ["ocId": metadata.ocId,
-                                                           "ocIdTemp": metadata.ocIdTemp,
+                                                           "ocIdTransfer": metadata.ocIdTransfer,
                                                            "serverUrl": metadata.serverUrl,
                                                            "account": metadata.account,
                                                            "fileName": metadata.fileName,
@@ -297,11 +297,11 @@ extension NCNetworking {
             isApplicationStateActive = UIApplication.shared.applicationState == .active
 #endif
             DispatchQueue.global(qos: .userInteractive).async {
-                let ocIdTemp = metadata.ocId
+                let ocIdTransfer = metadata.ocId
                 let selector = metadata.sessionSelector
 
                 if error == .success, let ocId = ocId, size == metadata.size {
-                    self.removeTransferInError(ocId: ocIdTemp)
+                    self.removeTransferInError(ocId: ocIdTransfer)
 
                     let metadata = tableMetadata.init(value: metadata)
                     metadata.uploadDate = (date as? NSDate) ?? NSDate()
@@ -319,19 +319,19 @@ extension NCNetworking {
                     metadata.status = NCGlobal.shared.metadataStatusNormal
 
                     NCManageDatabase.shared.addMetadata(metadata)
-                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTemp))
+                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocIdTransfer))
 
                     if selector == NCGlobal.shared.selectorUploadFileNODelete {
-                        self.utilityFileSystem.moveFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTemp), toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
+                        self.utilityFileSystem.moveFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTransfer), toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
                         NCManageDatabase.shared.addLocalFile(metadata: metadata)
                     } else {
-                        self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTemp))
+                        self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTransfer))
                     }
 
                     NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload complete " + metadata.serverUrl + "/" + metadata.fileName + ", result: success(\(size) bytes)")
 
                     let userInfo: [AnyHashable: Any] = ["ocId": metadata.ocId,
-                                                        "ocIdTemp": ocIdTemp,
+                                                        "ocIdTransfer": ocIdTransfer,
                                                         "serverUrl": metadata.serverUrl,
                                                         "account": metadata.account,
                                                         "fileName": metadata.fileName,
@@ -345,23 +345,23 @@ extension NCNetworking {
                     }
                 } else {
                     if error.errorCode == NSURLErrorCancelled || error.errorCode == NCGlobal.shared.errorRequestExplicityCancelled {
-                        self.removeTransferInError(ocId: ocIdTemp)
+                        self.removeTransferInError(ocId: ocIdTransfer)
                         self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
                         NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                         NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
                                                         object: nil,
                                                         userInfo: ["ocId": metadata.ocId,
-                                                                   "ocIdTemp": ocIdTemp,
+                                                                   "ocIdTransfer": ocIdTransfer,
                                                                    "serverUrl": metadata.serverUrl,
                                                                    "account": metadata.account])
                     } else if error.errorCode == NCGlobal.shared.errorBadRequest || error.errorCode == NCGlobal.shared.errorUnsupportedMediaType {
-                        self.removeTransferInError(ocId: ocIdTemp)
+                        self.removeTransferInError(ocId: ocIdTransfer)
                         self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
                         NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                         NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
                                                         object: nil,
                                                         userInfo: ["ocId": metadata.ocId,
-                                                                   "ocIdTemp": ocIdTemp,
+                                                                   "ocIdTransfer": ocIdTransfer,
                                                                    "serverUrl": metadata.serverUrl,
                                                                    "account": metadata.account])
                         if isApplicationStateActive {
@@ -371,7 +371,7 @@ extension NCNetworking {
                         // Client Diagnostic
                         NCManageDatabase.shared.addDiagnostic(account: metadata.account, issue: NCGlobal.shared.diagnosticIssueVirusDetected)
                     } else if error.errorCode == NCGlobal.shared.errorForbidden && isApplicationStateActive {
-                        self.removeTransferInError(ocId: ocIdTemp)
+                        self.removeTransferInError(ocId: ocIdTransfer)
 #if !EXTENSION
                         DispatchQueue.main.async {
                             let newFileName = self.utilityFileSystem.createFileName(metadata.fileName, serverUrl: metadata.serverUrl, account: metadata.account)
@@ -393,7 +393,7 @@ extension NCNetworking {
                                 NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
                                                                 object: nil,
                                                                 userInfo: ["ocId": metadata.ocId,
-                                                                           "ocIdTemp": ocIdTemp,
+                                                                           "ocIdTransfer": ocIdTransfer,
                                                                            "serverUrl": metadata.serverUrl,
                                                                            "account": metadata.account])
                             }))
@@ -424,7 +424,7 @@ extension NCNetworking {
                         NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile),
                                                         object: nil,
                                                         userInfo: ["ocId": metadata.ocId,
-                                                                   "ocIdTemp": ocIdTemp,
+                                                                   "ocIdTransfer": ocIdTransfer,
                                                                    "serverUrl": metadata.serverUrl,
                                                                    "account": metadata.account,
                                                                    "fileName": metadata.fileName,
@@ -459,7 +459,7 @@ extension NCNetworking {
                                                 object: nil,
                                                 userInfo: ["account": metadata.account,
                                                            "ocId": metadata.ocId,
-                                                           "ocIdTemp": metadata.ocIdTemp,
+                                                           "ocIdTransfer": metadata.ocIdTransfer,
                                                            "fileName": metadata.fileName,
                                                            "serverUrl": serverUrl,
                                                            "status": NSNumber(value: NCGlobal.shared.metadataStatusUploading),
