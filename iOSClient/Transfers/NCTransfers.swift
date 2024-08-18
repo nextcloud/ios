@@ -91,10 +91,20 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     }
 
     override func downloadedFile(_ notification: NSNotification) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocIdTemp = userInfo["ocIdTemp"] as? String
+        else { return }
+
+        transfersProgress.remove(where: { $0.ocIdTemp == ocIdTemp })
         reloadDataSource()
     }
 
     override func downloadCancelFile(_ notification: NSNotification) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocIdTemp = userInfo["ocIdTemp"] as? String
+        else { return }
+
+        transfersProgress.remove(where: { $0.ocIdTemp == ocIdTemp })
         reloadDataSource()
     }
 
@@ -103,14 +113,29 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     }
 
     override func uploadedFile(_ notification: NSNotification) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocIdTemp = userInfo["ocIdTemp"] as? String
+        else { return }
+
+        transfersProgress.remove(where: { $0.ocIdTemp == ocIdTemp })
         reloadDataSource()
     }
 
     override func uploadedLivePhoto(_ notification: NSNotification) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocIdTemp = userInfo["ocIdTemp"] as? String
+        else { return }
+
+        transfersProgress.remove(where: { $0.ocIdTemp == ocIdTemp })
         reloadDataSource()
     }
 
     override func uploadCancelFile(_ notification: NSNotification) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocIdTemp = userInfo["ocIdTemp"] as? String
+        else { return }
+
+        transfersProgress.remove(where: { $0.ocIdTemp == ocIdTemp })
         reloadDataSource()
     }
 
@@ -302,6 +327,9 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
         let metadatas: [tableMetadata] = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status != %i AND sessionTaskIdentifier != 0", NCGlobal.shared.metadataStatusNormal), sorted: "sessionDate", ascending: true) ?? []
         self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: layoutForView, filterIsUpload: false)
+        if self.dataSource.metadatas.isEmpty {
+            transfersProgress.removeAll()
+        }
         DispatchQueue.main.async {
             self.collectionView.reloadData()
         }
