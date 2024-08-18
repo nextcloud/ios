@@ -12,6 +12,7 @@ public class NCTransferProgress: NSObject {
     static let shared = NCTransferProgress()
 
     public class Transfer {
+        var ocId: String
         var ocIdTransfer: String
         var session: String
         var progressNumber: NSNumber
@@ -19,7 +20,8 @@ public class NCTransferProgress: NSObject {
         var totalBytesExpected: Int64
         var countError: Int = 0
 
-        init(ocIdTransfer: String, session: String, progressNumber: NSNumber, totalBytes: Int64, totalBytesExpected: Int64) {
+        init(ocId: String, ocIdTransfer: String, session: String, progressNumber: NSNumber, totalBytes: Int64, totalBytesExpected: Int64) {
+            self.ocId = ocId
             self.ocIdTransfer = ocIdTransfer
             self.session = session
             self.progressNumber = progressNumber
@@ -45,11 +47,11 @@ public class NCTransferProgress: NSObject {
         return transfers.filter({ $0.ocIdTransfer == ocIdTransfer}).first
     }
 
-    func get(ocIdTransfer: String, session: String) -> Transfer {
+    func get(ocId: String, ocIdTransfer: String, session: String) -> Transfer {
         if let transfer = transfers.filter({ $0.ocIdTransfer == ocIdTransfer}).first {
             return transfer
         }
-        return Transfer(ocIdTransfer: ocIdTransfer, session: session, progressNumber: 0, totalBytes: 0, totalBytesExpected: 0)
+        return Transfer(ocId: ocId, ocIdTransfer: ocIdTransfer, session: session, progressNumber: 0, totalBytes: 0, totalBytesExpected: 0)
     }
 
     func addCountError(ocIdTransfer: String) {

@@ -130,6 +130,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
               let progressNumber = userInfo["progress"] as? NSNumber,
               let totalBytes = userInfo["totalBytes"] as? Int64,
               let totalBytesExpected = userInfo["totalBytesExpected"] as? Int64,
+              let ocId = userInfo["ocId"] as? String,
               let ocIdTransfer = userInfo["ocIdTransfer"] as? String,
               let session = userInfo["session"] as? String
         else { return }
@@ -139,7 +140,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             transfer.totalBytes = totalBytes
             transfer.totalBytesExpected = totalBytesExpected
         } else {
-            NCTransferProgress.shared.append(NCTransferProgress.Transfer(ocIdTransfer: ocIdTransfer, session: session, progressNumber: progressNumber, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected))
+            NCTransferProgress.shared.append(NCTransferProgress.Transfer(ocId: ocId, ocIdTransfer: ocIdTransfer, session: session, progressNumber: progressNumber, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected))
         }
 
         DispatchQueue.main.async {
@@ -234,7 +235,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
               let metadata = dataSource.cellForItemAt(indexPath: indexPath) else {
             return NCTransferCell()
         }
-        let transfer = NCTransferProgress.shared.get(ocIdTransfer: metadata.ocIdTransfer, session: metadata.session)
+        let transfer = NCTransferProgress.shared.get(ocId: metadata.ocId, ocIdTransfer: metadata.ocIdTransfer, session: metadata.session)
 
         cell.delegate = self
         cell.fileObjectId = metadata.ocIdTransfer
