@@ -568,16 +568,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         } else {
             NCTransferProgress.shared.append(NCTransferProgress.Transfer(ocId: ocId, ocIdTransfer: ocIdTransfer, session: session, progressNumber: progressNumber, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected))
         }
+        let transfer = NCTransferProgress.shared.get(ocIdTransfer: ocIdTransfer)
 
         DispatchQueue.main.async {
             // HEADER
-            if self.headerMenuTransferView && (chunk > 0 || e2eEncrypted) {
-                if NCNetworking.shared.transferInForegorund?.ocId == ocId {
-                    NCNetworking.shared.transferInForegorund?.progress = progressNumber.floatValue
-                } else {
-                    NCNetworking.shared.transferInForegorund = NCNetworking.TransferInForegorund(ocId: ocId, progress: progressNumber.floatValue)
-                    self.collectionView.reloadData()
-                }
+            if self.headerMenuTransferView,
+               (chunk > 0 || e2eEncrypted),
+               transfer?.session == NextcloudKit.shared.nkCommonInstance.identifierSessionUpload {
                 self.sectionFirstHeader?.progressTransfer.progress = progressNumber.floatValue
                 self.sectionFirstHeaderEmptyData?.progressTransfer.progress = progressNumber.floatValue
             // DOWNLOAD
@@ -1083,6 +1080,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func tapButtonTransfer(_ sender: Any) {
+        if let transfer = NCTransferProgress.shared.get(ocIdTransfer: ocIdTransfer) {
+            
+        }
         if let ocId = NCNetworking.shared.transferInForegorund?.ocId,
            let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
             Task {
