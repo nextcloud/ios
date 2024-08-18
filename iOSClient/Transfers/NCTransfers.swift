@@ -268,7 +268,14 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         if let resultTransfersProgress = self.transfersProgress.filter({ $0.ocIdTemp == metadata.ocIdTemp}).first {
             transfersProgress = resultTransfersProgress
         }
+        if metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusUploading {
+            cell.progressView.isHidden = false
+        } else {
+            cell.progressView.isHidden = true
+        }
         cell.progressView.progress = transfersProgress.progressNumber.floatValue
+
+        /// Image
         if let image = utility.getIcon(metadata: metadata) {
             cell.imageItem.image = image
         } else if !metadata.iconName.isEmpty {
@@ -276,13 +283,8 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         } else {
             cell.imageItem.image = NCImageCache.images.file
         }
-        cell.labelInfo.text = utility.dateDiff(metadata.date as Date) + " · " + utilityFileSystem.transformedSize(metadata.size)
-        if metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusUploading {
-            cell.progressView.isHidden = false
-        } else {
-            cell.progressView.isHidden = true
-        }
-        // Write status on Label Info
+
+        /// Write status on Label Status / Info
         switch metadata.status {
         case NCGlobal.shared.metadataStatusWaitDownload:
             cell.labelStatus.text = NSLocalizedString("_status_wait_download_", comment: "")
@@ -310,7 +312,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             cell.labelInfo.text = NSLocalizedString("_waiting_for_", comment: "") + " " + NSLocalizedString("_reachable_wifi_", comment: "")
         }
         cell.accessibilityLabel = metadata.fileNameView + ", " + (cell.labelInfo.text ?? "")
-        // Remove last separator
+        /// Remove last separator
         if collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1 {
             cell.separator.isHidden = true
         } else {
