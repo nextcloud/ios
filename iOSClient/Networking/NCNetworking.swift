@@ -51,11 +51,6 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
         return instance
     }()
 
-    public struct TransferInForegorund {
-        var ocId: String
-        var progress: Float
-    }
-
     struct FileNameServerUrl: Hashable {
         var fileName: String
         var serverUrl: String
@@ -68,7 +63,6 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
     var networkReachability: NKCommon.TypeReachability?
     let downloadRequest = ThreadSafeDictionary<String, DownloadRequest>()
     let uploadRequest = ThreadSafeDictionary<String, UploadRequest>()
-    var transferInForegorund: TransferInForegorund?
     weak var delegate: NCNetworkingDelegate?
     weak var certificateDelegate: ClientCertificateDelegate?
 

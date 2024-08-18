@@ -553,14 +553,24 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let progressNumber = userInfo["progress"] as? NSNumber,
               let totalBytes = userInfo["totalBytes"] as? Int64,
               let totalBytesExpected = userInfo["totalBytesExpected"] as? Int64,
-              let ocId = userInfo["ocId"] as? String
+              let ocId = userInfo["ocId"] as? String,
+              let ocIdTransfer = userInfo["ocIdTransfer"] as? String,
+              let session = userInfo["session"] as? String
         else { return }
-
         let chunk: Int = userInfo["chunk"] as? Int ?? 0
         let e2eEncrypted: Bool = userInfo["e2eEncrypted"] as? Bool ?? false
         let status = userInfo["status"] as? Int ?? NCGlobal.shared.metadataStatusNormal
 
+        if let transfer = NCTransferProgress.shared.get(ocIdTransfer: ocIdTransfer) {
+            transfer.progressNumber = progressNumber
+            transfer.totalBytes = totalBytes
+            transfer.totalBytesExpected = totalBytesExpected
+        } else {
+            NCTransferProgress.shared.append(NCTransferProgress.Transfer(ocId: ocId, ocIdTransfer: ocIdTransfer, session: session, progressNumber: progressNumber, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected))
+        }
+
         DispatchQueue.main.async {
+            // HEADER
             if self.headerMenuTransferView && (chunk > 0 || e2eEncrypted) {
                 if NCNetworking.shared.transferInForegorund?.ocId == ocId {
                     NCNetworking.shared.transferInForegorund?.progress = progressNumber.floatValue
@@ -570,27 +580,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 }
                 self.sectionFirstHeader?.progressTransfer.progress = progressNumber.floatValue
                 self.sectionFirstHeaderEmptyData?.progressTransfer.progress = progressNumber.floatValue
+            // DOWNLOAD
             } else if status == NCGlobal.shared.metadataStatusWaitDownload || status == NCGlobal.shared.metadataStatusDownloading {
-                guard let indexPath = self.dataSource.getIndexPathMetadata(ocId: ocId).indexPath,
-                      let cell = self.collectionView?.cellForItem(at: indexPath),
-                      let cell = cell as? NCCellProtocol else { return }
-                if progressNumber.floatValue == 1 && !(cell is NCTransferCell) {
-                    cell.fileProgressView?.isHidden = true
-                    cell.fileProgressView?.progress = .zero
-                    cell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCImageCache.images.buttonMore)
-                    if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                        cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
-                    } else {
-                        cell.fileInfoLabel?.text = ""
-                        cell.fileSubinfoLabel?.text = ""
-                    }
-                } else {
-                    cell.fileProgressView?.isHidden = false
-                    cell.fileProgressView?.progress = progressNumber.floatValue
-                    cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCImageCache.images.buttonStop)
-                    if status == NCGlobal.shared.metadataStatusDownloading {
-                        cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected)
-                        cell.fileSubinfoLabel?.text = self.infoLabelsSeparator + "↓ " + self.utilityFileSystem.transformedSize(totalBytes)
+                for case let cell as NCCellProtocol in self.collectionView.visibleCells {
+                    if cell.fileObjectId == ocIdTransfer {
+                        cell.fileProgressView?.progress = progressNumber.floatValue
+                        cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - " + self.utilityFileSystem.transformedSize(totalBytes)
                     }
                 }
             }
