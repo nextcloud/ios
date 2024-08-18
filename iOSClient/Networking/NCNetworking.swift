@@ -75,20 +75,6 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
     var p12Data: Data?
     var p12Password: String?
 
-    let transferInError = ThreadSafeDictionary<String, Int>()
-
-    func transferInError(ocId: String) {
-        if let counter = self.transferInError[ocId] {
-            self.transferInError[ocId] = counter + 1
-        } else {
-            self.transferInError[ocId] = 1
-        }
-    }
-
-    func removeTransferInError(ocId: String) {
-        self.transferInError.removeValue(forKey: ocId)
-    }
-
     lazy var nkBackground: NKBackground = {
         let nckb = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance)
         return nckb
@@ -128,7 +114,7 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
     // MARK: - NotificationCenter
 
     func applicationDidEnterBackground() {
-        self.transferInError.removeAll()
+        NCTransferProgress.shared.clearAllCountError()
     }
 
     // MARK: - Communication Delegate

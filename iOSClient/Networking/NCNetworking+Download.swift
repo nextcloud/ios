@@ -185,7 +185,7 @@ extension NCNetworking {
                   let metadata = NCManageDatabase.shared.getMetadata(from: url, sessionTaskIdentifier: task.taskIdentifier) else { return }
 
             if error == .success {
-                self.removeTransferInError(ocId: metadata.ocId)
+                NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
 #if !EXTENSION
                 if let result = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", metadata.fileName, metadata.serverUrl)) {
                     NCEndToEndEncryption.shared().decryptFile(metadata.fileName, fileNameView: metadata.fileNameView, ocId: metadata.ocId, key: result.key, initializationVector: result.initializationVector, authenticationTag: result.authenticationTag)
@@ -207,7 +207,7 @@ extension NCNetworking {
                                                            "selector": metadata.sessionSelector,
                                                            "error": error])
             } else if error.errorCode == NSURLErrorCancelled || error.errorCode == NCGlobal.shared.errorRequestExplicityCancelled {
-                self.removeTransferInError(ocId: metadata.ocId)
+                NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                            session: "",
                                                            sessionTaskIdentifier: 0,
@@ -221,7 +221,7 @@ extension NCNetworking {
                                                            "serverUrl": metadata.serverUrl,
                                                            "account": metadata.account])
             } else {
-                self.transferInError(ocId: metadata.ocId)
+                NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                            session: "",
                                                            sessionTaskIdentifier: 0,

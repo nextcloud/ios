@@ -17,6 +17,7 @@ public class NCTransferProgress: NSObject {
         var progressNumber: NSNumber
         var totalBytes: Int64
         var totalBytesExpected: Int64
+        var countError: Int = 0
 
         init(ocIdTransfer: String, session: String, progressNumber: NSNumber, totalBytes: Int64, totalBytesExpected: Int64) {
             self.ocIdTransfer = ocIdTransfer
@@ -49,5 +50,23 @@ public class NCTransferProgress: NSObject {
             return transfer
         }
         return Transfer(ocIdTransfer: ocIdTransfer, session: session, progressNumber: 0, totalBytes: 0, totalBytesExpected: 0)
+    }
+
+    func addCountError(ocIdTransfer: String) {
+        if let transfer = transfers.filter({ $0.ocIdTransfer == ocIdTransfer}).first {
+            transfer.countError += 1
+        }
+    }
+
+    func clearCountError(ocIdTransfer: String) {
+        if let transfer = transfers.filter({ $0.ocIdTransfer == ocIdTransfer}).first {
+            transfer.countError = 0
+        }
+    }
+
+    func clearAllCountError() {
+        transfers.forEach { transfer in
+            transfer.countError = 0
+        }
     }
 }

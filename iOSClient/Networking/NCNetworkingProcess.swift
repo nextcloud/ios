@@ -108,8 +108,8 @@ class NCNetworkingProcess: NSObject {
             let metadatasDownloadError: [tableMetadata] = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "session == %@ AND status == %d", NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground, NCGlobal.shared.metadataStatusDownloadError), sorted: "sessionDate", ascending: true) ?? []
             for metadata in metadatasDownloadError {
                 // Verify COUNTER ERROR
-                if let counter = NCNetworking.shared.transferInError[metadata.ocId],
-                   counter > 3 {
+                if let transfer = NCTransferProgress.shared.get(ocIdTransfer: metadata.ocIdTransfer),
+                   transfer.countError > 3 {
                     continue
                 }
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
@@ -170,8 +170,8 @@ class NCNetworkingProcess: NSObject {
         if counterUploading == 0 {
             for metadata in metadatasUploadError {
                 // Verify COUNTER ERROR
-                if let counter = NCNetworking.shared.transferInError[metadata.ocId],
-                   counter > 3 {
+                if let transfer = NCTransferProgress.shared.get(ocIdTransfer: metadata.ocIdTransfer),
+                   transfer.countError > 3 {
                     continue
                 }
                 // Verify QUOTA
