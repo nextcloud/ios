@@ -123,13 +123,10 @@ private struct CustomProgressView: View {
     private let height: CGFloat = 9
     let progress: Double
     var body: some View {
-        ZStack {
+        GeometryReader { geometry in
             Color(.BurgerMenu.progressBarBackground)
-            GeometryReader { geometry in
-                Color(NCBrandColor.shared.brand)
-                    .frame(width: geometry.size.width * progress)
-                    .clipShape(RoundedRectangle(cornerRadius: height/2))
-            }
+            Color(NCBrandColor.shared.brand)
+                .frame(width: geometry.size.width * progress)
         }
         .frame(height: height)
         .clipShape(RoundedRectangle(cornerRadius: height/2))
@@ -173,7 +170,7 @@ private extension View {
     class BurgerMenuViewModelMock: BurgerMenuViewModel {
         override init(delegate: (any BurgerMenuViewModelDelegate)?) {
             super.init(delegate: delegate)
-            progressUsedSpace = 0.3
+            progressUsedSpace = 0.005
             messageUsedSpace = "You are using 62,5 MB of 607,21 GB"
             isVisible = true
         }
