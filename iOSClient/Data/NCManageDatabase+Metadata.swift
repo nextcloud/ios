@@ -355,6 +355,7 @@ extension NCManageDatabase {
         metadata.name = file.name
         metadata.note = file.note
         metadata.ocId = file.ocId
+        metadata.ocIdTemp = file.ocId
         metadata.ownerId = file.ownerId
         metadata.ownerDisplayName = file.ownerDisplayName
         metadata.lock = file.lock
