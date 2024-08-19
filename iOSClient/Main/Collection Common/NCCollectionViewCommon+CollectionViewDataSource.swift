@@ -381,6 +381,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         if isLayoutPhoto, sizeImage.width < 120 {
             cell.hideImageFavorite(true)
             cell.hideImageLocal(true)
+            cell.fileTitleLabel?.font = UIFont.systemFont(ofSize: 10)
             if sizeImage.width < 100 {
                 cell.hideImageItem(true)
                 cell.hideButtonMore(true)
