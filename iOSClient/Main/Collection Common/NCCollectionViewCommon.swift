@@ -822,13 +822,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             let menuButton = UIBarButtonItem(image: utility.loadImage(named: "ellipsis.circle"), menu: UIMenu(children: createMenuActions()))
             menuButton.tintColor = NCBrandColor.shared.iconImageColor
             if layoutKey == NCGlobal.shared.layoutViewFiles {
-                let notification = UIBarButtonItem(image: utility.loadImage(named: "bell"), style: .plain) {
-                    if let viewController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? NCNotification {
-                        self.navigationController?.pushViewController(viewController, animated: true)
-                    }
-                }
-                notification.tintColor = NCBrandColor.shared.iconImageColor
-                navigationItem.rightBarButtonItems = [createAccountButton(), menuButton, notification]
+                navigationItem.rightBarButtonItems = [createAccountButton(), menuButton]
             } else {
                 navigationItem.rightBarButtonItems = [menuButton]
             }
