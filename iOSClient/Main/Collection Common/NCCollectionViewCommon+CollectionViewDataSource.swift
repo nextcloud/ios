@@ -197,11 +197,17 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         cell.fileOcIdTransfer = metadata.ocIdTransfer
         cell.indexPath = indexPath
         cell.fileUser = metadata.ownerId
-        cell.fileProgressView?.isHidden = true
-        cell.fileProgressView?.progress = 0.0
+
+        cell.hideImageItem(false)
+        cell.hideImageFavorite(false)
+        cell.hideImageStatus(false)
+        cell.hideImageLocal(false)
+        cell.hideLabelTitle(false)
+        cell.hideLabelInfo(false)
+        cell.hideLabelSubinfo(false)
         cell.hideButtonShare(false)
         cell.hideButtonMore(false)
-        cell.hideImageFavorite(false)
+
         cell.titleInfoTrailingDefault()
 
         if isSearchingMode {
@@ -218,10 +224,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.fileTitleLabel?.text = metadata.fileNameView
             cell.fileTitleLabel?.lineBreakMode = .byTruncatingMiddle
             cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
-        }
-
-        if metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusUploading {
-            cell.fileProgressView?.isHidden = false
         }
 
         // Accessibility [shared] if metadata.ownerId != appDelegate.userId, appDelegate.account == metadata.account {
@@ -302,6 +304,13 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCImageCache.images.buttonMore)
         }
 
+        // Progress view
+        if let transfer = NCTransferProgress.shared.get(ocIdTransfer: metadata.ocIdTransfer) {
+            cell.setProgress(progress: transfer.progressNumber.floatValue)
+        } else {
+            cell.setProgress(progress: 0.0)
+        }
+
         // Write status on Label Info
         switch metadata.status {
         case NCGlobal.shared.metadataStatusWaitDownload:
@@ -371,8 +380,12 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         // Layout photo
         if isLayoutPhoto, sizeImage.width < 120 {
             cell.hideImageFavorite(true)
+            cell.hideImageLocal(true)
             if sizeImage.width < 100 {
+                cell.hideImageItem(true)
                 cell.hideButtonMore(true)
+                cell.hideLabelInfo(true)
+                cell.hideLabelSubinfo(true)
             }
         }
 

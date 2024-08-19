@@ -134,6 +134,15 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
         buttonMore.isHidden = status
     }
 
+    func setProgress(progress: Float) {
+        progressView.progress = progress
+        if progress > 0.0 {
+            progressView.isHidden = false
+        } else {
+            progressView.isHidden = true
+        }
+    }
+
     func setButtonMore(named: String, image: UIImage) {
         namedButtonMore = named
         imageMore.image = image

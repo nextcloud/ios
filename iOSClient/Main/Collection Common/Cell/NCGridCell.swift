@@ -150,12 +150,36 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         setA11yActions()
     }
 
-    func hideButtonMore(_ status: Bool) {
-        buttonMore.isHidden = status
+    func hideImageItem(_ status: Bool) {
+        imageItem.isHidden = status
     }
 
     func hideImageFavorite(_ status: Bool) {
         imageFavorite.isHidden = status
+    }
+
+    func hideImageStatus(_ status: Bool) {
+        imageStatus.isHidden = status
+    }
+
+    func hideImageLocal(_ status: Bool) {
+        imageLocal.isHidden = status
+    }
+
+    func hideLabelTitle(_ status: Bool) {
+        labelTitle.isHidden = status
+    }
+
+    func hideLabelInfo(_ status: Bool) {
+        labelInfo.isHidden = status
+    }
+
+    func hideLabelSubinfo(_ status: Bool) {
+        labelSubinfo.isHidden = status
+    }
+
+    func hideButtonMore(_ status: Bool) {
+        buttonMore.isHidden = status
     }
 
     func selected(_ status: Bool, isEditMode: Bool) {

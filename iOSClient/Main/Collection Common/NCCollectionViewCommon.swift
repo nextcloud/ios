@@ -573,7 +573,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             } else if status == NCGlobal.shared.metadataStatusWaitDownload || status == NCGlobal.shared.metadataStatusDownloading {
                 for case let cell as NCCellProtocol in self.collectionView.visibleCells {
                     if cell.fileOcId == ocId {
-                        cell.fileProgressView?.progress = progressNumber.floatValue
+                        cell.setProgress(progress: progressNumber.floatValue)
                         cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - " + self.utilityFileSystem.transformedSize(totalBytes)
                     }
                 }

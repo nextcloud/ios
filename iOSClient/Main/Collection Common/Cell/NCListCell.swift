@@ -221,8 +221,13 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         buttonShared.isHidden = status
     }
 
-    func hideSeparator(_ status: Bool) {
-        separator.isHidden = status
+    func setProgress(progress: Float) {
+        progressView.progress = progress
+        if progress > 0.0 {
+            progressView.isHidden = false
+        } else {
+            progressView.isHidden = true
+        }
     }
 
     func selected(_ status: Bool, isEditMode: Bool) {

@@ -121,7 +121,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         DispatchQueue.main.async {
             for case let cell as NCCellProtocol in self.collectionView.visibleCells {
                 if cell.fileOcIdTransfer == ocIdTransfer {
-                    cell.fileProgressView?.progress = progressNumber.floatValue
+                    cell.setProgress(progress: progressNumber.floatValue)
                     cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - " + self.utilityFileSystem.transformedSize(totalBytes)
                 }
             }
@@ -227,13 +227,12 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         if pathText.isEmpty { pathText = "/" }
         cell.labelPath.text = pathText
         cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCImageCache.images.buttonStop)
-        /// Progress
-        if metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusUploading {
-            cell.progressView.isHidden = false
+        /// Progress view
+        if let transfer = NCTransferProgress.shared.get(ocIdTransfer: metadata.ocIdTransfer) {
+            cell.setProgress(progress: transfer.progressNumber.floatValue)
         } else {
-            cell.progressView.isHidden = true
+            cell.setProgress(progress: 0.0)
         }
-        cell.progressView.progress = transfer.progressNumber.floatValue
         /// Image
         if let image = utility.getIcon(metadata: metadata) {
             cell.imageItem.image = image
