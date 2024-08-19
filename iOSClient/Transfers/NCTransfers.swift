@@ -131,7 +131,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     // MARK: TAP EVENT
 
     override func tapMoreGridItem(with ocId: String, ocIdTransfer: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcIdAndocIdTransfer(ocIdTransfer) else { return }
 
         Task {
             await cancelSession(metadata: metadata)
@@ -213,7 +213,8 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         let transfer = NCTransferProgress.shared.get(ocId: metadata.ocId, ocIdTransfer: metadata.ocIdTransfer, session: metadata.session)
 
         cell.delegate = self
-        cell.fileOcId = metadata.ocIdTransfer
+        cell.fileOcId = metadata.ocId
+        cell.fileOcIdTransfer = metadata.ocIdTransfer
         cell.indexPath = indexPath
         cell.fileUser = metadata.ownerId
         cell.indexPath = indexPath
