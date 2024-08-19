@@ -112,7 +112,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             navigationItem.searchController = searchController
             navigationItem.hidesSearchBarWhenScrolling = true
             if #available(iOS 16.0, *) {
-                navigationItem.preferredSearchBarPlacement = .inline
+                navigationItem.preferredSearchBarPlacement = .stacked
             }
         }
 
