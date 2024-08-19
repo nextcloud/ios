@@ -101,6 +101,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         layoutForView?.layout == NCGlobal.shared.layoutList ? " - " : ""
     }
 
+    var sizeImage: CGSize {
+        let columnCount: Int = self.layoutForView?.columnPhoto ?? 3
+        let size = CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
+        return size
+    }
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {

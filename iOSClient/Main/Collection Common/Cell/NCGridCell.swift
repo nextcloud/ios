@@ -154,6 +154,10 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         buttonMore.isHidden = status
     }
 
+    func hideImageFavorite(_ status: Bool) {
+        imageFavorite.isHidden = status
+    }
+
     func selected(_ status: Bool, isEditMode: Bool) {
         if isEditMode {
             buttonMore.isHidden = true

@@ -201,6 +201,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         cell.fileProgressView?.progress = 0.0
         cell.hideButtonShare(false)
         cell.hideButtonMore(false)
+        cell.hideImageFavorite(false)
         cell.titleInfoTrailingDefault()
 
         if isSearchingMode {
@@ -366,6 +367,14 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         // TAGS
         cell.setTags(tags: Array(metadata.tags))
+
+        // Layout photo
+        if isLayoutPhoto, sizeImage.width < 120 {
+            cell.hideImageFavorite(true)
+            if sizeImage.width < 100 {
+                cell.hideButtonMore(true)
+            }
+        }
 
         // Hide buttons
         if metadata.name != NCGlobal.shared.appName {

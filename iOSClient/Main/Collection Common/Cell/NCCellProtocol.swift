@@ -47,6 +47,7 @@ protocol NCCellProtocol {
     func setButtonMore(named: String, image: UIImage)
     func hideButtonShare(_ status: Bool)
     func hideButtonMore(_ status: Bool)
+    func hideImageFavorite(_ status: Bool)
     func selected(_ status: Bool, isEditMode: Bool)
     func setAccessibility(label: String, value: String)
     func setTags(tags: [String])
@@ -117,6 +118,7 @@ extension NCCellProtocol {
     func setButtonMore(named: String, image: UIImage) {}
     func hideButtonShare(_ status: Bool) {}
     func hideButtonMore(_ status: Bool) {}
+    func hideImageFavorite(_ status: Bool) {}
     func selected(_ status: Bool, isEditMode: Bool) {}
     func setAccessibility(label: String, value: String) {}
     func setTags(tags: [String]) {}
