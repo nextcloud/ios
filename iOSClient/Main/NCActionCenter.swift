@@ -32,8 +32,15 @@ import Alamofire
 class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelectDelegate {
     public static let shared: NCActionCenter = {
         let instance = NCActionCenter()
+        NotificationCenter.default.addObserver(instance, selector: #selector(downloadStartFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadStartFile), object: nil)
         NotificationCenter.default.addObserver(instance, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
+        NotificationCenter.default.addObserver(instance, selector: #selector(downloadCancelFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile), object: nil)
+
+        NotificationCenter.default.addObserver(instance, selector: #selector(uploadStartFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile), object: nil)
         NotificationCenter.default.addObserver(instance, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
+        NotificationCenter.default.addObserver(instance, selector: #selector(uploadedLivePhoto(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedLivePhoto), object: nil)
+        NotificationCenter.default.addObserver(instance, selector: #selector(uploadCancelFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile), object: nil)
+
         return instance
     }()
 
@@ -44,8 +51,15 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     // MARK: - Download
 
-    @objc func downloadedFile(_ notification: NSNotification) {
+    @objc func downloadStartFile(_ notification: NSNotification) { }
+    @objc func downloadCancelFile(_ notification: NSNotification) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocIdTransfer = userInfo["ocIdTransfer"] as? String
+        else { return }
 
+        NCTransferProgress.shared.remove(ocIdTransfer: ocIdTransfer)
+    }
+    @objc func downloadedFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               let selector = userInfo["selector"] as? String,
@@ -247,6 +261,21 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     // MARK: - Upload
 
+    @objc func uploadStartFile(_ notification: NSNotification) { }
+    @objc func uploadedLivePhoto(_ notification: NSNotification) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocIdTransfer = userInfo["ocIdTransfer"] as? String
+        else { return }
+
+        NCTransferProgress.shared.remove(ocIdTransfer: ocIdTransfer)
+    }
+    @objc func uploadCancelFile(_ notification: NSNotification) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocIdTransfer = userInfo["ocIdTransfer"] as? String
+        else { return }
+
+        NCTransferProgress.shared.remove(ocIdTransfer: ocIdTransfer)
+    }
     @objc func uploadedFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let error = userInfo["error"] as? NKError,

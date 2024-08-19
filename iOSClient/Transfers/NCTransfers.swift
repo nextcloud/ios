@@ -77,20 +77,10 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     }
 
     override func downloadedFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocIdTransfer = userInfo["ocIdTransfer"] as? String
-        else { return }
-
-        NCTransferProgress.shared.remove(ocIdTransfer: ocIdTransfer)
         reloadDataSource()
     }
 
     override func downloadCancelFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocIdTransfer = userInfo["ocIdTransfer"] as? String
-        else { return }
-
-        NCTransferProgress.shared.remove(ocIdTransfer: ocIdTransfer)
         reloadDataSource()
     }
 
@@ -99,29 +89,14 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     }
 
     override func uploadedFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocIdTransfer = userInfo["ocIdTransfer"] as? String
-        else { return }
-
-        NCTransferProgress.shared.remove(ocIdTransfer: ocIdTransfer)
         reloadDataSource()
     }
 
     override func uploadedLivePhoto(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocIdTransfer = userInfo["ocIdTransfer"] as? String
-        else { return }
-
-        NCTransferProgress.shared.remove(ocIdTransfer: ocIdTransfer)
         reloadDataSource()
     }
 
     override func uploadCancelFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocIdTransfer = userInfo["ocIdTransfer"] as? String
-        else { return }
-
-        NCTransferProgress.shared.remove(ocIdTransfer: ocIdTransfer)
         reloadDataSource()
     }
 

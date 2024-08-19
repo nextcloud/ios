@@ -47,6 +47,8 @@ public class NCTransferProgress: NSObject {
     }
     private var transfers = ThreadSafeArray<Transfer>()
 
+    override private init() {}
+
     func append(_ transfer: Transfer) {
         transfers.append(transfer)
     }

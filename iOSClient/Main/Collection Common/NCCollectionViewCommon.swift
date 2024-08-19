@@ -455,16 +455,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func downloadedFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let serverUrl = userInfo["serverUrl"] as? String,
-              let account = userInfo["account"] as? String,
-              let error = userInfo["error"] as? NKError,
-              let ocIdTransfer = userInfo["ocIdTransfer"] as? String
+              let account = userInfo["account"] as? String
         else { return }
-
-        if error != .success {
-            NCContentPresenter().showError(error: error)
-        }
-
-        NCTransferProgress.shared.remove(ocIdTransfer: ocIdTransfer)
 
         DispatchQueue.main.async {
             if account == self.session.account, serverUrl == self.serverUrl {
@@ -478,11 +470,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func downloadCancelFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let serverUrl = userInfo["serverUrl"] as? String,
-              let account = userInfo["account"] as? String,
-              let ocIdTransfer = userInfo["ocIdTransfer"] as? String
+              let account = userInfo["account"] as? String
         else { return }
-
-        NCTransferProgress.shared.remove(ocIdTransfer: ocIdTransfer)
 
         DispatchQueue.main.async {
             if account == self.session.account, serverUrl == self.serverUrl {
@@ -500,11 +489,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func uploadedFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let serverUrl = userInfo["serverUrl"] as? String,
-              let account = userInfo["account"] as? String,
-              let ocIdTransfer = userInfo["ocIdTransfer"] as? String
+              let account = userInfo["account"] as? String
         else { return }
-
-        NCTransferProgress.shared.remove(ocIdTransfer: ocIdTransfer)
 
         DispatchQueue.main.async {
             if account == self.session.account, serverUrl == self.serverUrl {
@@ -518,11 +504,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func uploadedLivePhoto(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let serverUrl = userInfo["serverUrl"] as? String,
-              let account = userInfo["account"] as? String,
-              let ocIdTransfer = userInfo["ocIdTransfer"] as? String
+              let account = userInfo["account"] as? String
         else { return }
-
-        NCTransferProgress.shared.remove(ocIdTransfer: ocIdTransfer)
 
         DispatchQueue.main.async {
             if account == self.session.account, serverUrl == self.serverUrl {
@@ -536,11 +519,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func uploadCancelFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let serverUrl = userInfo["serverUrl"] as? String,
-              let account = userInfo["account"] as? String,
-              let ocIdTransfer = userInfo["ocIdTransfer"] as? String
+              let account = userInfo["account"] as? String
         else { return }
-
-        NCTransferProgress.shared.remove(ocIdTransfer: ocIdTransfer)
 
         DispatchQueue.main.async {
             if account == self.session.account, serverUrl == self.serverUrl {
