@@ -49,8 +49,11 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               let selector = userInfo["selector"] as? String,
-              let error = userInfo["error"] as? NKError
+              let error = userInfo["error"] as? NKError,
+              let ocIdTransfer = userInfo["ocIdTransfer"] as? String
         else { return }
+
+        NCTransferProgress.shared.remove(ocIdTransfer: ocIdTransfer)
 
         guard error == .success else {
             // File do not exists on server, remove in local
@@ -246,8 +249,11 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     @objc func uploadedFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let error = userInfo["error"] as? NKError
+              let error = userInfo["error"] as? NKError,
+              let ocIdTransfer = userInfo["ocIdTransfer"] as? String
         else { return }
+
+        NCTransferProgress.shared.remove(ocIdTransfer: ocIdTransfer)
 
         if error != .success, error.errorCode != NSURLErrorCancelled, error.errorCode != NCGlobal.shared.errorRequestExplicityCancelled {
             NCContentPresenter().messageNotification("_upload_file_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
