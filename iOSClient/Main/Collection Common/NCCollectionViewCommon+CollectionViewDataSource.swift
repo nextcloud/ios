@@ -387,8 +387,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 self.sectionFirstHeaderEmptyData = header
                 header.delegate = self
 
-                if !isSearchingMode, headerMenuTransferView, isHeaderMenuTransferViewEnabled() {
-                    header.setViewTransfer(isHidden: false, ocId: NCNetworking.shared.transferInForegorund?.ocId, progress: NCNetworking.shared.transferInForegorund?.progress)
+                if !isSearchingMode, headerMenuTransferView, isHeaderMenuTransferViewEnabled(), let transfer = NCTransferProgress.shared.isForeground() {
+                    header.setViewTransfer(isHidden: false, ocId: transfer.ocId, progress: transfer.progressNumber.floatValue)
                 } else {
                     header.setViewTransfer(isHidden: true)
                 }
@@ -426,8 +426,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 self.sectionFirstHeader = header
                 header.delegate = self
 
-                if !isSearchingMode, headerMenuTransferView, isHeaderMenuTransferViewEnabled() {
-                    header.setViewTransfer(isHidden: false, ocId: NCNetworking.shared.transferInForegorund?.ocId, progress: NCNetworking.shared.transferInForegorund?.progress)
+                if !isSearchingMode, headerMenuTransferView, isHeaderMenuTransferViewEnabled(), let transfer = NCTransferProgress.shared.isForeground() {
+                    header.setViewTransfer(isHidden: false, ocId: transfer.ocId, progress: transfer.progressNumber.floatValue)
                 } else {
                     header.setViewTransfer(isHidden: true)
                 }

@@ -1080,8 +1080,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func tapButtonTransfer(_ sender: Any) {
+        /*
         if let transfer = NCTransferProgress.shared.get(ocIdTransfer: ocIdTransfer) {
-            
+
         }
         if let ocId = NCNetworking.shared.transferInForegorund?.ocId,
            let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
@@ -1089,6 +1090,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 await cancelSession(metadata: metadata)
             }
         }
+        */
     }
 
     func longPressListItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) { }
@@ -1292,9 +1294,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 if !isSearchingMode {
                     size += NCGlobal.shared.heightHeaderTransfer
                 }
-            } else {
-                NCNetworking.shared.transferInForegorund = nil
-            }
+            } 
             return size
         }
 

@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import NextcloudKit
 
 public class NCTransferProgress: NSObject {
     static let shared = NCTransferProgress()
@@ -85,5 +86,12 @@ public class NCTransferProgress: NSObject {
         transfers.forEach { transfer in
             transfer.countError = 0
         }
+    }
+
+    func isForeground() -> Transfer? {
+        if let transfer = transfers.filter({ $0.session == NextcloudKit.shared.nkCommonInstance.identifierSessionDownload || $0.session == NextcloudKit.shared.nkCommonInstance.identifierSessionUpload }).first {
+            return transfer
+        }
+        return nil
     }
 }
