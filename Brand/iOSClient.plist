@@ -103,7 +103,7 @@
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen</string>
+	<string>LaunchScreen-IONOS</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
@@ -175,21 +175,21 @@
 		</dict>
 	</array>
 	<key>UIApplicationSceneManifest</key>
-    	<dict>
-        	<key>UIApplicationSupportsMultipleScenes</key>
-        	<true/>
-        	<key>UISceneConfigurations</key>
-        	<dict>
-            		<key>UIWindowSceneSessionRoleApplication</key>
-            		<array>
-               			<dict>
-                  			<key>UISceneConfigurationName</key>
-                    			<string>Default Configuration</string>
-                    			<key>UISceneDelegateClassName</key>
-                    			<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
-               			</dict>
-            		</array>
-       		</dict>
-    </dict>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<true/>
+		<key>UISceneConfigurations</key>
+		<dict>
+			<key>UIWindowSceneSessionRoleApplication</key>
+			<array>
+				<dict>
+					<key>UISceneConfigurationName</key>
+					<string>Default Configuration</string>
+					<key>UISceneDelegateClassName</key>
+					<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
 </dict>
 </plist>

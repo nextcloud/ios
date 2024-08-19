@@ -343,7 +343,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
 
         privacyProtectionWindow = UIWindow(windowScene: windowScene)
-        privacyProtectionWindow?.rootViewController = UIStoryboard(name: "LaunchScreen", bundle: nil).instantiateInitialViewController()
+        privacyProtectionWindow?.rootViewController = UIStoryboard(name: "LaunchScreen-IONOS", bundle: nil).instantiateInitialViewController()
         privacyProtectionWindow?.windowLevel = .alert + 1
         privacyProtectionWindow?.makeKeyAndVisible()
     }
