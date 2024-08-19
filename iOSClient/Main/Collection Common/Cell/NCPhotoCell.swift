@@ -31,16 +31,21 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
     @IBOutlet weak var buttonMore: UIButton!
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
 
-    var objectId = ""
+    var ocId = ""
+    var ocIdTransfer = ""
     var indexPath = IndexPath()
     private var user = ""
 
     weak var photoCellDelegate: NCPhotoCellDelegate?
     var namedButtonMore = ""
 
-    var fileObjectId: String? {
-        get { return objectId }
-        set { objectId = newValue ?? "" }
+    var fileOcId: String? {
+        get { return ocId }
+        set { ocId = newValue ?? "" }
+    }
+    var fileOcIdTransfer: String? {
+        get { return ocIdTransfer }
+        set { ocIdTransfer = newValue ?? "" }
     }
     var filePreviewImageView: UIImageView? {
         get { return imageItem }
@@ -104,11 +109,11 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
     }
 
     @IBAction func touchUpInsideMore(_ sender: Any) {
-        photoCellDelegate?.tapMorePhotoItem(with: objectId, namedButtonMore: namedButtonMore, image: imageItem.image, indexPath: indexPath, sender: sender)
+        photoCellDelegate?.tapMorePhotoItem(with: ocId, ocIdTransfer: ocIdTransfer, namedButtonMore: namedButtonMore, image: imageItem.image, indexPath: indexPath, sender: sender)
     }
 
     @objc func longPress(gestureRecognizer: UILongPressGestureRecognizer) {
-        photoCellDelegate?.longPressPhotoItem(with: objectId, indexPath: indexPath, gestureRecognizer: gestureRecognizer)
+        photoCellDelegate?.longPressPhotoItem(with: ocId, ocIdTransfer: ocIdTransfer, indexPath: indexPath, gestureRecognizer: gestureRecognizer)
     }
 
     fileprivate func setA11yActions() {
@@ -157,6 +162,6 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
 }
 
 protocol NCPhotoCellDelegate: AnyObject {
-    func tapMorePhotoItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any)
-    func longPressPhotoItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer)
+    func tapMorePhotoItem(with ocId: String, ocIdTransfer: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any)
+    func longPressPhotoItem(with objectId: String, ocIdTransfer: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer)
 }

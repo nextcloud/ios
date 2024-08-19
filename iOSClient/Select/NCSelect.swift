@@ -213,20 +213,15 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         overwrite = sender.isOn
     }
 
-    func tapShareListItem(with objectId: String, indexPath: IndexPath, sender: Any) {
-    }
+    func tapShareListItem(with ocId: String, ocIdTransfer: String, indexPath: IndexPath, sender: Any) { }
 
-    func tapMoreListItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
-    }
+    func tapMoreListItem(with ocId: String, ocIdTransfer: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) { }
 
-    func longPressListItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
-    }
+    func longPressListItem(with odId: String, ocIdTransfer: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) { }
 
-    func tapButtonTransfer(_ sender: Any) {
-    }
+    func tapButtonTransfer(_ sender: Any) { }
 
-    func tapRichWorkspace(_ sender: Any) {
-    }
+    func tapRichWorkspace(_ sender: Any) { }
 
     // MARK: - Push metadata
 
@@ -320,7 +315,8 @@ extension NCSelect: UICollectionViewDataSource {
 
         cell.listCellDelegate = self
 
-        cell.fileObjectId = metadata.ocId
+        cell.fileOcId = metadata.ocId
+        cell.fileOcIdTransfer = metadata.ocIdTransfer
         cell.fileUser = metadata.ownerId
         cell.labelTitle.text = metadata.fileNameView
         cell.labelTitle.textColor = NCBrandColor.shared.textColor

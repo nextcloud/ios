@@ -142,14 +142,11 @@ extension NCShareExtension: NCShareCellDelegate, NCRenameFileDelegate, NCListCel
         tableView.reloadData()
     }
 
-    func tapShareListItem(with objectId: String, indexPath: IndexPath, sender: Any) {
-    }
+    func tapShareListItem(with ocId: String, ocIdTransfer: String, indexPath: IndexPath, sender: Any) { }
 
-    func tapMoreListItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
-    }
+    func tapMoreListItem(with ocId: String, ocIdTransfer: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) { }
 
-    func longPressListItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
-    }
+    func longPressListItem(with ocId: String, ocIdTransfer: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) { }
 }
 
 extension NCShareExtension: NCCreateFormUploadConflictDelegate {

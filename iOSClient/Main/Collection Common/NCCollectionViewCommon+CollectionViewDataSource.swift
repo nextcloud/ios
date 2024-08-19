@@ -193,7 +193,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         cell.fileMoreImage?.image = nil
         cell.filePreviewImageView?.image = nil
         cell.filePreviewImageView?.backgroundColor = nil
-        cell.fileObjectId = metadata.ocId
+        cell.fileOcId = metadata.ocId
+        cell.fileOcIdTransfer = metadata.ocIdTransfer
         cell.indexPath = indexPath
         cell.fileUser = metadata.ownerId
         cell.fileProgressView?.isHidden = true

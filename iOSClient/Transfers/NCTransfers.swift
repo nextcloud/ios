@@ -145,7 +145,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
         DispatchQueue.main.async {
             for case let cell as NCCellProtocol in self.collectionView.visibleCells {
-                if cell.fileObjectId == ocIdTransfer {
+                if cell.fileOcIdTransfer == ocIdTransfer {
                     cell.fileProgressView?.progress = progressNumber.floatValue
                     cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - " + self.utilityFileSystem.transformedSize(totalBytes)
                 }
@@ -155,15 +155,15 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     // MARK: TAP EVENT
 
-    override func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId) else { return }
+    override func tapMoreGridItem(with ocId: String, ocIdTransfer: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
 
         Task {
             await cancelSession(metadata: metadata)
         }
     }
 
-    override func longPressMoreListItem(with objectId: String, namedButtonMore: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
+    override func longPressMoreListItem(with ocId: String, ocIdTransfer: String, namedButtonMore: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
         if gestureRecognizer.state != .began { return }
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .alert)
 
@@ -178,10 +178,10 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         self.present(alertController, animated: true, completion: nil)
     }
 
-    override func longPressListItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
+    override func longPressListItem(with ocId: String, ocIdTransfer: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
         if gestureRecognizer.state != .began { return }
 
-        if let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId) {
+        if let metadata = NCManageDatabase.shared.getMetadataFromOcIdAndocIdTransfer(ocIdTransfer) {
             metadataTemp = metadata
             let touchPoint = gestureRecognizer.location(in: collectionView)
             becomeFirstResponder()
@@ -238,7 +238,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         let transfer = NCTransferProgress.shared.get(ocId: metadata.ocId, ocIdTransfer: metadata.ocIdTransfer, session: metadata.session)
 
         cell.delegate = self
-        cell.fileObjectId = metadata.ocIdTransfer
+        cell.fileOcId = metadata.ocIdTransfer
         cell.indexPath = indexPath
         cell.fileUser = metadata.ownerId
         cell.indexPath = indexPath

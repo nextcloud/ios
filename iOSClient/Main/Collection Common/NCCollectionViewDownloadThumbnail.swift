@@ -64,7 +64,7 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
             if error == .success, let imageIcon {
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
                 DispatchQueue.main.async {
-                    if self.metadata.ocId == self.cell?.fileObjectId, let filePreviewImageView = self.cell?.filePreviewImageView {
+                    if self.metadata.ocId == self.cell?.fileOcId, let filePreviewImageView = self.cell?.filePreviewImageView {
                         self.cell?.filePreviewImageView?.contentMode = .scaleAspectFill
                         if self.metadata.hasPreviewBorder {
                             self.cell?.filePreviewImageView?.layer.borderWidth = 0.2

@@ -25,7 +25,8 @@ import UIKit
 
 protocol NCCellProtocol {
     var fileAvatarImageView: UIImageView? { get }
-    var fileObjectId: String? { get set }
+    var fileOcId: String? { get set }
+    var fileOcIdTransfer: String? { get set }
     var filePreviewImageView: UIImageView? { get set }
     var fileUser: String? { get set }
     var fileTitleLabel: UILabel? { get set }
@@ -57,7 +58,11 @@ extension NCCellProtocol {
     var fileAvatarImageView: UIImageView? {
         return nil
     }
-    var fileObjectId: String? {
+    var fileOcId: String? {
+        get { return nil }
+        set {}
+    }
+    var fileOcIdTransfer: String? {
         get { return nil }
         set {}
     }

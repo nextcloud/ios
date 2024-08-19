@@ -36,16 +36,21 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
     @IBOutlet weak var separator: UIView!
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
 
-    private var objectId = ""
+    private var ocId = ""
+    private var ocIdTransfer = ""
     private var user = ""
     var indexPath = IndexPath()
 
     weak var delegate: NCTransferCellDelegate?
     var namedButtonMore = ""
 
-    var fileObjectId: String? {
-        get { return objectId }
-        set { objectId = newValue ?? "" }
+    var fileOcId: String? {
+        get { return ocId }
+        set { ocId = newValue ?? "" }
+    }
+    var fileOcIdTransfer: String? {
+        get { return ocIdTransfer }
+        set { ocIdTransfer = newValue ?? "" }
     }
     var filePreviewImageView: UIImageView? {
         get { return imageItem }
@@ -109,19 +114,19 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
     }
 
     @IBAction func touchUpInsideShare(_ sender: Any) {
-        delegate?.tapShareListItem(with: objectId, indexPath: indexPath, sender: sender)
+        delegate?.tapShareListItem(with: ocId, ocIdTransfer: ocIdTransfer, indexPath: indexPath, sender: sender)
     }
 
     @IBAction func touchUpInsideMore(_ sender: Any) {
-        delegate?.tapMoreListItem(with: objectId, namedButtonMore: namedButtonMore, image: imageItem.image, indexPath: indexPath, sender: sender)
+        delegate?.tapMoreListItem(with: ocId, ocIdTransfer: ocIdTransfer, namedButtonMore: namedButtonMore, image: imageItem.image, indexPath: indexPath, sender: sender)
     }
 
     @objc func longPressInsideMore(gestureRecognizer: UILongPressGestureRecognizer) {
-        delegate?.longPressMoreListItem(with: objectId, namedButtonMore: namedButtonMore, indexPath: indexPath, gestureRecognizer: gestureRecognizer)
+        delegate?.longPressMoreListItem(with: ocId, ocIdTransfer: ocIdTransfer, namedButtonMore: namedButtonMore, indexPath: indexPath, gestureRecognizer: gestureRecognizer)
     }
 
     @objc func longPress(gestureRecognizer: UILongPressGestureRecognizer) {
-        delegate?.longPressListItem(with: objectId, indexPath: indexPath, gestureRecognizer: gestureRecognizer)
+        delegate?.longPressListItem(with: ocId, ocIdTransfer: ocIdTransfer, indexPath: indexPath, gestureRecognizer: gestureRecognizer)
     }
 
     func hideButtonMore(_ status: Bool) {
@@ -146,8 +151,8 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
 }
 
 protocol NCTransferCellDelegate: AnyObject {
-    func tapShareListItem(with objectId: String, indexPath: IndexPath, sender: Any)
-    func tapMoreListItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any)
-    func longPressMoreListItem(with objectId: String, namedButtonMore: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer)
-    func longPressListItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer)
+    func tapShareListItem(with ocId: String, ocIdTransfer: String, indexPath: IndexPath, sender: Any)
+    func tapMoreListItem(with ocId: String, ocIdTransfer: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any)
+    func longPressMoreListItem(with ocId: String, ocIdTransfer: String, namedButtonMore: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer)
+    func longPressListItem(with ocId: String, ocIdTransfer: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer)
 }
