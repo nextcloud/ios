@@ -37,10 +37,10 @@
                         </constraints>
                     </imageView>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="DHy-Up-3Bh" userLabel="imageSelect">
-                        <rect key="frame" x="5" y="5" width="15" height="15"/>
+                        <rect key="frame" x="5" y="5" width="20" height="20"/>
                         <constraints>
-                            <constraint firstAttribute="height" constant="15" id="SoZ-J3-98x"/>
-                            <constraint firstAttribute="width" constant="15" id="cZG-gx-gwt"/>
+                            <constraint firstAttribute="height" constant="20" id="SoZ-J3-98x"/>
+                            <constraint firstAttribute="width" constant="20" id="cZG-gx-gwt"/>
                         </constraints>
                     </imageView>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PfR-89-FqQ" userLabel="buttonMoreGrid">
