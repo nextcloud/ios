@@ -27,14 +27,14 @@
                                 <action selector="touchUpTransfer:" destination="tys-A2-nDX" eventType="touchUpInside" id="AXk-oo-ObR"/>
                             </connections>
                         </button>
-                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="stop.circle" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="RAx-NP-nJe">
-                            <rect key="frame" x="15" y="13.5" width="20" height="19"/>
+                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icloud.and.arrow.up" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="RAx-NP-nJe">
+                            <rect key="frame" x="15" y="13" width="20" height="21.5"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="20" id="Bl3-T8-Pdl"/>
                                 <constraint firstAttribute="height" constant="20" id="s0j-tE-jVf"/>
                             </constraints>
                         </imageView>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="text" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ct8-na-XmL">
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="…" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ct8-na-XmL">
                             <rect key="frame" x="50" y="14" width="596" height="18"/>
                             <fontDescription key="fontDescription" type="system" pointSize="15"/>
                             <nil key="textColor"/>
@@ -119,7 +119,7 @@
         </collectionReusableView>
     </objects>
     <resources>
-        <image name="stop.circle" catalog="system" width="128" height="123"/>
+        <image name="icloud.and.arrow.up" catalog="system" width="128" height="115"/>
         <systemColor name="systemGrayColor">
             <color red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>

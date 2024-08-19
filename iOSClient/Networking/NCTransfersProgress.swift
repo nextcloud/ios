@@ -31,15 +31,19 @@ public class NCTransferProgress: NSObject {
         var ocId: String
         var ocIdTransfer: String
         var session: String
+        var chunk: Int
+        var e2eEncrypted: Bool
         var progressNumber: NSNumber
         var totalBytes: Int64
         var totalBytesExpected: Int64
         var countError: Int = 0
 
-        init(ocId: String, ocIdTransfer: String, session: String, progressNumber: NSNumber, totalBytes: Int64, totalBytesExpected: Int64) {
+        init(ocId: String, ocIdTransfer: String, session: String, chunk: Int, e2eEncrypted: Bool, progressNumber: NSNumber, totalBytes: Int64, totalBytesExpected: Int64) {
             self.ocId = ocId
             self.ocIdTransfer = ocIdTransfer
             self.session = session
+            self.chunk = chunk
+            self.e2eEncrypted = e2eEncrypted
             self.progressNumber = progressNumber
             self.totalBytes = totalBytes
             self.totalBytesExpected = totalBytesExpected
@@ -50,6 +54,7 @@ public class NCTransferProgress: NSObject {
     override private init() {}
 
     func append(_ transfer: Transfer) {
+        remove(ocIdTransfer: transfer.ocIdTransfer)
         transfers.append(transfer)
     }
 
@@ -69,11 +74,21 @@ public class NCTransferProgress: NSObject {
         if let transfer = transfers.filter({ $0.ocIdTransfer == ocIdTransfer}).first {
             return transfer
         }
-        return Transfer(ocId: ocId, ocIdTransfer: ocIdTransfer, session: session, progressNumber: 0, totalBytes: 0, totalBytesExpected: 0)
+        return Transfer(ocId: ocId, ocIdTransfer: ocIdTransfer, session: session, chunk: 0, e2eEncrypted: false, progressNumber: 0, totalBytes: 0, totalBytesExpected: 0)
     }
 
     func getAll() -> ThreadSafeArray<Transfer> {
         return transfers
+    }
+
+    func haveChunkOrE2eEncrypted() -> Bool {
+        var result: Bool = false
+        transfers.forEach { transfer in
+            if transfer.chunk > 0 || transfer.e2eEncrypted {
+                result = true
+            }
+        }
+        return result
     }
 
     func addCountError(ocIdTransfer: String) {

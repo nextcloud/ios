@@ -555,19 +555,21 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             transfer.totalBytes = totalBytes
             transfer.totalBytesExpected = totalBytesExpected
         } else {
-            NCTransferProgress.shared.append(NCTransferProgress.Transfer(ocId: ocId, ocIdTransfer: ocIdTransfer, session: session, progressNumber: progressNumber, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected))
+            NCTransferProgress.shared.append(NCTransferProgress.Transfer(ocId: ocId, ocIdTransfer: ocIdTransfer, session: session, chunk: chunk, e2eEncrypted: e2eEncrypted, progressNumber: progressNumber, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected))
         }
         let transfer = NCTransferProgress.shared.get(ocIdTransfer: ocIdTransfer)
 
         DispatchQueue.main.async {
             // HEADER
             if self.headerMenuTransferView, let transfer, transfer.session.contains("upload") {
-                if chunk > 0 || e2eEncrypted {
-                    self.sectionFirstHeader?.setViewTransfer(isHidden: false, stopButton: true, progress: progressNumber.floatValue)
-                    self.sectionFirstHeaderEmptyData?.setViewTransfer(isHidden: false, stopButton: true, progress: progressNumber.floatValue)
+                if NCTransferProgress.shared.haveChunkOrE2eEncrypted() {
+                    if chunk > 0 || e2eEncrypted {
+                        self.sectionFirstHeader?.setViewTransfer(isHidden: false, stopButton: true, progress: progressNumber.floatValue)
+                        self.sectionFirstHeaderEmptyData?.setViewTransfer(isHidden: false, stopButton: true, progress: progressNumber.floatValue)
+                    }
                 } else {
-                    self.sectionFirstHeader?.setViewTransfer(isHidden: false, stopButton: false, progress: 0)
-                    self.sectionFirstHeaderEmptyData?.setViewTransfer(isHidden: false, stopButton: false, progress: 0)
+                    self.sectionFirstHeader?.setViewTransfer(isHidden: false, stopButton: false, progress: 0.0)
+                    self.sectionFirstHeaderEmptyData?.setViewTransfer(isHidden: false, stopButton: false, progress: 0.0)
                 }
             // DOWNLOAD
             } else if status == NCGlobal.shared.metadataStatusWaitDownload || status == NCGlobal.shared.metadataStatusDownloading {

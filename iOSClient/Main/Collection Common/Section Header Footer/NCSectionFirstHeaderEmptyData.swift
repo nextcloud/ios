@@ -98,7 +98,7 @@ class NCSectionFirstHeaderEmptyData: UICollectionReusableView {
                     imageButtonTransfer.image = NCUtility().loadImage(named: "icloud.and.arrow.up")
                     labelTransfer.text = NSLocalizedString("_upload_background_msg_", comment: "")
                 }
-            } 
+            }
             if let progress {
                 progressTransfer.progress = progress
             }
