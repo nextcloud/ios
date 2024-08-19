@@ -438,11 +438,25 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func downloadStartFile(_ notification: NSNotification) {
-        DispatchQueue.main.async { self.collectionView?.reloadData() }
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let serverUrl = userInfo["serverUrl"] as? String,
+              let account = userInfo["account"] as? String,
+              let ocIdTransfer = userInfo["ocIdTransfer"] as? String
+        else { return }
+
+        DispatchQueue.main.async {
+            if account == self.session.account, serverUrl == self.serverUrl {
+                self.reloadDataSource()
+            } else {
+                self.collectionView?.reloadData()
+            }
+        }
     }
 
     @objc func downloadedFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
+              let serverUrl = userInfo["serverUrl"] as? String,
+              let account = userInfo["account"] as? String,
               let error = userInfo["error"] as? NKError,
               let ocIdTransfer = userInfo["ocIdTransfer"] as? String
         else { return }
@@ -453,17 +467,31 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         NCTransferProgress.shared.remove(ocIdTransfer: ocIdTransfer)
 
-        DispatchQueue.main.async { self.collectionView?.reloadData() }
+        DispatchQueue.main.async {
+            if account == self.session.account, serverUrl == self.serverUrl {
+                self.reloadDataSource()
+            } else {
+                self.collectionView?.reloadData()
+            }
+        }
     }
 
     @objc func downloadCancelFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
+              let serverUrl = userInfo["serverUrl"] as? String,
+              let account = userInfo["account"] as? String,
               let ocIdTransfer = userInfo["ocIdTransfer"] as? String
         else { return }
 
         NCTransferProgress.shared.remove(ocIdTransfer: ocIdTransfer)
 
-        DispatchQueue.main.async { self.collectionView?.reloadData() }
+        DispatchQueue.main.async {
+            if account == self.session.account, serverUrl == self.serverUrl {
+                self.reloadDataSource()
+            } else {
+                self.collectionView?.reloadData()
+            }
+        }
     }
 
     @objc func uploadStartFile(_ notification: NSNotification) {

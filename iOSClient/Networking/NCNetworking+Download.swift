@@ -78,6 +78,7 @@ extension NCNetworking {
         }, taskHandler: { task in
             downloadTask = task
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                       status: NCGlobal.shared.metadataStatusDownloading,
                                                        sessionTaskIdentifier: task.taskIdentifier)
             NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadStartFile),
                                             object: nil,
