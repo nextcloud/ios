@@ -53,9 +53,11 @@ public class NCTransferProgress: NSObject {
 
     override private init() {}
 
-    func append(_ transfer: Transfer) {
+    @discardableResult
+    func append(_ transfer: Transfer) -> Transfer {
         remove(ocIdTransfer: transfer.ocIdTransfer)
         transfers.append(transfer)
+        return transfer
     }
 
     func remove(ocIdTransfer: String) {

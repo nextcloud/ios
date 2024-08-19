@@ -549,19 +549,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         let chunk: Int = userInfo["chunk"] as? Int ?? 0
         let e2eEncrypted: Bool = userInfo["e2eEncrypted"] as? Bool ?? false
         let status = userInfo["status"] as? Int ?? NCGlobal.shared.metadataStatusNormal
-
-        if let transfer = NCTransferProgress.shared.get(ocIdTransfer: ocIdTransfer) {
-            transfer.progressNumber = progressNumber
-            transfer.totalBytes = totalBytes
-            transfer.totalBytesExpected = totalBytesExpected
-        } else {
-            NCTransferProgress.shared.append(NCTransferProgress.Transfer(ocId: ocId, ocIdTransfer: ocIdTransfer, session: session, chunk: chunk, e2eEncrypted: e2eEncrypted, progressNumber: progressNumber, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected))
-        }
-        let transfer = NCTransferProgress.shared.get(ocIdTransfer: ocIdTransfer)
+        let transfer = NCTransferProgress.shared.append(NCTransferProgress.Transfer(ocId: ocId, ocIdTransfer: ocIdTransfer, session: session, chunk: chunk, e2eEncrypted: e2eEncrypted, progressNumber: progressNumber, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected))
 
         DispatchQueue.main.async {
             // HEADER
-            if self.headerMenuTransferView, let transfer, transfer.session.contains("upload") {
+            if self.headerMenuTransferView, transfer.session.contains("upload") {
                 if NCTransferProgress.shared.haveChunkOrE2eEncrypted() {
                     if chunk > 0 || e2eEncrypted {
                         self.sectionFirstHeader?.setViewTransfer(isHidden: false, stopButton: true, progress: progressNumber.floatValue)

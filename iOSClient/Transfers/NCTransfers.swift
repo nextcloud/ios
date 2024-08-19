@@ -111,14 +111,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         else { return }
         let chunk: Int = userInfo["chunk"] as? Int ?? 0
         let e2eEncrypted: Bool = userInfo["e2eEncrypted"] as? Bool ?? false
-
-        if let transfer = NCTransferProgress.shared.get(ocIdTransfer: ocIdTransfer) {
-            transfer.progressNumber = progressNumber
-            transfer.totalBytes = totalBytes
-            transfer.totalBytesExpected = totalBytesExpected
-        } else {
-            NCTransferProgress.shared.append(NCTransferProgress.Transfer(ocId: ocId, ocIdTransfer: ocIdTransfer, session: session, chunk: chunk, e2eEncrypted: e2eEncrypted, progressNumber: progressNumber, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected))
-        }
+        NCTransferProgress.shared.append(NCTransferProgress.Transfer(ocId: ocId, ocIdTransfer: ocIdTransfer, session: session, chunk: chunk, e2eEncrypted: e2eEncrypted, progressNumber: progressNumber, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected))
 
         DispatchQueue.main.async {
             for case let cell as NCCellProtocol in self.collectionView.visibleCells {
