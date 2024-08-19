@@ -438,21 +438,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func downloadStartFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let serverUrl = userInfo["serverUrl"] as? String,
-              let account = userInfo["account"] as? String
-        else { return }
-
-        if account == session.account,
-           serverUrl == self.serverUrl {
-            DispatchQueue.main.async { self.collectionView?.reloadData() }
-        }
+        DispatchQueue.main.async { self.collectionView?.reloadData() }
     }
 
     @objc func downloadedFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let serverUrl = userInfo["serverUrl"] as? String,
-              let account = userInfo["account"] as? String,
               let error = userInfo["error"] as? NKError,
               let ocIdTransfer = userInfo["ocIdTransfer"] as? String
         else { return }
@@ -463,25 +453,17 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         NCTransferProgress.shared.remove(ocIdTransfer: ocIdTransfer)
 
-        if account == session.account,
-           serverUrl == self.serverUrl {
-            DispatchQueue.main.async { self.collectionView?.reloadData() }
-        }
+        DispatchQueue.main.async { self.collectionView?.reloadData() }
     }
 
     @objc func downloadCancelFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let serverUrl = userInfo["serverUrl"] as? String,
-              let account = userInfo["account"] as? String,
               let ocIdTransfer = userInfo["ocIdTransfer"] as? String
         else { return }
 
         NCTransferProgress.shared.remove(ocIdTransfer: ocIdTransfer)
 
-        if account == session.account,
-           serverUrl == self.serverUrl {
-            DispatchQueue.main.async { self.collectionView?.reloadData() }
-        }
+        DispatchQueue.main.async { self.collectionView?.reloadData() }
     }
 
     @objc func uploadStartFile(_ notification: NSNotification) {
@@ -497,12 +479,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         NCTransferProgress.shared.remove(ocIdTransfer: ocIdTransfer)
 
-        if account == session.account,
-           serverUrl == self.serverUrl,
-           !isHeaderMenuTransferViewEnabled() {
-            reloadDataSource()
-        } else {
-            DispatchQueue.main.async {
+        DispatchQueue.main.async {
+            if account == self.session.account, serverUrl == self.serverUrl {
+                self.reloadDataSource()
+            } else {
                 self.collectionView?.reloadData()
             }
         }
@@ -517,12 +497,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         NCTransferProgress.shared.remove(ocIdTransfer: ocIdTransfer)
 
-        if account == session.account,
-           serverUrl == self.serverUrl,
-           !isHeaderMenuTransferViewEnabled() {
-            reloadDataSource()
-        } else {
-            DispatchQueue.main.async {
+        DispatchQueue.main.async {
+            if account == self.session.account, serverUrl == self.serverUrl {
+                self.reloadDataSource()
+            } else {
                 self.collectionView?.reloadData()
             }
         }
@@ -537,12 +515,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         NCTransferProgress.shared.remove(ocIdTransfer: ocIdTransfer)
 
-        if account == session.account,
-           serverUrl == self.serverUrl,
-           !isHeaderMenuTransferViewEnabled() {
-            reloadDataSource()
-        } else {
-            DispatchQueue.main.async {
+        DispatchQueue.main.async {
+            if account == self.session.account, serverUrl == self.serverUrl {
+                self.reloadDataSource()
+            } else {
                 self.collectionView?.reloadData()
             }
         }
@@ -572,11 +548,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         DispatchQueue.main.async {
             // HEADER
-            if self.headerMenuTransferView,
-               (chunk > 0 || e2eEncrypted),
-               transfer?.session == NextcloudKit.shared.nkCommonInstance.identifierSessionUpload {
-                self.sectionFirstHeader?.progressTransfer.progress = progressNumber.floatValue
-                self.sectionFirstHeaderEmptyData?.progressTransfer.progress = progressNumber.floatValue
+            if self.headerMenuTransferView, let transfer, transfer.session.contains("upload") {
+                if chunk > 0 || e2eEncrypted {
+                    self.sectionFirstHeader?.setViewTransfer(isHidden: false, stopButton: true, progress: progressNumber.floatValue)
+                    self.sectionFirstHeaderEmptyData?.setViewTransfer(isHidden: false, stopButton: true, progress: progressNumber.floatValue)
+                } else {
+                    self.sectionFirstHeader?.setViewTransfer(isHidden: false, stopButton: false, progress: 0)
+                    self.sectionFirstHeaderEmptyData?.setViewTransfer(isHidden: false, stopButton: false, progress: 0)
+                }
             // DOWNLOAD
             } else if status == NCGlobal.shared.metadataStatusWaitDownload || status == NCGlobal.shared.metadataStatusDownloading {
                 for case let cell as NCCellProtocol in self.collectionView.visibleCells {
@@ -1080,17 +1059,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func tapButtonTransfer(_ sender: Any) {
-        /*
-        if let transfer = NCTransferProgress.shared.get(ocIdTransfer: ocIdTransfer) {
-
-        }
-        if let ocId = NCNetworking.shared.transferInForegorund?.ocId,
-           let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-            Task {
-                await cancelSession(metadata: metadata)
+        NCTransferProgress.shared.getAll().forEach { transfer in
+            if transfer.session == NextcloudKit.shared.nkCommonInstance.identifierSessionUpload,
+               let metadata = NCManageDatabase.shared.getMetadataFromOcIdAndocIdTransfer(transfer.ocIdTransfer) {
+                Task {
+                    await cancelSession(metadata: metadata)
+                }
             }
         }
-        */
     }
 
     func longPressListItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) { }
@@ -1274,14 +1250,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     // MARK: - Header size
 
-    func isHeaderMenuTransferViewEnabled() -> Bool {
+    func isHeaderMenuTransferViewEnabled() -> Results<tableMetadata>? {
         if headerMenuTransferView,
-           let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status == %d || status == %d", NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusUploading)) {
-            if !results.isEmpty {
-                return true
-            }
+           let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status == %d || status == %d", NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusUploading)),
+           !results.isEmpty {
+            return results
         }
-        return false
+        return nil
     }
 
     func getHeaderHeight(section: Int) -> (heightHeaderCommands: CGFloat, heightHeaderRichWorkspace: CGFloat, heightHeaderSection: CGFloat) {
@@ -1290,11 +1265,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         func getHeaderHeight() -> CGFloat {
             var size: CGFloat = 0
 
-            if isHeaderMenuTransferViewEnabled() {
+            if isHeaderMenuTransferViewEnabled() != nil {
                 if !isSearchingMode {
                     size += NCGlobal.shared.heightHeaderTransfer
                 }
-            } 
+            }
             return size
         }
 
@@ -1322,7 +1297,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if isEditMode {
             return CGSize.zero
         } else if dataSource.getMetadataSourceForAllSections().isEmpty {
-            height = NCGlobal.shared.getHeightHeaderEmptyData(view: view, portraitOffset: emptyDataPortaitOffset, landscapeOffset: emptyDataLandscapeOffset, isHeaderMenuTransferViewEnabled: isHeaderMenuTransferViewEnabled())
+            height = NCGlobal.shared.getHeightHeaderEmptyData(view: view, portraitOffset: emptyDataPortaitOffset, landscapeOffset: emptyDataLandscapeOffset, isHeaderMenuTransferViewEnabled: isHeaderMenuTransferViewEnabled() != nil)
         } else {
             let (heightHeaderCommands, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: section)
             height = heightHeaderCommands + heightHeaderRichWorkspace + heightHeaderSection

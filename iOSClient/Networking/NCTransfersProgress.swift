@@ -70,6 +70,10 @@ public class NCTransferProgress: NSObject {
         return Transfer(ocId: ocId, ocIdTransfer: ocIdTransfer, session: session, progressNumber: 0, totalBytes: 0, totalBytesExpected: 0)
     }
 
+    func getAll() -> ThreadSafeArray<Transfer> {
+        return transfers
+    }
+
     func addCountError(ocIdTransfer: String) {
         if let transfer = transfers.filter({ $0.ocIdTransfer == ocIdTransfer}).first {
             transfer.countError += 1
@@ -86,12 +90,5 @@ public class NCTransferProgress: NSObject {
         transfers.forEach { transfer in
             transfer.countError = 0
         }
-    }
-
-    func isForeground() -> Transfer? {
-        if let transfer = transfers.filter({ $0.session == NextcloudKit.shared.nkCommonInstance.identifierSessionDownload || $0.session == NextcloudKit.shared.nkCommonInstance.identifierSessionUpload }).first {
-            return transfer
-        }
-        return nil
     }
 }

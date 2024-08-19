@@ -23,6 +23,7 @@
 
 import UIKit
 import MarkdownKit
+import RealmSwift
 
 protocol NCSectionFirstHeaderEmptyDataDelegate: AnyObject {
     func tapButtonTransfer(_ sender: Any)
@@ -81,20 +82,25 @@ class NCSectionFirstHeaderEmptyData: UICollectionReusableView {
 
     // MARK: - Transfer
 
-    func setViewTransfer(isHidden: Bool, ocId: String? = nil, progress: Float? = nil) {
+    func setViewTransfer(isHidden: Bool, stopButton: Bool? = nil, progress: Float? = nil) {
         viewTransfer.isHidden = isHidden
-        progressTransfer.progress = 0
 
         if isHidden {
             viewTransferHeightConstraint.constant = 0
+            progressTransfer.progress = 0
         } else {
             viewTransferHeightConstraint.constant = NCGlobal.shared.heightHeaderTransfer
-            if ocId == nil {
-                imageButtonTransfer.image = NCUtility().loadImage(named: "icloud.and.arrow.up")
-                labelTransfer.text = NSLocalizedString("_upload_background_msg_", comment: "")
+            if let stopButton {
+                if stopButton {
+                    imageButtonTransfer.image = NCUtility().loadImage(named: "stop.circle")
+                    labelTransfer.text = String(format: NSLocalizedString("_upload_foreground_msg_", comment: ""), NCBrandOptions.shared.brand)
+                } else {
+                    imageButtonTransfer.image = NCUtility().loadImage(named: "icloud.and.arrow.up")
+                    labelTransfer.text = NSLocalizedString("_upload_background_msg_", comment: "")
+                }
             } else {
-                imageButtonTransfer.image = NCUtility().loadImage(named: "stop.circle")
-                labelTransfer.text = String(format: NSLocalizedString("_upload_foreground_msg_", comment: ""), NCBrandOptions.shared.brand)
+                imageButtonTransfer.image = NCUtility().loadImage(named: "icloud.and.arrow.up")
+                labelTransfer.text = NSLocalizedString("_waiting_", comment: "")
             }
             if let progress {
                 progressTransfer.progress = progress

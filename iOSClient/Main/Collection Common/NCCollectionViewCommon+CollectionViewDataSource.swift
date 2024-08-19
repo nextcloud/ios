@@ -378,17 +378,14 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-
         if kind == UICollectionView.elementKindSectionHeader || kind == mediaSectionHeader {
-
             if dataSource.getMetadataSourceForAllSections().isEmpty {
-
                 guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeaderEmptyData", for: indexPath) as? NCSectionFirstHeaderEmptyData else { return NCSectionFirstHeaderEmptyData() }
                 self.sectionFirstHeaderEmptyData = header
                 header.delegate = self
 
-                if !isSearchingMode, headerMenuTransferView, isHeaderMenuTransferViewEnabled(), let transfer = NCTransferProgress.shared.isForeground() {
-                    header.setViewTransfer(isHidden: false, ocId: transfer.ocId, progress: transfer.progressNumber.floatValue)
+                if !isSearchingMode, headerMenuTransferView, isHeaderMenuTransferViewEnabled() != nil {
+                    header.setViewTransfer(isHidden: false)
                 } else {
                     header.setViewTransfer(isHidden: true)
                 }
@@ -416,18 +413,16 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                         header.emptyDescription.text = NSLocalizedString("_no_file_pull_down_", comment: "")
                     }
                 }
-
                 return header
 
             } else if indexPath.section == 0 {
-
                 guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeader", for: indexPath) as? NCSectionFirstHeader else { return NCSectionFirstHeader() }
                 let (_, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: indexPath.section)
                 self.sectionFirstHeader = header
                 header.delegate = self
 
-                if !isSearchingMode, headerMenuTransferView, isHeaderMenuTransferViewEnabled(), let transfer = NCTransferProgress.shared.isForeground() {
-                    header.setViewTransfer(isHidden: false, ocId: transfer.ocId, progress: transfer.progressNumber.floatValue)
+                if !isSearchingMode, headerMenuTransferView, isHeaderMenuTransferViewEnabled() != nil {
+                    header.setViewTransfer(isHidden: false)
                 } else {
                     header.setViewTransfer(isHidden: true)
                 }
@@ -444,9 +439,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 header.labelSection.textColor = NCBrandColor.shared.textColor
 
                 return header
-
             } else {
-
                 guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeader", for: indexPath) as? NCSectionHeader else { return NCSectionHeader() }
 
                 header.labelSection.text = self.dataSource.getSectionValueLocalization(indexPath: indexPath)
@@ -454,9 +447,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
                 return header
             }
-
         } else {
-
             guard let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as? NCSectionFooter else { return NCSectionFooter() }
             let sections = dataSource.numberOfSections()
             let section = indexPath.section
@@ -499,7 +490,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     footer.separatorIsHidden(false)
                 }
             }
-
             return footer
         }
     }

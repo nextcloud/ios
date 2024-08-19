@@ -56,7 +56,7 @@ extension NCNetworking {
                                 indicatorView.ringColor = NCBrandColor.shared.brandElement
                             }
                             hud.tapOnHUDViewBlock = { _ in
-                                NotificationCenter.default.postOnMainThread(name: "NextcloudKit.chunkedFile.stop")
+                                NotificationCenter.default.postOnMainThread(name: NextcloudKit.shared.nkCommonInstance.notificationCenterChunkedFileStop.rawValue)
                             }
                             hud.textLabel.text = NSLocalizedString("_wait_file_preparation_", comment: "")
                             hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
@@ -323,6 +323,7 @@ extension NCNetworking {
                     metadata.status = NCGlobal.shared.metadataStatusNormal
 
                     NCManageDatabase.shared.addMetadata(metadata)
+                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocIdTransfer == %@", metadata.ocIdTransfer))
 
                     if selector == NCGlobal.shared.selectorUploadFileNODelete {
                         self.utilityFileSystem.moveFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer), toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
