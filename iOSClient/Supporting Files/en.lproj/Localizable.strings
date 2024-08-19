@@ -91,6 +91,7 @@
 "_photo_"                   = "Photo";
 "_audio_"                   = "Audio";
 "_unknown_"                 = "Unknown";
+"_additional_view_options_" = "Additional view options";
 "_next_"                    = "Next";
 "_success_"                 = "Success";
 "_initialization_"          = "Initialization";
@@ -123,7 +124,7 @@
 "_dark_mode_"               = "Dark mode";
 "_dark_mode_detect_"        = "Detect iOS dark mode";
 "_screen_"                  = "Screen";
-"_wipe_account_"            = "Account wiped from server";
+"_wipe_account_"            = "Account is wiped from server";
 "_appconfig_view_title_"    = "Account configuration in progress …";
 "_no_permission_add_file_"  = "You don't have permission to add files";
 "_no_permission_delete_file_" = "You don't have permission to delete files";
@@ -828,7 +829,7 @@
 "_no_nextcloud_found_"                  = "Server not found";
 "_error_decompressing_"                 = "Error during decompressing. Unknown compression method or the file is corrupt";
 "_error_json_decoding_"                 = "Serious internal error in decoding metadata (The data couldn't be read because it isn't in the correct format.)";
-"_error_check_remote_user_"             = "Server responded with error, password re-entry is required";
+"_error_check_remote_user_"             = "Server responded with an error. Please log in again";
 "_request_entity_too_large_"            = "The file is too large";
 "_not_possible_download_"               = "It is not possible to download the file";
 "_not_possible_upload_"                 = "It is not possible to upload the file";
@@ -982,7 +983,7 @@
 "_selected_photo_"          = "selected photo";
 "_selected_photos_"         = "selected photos";
 "_delete_selected_photos_"  = "Delete selected photos";
-"_media_square_"            = "Square photo grid";
+"_media_square_"            = "Square grid";
 "_media_ratio_"             = "Aspect ratio grid";
 "_autoupload_notice_"       = "To ensure the proper functioning of the application, it is necessary to enable Background App Refresh. Otherwise, new photos or videos will not be detected when the application is in the background.\n\nAdditionally, please note that the application will not be able to detect new photos and videos if it is manually terminated. When the app is in the background, data transfer may be slower, and new photos and/or videos will generally be detected every 10 minutes, depending on the device’s battery level.\n\nTo verify that the app is functioning correctly, you can use the log file available in Advanced.";
 "_display_"                 = "Display";
