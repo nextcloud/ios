@@ -116,8 +116,7 @@ extension NCShareExtension: NCCreateFormUploadConflictDelegate {
     }
 }
 
-extension NCShareExtension: NCShareCellDelegate, NCListCellDelegate {
-
+extension NCShareExtension: NCShareCellDelegate {
     func removeFile(named fileName: String) {
         guard let index = self.filesName.firstIndex(of: fileName) else {
             return showAlert(title: "_file_not_found_", description: fileName)
@@ -141,5 +140,7 @@ extension NCShareExtension: NCShareCellDelegate, NCListCellDelegate {
             filesName[fileIx] = newFileName
             tableView.reloadData()
         }
+
+        present(alert, animated: true)
     }
 }

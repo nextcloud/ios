@@ -89,8 +89,6 @@ extension NCShareExtension: UICollectionViewDataSource {
             return UICollectionViewCell()
         }
 
-        cell.listCellDelegate = self
-
         cell.fileObjectId = metadata.ocId
         cell.indexPath = indexPath
         cell.fileUser = metadata.ownerId
