@@ -26,9 +26,6 @@ import NextcloudKit
 
 extension NCMedia {
     func reloadDataSource() {
-        guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else { return }
-        let startServerUrl = NCUtilityFileSystem().getHomeServer(session: session) + tableAccount.mediaPath
-
         self.metadatas = NCManageDatabase.shared.getMediaMetadatas(predicate: getPredicate())
         self.collectionViewReloadData()
     }
