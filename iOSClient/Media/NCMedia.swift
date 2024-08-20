@@ -127,12 +127,15 @@ class NCMedia: UIViewController {
         }
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { notification in
+
             self.layoutType = NCManageDatabase.shared.getLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")?.layout ?? NCGlobal.shared.mediaLayoutRatio
-            if let userInfo = notification.userInfo,
-               let account = userInfo["account"] as? String,
-               let metadatas = self.metadatas,
-               let metadata = metadatas.first {
-                if metadata.account != account {
+
+            let currentController = (self.tabBarController as? NCMainTabBarController)
+            if let userInfo = notification.userInfo, let account = userInfo["account"] as? String {
+                if let controller = userInfo["controller"] as? NCMainTabBarController,
+                   controller == currentController,
+                   let firstMetadata = self.metadatas?.first,
+                   firstMetadata.account != account {
                     self.metadatas = nil
                     self.collectionViewReloadData()
                 }
@@ -140,6 +143,7 @@ class NCMedia: UIViewController {
         }
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCreateMediaCacheEnded), object: nil, queue: nil) { _ in
+
             if let metadatas = self.imageCache.initialMetadatas() {
                 self.metadatas = metadatas
             }

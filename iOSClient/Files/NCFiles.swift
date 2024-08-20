@@ -52,12 +52,11 @@ class NCFiles: NCCollectionViewCommon {
 
                 let currentController = (self.tabBarController as? NCMainTabBarController)
                 if let userInfo = notification.userInfo, let account = userInfo["account"] as? String {
-                    if let controller = userInfo["controller"] as? NCMainTabBarController {
-                        if controller == currentController {
-                            controller.account = account
-                        } else {
-                            return
-                        }
+                    if let controller = userInfo["controller"] as? NCMainTabBarController,
+                       controller == currentController {
+                        controller.account = account
+                    } else {
+                        return
                     }
                 }
 
