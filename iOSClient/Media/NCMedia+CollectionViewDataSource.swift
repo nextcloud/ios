@@ -68,7 +68,7 @@ extension NCMedia: UICollectionViewDataSource {
 
         if !collectionView.indexPathsForVisibleItems.contains(indexPath) && indexPath.row < metadatas.count {
             let metadata = metadatas[indexPath.row]
-            for case let operation as NCMediaDownloadThumbnaill in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
+            for case let operation as NCMediaDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
                 operation.cancel()
             }
             for case let operation as NCOperationConvertLivePhoto in NCNetworking.shared.convertLivePhotoQueue.operations where operation.ocId == metadata.ocId {

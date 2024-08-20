@@ -86,14 +86,14 @@ extension NCTrash {
 }
 
 class NCOperationDownloadThumbnailTrash: ConcurrentOperation {
-    var tableTrash: tableTrash
+    var trash: tableTrash
     var fileId: String
     var collectionView: UICollectionView?
     var cell: NCTrashCellProtocol?
     var account: String
 
-    init(tableTrash: tableTrash, fileId: String, account: String, cell: NCTrashCellProtocol?, collectionView: UICollectionView?) {
-        self.tableTrash = tableTrash
+    init(resultTableTrash: tableTrash, fileId: String, account: String, cell: NCTrashCellProtocol?, collectionView: UICollectionView?) {
+        self.trash = tableTrash(value: resultTableTrash)
         self.fileId = fileId
         self.account = account
         self.cell = cell
@@ -102,10 +102,10 @@ class NCOperationDownloadThumbnailTrash: ConcurrentOperation {
 
     override func start() {
         guard !isCancelled else { return self.finish() }
-        let fileNamePreviewLocalPath = NCUtilityFileSystem().getDirectoryProviderStoragePreviewOcId(tableTrash.fileId, etag: tableTrash.fileName)
-        let fileNameIconLocalPath = NCUtilityFileSystem().getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)
+        let fileNamePreviewLocalPath = NCUtilityFileSystem().getDirectoryProviderStoragePreviewOcId(trash.fileId, etag: trash.fileName)
+        let fileNameIconLocalPath = NCUtilityFileSystem().getDirectoryProviderStorageIconOcId(trash.fileId, etag: trash.fileName)
 
-        NextcloudKit.shared.downloadTrashPreview(fileId: tableTrash.fileId,
+        NextcloudKit.shared.downloadTrashPreview(fileId: trash.fileId,
                                                  fileNamePreviewLocalPath: fileNamePreviewLocalPath,
                                                  fileNameIconLocalPath: fileNameIconLocalPath,
                                                  widthPreview: NCGlobal.shared.sizePreview,

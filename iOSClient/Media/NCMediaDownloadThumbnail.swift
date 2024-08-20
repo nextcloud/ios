@@ -1,5 +1,5 @@
 //
-//  NCMediaDownloadThumbnaill.swift
+//  NCMediaDownloadThumbnail.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 25/01/24.
@@ -25,7 +25,7 @@ import UIKit
 import NextcloudKit
 import Queuer
 
-class NCMediaDownloadThumbnaill: ConcurrentOperation {
+class NCMediaDownloadThumbnail: ConcurrentOperation {
     var metadata: tableMetadata
     var collectioView: UICollectionView?
     var fileNamePreviewLocalPath: String
