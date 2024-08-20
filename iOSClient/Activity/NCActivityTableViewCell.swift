@@ -180,7 +180,7 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
                         cell.fileId = fileId
                         if !FileManager.default.fileExists(atPath: fileNamePath) {
                             if NCNetworking.shared.downloadThumbnailActivityQueue.operations.filter({ ($0 as? NCOperationDownloadThumbnailActivity)?.fileId == fileId }).isEmpty {
-                                NCNetworking.shared.downloadThumbnailActivityQueue.addOperation(NCOperationDownloadThumbnailActivity(fileId: fileId, fileNamePreviewLocalPath: fileNamePath, account: account, cell: cell, collectionView: collectionView))
+                                NCNetworking.shared.downloadThumbnailActivityQueue.addOperation(NCOperationDownloadThumbnailActivity(fileId: fileId, fileNamePreviewLocalPath: fileNamePath, account: account, collectionView: collectionView))
                             }
                         }
                     }
