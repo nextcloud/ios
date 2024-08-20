@@ -449,12 +449,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let account = userInfo["account"] as? String
         else { return }
 
-        DispatchQueue.main.async {
-            if account == self.session.account, serverUrl == self.serverUrl {
-                self.reloadDataSource()
-            } else {
-                self.collectionView?.reloadData()
-            }
+
+        if account == self.session.account, serverUrl == self.serverUrl {
+            self.reloadDataSource()
+        } else {
+            self.collectionView?.reloadData()
         }
     }
 
@@ -464,12 +463,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let account = userInfo["account"] as? String
         else { return }
 
-        DispatchQueue.main.async {
-            if account == self.session.account, serverUrl == self.serverUrl {
-                self.reloadDataSource()
-            } else {
-                self.collectionView?.reloadData()
-            }
+        if account == self.session.account, serverUrl == self.serverUrl {
+            self.reloadDataSource()
+        } else {
+            self.collectionView?.reloadData()
         }
     }
 
@@ -479,17 +476,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let account = userInfo["account"] as? String
         else { return }
 
-        DispatchQueue.main.async {
-            if account == self.session.account, serverUrl == self.serverUrl {
-                self.reloadDataSource()
-            } else {
-                self.collectionView?.reloadData()
-            }
+        if account == self.session.account, serverUrl == self.serverUrl {
+            self.reloadDataSource()
+        } else {
+            self.collectionView?.reloadData()
         }
     }
 
     @objc func uploadStartFile(_ notification: NSNotification) {
-        DispatchQueue.main.async { self.collectionView?.reloadData() }
+        self.collectionView?.reloadData()
     }
 
     @objc func uploadedFile(_ notification: NSNotification) {
@@ -498,12 +493,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let account = userInfo["account"] as? String
         else { return }
 
-        DispatchQueue.main.async {
-            if account == self.session.account, serverUrl == self.serverUrl {
-                self.reloadDataSource()
-            } else {
-                self.collectionView?.reloadData()
-            }
+        if account == self.session.account, serverUrl == self.serverUrl {
+            self.reloadDataSource()
+        } else {
+            self.collectionView?.reloadData()
         }
     }
 
@@ -513,12 +506,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let account = userInfo["account"] as? String
         else { return }
 
-        DispatchQueue.main.async {
-            if account == self.session.account, serverUrl == self.serverUrl {
-                self.reloadDataSource()
-            } else {
-                self.collectionView?.reloadData()
-            }
+        if account == self.session.account, serverUrl == self.serverUrl {
+            self.reloadDataSource()
+        } else {
+            self.collectionView?.reloadData()
         }
     }
 
@@ -528,12 +519,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let account = userInfo["account"] as? String
         else { return }
 
-        DispatchQueue.main.async {
-            if account == self.session.account, serverUrl == self.serverUrl {
-                self.reloadDataSource()
-            } else {
-                self.collectionView?.reloadData()
-            }
+        if account == self.session.account, serverUrl == self.serverUrl {
+            self.reloadDataSource()
+        } else {
+            self.collectionView?.reloadData()
         }
     }
 
@@ -551,25 +540,23 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         let status = userInfo["status"] as? Int ?? NCGlobal.shared.metadataStatusNormal
         let transfer = NCTransferProgress.shared.append(NCTransferProgress.Transfer(ocId: ocId, ocIdTransfer: ocIdTransfer, session: session, chunk: chunk, e2eEncrypted: e2eEncrypted, progressNumber: progressNumber, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected))
 
-        DispatchQueue.main.async {
-            // HEADER
-            if self.headerMenuTransferView, transfer.session.contains("upload") {
-                if NCTransferProgress.shared.haveChunkOrE2eEncrypted() {
-                    if chunk > 0 || e2eEncrypted {
-                        self.sectionFirstHeader?.setViewTransfer(isHidden: false, stopButton: true, progress: progressNumber.floatValue)
-                        self.sectionFirstHeaderEmptyData?.setViewTransfer(isHidden: false, stopButton: true, progress: progressNumber.floatValue)
-                    }
-                } else {
-                    self.sectionFirstHeader?.setViewTransfer(isHidden: false, stopButton: false, progress: 0.0)
-                    self.sectionFirstHeaderEmptyData?.setViewTransfer(isHidden: false, stopButton: false, progress: 0.0)
+        // HEADER
+        if self.headerMenuTransferView, transfer.session.contains("upload") {
+            if NCTransferProgress.shared.haveChunkOrE2eEncrypted() {
+                if chunk > 0 || e2eEncrypted {
+                    self.sectionFirstHeader?.setViewTransfer(isHidden: false, stopButton: true, progress: progressNumber.floatValue)
+                    self.sectionFirstHeaderEmptyData?.setViewTransfer(isHidden: false, stopButton: true, progress: progressNumber.floatValue)
                 }
-            // DOWNLOAD
-            } else if status == NCGlobal.shared.metadataStatusWaitDownload || status == NCGlobal.shared.metadataStatusDownloading {
-                for case let cell as NCCellProtocol in self.collectionView.visibleCells {
-                    if cell.fileOcId == ocId {
-                        cell.setProgress(progress: progressNumber.floatValue)
-                        cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - " + self.utilityFileSystem.transformedSize(totalBytes)
-                    }
+            } else {
+                self.sectionFirstHeader?.setViewTransfer(isHidden: false, stopButton: false, progress: 0.0)
+                self.sectionFirstHeaderEmptyData?.setViewTransfer(isHidden: false, stopButton: false, progress: 0.0)
+            }
+        // DOWNLOAD
+        } else if status == NCGlobal.shared.metadataStatusWaitDownload || status == NCGlobal.shared.metadataStatusDownloading {
+            for case let cell as NCCellProtocol in self.collectionView.visibleCells {
+                if cell.fileOcId == ocId {
+                    cell.setProgress(progress: progressNumber.floatValue)
+                    cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - " + self.utilityFileSystem.transformedSize(totalBytes)
                 }
             }
         }
@@ -944,7 +931,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                                                            sessionError: "",
                                                            selector: "",
                                                            status: NCGlobal.shared.metadataStatusNormal)
-                NotificationCenter.default.postOnMainThread(name:  NCGlobal.shared.notificationCenterDownloadCancelFile,
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadCancelFile,
                                                             object: nil,
                                                             userInfo: ["ocId": metadata.ocId,
                                                                        "ocIdTransfer": metadata.ocIdTransfer,

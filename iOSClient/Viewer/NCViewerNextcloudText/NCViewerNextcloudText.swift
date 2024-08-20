@@ -124,7 +124,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     // MARK: - NotificationCenter
 
     @objc func favoriteFile(_ notification: NSNotification) {
-
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               ocId == self.metadata.ocId,
@@ -135,7 +134,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     }
 
     @objc func keyboardDidShow(notification: Notification) {
-
         guard let info = notification.userInfo else { return }
         guard let frameInfo = info[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
         let keyboardFrame = frameInfo.cgRectValue
@@ -157,7 +155,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     // MARK: -
 
     public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-
         if message.name == "DirectEditingMobileInterface" {
 
             if message.body as? String == "close" {
@@ -217,7 +214,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
 }
 
 extension NCViewerNextcloudText: UINavigationControllerDelegate {
-
     override func didMove(toParent parent: UIViewController?) {
         super.didMove(toParent: parent)
 

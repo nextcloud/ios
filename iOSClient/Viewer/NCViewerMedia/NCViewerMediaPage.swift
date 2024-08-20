@@ -336,25 +336,23 @@ class NCViewerMediaPage: UIViewController {
             return
         }
 
-        DispatchQueue.main.async {
-            self.progressView.progress = 0
-            let metadata = self.currentViewController.metadata
-            guard metadata.ocId == ocId, self.utilityFileSystem.fileProviderStorageExists(metadata) else { return }
+        self.progressView.progress = 0
+        let metadata = self.currentViewController.metadata
+        guard metadata.ocId == ocId, self.utilityFileSystem.fileProviderStorageExists(metadata) else { return }
 
-            if metadata.isAudioOrVideo, let ncplayer = self.currentViewController.ncplayer {
-                let url = URL(fileURLWithPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-                if ncplayer.isPlay() {
-                    ncplayer.playerPause()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        ncplayer.openAVPlayer(url: url)
-                        ncplayer.playerPlay()
-                    }
-                } else {
+        if metadata.isAudioOrVideo, let ncplayer = self.currentViewController.ncplayer {
+            let url = URL(fileURLWithPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
+            if ncplayer.isPlay() {
+                ncplayer.playerPause()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     ncplayer.openAVPlayer(url: url)
+                    ncplayer.playerPlay()
                 }
-            } else if metadata.isImage {
-                self.currentViewController.loadImage()
+            } else {
+                ncplayer.openAVPlayer(url: url)
             }
+        } else if metadata.isImage {
+            self.currentViewController.loadImage()
         }
     }
 
@@ -363,13 +361,11 @@ class NCViewerMediaPage: UIViewController {
               let progressNumber = userInfo["progress"] as? NSNumber
         else { return }
 
-        DispatchQueue.main.async {
-            let progress = progressNumber.floatValue
-            if progress == 1 {
-                self.progressView.progress = 0
-            } else {
-                self.progressView.progress = progress
-            }
+        let progress = progressNumber.floatValue
+        if progress == 1 {
+            self.progressView.progress = 0
+        } else {
+            self.progressView.progress = progress
         }
     }
 
@@ -386,13 +382,11 @@ class NCViewerMediaPage: UIViewController {
             return
         }
 
-        DispatchQueue.main.async {
-            self.metadatas[index] = metadata
-            if self.currentViewController.metadata.ocId == ocId {
-                self.currentViewController.loadImage()
-            } else {
-                self.modifiedOcId.append(ocId)
-            }
+        self.metadatas[index] = metadata
+        if self.currentViewController.metadata.ocId == ocId {
+            self.currentViewController.loadImage()
+        } else {
+            self.modifiedOcId.append(ocId)
         }
     }
 

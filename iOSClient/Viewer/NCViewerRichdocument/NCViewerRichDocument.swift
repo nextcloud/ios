@@ -131,7 +131,6 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
     // MARK: - NotificationCenter
 
     @objc func favoriteFile(_ notification: NSNotification) {
-
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               ocId == self.metadata.ocId,
@@ -142,7 +141,6 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
     }
 
     @objc func keyboardDidShow(notification: Notification) {
-
         guard let info = notification.userInfo else { return }
         guard let frameInfo = info[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
         let keyboardFrame = frameInfo.cgRectValue
@@ -281,7 +279,6 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
     // MARK: -
 
     @objc func grabFocus() {
-
         let functionJS = "OCA.RichDocuments.documentsMain.postGrabFocus()"
         webView.evaluateJavaScript(functionJS) { _, _ in }
     }

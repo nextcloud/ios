@@ -72,7 +72,7 @@ class NCNetworkingProcess: NSObject {
                     let counterUpload = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "session == %@ AND (status == %d || status == %d)", NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground, NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusUploading))?.count ?? 0
                     print("[INFO] PROCESS Download: \(results.counterDownloading)/\(counterDownload) Upload: \(results.counterUploading)/\(counterUpload)")
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber,
-                                                                object: nil, 
+                                                                object: nil,
                                                                 userInfo: ["counterDownload": counterDownload,
                                                                            "counterUpload": counterUpload])
                 }

@@ -197,17 +197,15 @@ class NCMainTabBar: UITabBar {
     }
 
     @objc func updateBadgeNumber(_ notification: NSNotification) {
-        DispatchQueue.main.async {
-            guard let userInfo = notification.userInfo as NSDictionary?,
-                  let counterDownload = userInfo["counterDownload"] as? Int,
-                  let counterUpload = userInfo["counterUpload"] as? Int
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let counterDownload = userInfo["counterDownload"] as? Int,
+              let counterUpload = userInfo["counterUpload"] as? Int
             else { return }
-            self.updateBadgeNumberUI(counterDownload: counterDownload, counterUpload: counterUpload)
-        }
+        
+        self.updateBadgeNumberUI(counterDownload: counterDownload, counterUpload: counterUpload)
     }
 
     func updateBadgeNumberUI(counterDownload: Int, counterUpload: Int) {
-
         UIApplication.shared.applicationIconBadgeNumber = counterDownload + counterUpload
 
         if let item = self.items?[0] {
