@@ -153,7 +153,7 @@ extension UIAlertController {
         return alertController
     }
 
-    static func renameFile(metadata: tableMetadata, indexPath: IndexPath, completion: ((_ error: NKError) -> Void)? = nil) -> UIAlertController {
+    static func renameFile(metadata: tableMetadata, indexPath: IndexPath) -> UIAlertController {
         let alertController = UIAlertController(title: NSLocalizedString("_rename_", comment: ""), message: nil, preferredStyle: .alert)
 
         let okAction = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default, handler: { _ in

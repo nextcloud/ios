@@ -7,13 +7,15 @@
 //
 
 import SwiftUI
+import NextcloudKit
 
 struct NCUploadAssetsView: View {
     @ObservedObject var model: NCUploadAssetsModel
     @State private var showSelect = false
     @State private var showUploadConflict = false
     @State private var showQuickLook = false
-    @State private var shorRenameAlert = false
+    @State private var showRenameAlert = false
+    @State private var renameError = ""
     @State private var renameFileName: String = ""
     @State private var renameIndex: Int = 0
     @State private var index: Int = 0
@@ -39,7 +41,7 @@ struct NCUploadAssetsView: View {
                                         Button(action: {
                                             renameFileName = model.previewStore[index].fileName
                                             renameIndex = index
-                                            shorRenameAlert = true
+                                            showRenameAlert = true
                                         }) {
                                             Label(NSLocalizedString("_rename_", comment: ""), systemImage: "pencil")
                                         }
@@ -84,21 +86,37 @@ struct NCUploadAssetsView: View {
                                         }
                                     } label: {
                                         ImageAsset(model: model, index: index)
-                                            .alert(NSLocalizedString("_rename_file_", comment: ""), isPresented: $shorRenameAlert) {
-                                                TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $renameFileName)
+                                            .alert(NSLocalizedString("_rename_", comment: ""), isPresented: $showRenameAlert) {
+                                                TextField("", text: $renameFileName)
                                                     .autocapitalization(.none)
                                                     .autocorrectionDisabled()
+
                                                 Button(NSLocalizedString("_rename_", comment: ""), action: {
-                                                    model.previewStore[renameIndex].fileName = renameFileName.trimmingCharacters(in: .whitespacesAndNewlines)
+                                                    if !renameError.isEmpty {
+                                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                            showRenameAlert = true
+                                                        }
+                                                    } else {
+                                                        model.previewStore[renameIndex].fileName = renameFileName.trimmingCharacters(in: .whitespacesAndNewlines)
+                                                    }
                                                 })
+
                                                 Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel, action: {})
+                                            } message: {
+                                                Text(renameError)
                                             }
+                                    }
+                                    .onChange(of: renameFileName) { newValue in
+                                        if let error = FileNameValidator.shared.checkFileName(newValue) {
+                                            renameError = error.errorDescription
+                                        } else {
+                                            renameError = ""
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                    // .redacted(reason: uploadAssets.previewStore.isEmpty ? .placeholder : [])
 
                     Section {
                         Toggle(isOn: $model.useAutoUploadFolder, label: {
