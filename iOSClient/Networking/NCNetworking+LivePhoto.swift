@@ -32,9 +32,9 @@ extension NCNetworking {
         guard let metadata1 = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND urlBase == %@ AND path == %@ AND fileName == %@", metadata.account, metadata.urlBase, metadata.path, metadata.livePhotoFile)) else {
             metadata.livePhotoFile = ""
             NCManageDatabase.shared.addMetadata(metadata)
-            return NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedLivePhoto),
-                                                   object: nil,
-                                                   userInfo: aUserInfo)
+            return  NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedLivePhoto,
+                                                                object: nil,
+                                                                userInfo: aUserInfo)
         }
         if metadata1.status != NCGlobal.shared.metadataStatusNormal { return }
 
@@ -62,9 +62,9 @@ extension NCNetworking {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload set LivePhoto for files " + (metadata.fileName as NSString).deletingPathExtension)
 
             }
-            NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedLivePhoto),
-                                            object: nil,
-                                            userInfo: aUserInfo)
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedLivePhoto,
+                                                        object: nil,
+                                                        userInfo: aUserInfo)
         }
     }
 

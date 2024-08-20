@@ -77,15 +77,14 @@ class NCContextMenu: NSObject {
         let share = UIAction(title: NSLocalizedString("_share_", comment: ""),
                              image: utility.loadImage(named: "square.and.arrow.up") ) { _ in
             if self.utilityFileSystem.fileProviderStorageExists(metadata) {
-                NotificationCenter.default.post(
-                    name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
-                    object: nil,
-                    userInfo: ["ocId": metadata.ocId,
-                               "ocIdTransfer": metadata.ocIdTransfer,
-                               "session": metadata.session,
-                               "selector": NCGlobal.shared.selectorOpenIn,
-                               "error": NKError(),
-                               "account": metadata.account])
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile,
+                                                            object: nil,
+                                                            userInfo: ["ocId": metadata.ocId,
+                                                                       "ocIdTransfer": metadata.ocIdTransfer,
+                                                                       "session": metadata.session,
+                                                                       "selector": NCGlobal.shared.selectorOpenIn,
+                                                                       "error": NKError(),
+                                                                       "account": metadata.account])
             } else {
                 guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                session: NextcloudKit.shared.nkCommonInstance.identifierSessionDownload,
@@ -126,15 +125,14 @@ class NCContextMenu: NSObject {
         let modify = UIAction(title: NSLocalizedString("_modify_", comment: ""),
                               image: utility.loadImage(named: "pencil.tip.crop.circle")) { _ in
             if self.utilityFileSystem.fileProviderStorageExists(metadata) {
-                NotificationCenter.default.post(
-                    name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
-                    object: nil,
-                    userInfo: ["ocId": metadata.ocId,
-                               "ocIdTransfer": metadata.ocIdTransfer,
-                               "session": metadata.session,
-                               "selector": NCGlobal.shared.selectorLoadFileQuickLook,
-                               "error": NKError(),
-                               "account": metadata.account])
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile,
+                                                            object: nil,
+                                                            userInfo: ["ocId": metadata.ocId,
+                                                                       "ocIdTransfer": metadata.ocIdTransfer,
+                                                                       "session": metadata.session,
+                                                                       "selector": NCGlobal.shared.selectorLoadFileQuickLook,
+                                                                       "error": NKError(),
+                                                                       "account": metadata.account])
             } else {
                 guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                session: NextcloudKit.shared.nkCommonInstance.identifierSessionDownload,

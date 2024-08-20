@@ -80,27 +80,27 @@ extension NCNetworking {
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                        status: NCGlobal.shared.metadataStatusDownloading,
                                                        sessionTaskIdentifier: task.taskIdentifier)
-            NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadStartFile),
-                                            object: nil,
-                                            userInfo: ["ocId": metadata.ocId,
-                                                       "ocIdTransfer": metadata.ocIdTransfer,
-                                                       "session": metadata.session,
-                                                       "serverUrl": metadata.serverUrl,
-                                                       "account": metadata.account])
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadStartFile,
+                                                        object: nil,
+                                                        userInfo: ["ocId": metadata.ocId,
+                                                                   "ocIdTransfer": metadata.ocIdTransfer,
+                                                                   "session": metadata.session,
+                                                                   "serverUrl": metadata.serverUrl,
+                                                                   "account": metadata.account])
             start()
         }, progressHandler: { progress in
-            NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask),
-                                            object: nil,
-                                            userInfo: ["account": metadata.account,
-                                                       "ocId": metadata.ocId,
-                                                       "ocIdTransfer": metadata.ocIdTransfer,
-                                                       "session": metadata.session,
-                                                       "fileName": metadata.fileName,
-                                                       "serverUrl": metadata.serverUrl,
-                                                       "status": NSNumber(value: NCGlobal.shared.metadataStatusDownloading),
-                                                       "progress": NSNumber(value: progress.fractionCompleted),
-                                                       "totalBytes": NSNumber(value: progress.totalUnitCount),
-                                                       "totalBytesExpected": NSNumber(value: progress.completedUnitCount)])
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterProgressTask,
+                                                        object: nil,
+                                                        userInfo: ["account": metadata.account,
+                                                                   "ocId": metadata.ocId,
+                                                                   "ocIdTransfer": metadata.ocIdTransfer,
+                                                                   "session": metadata.session,
+                                                                   "fileName": metadata.fileName,
+                                                                   "serverUrl": metadata.serverUrl,
+                                                                   "status": NSNumber(value: NCGlobal.shared.metadataStatusDownloading),
+                                                                   "progress": NSNumber(value: progress.fractionCompleted),
+                                                                   "totalBytes": NSNumber(value: progress.totalUnitCount),
+                                                                   "totalBytesExpected": NSNumber(value: progress.completedUnitCount)])
             progressHandler(progress)
         }) { _, etag, date, length, allHeaderFields, afError, error in
             var error = error
@@ -138,13 +138,13 @@ extension NCNetworking {
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                        status: NCGlobal.shared.metadataStatusDownloading,
                                                        sessionTaskIdentifier: task.taskIdentifier)
-            NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadStartFile),
-                                            object: nil,
-                                            userInfo: ["ocId": metadata.ocId,
-                                                       "ocIdTransfer": metadata.ocIdTransfer,
-                                                       "session": metadata.session,
-                                                       "serverUrl": metadata.serverUrl,
-                                                       "account": metadata.account])
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadStartFile,
+                                                        object: nil,
+                                                        userInfo: ["ocId": metadata.ocId,
+                                                                   "ocIdTransfer": metadata.ocIdTransfer,
+                                                                   "session": metadata.session,
+                                                                   "serverUrl": metadata.serverUrl,
+                                                                   "account": metadata.account])
             completion(nil, NKError())
         } else {
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
@@ -202,15 +202,15 @@ extension NCNetworking {
                                                            sessionError: "",
                                                            status: NCGlobal.shared.metadataStatusNormal,
                                                            etag: etag)
-                NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
-                                                object: nil,
-                                                userInfo: ["ocId": metadata.ocId,
-                                                           "ocIdTransfer": metadata.ocIdTransfer,
-                                                           "session": metadata.session,
-                                                           "serverUrl": metadata.serverUrl,
-                                                           "account": metadata.account,
-                                                           "selector": metadata.sessionSelector,
-                                                           "error": error])
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile,
+                                                            object: nil,
+                                                            userInfo: ["ocId": metadata.ocId,
+                                                                       "ocIdTransfer": metadata.ocIdTransfer,
+                                                                       "session": metadata.session,
+                                                                       "serverUrl": metadata.serverUrl,
+                                                                       "account": metadata.account,
+                                                                       "selector": metadata.sessionSelector,
+                                                                       "error": error])
             } else if error.errorCode == NSURLErrorCancelled || error.errorCode == NCGlobal.shared.errorRequestExplicityCancelled {
                 NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
@@ -219,13 +219,13 @@ extension NCNetworking {
                                                            sessionError: "",
                                                            selector: "",
                                                            status: NCGlobal.shared.metadataStatusNormal)
-                NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile),
-                                                object: nil,
-                                                userInfo: ["ocId": metadata.ocId,
-                                                           "ocIdTransfer": metadata.ocIdTransfer,
-                                                           "session": metadata.session,
-                                                           "serverUrl": metadata.serverUrl,
-                                                           "account": metadata.account])
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadCancelFile,
+                                                            object: nil,
+                                                            userInfo: ["ocId": metadata.ocId,
+                                                                       "ocIdTransfer": metadata.ocIdTransfer,
+                                                                       "session": metadata.session,
+                                                                       "serverUrl": metadata.serverUrl,
+                                                                       "account": metadata.account])
             } else {
                 NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
@@ -234,15 +234,15 @@ extension NCNetworking {
                                                            sessionError: "",
                                                            selector: "",
                                                            status: NCGlobal.shared.metadataStatusNormal)
-                NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
-                                                object: nil,
-                                                userInfo: ["ocId": metadata.ocId,
-                                                           "ocIdTransfer": metadata.ocIdTransfer,
-                                                           "session": metadata.session,
-                                                           "serverUrl": metadata.serverUrl,
-                                                           "account": metadata.account,
-                                                           "selector": metadata.sessionSelector,
-                                                           "error": error])
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile,
+                                                            object: nil,
+                                                            userInfo: ["ocId": metadata.ocId,
+                                                                       "ocIdTransfer": metadata.ocIdTransfer,
+                                                                       "session": metadata.session,
+                                                                       "serverUrl": metadata.serverUrl,
+                                                                       "account": metadata.account,
+                                                                       "selector": metadata.sessionSelector,
+                                                                       "error": error])
             }
         }
     }
@@ -260,18 +260,18 @@ extension NCNetworking {
 
         DispatchQueue.global(qos: .userInteractive).async {
             if let metadata = NCManageDatabase.shared.getResultMetadataFromFileName(fileName, serverUrl: serverUrl, sessionTaskIdentifier: task.taskIdentifier) {
-                NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask),
-                                                object: nil,
-                                                userInfo: ["account": metadata.account,
-                                                           "ocId": metadata.ocId,
-                                                           "ocIdTransfer": metadata.ocIdTransfer,
-                                                           "session": metadata.session,
-                                                           "fileName": metadata.fileName,
-                                                           "serverUrl": metadata.serverUrl,
-                                                           "status": NSNumber(value: NCGlobal.shared.metadataStatusDownloading),
-                                                           "progress": NSNumber(value: progress),
-                                                           "totalBytes": NSNumber(value: totalBytes),
-                                                           "totalBytesExpected": NSNumber(value: totalBytesExpected)])
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterProgressTask,
+                                                            object: nil,
+                                                            userInfo: ["account": metadata.account,
+                                                                       "ocId": metadata.ocId,
+                                                                       "ocIdTransfer": metadata.ocIdTransfer,
+                                                                       "session": metadata.session,
+                                                                       "fileName": metadata.fileName,
+                                                                       "serverUrl": metadata.serverUrl,
+                                                                       "status": NSNumber(value: NCGlobal.shared.metadataStatusDownloading),
+                                                                       "progress": NSNumber(value: progress),
+                                                                       "totalBytes": NSNumber(value: totalBytes),
+                                                                       "totalBytesExpected": NSNumber(value: totalBytesExpected)])
             }
         }
     }
