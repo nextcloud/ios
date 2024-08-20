@@ -49,8 +49,14 @@ class NCFiles: NCCollectionViewCommon {
 
         if isRoot {
             NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { notification in
-
                 let currentController = (self.tabBarController as? NCMainTabBarController)
+
+                if let userInfo = notification.userInfo, let account = userInfo["account"] as? String {
+                    currentController?.account = account
+                }
+
+                /* DISABLED MULTI SCENE */
+                /*
                 if let userInfo = notification.userInfo, let account = userInfo["account"] as? String {
                     if let controller = userInfo["controller"] as? NCMainTabBarController,
                        controller == currentController {
@@ -59,6 +65,7 @@ class NCFiles: NCCollectionViewCommon {
                         return
                     }
                 }
+                */
 
                 self.navigationController?.popToRootViewController(animated: false)
                 self.serverUrl = self.utilityFileSystem.getHomeServer(session: self.session)

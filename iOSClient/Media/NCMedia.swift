@@ -128,11 +128,13 @@ class NCMedia: UIViewController {
             self.refreshControl.endRefreshing()
         }
 
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { notification in
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
 
             self.layoutType = NCManageDatabase.shared.getLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")?.layout ?? NCGlobal.shared.mediaLayoutRatio
+            self.reloadDataSource()
 
-            let currentController = (self.tabBarController as? NCMainTabBarController)
+            /* DISABLED MULTI SCENE */
+            /*
             if let userInfo = notification.userInfo, let account = userInfo["account"] as? String {
                 if let controller = userInfo["controller"] as? NCMainTabBarController,
                    controller == currentController,
@@ -141,6 +143,7 @@ class NCMedia: UIViewController {
                     self.collectionViewReloadData()
                 }
             }
+            */
         }
     }
 
