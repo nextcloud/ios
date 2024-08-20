@@ -321,7 +321,7 @@ class NCGlobal: NSObject {
 
     // Notification Center
     //
-    let notificationCenterChangeUser                            = "changeUser"                      // userInfo: account
+    let notificationCenterChangeUser                            = "changeUser"                      // userInfo: account, controller
     let notificationCenterChangeTheming                         = "changeTheming"
     let notificationCenterRichdocumentGrabFocus                 = "richdocumentGrabFocus"
     let notificationCenterReloadDataNCShare                     = "reloadDataNCShare"

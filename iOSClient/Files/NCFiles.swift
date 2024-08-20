@@ -49,10 +49,18 @@ class NCFiles: NCCollectionViewCommon {
 
         if isRoot {
             NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { notification in
-                if let userInfo = notification.userInfo,
-                   let account = userInfo["account"] as? String {
-                    (self.tabBarController as? NCMainTabBarController)?.account = account
+
+                let currentController = (self.tabBarController as? NCMainTabBarController)
+                if let userInfo = notification.userInfo, let account = userInfo["account"] as? String {
+                    if let controller = userInfo["controller"] as? NCMainTabBarController {
+                        if controller == currentController {
+                            controller.account = account
+                        } else {
+                            return
+                        }
+                    }
                 }
+
                 self.navigationController?.popToRootViewController(animated: false)
                 self.serverUrl = self.utilityFileSystem.getHomeServer(session: self.session)
                 self.isSearchingMode = false
