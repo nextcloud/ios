@@ -89,7 +89,7 @@ extension NCShareExtension: UICollectionViewDataSource {
             return UICollectionViewCell()
         }
 
-//        cell.listCellDelegate = self
+        cell.listCellDelegate = self
 
         cell.fileObjectId = metadata.ocId
         cell.indexPath = indexPath
@@ -181,7 +181,7 @@ extension NCShareExtension: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard !uploadStarted else { return }
         let fileName = filesName[indexPath.row]
-//        renameFile(named: fileName)
+        renameFile(named: fileName)
     }
 }
 
@@ -195,7 +195,7 @@ extension NCShareExtension: UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? NCShareCell else { return UITableViewCell() }
         let fileName = filesName[indexPath.row]
         cell.setup(fileName: fileName)
-//        cell.delegate = self
+        cell.delegate = self
         return cell
     }
 }

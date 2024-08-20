@@ -115,3 +115,31 @@ extension NCShareExtension: NCCreateFormUploadConflictDelegate {
         self.upload()
     }
 }
+
+extension NCShareExtension: NCShareCellDelegate, NCListCellDelegate {
+
+    func removeFile(named fileName: String) {
+        guard let index = self.filesName.firstIndex(of: fileName) else {
+            return showAlert(title: "_file_not_found_", description: fileName)
+        }
+        self.filesName.remove(at: index)
+        if self.filesName.isEmpty {
+            cancel(with: NCShareExtensionError.noFiles)
+        } else {
+            self.setCommandView()
+        }
+    }
+
+    func renameFile(named fileName: String) {
+        let alert = UIAlertController.renameFile(fileName: fileName) { [self] newFileName in
+            guard let fileIx = self.filesName.firstIndex(of: fileName),
+                  !self.filesName.contains(newFileName),
+                  utilityFileSystem.moveFile(atPath: (NSTemporaryDirectory() + fileName), toPath: (NSTemporaryDirectory() + newFileName)) else {
+                      return showAlert(title: "_single_file_conflict_title_", description: "'\(fileName)' -> '\(newFileName)'")
+                  }
+
+            filesName[fileIx] = newFileName
+            tableView.reloadData()
+        }
+    }
+}
