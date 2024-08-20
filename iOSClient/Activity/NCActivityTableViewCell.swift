@@ -228,7 +228,7 @@ class NCOperationDownloadThumbnailActivity: ConcurrentOperation {
             if error == .success, let imagePreview, let collectionView = self.collectionView {
                 DispatchQueue.main.async {
                     for case let cell as NCActivityCollectionViewCell in collectionView.visibleCells {
-                        if self.fileId == cell.fileId  {
+                        if self.fileId == cell.fileId {
                             UIView.transition(with: cell.imageView,
                                               duration: 0.75,
                                               options: .transitionCrossDissolve,

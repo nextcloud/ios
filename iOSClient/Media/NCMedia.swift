@@ -66,6 +66,10 @@ class NCMedia: UIViewController {
     var photoImage = UIImage()
     var videoImage = UIImage()
 
+    let showAllPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload')"
+    let showBothPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
+    let showOnlyPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
+
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: tabBarController)
     }
@@ -141,20 +145,15 @@ class NCMedia: UIViewController {
                 }
             }
         }
-
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCreateMediaCacheEnded), object: nil, queue: nil) { _ in
-
-            if let metadatas = self.imageCache.initialMetadatas() {
-                self.metadatas = metadatas
-            }
-            self.collectionViewReloadData()
-        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         navigationController?.setMediaAppreance()
+        DispatchQueue.global(qos: .userInteractive).async {
+            self.reloadDataSource()
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -168,18 +167,6 @@ class NCMedia: UIViewController {
 
         startTimer()
         createMenu()
-
-        if imageCache.createMediaCacheInProgress {
-            self.metadatas = nil
-            self.collectionViewReloadData()
-        } else if let metadatas = imageCache.initialMetadatas() {
-            self.metadatas = metadatas
-            self.collectionViewReloadData()
-        } else {
-            DispatchQueue.global(qos: .userInteractive).async {
-                self.reloadDataSource()
-            }
-        }
     }
 
     override func viewDidDisappear(_ animated: Bool) {

@@ -84,7 +84,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start session with level \(levelLog) " + versionNextcloudiOS)
         }
 
-        // Push Notification & display notification
+        /// Push Notification & display notification
         UNUserNotificationCenter.current().getNotificationSettings { settings in
             self.notificationSettings = settings
         }
@@ -98,12 +98,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             review.showStoreReview()
         }
 
-        // Background task register
+        /// Background task register
         BGTaskScheduler.shared.register(forTaskWithIdentifier: NCGlobal.shared.refreshTask, using: nil) { task in
             self.handleAppRefresh(task)
         }
         BGTaskScheduler.shared.register(forTaskWithIdentifier: NCGlobal.shared.processingTask, using: nil) { task in
             self.handleProcessingTask(task)
+        }
+
+        /// Cache Media
+        DispatchQueue.global().async {
+            NCImageCache.shared.createMediaCache()
         }
 
         return true

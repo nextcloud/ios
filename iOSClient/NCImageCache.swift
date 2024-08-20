@@ -64,29 +64,23 @@ class NCImageCache: NSObject {
     private lazy var cacheSizePreview: ThumbnailSizePreviewLRUCache = {
         return ThumbnailSizePreviewLRUCache()
     }()
-    private var metadatasInfo: [String: metadataInfo] = [:]
-    private var metadatas: ThreadSafeArray<tableMetadata>?
 
     var createMediaCacheInProgress: Bool = false
-    let showAllPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload')"
-    let showBothPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
-    let showOnlyPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
 
     override private init() {}
 
     ///
     /// MEDIA CACHE
     ///
-    func createMediaCache(withCacheSize: Bool, session: NCSession.Session) {
+    func createMediaCache() {
         if createMediaCacheInProgress {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] ThumbnailLRUCache image process already in progress")
             return
         }
         createMediaCacheInProgress = true
 
-        self.metadatasInfo.removeAll()
-        self.metadatas = nil
-        self.metadatas = getMediaMetadatas(session: session)
+        let predicate = NSPredicate(format: "(classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')")
+        let metadatas = NCManageDatabase.shared.getMediaMetadatas(predicate: predicate)
+        var metadatasInfo: [String: metadataInfo] = [:]
         let manager = FileManager.default
         let resourceKeys = Set<URLResourceKey>([.nameKey, .pathKey, .fileSizeKey, .creationDateKey])
         struct FileInfo {
@@ -115,17 +109,13 @@ class NCImageCache: NSObject {
                       fileSize > 0 else { continue }
                 let width = metadatasInfo[ocId]?.width ?? 0
                 let height = metadatasInfo[ocId]?.height ?? 0
-                if withCacheSize {
-                    if let date = metadatasInfo[ocId]?.date,
-                       let etag = metadatasInfo[ocId]?.etag,
-                       fileName == etag + NCGlobal.shared.storageExtPreview {
-                        files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: date as Date, fileSize: fileSize, width: width, height: height))
-                    } else {
-                        let etag = fileName.replacingOccurrences(of: NCGlobal.shared.storageExtPreview, with: "")
-                        files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: Date.distantPast, fileSize: fileSize, width: width, height: height))
-                    }
-                } else if let date = metadatasInfo[ocId]?.date, let etag = metadatasInfo[ocId]?.etag, fileName == etag + NCGlobal.shared.storageExtPreview {
+                if let date = metadatasInfo[ocId]?.date,
+                   let etag = metadatasInfo[ocId]?.etag,
+                   fileName == etag + NCGlobal.shared.storageExtPreview {
                     files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: date as Date, fileSize: fileSize, width: width, height: height))
+                } else {
+                    let etag = fileName.replacingOccurrences(of: NCGlobal.shared.storageExtPreview, with: "")
+                    files.append(FileInfo(path: fileURL, ocIdEtag: ocId + etag, date: Date.distantPast, fileSize: fileSize, width: width, height: height))
                 }
             }
         }
@@ -140,9 +130,6 @@ class NCImageCache: NSObject {
         cacheSizePreview.removeAllValues()
         var counter: Int = 0
         for file in files {
-            if !withCacheSize, counter > limitCacheImagePreview {
-                break
-            }
             autoreleasepool {
                 if let image = UIImage(contentsOfFile: file.path.path) {
                     if counter < limitCacheImagePreview {
@@ -166,19 +153,6 @@ class NCImageCache: NSObject {
         NextcloudKit.shared.nkCommonInstance.writeLog("--------- ThumbnailLRUCache image process ---------")
 
         createMediaCacheInProgress = false
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateMediaCacheEnded)
-    }
-
-    func initialMetadatas() -> ThreadSafeArray<tableMetadata>? {
-        defer { self.metadatas = nil }
-        return self.metadatas
-    }
-
-    func getMediaMetadatas(predicate: NSPredicate? = nil, session: NCSession.Session) -> ThreadSafeArray<tableMetadata>? {
-        guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else { return nil }
-        let startServerUrl = NCUtilityFileSystem().getHomeServer(session: session) + tableAccount.mediaPath
-        let predicateBoth = NSPredicate(format: showBothPredicateMediaString, session.account, startServerUrl)
-        return NCManageDatabase.shared.getMediaMetadatas(predicate: predicate ?? predicateBoth)
     }
 
     ///

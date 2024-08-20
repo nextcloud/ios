@@ -56,12 +56,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
 
             /// START
-            let session = NCSession.shared.getSession(account: activeTableAccount.account)
+
             /// Media cache
             DispatchQueue.global().async {
+                // let session = NCSession.shared.getSession(account: activeTableAccount.account)
                 NCBrandColor.shared.createUserColors()
                 NCImageCache.shared.createImagesCache()
-                NCImageCache.shared.createMediaCache(withCacheSize: true, session: session)
             }
             /// Main.storyboard
             if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {

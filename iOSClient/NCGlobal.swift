@@ -327,7 +327,6 @@ class NCGlobal: NSObject {
     let notificationCenterReloadDataNCShare                     = "reloadDataNCShare"
     let notificationCenterCloseRichWorkspaceWebView             = "closeRichWorkspaceWebView"
     let notificationCenterReloadAvatar                          = "reloadAvatar"
-    let notificationCenterCreateMediaCacheEnded                 = "createMediaCacheEnded"
 
     let notificationCenterReloadDataSource                      = "reloadDataSource"
     let notificationCenterReloadDataSourceNetwork               = "reloadDataSourceNetwork"         // userInfo: withQueryDB

@@ -26,7 +26,10 @@ import NextcloudKit
 
 extension NCMedia {
     func reloadDataSource() {
-        self.metadatas = imageCache.getMediaMetadatas(predicate: self.getPredicate(), session: session)
+        guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else { return }
+        let startServerUrl = NCUtilityFileSystem().getHomeServer(session: session) + tableAccount.mediaPath
+
+        self.metadatas = NCManageDatabase.shared.getMediaMetadatas(predicate: getPredicate())
         self.collectionViewReloadData()
     }
 
@@ -147,13 +150,13 @@ extension NCMedia {
         let startServerUrl = NCUtilityFileSystem().getHomeServer(session: session) + tableAccount.mediaPath
 
         if showAll {
-            return NSPredicate(format: imageCache.showAllPredicateMediaString, session.account, startServerUrl)
+            return NSPredicate(format: showAllPredicateMediaString, session.account, startServerUrl)
         } else if showOnlyImages {
-            return NSPredicate(format: imageCache.showOnlyPredicateMediaString, session.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue)
+            return NSPredicate(format: showOnlyPredicateMediaString, session.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue)
         } else if showOnlyVideos {
-            return NSPredicate(format: imageCache.showOnlyPredicateMediaString, session.account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)
+            return NSPredicate(format: showOnlyPredicateMediaString, session.account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)
         } else {
-            return NSPredicate(format: imageCache.showBothPredicateMediaString, session.account, startServerUrl)
+            return NSPredicate(format: showBothPredicateMediaString, session.account, startServerUrl)
         }
     }
 }
