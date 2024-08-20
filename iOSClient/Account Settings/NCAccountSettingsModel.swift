@@ -178,6 +178,10 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
             self.appDelegate.changeAccount(activeAccount.account, userProfile: nil) { }
         }
     }
+    
+    func openLogin() {
+        self.appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
+    }
 
     /// Function to delete the current account
     func deleteAccount() {

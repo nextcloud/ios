@@ -231,35 +231,56 @@ struct NCAccountSettingsView: View {
                             }
                         }
                     }
+                    switchAccountSection
+                })
+                ///
+                /// Add account
+                Button(action: {
+                    model.openLogin()
+                }, label: {
+                    HStack {
+                        Image(uiImage: NCUtility().loadImage(named: "person.crop.circle.badge.plus", colors: NCBrandColor.shared.iconImageMultiColors))
+                            .resizable()
+                            .scaledToFit()
+                            .font(Font.system(.body).weight(.light))
+                            .frame(width: 20, height: 20)
+                            .padding(.trailing, 10)
+                            .foregroundStyle(Color(NCBrandColor.shared.brandElement))
+                        Text(NSLocalizedString("_add_account_", comment: ""))
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                            .foregroundStyle(Color(NCBrandColor.shared.textColor))
+                            .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
+                    }
+                    .font(.system(size: 16))
                 })
                 ///
                 /// Delete account
-                Section(content: {
-                    Button(action: {
-                        showDeleteAccountAlert.toggle()
-                    }, label: {
-                        HStack {
-                            Image(systemName: "trash")
-                                .resizable()
-                                .scaledToFit()
-                                .font(Font.system(.body).weight(.light))
-                                .frame(width: 20, height: 20)
-                                .foregroundStyle(.red)
-                            Text(NSLocalizedString("_remove_local_account_", comment: ""))
-                                .lineLimit(1)
-                                .truncationMode(.middle)
-                                .foregroundStyle(.red)
-                                .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
-                        }
-                        .font(.system(size: 14))
-                    })
-                    .alert(NSLocalizedString("_want_delete_account_", comment: ""), isPresented: $showDeleteAccountAlert) {
-                        Button(NSLocalizedString("_remove_local_account_", comment: ""), role: .destructive) {
-                            model.deleteAccount()
-                        }
-                        Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel) { }
+                Button(action: {
+                    showDeleteAccountAlert.toggle()
+                }, label: {
+                    HStack {
+                        Image(systemName: "trash")
+                            .resizable()
+                            .scaledToFit()
+                            .font(Font.system(.body).weight(.light))
+                            .frame(width: 20, height: 20)
+                            .padding(.trailing, 10)
+                            .foregroundStyle(.red)
+                        Text(NSLocalizedString("_remove_local_account_", comment: ""))
+                            .lineLimit(1)
+                            .truncationMode(.middle)
+                            .foregroundStyle(Color(NCBrandColor.shared.textColor))
+                            .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
                     }
+                    .font(.system(size: 16))
                 })
+                .alert(NSLocalizedString("_want_delete_account_", comment: ""), isPresented: $showDeleteAccountAlert) {
+                    Button(NSLocalizedString("_remove_local_account_", comment: ""), role: .destructive) {
+                        model.deleteAccount()
+                    }
+                    Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel) { }
+                }
             }
             .navigationBarTitle(NSLocalizedString("_account_settings_", comment: ""))
             .navigationBarTitleDisplayMode(.inline)
@@ -281,6 +302,64 @@ struct NCAccountSettingsView: View {
         .onDisappear {
             model.delegate?.accountSettingsDidDismiss(tableAccount: model.activeAccount)
         }
+    }
+}
+
+extension NCAccountSettingsView {
+    
+    private var switchAccountSection: some View {
+        VStack {
+            ForEach(0..<model.accounts.count, id: \.self) { index in
+                let userAvatar = NCUtility().loadUserImage(for: model.accounts[index].user, displayName: model.accounts[index].displayName, userBaseUrl: model.accounts[index])
+                Button(action: {
+                    model.setAccount(account: model.accounts[index].account)
+                    model.changeAccount()
+                }) {
+                    SwitchAccountRowView(
+                        image: userAvatar,
+                        userName: model.accounts[index].displayName,
+                        userEmail: model.accounts[index].email,
+                        isActive: model.accounts[index].active)
+                }
+                
+            }
+        }
+    }
+}
+
+
+struct SwitchAccountRowView: View {
+    let image: UIImage
+    let userName: String
+    let userEmail: String
+    let isActive: Bool
+
+    var body: some View {
+        HStack {
+            Image(uiImage: UIImage(named: "accountCheckmark")!)
+                .resizable()
+                .frame(width: 20, height: 15)
+                .padding(.trailing, 10)
+                .hiddenConditionally(isHidden: !isActive)
+            VStack(alignment: .leading) {
+                Text(userName)
+                    .foregroundStyle(Color(NCBrandColor.shared.textColor))
+                    .padding(.trailing, 20)
+                    .font(.system(size: 17))
+                Text(userEmail)
+                    .foregroundStyle(Color(UIColor.lightGray))
+                    .padding(.trailing, 20)
+                    .font(.system(size: 16))
+            }
+            .lineLimit(1)
+            Spacer()
+            Image(uiImage: image)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 35, height: 35)
+                .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
+        }
+        .font(.system(size: 14))
     }
 }
 
