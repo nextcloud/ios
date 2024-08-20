@@ -29,9 +29,9 @@ import NextcloudKit
 
 extension NCTrash {
     func toggleMenuMore(with objectId: String, image: UIImage?, isGridCell: Bool) {
-        guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: objectId, account: session.account) else { return }
+        guard let resultTableTrash = NCManageDatabase.shared.getResultTrashItem(fileId: objectId, account: session.account) else { return }
         guard isGridCell else {
-            let alert = UIAlertController(title: NSLocalizedString("_want_delete_", comment: ""), message: tableTrash.trashbinFileName, preferredStyle: .alert)
+            let alert = UIAlertController(title: NSLocalizedString("_want_delete_", comment: ""), message: resultTableTrash.trashbinFileName, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("_delete_", comment: ""), style: .destructive, handler: { _ in
                 self.deleteItem(with: objectId)
             }))
@@ -44,10 +44,10 @@ extension NCTrash {
         var actions: [NCMenuAction] = []
 
         var iconHeader: UIImage!
-        if let icon = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)) {
+        if let icon = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(resultTableTrash.fileId, etag: resultTableTrash.fileName)) {
             iconHeader = icon
         } else {
-            if tableTrash.directory {
+            if resultTableTrash.directory {
                 iconHeader = NCImageCache.images.folder
             } else {
                 iconHeader = NCImageCache.images.file
@@ -56,7 +56,7 @@ extension NCTrash {
 
         actions.append(
             NCMenuAction(
-                title: tableTrash.trashbinFileName,
+                title: resultTableTrash.trashbinFileName,
                 icon: iconHeader,
                 action: nil
             )

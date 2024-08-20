@@ -93,7 +93,6 @@ struct NCTrashSelectTabBarView: View {
     var body: some View {
         VStack {
             Spacer().frame(height: sizeClass == .compact ? 5 : 10)
-
             HStack {
                 Button {
                     tabBarSelect.delegate?.recover()

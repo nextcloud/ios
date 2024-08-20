@@ -43,9 +43,9 @@ extension NCTrash {
     }
 
     func restoreItem(with fileId: String) {
-        guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: fileId, account: session.account) else { return }
-        let fileNameFrom = tableTrash.filePath + tableTrash.fileName
-        let fileNameTo = session.urlBase + "/remote.php/dav/trashbin/" + session.userId + "/restore/" + tableTrash.fileName
+        guard let resultTableTrash = NCManageDatabase.shared.getResultTrashItem(fileId: fileId, account: session.account) else { return }
+        let fileNameFrom = resultTableTrash.filePath + resultTableTrash.fileName
+        let fileNameTo = session.urlBase + "/remote.php/dav/trashbin/" + session.userId + "/restore/" + resultTableTrash.fileName
 
         NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: true, account: session.account) { account, error in
             guard error == .success else {
@@ -71,8 +71,8 @@ extension NCTrash {
     }
 
     func deleteItem(with fileId: String) {
-        guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: fileId, account: session.account) else { return }
-        let serverUrlFileName = tableTrash.filePath + tableTrash.fileName
+        guard let resultTableTrash = NCManageDatabase.shared.getResultTrashItem(fileId: fileId, account: session.account) else { return }
+        let serverUrlFileName = resultTableTrash.filePath + resultTableTrash.fileName
 
         NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: session.account) { account, error in
             guard error == .success else {
@@ -86,7 +86,6 @@ extension NCTrash {
 }
 
 class NCOperationDownloadThumbnailTrash: ConcurrentOperation {
-
     var tableTrash: tableTrash
     var fileId: String
     var collectionView: UICollectionView?
