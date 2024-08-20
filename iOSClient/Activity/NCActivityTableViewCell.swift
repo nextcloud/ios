@@ -206,17 +206,15 @@ extension NCActivityTableViewCell: UICollectionViewDelegateFlowLayout {
 }
 
 class NCOperationDownloadThumbnailActivity: ConcurrentOperation {
-    var cell: NCActivityCollectionViewCell?
     var collectionView: UICollectionView?
     var fileNamePreviewLocalPath: String
     var fileId: String
     var account: String
 
-    init(fileId: String, fileNamePreviewLocalPath: String, account: String, cell: NCActivityCollectionViewCell?, collectionView: UICollectionView?) {
+    init(fileId: String, fileNamePreviewLocalPath: String, account: String, collectionView: UICollectionView?) {
         self.fileNamePreviewLocalPath = fileNamePreviewLocalPath
         self.fileId = fileId
         self.account = account
-        self.cell = cell
         self.collectionView = collectionView
     }
 
@@ -227,16 +225,16 @@ class NCOperationDownloadThumbnailActivity: ConcurrentOperation {
                                             fileNamePreviewLocalPath: fileNamePreviewLocalPath,
                                             account: account,
                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imagePreview, _, _, _, error in
-            if error == .success, let imagePreview = imagePreview {
+            if error == .success, let imagePreview, let collectionView = self.collectionView {
                 DispatchQueue.main.async {
-                    if self.fileId == self.cell?.fileId, let imageView = self.cell?.imageView {
-                        UIView.transition(with: imageView,
-                                          duration: 0.75,
-                                          options: .transitionCrossDissolve,
-                                          animations: { imageView.image = imagePreview },
-                                          completion: nil)
-                    } else {
-                        self.collectionView?.reloadData()
+                    for case let cell as NCActivityCollectionViewCell in collectionView.visibleCells {
+                        if self.fileId == cell.fileId  {
+                            UIView.transition(with: cell.imageView,
+                                              duration: 0.75,
+                                              options: .transitionCrossDissolve,
+                                              animations: { cell.imageView.image = imagePreview },
+                                              completion: nil)
+                        }
                     }
                 }
             }
