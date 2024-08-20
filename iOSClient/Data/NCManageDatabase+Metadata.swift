@@ -1137,18 +1137,17 @@ extension NCManageDatabase {
         }
     }
 
-    func getMediaMetadatas(predicate: NSPredicate) -> ThreadSafeArray<tableMetadata>? {
+    func getResultsMediaMetadatas(predicate: NSPredicate) -> Results<tableMetadata>? {
         do {
             let realm = try Realm()
-            let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: "date", ascending: false)
-            return ThreadSafeArray(results.map { tableMetadata(value: $0) })
+            return realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: "date", ascending: false)
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
         return nil
     }
 
-    func getImageCacheMetadatas(predicate: NSPredicate) -> Results<tableMetadata>? {
+    func getResultsImageCacheMetadatas(predicate: NSPredicate) -> Results<tableMetadata>? {
         do {
             let realm = try Realm()
             return realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: "date", ascending: false)

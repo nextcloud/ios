@@ -43,7 +43,7 @@ class NCMedia: UIViewController {
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
     let imageCache = NCImageCache.shared
-    var metadatas: ThreadSafeArray<tableMetadata>?
+    var metadatas: Results<tableMetadata>?
     var serverUrl = ""
     let refreshControl = UIRefreshControl()
     var loadingTask: Task<Void, any Error>?
@@ -124,9 +124,7 @@ class NCMedia: UIViewController {
 
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
-            DispatchQueue.global(qos: .userInteractive).async {
-                self.reloadDataSource()
-            }
+            self.reloadDataSource()
             self.refreshControl.endRefreshing()
         }
 
@@ -140,7 +138,6 @@ class NCMedia: UIViewController {
                    controller == currentController,
                    let firstMetadata = self.metadatas?.first,
                    firstMetadata.account != account {
-                    self.metadatas = nil
                     self.collectionViewReloadData()
                 }
             }
@@ -151,9 +148,7 @@ class NCMedia: UIViewController {
         super.viewWillAppear(animated)
 
         navigationController?.setMediaAppreance()
-        DispatchQueue.global(qos: .userInteractive).async {
-            self.reloadDataSource()
-        }
+        reloadDataSource()
     }
 
     override func viewDidAppear(_ animated: Bool) {

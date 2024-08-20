@@ -79,7 +79,7 @@ class NCImageCache: NSObject {
         createMediaCacheInProgress = true
 
         let predicate = NSPredicate(format: "(classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')")
-        let metadatas = NCManageDatabase.shared.getImageCacheMetadatas(predicate: predicate)
+        let metadatas = NCManageDatabase.shared.getResultsImageCacheMetadatas(predicate: predicate)
         var metadatasInfo: [String: metadataInfo] = [:]
         let manager = FileManager.default
         let resourceKeys = Set<URLResourceKey>([.nameKey, .pathKey, .fileSizeKey, .creationDateKey])

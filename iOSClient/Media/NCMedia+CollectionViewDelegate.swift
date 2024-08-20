@@ -49,7 +49,9 @@ extension NCMedia: UICollectionViewDelegate {
             } else {
                 // ACTIVE SERVERURL
                 serverUrl = metadata.serverUrl
-                if let metadatas = self.metadatas?.getArray() {
+                if let metadatas = self.metadatas {
+                    let metadata = tableMetadata(value: metadata)
+                    let metadatas = Array(metadatas.map { tableMetadata(value: $0) })
                     NCViewer().view(viewController: self, metadata: metadata, metadatas: metadatas, imageIcon: getImage(metadata: metadata))
                 }
             }

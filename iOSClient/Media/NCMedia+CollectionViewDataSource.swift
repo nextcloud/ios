@@ -67,7 +67,7 @@ extension NCMedia: UICollectionViewDataSource {
         guard let metadatas else { return }
 
         if !collectionView.indexPathsForVisibleItems.contains(indexPath) && indexPath.row < metadatas.count {
-            guard let metadata = metadatas[indexPath.row] else { return }
+            let metadata = metadatas[indexPath.row]
             for case let operation as NCMediaDownloadThumbnaill in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
                 operation.cancel()
             }
@@ -79,8 +79,7 @@ extension NCMedia: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridMediaCell,
-              let metadatas = self.metadatas,
-              let metadata = metadatas[indexPath.row]
+              let metadata = metadatas?[indexPath.row]
         else {
             return NCGridMediaCell()
         }

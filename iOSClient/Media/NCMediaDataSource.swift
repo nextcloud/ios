@@ -26,7 +26,7 @@ import NextcloudKit
 
 extension NCMedia {
     func reloadDataSource() {
-        self.metadatas = NCManageDatabase.shared.getMediaMetadatas(predicate: getPredicate())
+        self.metadatas = NCManageDatabase.shared.getResultsMediaMetadatas(predicate: getPredicate())
         self.collectionViewReloadData()
     }
 
