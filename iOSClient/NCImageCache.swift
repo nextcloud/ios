@@ -276,8 +276,8 @@ class NCImageCache: NSObject {
         images.offlineFlag = utility.loadImage(named: "arrow.down.circle.fill", colors: [NCBrandColor.shared.brandElement])
         images.local = UIImage(resource: .local).withTintColor(NCBrandColor.shared.brandElement)
 
-        images.checkedYes = utility.loadImage(named: "checkmark.circle.fill", colors: [NCBrandColor.shared.brandElement])
-        images.checkedNo = utility.loadImage(named: "circle", colors: [NCBrandColor.shared.brandElement])
+        images.checkedYes = utility.loadImage(named: "list_item_selected")
+        images.checkedNo = utility.loadImage(named: "list_item_deselected", colors: [NCBrandColor.shared.brandElement])
 
         images.buttonMore = utility.loadImage(named: "ellipsis", colors: [NCBrandColor.shared.iconImageColor])
         images.buttonStop = utility.loadImage(named: "stop.circle", colors: [NCBrandColor.shared.iconImageColor])

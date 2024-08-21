@@ -5,6 +5,7 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -20,34 +21,48 @@
                                 <rect key="frame" x="0.0" y="50" width="375" height="50"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DCa-Cd-rrP">
-                                        <rect key="frame" x="10" y="0.0" width="24" height="50"/>
-                                        <state key="normal" title="Button"/>
-                                        <buttonConfiguration key="configuration" style="plain"/>
+                                        <rect key="frame" x="15" y="0.0" width="30" height="50"/>
+                                        <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="16"/>
+                                        <inset key="imageEdgeInsets" minX="10" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                        <state key="normal">
+                                            <color key="titleColor" systemColor="labelColor"/>
+                                        </state>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RAd-Qc-w9r">
-                                        <rect key="frame" x="271.33333333333331" y="0.0" width="49.666666666666686" height="50"/>
-                                        <state key="normal" title="Button"/>
-                                        <buttonConfiguration key="configuration" style="plain" image="checkmark.circle" catalog="system"/>
+                                        <rect key="frame" x="286" y="9" width="32" height="32"/>
+                                        <color key="backgroundColor" red="0.86022746360220881" green="0.88563137516683466" blue="0.91082270169744683" alpha="1" colorSpace="calibratedRGB"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="32" id="FmM-sG-HcG"/>
+                                            <constraint firstAttribute="width" secondItem="RAd-Qc-w9r" secondAttribute="height" id="Gzg-uh-VL5"/>
+                                        </constraints>
+                                        <color key="tintColor" systemColor="labelColor"/>
+                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                        <state key="normal" image="files_selection"/>
                                         <connections>
                                             <action selector="onSelectModeTap:" destination="EFX-fO-Oip" eventType="touchUpInside" id="WNV-bA-it0"/>
                                         </connections>
                                     </button>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Met-84-F1D">
-                                        <rect key="frame" x="341" y="0.0" width="24" height="50"/>
-                                        <state key="normal" title="Button"/>
-                                        <buttonConfiguration key="configuration" style="plain"/>
+                                        <rect key="frame" x="333" y="0.0" width="32" height="50"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="32" id="wBF-yC-OL8"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                        <state key="normal">
+                                            <color key="titleColor" systemColor="labelColor"/>
+                                        </state>
                                     </button>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstItem="Met-84-F1D" firstAttribute="leading" secondItem="RAd-Qc-w9r" secondAttribute="trailing" constant="20" id="2aD-1P-eWx"/>
+                                    <constraint firstItem="Met-84-F1D" firstAttribute="leading" secondItem="RAd-Qc-w9r" secondAttribute="trailing" constant="15" id="2aD-1P-eWx"/>
                                     <constraint firstItem="Met-84-F1D" firstAttribute="height" secondItem="BAN-5f-6Yg" secondAttribute="height" id="3eJ-RZ-60z"/>
                                     <constraint firstItem="Met-84-F1D" firstAttribute="centerY" secondItem="BAN-5f-6Yg" secondAttribute="centerY" id="A8b-C1-5IO"/>
                                     <constraint firstItem="RAd-Qc-w9r" firstAttribute="centerY" secondItem="BAN-5f-6Yg" secondAttribute="centerY" id="ELZ-UM-0Mv"/>
-                                    <constraint firstItem="RAd-Qc-w9r" firstAttribute="height" secondItem="BAN-5f-6Yg" secondAttribute="height" id="Ggy-G7-0cd"/>
                                     <constraint firstItem="DCa-Cd-rrP" firstAttribute="height" secondItem="BAN-5f-6Yg" secondAttribute="height" id="HAv-JE-sMl"/>
                                     <constraint firstItem="DCa-Cd-rrP" firstAttribute="centerY" secondItem="BAN-5f-6Yg" secondAttribute="centerY" id="Q8q-UB-1b8"/>
-                                    <constraint firstItem="DCa-Cd-rrP" firstAttribute="leading" secondItem="BAN-5f-6Yg" secondAttribute="leading" constant="10" id="TPE-aH-AFc"/>
+                                    <constraint firstItem="DCa-Cd-rrP" firstAttribute="leading" secondItem="BAN-5f-6Yg" secondAttribute="leading" constant="15" id="TPE-aH-AFc"/>
                                     <constraint firstAttribute="height" constant="50" id="bVN-vQ-6me"/>
                                     <constraint firstAttribute="trailing" secondItem="Met-84-F1D" secondAttribute="trailing" constant="10" id="qeR-d3-mKR"/>
                                 </constraints>
@@ -93,6 +108,9 @@
         </scene>
     </scenes>
     <resources>
-        <image name="checkmark.circle" catalog="system" width="128" height="123"/>
+        <image name="files_selection" width="14" height="14"/>
+        <systemColor name="labelColor">
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
     </resources>
 </document>

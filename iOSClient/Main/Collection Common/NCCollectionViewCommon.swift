@@ -745,15 +745,24 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 		bhSelect?.isHidden = isEditMode || isSearchingMode
 		
 		var viewModeImage: UIImage? {
+			var imageName: String = ""
+			
 			switch layoutType {
-			case NCGlobal.shared.layoutList: return UIImage(systemName: "list.bullet")
-			case NCGlobal.shared.layoutGrid: return UIImage(systemName: "square.grid.2x2")
-			case NCGlobal.shared.layoutPhotoRatio: return UIImage(systemName: "rectangle.grid.3x2")
-			case NCGlobal.shared.layoutPhotoSquare: return UIImage(systemName: "square.grid.3x3")
-			default: return nil
+			case NCGlobal.shared.layoutList: imageName = "list.bullet"
+			case NCGlobal.shared.layoutGrid: imageName = "square.grid.2x2"
+			case NCGlobal.shared.layoutPhotoRatio: imageName = "rectangle.grid.3x2"
+			case NCGlobal.shared.layoutPhotoSquare: imageName = "square.grid.3x3"
+			default: break
 			}
+			
+			return UIImage(systemName: imageName, withConfiguration: UIImage.SymbolConfiguration(pointSize: 24, weight: .medium))
 		}
-		bhViewMode?.setImage(viewModeImage, for: .normal)
+		bhViewMode?.setImage(formattedHeaderImage(image: viewModeImage), for: .normal)
+		bhViewMode?.tintColor = .label
+		
+		if let selectionButtonWidth = bhSelect?.bounds.width {
+			bhSelect?.layer.cornerRadius = selectionButtonWidth / 2
+		}
 		
 		var sortTitle: String? {
 			guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl) else { return nil }
@@ -767,12 +776,19 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 		}
 		var sortDirectionImage: UIImage? {
 			guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl) else { return nil }
-			
-			return layoutForView.ascending ? UIImage(systemName: "arrow.up") : UIImage(systemName: "arrow.down")
+			let imageName = layoutForView.ascending ? "arrow.up" : "arrow.down"
+			return UIImage(systemName: imageName, withConfiguration: UIImage.SymbolConfiguration(pointSize: 16, weight: .semibold))
 		}
 		
 		bhSort?.setTitle(sortTitle, for: .normal)
-		bhSort?.setImage(sortDirectionImage, for: .normal)
+		bhSort?.setImage(formattedHeaderImage(image: sortDirectionImage), for: .normal)
+		bhSort?.semanticContentAttribute = UIApplication.shared
+			.userInterfaceLayoutDirection == .rightToLeft ? .forceLeftToRight : .forceRightToLeft
+		bhSort?.tintColor = .label
+	}
+	
+	private func formattedHeaderImage(image: UIImage?) -> UIImage? {
+		return image?.withRenderingMode(.alwaysTemplate)
 	}
 	
     // MARK: - Layout
