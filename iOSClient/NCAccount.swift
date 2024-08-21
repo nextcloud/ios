@@ -40,7 +40,7 @@ class NCAccount: NSObject {
                                           userId: user,
                                           password: password,
                                           userAgent: userAgent,
-                                          nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
+                                          nextcloudVersion: NCCapabilities.shared.getCapabilities(account: account).capabilityServerVersionMajor,
                                           groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
         NextcloudKit.shared.getUserProfile(account: account) { account, userProfile, _, error in

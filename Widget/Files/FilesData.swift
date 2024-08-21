@@ -116,7 +116,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                                       userId: activeTableAccount.userId,
                                       password: password,
                                       userAgent: userAgent,
-                                      nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
+                                      nextcloudVersion: NCCapabilities.shared.getCapabilities(account: activeTableAccount.account).capabilityServerVersionMajor,
                                       groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
     let requestBodyRecent =

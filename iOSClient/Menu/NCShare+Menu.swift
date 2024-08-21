@@ -27,6 +27,7 @@ import NextcloudKit
 
 extension NCShare {
     func toggleShareMenu(for share: tableShare) {
+        let capabilities = NCCapabilities.shared.getCapabilities(account: self.metadata.account)
         var actions = [NCMenuAction]()
 
         if share.shareType == 3, canReshare {
@@ -65,7 +66,7 @@ extension NCShare {
                 icon: utility.loadImage(named: "person.2.slash"),
                 action: { _ in
                     Task {
-                        if share.shareType != NCShareCommon().SHARE_TYPE_LINK, let metadata = self.metadata, metadata.e2eEncrypted && NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
+                        if share.shareType != NCShareCommon().SHARE_TYPE_LINK, let metadata = self.metadata, metadata.e2eEncrypted && capabilities.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
                             let serverUrl = metadata.serverUrl + "/" + metadata.fileName
                             if NCNetworkingE2EE().isInUpload(account: metadata.account, serverUrl: serverUrl) {
                                 let error = NKError(errorCode: NCGlobal.shared.errorE2EEUploadInProgress, errorDescription: NSLocalizedString("_e2e_in_upload_", comment: ""))

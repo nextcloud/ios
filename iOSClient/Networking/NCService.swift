@@ -175,16 +175,16 @@ class NCService: NSObject {
             data.printJson()
 
             NCManageDatabase.shared.addCapabilitiesJSon(data, account: account)
-            NCManageDatabase.shared.setCapabilities(account: account, data: data)
+            guard let capability = NCManageDatabase.shared.setCapabilities(account: account, data: data) else { return }
 
             // Theming
-            if NCGlobal.shared.capabilityThemingColor != NCBrandColor.shared.themingColor || NCGlobal.shared.capabilityThemingColorElement != NCBrandColor.shared.themingColorElement || NCGlobal.shared.capabilityThemingColorText != NCBrandColor.shared.themingColorText {
+            if capability.capabilityThemingColor != NCBrandColor.shared.themingColor || capability.capabilityThemingColorElement != NCBrandColor.shared.themingColorElement || capability.capabilityThemingColorText != NCBrandColor.shared.themingColorText {
                 NCBrandColor.shared.settingThemingColor(account: account)
                 NCImageCache.shared.createImagesBrandCache()
             }
 
             // Text direct editor detail
-            if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion18 {
+            if capability.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion18 {
                 let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
                 NextcloudKit.shared.NCTextObtainEditorDetails(account: account, options: options) { account, editors, creators, _, error in
                     if error == .success {
@@ -194,7 +194,7 @@ class NCService: NSObject {
             }
 
             // External file Server
-            if NCGlobal.shared.capabilityExternalSites {
+            if capability.capabilityExternalSites {
                 NextcloudKit.shared.getExternalSite(account: account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, externalSites, _, error in
                     if error == .success {
                         NCManageDatabase.shared.deleteExternalSites(account: account)
@@ -208,7 +208,7 @@ class NCService: NSObject {
             }
 
             // User Status
-            if NCGlobal.shared.capabilityUserStatusEnabled {
+            if capability.capabilityUserStatusEnabled {
                 NextcloudKit.shared.getUserStatus(account: account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, _, _, error in
                     if error == .success {
                         NCManageDatabase.shared.setAccountUserStatus(userStatusClearAt: clearAt, userStatusIcon: icon, userStatusMessage: message, userStatusMessageId: messageId, userStatusMessageIsPredefined: messageIsPredefined, userStatusStatus: status, userStatusStatusIsUserDefined: statusIsUserDefined, account: account)
@@ -217,7 +217,7 @@ class NCService: NSObject {
             }
 
             // Added UTI for Collabora
-            NCGlobal.shared.capabilityRichDocumentsMimetypes.forEach { mimeType in
+            capability.capabilityRichDocumentsMimetypes.forEach { mimeType in
                 NextcloudKit.shared.nkCommonInstance.addInternalTypeIdentifier(typeIdentifier: mimeType, classFile: NKCommon.TypeClassFile.document.rawValue, editor: NCGlobal.shared.editorCollabora, iconName: NKCommon.TypeIconFile.document.rawValue, name: "document", account: account)
             }
 
@@ -257,8 +257,10 @@ class NCService: NSObject {
     // MARK: -
 
     func sendClientDiagnosticsRemoteOperation(account: String) {
-        guard NCGlobal.shared.capabilitySecurityGuardDiagnostics,
-              NCManageDatabase.shared.existsDiagnostics(account: account) else { return }
+        guard NCCapabilities.shared.getCapabilities(account: account).capabilitySecurityGuardDiagnostics,
+              NCManageDatabase.shared.existsDiagnostics(account: account) else {
+            return
+        }
 
         struct Issues: Codable {
             struct SyncConflicts: Codable {

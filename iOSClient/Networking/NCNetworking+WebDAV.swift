@@ -55,7 +55,7 @@ extension NCNetworking {
 #if !EXTENSION
                 // Convert Live Photo
                 for metadata in metadatas {
-                    if NCGlobal.shared.isLivePhotoServerAvailable, metadata.isLivePhoto {
+                    if NCCapabilities.shared.getCapabilities(account: account).isLivePhotoServerAvailable, metadata.isLivePhoto {
                         NCNetworking.shared.convertLivePhoto(metadata: metadata)
                     }
                 }

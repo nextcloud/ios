@@ -48,7 +48,7 @@ class NCMoreAppSuggestionsCell: BaseNCMoreCell {
         notesView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(notesTapped)))
         moreAppsView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(moreAppsTapped)))
 
-        if !NCGlobal.shared.capabilityAssistantEnabled {
+        if !NCCapabilities.shared.getCapabilities(account: controller?.account).capabilityAssistantEnabled {
             assistantView.isHidden = true
         }
     }

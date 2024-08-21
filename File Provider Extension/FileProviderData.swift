@@ -91,7 +91,7 @@ class fileProviderData: NSObject {
                                               userId: activeTableAccount.userId,
                                               password: NCKeychain().getPassword(account: activeTableAccount.account),
                                               userAgent: userAgent,
-                                              nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
+                                              nextcloudVersion: NCCapabilities.shared.getCapabilities(account: self.account).capabilityServerVersionMajor,
                                               groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
             NCNetworking.shared.delegate = providerExtension as? NCNetworkingDelegate
 

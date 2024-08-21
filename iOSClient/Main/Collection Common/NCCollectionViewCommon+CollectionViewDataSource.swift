@@ -176,7 +176,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return cell }
 
         defer {
-            if NCGlobal.shared.disableSharesView || !metadata.isSharable() {
+            if !metadata.isSharable() || NCCapabilities.shared.disableSharesView(account: metadata.account) {
                 cell.hideButtonShare(true)
             }
         }

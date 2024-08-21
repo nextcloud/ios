@@ -39,6 +39,7 @@ struct NCSettingsView: View {
     @ObservedObject var model: NCSettingsModel
 
     var body: some View {
+        let capabilities = NCCapabilities.shared.getCapabilities(account: model.controller?.account)
         Form {
             /// `Auto Upload` Section
             Section(content: {
@@ -179,7 +180,7 @@ struct NCSettingsView: View {
                     .lineSpacing(1)
             })
             /// E2EEncryption` Section
-            if NCGlobal.shared.capabilityE2EEEnabled && NCGlobal.shared.e2eeVersions.contains(NCGlobal.shared.capabilityE2EEApiVersion) {
+            if capabilities.capabilityE2EEEnabled && NCGlobal.shared.e2eeVersions.contains(capabilities.capabilityE2EEApiVersion) {
                 E2EESection(model: model)
             }
             /// `Advanced` Section

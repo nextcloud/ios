@@ -92,7 +92,6 @@ class NCCollectionViewCommonSelectTabBar: ObservableObject {
 
     func update(selectOcId: [String], metadatas: [tableMetadata]? = nil, userId: String? = nil) {
         if let metadatas {
-
             isAnyOffline = false
             canSetAsOffline = true
             isAnyDirectory = false
@@ -127,7 +126,7 @@ class NCCollectionViewCommonSelectTabBar: ObservableObject {
                     isAnyOffline = localFile.offline
                 } // else: file is not offline, continue
             }
-            enableLock = !isAnyDirectory && canUnlock && !NCGlobal.shared.capabilityFilesLockVersion.isEmpty
+            enableLock = !isAnyDirectory && canUnlock && !NCCapabilities.shared.getCapabilities(account: controller?.account).capabilityFilesLockVersion.isEmpty
         }
         isSelectedEmpty = selectOcId.isEmpty
     }

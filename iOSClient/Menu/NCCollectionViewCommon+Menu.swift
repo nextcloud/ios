@@ -33,7 +33,9 @@ import Queuer
 extension NCCollectionViewCommon {
     func toggleMenu(metadata: tableMetadata, indexPath: IndexPath, imageIcon: UIImage?) {
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId),
-              let sceneIdentifier = (tabBarController as? NCMainTabBarController)?.sceneIdentifier else { return }
+              let sceneIdentifier = (tabBarController as? NCMainTabBarController)?.sceneIdentifier else {
+            return
+        }
         var actions = [NCMenuAction]()
         let serverUrl = metadata.serverUrl + "/" + metadata.fileName
         var isOffline: Bool = false
@@ -71,7 +73,7 @@ extension NCCollectionViewCommon {
         //
         // DETAILS
         //
-        if !NCGlobal.shared.disableSharesView {
+        if !NCCapabilities.shared.disableSharesView(account: metadata.account) {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_details_", comment: ""),
@@ -136,7 +138,7 @@ extension NCCollectionViewCommon {
         //
         // LOCK / UNLOCK
         //
-        if !metadata.directory, metadata.canUnlock(as: metadata.userId), !NCGlobal.shared.capabilityFilesLockVersion.isEmpty {
+        if !metadata.directory, metadata.canUnlock(as: metadata.userId), !NCCapabilities.shared.getCapabilities(account: metadata.account).capabilityFilesLockVersion.isEmpty {
             actions.append(NCMenuAction.lockUnlockFiles(shouldLock: !metadata.lock, metadatas: [metadata], order: 30))
         }
 
