@@ -127,12 +127,8 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
 
     /// Function to update the user data
     func getUserStatus() -> (statusImage: UIImage?, statusMessage: String, descriptionMessage: String) {
-        guard let tblAccount,
-              let capability = NCCapabilities.shared.capabilities[tblAccount.account] else {
-            return (UIImage(), "", "")
-        }
-
-        if capability.capabilityUserStatusEnabled,
+        guard let tblAccount else { return (UIImage(), "", "") }
+        if NCCapabilities.shared.getCapabilities(account: tblAccount.account).capabilityUserStatusEnabled,
            let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", tblAccount.account)) {
             return NCUtility().getUserStatus(userIcon: tableAccount.userStatusIcon, userStatus: tableAccount.userStatusStatus, userMessage: tableAccount.userStatusMessage)
         }
@@ -148,13 +144,10 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
 
     /// Function to know the height of "account" data
     func getTableViewHeight() -> CGFloat {
-        guard let tblAccount,
-              let capability = NCCapabilities.shared.capabilities[tblAccount.account] else {
-            return 0
-        }
-        var height: CGFloat = capability.capabilityUserStatusEnabled ? 190 : 220
-
-        if capability.capabilityUserStatusEnabled,
+        guard let tblAccount else { return 0 }
+        let capabilities = NCCapabilities.shared.getCapabilities(account: tblAccount.account)
+        var height: CGFloat = capabilities.capabilityUserStatusEnabled ? 190 : 220
+        if capabilities.capabilityUserStatusEnabled,
            let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", tblAccount.account)) {
             if !tableAccount.email.isEmpty { height += 30 }
             if !tableAccount.phone.isEmpty { height += 30 }

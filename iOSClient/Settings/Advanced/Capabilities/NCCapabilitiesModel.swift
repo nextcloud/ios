@@ -38,7 +38,7 @@ class NCCapabilitiesModel: ObservableObject, ViewOnAppearHandling {
     func onViewAppear() {
         var textEditor = false
         var onlyofficeEditors = false
-        guard let capability = NCCapabilities.shared.capabilities[session.account] else { return }
+        let capability = NCCapabilities.shared.getCapabilities(account: session.account)
         capabililies.removeAll()
 
         var image = utility.loadImage(named: "person.fill.badge.plus")

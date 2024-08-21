@@ -157,7 +157,6 @@ extension NCLoginProvider: WKNavigationDelegate {
         if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
         let account: String = "\(username) \(urlBase)"
         let user = username
-        let capability = NCCapabilities.shared.capabilities[account]
 
         NextcloudKit.shared.getUserProfile(account: account) { account, userProfile, _, error in
             if error == .success, let userProfile {
@@ -167,7 +166,7 @@ extension NCLoginProvider: WKNavigationDelegate {
                                                   userId: user,
                                                   password: password,
                                                   userAgent: userAgent,
-                                                  nextcloudVersion: capability?.capabilityServerVersionMajor ?? 0,
+                                                  nextcloudVersion: NCCapabilities.shared.getCapabilities(account: account).capabilityServerVersionMajor,
                                                   groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
                 NCSession.shared.appendSession(account: account, urlBase: urlBase, user: user, userId: userProfile.userId)
                 NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
