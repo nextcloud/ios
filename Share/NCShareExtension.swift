@@ -298,6 +298,12 @@ extension NCShareExtension {
 
         var conflicts: [tableMetadata] = []
         for fileName in filesName {
+            if let fileNameError = FileNameValidator.shared.checkFileName(fileName) {
+                present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
+
+                continue
+            }
+
             let ocId = NSUUID().uuidString
             let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
             guard utilityFileSystem.copyFile(atPath: (NSTemporaryDirectory() + fileName), toPath: toPath) else { continue }
@@ -335,6 +341,7 @@ extension NCShareExtension {
         guard uploadStarted else { return }
         guard uploadMetadata.count > counterUploaded else { return DispatchQueue.main.async { self.finishedUploading() } }
         let metadata = uploadMetadata[counterUploaded]
+
         let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false)
         metadata.contentType = results.mimeType
         metadata.iconName = results.iconName

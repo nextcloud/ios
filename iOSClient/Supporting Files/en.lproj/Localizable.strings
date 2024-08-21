@@ -944,13 +944,13 @@
 "_calendar_contacts_footer_"    = "After downloading the profile you can install it from Settings.";
 "_preview_"                 = "Preview";
 "_crop_"                    = "Crop";
-"_modify_image_desc_"       = "Tap the image for modify";
-"_message_disable_livephoto_" = "This image is a Live Photo, changing it will lose the Live effect";
+"_modify_image_desc_"       = "Tap on a file to modify or rename.";
+"_message_disable_livephoto_" = "This image is a Live Photo, changing it will lose the Live Photo effect";
 "_enable_livephoto_"        = "Enable Live Photo";
 "_disable_livephoto_"       = "Disable Live Photo";
-"_undo_modify_"             = "Undo the modify";
-"_unauthorizedFilesPasscode_" = "Files cannot be used with an activated passcode";
-"_disableFilesApp_"         = "Files cannot be used because it is disabled";
+"_undo_modify_"             = "Undo modifying";
+"_unauthorizedFilesPasscode_" = "Files app cannot be used with an activated passcode";
+"_disableFilesApp_"         = "Files app cannot be used because it is disabled";
 "_reset_application_done_"  = "Reset application, done.";
 "_rename_already_exists_"   = "A file with this name already exists";
 "_created_"                 = "Created";
@@ -985,7 +985,7 @@
 "_delete_selected_photos_"  = "Delete selected photos";
 "_media_square_"            = "Square grid";
 "_media_ratio_"             = "Aspect ratio grid";
-"_autoupload_notice_"       = "To ensure the proper functioning of the application, it is necessary to enable Background App Refresh. Otherwise, new photos or videos will not be detected when the application is in the background.\n\nAdditionally, please note that the application will not be able to detect new photos and videos if it is manually terminated. When the app is in the background, data transfer may be slower, and new photos and/or videos will generally be detected every 10 minutes, depending on the device’s battery level.\n\nTo verify that the app is functioning correctly, you can use the log file available in Advanced.";
+"_autoupload_notice_"       = "To ensure the proper functioning of the application, it is necessary to enable Background App Refresh. Otherwise, new photos or videos will not be detected when the application is in the background.\n\nAdditionally, please note that the application will not be able to detect new photos and videos if it is manually terminated. When the app is in the background, data transfer may be slower, and new photos and/or videos will generally be detected every 10 minutes, depending on the device’s battery level.\n\nTo verify that the app is functioning correctly, you can use the log file available in Advanced settings.";
 "_display_"                 = "Display";
 "_appearance_"              = "Appearance";
 "_light_"                   = "Light";
@@ -1090,3 +1090,10 @@
 
 // MARK: Login poll
 "_poll_desc_"                    = "Please complete the log in process in your browser";
+
+// MARK: File name validator
+"_file_name_validator_error_ends_with_space_period_" = "Name ends with a space or a period.";
+"_file_name_validator_error_reserved_name_" = "\"%@\" is a forbidden name.";
+"_file_name_validator_error_forbidden_file_extension_" = "\".%@\" is a forbidden file extension.";
+"_file_name_validator_error_invalid_character_" = "Name contains an invalid character: \"%@\".";
+"_please_rename_file_"      = "Please rename the file or folder.";

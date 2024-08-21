@@ -22,6 +22,7 @@
 import Foundation
 import UIKit
 import SwiftUI
+import NextcloudKit
 
 enum DeepLink: String {
     case openFiles              // nextcloud://openFiles
@@ -109,6 +110,16 @@ class NCDeepLinkHandler {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
         controller.selectedIndex = ControllerConstants.filesIndex
         DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
+            let serverUrl = controller.currentServerUrl()
+            let fileFolderPath = NCUtilityFileSystem().getFileNamePath("", serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+            let fileFolderName = (serverUrl as NSString).lastPathComponent
+
+            if !FileNameValidator.shared.checkFolderPath(folderPath: fileFolderPath) {
+                controller.present(UIAlertController.warning(message: "\(String(format: NSLocalizedString("_file_name_validator_error_reserved_name_", comment: ""), fileFolderName)) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
+
+                return
+            }
+
             appDelegate.toggleMenu(controller: controller)
         }
     }

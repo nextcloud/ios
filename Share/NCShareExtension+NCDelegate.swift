@@ -93,59 +93,13 @@ extension NCShareExtension: NCAccountRequestDelegate {
 
         reloadDatasource(withLoadFolder: true)
         setNavigationBar(navigationTitle: NCBrandOptions.shared.brand)
-    }
-}
 
-extension NCShareExtension: NCShareCellDelegate, NCRenameFileDelegate, NCListCellDelegate {
-    func removeFile(named fileName: String) {
-        guard let index = self.filesName.firstIndex(of: fileName) else {
-            return showAlert(title: "_file_not_found_", description: fileName)
-        }
-        self.filesName.remove(at: index)
-        if self.filesName.isEmpty {
-            cancel(with: NCShareExtensionError.noFiles)
-        } else {
-            self.setCommandView()
-        }
-    }
-
-    func renameFile(named fileName: String) {
-        guard let vcRename = UIStoryboard(name: "NCRenameFile", bundle: nil).instantiateInitialViewController() as? NCRenameFile else { return }
-
-        let resultInternalType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false)
-        vcRename.delegate = self
-        vcRename.fileName = fileName
-        vcRename.indexPath = IndexPath()
-        if let previewImage = UIImage.downsample(imageAt: URL(fileURLWithPath: NSTemporaryDirectory() + fileName), to: CGSize(width: 140, height: 140)) {
-            vcRename.imagePreview = previewImage
-        } else {
-            vcRename.imagePreview = UIImage(named: resultInternalType.iconName) ?? NCImageCache.images.file
-        }
-
-        let popup = NCPopupViewController(contentController: vcRename, popupWidth: vcRename.width, popupHeight: vcRename.height)
-
-        self.present(popup, animated: true)
-    }
-
-    func rename(fileName: String, fileNameNew: String) {
-        guard fileName != fileNameNew else { return }
-        guard let fileIx = self.filesName.firstIndex(of: fileName),
-              !self.filesName.contains(fileNameNew),
-              utilityFileSystem.moveFile(atPath: (NSTemporaryDirectory() + fileName), toPath: (NSTemporaryDirectory() + fileNameNew)) else {
-                  return showAlert(title: "_single_file_conflict_title_", description: "'\(fileName)' -> '\(fileNameNew)'")
-              }
-
-        filesName[fileIx] = fileNameNew
-        tableView.reloadData()
-    }
-
-    func tapShareListItem(with objectId: String, indexPath: IndexPath, sender: Any) {
-    }
-
-    func tapMoreListItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
-    }
-
-    func longPressListItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
+        FileNameValidator.shared.setup(
+            forbiddenFileNames: NCGlobal.shared.capabilityForbiddenFileNames,
+            forbiddenFileNameBasenames: NCGlobal.shared.capabilityForbiddenFileNameBasenames,
+            forbiddenFileNameCharacters: NCGlobal.shared.capabilityForbiddenFileNameCharacters,
+            forbiddenFileNameExtensions: NCGlobal.shared.capabilityForbiddenFileNameExtensions
+        )
     }
 }
 
@@ -159,5 +113,34 @@ extension NCShareExtension: NCCreateFormUploadConflictDelegate {
 
         self.uploadMetadata.append(contentsOf: metadatas)
         self.upload()
+    }
+}
+
+extension NCShareExtension: NCShareCellDelegate {
+    func removeFile(named fileName: String) {
+        guard let index = self.filesName.firstIndex(of: fileName) else {
+            return showAlert(title: "_file_not_found_", description: fileName)
+        }
+        self.filesName.remove(at: index)
+        if self.filesName.isEmpty {
+            cancel(with: NCShareExtensionError.noFiles)
+        } else {
+            self.setCommandView()
+        }
+    }
+
+    func renameFile(named fileName: String) {
+        let alert = UIAlertController.renameFile(fileName: fileName) { [self] newFileName in
+            guard let fileIx = self.filesName.firstIndex(of: fileName),
+                  !self.filesName.contains(newFileName),
+                  utilityFileSystem.moveFile(atPath: (NSTemporaryDirectory() + fileName), toPath: (NSTemporaryDirectory() + newFileName)) else {
+                      return showAlert(title: "_single_file_conflict_title_", description: "'\(fileName)' -> '\(newFileName)'")
+                  }
+
+            filesName[fileIx] = newFileName
+            tableView.reloadData()
+        }
+
+        present(alert, animated: true)
     }
 }
