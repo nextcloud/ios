@@ -79,7 +79,8 @@ extension NCMedia: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridMediaCell,
-              let metadata = metadatas?[indexPath.row]
+              let metadata = metadatas?[indexPath.row],
+              let capability = NCCapabilities.shared.capabilities[metadata.account]
         else {
             return NCGridMediaCell()
         }
@@ -104,7 +105,7 @@ extension NCMedia: UICollectionViewDataSource {
         }
 
         // Convert OLD Live Photo
-        if NCGlobal.shared.isLivePhotoServerAvailable, metadata.isLivePhoto, metadata.isNotFlaggedAsLivePhotoByServer {
+        if capability.isLivePhotoServerAvailable, metadata.isLivePhoto, metadata.isNotFlaggedAsLivePhotoByServer {
             NCNetworking.shared.convertLivePhoto(metadata: metadata)
         }
 

@@ -341,38 +341,40 @@ class NCShareDateCell: UITableViewCell {
     }
 
     private func isExpireDateEnforced(account: String) -> Bool {
+        guard let capability = NCCapabilities.shared.capabilities[account] else { return false }
         switch self.shareType {
         case shareCommon.SHARE_TYPE_LINK,
             shareCommon.SHARE_TYPE_EMAIL,
             shareCommon.SHARE_TYPE_GUEST:
-            return NCGlobal.shared.capabilityFileSharingPubExpireDateEnforced
+            return capability.capabilityFileSharingPubExpireDateEnforced
         case shareCommon.SHARE_TYPE_USER,
             shareCommon.SHARE_TYPE_GROUP,
             shareCommon.SHARE_TYPE_CIRCLE,
             shareCommon.SHARE_TYPE_ROOM:
-            return NCGlobal.shared.capabilityFileSharingInternalExpireDateEnforced
+            return capability.capabilityFileSharingInternalExpireDateEnforced
         case shareCommon.SHARE_TYPE_REMOTE,
             shareCommon.SHARE_TYPE_REMOTE_GROUP:
-            return NCGlobal.shared.capabilityFileSharingRemoteExpireDateEnforced
+            return capability.capabilityFileSharingRemoteExpireDateEnforced
         default:
             return false
         }
     }
 
     private func defaultExpirationDays(account: String) -> Int {
+        guard let capability = NCCapabilities.shared.capabilities[account] else { return 0 }
         switch self.shareType {
         case shareCommon.SHARE_TYPE_LINK,
             shareCommon.SHARE_TYPE_EMAIL,
             shareCommon.SHARE_TYPE_GUEST:
-            return NCGlobal.shared.capabilityFileSharingPubExpireDateDays
+            return capability.capabilityFileSharingPubExpireDateDays
         case shareCommon.SHARE_TYPE_USER,
             shareCommon.SHARE_TYPE_GROUP,
             shareCommon.SHARE_TYPE_CIRCLE,
             shareCommon.SHARE_TYPE_ROOM:
-            return NCGlobal.shared.capabilityFileSharingInternalExpireDateDays
+            return capability.capabilityFileSharingInternalExpireDateDays
         case shareCommon.SHARE_TYPE_REMOTE,
             shareCommon.SHARE_TYPE_REMOTE_GROUP:
-            return NCGlobal.shared.capabilityFileSharingRemoteExpireDateDays
+            return capability.capabilityFileSharingRemoteExpireDateDays
         default:
             return 0
         }

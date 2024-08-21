@@ -65,8 +65,11 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
         resetWrongAttempts = keychain.resetAppCounterFail
         accountRequest = keychain.accountRequest
         footerApp = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility().getVersionApp(withBuild: true)) + "\n\n"
-        footerServer = String(format: NCBrandOptions.shared.textCopyrightNextcloudServer, NCGlobal.shared.capabilityServerVersion) + "\n"
-        footerSlogan = NCGlobal.shared.capabilityThemingName + " - " + NCGlobal.shared.capabilityThemingSlogan + "\n\n"
+        if let controller,
+           let capability = NCCapabilities.shared.capabilities[controller.account] {
+            footerServer = String(format: NCBrandOptions.shared.textCopyrightNextcloudServer, capability.capabilityServerVersion) + "\n"
+            footerSlogan = capability.capabilityThemingName + " - " + capability.capabilityThemingSlogan + "\n\n"
+        }
     }
 
     // MARK: - All functions

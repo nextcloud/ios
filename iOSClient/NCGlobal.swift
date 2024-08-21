@@ -78,16 +78,6 @@ class NCGlobal: NSObject {
         case original = "original"
     }
 
-    // Sharing & Comments
-    //
-    var disableSharesView: Bool {
-        if !capabilityFileSharingApiEnabled && !capabilityFilesComments && capabilityActivity.isEmpty {
-            return true
-        } else {
-            return false
-        }
-    }
-
     // Directory on Group
     //
     let directoryProviderStorage                    = "File Provider Storage"
@@ -404,50 +394,6 @@ class NCGlobal: NSObject {
     let configuration_disable_log                               = "disable_log"
     let configuration_disable_more_external_site                = "disable_more_external_site"
     let configuration_disable_openin_file                       = "disable_openin_file"
-
-    // CAPABILITIES
-    //
-    var capabilityServerVersionMajor: Int                       = 0
-    var capabilityServerVersion: String                         = ""
-
-    var capabilityFileSharingApiEnabled: Bool                   = false
-    var capabilityFileSharingPubPasswdEnforced: Bool            = false
-    var capabilityFileSharingPubExpireDateEnforced: Bool        = false
-    var capabilityFileSharingPubExpireDateDays: Int             = 0
-    var capabilityFileSharingInternalExpireDateEnforced: Bool   = false
-    var capabilityFileSharingInternalExpireDateDays: Int        = 0
-    var capabilityFileSharingRemoteExpireDateEnforced: Bool     = false
-    var capabilityFileSharingRemoteExpireDateDays: Int          = 0
-    var capabilityFileSharingDefaultPermission: Int             = 0
-
-    var capabilityThemingColor: String                          = ""
-    var capabilityThemingColorElement: String                   = ""
-    var capabilityThemingColorText: String                      = ""
-    var capabilityThemingName: String                           = ""
-    var capabilityThemingSlogan: String                         = ""
-
-    var capabilityE2EEEnabled: Bool                             = false
-    var capabilityE2EEApiVersion: String                        = ""
-
-    var capabilityRichDocumentsEnabled: Bool                    = false
-    var capabilityRichDocumentsMimetypes = ThreadSafeArray<String>()
-    var capabilityActivity = ThreadSafeArray<String>()
-    var capabilityNotification = ThreadSafeArray<String>()
-
-    var capabilityFilesUndelete: Bool                           = false
-    var capabilityFilesLockVersion: String                      = ""    // NC 24
-    var capabilityFilesComments: Bool                           = false // NC 20
-    var capabilityFilesBigfilechunking: Bool                    = false
-
-    var capabilityUserStatusEnabled: Bool                       = false
-    var capabilityExternalSites: Bool                           = false
-    var capabilityGroupfoldersEnabled: Bool                     = false // NC27
-    var capabilityAssistantEnabled: Bool                        = false // NC28
-    var isLivePhotoServerAvailable: Bool {                              // NC28
-        return capabilityServerVersionMajor >= nextcloudVersion28
-    }
-
-    var capabilitySecurityGuardDiagnostics                      = false
 
     // MORE NEXTCLOUD APPS
     let talkSchemeUrl                                           = "nextcloudtalk://"

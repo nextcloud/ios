@@ -63,7 +63,7 @@ extension NCManageDatabase {
         return nil
     }
 
-    func setCapabilities(account: String, data: Data? = nil) {
+    func setCapabilities(account: String, data: Data? = nil) -> NCCapabilities.Capabilities? {
         let jsonData: Data?
 
         struct CapabilityNextcloud: Codable {
@@ -285,85 +285,96 @@ extension NCManageDatabase {
                 let realm = try Realm()
                 guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first,
                       let data = result.jsondata else {
-                    return
+                    return nil
                 }
                 jsonData = data
             } catch let error as NSError {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
-                return
+                return nil
             }
         }
-        guard let jsonData = jsonData else { return }
+        guard let jsonData = jsonData else {
+            return nil
+        }
 
         do {
-            let global = NCGlobal.shared
             let json = try JSONDecoder().decode(CapabilityNextcloud.self, from: jsonData)
             let data = json.ocs.data
+            let capability = NCCapabilities.Capabilities()
 
-            global.capabilityServerVersion = data.version.string
-            global.capabilityServerVersionMajor = data.version.major
+            capability.capabilityServerVersion = data.version.string
+            capability.capabilityServerVersionMajor = data.version.major
 
-            if global.capabilityServerVersionMajor > 0 {
-                NextcloudKit.shared.updateSession(account: account, nextcloudVersion: global.capabilityServerVersionMajor)
+            if capability.capabilityServerVersionMajor > 0 {
+                NextcloudKit.shared.updateSession(account: account, nextcloudVersion: capability.capabilityServerVersionMajor)
             }
 
-            global.capabilityFileSharingApiEnabled = data.capabilities.filessharing?.apienabled ?? false
-            global.capabilityFileSharingDefaultPermission = data.capabilities.filessharing?.defaultpermissions ?? 0
-            global.capabilityFileSharingPubPasswdEnforced = data.capabilities.filessharing?.ncpublic?.password?.enforced ?? false
-            global.capabilityFileSharingPubExpireDateEnforced = data.capabilities.filessharing?.ncpublic?.expiredate?.enforced ?? false
-            global.capabilityFileSharingPubExpireDateDays = data.capabilities.filessharing?.ncpublic?.expiredate?.days ?? 0
-            global.capabilityFileSharingInternalExpireDateEnforced = data.capabilities.filessharing?.ncpublic?.expiredateinternal?.enforced ?? false
-            global.capabilityFileSharingInternalExpireDateDays = data.capabilities.filessharing?.ncpublic?.expiredateinternal?.days ?? 0
-            global.capabilityFileSharingRemoteExpireDateEnforced = data.capabilities.filessharing?.ncpublic?.expiredateremote?.enforced ?? false
-            global.capabilityFileSharingRemoteExpireDateDays = data.capabilities.filessharing?.ncpublic?.expiredateremote?.days ?? 0
+            capability.capabilityFileSharingApiEnabled = data.capabilities.filessharing?.apienabled ?? false
+            capability.capabilityFileSharingDefaultPermission = data.capabilities.filessharing?.defaultpermissions ?? 0
+            capability.capabilityFileSharingPubPasswdEnforced = data.capabilities.filessharing?.ncpublic?.password?.enforced ?? false
+            capability.capabilityFileSharingPubExpireDateEnforced = data.capabilities.filessharing?.ncpublic?.expiredate?.enforced ?? false
+            capability.capabilityFileSharingPubExpireDateDays = data.capabilities.filessharing?.ncpublic?.expiredate?.days ?? 0
+            capability.capabilityFileSharingInternalExpireDateEnforced = data.capabilities.filessharing?.ncpublic?.expiredateinternal?.enforced ?? false
+            capability.capabilityFileSharingInternalExpireDateDays = data.capabilities.filessharing?.ncpublic?.expiredateinternal?.days ?? 0
+            capability.capabilityFileSharingRemoteExpireDateEnforced = data.capabilities.filessharing?.ncpublic?.expiredateremote?.enforced ?? false
+            capability.capabilityFileSharingRemoteExpireDateDays = data.capabilities.filessharing?.ncpublic?.expiredateremote?.days ?? 0
 
-            global.capabilityThemingColor = data.capabilities.theming?.color ?? ""
-            global.capabilityThemingColorElement = data.capabilities.theming?.colorelement ?? ""
-            global.capabilityThemingColorText = data.capabilities.theming?.colortext ?? ""
-            global.capabilityThemingName = data.capabilities.theming?.name ?? ""
-            global.capabilityThemingSlogan = data.capabilities.theming?.slogan ?? ""
+            capability.capabilityThemingColor = data.capabilities.theming?.color ?? ""
+            capability.capabilityThemingColorElement = data.capabilities.theming?.colorelement ?? ""
+            capability.capabilityThemingColorText = data.capabilities.theming?.colortext ?? ""
+            capability.capabilityThemingName = data.capabilities.theming?.name ?? ""
+            capability.capabilityThemingSlogan = data.capabilities.theming?.slogan ?? ""
 
-            global.capabilityE2EEEnabled = data.capabilities.endtoendencryption?.enabled ?? false
-            global.capabilityE2EEApiVersion = data.capabilities.endtoendencryption?.apiversion ?? ""
+            capability.capabilityE2EEEnabled = data.capabilities.endtoendencryption?.enabled ?? false
+            capability.capabilityE2EEApiVersion = data.capabilities.endtoendencryption?.apiversion ?? ""
 
-            global.capabilityRichDocumentsEnabled = json.ocs.data.capabilities.richdocuments?.directediting ?? false
-            global.capabilityRichDocumentsMimetypes.removeAll()
+            capability.capabilityRichDocumentsEnabled = json.ocs.data.capabilities.richdocuments?.directediting ?? false
+            capability.capabilityRichDocumentsMimetypes.removeAll()
             if let mimetypes = data.capabilities.richdocuments?.mimetypes {
                 for mimetype in mimetypes {
-                    global.capabilityRichDocumentsMimetypes.append(mimetype)
+                    capability.capabilityRichDocumentsMimetypes.append(mimetype)
                 }
             }
 
-            global.capabilityAssistantEnabled = data.capabilities.assistant?.enabled ?? false
+            capability.capabilityAssistantEnabled = data.capabilities.assistant?.enabled ?? false
 
-            global.capabilityActivity.removeAll()
+            capability.capabilityActivity.removeAll()
             if let activities = data.capabilities.activity?.apiv2 {
                 for activity in activities {
-                    global.capabilityActivity.append(activity)
+                    capability.capabilityActivity.append(activity)
                 }
             }
 
-            global.capabilityNotification.removeAll()
+            capability.capabilityNotification.removeAll()
             if let notifications = data.capabilities.notifications?.ocsendpoints {
                 for notification in notifications {
-                    global.capabilityNotification.append(notification)
+                    capability.capabilityNotification.append(notification)
                 }
             }
 
-            global.capabilityFilesUndelete = data.capabilities.files?.undelete ?? false
-            global.capabilityFilesLockVersion = data.capabilities.files?.locking ?? ""
-            global.capabilityFilesComments = data.capabilities.files?.comments ?? false
-            global.capabilityFilesBigfilechunking = data.capabilities.files?.bigfilechunking ?? false
+            capability.capabilityFilesUndelete = data.capabilities.files?.undelete ?? false
+            capability.capabilityFilesLockVersion = data.capabilities.files?.locking ?? ""
+            capability.capabilityFilesComments = data.capabilities.files?.comments ?? false
+            capability.capabilityFilesBigfilechunking = data.capabilities.files?.bigfilechunking ?? false
 
-            global.capabilityUserStatusEnabled = data.capabilities.userstatus?.enabled ?? false
+            capability.capabilityUserStatusEnabled = data.capabilities.userstatus?.enabled ?? false
             if data.capabilities.external != nil {
-                global.capabilityExternalSites = true
+                capability.capabilityExternalSites = true
             }
-            global.capabilityGroupfoldersEnabled = data.capabilities.groupfolders?.hasGroupFolders ?? false
-            global.capabilitySecurityGuardDiagnostics = data.capabilities.securityguard?.diagnostics ?? false
+            capability.capabilityGroupfoldersEnabled = data.capabilities.groupfolders?.hasGroupFolders ?? false
+
+            if capability.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion28 {
+                capability.isLivePhotoServerAvailable = true
+            }
+
+            capability.capabilitySecurityGuardDiagnostics = data.capabilities.securityguard?.diagnostics ?? false
+
+            NCCapabilities.shared.capabilities[account] = capability
+            
+            return capability
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
-            return
+            return nil
         }
     }
 }

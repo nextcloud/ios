@@ -86,7 +86,8 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     // MARK: -
 
     func loadItems() {
-        guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
+        guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)),
+              let capability = NCCapabilities.shared.capabilities[tableAccount.account] else {
             return
         }
         var item = NKExternalSite()
@@ -125,7 +126,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         item.order = 30
         functionMenu.append(item)
 
-        if NCGlobal.shared.capabilityAssistantEnabled, NCBrandOptions.shared.disable_show_more_nextcloud_apps_in_settings {
+        if capability.capabilityAssistantEnabled, NCBrandOptions.shared.disable_show_more_nextcloud_apps_in_settings {
             // ITEM : Assistant
             item = NKExternalSite()
             item.name = "_assistant_"
@@ -136,7 +137,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
 
         // ITEM : Shares
-        if NCGlobal.shared.capabilityFileSharingApiEnabled {
+        if capability.capabilityFileSharingApiEnabled {
             item = NKExternalSite()
             item.name = "_list_shares_"
             item.icon = "person.badge.plus"
@@ -154,7 +155,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         functionMenu.append(item)
 
         // ITEM : Groupfolders
-        if NCGlobal.shared.capabilityGroupfoldersEnabled {
+        if capability.capabilityGroupfoldersEnabled {
             item = NKExternalSite()
             item.name = "_group_folders_"
             item.icon = "person.2"
@@ -172,7 +173,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         functionMenu.append(item)
 
         // ITEM : Trash
-        if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion15 {
+        if capability.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion15 {
             item = NKExternalSite()
             item.name = "_trash_view_"
             item.icon = "trash"

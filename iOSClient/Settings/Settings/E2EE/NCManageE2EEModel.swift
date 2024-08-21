@@ -31,7 +31,7 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
     let endToEndInitialize = NCEndToEndInitialize()
     var passcodeType = ""
 
-    @Published var controller: UITabBarController?
+    @Published var controller: NCMainTabBarController?
     @Published var isEndToEndEnabled: Bool = false
     @Published var statusOfService: String = NSLocalizedString("_status_in_progress_", comment: "")
     @Published var navigateBack: Bool = false
@@ -40,7 +40,7 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
         NCSession.shared.getSession(controller: controller)
     }
 
-    init(controller: UITabBarController?) {
+    init(controller: NCMainTabBarController?) {
         super.init()
         self.controller = controller
         endToEndInitialize.delegate = self
@@ -49,7 +49,9 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
 
     /// Triggered when the view appears.
     func onViewAppear() {
-        if NCGlobal.shared.capabilityE2EEEnabled && NCGlobal.shared.e2eeVersions.contains(NCGlobal.shared.capabilityE2EEApiVersion) {
+        if let controller,
+           let capability = NCCapabilities.shared.capabilities[controller.account],
+           capability.capabilityE2EEEnabled && NCGlobal.shared.e2eeVersions.contains(capability.capabilityE2EEApiVersion) {
             isEndToEndEnabled = NCKeychain().isEndToEndEnabled(account: session.account)
             if isEndToEndEnabled {
                 statusOfService = NSLocalizedString("_status_e2ee_configured_", comment: "")

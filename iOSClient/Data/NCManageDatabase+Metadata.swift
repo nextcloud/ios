@@ -273,12 +273,13 @@ extension tableMetadata {
     var isAvailableEditorView: Bool {
         guard !isPDF,
               classFile == NKCommon.TypeClassFile.document.rawValue,
-              NextcloudKit.shared.isNetworkReachable() else { return false }
+              NextcloudKit.shared.isNetworkReachable(),
+              let capability = NCCapabilities.shared.capabilities[account] else { return false }
         let utility = NCUtility()
         let directEditingEditors = utility.editorsDirectEditing(account: account, contentType: contentType)
         let richDocumentEditor = utility.isTypeFileRichDocument(self)
 
-        if NCGlobal.shared.capabilityRichDocumentsEnabled && richDocumentEditor && directEditingEditors.isEmpty {
+        if capability.capabilityRichDocumentsEnabled && richDocumentEditor && directEditingEditors.isEmpty {
             // RichDocument: Collabora
             return true
         } else if directEditingEditors.contains(NCGlobal.shared.editorText) || directEditingEditors.contains(NCGlobal.shared.editorOnlyoffice) {
@@ -289,7 +290,10 @@ extension tableMetadata {
     }
 
     var isAvailableRichDocumentEditorView: Bool {
-        guard (classFile == NKCommon.TypeClassFile.document.rawValue) && NCGlobal.shared.capabilityRichDocumentsEnabled && NextcloudKit.shared.isNetworkReachable() else { return false }
+        guard (classFile == NKCommon.TypeClassFile.document.rawValue),
+              let capability = NCCapabilities.shared.capabilities[account],
+              capability.capabilityRichDocumentsEnabled,
+              NextcloudKit.shared.isNetworkReachable() else { return false }
 
         if NCUtility().isTypeFileRichDocument(self) {
             return true
@@ -318,7 +322,8 @@ extension tableMetadata {
 
     // Return if is sharable
     func isSharable() -> Bool {
-        if !NCGlobal.shared.capabilityFileSharingApiEnabled || (NCGlobal.shared.capabilityE2EEEnabled && isDirectoryE2EE) {
+        guard let capability = NCCapabilities.shared.capabilities[account] else { return false }
+        if !capability.capabilityFileSharingApiEnabled || (capability.capabilityE2EEEnabled && isDirectoryE2EE) {
             return false
         }
         return true

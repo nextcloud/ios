@@ -470,7 +470,8 @@ import KeychainAccess
               let publicKey = getEndToEndPublicKey(account: account), !publicKey.isEmpty,
               let privateKey = getEndToEndPrivateKey(account: account), !privateKey.isEmpty,
               let passphrase = getEndToEndPassphrase(account: account), !passphrase.isEmpty,
-              NCGlobal.shared.e2eeVersions.contains(NCGlobal.shared.capabilityE2EEApiVersion) else { return false }
+              let capability = NCCapabilities.shared.capabilities[account],
+              NCGlobal.shared.e2eeVersions.contains(capability.capabilityE2EEApiVersion) else { return false }
         return true
     }
 

@@ -223,8 +223,8 @@ class NCFiles: NCCollectionViewCommon {
                         NCNetworkingE2EE().getMetadata(fileId: metadataFolder.ocId, e2eToken: lock?.e2eToken, account: account) { account, version, e2eMetadata, signature, _, error in
                             if error == .success, let e2eMetadata = e2eMetadata {
                                 let error = NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: signature, serverUrl: self.serverUrl, session: self.session)
-                                if error == .success {
-                                    if version == "v1", NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
+                                if error == .success, let capability = NCCapabilities.shared.capabilities[account] {
+                                    if version == "v1", capability.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
                                         NextcloudKit.shared.nkCommonInstance.writeLog("[E2EE] Conversion v1 to v2")
                                         NCActivityIndicator.shared.start()
                                         Task {

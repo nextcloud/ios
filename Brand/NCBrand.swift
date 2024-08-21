@@ -188,10 +188,10 @@ class NCBrandColor: NSObject {
         let darker: CGFloat = 30    // %
         let lighter: CGFloat = 30   // %
 
-        if NCBrandOptions.shared.use_themingColor {
-            self.themingColor = NCGlobal.shared.capabilityThemingColor
-            self.themingColorElement = NCGlobal.shared.capabilityThemingColorElement
-            self.themingColorText = NCGlobal.shared.capabilityThemingColorText
+        if NCBrandOptions.shared.use_themingColor, let capability = NCCapabilities.shared.capabilities[account] {
+            self.themingColor = capability.capabilityThemingColor
+            self.themingColorElement = capability.capabilityThemingColorElement
+            self.themingColorText = capability.capabilityThemingColorText
 
             // COLOR
             if themingColor.first == "#" {

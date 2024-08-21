@@ -33,6 +33,7 @@ class NCAccount: NSObject {
         var urlBase = urlBase
         if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
         let account: String = "\(user) \(urlBase)"
+        let capability = NCCapabilities.shared.capabilities[account]
 
         NextcloudKit.shared.appendSession(account: account,
                                           urlBase: urlBase,
@@ -40,7 +41,7 @@ class NCAccount: NSObject {
                                           userId: user,
                                           password: password,
                                           userAgent: userAgent,
-                                          nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
+                                          nextcloudVersion: capability?.capabilityServerVersionMajor ?? 0,
                                           groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
         NextcloudKit.shared.getUserProfile(account: account) { account, userProfile, _, error in

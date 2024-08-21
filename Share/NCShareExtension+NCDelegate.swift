@@ -67,6 +67,7 @@ extension NCShareExtension: NCAccountRequestDelegate {
 
         // CAPABILITIES
         NCManageDatabase.shared.setCapabilities(account: account)
+        let capability = NCCapabilities.shared.capabilities[account]
 
         // COLORS
         NCBrandColor.shared.settingThemingColor(account: activeTableAccount.account)
@@ -81,7 +82,7 @@ extension NCShareExtension: NCAccountRequestDelegate {
                                           userId: activeTableAccount.userId,
                                           password: NCKeychain().getPassword(account: activeTableAccount.account),
                                           userAgent: userAgent,
-                                          nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
+                                          nextcloudVersion: capability?.capabilityServerVersionMajor ?? 0,
                                           groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
         // get auto upload folder

@@ -1156,7 +1156,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func networkSearch() {
         guard !session.account.isEmpty,
               let literalSearch = literalSearch,
-              !literalSearch.isEmpty else {
+              !literalSearch.isEmpty,
+              let capability = NCCapabilities.shared.capabilities[session.account] else {
             return self.refreshControl.endRefreshing()
         }
 
@@ -1164,7 +1165,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.refreshControl.beginRefreshing()
         self.collectionView.reloadData()
 
-        if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion20 {
+        if capability.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion20 {
             NCNetworking.shared.unifiedSearchFiles(literal: literalSearch, account: session.account) { task in
                 self.dataSourceTask = task
                 self.collectionView.reloadData()

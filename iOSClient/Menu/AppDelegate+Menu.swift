@@ -37,6 +37,7 @@ extension AppDelegate {
         let isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, account: session.account)
         let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl))
         let utility = NCUtility()
+        guard let capability = NCCapabilities.shared.capabilities[session.account] else { return }
 
         actions.append(
             NCMenuAction(
@@ -129,7 +130,7 @@ extension AppDelegate {
             actions.append(.seperator(order: 0))
         }
 
-        if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion18 && directory?.richWorkspace == nil && !isDirectoryE2EE && NextcloudKit.shared.isNetworkReachable() {
+        if capability.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion18 && directory?.richWorkspace == nil && !isDirectoryE2EE && NextcloudKit.shared.isNetworkReachable() {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_add_folder_info_", comment: ""), icon: NCUtility().loadImage(named: "list.dash.header.rectangle", colors: [NCBrandColor.shared.iconImageColor]), action: { _ in
@@ -203,7 +204,7 @@ extension AppDelegate {
             )
         }
 
-        if NCGlobal.shared.capabilityRichDocumentsEnabled {
+        if capability.capabilityRichDocumentsEnabled {
             if NextcloudKit.shared.isNetworkReachable() && !isDirectoryE2EE {
                 actions.append(
                     NCMenuAction(
