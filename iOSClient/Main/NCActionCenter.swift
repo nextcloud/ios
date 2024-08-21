@@ -302,13 +302,12 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 var pages: [NCBrandOptions.NCInfoPagingTab] = []
                 let shareNavigationController = UIStoryboard(name: "NCShare", bundle: nil).instantiateInitialViewController() as? UINavigationController
                 let shareViewController = shareNavigationController?.topViewController as? NCSharePaging
-                let capability = NCCapabilities.shared.capabilities[account]
 
                 for value in NCBrandOptions.NCInfoPagingTab.allCases {
                     pages.append(value)
                 }
 
-                if capability?.capabilityActivity.isEmpty ?? true, let idx = pages.firstIndex(of: .activity) {
+                if NCCapabilities.shared.getCapabilities(account: account).capabilityActivity.isEmpty, let idx = pages.firstIndex(of: .activity) {
                     pages.remove(at: idx)
                 }
                 if !metadata.isSharable(), let idx = pages.firstIndex(of: .sharing) {

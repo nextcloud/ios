@@ -30,10 +30,9 @@ struct NCManageE2EEView: View {
 
     var body: some View {
         VStack {
-            let capabilityE2EEApiVersion = model.capability?.capabilityE2EEApiVersion ?? ""
             if model.isEndToEndEnabled {
                 List {
-                    Section(header: Text(""), footer: Text(model.statusOfService + "\n\n" + "End-to-End Encryption " + capabilityE2EEApiVersion)) {
+                    Section(header: Text(""), footer: Text(model.statusOfService + "\n\n" + "End-to-End Encryption " + model.capabilities.capabilityE2EEApiVersion)) {
                         Label {
                             Text(NSLocalizedString("_e2e_settings_activated_", comment: ""))
                         } icon: {
@@ -93,7 +92,7 @@ struct NCManageE2EEView: View {
                 }
             } else {
                 List {
-                    Section(header: Text(""), footer: Text(model.statusOfService + "\n\n" + "End-to-End Encryption " + capabilityE2EEApiVersion)) {
+                    Section(header: Text(""), footer: Text(model.statusOfService + "\n\n" + "End-to-End Encryption " + model.capabilities.capabilityE2EEApiVersion)) {
                         HStack {
                             Label {
                                 Text(NSLocalizedString("_e2e_settings_start_", comment: ""))

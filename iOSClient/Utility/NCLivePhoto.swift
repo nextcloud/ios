@@ -475,8 +475,7 @@ extension NCLivePhoto {
     }
 
     func setLivephotoUpload(metadata: tableMetadata) {
-        guard let capability = NCCapabilities.shared.capabilities[metadata.account],
-              capability.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion28 else { return }
+        guard NCCapabilities.shared.getCapabilities(account: metadata.account).capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion28 else { return }
 
         livePhotoFile = metadata.livePhotoFile
         livePhotoFile2 = metadata.fileName
@@ -506,8 +505,7 @@ extension NCLivePhoto {
     }
 
     func setLivePhoto(metadata1: tableMetadata, metadata2: tableMetadata) {
-        guard let capability = NCCapabilities.shared.capabilities[metadata1.account],
-              capability.isLivePhotoServerAvailable,
+        guard NCCapabilities.shared.getCapabilities(account: metadata1.account).capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion28,
               (!metadata1.livePhotoFile.isEmpty && !metadata2.livePhotoFile.isEmpty) else { return }
 
         Task {

@@ -273,13 +273,12 @@ extension tableMetadata {
     var isAvailableEditorView: Bool {
         guard !isPDF,
               classFile == NKCommon.TypeClassFile.document.rawValue,
-              NextcloudKit.shared.isNetworkReachable(),
-              let capability = NCCapabilities.shared.capabilities[account] else { return false }
+              NextcloudKit.shared.isNetworkReachable() else { return false }
         let utility = NCUtility()
         let directEditingEditors = utility.editorsDirectEditing(account: account, contentType: contentType)
         let richDocumentEditor = utility.isTypeFileRichDocument(self)
 
-        if capability.capabilityRichDocumentsEnabled && richDocumentEditor && directEditingEditors.isEmpty {
+        if NCCapabilities.shared.getCapabilities(account: account).capabilityRichDocumentsEnabled && richDocumentEditor && directEditingEditors.isEmpty {
             // RichDocument: Collabora
             return true
         } else if directEditingEditors.contains(NCGlobal.shared.editorText) || directEditingEditors.contains(NCGlobal.shared.editorOnlyoffice) {
@@ -291,8 +290,7 @@ extension tableMetadata {
 
     var isAvailableRichDocumentEditorView: Bool {
         guard (classFile == NKCommon.TypeClassFile.document.rawValue),
-              let capability = NCCapabilities.shared.capabilities[account],
-              capability.capabilityRichDocumentsEnabled,
+              NCCapabilities.shared.getCapabilities(account: account).capabilityRichDocumentsEnabled,
               NextcloudKit.shared.isNetworkReachable() else { return false }
 
         if NCUtility().isTypeFileRichDocument(self) {
@@ -322,8 +320,7 @@ extension tableMetadata {
 
     // Return if is sharable
     func isSharable() -> Bool {
-        guard let capability = NCCapabilities.shared.capabilities[account] else { return false }
-        if !capability.capabilityFileSharingApiEnabled || (capability.capabilityE2EEEnabled && isDirectoryE2EE) {
+        if !NCCapabilities.shared.getCapabilities(account: account).capabilityFileSharingApiEnabled || (NCCapabilities.shared.getCapabilities(account: account).capabilityE2EEEnabled && isDirectoryE2EE) {
             return false
         }
         return true

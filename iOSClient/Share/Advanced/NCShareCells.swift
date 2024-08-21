@@ -90,8 +90,7 @@ enum NCUserPermission: CaseIterable, NCPermission {
     }
 
     static func forDirectoryE2EE(account: String) -> [NCPermission] {
-        if let capability = NCCapabilities.shared.capabilities[account],
-           capability.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
+        if NCCapabilities.shared.getCapabilities(account: account).capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
             return NCUserPermission.allCases
         }
         return []
@@ -351,40 +350,38 @@ class NCShareDateCell: UITableViewCell {
     }
 
     private func isExpireDateEnforced(account: String) -> Bool {
-        guard let capability = NCCapabilities.shared.capabilities[account] else { return false }
         switch self.shareType {
         case shareCommon.SHARE_TYPE_LINK,
             shareCommon.SHARE_TYPE_EMAIL,
             shareCommon.SHARE_TYPE_GUEST:
-            return capability.capabilityFileSharingPubExpireDateEnforced
+            return NCCapabilities.shared.getCapabilities(account: account).capabilityFileSharingPubExpireDateEnforced
         case shareCommon.SHARE_TYPE_USER,
             shareCommon.SHARE_TYPE_GROUP,
             shareCommon.SHARE_TYPE_CIRCLE,
             shareCommon.SHARE_TYPE_ROOM:
-            return capability.capabilityFileSharingInternalExpireDateEnforced
+            return NCCapabilities.shared.getCapabilities(account: account).capabilityFileSharingInternalExpireDateEnforced
         case shareCommon.SHARE_TYPE_REMOTE,
             shareCommon.SHARE_TYPE_REMOTE_GROUP:
-            return capability.capabilityFileSharingRemoteExpireDateEnforced
+            return NCCapabilities.shared.getCapabilities(account: account).capabilityFileSharingRemoteExpireDateEnforced
         default:
             return false
         }
     }
 
     private func defaultExpirationDays(account: String) -> Int {
-        guard let capability = NCCapabilities.shared.capabilities[account] else { return 0 }
         switch self.shareType {
         case shareCommon.SHARE_TYPE_LINK,
             shareCommon.SHARE_TYPE_EMAIL,
             shareCommon.SHARE_TYPE_GUEST:
-            return capability.capabilityFileSharingPubExpireDateDays
+            return NCCapabilities.shared.getCapabilities(account: account).capabilityFileSharingPubExpireDateDays
         case shareCommon.SHARE_TYPE_USER,
             shareCommon.SHARE_TYPE_GROUP,
             shareCommon.SHARE_TYPE_CIRCLE,
             shareCommon.SHARE_TYPE_ROOM:
-            return capability.capabilityFileSharingInternalExpireDateDays
+            return NCCapabilities.shared.getCapabilities(account: account).capabilityFileSharingInternalExpireDateDays
         case shareCommon.SHARE_TYPE_REMOTE,
             shareCommon.SHARE_TYPE_REMOTE_GROUP:
-            return capability.capabilityFileSharingRemoteExpireDateDays
+            return NCCapabilities.shared.getCapabilities(account: account).capabilityFileSharingRemoteExpireDateDays
         default:
             return 0
         }

@@ -342,8 +342,7 @@ extension NCNetworking {
                                                         "fileName": metadata.fileName,
                                                         "error": error]
                     if metadata.isLivePhoto,
-                       let capability = NCCapabilities.shared.capabilities[metadata.account],
-                       capability.isLivePhotoServerAvailable {
+                       NCCapabilities.shared.getCapabilities(account: metadata.account).isLivePhotoServerAvailable {
                         self.uploadLivePhoto(metadata: metadata, userInfo: userInfo)
                     } else {
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile,

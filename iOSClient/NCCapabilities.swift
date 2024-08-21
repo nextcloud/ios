@@ -69,7 +69,7 @@ public class NCCapabilities: NSObject {
         var capabilitySecurityGuardDiagnostics                      = false
     }
 
-    var capabilities = ThreadSafeDictionary<String, Capabilities>()
+    private var capabilities = ThreadSafeDictionary<String, Capabilities>()
 
     override private init() {}
 
@@ -78,5 +78,16 @@ public class NCCapabilities: NSObject {
             return true
         }
         return (!capability.capabilityFileSharingApiEnabled && !capability.capabilityFilesComments && capability.capabilityActivity.isEmpty)
+    }
+
+    func getCapabilities(account: String?) -> Capabilities {
+        if let account, let capability = capabilities[account] {
+            return capability
+        }
+        return Capabilities()
+    }
+
+    func appendCapabilities(account: String, capabilities: Capabilities) {
+        self.capabilities[account] = capabilities
     }
 }

@@ -86,12 +86,12 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     // MARK: -
 
     func loadItems() {
-        guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)),
-              let capability = NCCapabilities.shared.capabilities[tableAccount.account] else {
+        guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
             return
         }
         var item = NKExternalSite()
         var quota: String = ""
+        let capabilities = NCCapabilities.shared.getCapabilities(account: tableAccount.account)
 
         // Clear
         functionMenu.removeAll()
@@ -126,7 +126,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         item.order = 30
         functionMenu.append(item)
 
-        if capability.capabilityAssistantEnabled, NCBrandOptions.shared.disable_show_more_nextcloud_apps_in_settings {
+        if capabilities.capabilityAssistantEnabled, NCBrandOptions.shared.disable_show_more_nextcloud_apps_in_settings {
             // ITEM : Assistant
             item = NKExternalSite()
             item.name = "_assistant_"
@@ -137,7 +137,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
 
         // ITEM : Shares
-        if capability.capabilityFileSharingApiEnabled {
+        if capabilities.capabilityFileSharingApiEnabled {
             item = NKExternalSite()
             item.name = "_list_shares_"
             item.icon = "person.badge.plus"
@@ -155,7 +155,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         functionMenu.append(item)
 
         // ITEM : Groupfolders
-        if capability.capabilityGroupfoldersEnabled {
+        if capabilities.capabilityGroupfoldersEnabled {
             item = NKExternalSite()
             item.name = "_group_folders_"
             item.icon = "person.2"
@@ -173,7 +173,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         functionMenu.append(item)
 
         // ITEM : Trash
-        if capability.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion15 {
+        if capabilities.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion15 {
             item = NKExternalSite()
             item.name = "_trash_view_"
             item.icon = "trash"

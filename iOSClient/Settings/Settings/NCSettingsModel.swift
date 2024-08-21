@@ -58,6 +58,7 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
 
     /// Triggered when the view appears.
     func onViewAppear() {
+        let capabilities = NCCapabilities.shared.getCapabilities(account: self.controller?.account)
         isLockActive = (keychain.passcode != nil)
         enableTouchID = keychain.touchFaceID
         lockScreen = !keychain.requestPasscodeAtStart
@@ -65,11 +66,8 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
         resetWrongAttempts = keychain.resetAppCounterFail
         accountRequest = keychain.accountRequest
         footerApp = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility().getVersionApp(withBuild: true)) + "\n\n"
-        if let controller,
-           let capability = NCCapabilities.shared.capabilities[controller.account] {
-            footerServer = String(format: NCBrandOptions.shared.textCopyrightNextcloudServer, capability.capabilityServerVersion) + "\n"
-            footerSlogan = capability.capabilityThemingName + " - " + capability.capabilityThemingSlogan + "\n\n"
-        }
+        footerServer = String(format: NCBrandOptions.shared.textCopyrightNextcloudServer, capabilities.capabilityServerVersion) + "\n"
+        footerSlogan = capabilities.capabilityThemingName + " - " + capabilities.capabilityThemingSlogan + "\n\n"
     }
 
     // MARK: - All functions

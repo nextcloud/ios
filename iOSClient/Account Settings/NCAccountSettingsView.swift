@@ -155,7 +155,7 @@ struct NCAccountSettingsView: View {
                     }
                     ///
                     /// User Status
-                    if let account = model.tblAccount?.account, NCCapabilities.shared.capabilities[account]?.capabilityUserStatusEnabled ?? false {
+                    if NCCapabilities.shared.getCapabilities(account: model.tblAccount?.account).capabilityUserStatusEnabled {
                         Button(action: {
                             showUserStatus = true
                         }, label: {

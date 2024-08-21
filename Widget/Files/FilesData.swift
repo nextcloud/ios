@@ -102,8 +102,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
         activeTableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", accountIdentifier))
     }
 
-    guard let activeTableAccount,
-          let capability = NCCapabilities.shared.capabilities[activeTableAccount.account] else {
+    guard let activeTableAccount else {
         return completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: "", url: "", tile: getTitleFilesWidget(tableAccount: nil), footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
     }
 
@@ -117,7 +116,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                                       userId: activeTableAccount.userId,
                                       password: password,
                                       userAgent: userAgent,
-                                      nextcloudVersion: capability.capabilityServerVersionMajor,
+                                      nextcloudVersion: NCCapabilities.shared.getCapabilities(account: activeTableAccount.account).capabilityServerVersionMajor,
                                       groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
     let requestBodyRecent =

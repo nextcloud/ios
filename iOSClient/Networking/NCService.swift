@@ -257,8 +257,7 @@ class NCService: NSObject {
     // MARK: -
 
     func sendClientDiagnosticsRemoteOperation(account: String) {
-        guard let capability = NCCapabilities.shared.capabilities[account],
-              capability.capabilitySecurityGuardDiagnostics,
+        guard NCCapabilities.shared.getCapabilities(account: account).capabilitySecurityGuardDiagnostics,
               NCManageDatabase.shared.existsDiagnostics(account: account) else {
             return
         }

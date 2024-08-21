@@ -43,8 +43,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         if fileNameFolder.isEmpty {
             return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
         }
-        guard let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl)),
-              let options = NCNetworkingE2EE().getOptions(account: session.account) else {
+        guard let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl)) else {
             return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
         }
 
@@ -130,7 +129,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
 
         // SET FOLDER AS E2EE
         //
-        let resultsMarkE2EEFolder = await NCNetworking.shared.markE2EEFolder(fileId: fileId, delete: false, account: session.account, options: options)
+        let resultsMarkE2EEFolder = await NCNetworking.shared.markE2EEFolder(fileId: fileId, delete: false, account: session.account, options: NCNetworkingE2EE().getOptions(account: session.account))
         guard resultsMarkE2EEFolder.error == .success  else {
             await networkingE2EE.unlock(account: session.account, serverUrl: serverUrl)
             return resultsMarkE2EEFolder.error

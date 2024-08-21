@@ -58,16 +58,13 @@ extension NCShareExtension: NCAccountRequestDelegate {
     func accountRequestAddAccount() { }
 
     func accountRequestChangeAccount(account: String, controller: UIViewController?) {
-        guard let activeTableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) else {
+        guard let activeTableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
+              let capabilities = NCManageDatabase.shared.setCapabilities(account: account) else {
             cancel(with: NCShareExtensionError.noAccount)
             return
         }
         self.activeTableAccount = activeTableAccount
         let session = NCSession.Session(account: activeTableAccount.account, urlBase: activeTableAccount.urlBase, user: activeTableAccount.user, userId: activeTableAccount.userId)
-
-        // CAPABILITIES
-        NCManageDatabase.shared.setCapabilities(account: account)
-        let capability = NCCapabilities.shared.capabilities[account]
 
         // COLORS
         NCBrandColor.shared.settingThemingColor(account: activeTableAccount.account)
@@ -82,7 +79,7 @@ extension NCShareExtension: NCAccountRequestDelegate {
                                           userId: activeTableAccount.userId,
                                           password: NCKeychain().getPassword(account: activeTableAccount.account),
                                           userAgent: userAgent,
-                                          nextcloudVersion: capability?.capabilityServerVersionMajor ?? 0,
+                                          nextcloudVersion: capabilities.capabilityServerVersionMajor,
                                           groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
         // get auto upload folder

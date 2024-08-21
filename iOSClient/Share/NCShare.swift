@@ -88,10 +88,11 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
 
         NotificationCenter.default.addObserver(self, selector: #selector(reloadData), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataNCShare), object: nil)
 
-        if metadata.e2eEncrypted, let capability = NCCapabilities.shared.capabilities[metadata.account] {
+        if metadata.e2eEncrypted {
             let direcrory = NCManageDatabase.shared.getTableDirectory(account: metadata.account, serverUrl: metadata.serverUrl)
-            if capability.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV12 ||
-                (capability.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 && direcrory?.e2eEncrypted ?? false) {
+            let capabilities = NCCapabilities.shared.getCapabilities(account: metadata.account)
+            if capabilities.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV12 ||
+                (capabilities.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 && direcrory?.e2eEncrypted ?? false) {
                 searchFieldTopConstraint.constant = -50
                 searchField.alpha = 0
                 btnContact.alpha = 0
@@ -196,8 +197,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
     }
 
     func checkEnforcedPassword(shareType: Int, completion: @escaping (String?) -> Void) {
-        guard let capability = NCCapabilities.shared.capabilities[session.account],
-              capability.capabilityFileSharingPubPasswdEnforced,
+        guard NCCapabilities.shared.getCapabilities(account: session.account).capabilityFileSharingPubPasswdEnforced,
               shareType == shareCommon.SHARE_TYPE_LINK || shareType == shareCommon.SHARE_TYPE_EMAIL
         else { return completion(nil) }
 
@@ -311,9 +311,7 @@ extension NCShare: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         var numRows = shares.share?.count ?? 0
         if section == 0 {
-            if metadata.e2eEncrypted,
-               let capability = NCCapabilities.shared.capabilities[metadata.account],
-               capability.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV12 {
+            if metadata.e2eEncrypted, NCCapabilities.shared.getCapabilities(account: metadata.account).capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV12 {
                 numRows = 1
             } else {
                 // don't allow link creation if reshare is disabled
@@ -329,9 +327,7 @@ extension NCShare: UITableViewDataSource {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "cellLink", for: indexPath) as? NCShareLinkCell
             else { return UITableViewCell() }
             cell.delegate = self
-            if metadata.e2eEncrypted,
-               let capability = NCCapabilities.shared.capabilities[metadata.account],
-               capability.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV12 {
+            if metadata.e2eEncrypted, NCCapabilities.shared.getCapabilities(account: metadata.account).capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV12 {
                 cell.tableShare = shares.firstShareLink
             } else {
                 if indexPath.row == 1 {

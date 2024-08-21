@@ -53,14 +53,11 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, fami
     }
 
     guard let activeTableAccount,
-          let capability = NCCapabilities.shared.capabilities[activeTableAccount.account] else {
+          let capabilities = NCManageDatabase.shared.setCapabilities(account: activeTableAccount.account) else {
         return completion(LockscreenData(date: Date(), isPlaceholder: true, activity: "", link: URL(string: "https://")!, quotaRelative: 0, quotaUsed: "", quotaTotal: "", error: false))
     }
 
-    // Capabilities
-    NCManageDatabase.shared.setCapabilities(account: activeTableAccount.account)
-
-    if capability.capabilityServerVersionMajor < NCGlobal.shared.nextcloudVersion25 {
+    if capabilities.capabilityServerVersionMajor < NCGlobal.shared.nextcloudVersion25 {
         completion(LockscreenData(date: Date(), isPlaceholder: false, activity: NSLocalizedString("_widget_available_nc25_", comment: ""), link: URL(string: "https://")!, quotaRelative: 0, quotaUsed: "", quotaTotal: "", error: true))
     }
 
@@ -74,7 +71,7 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, fami
                                       userId: activeTableAccount.userId,
                                       password: password,
                                       userAgent: userAgent,
-                                      nextcloudVersion: capability.capabilityServerVersionMajor,
+                                      nextcloudVersion: capabilities.capabilityServerVersionMajor,
                                       groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
     let options = NKRequestOptions(timeout: 90, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)

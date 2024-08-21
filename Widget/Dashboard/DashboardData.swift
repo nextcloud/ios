@@ -115,7 +115,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
     }
 
     guard let activeTableAccount,
-          let capability = NCCapabilities.shared.capabilities[activeTableAccount.account] else {
+          let capabilities = NCManageDatabase.shared.setCapabilities(account: activeTableAccount.account) else {
         return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, isEmpty: false, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", comment: "")))
     }
 
@@ -123,10 +123,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
     let result = NCManageDatabase.shared.getDashboardWidgetApplications(account: activeTableAccount.account).first
     let id: String = configuration?.applications?.identifier ?? (result?.id ?? "recommendations")
 
-    // Capabilities
-    NCManageDatabase.shared.setCapabilities(account: activeTableAccount.account)
-
-    guard capability.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion25 else {
+    guard capabilities.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion25 else {
         return completion(DashboardDataEntry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, isEmpty: false, titleImage: UIImage(named: "widget")!, title: "Dashboard", footerImage: "xmark.icloud", footerText: NSLocalizedString("_widget_available_nc25_", comment: "")))
     }
 
@@ -140,7 +137,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
                                       userId: activeTableAccount.userId,
                                       password: password,
                                       userAgent: userAgent,
-                                      nextcloudVersion: capability.capabilityServerVersionMajor,
+                                      nextcloudVersion: capabilities.capabilityServerVersionMajor,
                                       groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
     // LOG

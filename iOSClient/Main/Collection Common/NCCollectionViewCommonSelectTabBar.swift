@@ -126,8 +126,7 @@ class NCCollectionViewCommonSelectTabBar: ObservableObject {
                     isAnyOffline = localFile.offline
                 } // else: file is not offline, continue
             }
-            let capabilityFilesLockVersion = NCCapabilities.shared.capabilities[controller?.account ?? ""]?.capabilityFilesLockVersion ?? ""
-            enableLock = !isAnyDirectory && canUnlock && !capabilityFilesLockVersion.isEmpty
+            enableLock = !isAnyDirectory && canUnlock && !NCCapabilities.shared.getCapabilities(account: controller?.account).capabilityFilesLockVersion.isEmpty
         }
         isSelectedEmpty = selectOcId.isEmpty
     }

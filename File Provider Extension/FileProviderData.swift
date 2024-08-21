@@ -76,8 +76,7 @@ class fileProviderData: NSObject {
 
         // NO DOMAIN -> Set default account
         if domain == nil {
-            guard let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount(),
-                  let capability = NCCapabilities.shared.capabilities[activeTableAccount.account] else { return nil }
+            guard let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() else { return nil }
             self.account = activeTableAccount.account
             /// Session
             NCSession.shared.appendSession(account: activeTableAccount.account,
@@ -92,7 +91,7 @@ class fileProviderData: NSObject {
                                               userId: activeTableAccount.userId,
                                               password: NCKeychain().getPassword(account: activeTableAccount.account),
                                               userAgent: userAgent,
-                                              nextcloudVersion: capability.capabilityServerVersionMajor,
+                                              nextcloudVersion: NCCapabilities.shared.getCapabilities(account: self.account).capabilityServerVersionMajor,
                                               groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
             NCNetworking.shared.delegate = providerExtension as? NCNetworkingDelegate
 

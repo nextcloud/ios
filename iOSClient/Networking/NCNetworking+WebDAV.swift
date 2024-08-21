@@ -45,7 +45,7 @@ extension NCNetworking {
                                              options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
             taskHandler(task)
         } completion: { account, files, _, error in
-            guard error == .success, let files, let capability = NCCapabilities.shared.capabilities[account] else {
+            guard error == .success, let files else {
                 return completion(account, nil, nil, 0, 0, error)
             }
 
@@ -55,7 +55,7 @@ extension NCNetworking {
 #if !EXTENSION
                 // Convert Live Photo
                 for metadata in metadatas {
-                    if capability.isLivePhotoServerAvailable, metadata.isLivePhoto {
+                    if NCCapabilities.shared.getCapabilities(account: account).isLivePhotoServerAvailable, metadata.isLivePhoto {
                         NCNetworking.shared.convertLivePhoto(metadata: metadata)
                     }
                 }
