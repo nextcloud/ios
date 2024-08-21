@@ -179,7 +179,10 @@ struct NCSettingsView: View {
                     .lineSpacing(1)
             })
             /// E2EEncryption` Section
-            if NCGlobal.shared.capabilityE2EEEnabled && NCGlobal.shared.e2eeVersions.contains(NCGlobal.shared.capabilityE2EEApiVersion) {
+            if let controller = model.controller,
+               let capability = NCCapabilities.shared.capabilities[controller.account],
+               capability.capabilityE2EEEnabled,
+               capability.capabilityE2EEEnabled && NCGlobal.shared.e2eeVersions.contains(capability.capabilityE2EEApiVersion) {
                 E2EESection(model: model)
             }
             /// `Advanced` Section
