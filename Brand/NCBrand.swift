@@ -69,7 +69,7 @@ let userAgent: String = {
     var disable_crash_service: Bool = false
     var disable_log: Bool = false
     var disable_mobileconfig: Bool = false
-    var disable_show_more_nextcloud_apps_in_settings: Bool = true
+    var disable_show_more_nextcloud_apps_in_settings: Bool = false
     var doNotAskPasscodeAtStartup: Bool = false
 
     // Internal option behaviour
