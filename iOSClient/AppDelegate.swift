@@ -67,6 +67,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         utilityFileSystem.createDirectoryStandard()
         utilityFileSystem.emptyTemporaryDirectory()
         utilityFileSystem.clearCacheDirectory("com.limit-point.LivePhoto")
+        NCBrandColor.shared.createUserColors()
 
         NextcloudKit.shared.setup(delegate: NCNetworking.shared)
         NextcloudKit.shared.nkCommonInstance.pathLog = utilityFileSystem.directoryGroup
@@ -109,7 +110,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         /// Cache Media
         DispatchQueue.global().async {
             NCImageCache.shared.createMediaCache()
-            NCBrandColor.shared.createUserColors()
         }
 
         return true

@@ -200,14 +200,6 @@ class NCImageCache: NSObject {
 
     // MARK: -
 
-    func createImagesBrandCache(account: String) {
-        let brandElement = NCBrandColor.shared.brandElement
-        guard brandElement != self.brandElementColor else { return }
-        self.brandElementColor = brandElement
-
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming)
-    }
-
     func getImageFile() -> UIImage {
         return utility.loadImage(named: "doc", colors: [NCBrandColor.shared.iconImageColor2])
     }

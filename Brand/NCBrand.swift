@@ -135,18 +135,13 @@ class NCBrandColor: NSObject {
     var brandElement: UIColor                                                                                  // don't touch me
     var brandText: UIColor                                                                                     // don't touch me
 
+    // DEFINE COLORS
+    var userColors: [CGColor] = []
     let nextcloud: UIColor = UIColor(red: 0.0 / 255.0, green: 130.0 / 255.0, blue: 201.0 / 255.0, alpha: 1.0)
     let yellowFavorite: UIColor = UIColor(red: 248.0 / 255.0, green: 205.0 / 255.0, blue: 70.0 / 255.0, alpha: 1.0)
-
-    var userColors: [CGColor] = []
-    var themingColor: String = ""
-    var themingColorElement: String = ""
-    var themingColorText: String = ""
-
     let iconImageColor: UIColor = .label
     let iconImageColor2: UIColor = .secondaryLabel
     let iconImageMultiColors: [UIColor] = [.secondaryLabel, .label]
-
     let textColor: UIColor = .label
     let textColor2: UIColor = .secondaryLabel
 
@@ -189,9 +184,9 @@ class NCBrandColor: NSObject {
         let lighter: CGFloat = 30   // %
 
         if NCBrandOptions.shared.use_themingColor {
-            self.themingColor = NCCapabilities.shared.getCapabilities(account: account).capabilityThemingColor
-            self.themingColorElement = NCCapabilities.shared.getCapabilities(account: account).capabilityThemingColorElement
-            self.themingColorText = NCCapabilities.shared.getCapabilities(account: account).capabilityThemingColorText
+            let themingColor = NCCapabilities.shared.getCapabilities(account: account).capabilityThemingColor
+            let themingColorElement = NCCapabilities.shared.getCapabilities(account: account).capabilityThemingColorElement
+            let themingColorText = NCCapabilities.shared.getCapabilities(account: account).capabilityThemingColorText
 
             // COLOR
             if themingColor.first == "#" {
