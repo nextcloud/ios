@@ -115,7 +115,7 @@ extension NCShareExtension: UICollectionViewDataSource {
         cell.selected(false, isEditMode: false)
 
         if metadata.isLivePhoto {
-            cell.imageStatus.image = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor])
+            cell.imageStatus.image = utility.loadImage(named: "livephoto", colors: [.white])
         }
 
         cell.setTags(tags: Array(metadata.tags))
