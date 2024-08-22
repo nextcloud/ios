@@ -185,6 +185,7 @@ class NCBrandColor: NSObject {
             let themingColorElement = NCCapabilities.shared.getCapabilities(account: account).capabilityThemingColorElement
             let themingColorText = NCCapabilities.shared.getCapabilities(account: account).capabilityThemingColorText
 
+            // THEMING COLOR
             if themingColor.first == "#" {
                 if let color = UIColor(hex: themingColor) {
                     self.themingColor[account] = color
@@ -195,6 +196,28 @@ class NCBrandColor: NSObject {
                 self.themingColor[account] = customer
             }
 
+            // THEMING COLOR ELEMENT (control isTooLight / isTooDark)
+            if themingColorElement.first == "#" {
+                if let color = UIColor(hex: themingColorElement) {
+                    if color.isTooLight() {
+                        if let color = color.darker(by: darker) {
+                            self.themingColorElement[account] = color
+                        }
+                    } else if color.isTooDark() {
+                        if let color = color.lighter(by: lighter) {
+                            self.themingColorElement[account] = color
+                        }
+                    } else {
+                        self.themingColorElement[account] = color
+                    }
+                } else {
+                    self.themingColorElement[account] = customer
+                }
+            } else {
+                self.themingColorElement[account] = customer
+            }
+
+            // THEMING COLOR TEXT
             if themingColorText.first == "#" {
                 if let color = UIColor(hex: themingColorText) {
                     self.themingColorText[account] = color
@@ -205,28 +228,12 @@ class NCBrandColor: NSObject {
                 self.themingColorText[account] = .white
             }
 
-            // COLOR ELEMENT
-            if themingColorElement.first == "#" {
-                if let color = UIColor(hex: themingColorElement) {
-                    self.themingColorElement[account] = color
-                } else {
-                    self.themingColorElement[account] = customer
-                }
-            } else {
-                self.themingColorElement[account] = customer
-            }
-
-            if let element = self.themingColorElement[account], element.isTooLight() {
-                if let color = element.darker(by: darker) {
-                    self.themingColorElement[account] = color
-                }
-            } else if let element = self.themingColorElement[account], element.isTooDark() {
-                if let color = element.lighter(by: lighter) {
-                    self.themingColorElement[account] = color
-                }
-            }
-
         } else {
+
+            // THEMING COLOR
+            self.themingColor[account] = customer
+
+            // THEMING COLOR ELEMENT (control isTooLight / isTooDark)
             if self.customer.isTooLight() {
                 if let color = customer.darker(by: darker) {
                     self.themingColorElement[account] = color
@@ -238,7 +245,8 @@ class NCBrandColor: NSObject {
             } else {
                 self.themingColorElement[account] = customer
             }
-            self.themingColor[account] = customer
+
+            // THEMING COLOR TEXT
             self.themingColorText[account] = customerText
         }
     }
