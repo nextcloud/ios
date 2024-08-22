@@ -67,9 +67,8 @@ extension NCShareExtension: NCAccountRequestDelegate {
         let session = NCSession.Session(account: activeTableAccount.account, urlBase: activeTableAccount.urlBase, user: activeTableAccount.user, userId: activeTableAccount.userId)
 
         // COLORS
-        NCBrandColor.shared.createUserColors()
         NCBrandColor.shared.settingThemingColor(account: activeTableAccount.account)
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming)
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming, userInfo: ["account": activeTableAccount.account])
 
         // NETWORKING
         NextcloudKit.shared.setup(delegate: NCNetworking.shared)
