@@ -14,6 +14,7 @@ stages:
 .mac_general_scripts: &mac_general_scripts
   - security unlock-keychain -p $PASSWORD_BUILDE ~/Library/Keychains/login.keychain-db
   - brew install carthage
+  - brew install jq
   - fastlane -v
   - xcodebuild -version
   - date
@@ -22,7 +23,13 @@ stages:
   - carthage update --use-xcframeworks --platform iOS
 
 .download_google_info_plist: &download_google_info_plist
-  - curl "https://raw.githubusercontent.com/firebase/quickstart-ios/main/mock-GoogleService-Info.plist" -o ./GoogleService-Info.plist
+  - curl 
+    --fail 
+    --location 
+    --request GET 
+    --url $FB_PLIST_PATH 
+    --header "Authorization:Bearer ${FB_PLIST_PROJECT_TOKEN}"  | jq -r '.content' | base64 --decode >> "./GoogleService-Info.plist"
+  
 
 .build_general_script: &build_general_script
   - fastlane gym
