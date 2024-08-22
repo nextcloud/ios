@@ -41,16 +41,17 @@ class NCMainTabBar: UITabBar {
     required init?(coder: NSCoder) {
         super.init(coder: coder)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
-
-        changeTheming()
     }
 
-    @objc func changeTheming() {
-        tintColor = NCBrandColor.shared.brandElement
+    @objc func changeTheming(_ notification: NSNotification) {
+        guard let userInfo = notification.userInfo as? NSDictionary else { return }
+        let account = userInfo["account"] as? String
+
+        tintColor = NCBrandColor.shared.getBrandElement(account: account)
         if let centerButton = self.viewWithTag(99) {
-            centerButton.backgroundColor = NCBrandColor.shared.brandElement
+            centerButton.backgroundColor = NCBrandColor.shared.getBrandElement(account: account)
         }
     }
 
@@ -170,7 +171,7 @@ class NCMainTabBar: UITabBar {
 
         centerButton.setTitle("", for: .normal)
         centerButton.setImage(imagePlus, for: .normal)
-        centerButton.backgroundColor = NCBrandColor.shared.brandElement
+        centerButton.backgroundColor = NCBrandColor.shared.getBrandElement(account: "")
         centerButton.tintColor = UIColor.white
         centerButton.tag = 99
         centerButton.accessibilityLabel = NSLocalizedString("_accessibility_add_upload_", comment: "")
