@@ -47,7 +47,7 @@ struct NCSettingsAdvancedView: View {
             /// file name
             Section(content: {
                NavigationLink(destination: LazyView {
-                   NCFileNameView(model: NCFileNameModel())
+                   NCFileNameView(model: NCFileNameModel(controller: model.controller))
                }) {
                    Text(NSLocalizedString("_filenamemask_", comment: ""))
                        .font(.system(size: 16))
