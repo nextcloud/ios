@@ -43,11 +43,11 @@ extension NCShareExtension: UICollectionViewDelegate {
         if kind == UICollectionView.elementKindSectionHeader {
             guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeaderEmptyData", for: indexPath) as? NCSectionFirstHeaderEmptyData else { return NCSectionFirstHeaderEmptyData() }
             if self.dataSourceTask?.state == .running {
-                header.emptyImage.image = utility.loadImage(named: "wifi", colors: [NCBrandColor.shared.brandElement])
+                header.emptyImage.image = utility.loadImage(named: "wifi", colors: [NCBrandColor.shared.getBrandElement(account: activeTableAccount.account)])
                 header.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
                 header.emptyDescription.text = ""
             } else {
-                header.emptyImage.image = NCImageCache.images.folder
+                header.emptyImage.image = NCImageCache.shared.getFolder(account: self.activeTableAccount.account)
                 header.emptyTitle.text = NSLocalizedString("_files_no_folders_", comment: "")
                 header.emptyDescription.text = ""
             }
@@ -105,7 +105,7 @@ extension NCShareExtension: UICollectionViewDataSource {
         }
 
         if metadata.favorite {
-            cell.imageFavorite.image = NCImageCache.images.favorite
+            cell.imageFavorite.image = NCImageCache.shared.getImageFavorite()
         }
 
         cell.imageSelect.isHidden = true
@@ -115,7 +115,7 @@ extension NCShareExtension: UICollectionViewDataSource {
         cell.selected(false, isEditMode: false)
 
         if metadata.isLivePhoto {
-            cell.imageStatus.image = NCImageCache.images.livePhoto
+            cell.imageStatus.image = utility.loadImage(named: "livephoto", colors: [.white])
         }
 
         cell.setTags(tags: Array(metadata.tags))
@@ -135,21 +135,21 @@ extension NCShareExtension: UICollectionViewDataSource {
         }
 
         if metadata.e2eEncrypted {
-            cell.imageItem.image = NCImageCache.images.folderEncrypted
+            cell.imageItem.image = NCImageCache.shared.getFolderEncrypted(account: metadata.account)
         } else if isShare {
-            cell.imageItem.image = NCImageCache.images.folderSharedWithMe
+            cell.imageItem.image = NCImageCache.shared.getFolderSharedWithMe(account: metadata.account)
         } else if !metadata.shareType.isEmpty {
             metadata.shareType.contains(3) ?
-            (cell.imageItem.image = NCImageCache.images.folderPublic) :
-            (cell.imageItem.image = NCImageCache.images.folderSharedWithMe)
+            (cell.imageItem.image = NCImageCache.shared.getFolderPublic(account: metadata.account)) :
+            (cell.imageItem.image = NCImageCache.shared.getFolderSharedWithMe(account: metadata.account))
         } else if metadata.mountType == "group" {
-            cell.imageItem.image = NCImageCache.images.folderGroup
+            cell.imageItem.image = NCImageCache.shared.getFolderGroup(account: metadata.account)
         } else if isMounted {
-            cell.imageItem.image = NCImageCache.images.folderExternal
+            cell.imageItem.image = NCImageCache.shared.getFolderExternal(account: metadata.account)
         } else if metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory {
-            cell.imageItem.image = NCImageCache.images.folderAutomaticUpload
+            cell.imageItem.image = NCImageCache.shared.getFolderAutomaticUpload(account: metadata.account)
         } else {
-            cell.imageItem.image = NCImageCache.images.folder
+            cell.imageItem.image = NCImageCache.shared.getFolder(account: metadata.account)
         }
 
         cell.labelInfo.text = utility.dateDiff(metadata.date as Date)
@@ -159,7 +159,7 @@ extension NCShareExtension: UICollectionViewDataSource {
 
         // Local image: offline
         if tableDirectory != nil && tableDirectory!.offline {
-            cell.imageLocal.image = NCImageCache.images.offlineFlag
+            cell.imageLocal.image = NCImageCache.shared.getImageOfflineFlag()
         }
     }
 }

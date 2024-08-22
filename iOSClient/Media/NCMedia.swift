@@ -61,8 +61,8 @@ class NCMedia: UIViewController {
     var timerSearchNewMedia: Timer?
     let insetsTop: CGFloat = 75
     let maxImageGrid: CGFloat = 7
-    var livePhotoImage = UIImage()
-    var playImage = UIImage()
+    let livePhotoImage = NCUtility().loadImage(named: "livephoto", colors: [.white])
+    let playImage = NCUtility().loadImage(named: "play.fill", colors: [.white])
     var photoImage = UIImage()
     var videoImage = UIImage()
 
@@ -96,9 +96,6 @@ class NCMedia: UIViewController {
         layoutType = NCManageDatabase.shared.getLayoutForView(account: session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")?.layout ?? NCGlobal.shared.mediaLayoutRatio
 
         tabBarSelect = NCMediaSelectTabBar(tabBarController: self.tabBarController, delegate: self)
-
-        livePhotoImage = utility.loadImage(named: "livephoto", colors: [.white])
-        playImage = utility.loadImage(named: "play.fill", colors: [.white])
 
         titleDate.text = ""
 

@@ -67,7 +67,7 @@ class NCUserStatus: UIViewController {
     private let utility = NCUtility()
     private var clearAtTimestamp: Double = 0     // Unix Timestamp representing the time to clear the status
     private let borderWidthButton: CGFloat = 1.5
-    private let borderColorButton: CGColor = NCBrandColor.shared.brandElement.cgColor
+    private var borderColorButton: CGColor = NCBrandColor.shared.customer.cgColor
 
     public var account: String = ""
 
@@ -82,6 +82,7 @@ class NCUserStatus: UIViewController {
         view.backgroundColor = .systemBackground
         tableView.backgroundColor = .systemBackground
 
+        borderColorButton = NCBrandColor.shared.getBrandElement(account: account).cgColor
         buttonCancel.image = utility.loadImage(named: "xmark", colors: [NCBrandColor.shared.iconImageColor])
 
         onlineButton.layer.cornerRadius = 10
@@ -163,9 +164,9 @@ class NCUserStatus: UIViewController {
 
         setStatusMessageButton.layer.cornerRadius = 20
         setStatusMessageButton.layer.masksToBounds = true
-        setStatusMessageButton.backgroundColor = NCBrandColor.shared.brandElement
+        setStatusMessageButton.backgroundColor = NCBrandColor.shared.getBrandElement(account: account)
         setStatusMessageButton.setTitle(NSLocalizedString("_set_status_message_", comment: ""), for: .normal)
-        setStatusMessageButton.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
+        setStatusMessageButton.setTitleColor(NCBrandColor.shared.getBrandText(account: account), for: .normal)
 
         getStatus()
     }

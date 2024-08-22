@@ -34,7 +34,6 @@ enum ScreenMode {
 var viewerMediaScreenMode: ScreenMode = .normal
 
 class NCViewerMediaPage: UIViewController {
-
     @IBOutlet weak var progressView: UIProgressView!
 
     // swiftlint:disable force_cast
@@ -77,7 +76,7 @@ class NCViewerMediaPage: UIViewController {
     var timerAutoHide: Timer?
     private var timerAutoHideSeconds: Double = 4
 
-    private lazy var moreNavigationItem = UIBarButtonItem(image: NCImageCache.images.buttonMore, style: .plain, target: self, action: #selector(openMenuMore))
+    private lazy var moreNavigationItem = UIBarButtonItem(image: NCImageCache.shared.getImageButtonMore(), style: .plain, target: self, action: #selector(openMenuMore))
     private lazy var imageDetailNavigationItem = UIBarButtonItem(image: NCUtility().loadImage(named: "info.circle", colors: [NCBrandColor.shared.iconImageColor]), style: .plain, target: self, action: #selector(toggleDetail))
 
     // MARK: - View Life Cycle
@@ -113,7 +112,7 @@ class NCViewerMediaPage: UIViewController {
         pageViewController.view.addGestureRecognizer(singleTapGestureRecognizer)
         pageViewController.view.addGestureRecognizer(longtapGestureRecognizer)
 
-        progressView.tintColor = NCBrandColor.shared.brandElement
+        progressView.tintColor = NCBrandColor.shared.getBrandElement(account: metadatas.first?.account)
         progressView.trackTintColor = .clear
         progressView.progress = 0
 

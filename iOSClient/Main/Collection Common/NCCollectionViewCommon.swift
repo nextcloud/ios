@@ -173,7 +173,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         let dropInteraction = UIDropInteraction(delegate: self)
         self.navigationController?.navigationItem.leftBarButtonItems?.first?.customView?.addInteraction(dropInteraction)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -326,7 +326,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         setNavigationLeftItems()
     }
 
-    @objc func changeTheming() {
+    @objc func changeTheming(_ notification: NSNotification) {
         collectionView.reloadData()
     }
 
@@ -448,7 +448,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let serverUrl = userInfo["serverUrl"] as? String,
               let account = userInfo["account"] as? String
         else { return }
-
 
         if account == self.session.account, serverUrl == self.serverUrl {
             self.reloadDataSource()

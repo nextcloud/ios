@@ -41,9 +41,16 @@ class NCFileNameModel: ObservableObject, ViewOnAppearHandling {
     @Published var changedName: String = ""
     /// The complete new file name.
     @Published var fileNamePreview: String = ""
+    /// Root View Controller
+    @Published var controller: NCMainTabBarController?
+    /// Get session
+    var session: NCSession.Session {
+        NCSession.shared.getSession(controller: controller)
+    }
 
     /// Initializes the view model with default values.
-    init() {
+    init(controller: NCMainTabBarController?) {
+        self.controller = controller
         onViewAppear()
     }
 

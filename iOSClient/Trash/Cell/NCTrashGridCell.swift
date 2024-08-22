@@ -109,7 +109,7 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
             setA11yActions()
         }
         if status {
-            imageSelect.image = NCImageCache.images.checkedYes
+            imageSelect.image = NCImageCache.shared.getImageCheckedYes()
             imageSelect.isHidden = false
             imageVisualEffect.isHidden = false
         } else {

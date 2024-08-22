@@ -33,7 +33,7 @@ class NCRecent: NCCollectionViewCommon {
         layoutKey = NCGlobal.shared.layoutViewRecent
         enableSearchBar = false
         headerRichWorkspaceDisable = true
-        emptyImage = utility.loadImage(named: "clock.arrow.circlepath", colors: [NCBrandColor.shared.brandElement])
+        emptyImage = utility.loadImage(named: "clock.arrow.circlepath", colors: [NCBrandColor.shared.getBrandElement(account: session.account)])
         emptyTitle = "_files_no_files_"
         emptyDescription = ""
     }

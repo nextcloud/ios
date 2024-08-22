@@ -85,7 +85,7 @@ class NCShareExtension: UIViewController {
         collectionView.collectionViewLayout = NCListLayout()
 
         collectionView.refreshControl = refreshControl
-        refreshControl.tintColor = NCBrandColor.shared.brandText
+        refreshControl.tintColor = NCBrandColor.shared.getBrandText(account: activeTableAccount.account)
         refreshControl.backgroundColor = .systemBackground
         refreshControl.addTarget(self, action: #selector(reloadDatasource), for: .valueChanged)
 
@@ -125,17 +125,18 @@ class NCShareExtension: UIViewController {
         }
 
         // Colors
+        NCBrandColor.shared.createUserColors()
+        NCBrandColor.shared.settingThemingColor(account: activeTableAccount.account)
+
         if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
             NCBrandColor.shared.settingThemingColor(account: activeTableAccount.account)
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming, userInfo: ["account": activeTableAccount.account])
         }
-        NCBrandColor.shared.createUserColors()
-        NCImageCache.shared.createImagesCache()
-        NCImageCache.shared.createImagesBrandCache()
 
         hud.indicatorView = JGProgressHUDRingIndicatorView()
         if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
             indicatorView.ringWidth = 1.5
-            indicatorView.ringColor = NCBrandColor.shared.brandElement
+            indicatorView.ringColor = NCBrandColor.shared.getBrandElement(account: activeTableAccount.account)
         }
 
         NotificationCenter.default.addObserver(self, selector: #selector(didCreateFolder(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCreateFolder), object: nil)
@@ -317,6 +318,8 @@ extension NCShareExtension {
         if !conflicts.isEmpty {
             guard let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict
             else { return }
+
+            conflict.account = activeTableAccount.account
             conflict.serverUrl = self.serverUrl
             conflict.metadatasUploadInConflict = conflicts
             conflict.delegate = self
@@ -380,7 +383,7 @@ extension NCShareExtension {
             }
         } else {
             hud.indicatorView = JGProgressHUDSuccessIndicatorView()
-            hud.indicatorView?.tintColor = NCBrandColor.shared.brandElement
+            hud.indicatorView?.tintColor = NCBrandColor.shared.getBrandElement(account: activeTableAccount.account)
             hud.textLabel.text = NSLocalizedString("_success_", comment: "")
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)

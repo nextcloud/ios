@@ -36,7 +36,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         enableSearchBar = false
         headerRichWorkspaceDisable = true
         headerMenuTransferView = false
-        emptyImage = utility.loadImage(named: "arrow.left.arrow.right", colors: [NCBrandColor.shared.brandElement])
+        emptyImage = utility.loadImage(named: "arrow.left.arrow.right", colors: [NCBrandColor.shared.getBrandElement(account: session.account)])
         emptyTitle = "_no_transfer_"
         emptyDescription = "_no_transfer_sub_"
     }
@@ -213,7 +213,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         cell.indexPath = indexPath
         cell.fileUser = metadata.ownerId
         cell.indexPath = indexPath
-        cell.imageItem.image = NCImageCache.images.file
+        cell.imageItem.image = NCImageCache.shared.getImageFile()
         cell.imageItem.backgroundColor = nil
         cell.labelTitle.text = metadata.fileNameView
         cell.labelTitle.textColor = NCBrandColor.shared.textColor
@@ -221,7 +221,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         var pathText = metadata.serverUrl.replacingOccurrences(of: serverUrlHome, with: "")
         if pathText.isEmpty { pathText = "/" }
         cell.labelPath.text = pathText
-        cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCImageCache.images.buttonStop)
+        cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCImageCache.shared.getImageButtonStop())
         /// Progress view
         if let transfer = NCTransferProgress.shared.get(ocIdTransfer: metadata.ocIdTransfer) {
             cell.setProgress(progress: transfer.progressNumber.floatValue)
@@ -232,9 +232,9 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         if let image = utility.getIcon(metadata: metadata) {
             cell.imageItem.image = image
         } else if !metadata.iconName.isEmpty {
-            cell.imageItem.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true)
+            cell.imageItem.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
         } else {
-            cell.imageItem.image = NCImageCache.images.file
+            cell.imageItem.image = NCImageCache.shared.getImageFile()
         }
         /// Write status on Label Status / Info
         switch metadata.status {

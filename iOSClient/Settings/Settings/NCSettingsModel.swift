@@ -49,6 +49,10 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
     var footerApp = ""
     var footerServer = ""
     var footerSlogan = ""
+    /// Get session
+    var session: NCSession.Session {
+        NCSession.shared.getSession(controller: controller)
+    }
 
     /// Initializes the view model with default values.
     init(controller: NCMainTabBarController?) {

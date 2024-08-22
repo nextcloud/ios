@@ -21,6 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+import Foundation
 import UIKit
 import NextcloudKit
 import WidgetKit
@@ -57,8 +58,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
             /// Media cache
             DispatchQueue.global().async {
-                NCBrandColor.shared.createUserColors()
-                NCImageCache.shared.createImagesCache()
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming, userInfo: ["account": activeTableAccount.account])
             }
             /// Main.storyboard
             if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {

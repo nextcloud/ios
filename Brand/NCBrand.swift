@@ -131,22 +131,17 @@ class NCBrandColor: NSObject {
     let customer: UIColor = UIColor(red: 0.0 / 255.0, green: 130.0 / 255.0, blue: 201.0 / 255.0, alpha: 1.0)         // BLU NC : #0082c9
     var customerText: UIColor = .white
 
-    var brand: UIColor                                                                                         // don't touch me
-    var brandElement: UIColor                                                                                  // don't touch me
-    var brandText: UIColor                                                                                     // don't touch me
+    private var brand = ThreadSafeDictionary<String, UIColor>() // don't touch me
+    private var brandElement = ThreadSafeDictionary<String, UIColor>() // don't touch me
+    private var brandText = ThreadSafeDictionary<String, UIColor>() // don't touch me
 
+    // DEFINE COLORS
+    var userColors: [CGColor] = []
     let nextcloud: UIColor = UIColor(red: 0.0 / 255.0, green: 130.0 / 255.0, blue: 201.0 / 255.0, alpha: 1.0)
     let yellowFavorite: UIColor = UIColor(red: 248.0 / 255.0, green: 205.0 / 255.0, blue: 70.0 / 255.0, alpha: 1.0)
-
-    var userColors: [CGColor] = []
-    var themingColor: String = ""
-    var themingColorElement: String = ""
-    var themingColorText: String = ""
-
     let iconImageColor: UIColor = .label
     let iconImageColor2: UIColor = .secondaryLabel
     let iconImageMultiColors: [UIColor] = [.secondaryLabel, .label]
-
     let textColor: UIColor = .label
     let textColor2: UIColor = .secondaryLabel
 
@@ -174,11 +169,7 @@ class NCBrandColor: NSObject {
         }
     }
 
-    override init() {
-        brand = customer
-        brandElement = customer
-        brandText = customerText
-    }
+    override init() { }
 
     func createUserColors() {
         userColors = generateColors()
@@ -189,50 +180,50 @@ class NCBrandColor: NSObject {
         let lighter: CGFloat = 30   // %
 
         if NCBrandOptions.shared.use_themingColor {
-            self.themingColor = NCCapabilities.shared.getCapabilities(account: account).capabilityThemingColor
-            self.themingColorElement = NCCapabilities.shared.getCapabilities(account: account).capabilityThemingColorElement
-            self.themingColorText = NCCapabilities.shared.getCapabilities(account: account).capabilityThemingColorText
+            let themingColor = NCCapabilities.shared.getCapabilities(account: account).capabilityThemingColor
+            let themingColorElement = NCCapabilities.shared.getCapabilities(account: account).capabilityThemingColorElement
+            let themingColorText = NCCapabilities.shared.getCapabilities(account: account).capabilityThemingColorText
 
             // COLOR
             if themingColor.first == "#" {
                 if let color = UIColor(hex: themingColor) {
-                    brand = color
+                    brand[account] = color
                 } else {
-                    brand = customer
+                    brand[account] = customer
                 }
             } else {
-                brand = customer
+                brand[account] = customer
             }
 
             // COLOR TEXT
             if themingColorText.first == "#" {
                 if let color = UIColor(hex: themingColorText) {
-                    brandText = color
+                    brandText[account] = color
                 } else {
-                    brandText = customerText
+                    brandText[account] = customerText
                 }
             } else {
-                brandText = customerText
+                brandText[account] = customerText
             }
 
             // COLOR ELEMENT
             if themingColorElement.first == "#" {
                 if let color = UIColor(hex: themingColorElement) {
-                    brandElement = color
+                    brandElement[account] = color
                 } else {
-                    brandElement = brand
+                    brandElement[account] = brand[account]
                 }
             } else {
-                brandElement = brand
+                brandElement[account] = brand[account]
             }
 
-            if brandElement.isTooLight() {
-                if let color = brandElement.darker(by: darker) {
-                    brandElement = color
+            if let element = brandElement[account], element.isTooLight() {
+                if let color = element.darker(by: darker) {
+                    brandElement[account] = color
                 }
-            } else if brandElement.isTooDark() {
-                if let color = brandElement.lighter(by: lighter) {
-                    brandElement = color
+            } else if let element = brandElement[account], element.isTooDark() {
+                if let color = element.lighter(by: lighter) {
+                    brandElement[account] = color
                 }
             }
 
@@ -240,19 +231,40 @@ class NCBrandColor: NSObject {
 
             if self.customer.isTooLight() {
                 if let color = customer.darker(by: darker) {
-                    brandElement = color
+                    brandElement[account] = color
                 }
             } else if customer.isTooDark() {
                 if let color = customer.lighter(by: lighter) {
-                    brandElement = color
+                    brandElement[account] = color
                 }
             } else {
-                brandElement = customer
+                brandElement[account] = customer
             }
 
-            brand = customer
-            brandText = customerText
+            brand[account] = customer
+            brandText[account] = customerText
         }
+    }
+
+    public func getBrandColor(account: String?) -> UIColor {
+        if let account, let color = brand[account] {
+            return color
+        }
+        return customer
+    }
+
+    public func getBrandElement(account: String?) -> UIColor {
+        if let account, let color = brandElement[account] {
+            return color
+        }
+        return customer
+    }
+
+    public func getBrandText(account: String?) -> UIColor {
+        if let account, let color = brandText[account] {
+            return color
+        }
+        return customerText
     }
 
     private func stepCalc(steps: Int, color1: CGColor, color2: CGColor) -> [CGFloat] {

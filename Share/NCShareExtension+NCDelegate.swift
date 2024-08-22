@@ -68,8 +68,7 @@ extension NCShareExtension: NCAccountRequestDelegate {
 
         // COLORS
         NCBrandColor.shared.settingThemingColor(account: activeTableAccount.account)
-        NCBrandColor.shared.createUserColors()
-        NCImageCache.shared.createImagesBrandCache()
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming, userInfo: ["account": activeTableAccount.account])
 
         // NETWORKING
         NextcloudKit.shared.setup(delegate: NCNetworking.shared)
@@ -120,7 +119,7 @@ extension NCShareExtension: NCShareCellDelegate, NCRenameFileDelegate, NCListCel
             vcRename.imagePreview = previewImage
         } else {
             let resultInternalType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false, account: account)
-            vcRename.imagePreview = UIImage(named: resultInternalType.iconName) ?? NCImageCache.images.file
+            vcRename.imagePreview = UIImage(named: resultInternalType.iconName) ?? NCImageCache.shared.getImageFile()
         }
 
         let popup = NCPopupViewController(contentController: vcRename, popupWidth: vcRename.width, popupHeight: vcRename.height)

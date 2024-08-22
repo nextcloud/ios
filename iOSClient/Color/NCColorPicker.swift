@@ -129,7 +129,7 @@ class NCColorPicker: UIViewController {
         systemIndigoButton.layer.cornerRadius = 5
         systemIndigoButton.layer.masksToBounds = true
 
-        defaultButton.backgroundColor = NCBrandColor.shared.brandElement
+        defaultButton.backgroundColor = NCBrandColor.shared.customer
         defaultButton.layer.cornerRadius = 5
         defaultButton.layer.masksToBounds = true
     }

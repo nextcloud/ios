@@ -127,7 +127,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         accessibilityValue = nil
         isAccessibilityElement = true
 
-        progressView.tintColor = NCBrandColor.shared.brandElement
+        progressView.tintColor = NCBrandColor.shared.getBrandElement(account: fileAccount)
         progressView.transform = CGAffineTransform(scaleX: 1.0, y: 0.5)
         progressView.trackTintColor = .clear
 
@@ -255,11 +255,11 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             blurEffectView?.backgroundColor = .lightGray
             blurEffectView?.frame = self.bounds
             blurEffectView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            imageSelect.image = NCImageCache.images.checkedYes
+            imageSelect.image = NCImageCache.shared.getImageCheckedYes()
             backgroundView = blurEffectView
             separator.isHidden = true
         } else {
-            imageSelect.image = NCImageCache.images.checkedNo
+            imageSelect.image = NCImageCache.shared.getImageCheckedNo()
             backgroundView = nil
             separator.isHidden = false
         }

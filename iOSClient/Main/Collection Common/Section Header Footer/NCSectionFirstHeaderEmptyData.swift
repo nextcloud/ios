@@ -63,8 +63,8 @@ class NCSectionFirstHeaderEmptyData: UICollectionReusableView {
         imageButtonTransfer.tintColor = .label
 
         progressTransfer.progress = 0
-        progressTransfer.tintColor = NCBrandColor.shared.brandElement
-        progressTransfer.trackTintColor = NCBrandColor.shared.brandElement.withAlphaComponent(0.2)
+        progressTransfer.tintColor = NCBrandColor.shared.customer
+        progressTransfer.trackTintColor = NCBrandColor.shared.customer.withAlphaComponent(0.2)
 
         transferSeparatorBottom.backgroundColor = .separator
         transferSeparatorBottomHeightConstraint.constant = 0.5

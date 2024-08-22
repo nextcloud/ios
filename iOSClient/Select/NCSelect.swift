@@ -109,6 +109,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
                 selectCommandViewSelect = Bundle.main.loadNibNamed("NCSelectCommandViewSelect+CreateFolder", owner: self, options: nil)?.first as? NCSelectCommandView
             }
             self.view.addSubview(selectCommandViewSelect!)
+
+            selectCommandViewSelect?.setColor(account: session.account)
             selectCommandViewSelect?.selectView = self
             selectCommandViewSelect?.translatesAutoresizingMaskIntoConstraints = false
 
@@ -123,6 +125,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         if typeOfCommandView == .copyMove {
             selectCommandViewSelect = Bundle.main.loadNibNamed("NCSelectCommandViewCopyMove", owner: self, options: nil)?.first as? NCSelectCommandView
             self.view.addSubview(selectCommandViewSelect!)
+
+            selectCommandViewSelect?.setColor(account: session.account)
             selectCommandViewSelect?.selectView = self
             selectCommandViewSelect?.translatesAutoresizingMaskIntoConstraints = false
             if items.contains(where: { $0.lock }) {
@@ -279,9 +283,9 @@ extension NCSelect: UICollectionViewDataSource {
                 (cell as? NCCellProtocol)?.filePreviewImageView?.image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
             } else {
                 if metadata.iconName.isEmpty {
-                    (cell as? NCCellProtocol)?.filePreviewImageView?.image = NCImageCache.images.file
+                    (cell as? NCCellProtocol)?.filePreviewImageView?.image = NCImageCache.shared.getImageFile()
                 } else {
-                    (cell as? NCCellProtocol)?.filePreviewImageView?.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true)
+                    (cell as? NCCellProtocol)?.filePreviewImageView?.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
                 }
                 if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
                     for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { return }
@@ -334,23 +338,22 @@ extension NCSelect: UICollectionViewDataSource {
         cell.progressView.progress = 0.0
 
         if metadata.directory {
-
             if metadata.e2eEncrypted {
-                cell.imageItem.image = NCImageCache.images.folderEncrypted
+                cell.imageItem.image = NCImageCache.shared.getFolderEncrypted(account: metadata.account)
             } else if isShare {
-                cell.imageItem.image = NCImageCache.images.folderSharedWithMe
+                cell.imageItem.image = NCImageCache.shared.getFolderSharedWithMe(account: metadata.account)
             } else if !metadata.shareType.isEmpty {
                 metadata.shareType.contains(3) ?
-                (cell.imageItem.image = NCImageCache.images.folderPublic) :
-                (cell.imageItem.image = NCImageCache.images.folderSharedWithMe)
+                (cell.imageItem.image = NCImageCache.shared.getFolderPublic(account: metadata.account)) :
+                (cell.imageItem.image = NCImageCache.shared.getFolderSharedWithMe(account: metadata.account))
             } else if metadata.mountType == "group" {
-                cell.imageItem.image = NCImageCache.images.folderGroup
+                cell.imageItem.image = NCImageCache.shared.getFolderGroup(account: metadata.account)
             } else if isMounted {
-                cell.imageItem.image = NCImageCache.images.folderExternal
+                cell.imageItem.image = NCImageCache.shared.getFolderExternal(account: metadata.account)
             } else if metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory {
-                cell.imageItem.image = NCImageCache.images.folderAutomaticUpload
+                cell.imageItem.image = NCImageCache.shared.getFolderAutomaticUpload(account: metadata.account)
             } else {
-                cell.imageItem.image = NCImageCache.images.folder
+                cell.imageItem.image = NCImageCache.shared.getFolder(account: metadata.account)
             }
             cell.imageItem.image = cell.imageItem.image?.colorizeFolder(metadata: metadata)
 
@@ -362,15 +365,15 @@ extension NCSelect: UICollectionViewDataSource {
 
             // image local
             if NCManageDatabase.shared.getTableLocalFile(ocId: metadata.ocId) != nil {
-                cell.imageLocal.image = NCImageCache.images.offlineFlag
+                cell.imageLocal.image = NCImageCache.shared.getImageOfflineFlag()
             } else if utilityFileSystem.fileProviderStorageExists(metadata) {
-                cell.imageLocal.image = NCImageCache.images.local
+                cell.imageLocal.image = NCImageCache.shared.getImageLocal()
             }
         }
 
         // image Favorite
         if metadata.favorite {
-            cell.imageFavorite.image = NCImageCache.images.favorite
+            cell.imageFavorite.image = NCImageCache.shared.getImageFavorite()
         }
 
         cell.imageSelect.isHidden = true
@@ -381,7 +384,7 @@ extension NCSelect: UICollectionViewDataSource {
 
         // Live Photo
         if metadata.isLivePhoto {
-            cell.imageStatus.image = NCImageCache.images.livePhoto
+            cell.imageStatus.image = utility.loadImage(named: "livephoto", colors: [.white])
         }
 
         // Remove last separator
@@ -405,11 +408,11 @@ extension NCSelect: UICollectionViewDataSource {
 
                 guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeaderEmptyData", for: indexPath) as? NCSectionFirstHeaderEmptyData else { return NCSectionFirstHeaderEmptyData() }
                 if self.dataSourceTask?.state == .running {
-                    header.emptyImage.image = utility.loadImage(named: "wifi", colors: [NCBrandColor.shared.brandElement])
+                    header.emptyImage.image = utility.loadImage(named: "wifi", colors: [NCBrandColor.shared.getBrandElement(account: session.account)])
                     header.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
                     header.emptyDescription.text = ""
                 } else {
-                    header.emptyImage.image = NCImageCache.images.folder
+                    header.emptyImage.image = NCImageCache.shared.getFolder(account: session.account)
                     if includeImages {
                         header.emptyTitle.text = NSLocalizedString("_files_no_files_", comment: "")
                     } else {
@@ -550,7 +553,6 @@ extension NCSelect {
 // MARK: -
 
 class NCSelectCommandView: UIView {
-
     @IBOutlet weak var separatorView: UIView!
     @IBOutlet weak var createFolderButton: UIButton?
     @IBOutlet weak var selectButton: UIButton?
@@ -564,40 +566,46 @@ class NCSelectCommandView: UIView {
     private let gradient: CAGradientLayer = CAGradientLayer()
 
     override func awakeFromNib() {
-
         separatorHeightConstraint.constant = 0.5
         separatorView.backgroundColor = .separator
 
-        overwriteSwitch?.onTintColor = NCBrandColor.shared.brandElement
         overwriteLabel?.text = NSLocalizedString("_overwrite_", comment: "")
 
         selectButton?.layer.cornerRadius = 15
         selectButton?.layer.masksToBounds = true
         selectButton?.setTitle(NSLocalizedString("_select_", comment: ""), for: .normal)
-        selectButton?.backgroundColor = NCBrandColor.shared.brandElement
-        selectButton?.setTitleColor(UIColor(white: 1, alpha: 0.3), for: .highlighted)
-        selectButton?.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
 
         createFolderButton?.layer.cornerRadius = 15
         createFolderButton?.layer.masksToBounds = true
         createFolderButton?.setTitle(NSLocalizedString("_create_folder_", comment: ""), for: .normal)
-        createFolderButton?.backgroundColor = NCBrandColor.shared.brandElement
-        createFolderButton?.setTitleColor(UIColor(white: 1, alpha: 0.3), for: .highlighted)
-        createFolderButton?.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
 
         copyButton?.layer.cornerRadius = 15
         copyButton?.layer.masksToBounds = true
         copyButton?.setTitle(NSLocalizedString("_copy_", comment: ""), for: .normal)
-        copyButton?.backgroundColor = NCBrandColor.shared.brandElement
-        copyButton?.setTitleColor(UIColor(white: 1, alpha: 0.3), for: .highlighted)
-        copyButton?.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
 
         moveButton?.layer.cornerRadius = 15
         moveButton?.layer.masksToBounds = true
         moveButton?.setTitle(NSLocalizedString("_move_", comment: ""), for: .normal)
-        moveButton?.backgroundColor = NCBrandColor.shared.brandElement
+    }
+
+    func setColor(account: String) {
+        overwriteSwitch?.onTintColor = NCBrandColor.shared.getBrandElement(account: account)
+
+        selectButton?.backgroundColor = NCBrandColor.shared.getBrandElement(account: account)
+        selectButton?.setTitleColor(UIColor(white: 1, alpha: 0.3), for: .highlighted)
+        selectButton?.setTitleColor(NCBrandColor.shared.getBrandText(account: account), for: .normal)
+
+        createFolderButton?.backgroundColor = NCBrandColor.shared.getBrandElement(account: account)
+        createFolderButton?.setTitleColor(UIColor(white: 1, alpha: 0.3), for: .highlighted)
+        createFolderButton?.setTitleColor(NCBrandColor.shared.getBrandText(account: account), for: .normal)
+
+        copyButton?.backgroundColor = NCBrandColor.shared.getBrandElement(account: account)
+        copyButton?.setTitleColor(UIColor(white: 1, alpha: 0.3), for: .highlighted)
+        copyButton?.setTitleColor(NCBrandColor.shared.getBrandText(account: account), for: .normal)
+
+        moveButton?.backgroundColor = NCBrandColor.shared.getBrandElement(account: account)
         moveButton?.setTitleColor(UIColor(white: 1, alpha: 0.3), for: .highlighted)
-        moveButton?.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
+        moveButton?.setTitleColor(NCBrandColor.shared.getBrandText(account: account), for: .normal)
     }
 
     @IBAction func createFolderButtonPressed(_ sender: UIButton) {

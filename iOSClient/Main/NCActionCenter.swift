@@ -83,10 +83,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             return
         }
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
-
-
-
-        // Select UIWindowScene active in serverUrl
+        /// Select UIWindowScene active in serverUrl
         var controller: NCMainTabBarController?
         let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
         if windowScenes.count == 1 {
@@ -212,7 +209,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         hud.indicatorView = JGProgressHUDRingIndicatorView()
         if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
             indicatorView.ringWidth = 1.5
-            indicatorView.ringColor = NCBrandColor.shared.brandElement
+            indicatorView.ringColor = NCBrandColor.shared.getBrandElement(account: account)
         }
         hud.tapOnHUDViewBlock = { _ in
             if let request = downloadRequest {

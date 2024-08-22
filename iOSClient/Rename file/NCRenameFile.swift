@@ -83,9 +83,8 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
             previewFile.layer.masksToBounds = true
 
             if metadata.directory {
-
                 if imagePreview == nil {
-                    previewFile.image = NCImageCache.images.folder
+                    previewFile.image = NCImageCache.shared.getFolder(account: metadata.account)
                 }
 
                 ext.isHidden = true
@@ -95,7 +94,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
             } else {
 
                 if imagePreview == nil {
-                    previewFile.image = NCImageCache.images.file
+                    previewFile.image = NCImageCache.shared.getImageFile()
                 }
 
                 fileNameNoExtensionTrailingContraint.constant = 90
@@ -114,7 +113,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
             ext.delegate = self
 
             if imagePreview == nil {
-                previewFile.image = NCImageCache.images.file
+                previewFile.image = NCImageCache.shared.getImageFile()
             } else {
                 previewFile.image = imagePreview
             }
@@ -123,9 +122,9 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
         }
 
         cancelButton.setTitle(NSLocalizedString("_cancel_", comment: ""), for: .normal)
-        cancelButton.setTitleColor(NCBrandColor.shared.brandElement, for: .normal)
+        cancelButton.setTitleColor(NCBrandColor.shared.getBrandElement(account: account), for: .normal)
         renameButton.setTitle(NSLocalizedString("_rename_", comment: ""), for: .normal)
-        renameButton.setTitleColor(NCBrandColor.shared.brandElement, for: .normal)
+        renameButton.setTitleColor(NCBrandColor.shared.getBrandElement(account: account), for: .normal)
     }
 
     override func viewDidAppear(_ animated: Bool) {

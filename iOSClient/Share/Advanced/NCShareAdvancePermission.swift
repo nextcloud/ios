@@ -95,7 +95,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
 
     func setupFooterView() {
         guard let footerView = (Bundle.main.loadNibNamed("NCShareAdvancePermissionFooter", owner: self, options: nil)?.first as? NCShareAdvancePermissionFooter) else { return }
-        footerView.setupUI(delegate: self)
+        footerView.setupUI(delegate: self, account: metadata.account)
 
         // tableFooterView can't use auto layout directly
         let container = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 120))

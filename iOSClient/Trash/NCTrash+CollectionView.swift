@@ -66,15 +66,15 @@ extension NCTrash: UICollectionViewDataSource {
             cell = listCell
         } else {
             guard let gridCell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCTrashGridCell else { return NCTrashGridCell() }
-            gridCell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCImageCache.images.buttonMore)
+            gridCell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCImageCache.shared.getImageButtonMore())
             gridCell.delegate = self
             cell = gridCell
         }
 
         if resultTableTrash.iconName.isEmpty {
-            image = NCImageCache.images.file
+            image = NCImageCache.shared.getImageFile()
         } else {
-            image = NCUtility().loadImage(named: resultTableTrash.iconName, useTypeIconFile: true)
+            image = NCUtility().loadImage(named: resultTableTrash.iconName, useTypeIconFile: true, account: resultTableTrash.account)
         }
 
         if FileManager().fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageIconOcId(resultTableTrash.fileId, etag: resultTableTrash.fileName)) {
@@ -137,7 +137,7 @@ extension NCTrash: UICollectionViewDataSource {
         if kind == UICollectionView.elementKindSectionHeader {
             guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeaderEmptyData", for: indexPath) as? NCSectionFirstHeaderEmptyData
             else { return NCSectionFirstHeaderEmptyData() }
-            header.emptyImage.image = utility.loadImage(named: "trash", colors: [NCBrandColor.shared.brandElement])
+            header.emptyImage.image = utility.loadImage(named: "trash", colors: [NCBrandColor.shared.getBrandElement(account: session.account)])
             header.emptyTitle.text = NSLocalizedString("_trash_no_trash_", comment: "")
             header.emptyDescription.text = NSLocalizedString("_trash_no_trash_description_", comment: "")
             return header

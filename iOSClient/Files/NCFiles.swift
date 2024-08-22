@@ -37,7 +37,7 @@ class NCFiles: NCCollectionViewCommon {
         enableSearchBar = true
         headerRichWorkspaceDisable = false
         headerMenuTransferView = true
-        emptyImage = NCImageCache.images.folder
+        emptyImage = NCImageCache.shared.getFolder(account: session.account)
         emptyTitle = "_files_no_files_"
         emptyDescription = "_no_file_pull_down_"
     }

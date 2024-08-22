@@ -65,7 +65,7 @@ class NCPhotosPickerViewController: NSObject {
         if maxSelectedAssets > 0 {
             configure.maxSelectedAssets = maxSelectedAssets
         }
-        configure.selectedColor = NCBrandColor.shared.brandElement
+        configure.selectedColor = NCBrandColor.shared.getBrandElement(account: controller.account)
         configure.singleSelectedMode = singleSelectedMode
         configure.allowedAlbumCloudShared = true
 
@@ -179,6 +179,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
             if !metadatasInConflict.isEmpty {
                 if let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict {
 
+                    conflict.account =  self.controller.account
                     conflict.delegate = appDelegate
                     conflict.serverUrl = serverUrl
                     conflict.metadatasUploadInConflict = metadatasInConflict

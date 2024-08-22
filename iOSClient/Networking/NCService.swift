@@ -168,7 +168,7 @@ class NCService: NSObject {
         NextcloudKit.shared.getCapabilities(account: account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, data, error in
             guard error == .success, let data else {
                 NCBrandColor.shared.settingThemingColor(account: account)
-                NCImageCache.shared.createImagesBrandCache()
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming, userInfo: ["account": account])
                 return
             }
 
@@ -178,10 +178,8 @@ class NCService: NSObject {
             guard let capability = NCManageDatabase.shared.setCapabilities(account: account, data: data) else { return }
 
             // Theming
-            if capability.capabilityThemingColor != NCBrandColor.shared.themingColor || capability.capabilityThemingColorElement != NCBrandColor.shared.themingColorElement || capability.capabilityThemingColorText != NCBrandColor.shared.themingColorText {
-                NCBrandColor.shared.settingThemingColor(account: account)
-                NCImageCache.shared.createImagesBrandCache()
-            }
+            NCBrandColor.shared.settingThemingColor(account: account)
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming, userInfo: ["account": account])
 
             // Text direct editor detail
             if capability.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion18 {
