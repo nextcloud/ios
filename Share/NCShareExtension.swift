@@ -318,6 +318,8 @@ extension NCShareExtension {
         if !conflicts.isEmpty {
             guard let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict
             else { return }
+
+            conflict.account = activeTableAccount.account
             conflict.serverUrl = self.serverUrl
             conflict.metadatasUploadInConflict = conflicts
             conflict.delegate = self

@@ -179,6 +179,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
             if !metadatasInConflict.isEmpty {
                 if let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict {
 
+                    conflict.account =  self.controller.account
                     conflict.delegate = appDelegate
                     conflict.serverUrl = serverUrl
                     conflict.metadatasUploadInConflict = metadatasInConflict

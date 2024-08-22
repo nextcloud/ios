@@ -48,6 +48,7 @@ class NCCreateFormUploadConflict: UIViewController {
     @IBOutlet weak var buttonCancel: UIButton!
     @IBOutlet weak var buttonContinue: UIButton!
 
+    var account: String
     var metadatasNOConflict: [tableMetadata]
     var metadatasUploadInConflict: [tableMetadata]
     var serverUrl: String?
@@ -66,6 +67,7 @@ class NCCreateFormUploadConflict: UIViewController {
     // MARK: - View Life Cycle
 
     required init?(coder aDecoder: NSCoder) {
+        self.account = ""
         self.metadatasNOConflict = []
         self.metadatasUploadInConflict = []
         super.init(coder: aDecoder)
@@ -98,9 +100,9 @@ class NCCreateFormUploadConflict: UIViewController {
             labelAlreadyExistingFiles.text = NSLocalizedString("_file_conflict_exists_", comment: "")
         }
 
-        switchNewFiles.onTintColor = NCBrandColor.shared.brandElement
+        switchNewFiles.onTintColor = NCBrandColor.shared.getBrandElement(account: account)
         switchNewFiles.isOn = false
-        switchAlreadyExistingFiles.onTintColor = NCBrandColor.shared.brandElement
+        switchAlreadyExistingFiles.onTintColor = NCBrandColor.shared.getBrandElement(account: account)
         switchAlreadyExistingFiles.isOn = false
 
         buttonCancel.layer.cornerRadius = 20
@@ -113,10 +115,10 @@ class NCCreateFormUploadConflict: UIViewController {
 
         buttonContinue.layer.cornerRadius = 20
         buttonContinue.layer.masksToBounds = true
-        buttonContinue.backgroundColor = NCBrandColor.shared.brandElement
+        buttonContinue.backgroundColor = NCBrandColor.shared.getBrandElement(account: account)
         buttonContinue.setTitle(NSLocalizedString("_continue_", comment: ""), for: .normal)
         buttonContinue.isEnabled = false
-        buttonContinue.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
+        buttonContinue.setTitleColor(NCBrandColor.shared.getBrandText(account: account), for: .normal)
 
         let blurEffect = UIBlurEffect(style: .light)
         blurView = UIVisualEffectView(effect: blurEffect)
@@ -307,15 +309,12 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
         if let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? NCCreateFormUploadConflictCell {
-
-            cell.backgroundColor = tableView.backgroundColor
-            cell.switchNewFile.onTintColor = NCBrandColor.shared.brandElement
-            cell.switchAlreadyExistingFile.onTintColor = NCBrandColor.shared.brandElement
-
             let metadataNewFile = tableMetadata.init(value: metadatasUploadInConflict[indexPath.row])
 
+            cell.backgroundColor = tableView.backgroundColor
+            cell.switchNewFile.onTintColor = NCBrandColor.shared.getBrandElement(account: metadataNewFile.account)
+            cell.switchAlreadyExistingFile.onTintColor = NCBrandColor.shared.getBrandElement(account: metadataNewFile.account)
             cell.ocId = metadataNewFile.ocId
             cell.delegate = self
             cell.labelFileName.text = metadataNewFile.fileNameView
