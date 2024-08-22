@@ -58,7 +58,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
             /// Media cache
             DispatchQueue.global().async {
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming)
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming, userInfo: ["account": activeTableAccount.account])
             }
             /// Main.storyboard
             if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {

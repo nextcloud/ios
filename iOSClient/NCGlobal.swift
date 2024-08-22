@@ -312,7 +312,7 @@ class NCGlobal: NSObject {
     // Notification Center
     //
     let notificationCenterChangeUser                            = "changeUser"                      // userInfo: account, controller
-    let notificationCenterChangeTheming                         = "changeTheming"
+    let notificationCenterChangeTheming                         = "changeTheming"                   // userInfo: account
     let notificationCenterRichdocumentGrabFocus                 = "richdocumentGrabFocus"
     let notificationCenterReloadDataNCShare                     = "reloadDataNCShare"
     let notificationCenterCloseRichWorkspaceWebView             = "closeRichWorkspaceWebView"
