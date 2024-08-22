@@ -201,7 +201,7 @@ class NCMainTabBar: UITabBar {
               let counterDownload = userInfo["counterDownload"] as? Int,
               let counterUpload = userInfo["counterUpload"] as? Int
             else { return }
-        
+
         self.updateBadgeNumberUI(counterDownload: counterDownload, counterUpload: counterUpload)
     }
 

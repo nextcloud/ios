@@ -176,7 +176,7 @@ class NCNetworkingE2EE: NSObject {
 
         // COUNTER
         //
-        if NCCapabilities.shared.getCapabilities(account:session.account).capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
+        if NCCapabilities.shared.getCapabilities(account: session.account).capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
             NCManageDatabase.shared.updateCounterE2eMetadata(account: session.account, ocIdServerUrl: ocIdServerUrl, counter: resultsEncodeMetadata.counter)
         }
 

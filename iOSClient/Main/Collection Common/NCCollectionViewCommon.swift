@@ -449,7 +449,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let account = userInfo["account"] as? String
         else { return }
 
-
         if account == self.session.account, serverUrl == self.serverUrl {
             self.reloadDataSource()
         } else {

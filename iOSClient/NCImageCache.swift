@@ -205,7 +205,6 @@ class NCImageCache: NSObject {
         guard brandElement != self.brandElementColor else { return }
         self.brandElementColor = brandElement
 
-
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming)
     }
 

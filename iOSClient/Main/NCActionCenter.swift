@@ -83,10 +83,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             return
         }
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
-
-
-
-        // Select UIWindowScene active in serverUrl
+        /// Select UIWindowScene active in serverUrl
         var controller: NCMainTabBarController?
         let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
         if windowScenes.count == 1 {

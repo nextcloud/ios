@@ -131,7 +131,6 @@ class NCShareExtension: UIViewController {
         }
         NCBrandColor.shared.createUserColors()
 
-
         hud.indicatorView = JGProgressHUDRingIndicatorView()
         if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
             indicatorView.ringWidth = 1.5
