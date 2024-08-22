@@ -109,6 +109,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
                 selectCommandViewSelect = Bundle.main.loadNibNamed("NCSelectCommandViewSelect+CreateFolder", owner: self, options: nil)?.first as? NCSelectCommandView
             }
             self.view.addSubview(selectCommandViewSelect!)
+
+            selectCommandViewSelect?.setColor(account: session.account)
             selectCommandViewSelect?.selectView = self
             selectCommandViewSelect?.translatesAutoresizingMaskIntoConstraints = false
 
@@ -123,6 +125,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         if typeOfCommandView == .copyMove {
             selectCommandViewSelect = Bundle.main.loadNibNamed("NCSelectCommandViewCopyMove", owner: self, options: nil)?.first as? NCSelectCommandView
             self.view.addSubview(selectCommandViewSelect!)
+
+            selectCommandViewSelect?.setColor(account: session.account)
             selectCommandViewSelect?.selectView = self
             selectCommandViewSelect?.translatesAutoresizingMaskIntoConstraints = false
             if items.contains(where: { $0.lock }) {
@@ -404,7 +408,7 @@ extension NCSelect: UICollectionViewDataSource {
 
                 guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeaderEmptyData", for: indexPath) as? NCSectionFirstHeaderEmptyData else { return NCSectionFirstHeaderEmptyData() }
                 if self.dataSourceTask?.state == .running {
-                    header.emptyImage.image = utility.loadImage(named: "wifi", colors: [NCBrandColor.shared.brandElement])
+                    header.emptyImage.image = utility.loadImage(named: "wifi", colors: [NCBrandColor.shared.getBrandElement(account: session.account)])
                     header.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
                     header.emptyDescription.text = ""
                 } else {
@@ -549,7 +553,6 @@ extension NCSelect {
 // MARK: -
 
 class NCSelectCommandView: UIView {
-
     @IBOutlet weak var separatorView: UIView!
     @IBOutlet weak var createFolderButton: UIButton?
     @IBOutlet weak var selectButton: UIButton?
@@ -563,40 +566,46 @@ class NCSelectCommandView: UIView {
     private let gradient: CAGradientLayer = CAGradientLayer()
 
     override func awakeFromNib() {
-
         separatorHeightConstraint.constant = 0.5
         separatorView.backgroundColor = .separator
 
-        overwriteSwitch?.onTintColor = NCBrandColor.shared.brandElement
         overwriteLabel?.text = NSLocalizedString("_overwrite_", comment: "")
 
         selectButton?.layer.cornerRadius = 15
         selectButton?.layer.masksToBounds = true
         selectButton?.setTitle(NSLocalizedString("_select_", comment: ""), for: .normal)
-        selectButton?.backgroundColor = NCBrandColor.shared.brandElement
-        selectButton?.setTitleColor(UIColor(white: 1, alpha: 0.3), for: .highlighted)
-        selectButton?.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
 
         createFolderButton?.layer.cornerRadius = 15
         createFolderButton?.layer.masksToBounds = true
         createFolderButton?.setTitle(NSLocalizedString("_create_folder_", comment: ""), for: .normal)
-        createFolderButton?.backgroundColor = NCBrandColor.shared.brandElement
-        createFolderButton?.setTitleColor(UIColor(white: 1, alpha: 0.3), for: .highlighted)
-        createFolderButton?.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
 
         copyButton?.layer.cornerRadius = 15
         copyButton?.layer.masksToBounds = true
         copyButton?.setTitle(NSLocalizedString("_copy_", comment: ""), for: .normal)
-        copyButton?.backgroundColor = NCBrandColor.shared.brandElement
-        copyButton?.setTitleColor(UIColor(white: 1, alpha: 0.3), for: .highlighted)
-        copyButton?.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
 
         moveButton?.layer.cornerRadius = 15
         moveButton?.layer.masksToBounds = true
         moveButton?.setTitle(NSLocalizedString("_move_", comment: ""), for: .normal)
-        moveButton?.backgroundColor = NCBrandColor.shared.brandElement
+    }
+
+    func setColor(account: String) {
+        overwriteSwitch?.onTintColor = NCBrandColor.shared.getBrandElement(account: account)
+
+        selectButton?.backgroundColor = NCBrandColor.shared.getBrandElement(account: account)
+        selectButton?.setTitleColor(UIColor(white: 1, alpha: 0.3), for: .highlighted)
+        selectButton?.setTitleColor(NCBrandColor.shared.getBrandText(account: account), for: .normal)
+
+        createFolderButton?.backgroundColor = NCBrandColor.shared.getBrandElement(account: account)
+        createFolderButton?.setTitleColor(UIColor(white: 1, alpha: 0.3), for: .highlighted)
+        createFolderButton?.setTitleColor(NCBrandColor.shared.getBrandText(account: account), for: .normal)
+
+        copyButton?.backgroundColor = NCBrandColor.shared.getBrandElement(account: account)
+        copyButton?.setTitleColor(UIColor(white: 1, alpha: 0.3), for: .highlighted)
+        copyButton?.setTitleColor(NCBrandColor.shared.getBrandText(account: account), for: .normal)
+
+        moveButton?.backgroundColor = NCBrandColor.shared.getBrandElement(account: account)
         moveButton?.setTitleColor(UIColor(white: 1, alpha: 0.3), for: .highlighted)
-        moveButton?.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
+        moveButton?.setTitleColor(NCBrandColor.shared.getBrandText(account: account), for: .normal)
     }
 
     @IBAction func createFolderButtonPressed(_ sender: UIButton) {
