@@ -170,7 +170,7 @@ class NCNetworkingE2EEUpload: NSObject {
                     hud.indicatorView = JGProgressHUDRingIndicatorView()
                     if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
                         indicatorView.ringWidth = 1.5
-                        indicatorView.ringColor = NCBrandColor.shared.brandElement
+                        indicatorView.ringColor = NCBrandColor.shared.getBrandElement(account: metadata.account)
                     }
                     hud.tapOnHUDViewBlock = { _ in
                         NotificationCenter.default.postOnMainThread(name: "NextcloudKit.chunkedFile.stop")
