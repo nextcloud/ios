@@ -86,7 +86,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 }
                 if cell.filePreviewImageView?.image == nil {
                     if metadata.iconName.isEmpty {
-                        cell.filePreviewImageView?.image = NCImageCache.images.file
+                        cell.filePreviewImageView?.image = NCImageCache.shared.getImageFile()
                     } else {
                         cell.filePreviewImageView?.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true)
                     }

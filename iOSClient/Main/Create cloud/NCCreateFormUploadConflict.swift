@@ -338,7 +338,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
 
             } else {
                 if metadataAlreadyExists.iconName.isEmpty {
-                    cell.imageAlreadyExistingFile.image = NCImageCache.images.file
+                    cell.imageAlreadyExistingFile.image = NCImageCache.shared.getImageFile()
                 } else {
                     cell.imageAlreadyExistingFile.image = UIImage(named: metadataAlreadyExists.iconName)
                 }
@@ -354,7 +354,7 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
             // -----> New File
 
             if metadataNewFile.iconName.isEmpty {
-                cell.imageNewFile.image = NCImageCache.images.file
+                cell.imageNewFile.image = NCImageCache.shared.getImageFile()
             } else {
                 cell.imageNewFile.image = UIImage(named: metadataNewFile.iconName)
             }

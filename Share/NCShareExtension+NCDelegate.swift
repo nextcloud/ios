@@ -120,7 +120,7 @@ extension NCShareExtension: NCShareCellDelegate, NCRenameFileDelegate, NCListCel
             vcRename.imagePreview = previewImage
         } else {
             let resultInternalType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false, account: account)
-            vcRename.imagePreview = UIImage(named: resultInternalType.iconName) ?? NCImageCache.images.file
+            vcRename.imagePreview = UIImage(named: resultInternalType.iconName) ?? NCImageCache.shared.getImageFile()
         }
 
         let popup = NCPopupViewController(contentController: vcRename, popupWidth: vcRename.width, popupHeight: vcRename.height)

@@ -153,7 +153,7 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
                 if let imageNamePath = imageNamePath, id == self.idActivity, let image = UIImage(contentsOfFile: imageNamePath) {
                     cell.imageView.image = image
                 } else {
-                    cell.imageView.image = NCImageCache.images.file
+                    cell.imageView.image = NCImageCache.shared.getImageFile()
                 }
             }
         } else {
@@ -164,7 +164,7 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
                     if let imageNamePath = imageNamePath, id == self.idActivity, let image = UIImage(contentsOfFile: imageNamePath) {
                         cell.imageView.image = image
                     } else {
-                        cell.imageView.image = NCImageCache.images.file
+                        cell.imageView.image = NCImageCache.shared.getImageFile()
                     }
                 }
             } else {

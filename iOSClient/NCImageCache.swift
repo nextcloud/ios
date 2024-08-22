@@ -35,6 +35,8 @@ class NCImageCache: NSObject {
 
     // MARK: -
 
+    private let utility = NCUtility()
+
     private let limitCacheImagePreview: Int = 1000
     private var brandElementColor: UIColor?
     private var totalSize: Int64 = 0
@@ -199,7 +201,6 @@ class NCImageCache: NSObject {
     // MARK: -
 
     struct images {
-        static var file = UIImage()
 
         static var shared = UIImage()
         static var canShare = UIImage()
@@ -226,10 +227,10 @@ class NCImageCache: NSObject {
         static var buttonMoreLock = UIImage()
     }
 
+
+
     func createImagesCache() {
         let utility = NCUtility()
-
-        images.file = utility.loadImage(named: "doc", colors: [NCBrandColor.shared.iconImageColor2])
 
         images.shared = utility.loadImage(named: "person.fill.badge.plus", colors: NCBrandColor.shared.iconImageMultiColors)
         images.canShare = utility.loadImage(named: "person.fill.badge.plus", colors: NCBrandColor.shared.iconImageMultiColors)
@@ -263,5 +264,9 @@ class NCImageCache: NSObject {
         images.folder = UIImage(named: "folder")!.image(color: brandElement)
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming)
+    }
+
+    func getImageFile() -> UIImage {
+        return utility.loadImage(named: "doc", colors: [NCBrandColor.shared.iconImageColor2])
     }
 }

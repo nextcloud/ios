@@ -54,7 +54,7 @@ extension NCCollectionViewCommon {
             if metadata.directory {
                 iconHeader = NCImageCache.images.folder
             } else {
-                iconHeader = NCImageCache.images.file
+                iconHeader = NCImageCache.shared.getImageFile()
             }
         }
 

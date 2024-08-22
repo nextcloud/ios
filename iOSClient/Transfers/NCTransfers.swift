@@ -213,7 +213,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         cell.indexPath = indexPath
         cell.fileUser = metadata.ownerId
         cell.indexPath = indexPath
-        cell.imageItem.image = NCImageCache.images.file
+        cell.imageItem.image = NCImageCache.shared.getImageFile()
         cell.imageItem.backgroundColor = nil
         cell.labelTitle.text = metadata.fileNameView
         cell.labelTitle.textColor = NCBrandColor.shared.textColor
@@ -234,7 +234,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         } else if !metadata.iconName.isEmpty {
             cell.imageItem.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true)
         } else {
-            cell.imageItem.image = NCImageCache.images.file
+            cell.imageItem.image = NCImageCache.shared.getImageFile()
         }
         /// Write status on Label Status / Info
         switch metadata.status {

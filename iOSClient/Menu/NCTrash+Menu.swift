@@ -50,7 +50,7 @@ extension NCTrash {
             if resultTableTrash.directory {
                 iconHeader = NCImageCache.images.folder
             } else {
-                iconHeader = NCImageCache.images.file
+                iconHeader = NCImageCache.shared.getImageFile()
             }
         }
 

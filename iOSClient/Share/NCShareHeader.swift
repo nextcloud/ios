@@ -48,7 +48,7 @@ class NCShareHeader: UIView {
             } else if !metadata.iconName.isEmpty {
                 imageView.image = NCUtility().loadImage(named: metadata.iconName, useTypeIconFile: true)
             } else {
-                imageView.image = NCImageCache.images.file
+                imageView.image = NCImageCache.shared.getImageFile()
             }
 
             fileNameTopConstraint.constant -= 45

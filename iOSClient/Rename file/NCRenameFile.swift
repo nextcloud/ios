@@ -95,7 +95,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
             } else {
 
                 if imagePreview == nil {
-                    previewFile.image = NCImageCache.images.file
+                    previewFile.image = NCImageCache.shared.getImageFile()
                 }
 
                 fileNameNoExtensionTrailingContraint.constant = 90
@@ -114,7 +114,7 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
             ext.delegate = self
 
             if imagePreview == nil {
-                previewFile.image = NCImageCache.images.file
+                previewFile.image = NCImageCache.shared.getImageFile()
             } else {
                 previewFile.image = imagePreview
             }
