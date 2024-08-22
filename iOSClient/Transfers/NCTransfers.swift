@@ -36,7 +36,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         enableSearchBar = false
         headerRichWorkspaceDisable = true
         headerMenuTransferView = false
-        emptyImage = utility.loadImage(named: "arrow.left.arrow.right", colors: [NCBrandColor.shared.brandElement])
+        emptyImage = utility.loadImage(named: "arrow.left.arrow.right", colors: [NCBrandColor.shared.getBrandElement(account: session.account)])
         emptyTitle = "_no_transfer_"
         emptyDescription = "_no_transfer_sub_"
     }
