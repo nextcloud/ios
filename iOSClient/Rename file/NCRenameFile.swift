@@ -122,9 +122,9 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
         }
 
         cancelButton.setTitle(NSLocalizedString("_cancel_", comment: ""), for: .normal)
-        cancelButton.setTitleColor(NCBrandColor.shared.brandElement, for: .normal)
+        cancelButton.setTitleColor(NCBrandColor.shared.getBrandElement(account: account), for: .normal)
         renameButton.setTitle(NSLocalizedString("_rename_", comment: ""), for: .normal)
-        renameButton.setTitleColor(NCBrandColor.shared.brandElement, for: .normal)
+        renameButton.setTitleColor(NCBrandColor.shared.getBrandElement(account: account), for: .normal)
     }
 
     override func viewDidAppear(_ animated: Bool) {
