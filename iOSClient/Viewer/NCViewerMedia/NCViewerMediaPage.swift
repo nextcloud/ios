@@ -34,7 +34,6 @@ enum ScreenMode {
 var viewerMediaScreenMode: ScreenMode = .normal
 
 class NCViewerMediaPage: UIViewController {
-
     @IBOutlet weak var progressView: UIProgressView!
 
     // swiftlint:disable force_cast
@@ -113,7 +112,7 @@ class NCViewerMediaPage: UIViewController {
         pageViewController.view.addGestureRecognizer(singleTapGestureRecognizer)
         pageViewController.view.addGestureRecognizer(longtapGestureRecognizer)
 
-        progressView.tintColor = NCBrandColor.shared.brandElement
+        progressView.tintColor = NCBrandColor.shared.getBrandElement(account: metadatas.first?.account)
         progressView.trackTintColor = .clear
         progressView.progress = 0
 
