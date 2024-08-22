@@ -102,7 +102,7 @@ extension NCMenuAction {
     static func deleteAction(selectedMetadatas: [tableMetadata], indexPaths: [IndexPath], metadataFolder: tableMetadata? = nil, viewController: UIViewController, order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
         var titleDelete = NSLocalizedString("_delete_", comment: "")
         var message = NSLocalizedString("_want_delete_", comment: "")
-        var icon = "delete"
+        var icon = "trash_icon"
         var destructive = false
         var color = NCBrandColor.shared.iconImageColor
         let permissions = NCPermissions()
