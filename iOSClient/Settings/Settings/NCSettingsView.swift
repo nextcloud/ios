@@ -83,28 +83,28 @@ struct NCSettingsView: View {
                 }
                 /// Enable Touch ID
                 Toggle(NSLocalizedString("_enable_touch_face_id_", comment: ""), isOn: $model.enableTouchID)
-                    .tint(Color(NCBrandColor.shared.brandElement))
+                    .tint(Color(NCBrandColor.shared.getBrandElement(account: model.session.account)))
                     .font(.system(size: 16))
                     .onChange(of: model.enableTouchID) { _ in
                         model.updateTouchIDSetting()
                     }
                 /// Lock no screen
                 Toggle(NSLocalizedString("_lock_protection_no_screen_", comment: ""), isOn: $model.lockScreen)
-                    .tint(Color(NCBrandColor.shared.brandElement))
+                    .tint(Color(NCBrandColor.shared.getBrandElement(account: model.session.account)))
                     .font(.system(size: 16))
                     .onChange(of: model.lockScreen) { _ in
                         model.updateLockScreenSetting()
                     }
                 /// Privacy screen
                 Toggle(NSLocalizedString("_privacy_screen_", comment: ""), isOn: $model.privacyScreen)
-                    .tint(Color(NCBrandColor.shared.brandElement))
+                    .tint(Color(NCBrandColor.shared.getBrandElement(account: model.session.account)))
                     .font(.system(size: 16))
                     .onChange(of: model.privacyScreen) { _ in
                         model.updatePrivacyScreenSetting()
                     }
                 /// Reset app wrong attempts
                 Toggle(NSLocalizedString("_reset_wrong_passcode_", comment: ""), isOn: $model.resetWrongAttempts)
-                    .tint(Color(NCBrandColor.shared.brandElement))
+                    .tint(Color(NCBrandColor.shared.getBrandElement(account: model.session.account)))
                     .font(.system(size: 16))
                     .onChange(of: model.resetWrongAttempts) { _ in
                         model.updateResetWrongAttemptsSetting()
@@ -168,7 +168,7 @@ struct NCSettingsView: View {
             Section(content: {
                 Toggle(NSLocalizedString("_settings_account_request_", comment: ""), isOn: $model.accountRequest)
                     .font(.system(size: 16))
-                    .tint(Color(NCBrandColor.shared.brandElement))
+                    .tint(Color(NCBrandColor.shared.getBrandElement(account: model.session.account)))
                     .onChange(of: model.accountRequest, perform: { _ in
                         model.updateAccountRequest()
                     })
