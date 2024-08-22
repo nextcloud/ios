@@ -95,7 +95,7 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
         imageVisualEffect.alpha = 0.5
 
         imageSelect.isHidden = true
-        imageSelect.image = NCImageCache.images.checkedYes
+        imageSelect.image = NCImageCache.shared.getImageCheckedYes()
 
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPress(gestureRecognizer:)))
         longPressedGesture.minimumPressDuration = 0.5

@@ -43,7 +43,7 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
         super.viewDidLoad()
 
         if !metadata.ocId.hasPrefix("TEMP") {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(image: NCImageCache.images.buttonMore, style: .plain, target: self, action: #selector(self.openMenuMore))
+            navigationItem.rightBarButtonItem = UIBarButtonItem(image: NCImageCache.shared.getImageButtonMore(), style: .plain, target: self, action: #selector(self.openMenuMore))
         }
         navigationController?.navigationBar.prefersLargeTitles = false
         navigationItem.title = metadata.fileNameView

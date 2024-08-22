@@ -221,7 +221,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         var pathText = metadata.serverUrl.replacingOccurrences(of: serverUrlHome, with: "")
         if pathText.isEmpty { pathText = "/" }
         cell.labelPath.text = pathText
-        cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCImageCache.images.buttonStop)
+        cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCImageCache.shared.getImageButtonStop())
         /// Progress view
         if let transfer = NCTransferProgress.shared.get(ocIdTransfer: metadata.ocIdTransfer) {
             cell.setProgress(progress: transfer.progressNumber.floatValue)

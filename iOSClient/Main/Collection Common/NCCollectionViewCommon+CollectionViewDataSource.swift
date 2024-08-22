@@ -296,12 +296,12 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         // Button More
         if metadata.isDownload {
-            cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCImageCache.images.buttonStop)
+            cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCImageCache.shared.getImageButtonStop())
         } else if metadata.lock == true {
-            cell.setButtonMore(named: NCGlobal.shared.buttonMoreLock, image: NCImageCache.images.buttonMoreLock)
+            cell.setButtonMore(named: NCGlobal.shared.buttonMoreLock, image: NCImageCache.shared.getImageButtonMoreLock())
             a11yValues.append(String(format: NSLocalizedString("_locked_by_", comment: ""), metadata.lockOwnerDisplayName))
         } else {
-            cell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCImageCache.images.buttonMore)
+            cell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCImageCache.shared.getImageButtonMore())
         }
 
         // Progress view

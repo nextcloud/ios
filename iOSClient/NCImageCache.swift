@@ -201,10 +201,6 @@ class NCImageCache: NSObject {
     // MARK: -
 
     struct images {
-
-
-        static var comment = UIImage()
-
         static var folderEncrypted = UIImage()
         static var folderSharedWithMe = UIImage()
         static var folderPublic = UIImage()
@@ -213,24 +209,12 @@ class NCImageCache: NSObject {
         static var folderAutomaticUpload = UIImage()
         static var folder = UIImage()
 
-        static var checkedYes = UIImage()
-        static var checkedNo = UIImage()
 
-        static var buttonMore = UIImage()
-        static var buttonStop = UIImage()
-        static var buttonMoreLock = UIImage()
     }
 
     func createImagesCache() {
         let utility = NCUtility()
 
-
-        images.checkedYes = utility.loadImage(named: "checkmark.circle.fill", colors: [NCBrandColor.shared.brandElement])
-        images.checkedNo = utility.loadImage(named: "circle", colors: [NCBrandColor.shared.brandElement])
-
-        images.buttonMore = utility.loadImage(named: "ellipsis", colors: [NCBrandColor.shared.iconImageColor])
-        images.buttonStop = utility.loadImage(named: "stop.circle", colors: [NCBrandColor.shared.iconImageColor])
-        images.buttonMoreLock = utility.loadImage(named: "lock.fill", colors: [NCBrandColor.shared.iconImageColor])
 
         createImagesBrandCache()
     }
@@ -277,5 +261,25 @@ class NCImageCache: NSObject {
 
     func getImageLocal() -> UIImage {
         return utility.loadImage(named: "checkmark.circle.fill", colors: [.systemGreen])
+    }
+
+    func getImageCheckedYes() -> UIImage {
+        return utility.loadImage(named: "checkmark.circle.fill", colors: [.systemGreen])
+    }
+
+    func getImageCheckedNo() -> UIImage {
+        return utility.loadImage(named: "circle", colors: [NCBrandColor.shared.brandElement])
+    }
+
+    func getImageButtonMore() -> UIImage {
+        return utility.loadImage(named: "ellipsis", colors: [NCBrandColor.shared.iconImageColor])
+    }
+
+    func getImageButtonStop() -> UIImage {
+        return utility.loadImage(named: "stop.circle", colors: [NCBrandColor.shared.iconImageColor])
+    }
+
+    func getImageButtonMoreLock() -> UIImage {
+        return utility.loadImage(named: "lock.fill", colors: [NCBrandColor.shared.iconImageColor])
     }
 }
