@@ -381,7 +381,7 @@ extension NCSelect: UICollectionViewDataSource {
 
         // Live Photo
         if metadata.isLivePhoto {
-            cell.imageStatus.image = NCImageCache.images.livePhoto
+            cell.imageStatus.image = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor])
         }
 
         // Remove last separator

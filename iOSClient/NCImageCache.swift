@@ -207,7 +207,6 @@ class NCImageCache: NSObject {
 
         static var favorite = UIImage()
         static var comment = UIImage()
-        static var livePhoto = UIImage()
         static var offlineFlag = UIImage()
         static var local = UIImage()
 
@@ -237,7 +236,7 @@ class NCImageCache: NSObject {
         images.shareByLink = utility.loadImage(named: "link", colors: [NCBrandColor.shared.iconImageColor])
 
         images.favorite = utility.loadImage(named: "star.fill", colors: [NCBrandColor.shared.yellowFavorite])
-        images.livePhoto = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor])
+        //images.livePhoto = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor])
         images.offlineFlag = utility.loadImage(named: "arrow.down.circle.fill", colors: [.systemGreen])
         images.local = utility.loadImage(named: "checkmark.circle.fill", colors: [.systemGreen])
 
