@@ -29,6 +29,7 @@ class NCMainTabBar: UITabBar {
     private var shapeLayer: CALayer?
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private let centerButtonY: CGFloat = -28
+    private var color = NCBrandColor.shared.customer
 
     public var menuRect: CGRect {
         let tabBarItemWidth = Int(self.frame.size.width) / (self.items?.count ?? 0)
@@ -49,9 +50,10 @@ class NCMainTabBar: UITabBar {
         guard let userInfo = notification.userInfo as? NSDictionary else { return }
         let account = userInfo["account"] as? String
 
-        tintColor = NCBrandColor.shared.getElement(account: account)
+        self.color = NCBrandColor.shared.getElement(account: account)
+        tintColor = color
         if let centerButton = self.viewWithTag(99) {
-            centerButton.backgroundColor = NCBrandColor.shared.getElement(account: account)
+            centerButton.backgroundColor = color
         }
     }
 
@@ -171,7 +173,7 @@ class NCMainTabBar: UITabBar {
 
         centerButton.setTitle("", for: .normal)
         centerButton.setImage(imagePlus, for: .normal)
-        centerButton.backgroundColor = NCBrandColor.shared.getElement(account: "")
+        centerButton.backgroundColor = color
         centerButton.tintColor = UIColor.white
         centerButton.tag = 99
         centerButton.accessibilityLabel = NSLocalizedString("_accessibility_add_upload_", comment: "")
