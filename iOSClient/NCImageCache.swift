@@ -21,6 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+import Foundation
 import UIKit
 import LRUCache
 import NextcloudKit
@@ -272,15 +273,6 @@ class NCImageCache: NSObject {
         images.folderExternal = UIImage(named: "folder_external")!.image(color: brandElement)
         images.folderAutomaticUpload = UIImage(named: "folderAutomaticUpload")!.image(color: brandElement)
         images.folder = UIImage(named: "folder")!.image(color: brandElement)
-
-        images.iconContacts = utility.loadImage(named: "person.crop.rectangle.stack", colors: [NCBrandColor.shared.iconImageColor])
-        images.iconTalk = UIImage(named: "talk-template")!.image(color: brandElement)
-        images.iconCalendar = utility.loadImage(named: "calendar", colors: [NCBrandColor.shared.iconImageColor])
-        images.iconDeck = utility.loadImage(named: "square.stack.fill", colors: [NCBrandColor.shared.iconImageColor])
-        images.iconMail = utility.loadImage(named: "mail", colors: [NCBrandColor.shared.iconImageColor])
-        images.iconConfirm = utility.loadImage(named: "arrow.right", colors: [NCBrandColor.shared.iconImageColor])
-        images.iconPages = utility.loadImage(named: "doc.richtext", colors: [NCBrandColor.shared.iconImageColor])
-        images.iconFile = utility.loadImage(named: "doc", colors: [NCBrandColor.shared.iconImageColor])
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming)
     }
