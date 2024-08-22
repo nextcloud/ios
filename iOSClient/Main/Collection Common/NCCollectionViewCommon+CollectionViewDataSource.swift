@@ -99,23 +99,23 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 /// APP NAME - UNIFIED SEARCH
                 switch metadata.iconName {
                 case let str where str.contains("contacts"):
-                    cell.filePreviewImageView?.image = NCImageCache.images.iconContacts
+                    cell.filePreviewImageView?.image = utility.loadImage(named: "person.crop.rectangle.stack", colors: [NCBrandColor.shared.iconImageColor])
                 case let str where str.contains("conversation"):
-                    cell.filePreviewImageView?.image = NCImageCache.images.iconTalk
+                    cell.filePreviewImageView?.image = UIImage(named: "talk-template")!.image(color: NCBrandColor.shared.brandElement)
                 case let str where str.contains("calendar"):
-                    cell.filePreviewImageView?.image = NCImageCache.images.iconCalendar
+                    cell.filePreviewImageView?.image = utility.loadImage(named: "calendar", colors: [NCBrandColor.shared.iconImageColor])
                 case let str where str.contains("deck"):
-                    cell.filePreviewImageView?.image = NCImageCache.images.iconDeck
+                    cell.filePreviewImageView?.image = utility.loadImage(named: "square.stack.fill", colors: [NCBrandColor.shared.iconImageColor])
                 case let str where str.contains("mail"):
-                    cell.filePreviewImageView?.image = NCImageCache.images.iconMail
+                    cell.filePreviewImageView?.image = utility.loadImage(named: "mail", colors: [NCBrandColor.shared.iconImageColor])
                 case let str where str.contains("talk"):
-                    cell.filePreviewImageView?.image = NCImageCache.images.iconTalk
+                    cell.filePreviewImageView?.image = UIImage(named: "talk-template")!.image(color: NCBrandColor.shared.brandElement)
                 case let str where str.contains("confirm"):
-                    cell.filePreviewImageView?.image = NCImageCache.images.iconConfirm
+                    cell.filePreviewImageView?.image = utility.loadImage(named: "arrow.right", colors: [NCBrandColor.shared.iconImageColor])
                 case let str where str.contains("pages"):
-                    cell.filePreviewImageView?.image = NCImageCache.images.iconPages
+                    cell.filePreviewImageView?.image = utility.loadImage(named: "doc.richtext", colors: [NCBrandColor.shared.iconImageColor])
                 default:
-                    cell.filePreviewImageView?.image = NCImageCache.images.iconFile
+                    cell.filePreviewImageView?.image = utility.loadImage(named: "doc", colors: [NCBrandColor.shared.iconImageColor])
                 }
                 if !metadata.iconUrl.isEmpty {
                     if let ownerId = getAvatarFromIconUrl(metadata: metadata) {

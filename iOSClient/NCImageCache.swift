@@ -225,15 +225,6 @@ class NCImageCache: NSObject {
         static var buttonMore = UIImage()
         static var buttonStop = UIImage()
         static var buttonMoreLock = UIImage()
-
-        static var iconContacts = UIImage()
-        static var iconTalk = UIImage()
-        static var iconCalendar = UIImage()
-        static var iconDeck = UIImage()
-        static var iconMail = UIImage()
-        static var iconConfirm = UIImage()
-        static var iconPages = UIImage()
-        static var iconFile = UIImage()
     }
 
     func createImagesCache() {
@@ -264,7 +255,6 @@ class NCImageCache: NSObject {
         let brandElement = NCBrandColor.shared.brandElement
         guard brandElement != self.brandElementColor else { return }
         self.brandElementColor = brandElement
-        let utility = NCUtility()
 
         images.folderEncrypted = UIImage(named: "folderEncrypted")!.image(color: brandElement)
         images.folderSharedWithMe = UIImage(named: "folder_shared_with_me")!.image(color: brandElement)
