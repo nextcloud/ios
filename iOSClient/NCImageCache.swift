@@ -202,14 +202,8 @@ class NCImageCache: NSObject {
 
     struct images {
 
-        static var shared = UIImage()
-        static var canShare = UIImage()
-        static var shareByLink = UIImage()
 
-        static var favorite = UIImage()
         static var comment = UIImage()
-        static var offlineFlag = UIImage()
-        static var local = UIImage()
 
         static var folderEncrypted = UIImage()
         static var folderSharedWithMe = UIImage()
@@ -227,18 +221,9 @@ class NCImageCache: NSObject {
         static var buttonMoreLock = UIImage()
     }
 
-
-
     func createImagesCache() {
         let utility = NCUtility()
 
-        images.shared = utility.loadImage(named: "person.fill.badge.plus", colors: NCBrandColor.shared.iconImageMultiColors)
-        images.canShare = utility.loadImage(named: "person.fill.badge.plus", colors: NCBrandColor.shared.iconImageMultiColors)
-        images.shareByLink = utility.loadImage(named: "link", colors: [NCBrandColor.shared.iconImageColor])
-
-        images.favorite = utility.loadImage(named: "star.fill", colors: [NCBrandColor.shared.yellowFavorite])
-        images.offlineFlag = utility.loadImage(named: "arrow.down.circle.fill", colors: [.systemGreen])
-        images.local = utility.loadImage(named: "checkmark.circle.fill", colors: [.systemGreen])
 
         images.checkedYes = utility.loadImage(named: "checkmark.circle.fill", colors: [NCBrandColor.shared.brandElement])
         images.checkedNo = utility.loadImage(named: "circle", colors: [NCBrandColor.shared.brandElement])
@@ -268,5 +253,29 @@ class NCImageCache: NSObject {
 
     func getImageFile() -> UIImage {
         return utility.loadImage(named: "doc", colors: [NCBrandColor.shared.iconImageColor2])
+    }
+
+    func getImageShared() -> UIImage {
+        return utility.loadImage(named: "person.fill.badge.plus", colors: NCBrandColor.shared.iconImageMultiColors)
+    }
+
+    func getImageCanShare() -> UIImage {
+        return utility.loadImage(named: "person.fill.badge.plus", colors: NCBrandColor.shared.iconImageMultiColors)
+    }
+
+    func getImageShareByLink() -> UIImage {
+        return utility.loadImage(named: "link", colors: [NCBrandColor.shared.iconImageColor])
+    }
+
+    func getImageFavorite() -> UIImage {
+        return utility.loadImage(named: "star.fill", colors: [NCBrandColor.shared.yellowFavorite])
+    }
+
+    func getImageOfflineFlag() -> UIImage {
+        return utility.loadImage(named: "arrow.down.circle.fill", colors: [.systemGreen])
+    }
+
+    func getImageLocal() -> UIImage {
+        return utility.loadImage(named: "checkmark.circle.fill", colors: [.systemGreen])
     }
 }

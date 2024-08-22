@@ -255,7 +255,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
             // Local image: offline
             if let tableDirectory, tableDirectory.offline {
-                cell.fileLocalImage?.image = NCImageCache.images.offlineFlag
+                cell.fileLocalImage?.image = NCImageCache.shared.getImageOfflineFlag()
             }
 
             // color folder
@@ -265,27 +265,27 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             // image local
             if let tableLocalFile, tableLocalFile.offline {
                 a11yValues.append(NSLocalizedString("_offline_", comment: ""))
-                cell.fileLocalImage?.image = NCImageCache.images.offlineFlag
+                cell.fileLocalImage?.image = NCImageCache.shared.getImageOfflineFlag()
             } else if utilityFileSystem.fileProviderStorageExists(metadata) {
-                cell.fileLocalImage?.image = NCImageCache.images.local
+                cell.fileLocalImage?.image = NCImageCache.shared.getImageLocal()
             }
         }
 
         // image Favorite
         if metadata.favorite {
-            cell.fileFavoriteImage?.image = NCImageCache.images.favorite
+            cell.fileFavoriteImage?.image = NCImageCache.shared.getImageFavorite()
             a11yValues.append(NSLocalizedString("_favorite_short_", comment: ""))
         }
 
         // Share image
         if isShare {
-            cell.fileSharedImage?.image = NCImageCache.images.shared
+            cell.fileSharedImage?.image = NCImageCache.shared.getImageShared()
         } else if !metadata.shareType.isEmpty {
             metadata.shareType.contains(3) ?
-            (cell.fileSharedImage?.image = NCImageCache.images.shareByLink) :
-            (cell.fileSharedImage?.image = NCImageCache.images.shared)
+            (cell.fileSharedImage?.image = NCImageCache.shared.getImageShareByLink()) :
+            (cell.fileSharedImage?.image = NCImageCache.shared.getImageShared())
         } else {
-            cell.fileSharedImage?.image = NCImageCache.images.canShare
+            cell.fileSharedImage?.image = NCImageCache.shared.getImageCanShare()
         }
 
         /*

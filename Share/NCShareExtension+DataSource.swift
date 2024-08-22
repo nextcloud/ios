@@ -105,7 +105,7 @@ extension NCShareExtension: UICollectionViewDataSource {
         }
 
         if metadata.favorite {
-            cell.imageFavorite.image = NCImageCache.images.favorite
+            cell.imageFavorite.image = NCImageCache.shared.getImageFavorite()
         }
 
         cell.imageSelect.isHidden = true
@@ -159,7 +159,7 @@ extension NCShareExtension: UICollectionViewDataSource {
 
         // Local image: offline
         if tableDirectory != nil && tableDirectory!.offline {
-            cell.imageLocal.image = NCImageCache.images.offlineFlag
+            cell.imageLocal.image = NCImageCache.shared.getImageOfflineFlag()
         }
     }
 }
