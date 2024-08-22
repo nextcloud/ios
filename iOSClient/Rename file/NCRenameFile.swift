@@ -83,9 +83,8 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
             previewFile.layer.masksToBounds = true
 
             if metadata.directory {
-
                 if imagePreview == nil {
-                    previewFile.image = NCImageCache.images.folder
+                    previewFile.image = NCImageCache.shared.getFolder(account: metadata.account)
                 }
 
                 ext.isHidden = true

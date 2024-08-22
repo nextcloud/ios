@@ -49,7 +49,7 @@ class NCViewerProviderContextMenu: UIViewController {
         self.image = image
 
         if metadata.directory {
-            imageView.image = NCImageCache.images.folder.colorizeFolder(metadata: metadata)
+            imageView.image = NCImageCache.shared.getFolder(account: metadata.account)
             imageView.frame = resize(CGSize(width: sizeIcon, height: sizeIcon))
         } else {
             // ICON

@@ -48,7 +48,7 @@ extension NCTrash {
             iconHeader = icon
         } else {
             if resultTableTrash.directory {
-                iconHeader = NCImageCache.images.folder
+                iconHeader = NCImageCache.shared.getFolder(account: resultTableTrash.account)
             } else {
                 iconHeader = NCImageCache.shared.getImageFile()
             }

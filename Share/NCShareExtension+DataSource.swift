@@ -47,7 +47,7 @@ extension NCShareExtension: UICollectionViewDelegate {
                 header.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
                 header.emptyDescription.text = ""
             } else {
-                header.emptyImage.image = NCImageCache.images.folder
+                header.emptyImage.image = NCImageCache.shared.getFolder(account: self.activeTableAccount.account)
                 header.emptyTitle.text = NSLocalizedString("_files_no_folders_", comment: "")
                 header.emptyDescription.text = ""
             }
@@ -135,21 +135,21 @@ extension NCShareExtension: UICollectionViewDataSource {
         }
 
         if metadata.e2eEncrypted {
-            cell.imageItem.image = NCImageCache.images.folderEncrypted
+            cell.imageItem.image = NCImageCache.shared.getFolderEncrypted(account: metadata.account)
         } else if isShare {
-            cell.imageItem.image = NCImageCache.images.folderSharedWithMe
+            cell.imageItem.image = NCImageCache.shared.getFolderSharedWithMe(account: metadata.account)
         } else if !metadata.shareType.isEmpty {
             metadata.shareType.contains(3) ?
-            (cell.imageItem.image = NCImageCache.images.folderPublic) :
-            (cell.imageItem.image = NCImageCache.images.folderSharedWithMe)
+            (cell.imageItem.image = NCImageCache.shared.getFolderPublic(account: metadata.account)) :
+            (cell.imageItem.image = NCImageCache.shared.getFolderSharedWithMe(account: metadata.account))
         } else if metadata.mountType == "group" {
-            cell.imageItem.image = NCImageCache.images.folderGroup
+            cell.imageItem.image = NCImageCache.shared.getFolderGroup(account: metadata.account)
         } else if isMounted {
-            cell.imageItem.image = NCImageCache.images.folderExternal
+            cell.imageItem.image = NCImageCache.shared.getFolderExternal(account: metadata.account)
         } else if metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory {
-            cell.imageItem.image = NCImageCache.images.folderAutomaticUpload
+            cell.imageItem.image = NCImageCache.shared.getFolderAutomaticUpload(account: metadata.account)
         } else {
-            cell.imageItem.image = NCImageCache.images.folder
+            cell.imageItem.image = NCImageCache.shared.getFolder(account: metadata.account)
         }
 
         cell.labelInfo.text = utility.dateDiff(metadata.date as Date)

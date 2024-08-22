@@ -200,31 +200,11 @@ class NCImageCache: NSObject {
 
     // MARK: -
 
-    struct images {
-        static var folderEncrypted = UIImage()
-        static var folderSharedWithMe = UIImage()
-        static var folderPublic = UIImage()
-        static var folderGroup = UIImage()
-        static var folderExternal = UIImage()
-        static var folderAutomaticUpload = UIImage()
-        static var folder = UIImage()
-
-
-    }
-
-    
     func createImagesBrandCache() {
         let brandElement = NCBrandColor.shared.brandElement
         guard brandElement != self.brandElementColor else { return }
         self.brandElementColor = brandElement
 
-        images.folderEncrypted = UIImage(named: "folderEncrypted")!.image(color: brandElement)
-        images.folderSharedWithMe = UIImage(named: "folder_shared_with_me")!.image(color: brandElement)
-        images.folderPublic = UIImage(named: "folder_public")!.image(color: brandElement)
-        images.folderGroup = UIImage(named: "folder_group")!.image(color: brandElement)
-        images.folderExternal = UIImage(named: "folder_external")!.image(color: brandElement)
-        images.folderAutomaticUpload = UIImage(named: "folderAutomaticUpload")!.image(color: brandElement)
-        images.folder = UIImage(named: "folder")!.image(color: brandElement)
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming)
     }
@@ -275,5 +255,33 @@ class NCImageCache: NSObject {
 
     func getImageButtonMoreLock() -> UIImage {
         return utility.loadImage(named: "lock.fill", colors: [NCBrandColor.shared.iconImageColor])
+    }
+
+    func getFolder(account: String) -> UIImage {
+        return UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement)
+    }
+
+    func getFolderEncrypted(account: String) -> UIImage {
+        return UIImage(named: "folderEncrypted")!.image(color: NCBrandColor.shared.brandElement)
+    }
+
+    func getFolderSharedWithMe(account: String) -> UIImage {
+        return UIImage(named: "folder_shared_with_me")!.image(color: NCBrandColor.shared.brandElement)
+    }
+
+    func getFolderPublic(account: String) -> UIImage {
+        return UIImage(named: "folder_public")!.image(color: NCBrandColor.shared.brandElement)
+    }
+
+    func getFolderGroup(account: String) -> UIImage {
+        return UIImage(named: "folder_group")!.image(color: NCBrandColor.shared.brandElement)
+    }
+
+    func getFolderExternal(account: String) -> UIImage {
+        return UIImage(named: "folder_external")!.image(color: NCBrandColor.shared.brandElement)
+    }
+
+    func getFolderAutomaticUpload(account: String) -> UIImage {
+        return UIImage(named: "folderAutomaticUpload")!.image(color: NCBrandColor.shared.brandElement)
     }
 }

@@ -234,23 +234,23 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         if metadata.directory {
             let tableDirectory = NCManageDatabase.shared.getTableDirectory(ocId: metadata.ocId)
             if metadata.e2eEncrypted {
-                cell.filePreviewImageView?.image = NCImageCache.images.folderEncrypted
+                cell.filePreviewImageView?.image = NCImageCache.shared.getFolderEncrypted(account: metadata.account)
             } else if isShare {
-                cell.filePreviewImageView?.image = NCImageCache.images.folderSharedWithMe
+                cell.filePreviewImageView?.image = NCImageCache.shared.getFolderSharedWithMe(account: metadata.account)
             } else if !metadata.shareType.isEmpty {
                 metadata.shareType.contains(3) ?
-                (cell.filePreviewImageView?.image = NCImageCache.images.folderPublic) :
-                (cell.filePreviewImageView?.image = NCImageCache.images.folderSharedWithMe)
+                (cell.filePreviewImageView?.image = NCImageCache.shared.getFolderPublic(account: metadata.account)) :
+                (cell.filePreviewImageView?.image = NCImageCache.shared.getFolderSharedWithMe(account: metadata.account))
             } else if !metadata.shareType.isEmpty && metadata.shareType.contains(3) {
-                cell.filePreviewImageView?.image = NCImageCache.images.folderPublic
+                cell.filePreviewImageView?.image = NCImageCache.shared.getFolderPublic(account: metadata.account)
             } else if metadata.mountType == "group" {
-                cell.filePreviewImageView?.image = NCImageCache.images.folderGroup
+                cell.filePreviewImageView?.image = NCImageCache.shared.getFolderGroup(account: metadata.account)
             } else if isMounted {
-                cell.filePreviewImageView?.image = NCImageCache.images.folderExternal
+                cell.filePreviewImageView?.image = NCImageCache.shared.getFolderExternal(account: metadata.account)
             } else if metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory {
-                cell.filePreviewImageView?.image = NCImageCache.images.folderAutomaticUpload
+                cell.filePreviewImageView?.image = NCImageCache.shared.getFolderAutomaticUpload(account: metadata.account)
             } else {
-                cell.filePreviewImageView?.image = NCImageCache.images.folder
+                cell.filePreviewImageView?.image = NCImageCache.shared.getFolder(account: metadata.account)
             }
 
             // Local image: offline
@@ -432,7 +432,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                         header.emptyTitle.text = NSLocalizedString(emptyTitle, comment: "")
                         header.emptyDescription.text = NSLocalizedString(emptyDescription, comment: "")
                     } else {
-                        header.emptyImage.image = NCImageCache.images.folder
+                        header.emptyImage.image = NCImageCache.shared.getFolder(account: session.account)
                         header.emptyTitle.text = NSLocalizedString("_files_no_files_", comment: "")
                         header.emptyDescription.text = NSLocalizedString("_no_file_pull_down_", comment: "")
                     }
