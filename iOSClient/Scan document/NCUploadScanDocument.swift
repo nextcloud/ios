@@ -354,7 +354,7 @@ struct UploadScanDocumentView: View {
                                     .renderingMode(.template)
                                     .resizable()
                                     .scaledToFit()
-                                    .foregroundColor(Color(NCBrandColor.shared.getBrandElement(account: uploadScanDocument.session.account)))
+                                    .foregroundColor(Color(NCBrandColor.shared.getElement(account: uploadScanDocument.session.account)))
                             }
                         }
                         .contentShape(Rectangle())
@@ -395,7 +395,7 @@ struct UploadScanDocumentView: View {
                         }
                         HStack {
                             Toggle(NSLocalizedString("_text_recognition_", comment: ""), isOn: $isTextRecognition)
-                                .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.getBrandElement(account: uploadScanDocument.session.account))))
+                                .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.getElement(account: uploadScanDocument.session.account))))
                                 .onChange(of: isTextRecognition) { newValue in
                                     NCKeychain().textRecognitionStatus = newValue
                                 }
@@ -406,7 +406,7 @@ struct UploadScanDocumentView: View {
                     }
                     VStack(spacing: 20) {
                         Toggle(NSLocalizedString("_delete_all_scanned_images_", comment: ""), isOn: $removeAllFiles)
-                            .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.getBrandElement(account: uploadScanDocument.session.account))))
+                            .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.getElement(account: uploadScanDocument.session.account))))
                             .onChange(of: removeAllFiles) { newValue in
                                 NCKeychain().deleteAllScanImages = newValue
                             }
@@ -436,7 +436,7 @@ struct UploadScanDocumentView: View {
                                     NCKeychain().qualityScanDocument = quality
                                 }
                             })
-                            .accentColor(Color(NCBrandColor.shared.getBrandElement(account: uploadScanDocument.session.account)))
+                            .accentColor(Color(NCBrandColor.shared.getElement(account: uploadScanDocument.session.account)))
                         }
                         PDFKitRepresentedView(quality: $quality, isTextRecognition: $isTextRecognition, uploadScanDocument: uploadScanDocument)
                             .frame(maxWidth: .infinity, minHeight: geo.size.height / 2)

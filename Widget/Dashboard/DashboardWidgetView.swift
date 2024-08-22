@@ -152,9 +152,8 @@ struct DashboardWidgetView: View {
                 if let buttons = entry.buttons, !buttons.isEmpty, !entry.isPlaceholder {
 
                     HStack(spacing: 10) {
-
-                        let brandColor = Color(NCBrandColor.shared.getBrandElement(account: entry.account))
-                        let brandTextColor = Color(NCBrandColor.shared.getBrandText(account: entry.account))
+                        let brandColor = Color(NCBrandColor.shared.getElement(account: entry.account))
+                        let brandTextColor = Color(NCBrandColor.shared.getText(account: entry.account))
 
                         ForEach(buttons, id: \.index) { element in
                             Link(destination: URL(string: element.link)!, label: {
@@ -179,12 +178,12 @@ struct DashboardWidgetView: View {
                         .scaledToFit()
                         .frame(width: 15, height: 15)
                         .font(Font.system(.body).weight(.light))
-                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getBrandElement(account: entry.account)))
+                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getElement(account: entry.account)))
 
                     Text(entry.footerText)
                         .font(.caption2)
                         .lineLimit(1)
-                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getBrandElement(account: entry.account)))
+                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getElement(account: entry.account)))
                 }
                 .padding(.horizontal, 15.0)
                 .frame(maxWidth: geo.size.width, maxHeight: geo.size.height - 2, alignment: .bottomTrailing)

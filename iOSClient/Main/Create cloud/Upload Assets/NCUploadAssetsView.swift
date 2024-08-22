@@ -105,14 +105,14 @@ struct NCUploadAssetsView: View {
                             Text(NSLocalizedString("_use_folder_auto_upload_", comment: ""))
                                 .font(.system(size: 15))
                         })
-                        .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.getBrandElement(account: metadata?.account))))
+                        .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.getElement(account: metadata?.account))))
 
                         if model.useAutoUploadFolder {
                             Toggle(isOn: $model.useAutoUploadFolder, label: {
                                 Text(NSLocalizedString("_autoupload_create_subfolder_", comment: ""))
                                     .font(.system(size: 15))
                             })
-                            .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.getBrandElement(account: metadata?.account))))
+                            .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.getElement(account: metadata?.account))))
                         }
 
                         if !model.useAutoUploadFolder {
@@ -132,7 +132,7 @@ struct NCUploadAssetsView: View {
                                         .renderingMode(.template)
                                         .resizable()
                                         .scaledToFit()
-                                        .foregroundColor(Color(NCBrandColor.shared.getBrandElement(account: metadata?.account)))
+                                        .foregroundColor(Color(NCBrandColor.shared.getElement(account: metadata?.account)))
                                 }
                             }
                             .contentShape(Rectangle())

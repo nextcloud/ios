@@ -49,9 +49,9 @@ class NCShareAdvancePermissionFooter: UIView {
         buttonNext.setTitle(NSLocalizedString(delegate?.isNewShare == true ? "_share_" : "_save_", comment: ""), for: .normal)
         buttonNext.layer.cornerRadius = 25
         buttonNext.layer.masksToBounds = true
-        buttonNext.backgroundColor = NCBrandColor.shared.getBrandElement(account: account)
+        buttonNext.backgroundColor = NCBrandColor.shared.getElement(account: account)
         buttonNext.addTarget(self, action: #selector(nextClicked), for: .touchUpInside)
-        buttonNext.setTitleColor(NCBrandColor.shared.getBrandText(account: account), for: .normal)
+        buttonNext.setTitleColor(.white, for: .normal)
     }
 
     @objc func cancelClicked() {

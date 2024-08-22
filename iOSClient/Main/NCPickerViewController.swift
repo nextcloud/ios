@@ -65,7 +65,7 @@ class NCPhotosPickerViewController: NSObject {
         if maxSelectedAssets > 0 {
             configure.maxSelectedAssets = maxSelectedAssets
         }
-        configure.selectedColor = NCBrandColor.shared.getBrandElement(account: controller.account)
+        configure.selectedColor = NCBrandColor.shared.getElement(account: controller.account)
         configure.singleSelectedMode = singleSelectedMode
         configure.allowedAlbumCloudShared = true
 

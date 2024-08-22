@@ -408,7 +408,7 @@ extension NCSelect: UICollectionViewDataSource {
 
                 guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeaderEmptyData", for: indexPath) as? NCSectionFirstHeaderEmptyData else { return NCSectionFirstHeaderEmptyData() }
                 if self.dataSourceTask?.state == .running {
-                    header.emptyImage.image = utility.loadImage(named: "wifi", colors: [NCBrandColor.shared.getBrandElement(account: session.account)])
+                    header.emptyImage.image = utility.loadImage(named: "wifi", colors: [NCBrandColor.shared.getElement(account: session.account)])
                     header.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
                     header.emptyDescription.text = ""
                 } else {
@@ -589,23 +589,23 @@ class NCSelectCommandView: UIView {
     }
 
     func setColor(account: String) {
-        overwriteSwitch?.onTintColor = NCBrandColor.shared.getBrandElement(account: account)
+        overwriteSwitch?.onTintColor = NCBrandColor.shared.getElement(account: account)
 
-        selectButton?.backgroundColor = NCBrandColor.shared.getBrandElement(account: account)
+        selectButton?.backgroundColor = NCBrandColor.shared.getElement(account: account)
         selectButton?.setTitleColor(UIColor(white: 1, alpha: 0.3), for: .highlighted)
-        selectButton?.setTitleColor(NCBrandColor.shared.getBrandText(account: account), for: .normal)
+        selectButton?.setTitleColor(.white, for: .normal)
 
-        createFolderButton?.backgroundColor = NCBrandColor.shared.getBrandElement(account: account)
+        createFolderButton?.backgroundColor = NCBrandColor.shared.getElement(account: account)
         createFolderButton?.setTitleColor(UIColor(white: 1, alpha: 0.3), for: .highlighted)
-        createFolderButton?.setTitleColor(NCBrandColor.shared.getBrandText(account: account), for: .normal)
+        createFolderButton?.setTitleColor(NCBrandColor.shared.getText(account: account), for: .normal)
 
-        copyButton?.backgroundColor = NCBrandColor.shared.getBrandElement(account: account)
+        copyButton?.backgroundColor = NCBrandColor.shared.getElement(account: account)
         copyButton?.setTitleColor(UIColor(white: 1, alpha: 0.3), for: .highlighted)
-        copyButton?.setTitleColor(NCBrandColor.shared.getBrandText(account: account), for: .normal)
+        copyButton?.setTitleColor(NCBrandColor.shared.getText(account: account), for: .normal)
 
-        moveButton?.backgroundColor = NCBrandColor.shared.getBrandElement(account: account)
+        moveButton?.backgroundColor = NCBrandColor.shared.getElement(account: account)
         moveButton?.setTitleColor(UIColor(white: 1, alpha: 0.3), for: .highlighted)
-        moveButton?.setTitleColor(NCBrandColor.shared.getBrandText(account: account), for: .normal)
+        moveButton?.setTitleColor(NCBrandColor.shared.getText(account: account), for: .normal)
     }
 
     @IBAction func createFolderButtonPressed(_ sender: UIButton) {

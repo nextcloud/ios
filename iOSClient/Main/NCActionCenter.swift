@@ -209,7 +209,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         hud.indicatorView = JGProgressHUDRingIndicatorView()
         if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
             indicatorView.ringWidth = 1.5
-            indicatorView.ringColor = NCBrandColor.shared.getBrandElement(account: account)
+            indicatorView.ringColor = NCBrandColor.shared.getElement(account: account)
         }
         hud.tapOnHUDViewBlock = { _ in
             if let request = downloadRequest {

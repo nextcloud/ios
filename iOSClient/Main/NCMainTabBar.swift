@@ -49,9 +49,9 @@ class NCMainTabBar: UITabBar {
         guard let userInfo = notification.userInfo as? NSDictionary else { return }
         let account = userInfo["account"] as? String
 
-        tintColor = NCBrandColor.shared.getBrandElement(account: account)
+        tintColor = NCBrandColor.shared.getElement(account: account)
         if let centerButton = self.viewWithTag(99) {
-            centerButton.backgroundColor = NCBrandColor.shared.getBrandElement(account: account)
+            centerButton.backgroundColor = NCBrandColor.shared.getElement(account: account)
         }
     }
 
@@ -171,7 +171,7 @@ class NCMainTabBar: UITabBar {
 
         centerButton.setTitle("", for: .normal)
         centerButton.setImage(imagePlus, for: .normal)
-        centerButton.backgroundColor = NCBrandColor.shared.getBrandElement(account: "")
+        centerButton.backgroundColor = NCBrandColor.shared.getElement(account: "")
         centerButton.tintColor = UIColor.white
         centerButton.tag = 99
         centerButton.accessibilityLabel = NSLocalizedString("_accessibility_add_upload_", comment: "")

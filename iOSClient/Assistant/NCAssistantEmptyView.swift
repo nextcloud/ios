@@ -18,7 +18,7 @@ struct NCAssistantEmptyView: View {
                 .renderingMode(.template)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .foregroundStyle(Color(NCBrandColor.shared.getBrandElement(account: model.controller?.account)))
+                .foregroundStyle(Color(NCBrandColor.shared.getElement(account: model.controller?.account)))
                 .font(Font.system(.body).weight(.light))
                 .frame(height: 100)
 

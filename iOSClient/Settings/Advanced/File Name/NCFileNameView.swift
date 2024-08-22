@@ -33,7 +33,7 @@ struct NCFileNameView: View {
                 ///
                 Toggle(NSLocalizedString("_maintain_original_filename_", comment: ""), isOn: $model.maintainFilenameOriginal)
                     .font(.system(size: 16))
-                    .tint(Color(NCBrandColor.shared.getBrandElement(account: model.session.account)))
+                    .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                     .onChange(of: model.maintainFilenameOriginal, perform: { newValue in
                         model.toggleMaintainFilenameOriginal(newValue: newValue)
                         model.getFileName()
@@ -42,7 +42,7 @@ struct NCFileNameView: View {
                 if !model.maintainFilenameOriginal {
                     Toggle(NSLocalizedString("_add_filenametype_", comment: ""), isOn: $model.addFileNameType)
                         .font(.system(size: 16))
-                        .tint(Color(NCBrandColor.shared.getBrandElement(account: model.session.account)))
+                        .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                         .onChange(of: model.addFileNameType, perform: { newValue in
                             model.toggleAddFilenameType(newValue: newValue)
                             model.getFileName()

@@ -100,9 +100,9 @@ class NCCreateFormUploadConflict: UIViewController {
             labelAlreadyExistingFiles.text = NSLocalizedString("_file_conflict_exists_", comment: "")
         }
 
-        switchNewFiles.onTintColor = NCBrandColor.shared.getBrandElement(account: account)
+        switchNewFiles.onTintColor = NCBrandColor.shared.getElement(account: account)
         switchNewFiles.isOn = false
-        switchAlreadyExistingFiles.onTintColor = NCBrandColor.shared.getBrandElement(account: account)
+        switchAlreadyExistingFiles.onTintColor = NCBrandColor.shared.getElement(account: account)
         switchAlreadyExistingFiles.isOn = false
 
         buttonCancel.layer.cornerRadius = 20
@@ -115,10 +115,10 @@ class NCCreateFormUploadConflict: UIViewController {
 
         buttonContinue.layer.cornerRadius = 20
         buttonContinue.layer.masksToBounds = true
-        buttonContinue.backgroundColor = NCBrandColor.shared.getBrandElement(account: account)
+        buttonContinue.backgroundColor = NCBrandColor.shared.getElement(account: account)
         buttonContinue.setTitle(NSLocalizedString("_continue_", comment: ""), for: .normal)
         buttonContinue.isEnabled = false
-        buttonContinue.setTitleColor(NCBrandColor.shared.getBrandText(account: account), for: .normal)
+        buttonContinue.setTitleColor(.white, for: .normal)
 
         let blurEffect = UIBlurEffect(style: .light)
         blurView = UIVisualEffectView(effect: blurEffect)
@@ -313,8 +313,8 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
             let metadataNewFile = tableMetadata.init(value: metadatasUploadInConflict[indexPath.row])
 
             cell.backgroundColor = tableView.backgroundColor
-            cell.switchNewFile.onTintColor = NCBrandColor.shared.getBrandElement(account: metadataNewFile.account)
-            cell.switchAlreadyExistingFile.onTintColor = NCBrandColor.shared.getBrandElement(account: metadataNewFile.account)
+            cell.switchNewFile.onTintColor = NCBrandColor.shared.getElement(account: metadataNewFile.account)
+            cell.switchAlreadyExistingFile.onTintColor = NCBrandColor.shared.getElement(account: metadataNewFile.account)
             cell.ocId = metadataNewFile.ocId
             cell.delegate = self
             cell.labelFileName.text = metadataNewFile.fileNameView

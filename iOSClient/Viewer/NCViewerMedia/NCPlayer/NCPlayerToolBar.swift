@@ -458,7 +458,7 @@ extension NCPlayerToolBar: NCSelectDelegate {
                 hud.detailTextLabel.textColor = NCBrandColor.shared.iconImageColor2
                 if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
                     indicatorView.ringWidth = 1.5
-                    indicatorView.ringColor = NCBrandColor.shared.getBrandElement(account: metadata.account)
+                    indicatorView.ringColor = NCBrandColor.shared.getElement(account: metadata.account)
                 }
                 hud.tapOnHUDViewBlock = { _ in
                     if let request = downloadRequest {

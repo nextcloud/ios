@@ -112,7 +112,7 @@ class NCViewerMediaPage: UIViewController {
         pageViewController.view.addGestureRecognizer(singleTapGestureRecognizer)
         pageViewController.view.addGestureRecognizer(longtapGestureRecognizer)
 
-        progressView.tintColor = NCBrandColor.shared.getBrandElement(account: metadatas.first?.account)
+        progressView.tintColor = NCBrandColor.shared.getElement(account: metadatas.first?.account)
         progressView.trackTintColor = .clear
         progressView.progress = 0
 

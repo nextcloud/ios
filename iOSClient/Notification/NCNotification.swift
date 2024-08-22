@@ -119,7 +119,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
         }
 
         if let image = image {
-            cell.icon.image = image.withTintColor(NCBrandColor.shared.getBrandElement(account: session.account), renderingMode: .alwaysOriginal)
+            cell.icon.image = image.withTintColor(NCBrandColor.shared.getElement(account: session.account), renderingMode: .alwaysOriginal)
         }
 
         // Avatar
@@ -158,16 +158,16 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
         cell.primary.titleLabel?.font = .systemFont(ofSize: 15)
         cell.primary.layer.cornerRadius = 15
         cell.primary.layer.masksToBounds = true
-        cell.primary.layer.backgroundColor = NCBrandColor.shared.getBrandElement(account: session.account).cgColor
-        cell.primary.setTitleColor(NCBrandColor.shared.getBrandText(account: session.account), for: .normal)
+        cell.primary.layer.backgroundColor = NCBrandColor.shared.getElement(account: session.account).cgColor
+        cell.primary.setTitleColor(.white, for: .normal)
 
         cell.more.isEnabled = false
         cell.more.isHidden = true
         cell.more.titleLabel?.font = .systemFont(ofSize: 15)
         cell.more.layer.cornerRadius = 15
         cell.more.layer.masksToBounds = true
-        cell.more.layer.backgroundColor = NCBrandColor.shared.getBrandElement(account: session.account).cgColor
-        cell.more.setTitleColor(NCBrandColor.shared.getBrandText(account: session.account), for: .normal)
+        cell.more.layer.backgroundColor = NCBrandColor.shared.getElement(account: session.account).cgColor
+        cell.more.setTitleColor(.white, for: .normal)
 
         cell.secondary.isEnabled = false
         cell.secondary.isHidden = true

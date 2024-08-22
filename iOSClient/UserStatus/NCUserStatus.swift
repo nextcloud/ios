@@ -82,7 +82,7 @@ class NCUserStatus: UIViewController {
         view.backgroundColor = .systemBackground
         tableView.backgroundColor = .systemBackground
 
-        borderColorButton = NCBrandColor.shared.getBrandElement(account: account).cgColor
+        borderColorButton = NCBrandColor.shared.getElement(account: account).cgColor
         buttonCancel.image = utility.loadImage(named: "xmark", colors: [NCBrandColor.shared.iconImageColor])
 
         onlineButton.layer.cornerRadius = 10
@@ -164,9 +164,9 @@ class NCUserStatus: UIViewController {
 
         setStatusMessageButton.layer.cornerRadius = 20
         setStatusMessageButton.layer.masksToBounds = true
-        setStatusMessageButton.backgroundColor = NCBrandColor.shared.getBrandElement(account: account)
+        setStatusMessageButton.backgroundColor = NCBrandColor.shared.getElement(account: account)
         setStatusMessageButton.setTitle(NSLocalizedString("_set_status_message_", comment: ""), for: .normal)
-        setStatusMessageButton.setTitleColor(NCBrandColor.shared.getBrandText(account: account), for: .normal)
+        setStatusMessageButton.setTitleColor(NCBrandColor.shared.getText(account: account), for: .normal)
 
         getStatus()
     }
