@@ -68,7 +68,6 @@ extension NCShareExtension: NCAccountRequestDelegate {
 
         // COLORS
         NCBrandColor.shared.settingThemingColor(account: activeTableAccount.account)
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming, userInfo: ["account": activeTableAccount.account])
 
         // NETWORKING
         NextcloudKit.shared.setup(delegate: NCNetworking.shared)

@@ -83,7 +83,9 @@ class NCAccount: NSObject {
         NCAutoUpload.shared.initAutoUpload(viewController: nil, account: account) { items in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
         }
-
+        /// Color
+        NCBrandColor.shared.settingThemingColor(account: account)
+        /// Notification
         if let controller {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeUser, userInfo: ["account": account, "controller": controller])
         } else {

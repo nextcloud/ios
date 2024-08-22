@@ -128,11 +128,6 @@ class NCShareExtension: UIViewController {
         NCBrandColor.shared.createUserColors()
         NCBrandColor.shared.settingThemingColor(account: activeTableAccount.account)
 
-        if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
-            NCBrandColor.shared.settingThemingColor(account: activeTableAccount.account)
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming, userInfo: ["account": activeTableAccount.account])
-        }
-
         hud.indicatorView = JGProgressHUDRingIndicatorView()
         if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
             indicatorView.ringWidth = 1.5

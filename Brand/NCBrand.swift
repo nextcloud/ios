@@ -172,7 +172,49 @@ class NCBrandColor: NSObject {
 
     override init() { }
 
+    /**
+     Generate colors from the official nextcloud color.
+     You can provide how many colors you want (multiplied by 3).
+     if `step` = 6,
+     3 colors \* 6 will result in 18 generated colors
+     */
     func createUserColors() {
+        func generateColors(steps: Int = 6) -> [CGColor] {
+            func stepCalc(steps: Int, color1: CGColor, color2: CGColor) -> [CGFloat] {
+                var step = [CGFloat](repeating: 0, count: 3)
+
+                step[0] = (color2.components![0] - color1.components![0]) / CGFloat(steps)
+                step[1] = (color2.components![1] - color1.components![1]) / CGFloat(steps)
+                step[2] = (color2.components![2] - color1.components![2]) / CGFloat(steps)
+                return step
+            }
+
+            func mixPalette(steps: Int, color1: CGColor, color2: CGColor) -> [CGColor] {
+                var palette = [color1]
+                let step = stepCalc(steps: steps, color1: color1, color2: color2)
+                let c1Components = color1.components!
+
+                for i in 1 ..< steps {
+                    let r = c1Components[0] + step[0] * CGFloat(i)
+                    let g = c1Components[1] + step[1] * CGFloat(i)
+                    let b = c1Components[2] + step[2] * CGFloat(i)
+
+                    palette.append(UIColor(red: r, green: g, blue: b, alpha: 1).cgColor)
+                }
+                return palette
+            }
+
+            let red = UIColor(red: 182 / 255, green: 70 / 255, blue: 157 / 255, alpha: 1).cgColor
+            let yellow = UIColor(red: 221 / 255, green: 203 / 255, blue: 85 / 255, alpha: 1).cgColor
+            let blue = UIColor(red: 0 / 255, green: 130 / 255, blue: 201 / 255, alpha: 1).cgColor
+
+            let palette1 = mixPalette(steps: steps, color1: red, color2: yellow)
+            let palette2 = mixPalette(steps: steps, color1: yellow, color2: blue)
+            let palette3 = mixPalette(steps: steps, color1: blue, color2: red)
+
+            return palette1 + palette2 + palette3
+        }
+
         userColors = generateColors()
     }
 
@@ -249,6 +291,8 @@ class NCBrandColor: NSObject {
             // THEMING COLOR TEXT
             self.themingColorText[account] = customerText
         }
+
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming, userInfo: ["account": account])
     }
 
     public func getTheming(account: String?) -> UIColor {
@@ -270,47 +314,5 @@ class NCBrandColor: NSObject {
             return color
         }
         return .white
-    }
-
-    private func stepCalc(steps: Int, color1: CGColor, color2: CGColor) -> [CGFloat] {
-        var step = [CGFloat](repeating: 0, count: 3)
-
-        step[0] = (color2.components![0] - color1.components![0]) / CGFloat(steps)
-        step[1] = (color2.components![1] - color1.components![1]) / CGFloat(steps)
-        step[2] = (color2.components![2] - color1.components![2]) / CGFloat(steps)
-        return step
-    }
-
-    private func mixPalette(steps: Int, color1: CGColor, color2: CGColor) -> [CGColor] {
-        var palette = [color1]
-        let step = stepCalc(steps: steps, color1: color1, color2: color2)
-        let c1Components = color1.components!
-
-        for i in 1 ..< steps {
-            let r = c1Components[0] + step[0] * CGFloat(i)
-            let g = c1Components[1] + step[1] * CGFloat(i)
-            let b = c1Components[2] + step[2] * CGFloat(i)
-
-            palette.append(UIColor(red: r, green: g, blue: b, alpha: 1).cgColor)
-        }
-        return palette
-    }
-
-    /**
-     Generate colors from the official nextcloud color.
-     You can provide how many colors you want (multiplied by 3).
-     if `step` = 6,
-     3 colors \* 6 will result in 18 generated colors
-     */
-    func generateColors(steps: Int = 6) -> [CGColor] {
-        let red = UIColor(red: 182 / 255, green: 70 / 255, blue: 157 / 255, alpha: 1).cgColor
-        let yellow = UIColor(red: 221 / 255, green: 203 / 255, blue: 85 / 255, alpha: 1).cgColor
-        let blue = UIColor(red: 0 / 255, green: 130 / 255, blue: 201 / 255, alpha: 1).cgColor
-
-        let palette1 = mixPalette(steps: steps, color1: red, color2: yellow)
-        let palette2 = mixPalette(steps: steps, color1: yellow, color2: blue)
-        let palette3 = mixPalette(steps: steps, color1: blue, color2: red)
-
-        return palette1 + palette2 + palette3
     }
 }

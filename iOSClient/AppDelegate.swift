@@ -67,6 +67,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         utilityFileSystem.createDirectoryStandard()
         utilityFileSystem.emptyTemporaryDirectory()
         utilityFileSystem.clearCacheDirectory("com.limit-point.LivePhoto")
+
+        // Create users colors
         NCBrandColor.shared.createUserColors()
 
         NextcloudKit.shared.setup(delegate: NCNetworking.shared)
