@@ -44,6 +44,11 @@ class NCMainTabBar: UITabBar {
 
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
+
+        if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
+            self.color = NCBrandColor.shared.getElement(account: activeTableAccount.account)
+            tintColor = color
+        }
     }
 
     @objc func changeTheming(_ notification: NSNotification) {
