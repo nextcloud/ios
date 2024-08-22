@@ -69,7 +69,7 @@ extension NCShareExtension: NCAccountRequestDelegate {
         // COLORS
         NCBrandColor.shared.settingThemingColor(account: activeTableAccount.account)
         NCBrandColor.shared.createUserColors()
-        NCImageCache.shared.createImagesBrandCache()
+        NCImageCache.shared.createImagesBrandCache(account: activeTableAccount.account)
 
         // NETWORKING
         NextcloudKit.shared.setup(delegate: NCNetworking.shared)

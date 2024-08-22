@@ -200,7 +200,7 @@ class NCImageCache: NSObject {
 
     // MARK: -
 
-    func createImagesBrandCache() {
+    func createImagesBrandCache(account: String) {
         let brandElement = NCBrandColor.shared.brandElement
         guard brandElement != self.brandElementColor else { return }
         self.brandElementColor = brandElement

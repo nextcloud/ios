@@ -58,8 +58,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
             /// Media cache
             DispatchQueue.global().async {
-                NCBrandColor.shared.createUserColors()
-                NCImageCache.shared.createImagesBrandCache()
+                NCImageCache.shared.createImagesBrandCache(account: activeTableAccount.account)
             }
             /// Main.storyboard
             if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {

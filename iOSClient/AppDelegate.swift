@@ -109,6 +109,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         /// Cache Media
         DispatchQueue.global().async {
             NCImageCache.shared.createMediaCache()
+            NCBrandColor.shared.createUserColors()
         }
 
         return true

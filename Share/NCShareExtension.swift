@@ -127,9 +127,10 @@ class NCShareExtension: UIViewController {
         // Colors
         if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
             NCBrandColor.shared.settingThemingColor(account: activeTableAccount.account)
+            NCImageCache.shared.createImagesBrandCache(account: activeTableAccount.account)
         }
         NCBrandColor.shared.createUserColors()
-        NCImageCache.shared.createImagesBrandCache()
+
 
         hud.indicatorView = JGProgressHUDRingIndicatorView()
         if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
