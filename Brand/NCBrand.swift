@@ -58,7 +58,7 @@ let userAgent: String = {
     // BRAND ONLY
     @objc public var use_AppConfig: Bool = false                                                // Don't touch me !!
 
-    // Options
+    // Use server theming color
     @objc public var use_themingColor: Bool = true
 
     var disable_intro: Bool = false
