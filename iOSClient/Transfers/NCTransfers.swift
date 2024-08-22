@@ -232,7 +232,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         if let image = utility.getIcon(metadata: metadata) {
             cell.imageItem.image = image
         } else if !metadata.iconName.isEmpty {
-            cell.imageItem.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true)
+            cell.imageItem.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
         } else {
             cell.imageItem.image = NCImageCache.shared.getImageFile()
         }

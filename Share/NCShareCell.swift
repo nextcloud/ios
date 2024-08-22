@@ -54,7 +54,7 @@ class NCShareCell: UITableViewCell {
             imageCell.image = image
             imageCell.contentMode = .scaleAspectFill
         } else {
-            imageCell.image = utility.loadImage(named: resultInternalType.iconName, useTypeIconFile: true)
+            imageCell.image = utility.loadImage(named: resultInternalType.iconName, useTypeIconFile: true, account: account)
             imageCell.contentMode = .scaleAspectFit
         }
 

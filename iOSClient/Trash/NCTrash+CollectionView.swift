@@ -74,7 +74,7 @@ extension NCTrash: UICollectionViewDataSource {
         if resultTableTrash.iconName.isEmpty {
             image = NCImageCache.shared.getImageFile()
         } else {
-            image = NCUtility().loadImage(named: resultTableTrash.iconName, useTypeIconFile: true)
+            image = NCUtility().loadImage(named: resultTableTrash.iconName, useTypeIconFile: true, account: resultTableTrash.account)
         }
 
         if FileManager().fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageIconOcId(resultTableTrash.fileId, etag: resultTableTrash.fileName)) {

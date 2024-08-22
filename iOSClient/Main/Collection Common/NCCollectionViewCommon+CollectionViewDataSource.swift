@@ -88,7 +88,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     if metadata.iconName.isEmpty {
                         cell.filePreviewImageView?.image = NCImageCache.shared.getImageFile()
                     } else {
-                        cell.filePreviewImageView?.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true)
+                        cell.filePreviewImageView?.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
                     }
                     if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && !existsIcon {
                         for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { return }
