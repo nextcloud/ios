@@ -251,6 +251,13 @@ class NCBrandColor: NSObject {
         }
     }
 
+    public func getTheming(account: String?) -> UIColor {
+        if let account, let color = self.themingColor[account] {
+            return color
+        }
+        return customer
+    }
+
     public func getElement(account: String?) -> UIColor {
         if let account, let color = self.themingColorElement[account] {
             return color
