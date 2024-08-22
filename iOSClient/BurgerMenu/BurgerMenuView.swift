@@ -147,7 +147,7 @@ private struct CustomProgressView: View {
     var body: some View {
         GeometryReader { geometry in
             Color(.BurgerMenu.progressBarBackground)
-            Color(NCBrandColor.shared.brand)
+            Color(NCBrandColor.shared.brandElement)
                 .frame(width: geometry.size.width * progress)
         }
         .frame(height: height)

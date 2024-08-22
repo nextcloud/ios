@@ -123,7 +123,7 @@ let userAgent: String = {
 
 class NCBrandColor: NSObject {
     static let shared: NCBrandColor = {
-        let instance = NCBrandColor()
+        let instance = NCBrandColorIONOS()
         return instance
     }()
 
