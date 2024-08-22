@@ -54,7 +54,7 @@ class ParallelWorker {
             hud.indicatorView = JGProgressHUDRingIndicatorView()
             if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
                 indicatorView.ringWidth = 1.5
-                indicatorView.ringColor = NCBrandColor.shared.brandElement
+                indicatorView.ringColor = NCBrandColor.shared.customer
             }
             hud.textLabel.text = NSLocalizedString(self.titleKey, comment: "")
             hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
