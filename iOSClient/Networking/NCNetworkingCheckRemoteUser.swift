@@ -33,37 +33,29 @@ class NCNetworkingCheckRemoteUser {
 
         NCNetworking.shared.cancelAllTask()
 
-        if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion17 {
-            NextcloudKit.shared.getRemoteWipeStatus(serverUrl: tableAccount.urlBase, token: token, account: tableAccount.account) { account, wipe, _, error in
-                if wipe {
-                    appDelegate.deleteAccount(account)
-                    let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_wipe_account_")
-                    NCContentPresenter().messageNotification(tableAccount.user, error: error, delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, priority: .max)
-                    NextcloudKit.shared.setRemoteWipeCompletition(serverUrl: tableAccount.urlBase, token: token, account: tableAccount.account) { _, _ in print("wipe") }
-                    let accounts = NCManageDatabase.shared.getAccounts()
-                    if accounts?.count ?? 0 > 0 {
-                        if let newAccount = accounts?.first {
-                            appDelegate.changeAccount(newAccount, userProfile: nil) { }
-                        } else {
-                            appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
-                        }
-                    }
-                } else {
-                    if UIApplication.shared.applicationState == .active && NextcloudKit.shared.isNetworkReachable() {
-                        let description = String.localizedStringWithFormat(NSLocalizedString("_error_check_remote_user_", comment: ""), tableAccount.user, tableAccount.urlBase)
-                        let error = NKError(errorCode: error.errorCode, errorDescription: description)
-                        NCContentPresenter().showError(error: error, priority: .max)
-                        NCKeychain().setPassword(account: account, password: nil)
-                        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Password removed.")
-                    }
-                }
+        NextcloudKit.shared.getRemoteWipeStatus(serverUrl: tableAccount.urlBase, token: token, account: tableAccount.account) { account, wipe, _, error in
+            var finalError: NKError?
+
+            if wipe {
+                appDelegate.deleteAccount(account) // delete account, don't delete database
+                finalError = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_wipe_account_")
+            } else if UIApplication.shared.applicationState == .active && NextcloudKit.shared.isNetworkReachable() {
+                appDelegate.deleteAccount(account) // delete account, delete database
+                finalError = NKError(errorCode: error.errorCode, errorDescription: "_error_check_remote_user_")
             }
-        } else {
-            if UIApplication.shared.applicationState == .active && NextcloudKit.shared.isNetworkReachable() {
-                let description = String.localizedStringWithFormat(NSLocalizedString("_error_check_remote_user_", comment: ""), tableAccount.user, tableAccount.urlBase)
-                let error = NKError(errorCode: error.errorCode, errorDescription: description)
-                NCContentPresenter().showError(error: error, priority: .max)
-                NCKeychain().setPassword(account: account, password: nil)
+
+            if let finalError {
+                NCContentPresenter().messageNotification(tableAccount.user, error: finalError, delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, priority: .max)
+            }
+
+            NextcloudKit.shared.setRemoteWipeCompletition(serverUrl: tableAccount.urlBase, token: token, account: tableAccount.account) { _, _ in print("wipe") }
+
+            let accounts = NCManageDatabase.shared.getAccounts()
+
+            if accounts?.count ?? 0 > 0, let newAccount = accounts?.first {
+                appDelegate.changeAccount(newAccount, userProfile: nil) { }
+            } else {
+                appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
             }
         }
     }
