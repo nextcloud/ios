@@ -152,7 +152,8 @@ private struct CustomProgressView: View {
                 Color(.BurgerMenu.progressBarBackground)
                     .overlay {
                         RoundedRectangle(cornerRadius: cornerRadius)
-                            .stroke(Color.black.opacity(0.6), lineWidth: 1)
+                            .stroke(Color(.BurgerMenu.commonShadow).opacity(0.6), 
+                                    lineWidth: 1)
                             .frame(width: geometry.size.width+blurRadius,
                                    height: 2*geometry.size.height)
                             .blur(radius: blurRadius)
@@ -167,7 +168,10 @@ private struct CustomProgressView: View {
                 .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
                 .offset(x: -height)
                 .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
-                .shadow(color: .black.opacity(0.25), radius: 2, x: 0, y: 1)
+                .shadow(color: Color(.BurgerMenu.commonShadow).opacity(0.25),
+                        radius: 2,
+                        x: 0,
+                        y: 1)
         }
         .frame(height: height)
     }
