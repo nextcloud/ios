@@ -233,7 +233,7 @@ class NCImageCache: NSObject {
     }
 
     func getImageCheckedNo() -> UIImage {
-        return utility.loadImage(named: "circle", colors: [NCBrandColor.shared.brandElement])
+        return utility.loadImage(named: "circle", colors: [NCBrandColor.shared.iconImageColor])
     }
 
     func getImageButtonMore() -> UIImage {
@@ -249,30 +249,30 @@ class NCImageCache: NSObject {
     }
 
     func getFolder(account: String) -> UIImage {
-        return UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement)
+        return UIImage(named: "folder")!.image(color: NCBrandColor.shared.getBrandElement(account: account))
     }
 
     func getFolderEncrypted(account: String) -> UIImage {
-        return UIImage(named: "folderEncrypted")!.image(color: NCBrandColor.shared.brandElement)
+        return UIImage(named: "folderEncrypted")!.image(color: NCBrandColor.shared.getBrandElement(account: account))
     }
 
     func getFolderSharedWithMe(account: String) -> UIImage {
-        return UIImage(named: "folder_shared_with_me")!.image(color: NCBrandColor.shared.brandElement)
+        return UIImage(named: "folder_shared_with_me")!.image(color: NCBrandColor.shared.getBrandElement(account: account))
     }
 
     func getFolderPublic(account: String) -> UIImage {
-        return UIImage(named: "folder_public")!.image(color: NCBrandColor.shared.brandElement)
+        return UIImage(named: "folder_public")!.image(color: NCBrandColor.shared.getBrandElement(account: account))
     }
 
     func getFolderGroup(account: String) -> UIImage {
-        return UIImage(named: "folder_group")!.image(color: NCBrandColor.shared.brandElement)
+        return UIImage(named: "folder_group")!.image(color: NCBrandColor.shared.getBrandElement(account: account))
     }
 
     func getFolderExternal(account: String) -> UIImage {
-        return UIImage(named: "folder_external")!.image(color: NCBrandColor.shared.brandElement)
+        return UIImage(named: "folder_external")!.image(color: NCBrandColor.shared.getBrandElement(account: account))
     }
 
     func getFolderAutomaticUpload(account: String) -> UIImage {
-        return UIImage(named: "folderAutomaticUpload")!.image(color: NCBrandColor.shared.brandElement)
+        return UIImage(named: "folderAutomaticUpload")!.image(color: NCBrandColor.shared.getBrandElement(account: account))
     }
 }
