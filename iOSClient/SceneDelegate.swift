@@ -120,8 +120,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         NCSettingsBundleHelper.setVersionAndBuildNumber()
         NCSettingsBundleHelper.checkAndExecuteSettings(delay: 0.5)
 
-        // START TIMER UPLOAD PROCESS
-        NCNetworkingProcess.shared.startTimer(scene: scene)
+        // START VERIFY ZOMBIE AND UPLOAD PROCEDD
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            Task {
+                await NCNetworkingProcess.shared.verifyZombie()
+                NCNetworkingProcess.shared.startTimer(scene: scene)
+            }
+        }
 
         hidePrivacyProtectionWindow()
 
