@@ -210,7 +210,8 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
                                                                    "ocIdTransfer": metadata.ocIdTransfer,
                                                                    "session": metadata.session,
                                                                    "serverUrl": metadata.serverUrl,
-                                                                   "account": metadata.account])
+                                                                   "account": metadata.account],
+                                                        second: 0.2)
         }
 
         /// UPLOAD
@@ -229,7 +230,8 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
                                                                    "ocIdTransfer": metadata.ocIdTransfer,
                                                                    "session": metadata.session,
                                                                    "serverUrl": metadata.serverUrl,
-                                                                   "account": metadata.account])
+                                                                   "account": metadata.account],
+                                                        second: 0.2)
         }
     }
 

@@ -301,7 +301,6 @@ class NCNetworkingProcess: NSObject {
             }
         }
 
-
         /// DOWNLOADING-BACKGROUND -> STATUS: NORMAL
         ///
         metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "session == %@ AND status == %d",
