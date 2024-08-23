@@ -64,12 +64,6 @@ extension UIViewController {
     }
     
     var mainTabBarController: NCMainTabBarController? {
-        if let ncMainTabBarController = self.tabBarController as? NCMainTabBarController {
-            return ncMainTabBarController
-        }
-        if let ncMainTabBarController = self.navigationController?.presentingViewController as? NCMainTabBarController {
-            return ncMainTabBarController
-        }
-        return nil
+        self.view.window?.rootViewController as? NCMainTabBarController
     }
 }
