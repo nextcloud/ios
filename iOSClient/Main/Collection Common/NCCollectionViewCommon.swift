@@ -918,24 +918,27 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
 
         // DOWNLOAD FOREGROUND
-        if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionDownload {
-            if let request = NCNetworking.shared.downloadRequest[fileNameLocalPath] {
-                request.cancel()
-            } else if let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) {
-                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                           session: "",
-                                                           sessionTaskIdentifier: 0,
-                                                           sessionError: "",
-                                                           selector: "",
-                                                           status: NCGlobal.shared.metadataStatusNormal)
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadCancelFile,
-                                                            object: nil,
-                                                            userInfo: ["ocId": metadata.ocId,
-                                                                       "ocIdTransfer": metadata.ocIdTransfer,
-                                                                       "session": metadata.session,
-                                                                       "serverUrl": metadata.serverUrl,
-                                                                       "account": metadata.account])
+        if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionDownload,
+           let nksession = NextcloudKit.shared.getSession(account: metadata.account) {
+            let tasks = await nksession.sessionData.session.tasks.2 // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
+            for task in tasks {
+                if task.taskIdentifier == metadata.sessionTaskIdentifier {
+                    task.cancel()
+                }
             }
+            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
+                                                       session: "",
+                                                       sessionTaskIdentifier: 0,
+                                                       sessionError: "",
+                                                       selector: "",
+                                                       status: NCGlobal.shared.metadataStatusNormal)
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadCancelFile,
+                                                        object: nil,
+                                                        userInfo: ["ocId": metadata.ocId,
+                                                                   "ocIdTransfer": metadata.ocIdTransfer,
+                                                                   "session": metadata.session,
+                                                                   "serverUrl": metadata.serverUrl,
+                                                                   "account": metadata.account])
             return
         }
 

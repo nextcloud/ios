@@ -163,7 +163,7 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
         convertLivePhotoQueue.cancelAll()
     }
 
-    func cancelAllTask(account: String?) {
+    func cancelAllTask(account: String? = nil) {
         cancelAllQueue()
         cancelDataTask()
         cancelDownloadTasks()
