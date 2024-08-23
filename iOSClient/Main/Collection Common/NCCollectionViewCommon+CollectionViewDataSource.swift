@@ -332,7 +332,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         // Live Photo
         if metadata.isLivePhoto {
-            cell.fileStatusImage?.image = utility.loadImage(named: "livephoto", colors: [.white])
+            cell.fileStatusImage?.image = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor2])
             a11yValues.append(NSLocalizedString("_upload_mov_livephoto_", comment: ""))
         }
 

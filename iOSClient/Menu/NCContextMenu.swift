@@ -115,8 +115,7 @@ class NCContextMenu: NSObject {
             NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil, sceneIdentifier: sceneIdentifier)
         }
 
-        let livePhotoSave = UIAction(title: NSLocalizedString("_livephoto_save_", comment: ""),
-                                     image: utility.loadImage(named: "livephoto")) { _ in
+        let livePhotoSave = UIAction(title: NSLocalizedString("_livephoto_save_", comment: ""), image: utility.loadImage(named: "livephoto")) { _ in
             if let metadataMOV = metadataMOV {
                 NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, hudView: viewController.view))
             }
