@@ -897,17 +897,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     // MARK: - TAP EVENT
 
-    // sessionIdentifierDownload: String = "com.nextcloud.nextcloudkit.session.download"
-    // sessionIdentifierUpload: String = "com.nextcloud.nextcloudkit.session.upload"
-
-    // sessionUploadBackground: String = "com.nextcloud.session.upload.background"
-    // sessionUploadBackgroundWWan: String = "com.nextcloud.session.upload.backgroundWWan"
-    // sessionUploadBackgroundExtension: String = "com.nextcloud.session.upload.extension"
-
-    func cancelSession(metadata: tableMetadata) async {
-        NCNetworking.shared.cancelTask(metadata: metadata)
-    }
-
     func tapMoreListItem(with ocId: String, ocIdTransfer: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
         tapMoreGridItem(with: ocId, ocIdTransfer: ocIdTransfer, namedButtonMore: namedButtonMore, image: image, indexPath: indexPath, sender: sender)
     }
@@ -928,9 +917,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if namedButtonMore == NCGlobal.shared.buttonMoreMore || namedButtonMore == NCGlobal.shared.buttonMoreLock {
             toggleMenu(metadata: metadata, indexPath: indexPath, imageIcon: image)
         } else if namedButtonMore == NCGlobal.shared.buttonMoreStop {
-            Task {
-                await cancelSession(metadata: metadata)
-            }
+            NCNetworking.shared.cancelTask(metadata: metadata)
         }
     }
 
@@ -955,9 +942,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NCTransferProgress.shared.getAll().forEach { transfer in
             if transfer.session == NextcloudKit.shared.nkCommonInstance.identifierSessionUpload,
                let metadata = NCManageDatabase.shared.getMetadataFromOcIdAndocIdTransfer(transfer.ocIdTransfer) {
-                Task {
-                    await cancelSession(metadata: metadata)
-                }
+                NCNetworking.shared.cancelTask(metadata: metadata)
             }
         }
     }

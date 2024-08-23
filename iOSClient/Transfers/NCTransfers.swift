@@ -127,10 +127,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     override func tapMoreGridItem(with ocId: String, ocIdTransfer: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcIdAndocIdTransfer(ocIdTransfer) else { return }
-
-        Task {
-            await cancelSession(metadata: metadata)
-        }
+        NCNetworking.shared.cancelTask(metadata: metadata)
     }
 
     override func longPressMoreListItem(with ocId: String, ocIdTransfer: String, namedButtonMore: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
