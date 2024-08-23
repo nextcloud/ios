@@ -264,7 +264,9 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
             if let nkSession = NextcloudKit.shared.getSession(account: metadata.account) {
                 let tasks = await nkSession.sessionData.session.tasks
                 for task in tasks.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
-                    if task.taskIdentifier == metadata.sessionTaskIdentifier {
+                    if metadata.account == nkSession.account,
+                       metadata.session == NCNetworking.shared.sessionUpload,
+                       metadata.sessionTaskIdentifier == task.taskIdentifier {
                         foundTask = true
                     }
                 }
@@ -285,7 +287,9 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
             if let nkSession = NextcloudKit.shared.getSession(account: metadata.account) {
                 let tasks = await nkSession.sessionData.session.tasks
                 for task in tasks.2 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
-                    if task.taskIdentifier == metadata.sessionTaskIdentifier {
+                    if metadata.account == nkSession.account,
+                       metadata.session == NCNetworking.shared.sessionDownload,
+                       metadata.sessionTaskIdentifier == task.taskIdentifier {
                         foundTask = true
                     }
                 }
@@ -314,10 +318,15 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
                     session = nkSession.sessionUploadBackground
                 } else if metadata.session == NCNetworking.shared.sessionUploadBackgroundWWan {
                     session = nkSession.sessionUploadBackgroundWWan
+                } else if metadata.session == NCNetworking.shared.sessionUploadBackgroundExt {
+                    session = nkSession.sessionUploadBackgroundExt
                 }
                 if let tasks = await session?.allTasks {
                     for task in tasks {
-                        if task.taskIdentifier == metadata.sessionTaskIdentifier { taskUpload = task }
+                        if metadata.account == nkSession.account,
+                           metadata.sessionTaskIdentifier == task.taskIdentifier {
+                            taskUpload = task
+                        }
                     }
                     if taskUpload == nil, let metadata = NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "ocId == %@ AND status == %d",
                                                                                                                           metadata.ocId,
@@ -344,7 +353,9 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
                 let session: URLSession? = nkSession.sessionDownloadBackground
                 if let tasks = await session?.allTasks {
                     for task in tasks {
-                        if task.taskIdentifier == metadata.sessionTaskIdentifier { taskDownload = task }
+                        if metadata.sessionTaskIdentifier == task.taskIdentifier {
+                            taskDownload = task
+                        }
                     }
                     if taskDownload == nil, let metadata = NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "ocId == %@ AND status == %d",
                                                                                                                             metadata.ocId,
