@@ -59,6 +59,7 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
 
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
+    var requestsUnifiedSearch: [DataRequest] = []
     var lastReachability: Bool = true
     var networkReachability: NKCommon.TypeReachability?
     weak var delegate: NCNetworkingDelegate?
@@ -69,9 +70,6 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
         let nckb = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance)
         return nckb
     }()
-
-    // REQUESTS
-    var requestsUnifiedSearch: [DataRequest] = []
 
     // OPERATIONQUEUE
     let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
