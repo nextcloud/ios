@@ -31,29 +31,29 @@ class NCNetworkingCheckRemoteUser {
               let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
               !token.isEmpty else { return }
 
-        NextcloudKit.shared.getRemoteWipeStatus(serverUrl: tableAccount.urlBase, token: token, account: tableAccount.account) { account, wipe, _, error in
-            var finalError: NKError?
+        if UIApplication.shared.applicationState == .active && NextcloudKit.shared.isNetworkReachable() {
+            NextcloudKit.shared.getRemoteWipeStatus(serverUrl: tableAccount.urlBase, token: token, account: tableAccount.account) { account, wipe, _, error in
+                if wipe {
+                    NCAccount().deleteAccount(account) // delete account, don't delete database
 
-            if wipe {
-                NCAccount().deleteAccount(account) // delete account, don't delete database
-                finalError = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_wipe_account_")
-            } else if UIApplication.shared.applicationState == .active && NextcloudKit.shared.isNetworkReachable() {
-                NCAccount().deleteAccount(account) // delete account, delete database
-                finalError = NKError(errorCode: error.errorCode, errorDescription: "_error_check_remote_user_")
-            }
 
-            if let finalError {
-                NCContentPresenter().messageNotification(tableAccount.user, error: finalError, delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, priority: .max)
-            }
+                    NextcloudKit.shared.setRemoteWipeCompletition(serverUrl: tableAccount.urlBase, token: token, account: tableAccount.account) {
+                        _, error in
+                        if error != .success {
+                            NCContentPresenter().messageNotification(tableAccount.user, error: error, delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, priority: .max)
+                        }
+                    }
+                } else {
+                    NCAccount().deleteAccount(account) // delete account, delete database
+                }
 
-            NextcloudKit.shared.setRemoteWipeCompletition(serverUrl: tableAccount.urlBase, token: token, account: tableAccount.account) { _, _ in print("wipe") }
-
-            if let accounts = NCManageDatabase.shared.getAccounts(),
-               account.count > 0,
-               let account = accounts.first {
-                NCAccount().changeAccount(account, userProfile: nil, controller: nil) { }
-            } else {
-                appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
+                if let accounts = NCManageDatabase.shared.getAccounts(),
+                   account.count > 0,
+                   let account = accounts.first {
+                    NCAccount().changeAccount(account, userProfile: nil, controller: nil) { }
+                } else {
+                    appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
+                }
             }
         }
     }
