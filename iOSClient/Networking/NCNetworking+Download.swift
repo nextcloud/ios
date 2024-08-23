@@ -306,7 +306,11 @@ extension NCNetworking {
                 }
             }
         }
-        if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status < 0 AND session == %@", NextcloudKit.shared.nkCommonInstance.identifierSessionDownload)) {
+        if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND session == %@",
+                                                                                            NCGlobal.shared.metadataStatusWaitDownload,
+                                                                                            NCGlobal.shared.metadataStatusDownloading,
+                                                                                            NCGlobal.shared.metadataStatusDownloadError,
+                                                                                            NextcloudKit.shared.nkCommonInstance.identifierSessionDownload)) {
             NCManageDatabase.shared.clearMetadataSession(metadatas: results)
         }
     }
@@ -318,7 +322,11 @@ extension NCNetworking {
                 for task in tasksBackground.2 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
                     task.cancel()
                 }
-                if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status < 0 AND session == %@", NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground)) {
+                if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND session == %@",
+                                                                                                    NCGlobal.shared.metadataStatusWaitDownload,
+                                                                                                    NCGlobal.shared.metadataStatusDownloading,
+                                                                                                    NCGlobal.shared.metadataStatusDownloadError,
+                                                                                                    NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground)) {
                     NCManageDatabase.shared.clearMetadataSession(metadatas: results)
                 }
             }
