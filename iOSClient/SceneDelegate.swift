@@ -123,7 +123,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // START VERIFY ZOMBIE AND UPLOAD PROCEDD
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             Task {
-                await NCNetworkingProcess.shared.verifyZombie()
+                await NCNetworking.shared.verifyZombie()
                 NCNetworkingProcess.shared.startTimer(scene: scene)
             }
         }

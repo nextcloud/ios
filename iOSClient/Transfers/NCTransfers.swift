@@ -61,7 +61,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         super.viewDidAppear(animated)
 
         Task {
-            await NCNetworkingProcess.shared.verifyZombie()
+            await NCNetworking.shared.verifyZombie()
         }
     }
 
@@ -291,7 +291,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
         Task {
-            await NCNetworkingProcess.shared.verifyZombie()
+            await NCNetworking.shared.verifyZombie()
             super.reloadDataSource(withQueryDB: true)
         }
     }
