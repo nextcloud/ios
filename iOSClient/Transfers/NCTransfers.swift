@@ -256,7 +256,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             cell.labelInfo.text = ""
         }
         let isWiFi = NCNetworking.shared.networkReachability == .reachableEthernetOrWiFi
-        if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundWWan && !isWiFi {
+        if metadata.session == NCNetworking.shared.sessionUploadBackgroundWWan && !isWiFi {
             cell.labelInfo.text = NSLocalizedString("_waiting_for_", comment: "") + " " + NSLocalizedString("_reachable_wifi_", comment: "")
         }
         cell.accessibilityLabel = metadata.fileNameView + ", " + (cell.labelInfo.text ?? "")

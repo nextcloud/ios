@@ -174,7 +174,7 @@ class FileProviderExtension: NSFileProviderExtension {
         guard let metadata else {
             return completionHandler(NSFileProviderError(.noSuchItem))
         }
-        if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundExt {
+        if metadata.session == NCNetworking.shared.sessionUploadBackgroundExt {
             return completionHandler(nil)
         }
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
@@ -186,7 +186,7 @@ class FileProviderExtension: NSFileProviderExtension {
             return completionHandler(nil)
         } else {
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                       session: NextcloudKit.shared.nkCommonInstance.identifierSessionDownload,
+                                                       session: NCNetworking.shared.sessionDownload,
                                                        sessionTaskIdentifier: 0,
                                                        sessionError: "",
                                                        selector: "",
@@ -250,7 +250,7 @@ class FileProviderExtension: NSFileProviderExtension {
         let serverUrlFileName = metadata.serverUrl + "/" + fileName
 
         NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                   session: NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundExt,
+                                                   session: NCNetworking.shared.sessionUploadBackgroundExt,
                                                    sessionTaskIdentifier: 0,
                                                    sessionError: "",
                                                    selector: "",
@@ -268,7 +268,7 @@ class FileProviderExtension: NSFileProviderExtension {
         assert(pathComponents.count > 2)
         let itemIdentifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcIdAndocIdTransfer(itemIdentifier.rawValue) else { return }
-        if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionDownload {
+        if metadata.session == NCNetworking.shared.sessionDownload {
             let session = NextcloudKit.shared.nkCommonInstance.getSession(account: metadata.session)?.sessionData.session
             session?.getTasksWithCompletionHandler { _, _, downloadTasks in
                 downloadTasks.forEach { task in
@@ -312,7 +312,7 @@ class FileProviderExtension: NSFileProviderExtension {
                 fileURL.stopAccessingSecurityScopedResource()
 
                 let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: ocIdTransfer, serverUrl: tableDirectory.serverUrl, url: "", contentType: "", session: session)
-                metadata.session = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundExt
+                metadata.session = NCNetworking.shared.sessionUploadBackgroundExt
                 metadata.size = size
                 metadata.status = NCGlobal.shared.metadataStatusUploading
 

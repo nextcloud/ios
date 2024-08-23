@@ -91,7 +91,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             self.fetchItemsForPage(serverUrl: serverUrl, pageNumber: pageNumber) { metadatas in
                 if let metadatas {
                     for metadata in metadatas {
-                        if metadata.e2eEncrypted || (!metadata.session.isEmpty && metadata.session != NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundExt) {
+                        if metadata.e2eEncrypted || (!metadata.session.isEmpty && metadata.session != NCNetworking.shared.sessionUploadBackgroundExt) {
                             continue
                         }
                         if let parentItemIdentifier = self.providerUtility.getParentItemIdentifier(metadata: metadata) {

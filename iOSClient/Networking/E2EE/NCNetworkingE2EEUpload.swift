@@ -52,7 +52,7 @@ class NCNetworkingE2EEUpload: NSObject {
         } else {
             metadata.fileName = networkingE2EE.generateRandomIdentifier()
         }
-        metadata.session = NextcloudKit.shared.nkCommonInstance.identifierSessionUpload
+        metadata.session = NCNetworking.shared.sessionUpload
         metadata.sessionError = ""
         guard let result = NCManageDatabase.shared.addMetadata(metadata),
               let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {

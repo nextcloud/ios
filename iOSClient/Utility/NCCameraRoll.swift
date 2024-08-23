@@ -60,7 +60,7 @@ class NCCameraRoll: NSObject {
             }
             metadataSource.e2eEncrypted = metadata.isDirectoryE2EE
             if metadataSource.chunk > 0 || metadataSource.e2eEncrypted {
-                metadataSource.session = NextcloudKit.shared.nkCommonInstance.identifierSessionUpload
+                metadataSource.session = NCNetworking.shared.sessionUpload
             }
             metadataSource.isExtractFile = true
             if let metadata = NCManageDatabase.shared.addMetadata(metadataSource) {
@@ -124,7 +124,7 @@ class NCCameraRoll: NSObject {
                     }
                     metadata.e2eEncrypted = metadata.isDirectoryE2EE
                     if metadata.chunk > 0 || metadata.e2eEncrypted {
-                        metadata.session = NextcloudKit.shared.nkCommonInstance.identifierSessionUpload
+                        metadata.session = NCNetworking.shared.sessionUpload
                     }
                     metadata.isExtractFile = true
                     if let metadata = NCManageDatabase.shared.addMetadata(metadata) {
@@ -283,7 +283,7 @@ class NCCameraRoll: NSObject {
                 }
                 metadataLivePhoto.e2eEncrypted = metadata.isDirectoryE2EE
                 if metadataLivePhoto.chunk > 0 || metadataLivePhoto.e2eEncrypted {
-                    metadataLivePhoto.session = NextcloudKit.shared.nkCommonInstance.identifierSessionUpload
+                    metadataLivePhoto.session = NCNetworking.shared.sessionUpload
                 }
                 metadataLivePhoto.creationDate = metadata.creationDate
                 metadataLivePhoto.date = metadata.date

@@ -264,7 +264,7 @@ extension NCCollectionViewCommon {
                                                                                    "account": metadata.account])
                         } else {
                             guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                                           session: NextcloudKit.shared.nkCommonInstance.identifierSessionDownload,
+                                                                                                           session: NCNetworking.shared.sessionDownload,
                                                                                                            selector: NCGlobal.shared.selectorSaveAsScan,
                                                                                                            sceneIdentifier: sceneIdentifier) else { return }
                             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
@@ -329,7 +329,7 @@ extension NCCollectionViewCommon {
                                                                                    "account": metadata.account])
                         } else {
                             guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                                           session: NextcloudKit.shared.nkCommonInstance.identifierSessionDownload,
+                                                                                                           session: NCNetworking.shared.sessionDownload,
                                                                                                            selector: NCGlobal.shared.selectorLoadFileQuickLook,
                                                                                                            sceneIdentifier: sceneIdentifier) else { return }
                             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)

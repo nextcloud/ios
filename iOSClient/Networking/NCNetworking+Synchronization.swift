@@ -62,7 +62,7 @@ extension NCNetworking {
                 }
                 NCManageDatabase.shared.addMetadatas(metadatasDirectory)
                 NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: metadatasSynchronizationOffline,
-                                                                          session: NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground,
+                                                                          session: NCNetworking.shared.sessionDownloadBackground,
                                                                           selector: NCGlobal.shared.selectorSynchronizationOffline)
                 NCManageDatabase.shared.setDirectorySynchronizationDate(serverUrl: serverUrl, account: account)
                 let diffDate = Date().timeIntervalSinceReferenceDate - startDate.timeIntervalSinceReferenceDate

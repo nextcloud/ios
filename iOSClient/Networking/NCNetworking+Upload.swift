@@ -94,7 +94,7 @@ extension NCNetworking {
                 }
                 completion(afError, error)
             }
-        } else if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionUpload {
+        } else if metadata.session == NCNetworking.shared.sessionUpload {
             let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
             uploadFile(metadata: metadata, fileNameLocalPath: fileNameLocalPath, start: start, progressHandler: progressHandler) { _, _, _, _, _, _, afError, error in
                 completion(afError, error)
@@ -494,7 +494,7 @@ extension NCNetworking {
                                                                                             NCGlobal.shared.metadataStatusWaitUpload,
                                                                                             NCGlobal.shared.metadataStatusUploading,
                                                                                             NCGlobal.shared.metadataStatusUploadError,
-                                                                                            NextcloudKit.shared.nkCommonInstance.identifierSessionUpload)) {
+                                                                                                   NCNetworking.shared.sessionUpload)) {
             NCManageDatabase.shared.deleteMetadata(results: results)
         }
     }
@@ -526,8 +526,8 @@ extension NCNetworking {
                                                                                                     NCGlobal.shared.metadataStatusWaitUpload,
                                                                                                     NCGlobal.shared.metadataStatusUploading,
                                                                                                     NCGlobal.shared.metadataStatusUploadError,
-                                                                                                    NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground,
-                                                                                                    NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundWWan)) {
+                                                                                                           NCNetworking.shared.sessionUploadBackground,
+                                                                                                           NCNetworking.shared.sessionUploadBackgroundWWan)) {
                     NCManageDatabase.shared.deleteMetadata(results: results)
                 }
             }

@@ -161,7 +161,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
 
                 let metadataForUpload = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, url: "", contentType: "", session: session)
 
-                metadataForUpload.session = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground
+                metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
                 metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
                 metadataForUpload.size = utilityFileSystem.getFileSize(filePath: toPath)
                 metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload

@@ -35,7 +35,7 @@ extension NCNetworking {
                   requestHandler: @escaping (_ request: DownloadRequest) -> Void = { _ in },
                   progressHandler: @escaping (_ progress: Progress) -> Void = { _ in },
                   completion: @escaping (_ afError: AFError?, _ error: NKError) -> Void = { _, _ in }) {
-        if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionDownload {
+        if metadata.session == NCNetworking.shared.sessionDownload {
             downloadFile(metadata: metadata, withNotificationProgressTask: withNotificationProgressTask) {
                 start()
             } requestHandler: { request in
@@ -312,7 +312,7 @@ extension NCNetworking {
                                                                                             NCGlobal.shared.metadataStatusWaitDownload,
                                                                                             NCGlobal.shared.metadataStatusDownloading,
                                                                                             NCGlobal.shared.metadataStatusDownloadError,
-                                                                                            NextcloudKit.shared.nkCommonInstance.identifierSessionDownload)) {
+                                                                                                   NCNetworking.shared.sessionDownload)) {
             NCManageDatabase.shared.clearMetadataSession(metadatas: results)
         }
     }
@@ -332,7 +332,7 @@ extension NCNetworking {
                                                                                                     NCGlobal.shared.metadataStatusWaitDownload,
                                                                                                     NCGlobal.shared.metadataStatusDownloading,
                                                                                                     NCGlobal.shared.metadataStatusDownloadError,
-                                                                                                    NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground)) {
+                                                                                                           NCNetworking.shared.sessionDownloadBackground)) {
                     NCManageDatabase.shared.clearMetadataSession(metadatas: results)
                 }
             }
@@ -352,7 +352,7 @@ class NCOperationDownload: ConcurrentOperation {
     override func start() {
         guard !isCancelled else { return self.finish() }
 
-        metadata.session = NextcloudKit.shared.nkCommonInstance.identifierSessionDownload
+        metadata.session = NCNetworking.shared.sessionDownload
         metadata.sessionError = ""
         metadata.sessionSelector = selector
         metadata.sessionTaskIdentifier = 0

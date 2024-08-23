@@ -246,7 +246,7 @@ class NCService: NSObject {
             guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(file.ocId) else { continue }
             if NCNetworking.shared.isSynchronizable(ocId: metadata.ocId, fileName: metadata.fileName, etag: metadata.etag) {
                 NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                          session: NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground,
+                                                                          session: NCNetworking.shared.sessionDownloadBackground,
                                                                           selector: NCGlobal.shared.selectorSynchronizationOffline)
             }
         }

@@ -940,7 +940,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func tapButtonTransfer(_ sender: Any) {
         NCTransferProgress.shared.getAll().forEach { transfer in
-            if transfer.session == NextcloudKit.shared.nkCommonInstance.identifierSessionUpload,
+            if transfer.session == NCNetworking.shared.sessionUpload,
                let metadata = NCManageDatabase.shared.getMetadataFromOcIdAndocIdTransfer(transfer.ocIdTransfer) {
                 NCNetworking.shared.cancelTask(metadata: metadata)
             }

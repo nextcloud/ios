@@ -66,7 +66,7 @@ class NCUploadScanDocument: ObservableObject {
         self.removeAllFiles = removeAllFiles
 
         metadata = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: UUID().uuidString, serverUrl: serverUrl, url: "", contentType: "", session: session)
-        metadata.session = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground
+        metadata.session = NCNetworking.shared.sessionUploadBackground
         metadata.sessionSelector = NCGlobal.shared.selectorUploadFile
         metadata.status = NCGlobal.shared.metadataStatusWaitUpload
         metadata.sessionDate = Date()

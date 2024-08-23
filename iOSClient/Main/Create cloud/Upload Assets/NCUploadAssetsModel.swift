@@ -221,7 +221,7 @@ class NCUploadAssetsModel: NSObject, ObservableObject, NCCreateFormUploadConflic
                 metadata.livePhotoFile = (metadata.fileName as NSString).deletingPathExtension + ".mov"
             }
             metadata.assetLocalIdentifier = asset.localIdentifier
-            metadata.session = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground
+            metadata.session = NCNetworking.shared.sessionUploadBackground
             metadata.sessionSelector = NCGlobal.shared.selectorUploadFile
             metadata.status = NCGlobal.shared.metadataStatusWaitUpload
             metadata.sessionDate = Date()

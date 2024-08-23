@@ -126,18 +126,18 @@ class NCAutoUpload: NSObject {
                 }
 
                 if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
-                    uploadSession = NextcloudKit.shared.nkCommonInstance.identifierSessionUpload
+                    uploadSession = NCNetworking.shared.sessionUpload
                 } else {
                     if assetMediaType == PHAssetMediaType.image && tableAccount.autoUploadWWAnPhoto == false {
-                        uploadSession = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground
+                        uploadSession = NCNetworking.shared.sessionUploadBackground
                     } else if assetMediaType == PHAssetMediaType.video && tableAccount.autoUploadWWAnVideo == false {
-                        uploadSession = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground
+                        uploadSession = NCNetworking.shared.sessionUploadBackground
                     } else if assetMediaType == PHAssetMediaType.image && tableAccount.autoUploadWWAnPhoto {
-                        uploadSession = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundWWan
+                        uploadSession = NCNetworking.shared.sessionUploadBackgroundWWan
                     } else if assetMediaType == PHAssetMediaType.video && tableAccount.autoUploadWWAnVideo {
-                        uploadSession = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundWWan
+                        uploadSession = NCNetworking.shared.sessionUploadBackgroundWWan
                     } else {
-                        uploadSession = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground
+                        uploadSession = NCNetworking.shared.sessionUploadBackground
                     }
                 }
 

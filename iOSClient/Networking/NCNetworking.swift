@@ -57,6 +57,13 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
 
     }
 
+    let sessionDownload = NextcloudKit.shared.nkCommonInstance.identifierSessionDownload
+    let sessionDownloadBackground = NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground
+    let sessionUpload = NextcloudKit.shared.nkCommonInstance.identifierSessionUpload
+    let sessionUploadBackground = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground
+    let sessionUploadBackgroundWWan = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundWWan
+    let sessionUploadBackgroundExt = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundExt
+
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
     var requestsUnifiedSearch: [DataRequest] = []
@@ -198,9 +205,9 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
         ///
         if metadata.session.contains("download") {
 
-            if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionDownload {
+            if metadata.session == NCNetworking.shared.sessionDownload {
                 NCNetworking.shared.cancelDownloadTasks(metadata: metadata)
-            } else if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground {
+            } else if metadata.session == NCNetworking.shared.sessionDownloadBackground {
                 NCNetworking.shared.cancelDownloadBackgroundTask(metadata: metadata)
             }
 
