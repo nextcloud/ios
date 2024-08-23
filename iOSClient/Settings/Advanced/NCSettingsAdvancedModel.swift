@@ -133,7 +133,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
     func clearCache() {
         NCActivityIndicator.shared.startActivity(style: .large, blurEffect: true)
         // Cancel all networking tasks
-        NCNetworking.shared.cancelAllTask()
+        NCNetworking.shared.cancelAllTask(account: nil)
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             URLCache.shared.memoryCapacity = 0
             URLCache.shared.diskCapacity = 0

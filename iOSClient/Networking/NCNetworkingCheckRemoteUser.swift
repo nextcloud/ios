@@ -32,10 +32,11 @@ class NCNetworkingCheckRemoteUser {
               !token.isEmpty else { return }
 
         if UIApplication.shared.applicationState == .active && NextcloudKit.shared.isNetworkReachable() {
+            NCNetworking.shared.cancelAllTask(account: account)
+
             NextcloudKit.shared.getRemoteWipeStatus(serverUrl: tableAccount.urlBase, token: token, account: tableAccount.account) { account, wipe, _, error in
                 if wipe {
                     NCAccount().deleteAccount(account) // delete account, don't delete database
-
 
                     NextcloudKit.shared.setRemoteWipeCompletition(serverUrl: tableAccount.urlBase, token: token, account: tableAccount.account) {
                         _, error in

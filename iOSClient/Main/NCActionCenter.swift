@@ -459,14 +459,12 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
         func uploadPastePasteboard(fileName: String, serverUrlFileName: String, fileNameLocalPath: String, serverUrl: String, completion: @escaping () -> Void) {
             NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: account) { request in
-                NCNetworking.shared.uploadRequest[fileNameLocalPath] = request
             } progressHandler: { progress in
                 if Float(progress.fractionCompleted) > fractionCompleted || fractionCompleted == 0 {
                     processor.hud?.progress = Float(progress.fractionCompleted)
                     fractionCompleted = Float(progress.fractionCompleted)
                 }
             } completionHandler: { account, ocId, etag, _, _, _, afError, error in
-                NCNetworking.shared.uploadRequest.removeValue(forKey: fileNameLocalPath)
                 if error == .success && etag != nil && ocId != nil {
                     let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId!, fileNameView: fileName)
                     self.utilityFileSystem.moveFile(atPath: fileNameLocalPath, toPath: toPath)

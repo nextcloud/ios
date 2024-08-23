@@ -912,8 +912,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         // No session found
         if metadata.session.isEmpty {
-            NCNetworking.shared.uploadRequest.removeValue(forKey: fileNameLocalPath)
-            NCNetworking.shared.downloadRequest.removeValue(forKey: fileNameLocalPath)
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
             return
