@@ -502,21 +502,24 @@ extension NCNetworking {
     func cancelUploadBackgroundTask(metadata: tableMetadata? = nil) {
         NextcloudKit.shared.nkCommonInstance.nksessions.forEach { session in
             Task {
+                // Upload Background
                 let tasksBackground = await session.sessionUploadBackground.tasks
                 for task in tasksBackground.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
-                    if metadata == nil || (task.taskIdentifier == metadata?.sessionTaskIdentifier) {
+                    if metadata == nil || (session.account == metadata?.account && task.taskIdentifier == metadata?.sessionTaskIdentifier && metadata?.session == NCNetworking.shared.sessionUploadBackground) {
                         task.cancel()
                     }
                 }
+                // Upload Background WWan
                 let tasksBackgroundWWan = await session.sessionUploadBackgroundWWan.tasks
                 for task in tasksBackgroundWWan.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
-                    if metadata == nil || (task.taskIdentifier == metadata?.sessionTaskIdentifier) {
+                    if metadata == nil || (session.account == metadata?.account && task.taskIdentifier == metadata?.sessionTaskIdentifier && metadata?.session == NCNetworking.shared.sessionUploadBackgroundWWan) {
                         task.cancel()
                     }
                 }
+                // Upload Background Ext
                 let tasksBackgroundExt = await session.sessionUploadBackgroundExt.tasks
                 for task in tasksBackgroundExt.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
-                    if metadata == nil || (task.taskIdentifier == metadata?.sessionTaskIdentifier) {
+                    if metadata == nil || (session.account == metadata?.account && task.taskIdentifier == metadata?.sessionTaskIdentifier && metadata?.session == NCNetworking.shared.sessionUploadBackgroundExt) {
                         task.cancel()
                     }
                 }
