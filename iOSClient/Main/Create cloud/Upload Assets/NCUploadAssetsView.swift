@@ -158,7 +158,7 @@ struct NCUploadAssetsView: View {
                         }
                     }
                     .frame(maxWidth: .infinity)
-                    .buttonStyle(ButtonRounded(disabled: model.uploadInProgress))
+                    .buttonStyle(ButtonRounded(disabled: model.uploadInProgress, account: model.session.account))
                     .listRowBackground(Color(UIColor.systemGroupedBackground))
                     .disabled(model.uploadInProgress)
                     .hiddenConditionally(isHidden: model.hiddenSave)
