@@ -309,9 +309,9 @@ extension NCNetworking {
         if let metadata {
             NCManageDatabase.shared.clearMetadataSession(metadata: metadata)
         } else if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND session == %@",
-                                                                                            NCGlobal.shared.metadataStatusWaitDownload,
-                                                                                            NCGlobal.shared.metadataStatusDownloading,
-                                                                                            NCGlobal.shared.metadataStatusDownloadError,
+                                                                                                   NCGlobal.shared.metadataStatusWaitDownload,
+                                                                                                   NCGlobal.shared.metadataStatusDownloading,
+                                                                                                   NCGlobal.shared.metadataStatusDownloadError,
                                                                                                    NCNetworking.shared.sessionDownload)) {
             NCManageDatabase.shared.clearMetadataSession(metadatas: results)
         }
@@ -329,9 +329,9 @@ extension NCNetworking {
                 if let metadata {
                     NCManageDatabase.shared.clearMetadataSession(metadata: metadata)
                 } else if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND session == %@",
-                                                                                                    NCGlobal.shared.metadataStatusWaitDownload,
-                                                                                                    NCGlobal.shared.metadataStatusDownloading,
-                                                                                                    NCGlobal.shared.metadataStatusDownloadError,
+                                                                                                           NCGlobal.shared.metadataStatusWaitDownload,
+                                                                                                           NCGlobal.shared.metadataStatusDownloading,
+                                                                                                           NCGlobal.shared.metadataStatusDownloadError,
                                                                                                            NCNetworking.shared.sessionDownloadBackground)) {
                     NCManageDatabase.shared.clearMetadataSession(metadatas: results)
                 }

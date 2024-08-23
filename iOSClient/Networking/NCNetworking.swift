@@ -264,9 +264,7 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
             if let nkSession = NextcloudKit.shared.getSession(account: metadata.account) {
                 let tasks = await nkSession.sessionData.session.tasks
                 for task in tasks.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
-                    if metadata.account == nkSession.account,
-                       metadata.session == NCNetworking.shared.sessionUpload,
-                       metadata.sessionTaskIdentifier == task.taskIdentifier {
+                    if metadata.sessionTaskIdentifier == task.taskIdentifier {
                         foundTask = true
                     }
                 }
@@ -287,9 +285,7 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
             if let nkSession = NextcloudKit.shared.getSession(account: metadata.account) {
                 let tasks = await nkSession.sessionData.session.tasks
                 for task in tasks.2 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
-                    if metadata.account == nkSession.account,
-                       metadata.session == NCNetworking.shared.sessionDownload,
-                       metadata.sessionTaskIdentifier == task.taskIdentifier {
+                    if metadata.sessionTaskIdentifier == task.taskIdentifier {
                         foundTask = true
                     }
                 }
@@ -323,8 +319,7 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
                 }
                 if let tasks = await session?.allTasks {
                     for task in tasks {
-                        if metadata.account == nkSession.account,
-                           metadata.sessionTaskIdentifier == task.taskIdentifier {
+                        if metadata.sessionTaskIdentifier == task.taskIdentifier {
                             taskUpload = task
                         }
                     }
