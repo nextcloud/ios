@@ -37,6 +37,10 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             }
             collectionView.reloadItems(at: [indexPath])
             tabBarSelect.update(selectOcId: selectOcId, metadatas: getSelectedMetadatas(), userId: appDelegate.userId)
+			
+			let selectedItemsCount = selectOcId.count
+			let selectionState: FileActionsHeaderSelectionState = selectedItemsCount == dataSource.getMetadataSourceForAllSections().count ? .all(selectedItemsCount) : .some(selectedItemsCount)
+			fileActionsHeader?.setSelectionState(selectionState: selectionState)
             return
         }
 
@@ -110,4 +114,8 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             }
         }
     }
+	
+	func scrollViewDidScroll(_ scrollView: UIScrollView) {
+		headerTop?.constant = max(0, -scrollView.contentOffset.y)
+	}
 }

@@ -30,7 +30,10 @@ import JGProgressHUD
 
 class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCPhotoCellDelegate, NCSectionFirstHeaderDelegate, NCSectionFooterDelegate, NCSectionFirstHeaderEmptyDataDelegate, NCAccountSettingsModelDelegate, UIAdaptivePresentationControllerDelegate, UIContextMenuInteractionDelegate {
 
-    @IBOutlet weak var collectionView: UICollectionView!
+	@IBOutlet weak var collectionView: UICollectionView!
+	@IBOutlet weak var headerTop: NSLayoutConstraint?
+	@IBOutlet weak var collectionViewTop: NSLayoutConstraint?
+	@IBOutlet weak var fileActionsHeader: FileActionsHeader?
 
     var autoUploadFileName = ""
     var autoUploadDirectory = ""
@@ -736,34 +739,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 			return [list, grid, UIMenu(title: NSLocalizedString("_media_view_options_", comment: ""), children: [menuPhoto])]
 		}
 		
-		bhSort?.menu = UIMenu(children: createSortMenuActions())
-		bhSort?.showsMenuAsPrimaryAction = true
-		
-		bhViewMode?.menu = UIMenu(children: createViewModeMenuActions())
-		bhViewMode?.showsMenuAsPrimaryAction = true
-				
-		bhSelect?.isHidden = isEditMode || isSearchingMode
-		
-		var viewModeImage: UIImage? {
-			var imageName: String = ""
-			
-			switch layoutType {
-			case NCGlobal.shared.layoutList: imageName = "list.bullet"
-			case NCGlobal.shared.layoutGrid: imageName = "square.grid.2x2"
-			case NCGlobal.shared.layoutPhotoRatio: imageName = "rectangle.grid.3x2"
-			case NCGlobal.shared.layoutPhotoSquare: imageName = "square.grid.3x3"
-			default: break
-			}
-			
-			return UIImage(systemName: imageName, withConfiguration: UIImage.SymbolConfiguration(pointSize: 24, weight: .medium))
-		}
-		bhViewMode?.setImage(formattedHeaderImage(image: viewModeImage), for: .normal)
-		bhViewMode?.tintColor = .label
-		
-		if let selectionButtonWidth = bhSelect?.bounds.width {
-			bhSelect?.layer.cornerRadius = selectionButtonWidth / 2
-		}
-		
 		var sortTitle: String? {
 			guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl) else { return nil }
 			
@@ -780,11 +755,40 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 			return UIImage(systemName: imageName, withConfiguration: UIImage.SymbolConfiguration(pointSize: 16, weight: .semibold))
 		}
 		
-		bhSort?.setTitle(sortTitle, for: .normal)
-		bhSort?.setImage(formattedHeaderImage(image: sortDirectionImage), for: .normal)
-		bhSort?.semanticContentAttribute = UIApplication.shared
-			.userInterfaceLayoutDirection == .rightToLeft ? .forceLeftToRight : .forceRightToLeft
-		bhSort?.tintColor = .label
+		var viewModeImage: UIImage? {
+			var imageName: String = ""
+			
+			switch layoutType {
+			case NCGlobal.shared.layoutList: imageName = "list.bullet"
+			case NCGlobal.shared.layoutGrid: imageName = "square.grid.2x2"
+			case NCGlobal.shared.layoutPhotoRatio: imageName = "rectangle.grid.3x2"
+			case NCGlobal.shared.layoutPhotoSquare: imageName = "square.grid.3x3"
+			default: break
+			}
+			
+			return UIImage(systemName: imageName, withConfiguration: UIImage.SymbolConfiguration(pointSize: 24, weight: .medium))
+		}
+
+		fileActionsHeader?.isHidden = isSearchingMode
+		collectionViewTop?.constant = isSearchingMode ? 0 : fileActionsHeader?.bounds.height ?? 0
+		fileActionsHeader?.setIsEditingMode(isEditingMode: isEditMode)
+		fileActionsHeader?.setSortingMenu(sortingMenuElements: createSortMenuActions(), title: sortTitle, image: sortDirectionImage, tintColor: .label)
+		fileActionsHeader?.setViewMenu(viewMenuElements: createViewModeMenuActions(), image: viewModeImage, tintColor: .label)
+		
+		
+		fileActionsHeader?.onSelectModeChange = { [weak self] isSelectionMode in
+			self?.setEditMode(isSelectionMode)
+			self?.setNavigationRightItems()
+			self?.updateHeadersView()
+			self?.fileActionsHeader?.setSelectionState(selectionState: .none)
+		}
+		
+		fileActionsHeader?.onSelectAll = { [weak self] in
+			guard let self = self else { return }
+			self.selectAll()
+			let selectionState: FileActionsHeaderSelectionState = self.selectOcId.count == 0 ? .none : .all(self.selectOcId.count)
+			self.fileActionsHeader?.setSelectionState(selectionState: selectionState)
+		}
 	}
 	
 	private func formattedHeaderImage(image: UIImage?) -> UIImage? {
@@ -855,10 +859,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if isEditMode {
             tabBarSelect.update(selectOcId: selectOcId, metadatas: getSelectedMetadatas(), userId: appDelegate.userId)
             tabBarSelect.show()
-            let cancelSelect = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) {
-                self.setEditMode(false)
-            }
-            navigationItem.rightBarButtonItems = [cancelSelect]
         } else {
             tabBarSelect.hide()
 			navigationItem.rightBarButtonItems = layoutKey == NCGlobal.shared.layoutViewFiles ? [createAccountButton()] : []

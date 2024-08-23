@@ -5,7 +5,6 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
-        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -17,58 +16,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BAN-5f-6Yg" userLabel="Headers">
-                                <rect key="frame" x="0.0" y="50" width="375" height="50"/>
-                                <subviews>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DCa-Cd-rrP">
-                                        <rect key="frame" x="15" y="0.0" width="30" height="50"/>
-                                        <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="16"/>
-                                        <inset key="imageEdgeInsets" minX="10" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                        <state key="normal">
-                                            <color key="titleColor" systemColor="labelColor"/>
-                                        </state>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RAd-Qc-w9r">
-                                        <rect key="frame" x="286" y="9" width="32" height="32"/>
-                                        <color key="backgroundColor" red="0.86022746360220881" green="0.88563137516683466" blue="0.91082270169744683" alpha="1" colorSpace="calibratedRGB"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" constant="32" id="FmM-sG-HcG"/>
-                                            <constraint firstAttribute="width" secondItem="RAd-Qc-w9r" secondAttribute="height" id="Gzg-uh-VL5"/>
-                                        </constraints>
-                                        <color key="tintColor" systemColor="labelColor"/>
-                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                        <state key="normal" image="files_selection"/>
-                                        <connections>
-                                            <action selector="onSelectModeTap:" destination="EFX-fO-Oip" eventType="touchUpInside" id="WNV-bA-it0"/>
-                                        </connections>
-                                    </button>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Met-84-F1D">
-                                        <rect key="frame" x="333" y="0.0" width="32" height="50"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="32" id="wBF-yC-OL8"/>
-                                        </constraints>
-                                        <fontDescription key="fontDescription" type="system" pointSize="20"/>
-                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                        <state key="normal">
-                                            <color key="titleColor" systemColor="labelColor"/>
-                                        </state>
-                                    </button>
-                                </subviews>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <constraints>
-                                    <constraint firstItem="Met-84-F1D" firstAttribute="leading" secondItem="RAd-Qc-w9r" secondAttribute="trailing" constant="15" id="2aD-1P-eWx"/>
-                                    <constraint firstItem="Met-84-F1D" firstAttribute="height" secondItem="BAN-5f-6Yg" secondAttribute="height" id="3eJ-RZ-60z"/>
-                                    <constraint firstItem="Met-84-F1D" firstAttribute="centerY" secondItem="BAN-5f-6Yg" secondAttribute="centerY" id="A8b-C1-5IO"/>
-                                    <constraint firstItem="RAd-Qc-w9r" firstAttribute="centerY" secondItem="BAN-5f-6Yg" secondAttribute="centerY" id="ELZ-UM-0Mv"/>
-                                    <constraint firstItem="DCa-Cd-rrP" firstAttribute="height" secondItem="BAN-5f-6Yg" secondAttribute="height" id="HAv-JE-sMl"/>
-                                    <constraint firstItem="DCa-Cd-rrP" firstAttribute="centerY" secondItem="BAN-5f-6Yg" secondAttribute="centerY" id="Q8q-UB-1b8"/>
-                                    <constraint firstItem="DCa-Cd-rrP" firstAttribute="leading" secondItem="BAN-5f-6Yg" secondAttribute="leading" constant="15" id="TPE-aH-AFc"/>
-                                    <constraint firstAttribute="height" constant="50" id="bVN-vQ-6me"/>
-                                    <constraint firstAttribute="trailing" secondItem="Met-84-F1D" secondAttribute="trailing" constant="10" id="qeR-d3-mKR"/>
-                                </constraints>
-                            </view>
-                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="Zaz-Cl-qpZ">
-                                <rect key="frame" x="0.0" y="100" width="375" height="762"/>
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bouncesZoom="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="Zaz-Cl-qpZ">
+                                <rect key="frame" x="0.0" y="100" width="375" height="678"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="fF1-wd-0xN">
                                     <size key="itemSize" width="0.0" height="0.0"/>
@@ -82,24 +31,31 @@
                                     <outlet property="delegate" destination="EFX-fO-Oip" id="s3n-CL-8X2"/>
                                 </connections>
                             </collectionView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BAN-5f-6Yg" userLabel="Headers" customClass="FileActionsHeader" customModule="Nextcloud" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="50" width="375" height="50"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="bVN-vQ-6me"/>
+                                </constraints>
+                            </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Meh-VD-wWh"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="Zaz-Cl-qpZ" firstAttribute="leading" secondItem="Meh-VD-wWh" secondAttribute="leading" id="1bp-sm-u0X"/>
-                            <constraint firstItem="Zaz-Cl-qpZ" firstAttribute="top" secondItem="BAN-5f-6Yg" secondAttribute="bottom" id="8rZ-37-1PE"/>
-                            <constraint firstItem="Meh-VD-wWh" firstAttribute="trailing" secondItem="Zaz-Cl-qpZ" secondAttribute="trailing" id="aNd-UL-hmu"/>
-                            <constraint firstItem="Meh-VD-wWh" firstAttribute="bottom" secondItem="Zaz-Cl-qpZ" secondAttribute="bottom" constant="-84" id="aNr-tf-2AH"/>
-                            <constraint firstItem="BAN-5f-6Yg" firstAttribute="top" secondItem="Meh-VD-wWh" secondAttribute="top" id="dgG-ed-9Z8"/>
-                            <constraint firstItem="BAN-5f-6Yg" firstAttribute="centerX" secondItem="Meh-VD-wWh" secondAttribute="centerX" id="fhj-3B-zu0"/>
-                            <constraint firstItem="BAN-5f-6Yg" firstAttribute="width" secondItem="Meh-VD-wWh" secondAttribute="width" id="rjg-qC-plf"/>
+                            <constraint firstItem="Zaz-Cl-qpZ" firstAttribute="top" secondItem="Meh-VD-wWh" secondAttribute="top" constant="50" id="CJ9-1T-2zz"/>
+                            <constraint firstItem="Zaz-Cl-qpZ" firstAttribute="centerX" secondItem="QEs-gO-Cmp" secondAttribute="centerX" id="ME3-UV-shQ"/>
+                            <constraint firstItem="BAN-5f-6Yg" firstAttribute="centerX" secondItem="QEs-gO-Cmp" secondAttribute="centerX" id="W0h-In-iBI"/>
+                            <constraint firstItem="Zaz-Cl-qpZ" firstAttribute="width" secondItem="Meh-VD-wWh" secondAttribute="width" id="XZm-hS-nQO"/>
+                            <constraint firstItem="BAN-5f-6Yg" firstAttribute="top" secondItem="Meh-VD-wWh" secondAttribute="top" id="kfA-Lr-Sr4"/>
+                            <constraint firstAttribute="bottom" secondItem="Zaz-Cl-qpZ" secondAttribute="bottom" constant="34" id="qa0-Gh-9JM"/>
+                            <constraint firstItem="BAN-5f-6Yg" firstAttribute="width" secondItem="Meh-VD-wWh" secondAttribute="width" id="vkW-5S-tUE"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="bhSelect" destination="RAd-Qc-w9r" id="cUu-YD-Pl1"/>
-                        <outlet property="bhSort" destination="DCa-Cd-rrP" id="DLx-ec-GZE"/>
-                        <outlet property="bhViewMode" destination="Met-84-F1D" id="drt-bh-DOX"/>
                         <outlet property="collectionView" destination="Zaz-Cl-qpZ" id="8oA-Gx-z7T"/>
+                        <outlet property="collectionViewTop" destination="CJ9-1T-2zz" id="ZH5-wa-KTY"/>
+                        <outlet property="fileActionsHeader" destination="BAN-5f-6Yg" id="0bD-QS-qE0"/>
+                        <outlet property="headerTop" destination="kfA-Lr-Sr4" id="4aX-nw-a2n"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JJ0-Le-6eT" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -107,10 +63,4 @@
             <point key="canvasLocation" x="256.80000000000001" y="228.32512315270938"/>
         </scene>
     </scenes>
-    <resources>
-        <image name="files_selection" width="14" height="14"/>
-        <systemColor name="labelColor">
-            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
-    </resources>
 </document>
