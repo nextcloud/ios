@@ -229,7 +229,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 }
             }
 
-            let counter = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND (session == %@ || session == %@) AND status != %d", 
+            let counter = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND (session == %@ || session == %@) AND status != %d",
                                                                                              account,
                                                                                              NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground,
                                                                                              NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground,

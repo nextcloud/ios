@@ -226,7 +226,7 @@ class NCNetworkingProcess: NSObject {
         var metadatasForUpload: [tableMetadata] = []
         for metadata in metadatas {
             if verifyAlreadyExists {
-                if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && serverUrl == %@ && fileName == %@ && session != ''", 
+                if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && serverUrl == %@ && fileName == %@ && session != ''",
                                                                               metadata.account,
                                                                               metadata.serverUrl,
                                                                               metadata.fileName)) != nil {

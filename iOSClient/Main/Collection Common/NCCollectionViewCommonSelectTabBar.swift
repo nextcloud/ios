@@ -120,7 +120,7 @@ class NCCollectionViewCommonSelectTabBar: ObservableObject {
                 guard !isAnyOffline else { continue }
 
                 if metadata.directory,
-                   let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", 
+                   let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@",
                                                                                                     metadata.account,
                                                                                                     metadata.serverUrl + "/" + metadata.fileName)) {
                     isAnyOffline = directory.offline

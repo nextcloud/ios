@@ -58,7 +58,7 @@ class NCRichWorkspaceCommon: NSObject {
             return NCContentPresenter().showError(error: error)
         }
 
-        if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", 
+        if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@",
                                                                                      session.account,
                                                                                      serverUrl,
                                                                                      NCGlobal.shared.fileNameRichWorkspace.lowercased())) {

@@ -993,7 +993,7 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
-            guard let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileId == %@", 
+            guard let result = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileId == %@",
                                                                                     metadata.account,
                                                                                     metadata.serverUrl,
                                                                                     metadata.livePhotoFile)).first else { return nil }
@@ -1033,7 +1033,7 @@ extension NCManageDatabase {
         if fileNameExtension == "heic", NCKeychain().formatCompatibility {
             fileNameConflict = fileNameNoExtension + ".jpg"
         }
-        return getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", 
+        return getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@",
                                                   account,
                                                   serverUrl,
                                                   fileNameConflict))

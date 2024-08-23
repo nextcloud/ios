@@ -45,7 +45,7 @@ extension NCNetworking {
             var metadatasSynchronizationOffline: [tableMetadata] = []
 
             if !add {
-                if NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "account == %@ AND sessionSelector == %@ AND (status == %d OR status == %d)", 
+                if NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "account == %@ AND sessionSelector == %@ AND (status == %d OR status == %d)",
                                                                                     account,
                                                                                     NCGlobal.shared.selectorSynchronizationOffline,
                                                                                     NCGlobal.shared.metadataStatusWaitDownload,
