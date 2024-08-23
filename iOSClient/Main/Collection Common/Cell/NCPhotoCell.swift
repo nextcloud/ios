@@ -141,6 +141,7 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
         if status {
             imageSelect.isHidden = false
             imageVisualEffect.isHidden = false
+            imageSelect.image = NCImageCache.shared.getImageCheckedYes(account: account)
         } else {
             imageSelect.isHidden = true
             imageVisualEffect.isHidden = true
