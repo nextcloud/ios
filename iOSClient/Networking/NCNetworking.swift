@@ -165,7 +165,7 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
 
     func cancelAllTask() {
         cancelAllQueue()
-        cancelDataTask()
+        cancelAllDataTask()
         cancelAllDownloadUploadTask()
     }
 
@@ -230,6 +230,16 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
                                                                    "session": metadata.session,
                                                                    "serverUrl": metadata.serverUrl,
                                                                    "account": metadata.account])
+        }
+    }
+
+    func cancelAllDataTask() {
+        NextcloudKit.shared.nkCommonInstance.nksessions.forEach { session in
+            session.sessionData.session.getTasksWithCompletionHandler { dataTasks, _, _ in
+                dataTasks.forEach { task in
+                    task.cancel()
+                }
+            }
         }
     }
 

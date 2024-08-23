@@ -829,16 +829,6 @@ extension NCNetworking {
             completion(account, returnMetadata, error)
         }
     }
-
-    func cancelDataTask() {
-        NextcloudKit.shared.nkCommonInstance.nksessions.forEach { session in
-            session.sessionData.session.getTasksWithCompletionHandler { dataTasks, _, _ in
-                dataTasks.forEach {
-                    $0.cancel()
-                }
-            }
-        }
-    }
 }
 
 class NCOperationDownloadAvatar: ConcurrentOperation {
