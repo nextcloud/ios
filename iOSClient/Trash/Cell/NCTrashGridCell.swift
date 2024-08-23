@@ -40,6 +40,7 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
     weak var delegate: NCTrashGridCellDelegate?
     var objectId = ""
     var indexPath = IndexPath()
+    var account = ""
     var user = ""
     var namedButtonMore = ""
 
@@ -100,7 +101,7 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
         buttonMore.isHidden = status
     }
 
-    func selected(_ status: Bool, isEditMode: Bool) {
+    func selected(_ status: Bool, isEditMode: Bool, account: String) {
         if isEditMode {
             buttonMore.isHidden = true
             accessibilityCustomActions = nil
@@ -109,7 +110,7 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
             setA11yActions()
         }
         if status {
-            imageSelect.image = NCImageCache.shared.getImageCheckedYes()
+            imageSelect.image = NCImageCache.shared.getImageCheckedYes(account: account)
             imageSelect.isHidden = false
             imageVisualEffect.isHidden = false
         } else {

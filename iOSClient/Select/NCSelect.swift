@@ -380,7 +380,7 @@ extension NCSelect: UICollectionViewDataSource {
         cell.backgroundView = nil
         cell.hideButtonMore(true)
         cell.hideButtonShare(true)
-        cell.selected(false, isEditMode: false)
+        cell.selected(false, isEditMode: false, account: metadata.account)
 
         // Live Photo
         if metadata.isLivePhoto {

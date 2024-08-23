@@ -355,10 +355,10 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         // Edit mode
         if selectOcId.contains(metadata.ocId) {
-            cell.selected(true, isEditMode: isEditMode)
+            cell.selected(true, isEditMode: isEditMode, account: metadata.account)
             a11yValues.append(NSLocalizedString("_selected_", comment: ""))
         } else {
-            cell.selected(false, isEditMode: isEditMode)
+            cell.selected(false, isEditMode: isEditMode, account: metadata.account)
         }
 
         // Accessibility

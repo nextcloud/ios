@@ -56,7 +56,7 @@ protocol NCCellProtocol {
     func hideButtonShare(_ status: Bool)
     func hideButtonMore(_ status: Bool)
     func setProgress(progress: Float)
-    func selected(_ status: Bool, isEditMode: Bool)
+    func selected(_ status: Bool, isEditMode: Bool, account: String)
     func setAccessibility(label: String, value: String)
     func setTags(tags: [String])
     func setIconOutlines()
@@ -137,7 +137,7 @@ extension NCCellProtocol {
     func hideButtonShare(_ status: Bool) {}
     func hideButtonMore(_ status: Bool) {}
     func setProgress(progress: Float) {}
-    func selected(_ status: Bool, isEditMode: Bool) {}
+    func selected(_ status: Bool, isEditMode: Bool, account: String) {}
     func setAccessibility(label: String, value: String) {}
     func setTags(tags: [String]) {}
     func setIconOutlines() {}

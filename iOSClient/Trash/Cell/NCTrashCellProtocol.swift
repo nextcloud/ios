@@ -28,9 +28,9 @@ protocol NCTrashCellProtocol {
     var labelTitle: UILabel! { get set }
     var labelInfo: UILabel! { get set }
     var imageItem: UIImageView! { get set }
-    var indexPath: IndexPath { get set }
+    var account: String { get set }
 
-    func selected(_ status: Bool, isEditMode: Bool)
+    func selected(_ status: Bool, isEditMode: Bool, account: String)
 }
 
 extension NCTrashCellProtocol where Self: UICollectionViewCell {

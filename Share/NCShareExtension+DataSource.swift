@@ -112,7 +112,7 @@ extension NCShareExtension: UICollectionViewDataSource {
         cell.backgroundView = nil
         cell.hideButtonMore(true)
         cell.hideButtonShare(true)
-        cell.selected(false, isEditMode: false)
+        cell.selected(false, isEditMode: false, account: metadata.account)
 
         if metadata.isLivePhoto {
             cell.imageStatus.image = utility.loadImage(named: "livephoto", colors: [.white])

@@ -230,7 +230,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         }
     }
 
-    func selected(_ status: Bool, isEditMode: Bool) {
+    func selected(_ status: Bool, isEditMode: Bool, account: String) {
         if isEditMode {
             imageItemLeftConstraint.constant = 45
             imageSelect.isHidden = false
@@ -255,7 +255,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             blurEffectView?.backgroundColor = .lightGray
             blurEffectView?.frame = self.bounds
             blurEffectView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            imageSelect.image = NCImageCache.shared.getImageCheckedYes()
+            imageSelect.image = NCImageCache.shared.getImageCheckedYes(account: account)
             backgroundView = blurEffectView
             separator.isHidden = true
         } else {

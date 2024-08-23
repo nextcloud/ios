@@ -38,6 +38,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     var ocId = ""
     var ocIdTransfer = ""
     var indexPath = IndexPath()
+    var account = ""
     private var user = ""
 
     weak var gridCellDelegate: NCGridCellDelegate?
@@ -108,7 +109,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         imageVisualEffect.alpha = 0.5
 
         imageSelect.isHidden = true
-        imageSelect.image = NCImageCache.shared.getImageCheckedYes()
+        imageSelect.image = NCImageCache.shared.getImageCheckedYes(account: fileAccount)
 
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPress(gestureRecognizer:)))
         longPressedGesture.minimumPressDuration = 0.5
@@ -182,7 +183,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         buttonMore.isHidden = status
     }
 
-    func selected(_ status: Bool, isEditMode: Bool) {
+    func selected(_ status: Bool, isEditMode: Bool, account: String) {
         if isEditMode {
             buttonMore.isHidden = true
             accessibilityCustomActions = nil
@@ -192,6 +193,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         }
         if status {
             imageSelect.isHidden = false
+            imageSelect.image = NCImageCache.shared.getImageCheckedYes(account: account)
             imageVisualEffect.isHidden = false
         } else {
             imageSelect.isHidden = true

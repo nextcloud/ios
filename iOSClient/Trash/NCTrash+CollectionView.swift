@@ -87,10 +87,10 @@ extension NCTrash: UICollectionViewDataSource {
             }
         }
 
-        cell.indexPath = indexPath
+        cell.account = resultTableTrash.account
         cell.objectId = resultTableTrash.fileId
         cell.setupCellUI(tableTrash: resultTableTrash, image: image)
-        cell.selected(selectOcId.contains(resultTableTrash.fileId), isEditMode: isEditMode)
+        cell.selected(selectOcId.contains(resultTableTrash.fileId), isEditMode: isEditMode, account: resultTableTrash.account)
 
         return cell
     }

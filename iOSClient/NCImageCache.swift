@@ -228,8 +228,9 @@ class NCImageCache: NSObject {
         return utility.loadImage(named: "checkmark.circle.fill", colors: [.systemGreen])
     }
 
-    func getImageCheckedYes() -> UIImage {
-        return utility.loadImage(named: "checkmark.circle.fill", colors: [.systemGreen])
+    func getImageCheckedYes(account: String?) -> UIImage {
+        let color = NCBrandColor.shared.getElement(account: account)
+        return utility.loadImage(named: "checkmark.circle.fill", colors: [color])
     }
 
     func getImageCheckedNo() -> UIImage {
