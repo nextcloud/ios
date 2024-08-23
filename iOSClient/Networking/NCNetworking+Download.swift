@@ -26,6 +26,7 @@ import JGProgressHUD
 import NextcloudKit
 import Alamofire
 import Queuer
+import RealmSwift
 
 extension NCNetworking {
     func download(metadata: tableMetadata,
@@ -295,15 +296,19 @@ extension NCNetworking {
     }
 #endif
 
-    func cancelDownloadTasks() {
+    func cancelDownloadTasks(metadata: tableMetadata? = nil) {
         NextcloudKit.shared.nkCommonInstance.nksessions.forEach { session in
             session.sessionData.session.getTasksWithCompletionHandler { _, _, downloadTasks in
-                downloadTasks.forEach {
-                    $0.cancel()
+                downloadTasks.forEach { task in
+                    if metadata == nil || (task.taskIdentifier == metadata?.sessionTaskIdentifier) {
+                        task.cancel()
+                    }
                 }
             }
         }
-        if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND session == %@",
+        if let metadata {
+            NCManageDatabase.shared.clearMetadataSession(metadata: metadata)
+        } else if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND session == %@",
                                                                                             NCGlobal.shared.metadataStatusWaitDownload,
                                                                                             NCGlobal.shared.metadataStatusDownloading,
                                                                                             NCGlobal.shared.metadataStatusDownloadError,
@@ -312,14 +317,18 @@ extension NCNetworking {
         }
     }
 
-    func cancelDownloadBackgroundTask() {
+    func cancelDownloadBackgroundTask(metadata: tableMetadata? = nil) {
         NextcloudKit.shared.nkCommonInstance.nksessions.forEach { session in
             Task {
                 let tasksBackground = await session.sessionDownloadBackground.tasks
                 for task in tasksBackground.2 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
-                    task.cancel()
+                    if metadata == nil || (task.taskIdentifier == metadata?.sessionTaskIdentifier) {
+                        task.cancel()
+                    }
                 }
-                if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND session == %@",
+                if let metadata {
+                    NCManageDatabase.shared.clearMetadataSession(metadata: metadata)
+                } else if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND session == %@",
                                                                                                     NCGlobal.shared.metadataStatusWaitDownload,
                                                                                                     NCGlobal.shared.metadataStatusDownloading,
                                                                                                     NCGlobal.shared.metadataStatusDownloadError,

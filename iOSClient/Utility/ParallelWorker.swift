@@ -63,7 +63,7 @@ class ParallelWorker {
             hud.tapOnHUDViewBlock = { hud in
                 self.isCancelled = true
                 NCNetworking.shared.cancelUploadTasks()
-                NCNetworking.shared.cancelDataTask()
+                NCNetworking.shared.cancelDownloadTasks()
                 hud.dismiss()
             }
             self.hud = hud

@@ -163,6 +163,23 @@ extension NCManageDatabase {
         }
     }
 
+    func clearMetadataSession(metadata: tableMetadata) {
+        do {
+            let realm = try Realm()
+            try realm.write {
+                metadata.sceneIdentifier = nil
+                metadata.session = ""
+                metadata.sessionTaskIdentifier = 0
+                metadata.sessionError = ""
+                metadata.sessionSelector = ""
+                metadata.sessionDate = nil
+                metadata.status = NCGlobal.shared.metadataStatusNormal
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
+        }
+    }
+
     @discardableResult
     func setMetadataStatus(ocId: String, status: Int) -> tableMetadata? {
         var result: tableMetadata?

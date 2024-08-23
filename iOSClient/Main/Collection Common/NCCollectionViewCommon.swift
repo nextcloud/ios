@@ -905,9 +905,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // sessionUploadBackgroundExtension: String = "com.nextcloud.session.upload.extension"
 
     func cancelSession(metadata: tableMetadata) async {
-        let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
         let nkSession = NextcloudKit.shared.nkCommonInstance.getSession(account: metadata.account)
-
         utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
 
         // No session found
@@ -917,46 +915,17 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             return
         }
 
-        // DOWNLOAD FOREGROUND
-        if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionDownload,
-           let nksession = NextcloudKit.shared.getSession(account: metadata.account) {
-            let tasks = await nksession.sessionData.session.tasks.2 // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
-            for task in tasks {
-                if task.taskIdentifier == metadata.sessionTaskIdentifier {
-                    task.cancel()
-                }
+        // DOWNLOAD
+        if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionDownload || metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground {
+            // DOWNLOAD FOREGROUND
+            if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionDownload {
+                NCNetworking.shared.cancelDownloadTasks(metadata: metadata)
             }
-            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                       session: "",
-                                                       sessionTaskIdentifier: 0,
-                                                       sessionError: "",
-                                                       selector: "",
-                                                       status: NCGlobal.shared.metadataStatusNormal)
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadCancelFile,
-                                                        object: nil,
-                                                        userInfo: ["ocId": metadata.ocId,
-                                                                   "ocIdTransfer": metadata.ocIdTransfer,
-                                                                   "session": metadata.session,
-                                                                   "serverUrl": metadata.serverUrl,
-                                                                   "account": metadata.account])
-            return
-        }
+            // DOWNLOAD BACKGROUND
+            if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground {
+                NCNetworking.shared.cancelDownloadBackgroundTask(metadata: metadata)
+            }
 
-        // DOWNLOAD BACKGROUND
-        if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground {
-            if let tasks = await nkSession?.sessionDownloadBackground.tasks {
-                for task in tasks.2 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
-                    if task.taskIdentifier == metadata.sessionTaskIdentifier {
-                        task.cancel()
-                    }
-                }
-            }
-            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                       session: "",
-                                                       sessionTaskIdentifier: 0,
-                                                       sessionError: "",
-                                                       selector: "",
-                                                       status: NCGlobal.shared.metadataStatusNormal)
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadCancelFile,
                                                         object: nil,
                                                         userInfo: ["ocId": metadata.ocId,
@@ -965,13 +934,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                                                                    "serverUrl": metadata.serverUrl,
                                                                    "account": metadata.account])
         }
-
         // UPLOAD FOREGROUND
         if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionUpload {
-            if let request = NCNetworking.shared.uploadRequest[fileNameLocalPath] {
-                request.cancel()
-                NCNetworking.shared.uploadRequest.removeValue(forKey: fileNameLocalPath)
-            }
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadCancelFile,
                                                         object: nil,
