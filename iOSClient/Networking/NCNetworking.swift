@@ -166,10 +166,22 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
     func cancelAllTask(account: String? = nil) {
         cancelAllQueue()
         cancelDataTask()
-        cancelDownloadTasks()
-        cancelUploadTasks()
-        cancelDownloadBackgroundTask()
-        cancelUploadBackgroundTask()
+        cancelAllDownloadUploadTask()
+    }
+
+    func cancelAllDownloadTask() {
+        NCNetworking.shared.cancelDownloadTasks()
+        NCNetworking.shared.cancelDownloadBackgroundTask()
+    }
+
+    func cancelAllUploadTask() {
+        NCNetworking.shared.cancelUploadTasks()
+        NCNetworking.shared.cancelUploadBackgroundTask()
+    }
+
+    func cancelAllDownloadUploadTask() {
+        cancelAllDownloadTask()
+        cancelAllUploadTask()
     }
 
     func cancelTask(metadata: tableMetadata) {
