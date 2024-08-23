@@ -129,7 +129,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
         keychain.cleanUpDay = selectedInterval.rawValue
     }
 
-    /// Clears cache associated with the specified account.
+    /// Clears cache
     func clearCache() {
         NCActivityIndicator.shared.startActivity(style: .large, blurEffect: true)
         // Cancel all networking tasks

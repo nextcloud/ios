@@ -31,8 +31,6 @@ class NCNetworkingCheckRemoteUser {
               let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
               !token.isEmpty else { return }
 
-        NCNetworking.shared.cancelAllTask()
-
         NextcloudKit.shared.getRemoteWipeStatus(serverUrl: tableAccount.urlBase, token: token, account: tableAccount.account) { account, wipe, _, error in
             var finalError: NKError?
 
