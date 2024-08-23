@@ -172,6 +172,55 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
         cancelUploadBackgroundTask()
     }
 
+    func cancelTask(metadata: tableMetadata) {
+        utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+
+        // No session found
+        if metadata.session.isEmpty {
+            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
+            return
+        }
+
+        /// DOWNLOAD
+        ///
+        if metadata.session.contains("download") {
+
+            if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionDownload {
+                NCNetworking.shared.cancelDownloadTasks(metadata: metadata)
+            } else if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground {
+                NCNetworking.shared.cancelDownloadBackgroundTask(metadata: metadata)
+            }
+
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadCancelFile,
+                                                        object: nil,
+                                                        userInfo: ["ocId": metadata.ocId,
+                                                                   "ocIdTransfer": metadata.ocIdTransfer,
+                                                                   "session": metadata.session,
+                                                                   "serverUrl": metadata.serverUrl,
+                                                                   "account": metadata.account])
+        }
+
+        /// UPLOAD
+        ///
+        if metadata.session.contains("upload") {
+
+            if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionUpload {
+                NCNetworking.shared.cancelUploadTasks(metadata: metadata)
+            } else {
+                NCNetworking.shared.cancelUploadBackgroundTask(metadata: metadata)
+            }
+
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadCancelFile,
+                                                        object: nil,
+                                                        userInfo: ["ocId": metadata.ocId,
+                                                                   "ocIdTransfer": metadata.ocIdTransfer,
+                                                                   "session": metadata.session,
+                                                                   "serverUrl": metadata.serverUrl,
+                                                                   "account": metadata.account])
+        }
+    }
+
     // MARK: - Pinning check
 
     public func checkTrustedChallenge(_ session: URLSession,
