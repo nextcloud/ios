@@ -71,7 +71,6 @@ extension NCNetworking {
         }
 
         NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account, options: options, requestHandler: { request in
-            self.downloadRequest[fileNameLocalPath] = request
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                        status: NCGlobal.shared.metadataStatusDownloading)
             requestHandler(request)
@@ -106,7 +105,6 @@ extension NCNetworking {
             var error = error
             var dateLastModified: Date?
 
-            self.downloadRequest.removeValue(forKey: fileNameLocalPath)
             // this delay was added because for small file the "taskHandler: { task" is not called, so this part of code is not executed
             NextcloudKit.shared.nkCommonInstance.backgroundQueue.asyncAfter(deadline: .now() + 0.5) {
                 if let downloadTask = downloadTask {
@@ -298,7 +296,6 @@ extension NCNetworking {
 #endif
 
     func cancelDownloadTasks() {
-        downloadRequest.removeAll()
         NextcloudKit.shared.nkCommonInstance.nksessions.forEach { session in
             session.sessionData.session.getTasksWithCompletionHandler { _, _, downloadTasks in
                 downloadTasks.forEach {

@@ -61,14 +61,10 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
     let utility = NCUtility()
     var lastReachability: Bool = true
     var networkReachability: NKCommon.TypeReachability?
-    let downloadRequest = ThreadSafeDictionary<String, DownloadRequest>()
-    let uploadRequest = ThreadSafeDictionary<String, UploadRequest>()
     weak var delegate: NCNetworkingDelegate?
     weak var certificateDelegate: ClientCertificateDelegate?
-
     var p12Data: Data?
     var p12Password: String?
-
     lazy var nkBackground: NKBackground = {
         let nckb = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance)
         return nckb

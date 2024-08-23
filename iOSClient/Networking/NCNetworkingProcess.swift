@@ -242,28 +242,14 @@ class NCNetworkingProcess: NSObject {
     // MARK: -
 
     func verifyZombie() async {
-        /// UPLOADING-FOREGROUND File Share Extension -> DELETE
-        ///
-        if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "session == %@ AND sessionSelector == %@",
-                                                                                            NextcloudKit.shared.nkCommonInstance.identifierSessionUpload,
-                                                                                            NCGlobal.shared.selectorUploadFileShareExtension)) {
-            for metadata in results {
-                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-            }
-        }
-
-        /// UPLOADING-FOREGROUND -> STATUS: WAIT UPLOAD
+        /// UPLOADING-FOREGROUND -> DELETE
         ///
         if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "session == %@ AND status == %d",
                                                                                             NextcloudKit.shared.nkCommonInstance.identifierSessionUpload,
                                                                                             NCGlobal.shared.metadataStatusUploading)) {
             for metadata in results {
-                let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
-                if NCNetworking.shared.uploadRequest[fileNameLocalPath] == nil {
-                    NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                               status: NCGlobal.shared.metadataStatusWaitUpload)
-                }
+                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
             }
         }
 

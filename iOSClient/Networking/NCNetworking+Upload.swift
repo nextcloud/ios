@@ -119,7 +119,6 @@ extension NCNetworking {
 
         NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, account: metadata.account, options: options, requestHandler: { request in
 
-            self.uploadRequest[fileNameLocalPath] = request
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                        status: NCGlobal.shared.metadataStatusUploading)
             requestHandler(request)
@@ -153,7 +152,6 @@ extension NCNetworking {
             progressHandler(progress.completedUnitCount, progress.totalUnitCount, progress.fractionCompleted)
         }) { account, ocId, etag, date, size, allHeaderFields, afError, error in
             var error = error
-            self.uploadRequest.removeValue(forKey: fileNameLocalPath)
             if withUploadComplete {
                 if afError?.isExplicitlyCancelledError ?? false {
                     error = NKError(errorCode: NCGlobal.shared.errorRequestExplicityCancelled, errorDescription: "error request explicity cancelled")
@@ -199,7 +197,6 @@ extension NCNetworking {
                                                                    "fileName": metadata.fileName,
                                                                    "sessionSelector": metadata.sessionSelector])
         } requestHandler: { request in
-            self.uploadRequest[fileNameLocalPath] = request
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                        status: NCGlobal.shared.metadataStatusUploading)
         } taskHandler: { task in
@@ -225,7 +222,6 @@ extension NCNetworking {
         } uploaded: { fileChunk in
             NCManageDatabase.shared.deleteChunk(account: metadata.account, ocId: metadata.ocId, fileChunk: fileChunk, directory: directory)
         } completion: { account, _, file, afError, error in
-            self.uploadRequest.removeValue(forKey: fileNameLocalPath)
             if error == .success {
                 NCManageDatabase.shared.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
             }
@@ -483,7 +479,6 @@ extension NCNetworking {
     }
 
     func cancelUploadTasks() {
-        uploadRequest.removeAll()
         NextcloudKit.shared.nkCommonInstance.nksessions.forEach { nkSession in
             nkSession.sessionData.session.getTasksWithCompletionHandler { _, uploadTasks, _ in
                 uploadTasks.forEach {
