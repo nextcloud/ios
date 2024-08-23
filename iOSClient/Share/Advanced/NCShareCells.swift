@@ -36,7 +36,7 @@ protocol NCToggleCellConfig: NCShareCellConfig {
 
 extension NCToggleCellConfig {
     func getCell(for share: NCTableShareable) -> UITableViewCell {
-        return NCShareToggleCell(isOn: isOn(for: share), customIcons: (.checkmarkShare, nil))
+        return NCShareToggleCell(isOn: isOn(for: share), customIcons: (.checkmarkIcon, nil))
     }
 
     func didSelect(for share: NCTableShareable) {
@@ -198,7 +198,7 @@ enum NCShareDetails: CaseIterable, NCShareCellConfig {
     func getCell(for share: NCTableShareable) -> UITableViewCell {
         switch self {
         case .hideDownload:
-            return NCShareToggleCell(isOn: share.hideDownload, customIcons: (.checkmarkShare, nil))
+            return NCShareToggleCell(isOn: share.hideDownload, customIcons: (.checkmarkIcon, nil))
         case .expirationDate:
             return NCShareDateCell(share: share)
         case .password: return NCShareToggleCell(isOn: !share.password.isEmpty, customIcons: (.lock, .lockOpen))
