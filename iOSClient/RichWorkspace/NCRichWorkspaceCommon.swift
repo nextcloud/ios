@@ -58,7 +58,10 @@ class NCRichWorkspaceCommon: NSObject {
             return NCContentPresenter().showError(error: error)
         }
 
-        if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", session.account, serverUrl, NCGlobal.shared.fileNameRichWorkspace.lowercased())) {
+        if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView LIKE[c] %@", 
+                                                                                     session.account,
+                                                                                     serverUrl,
+                                                                                     NCGlobal.shared.fileNameRichWorkspace.lowercased())) {
 
             if metadata.url.isEmpty {
                 NCActivityIndicator.shared.start(backgroundView: viewController.view)

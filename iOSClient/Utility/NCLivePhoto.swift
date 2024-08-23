@@ -490,7 +490,12 @@ extension NCLivePhoto {
 
         guard metadata.isLivePhoto,
               !livePhotoFile.isEmpty,
-              let metadata2 = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND urlBase == %@ AND path == %@ AND fileName == %@ AND status == %d", metadata.account, metadata.urlBase, metadata.path, livePhotoFile, NCGlobal.shared.metadataStatusNormal)) else { return }
+              let metadata2 = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND urlBase == %@ AND path == %@ AND fileName == %@ AND status == %d", 
+                                                                                         metadata.account,
+                                                                                         metadata.urlBase,
+                                                                                         metadata.path,
+                                                                                         livePhotoFile,
+                                                                                         NCGlobal.shared.metadataStatusNormal)) else { return }
         let serverUrlfileNamePath1 = metadata.urlBase + metadata.path + metadata.fileName
         let serverUrlfileNamePath2 = metadata2.urlBase + metadata2.path + livePhotoFile
 

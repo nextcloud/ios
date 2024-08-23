@@ -80,7 +80,7 @@ class NCUploadAssetsModel: NSObject, ObservableObject, NCCreateFormUploadConflic
     }
 
     func getTextServerUrl() -> String {
-        if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl)), let metadata = NCManageDatabase.shared.getMetadataFromOcId(directory.ocId) {
+        if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@",session.account, serverUrl)), let metadata = NCManageDatabase.shared.getMetadataFromOcId(directory.ocId) {
             return (metadata.fileNameView)
         } else {
             return (serverUrl as NSString).lastPathComponent
@@ -208,7 +208,10 @@ class NCUploadAssetsModel: NSObject, ObservableObject, NCCreateFormUploadConflic
             }
 
             // Check if is in upload
-            if let results = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@ AND session != ''", session.account, serverUrl, fileName), sorted: "fileName", ascending: false), !results.isEmpty {
+            if let results = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@ AND session != ''",
+                                                                                         session.account,
+                                                                                         serverUrl,
+                                                                                         fileName), sorted: "fileName", ascending: false), !results.isEmpty {
                 continue
             }
 

@@ -68,8 +68,16 @@ class NCNetworkingProcess: NSObject {
             } else {
                 Task {
                     let results = await self.start(scene: scene)
-                    let counterDownload = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "session == %@ AND (status == %d || status == %d)", NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground, NCGlobal.shared.metadataStatusWaitDownload, NCGlobal.shared.metadataStatusDownloading))?.count ?? 0
-                    let counterUpload = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "session == %@ AND (status == %d || status == %d)", NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground, NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusUploading))?.count ?? 0
+                    let counterDownload = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "session == %@ AND (status == %d || status == %d)",
+                                                                                                             NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground,
+                                                                                                             NCGlobal.shared.metadataStatusWaitDownload,
+                                                                                                             NCGlobal.shared.metadataStatusDownloading))?.count ?? 0
+
+                    let counterUpload = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "session == %@ AND (status == %d || status == %d)",
+                                                                                                           NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground,
+                                                                                                           NCGlobal.shared.metadataStatusWaitUpload,
+                                                                                                           NCGlobal.shared.metadataStatusUploading))?.count ?? 0
+
                     print("[INFO] PROCESS Download: \(results.counterDownloading)/\(counterDownload) Upload: \(results.counterUploading)/\(counterUpload)")
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber,
                                                                 object: nil,
@@ -218,7 +226,10 @@ class NCNetworkingProcess: NSObject {
         var metadatasForUpload: [tableMetadata] = []
         for metadata in metadatas {
             if verifyAlreadyExists {
-                if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && serverUrl == %@ && fileName == %@ && session != ''", metadata.account, metadata.serverUrl, metadata.fileName)) != nil {
+                if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && serverUrl == %@ && fileName == %@ && session != ''", 
+                                                                              metadata.account,
+                                                                              metadata.serverUrl,
+                                                                              metadata.fileName)) != nil {
                     continue
                 }
             }
@@ -264,7 +275,11 @@ class NCNetworkingProcess: NSObject {
             }
 
             // metadataStatusUploading (BACKGROUND)
-            let resultsUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "(session == %@ OR session == %@ OR session == %@) AND status == %d", NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground, NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundWWan, NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundExt, NCGlobal.shared.metadataStatusUploading))
+            let resultsUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "(session == %@ OR session == %@ OR session == %@) AND status == %d",
+                                                                                            NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground,
+                                                                                            NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundWWan,
+                                                                                            NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundExt,
+                                                                                            NCGlobal.shared.metadataStatusUploading))
             for metadata in resultsUpload {
                 var taskUpload: URLSessionTask?
                 var session: URLSession?
@@ -305,7 +320,11 @@ class NCNetworkingProcess: NSObject {
                 }
 
                 // metadataStatusUploading (BACKGROUND)
-                let resultsUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "(session == %@ OR session == %@ OR session == %@) AND status == %d", NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground, NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundWWan, NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundExt, NCGlobal.shared.metadataStatusUploading))
+                let resultsUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "(session == %@ OR session == %@ OR session == %@) AND status == %d",
+                                                                                                NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground,
+                                                                                                NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundWWan,
+                                                                                                NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundExt,
+                                                                                                NCGlobal.shared.metadataStatusUploading))
                 for metadata in resultsUpload {
                     var taskUpload: URLSessionTask?
                     var session: URLSession?

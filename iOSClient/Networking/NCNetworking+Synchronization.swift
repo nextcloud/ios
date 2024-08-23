@@ -45,7 +45,11 @@ extension NCNetworking {
             var metadatasSynchronizationOffline: [tableMetadata] = []
 
             if !add {
-                if NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "account == %@ AND sessionSelector == %@ AND (status == %d OR status == %d)", account, NCGlobal.shared.selectorSynchronizationOffline, NCGlobal.shared.metadataStatusWaitDownload, NCGlobal.shared.metadataStatusDownloading)) != nil { return }
+                if NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "account == %@ AND sessionSelector == %@ AND (status == %d OR status == %d)", 
+                                                                                    account,
+                                                                                    NCGlobal.shared.selectorSynchronizationOffline,
+                                                                                    NCGlobal.shared.metadataStatusWaitDownload,
+                                                                                    NCGlobal.shared.metadataStatusDownloading)) != nil { return }
             }
 
             if error == .success, let files {

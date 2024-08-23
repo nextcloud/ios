@@ -62,7 +62,10 @@ class NCNetworkingE2EEDelete: NSObject {
 
         // UPDATE DB
         //
-        NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, metadata.serverUrl, metadata.fileName))
+        NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", 
+                                                                           metadata.account,
+                                                                           metadata.serverUrl,
+                                                                           metadata.fileName))
 
         // UPLOAD METADATA
         //
