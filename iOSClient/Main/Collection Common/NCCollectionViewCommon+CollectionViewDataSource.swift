@@ -410,7 +410,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 header.delegate = self
 
                 if !isSearchingMode, headerMenuTransferView, isHeaderMenuTransferViewEnabled() != nil {
-                    header.setViewTransfer(isHidden: false)
+                    if let transfer = NCTransferProgress.shared.getLastTransferChunkOrE2eEncrypted() {
+                        header.setViewTransfer(isHidden: false, progress: transfer.progressNumber.floatValue)
+                    } else {
+                        header.setViewTransfer(isHidden: false)
+                    }
                 } else {
                     header.setViewTransfer(isHidden: true)
                 }
@@ -447,7 +451,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 header.delegate = self
 
                 if !isSearchingMode, headerMenuTransferView, isHeaderMenuTransferViewEnabled() != nil {
-                    header.setViewTransfer(isHidden: false)
+                    if let transfer = NCTransferProgress.shared.getLastTransferChunkOrE2eEncrypted() {
+                        header.setViewTransfer(isHidden: false, progress: transfer.progressNumber.floatValue)
+                    } else {
+                        header.setViewTransfer(isHidden: false)
+                    }
                 } else {
                     header.setViewTransfer(isHidden: true)
                 }
