@@ -76,7 +76,7 @@ class NCSectionFirstHeaderEmptyData: UICollectionReusableView {
 
     // MARK: - Transfer
 
-    func setViewTransfer(isHidden: Bool, text: String?, progress: Float?) {
+    func setViewTransfer(isHidden: Bool, progress: Float? = nil) {
         viewTransfer.isHidden = isHidden
 
         if isHidden {
@@ -84,8 +84,10 @@ class NCSectionFirstHeaderEmptyData: UICollectionReusableView {
             progressTransfer.progress = 0
         } else {
             viewTransferHeightConstraint.constant = NCGlobal.shared.heightHeaderTransfer
-            if let text {
-                labelTransfer.text = text
+            if NCTransferProgress.shared.haveChunkOrE2eEncrypted() {
+                labelTransfer.text = String(format: NSLocalizedString("_upload_foreground_msg_", comment: ""), NCBrandOptions.shared.brand)
+            } else {
+                labelTransfer.text = NSLocalizedString("_upload_background_msg_", comment: "")
             }
             if let progress {
                 progressTransfer.progress = progress
