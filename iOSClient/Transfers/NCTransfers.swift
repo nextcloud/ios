@@ -57,14 +57,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         reloadDataSource()
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        Task {
-            await NCNetworking.shared.verifyZombie()
-        }
-    }
-
     override func setNavigationLeftItems() {
         self.navigationItem.rightBarButtonItem = nil
         self.navigationItem.leftBarButtonItem = nil
@@ -290,9 +282,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     }
 
     override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
-        Task {
-            await NCNetworking.shared.verifyZombie()
-            super.reloadDataSource(withQueryDB: true)
-        }
+        super.reloadDataSource(withQueryDB: true)
     }
 }

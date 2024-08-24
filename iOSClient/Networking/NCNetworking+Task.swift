@@ -238,7 +238,7 @@ extension NCNetworking {
     func verifyZombie() async {
         var metadatas: [tableMetadata] = []
 
-        /// UPLOADING-FOREGROUND -> DELETE
+        /// UPLOADING-FOREGROUND
         ///
         metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "session == %@ AND status == %d",
                                                                                 NCNetworking.shared.sessionUpload,
@@ -270,7 +270,7 @@ extension NCNetworking {
             }
         }
 
-        /// UPLOADING-BACKGROUND -> STATUS: WAIT UPLOAD
+        /// UPLOADING-BACKGROUND
         ///
         metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "(session == %@ OR session == %@ OR session == %@) AND status == %d",
                                                                                 NCNetworking.shared.sessionUploadBackground,
@@ -318,7 +318,7 @@ extension NCNetworking {
             }
         }
 
-        /// DOWNLOADING-FOREGROUND -> STATUS: NORMAL
+        /// DOWNLOADING-FOREGROUND
         ///
         metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "session == %@ AND status == %d",
                                                                                 NCNetworking.shared.sessionDownload,
@@ -348,7 +348,7 @@ extension NCNetworking {
             }
         }
 
-        /// DOWNLOADING-BACKGROUND -> STATUS: NORMAL
+        /// DOWNLOADING-BACKGROUND
         ///
         metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "session == %@ AND status == %d",
                                                                                 NCNetworking.shared.sessionDownloadBackground,
