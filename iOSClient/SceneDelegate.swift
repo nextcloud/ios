@@ -121,19 +121,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         NCSettingsBundleHelper.checkAndExecuteSettings(delay: 0.5)
 
         // START VERIFY ZOMBIE AND UPLOAD PROCEDD
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            Task {
-                await NCNetworking.shared.verifyZombie()
-                NCNetworkingProcess.shared.startTimer(scene: scene)
-            }
-        }
+        NCNetworkingProcess.shared.startTimer(scene: scene)
 
         hidePrivacyProtectionWindow()
 
         NCService().startRequestServicesServer(account: session.account)
 
-        NCAutoUpload.shared.initAutoUpload(viewController: nil, account: session.account) { items in
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(items) uploads")
+        NCAutoUpload.shared.initAutoUpload(viewController: nil, account: session.account) { num in
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(num) uploads")
         }
     }
 

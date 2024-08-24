@@ -34,7 +34,7 @@ class NCAutoUpload: NSObject {
 
     // MARK: -
 
-    @objc func initAutoUpload(viewController: UIViewController?, account: String, completion: @escaping (_ items: Int) -> Void) {
+    @objc func initAutoUpload(viewController: UIViewController?, account: String, completion: @escaping (_ num: Int) -> Void) {
         guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
               tableAccount.autoUpload else {
             return completion(0)
@@ -47,8 +47,8 @@ class NCAutoUpload: NSObject {
                 return completion(0)
             }
             DispatchQueue.global(qos: .userInteractive).async {
-                self.uploadAssetsNewAndFull(viewController: viewController, selector: NCGlobal.shared.selectorUploadAutoUpload, log: "Init Auto Upload", account: account) { items in
-                    completion(items)
+                self.uploadAssetsNewAndFull(viewController: viewController, selector: NCGlobal.shared.selectorUploadAutoUpload, log: "Init Auto Upload", account: account) { num in
+                    completion(num)
                 }
             }
         }
@@ -56,8 +56,8 @@ class NCAutoUpload: NSObject {
 
     func initAutoUpload(viewController: UIViewController? = nil, account: String) async -> Int {
         await withUnsafeContinuation({ continuation in
-            initAutoUpload(viewController: viewController, account: account) { items in
-                continuation.resume(returning: items)
+            initAutoUpload(viewController: viewController, account: account) { num in
+                continuation.resume(returning: num)
             }
         })
     }
@@ -78,7 +78,7 @@ class NCAutoUpload: NSObject {
         }
     }
 
-    private func uploadAssetsNewAndFull(viewController: UIViewController?, selector: String, log: String, account: String, completion: @escaping (_ items: Int) -> Void) {
+    private func uploadAssetsNewAndFull(viewController: UIViewController?, selector: String, log: String, account: String, completion: @escaping (_ num: Int) -> Void) {
         guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) else {
             return completion(0)
         }

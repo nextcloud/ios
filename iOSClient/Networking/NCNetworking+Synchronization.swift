@@ -31,7 +31,7 @@ extension NCNetworking {
     func synchronization(account: String,
                          serverUrl: String,
                          add: Bool,
-                         completion: @escaping (_ errorCode: Int, _ items: Int) -> Void = { _, _ in }) {
+                         completion: @escaping (_ errorCode: Int, _ num: Int) -> Void = { _, _ in }) {
         let startDate = Date()
         let options = NKRequestOptions(timeout: 120, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
@@ -76,10 +76,10 @@ extension NCNetworking {
     }
 
     @discardableResult
-    func synchronization(account: String, serverUrl: String, add: Bool) async -> (errorCode: Int, items: Int) {
+    func synchronization(account: String, serverUrl: String, add: Bool) async -> (errorCode: Int, num: Int) {
         await withUnsafeContinuation({ continuation in
-            synchronization(account: account, serverUrl: serverUrl, add: add) { errorCode, items in
-                continuation.resume(returning: (errorCode, items))
+            synchronization(account: account, serverUrl: serverUrl, add: add) { errorCode, num in
+                continuation.resume(returning: (errorCode, num))
             }
         })
     }

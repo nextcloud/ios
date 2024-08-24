@@ -63,6 +63,7 @@ extension NCManageDatabase {
         return nil
     }
 
+    @discardableResult
     func setCapabilities(account: String, data: Data? = nil) -> NCCapabilities.Capabilities? {
         let jsonData: Data?
 

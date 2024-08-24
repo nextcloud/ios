@@ -194,7 +194,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     func handleAppRefreshProcessingTask(taskText: String, completion: @escaping () -> Void = {}) {
         Task {
-            var itemsAutoUpload = 0
+            var numAutoUpload = 0
             guard let account = NCManageDatabase.shared.getActiveTableAccount()?.account else {
                 return
             }
@@ -204,8 +204,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             // Test every > 1 min
             if Date() > self.taskAutoUploadDate.addingTimeInterval(60) {
                 self.taskAutoUploadDate = Date()
-                itemsAutoUpload = await NCAutoUpload.shared.initAutoUpload(account: account)
-                NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) auto upload with \(itemsAutoUpload) uploads")
+                numAutoUpload = await NCAutoUpload.shared.initAutoUpload(account: account)
+                NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) auto upload with \(numAutoUpload) uploads")
             } else {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) disabled auto upload")
             }
@@ -214,7 +214,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) networking process with download: \(results.counterDownloading) upload: \(results.counterUploading)")
 
             if taskText == "ProcessingTask",
-               itemsAutoUpload == 0,
+               numAutoUpload == 0,
                results.counterDownloading == 0,
                results.counterUploading == 0,
                let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "offlineDate", ascending: true) {
@@ -225,7 +225,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                         continue
                     }
                     let results = await NCNetworking.shared.synchronization(account: account, serverUrl: directory.serverUrl, add: false)
-                    NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) end synchronization for \(directory.serverUrl), errorCode: \(results.errorCode), item: \(results.items)")
+                    NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) end synchronization for \(directory.serverUrl), errorCode: \(results.errorCode), item: \(results.num)")
                 }
             }
 

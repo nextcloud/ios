@@ -458,7 +458,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         let processor = ParallelWorker(n: 5, titleKey: "_uploading_", totalTasks: nil, hudView: hudView)
 
         func uploadPastePasteboard(fileName: String, serverUrlFileName: String, fileNameLocalPath: String, serverUrl: String, completion: @escaping () -> Void) {
-            NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: account) { request in
+            NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: account) { _ in
             } progressHandler: { progress in
                 if Float(progress.fractionCompleted) > fractionCompleted || fractionCompleted == 0 {
                     processor.hud?.progress = Float(progress.fractionCompleted)
