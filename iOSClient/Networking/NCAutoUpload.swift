@@ -27,10 +27,7 @@ import NextcloudKit
 import Photos
 
 class NCAutoUpload: NSObject {
-    @objc static let shared: NCAutoUpload = {
-        let instance = NCAutoUpload()
-        return instance
-    }()
+    static let shared = NCAutoUpload()
 
     private var endForAssetToUpload: Bool = false
     private var applicationState = UIApplication.shared.applicationState

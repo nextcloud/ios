@@ -28,10 +28,7 @@ import JGProgressHUD
 import RealmSwift
 
 class NCNetworkingProcess: NSObject {
-    public static let shared: NCNetworkingProcess = {
-        let instance = NCNetworkingProcess()
-        return instance
-    }()
+    static let shared = NCNetworkingProcess()
 
     let utilityFileSystem = NCUtilityFileSystem()
     var notificationToken: NotificationToken?
