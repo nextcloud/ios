@@ -305,8 +305,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCImageCache.shared.getImageButtonMore())
         }
 
-        // Progress view
-        if let transfer = NCTransferProgress.shared.get(ocIdTransfer: metadata.ocIdTransfer) {
+        // Progress
+        if metadata.session == NCNetworking.shared.sessionDownloadBackground,
+            let transfer = NCTransferProgress.shared.get(ocIdTransfer: metadata.ocIdTransfer) {
             cell.setProgress(progress: transfer.progressNumber.floatValue)
         } else {
             cell.setProgress(progress: 0.0)

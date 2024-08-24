@@ -546,7 +546,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             self.sectionFirstHeader?.setViewTransfer(isHidden: false, progress: transfer.progressNumber.floatValue)
             self.sectionFirstHeaderEmptyData?.setViewTransfer(isHidden: false, progress: transfer.progressNumber.floatValue)
         // DOWNLOAD
-        } else if status == NCGlobal.shared.metadataStatusWaitDownload || status == NCGlobal.shared.metadataStatusDownloading {
+        } else if session == NCNetworking.shared.sessionDownloadBackground {
             for case let cell as NCCellProtocol in self.collectionView.visibleCells {
                 if cell.fileOcId == ocId {
                     cell.setProgress(progress: progressNumber.floatValue)
