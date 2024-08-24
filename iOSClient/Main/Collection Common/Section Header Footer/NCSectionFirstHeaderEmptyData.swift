@@ -86,12 +86,18 @@ class NCSectionFirstHeaderEmptyData: UICollectionReusableView {
             viewTransferHeightConstraint.constant = NCGlobal.shared.heightHeaderTransfer
             if NCTransferProgress.shared.haveUploadInForeground() {
                 labelTransfer.text = String(format: NSLocalizedString("_upload_foreground_msg_", comment: ""), NCBrandOptions.shared.brand)
+                if let progress {
+                    progressTransfer.progress = progress
+                } else if let progress = NCTransferProgress.shared.getLastTransferProgressInForeground() {
+                    progressTransfer.progress = progress
+                } else {
+                    progressTransfer.progress = 0.0
+                }
             } else {
                 labelTransfer.text = NSLocalizedString("_upload_background_msg_", comment: "")
+                progressTransfer.progress = 0.0
             }
-            if let progress {
-                progressTransfer.progress = progress
-            }
+
         }
     }
 }
