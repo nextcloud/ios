@@ -24,7 +24,7 @@
 import UIKit
 
 protocol NCTrashGridCellDelegate: AnyObject {
-    func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any)
+    func tapMoreGridItem(with objectId: String, image: UIImage?, indexPath: IndexPath, sender: Any)
 }
 
 class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
@@ -42,7 +42,6 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
     var indexPath = IndexPath()
     var account = ""
     var user = ""
-    var namedButtonMore = ""
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -77,22 +76,19 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
     }
 
     @IBAction func touchUpInsideMore(_ sender: Any) {
-        delegate?.tapMoreGridItem(with: objectId, namedButtonMore: namedButtonMore, image: imageItem.image, indexPath: indexPath, sender: sender)
+        delegate?.tapMoreGridItem(with: objectId, image: imageItem.image, indexPath: indexPath, sender: sender)
     }
 
     fileprivate func setA11yActions() {
-        let moreName = namedButtonMore == NCGlobal.shared.buttonMoreStop ? "_cancel_" : "_more_"
-
         self.accessibilityCustomActions = [
             UIAccessibilityCustomAction(
-                name: NSLocalizedString(moreName, comment: ""),
+                name: NSLocalizedString("_more_", comment: ""),
                 target: self,
                 selector: #selector(touchUpInsideMore))
         ]
     }
 
-    func setButtonMore(named: String, image: UIImage) {
-        namedButtonMore = named
+    func setButtonMore(image: UIImage) {
         buttonMore.setImage(image, for: .normal)
         setA11yActions()
     }

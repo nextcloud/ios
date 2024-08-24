@@ -106,7 +106,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         NCTransferProgress.shared.append(NCTransferProgress.Transfer(ocId: ocId, ocIdTransfer: ocIdTransfer, session: session, chunk: chunk, e2eEncrypted: e2eEncrypted, progressNumber: progressNumber, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected))
 
         DispatchQueue.main.async {
-            for case let cell as NCCellProtocol in self.collectionView.visibleCells {
+            for case let cell as NCTransferCell in self.collectionView.visibleCells {
                 if cell.fileOcIdTransfer == ocIdTransfer {
                     cell.setProgress(progress: progressNumber.floatValue)
                     cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - " + self.utilityFileSystem.transformedSize(totalBytes)
@@ -117,12 +117,12 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     // MARK: TAP EVENT
 
-    override func tapMoreGridItem(with ocId: String, ocIdTransfer: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
+    override func tapMoreGridItem(with ocId: String, ocIdTransfer: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcIdAndocIdTransfer(ocIdTransfer) else { return }
         NCNetworking.shared.cancelTask(metadata: metadata)
     }
 
-    override func longPressMoreListItem(with ocId: String, ocIdTransfer: String, namedButtonMore: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
+    override func longPressMoreListItem(with ocId: String, ocIdTransfer: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
         if gestureRecognizer.state != .began { return }
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .alert)
 
@@ -214,7 +214,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         var pathText = metadata.serverUrl.replacingOccurrences(of: serverUrlHome, with: "")
         if pathText.isEmpty { pathText = "/" }
         cell.labelPath.text = pathText
-        cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCImageCache.shared.getImageButtonStop())
+        cell.setButtonMore(image: NCImageCache.shared.getImageButtonStop())
         /// Progress view
         if let transfer = NCTransferProgress.shared.get(ocIdTransfer: metadata.ocIdTransfer) {
             cell.setProgress(progress: transfer.progressNumber.floatValue)

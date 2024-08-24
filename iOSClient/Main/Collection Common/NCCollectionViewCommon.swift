@@ -545,14 +545,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if self.headerMenuTransferView, transfer.session.contains("upload") {
             self.sectionFirstHeader?.setViewTransfer(isHidden: false, progress: transfer.progressNumber.floatValue)
             self.sectionFirstHeaderEmptyData?.setViewTransfer(isHidden: false, progress: transfer.progressNumber.floatValue)
-        // DOWNLOAD
-        } else if session == NCNetworking.shared.sessionDownloadBackground {
-            for case let cell as NCCellProtocol in self.collectionView.visibleCells {
-                if cell.fileOcId == ocId {
-                    cell.setProgress(progress: progressNumber.floatValue)
-                    cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - " + self.utilityFileSystem.transformedSize(totalBytes)
-                }
-            }
         }
     }
 
@@ -892,12 +884,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     // MARK: - TAP EVENT
 
-    func tapMoreListItem(with ocId: String, ocIdTransfer: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
-        tapMoreGridItem(with: ocId, ocIdTransfer: ocIdTransfer, namedButtonMore: namedButtonMore, image: image, indexPath: indexPath, sender: sender)
+    func tapMoreListItem(with ocId: String, ocIdTransfer: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
+        tapMoreGridItem(with: ocId, ocIdTransfer: ocIdTransfer, image: image, indexPath: indexPath, sender: sender)
     }
 
-    func tapMorePhotoItem(with ocId: String, ocIdTransfer: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
-        tapMoreGridItem(with: ocId, ocIdTransfer: ocIdTransfer, namedButtonMore: namedButtonMore, image: image, indexPath: indexPath, sender: sender)
+    func tapMorePhotoItem(with ocId: String, ocIdTransfer: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
+        tapMoreGridItem(with: ocId, ocIdTransfer: ocIdTransfer, image: image, indexPath: indexPath, sender: sender)
     }
 
     func tapShareListItem(with ocId: String, ocIdTransfer: String, indexPath: IndexPath, sender: Any) {
@@ -906,14 +898,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NCActionCenter.shared.openShare(viewController: self, metadata: metadata, page: .sharing)
     }
 
-    func tapMoreGridItem(with ocId: String, ocIdTransfer: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
+    func tapMoreGridItem(with ocId: String, ocIdTransfer: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
-
-        if namedButtonMore == NCGlobal.shared.buttonMoreMore || namedButtonMore == NCGlobal.shared.buttonMoreLock {
-            toggleMenu(metadata: metadata, indexPath: indexPath, imageIcon: image)
-        } else if namedButtonMore == NCGlobal.shared.buttonMoreStop {
-            NCNetworking.shared.cancelTask(metadata: metadata)
-        }
+        toggleMenu(metadata: metadata, indexPath: indexPath, imageIcon: image)
     }
 
     func tapRichWorkspace(_ sender: Any) {
@@ -933,24 +920,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         unifiedSearchMore(metadataForSection: metadataForSection)
     }
 
-    func tapButtonTransfer(_ sender: Any) {
-        NCTransferProgress.shared.getAll().forEach { transfer in
-            if transfer.session == NCNetworking.shared.sessionUpload,
-               let metadata = NCManageDatabase.shared.getMetadataFromOcIdAndocIdTransfer(transfer.ocIdTransfer) {
-                NCNetworking.shared.cancelTask(metadata: metadata)
-            }
-        }
-    }
-
     func longPressListItem(with ocId: String, ocIdTransfer: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) { }
 
     func longPressGridItem(with ocId: String, ocIdTransfer: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) { }
 
-    func longPressMoreListItem(with ocId: String, ocIdTransfer: String, namedButtonMore: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) { }
+    func longPressMoreListItem(with ocId: String, ocIdTransfer: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) { }
 
     func longPressPhotoItem(with ocId: String, ocIdTransfer: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) { }
 
-    func longPressMoreGridItem(with ocId: String, ocIdTransfer: String, namedButtonMore: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) { }
+    func longPressMoreGridItem(with ocId: String, ocIdTransfer: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) { }
 
     @objc func longPressCollecationView(_ gestureRecognizer: UILongPressGestureRecognizer) {
         openMenuItems(with: nil, gestureRecognizer: gestureRecognizer)

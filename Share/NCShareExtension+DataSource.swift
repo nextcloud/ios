@@ -98,7 +98,6 @@ extension NCShareExtension: UICollectionViewDataSource {
         cell.imageMore.image = nil
         cell.imageItem.image = nil
         cell.imageItem.backgroundColor = nil
-        cell.progressView.progress = 0.0
 
         if metadata.directory {
             setupDirectoryCell(cell, indexPath: indexPath, with: metadata)

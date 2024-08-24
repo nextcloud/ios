@@ -35,9 +35,7 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
     var ocIdTransfer = ""
     var indexPath = IndexPath()
     private var user = ""
-
     weak var photoCellDelegate: NCPhotoCellDelegate?
-    var namedButtonMore = ""
 
     var fileOcId: String? {
         get { return ocId }
@@ -109,7 +107,7 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
     }
 
     @IBAction func touchUpInsideMore(_ sender: Any) {
-        photoCellDelegate?.tapMorePhotoItem(with: ocId, ocIdTransfer: ocIdTransfer, namedButtonMore: namedButtonMore, image: imageItem.image, indexPath: indexPath, sender: sender)
+        photoCellDelegate?.tapMorePhotoItem(with: ocId, ocIdTransfer: ocIdTransfer, image: imageItem.image, indexPath: indexPath, sender: sender)
     }
 
     @objc func longPress(gestureRecognizer: UILongPressGestureRecognizer) {
@@ -117,18 +115,15 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
     }
 
     fileprivate func setA11yActions() {
-        let moreName = namedButtonMore == NCGlobal.shared.buttonMoreStop ? "_cancel_" : "_more_"
-
         self.accessibilityCustomActions = [
             UIAccessibilityCustomAction(
-                name: NSLocalizedString(moreName, comment: ""),
+                name: NSLocalizedString("_more_", comment: ""),
                 target: self,
                 selector: #selector(touchUpInsideMore))
         ]
     }
 
-    func setButtonMore(named: String, image: UIImage) {
-        namedButtonMore = named
+    func setButtonMore(image: UIImage) {
         buttonMore.setImage(image, for: .normal)
         setA11yActions()
     }
@@ -163,6 +158,6 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
 }
 
 protocol NCPhotoCellDelegate: AnyObject {
-    func tapMorePhotoItem(with ocId: String, ocIdTransfer: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any)
+    func tapMorePhotoItem(with ocId: String, ocIdTransfer: String, image: UIImage?, indexPath: IndexPath, sender: Any)
     func longPressPhotoItem(with objectId: String, ocIdTransfer: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer)
 }

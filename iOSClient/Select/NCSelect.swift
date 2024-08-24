@@ -219,11 +219,9 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
     func tapShareListItem(with ocId: String, ocIdTransfer: String, indexPath: IndexPath, sender: Any) { }
 
-    func tapMoreListItem(with ocId: String, ocIdTransfer: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) { }
+    func tapMoreListItem(with ocId: String, ocIdTransfer: String, image: UIImage?, indexPath: IndexPath, sender: Any) { }
 
     func longPressListItem(with odId: String, ocIdTransfer: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) { }
-
-    func tapButtonTransfer(_ sender: Any) { }
 
     func tapRichWorkspace(_ sender: Any) { }
 
@@ -334,8 +332,6 @@ extension NCSelect: UICollectionViewDataSource {
 
         cell.imageItem.image = nil
         cell.imageItem.backgroundColor = nil
-
-        cell.progressView.progress = 0.0
 
         if metadata.directory {
             if metadata.e2eEncrypted {

@@ -296,21 +296,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         */
 
         // Button More
-        if metadata.isDownload {
-            cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCImageCache.shared.getImageButtonStop())
-        } else if metadata.lock == true {
-            cell.setButtonMore(named: NCGlobal.shared.buttonMoreLock, image: NCImageCache.shared.getImageButtonMoreLock())
+        if metadata.lock == true {
+            cell.setButtonMore(image: NCImageCache.shared.getImageButtonMoreLock())
             a11yValues.append(String(format: NSLocalizedString("_locked_by_", comment: ""), metadata.lockOwnerDisplayName))
         } else {
-            cell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCImageCache.shared.getImageButtonMore())
-        }
-
-        // Progress
-        if metadata.session == NCNetworking.shared.sessionDownloadBackground,
-            let transfer = NCTransferProgress.shared.get(ocIdTransfer: metadata.ocIdTransfer) {
-            cell.setProgress(progress: transfer.progressNumber.floatValue)
-        } else {
-            cell.setProgress(progress: 0.0)
+            cell.setButtonMore(image: NCImageCache.shared.getImageButtonMore())
         }
 
         // Write status on Label Info

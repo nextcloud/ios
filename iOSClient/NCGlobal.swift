@@ -174,7 +174,6 @@ class NCGlobal: NSObject {
     // Button Type in Cell list/grid
     //
     let buttonMoreMore                              = "more"
-    let buttonMoreStop                              = "stop"
     let buttonMoreLock                              = "moreLock"
 
     // Standard height sections header/footer

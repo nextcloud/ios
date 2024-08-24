@@ -25,7 +25,6 @@ import UIKit
 import MarkdownKit
 
 protocol NCSectionFirstHeaderDelegate: AnyObject {
-    func tapButtonTransfer(_ sender: Any)
     func tapRichWorkspace(_ sender: Any)
 }
 

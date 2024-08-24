@@ -26,7 +26,6 @@ import MarkdownKit
 import RealmSwift
 
 protocol NCSectionFirstHeaderEmptyDataDelegate: AnyObject {
-    func tapButtonTransfer(_ sender: Any)
 }
 
 class NCSectionFirstHeaderEmptyData: UICollectionReusableView {

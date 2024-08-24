@@ -186,7 +186,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         } // else: undefined sender
     }
 
-    func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
+    func tapMoreGridItem(with objectId: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
         if !isEditMode {
             toggleMenuMore(with: objectId, image: image, isGridCell: true)
         } else if let button = sender as? UIView {
@@ -198,7 +198,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
     func longPressGridItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) { }
 
-    func longPressMoreGridItem(with objectId: String, namedButtonMore: String, gestureRecognizer: UILongPressGestureRecognizer) { }
+    func longPressMoreGridItem(with objectId: String, gestureRecognizer: UILongPressGestureRecognizer) { }
 
     // MARK: - DataSource
 
