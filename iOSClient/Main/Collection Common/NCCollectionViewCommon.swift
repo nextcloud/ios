@@ -534,9 +534,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let ocIdTransfer = userInfo["ocIdTransfer"] as? String,
               let session = userInfo["session"] as? String
         else { return }
+
         let chunk: Int = userInfo["chunk"] as? Int ?? 0
         let e2eEncrypted: Bool = userInfo["e2eEncrypted"] as? Bool ?? false
         let status = userInfo["status"] as? Int ?? NCGlobal.shared.metadataStatusNormal
+
         let transfer = NCTransferProgress.shared.append(NCTransferProgress.Transfer(ocId: ocId, ocIdTransfer: ocIdTransfer, session: session, chunk: chunk, e2eEncrypted: e2eEncrypted, progressNumber: progressNumber, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected))
 
         // HEADER
