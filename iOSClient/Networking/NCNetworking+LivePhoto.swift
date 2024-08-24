@@ -54,8 +54,6 @@ extension NCNetworking {
 
             let serverUrlfileNamePath1 = metadata1.urlBase + metadata1.path + metadata1.fileName
             livePhotoFile = metadata.fileId
-            /// Sleep 1 second for server issue
-            try await Task.sleep(nanoseconds: 1 * 1_000_000_000)
             let results1 = await setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath1, livePhotoFile: livePhotoFile, account: metadata1.account)
             if results1.error == .success {
                 NCManageDatabase.shared.setMetadataLivePhotoByServer(account: metadata1.account, ocId: metadata1.ocId, livePhotoFile: livePhotoFile)
