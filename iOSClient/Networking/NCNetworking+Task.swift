@@ -52,7 +52,7 @@ extension NCNetworking {
     func cancelTask(metadata: tableMetadata) {
         utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
 
-        // No session found
+        /// No session found
         if metadata.session.isEmpty {
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
@@ -76,7 +76,7 @@ extension NCNetworking {
                                                                    "session": metadata.session,
                                                                    "serverUrl": metadata.serverUrl,
                                                                    "account": metadata.account],
-                                                        second: 0.2)
+                                                        second: 0.5)
         }
 
         /// UPLOAD
@@ -96,7 +96,7 @@ extension NCNetworking {
                                                                    "session": metadata.session,
                                                                    "serverUrl": metadata.serverUrl,
                                                                    "account": metadata.account],
-                                                        second: 0.2)
+                                                        second: 0.5)
         }
     }
 
