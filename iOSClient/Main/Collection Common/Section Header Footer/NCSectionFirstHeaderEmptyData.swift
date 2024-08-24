@@ -76,7 +76,7 @@ class NCSectionFirstHeaderEmptyData: UICollectionReusableView {
 
     // MARK: - Transfer
 
-    func setViewTransfer(isHidden: Bool, text: String? = nil, progress: Float? = nil) {
+    func setViewTransfer(isHidden: Bool, text: String?, progress: Float?) {
         viewTransfer.isHidden = isHidden
 
         if isHidden {
@@ -84,7 +84,9 @@ class NCSectionFirstHeaderEmptyData: UICollectionReusableView {
             progressTransfer.progress = 0
         } else {
             viewTransferHeightConstraint.constant = NCGlobal.shared.heightHeaderTransfer
-            labelTransfer.text = text
+            if let text {
+                labelTransfer.text = text
+            }
             if let progress {
                 progressTransfer.progress = progress
             }

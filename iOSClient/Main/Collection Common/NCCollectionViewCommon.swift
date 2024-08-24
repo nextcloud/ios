@@ -549,8 +549,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 }
             } else {
                 let text = NSLocalizedString("_upload_background_msg_", comment: "")
-                self.sectionFirstHeader?.setViewTransfer(isHidden: false, text: text)
-                self.sectionFirstHeaderEmptyData?.setViewTransfer(isHidden: false, text: text)
+                self.sectionFirstHeader?.setViewTransfer(isHidden: false, text: text, progress: 0.0)
+                self.sectionFirstHeaderEmptyData?.setViewTransfer(isHidden: false, text: text, progress: 0.0)
             }
         // DOWNLOAD
         } else if status == NCGlobal.shared.metadataStatusWaitDownload || status == NCGlobal.shared.metadataStatusDownloading {

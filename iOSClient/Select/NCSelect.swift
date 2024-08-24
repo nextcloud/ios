@@ -432,7 +432,7 @@ extension NCSelect: UICollectionViewDataSource {
                 header.delegate = self
                 header.setRichWorkspaceHeight(heightHeaderRichWorkspace)
                 header.setRichWorkspaceText(richWorkspaceText)
-                header.setViewTransfer(isHidden: true)
+                header.setViewTransfer(isHidden: true, text: "", progress: 0.0)
                 return header
             }
 

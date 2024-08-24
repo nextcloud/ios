@@ -410,9 +410,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 header.delegate = self
 
                 if !isSearchingMode, headerMenuTransferView, isHeaderMenuTransferViewEnabled() != nil {
-                    header.setViewTransfer(isHidden: false)
+                    header.setViewTransfer(isHidden: false, text: nil, progress: nil)
                 } else {
-                    header.setViewTransfer(isHidden: true)
+                    header.setViewTransfer(isHidden: true, text: "", progress: 0.0)
                 }
 
                 if isSearchingMode {
@@ -447,9 +447,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 header.delegate = self
 
                 if !isSearchingMode, headerMenuTransferView, isHeaderMenuTransferViewEnabled() != nil {
-                    header.setViewTransfer(isHidden: false)
+                    header.setViewTransfer(isHidden: false, text: nil, progress: nil)
                 } else {
-                    header.setViewTransfer(isHidden: true)
+                    header.setViewTransfer(isHidden: true, text: "", progress: 0.0)
                 }
 
                 header.setRichWorkspaceHeight(heightHeaderRichWorkspace)
