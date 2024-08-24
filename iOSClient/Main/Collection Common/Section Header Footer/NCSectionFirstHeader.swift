@@ -31,7 +31,7 @@ protocol NCSectionFirstHeaderDelegate: AnyObject {
 
 class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegate {
     @IBOutlet weak var buttonTransfer: UIButton!
-    @IBOutlet weak var imageButtonTransfer: UIImageView!
+    @IBOutlet weak var imageTransfer: UIImageView!
     @IBOutlet weak var labelTransfer: UILabel!
     @IBOutlet weak var progressTransfer: UIProgressView!
     @IBOutlet weak var transferSeparatorBottom: UIView!
@@ -77,7 +77,8 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
         labelSection.text = ""
         viewSectionHeightConstraint.constant = 0
 
-        imageButtonTransfer.tintColor = .label
+        imageTransfer.tintColor = .label
+        imageTransfer.image = NCUtility().loadImage(named: "icloud.and.arrow.up")
 
         progressTransfer.progress = 0
         progressTransfer.tintColor = NCBrandColor.shared.customer
@@ -130,7 +131,7 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
 
     // MARK: - Transfer
 
-    func setViewTransfer(isHidden: Bool, stopButton: Bool? = nil, progress: Float? = nil) {
+    func setViewTransfer(isHidden: Bool, text: String? = nil, progress: Float = 0.0) {
         viewTransfer.isHidden = isHidden
 
         if isHidden {
@@ -138,18 +139,8 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
             progressTransfer.progress = 0
         } else {
             viewTransferHeightConstraint.constant = NCGlobal.shared.heightHeaderTransfer
-            if let stopButton {
-                if stopButton {
-                    imageButtonTransfer.image = NCUtility().loadImage(named: "stop.circle")
-                    labelTransfer.text = String(format: NSLocalizedString("_upload_foreground_msg_", comment: ""), NCBrandOptions.shared.brand)
-                } else {
-                    imageButtonTransfer.image = NCUtility().loadImage(named: "icloud.and.arrow.up")
-                    labelTransfer.text = NSLocalizedString("_upload_background_msg_", comment: "")
-                }
-            }
-            if let progress {
-                progressTransfer.progress = progress
-            }
+            labelTransfer.text = text
+            progressTransfer.progress = progress
         }
     }
 
@@ -166,10 +157,6 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
     }
 
     // MARK: - Action
-
-    @IBAction func touchUpTransfer(_ sender: Any) {
-       delegate?.tapButtonTransfer(sender)
-    }
 
     @objc func touchUpInsideViewRichWorkspace(_ sender: Any) {
         delegate?.tapRichWorkspace(sender)

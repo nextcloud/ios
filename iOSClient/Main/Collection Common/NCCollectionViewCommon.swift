@@ -543,12 +543,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if self.headerMenuTransferView, transfer.session.contains("upload") {
             if NCTransferProgress.shared.haveChunkOrE2eEncrypted() {
                 if chunk > 0 || e2eEncrypted {
-                    self.sectionFirstHeader?.setViewTransfer(isHidden: false, stopButton: true, progress: progressNumber.floatValue)
-                    self.sectionFirstHeaderEmptyData?.setViewTransfer(isHidden: false, stopButton: true, progress: progressNumber.floatValue)
+                    let text = String(format: NSLocalizedString("_upload_foreground_msg_", comment: ""), NCBrandOptions.shared.brand)
+                    self.sectionFirstHeader?.setViewTransfer(isHidden: false, text: text, progress: progressNumber.floatValue)
+                    self.sectionFirstHeaderEmptyData?.setViewTransfer(isHidden: false, text: text, progress: progressNumber.floatValue)
                 }
             } else {
-                self.sectionFirstHeader?.setViewTransfer(isHidden: false, stopButton: false, progress: 0.0)
-                self.sectionFirstHeaderEmptyData?.setViewTransfer(isHidden: false, stopButton: false, progress: 0.0)
+                let text = NSLocalizedString("_upload_background_msg_", comment: "")
+                self.sectionFirstHeader?.setViewTransfer(isHidden: false, text: text)
+                self.sectionFirstHeaderEmptyData?.setViewTransfer(isHidden: false, text: text)
             }
         // DOWNLOAD
         } else if status == NCGlobal.shared.metadataStatusWaitDownload || status == NCGlobal.shared.metadataStatusDownloading {

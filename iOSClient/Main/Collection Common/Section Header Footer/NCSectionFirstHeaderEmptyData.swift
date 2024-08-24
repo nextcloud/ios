@@ -33,8 +33,7 @@ class NCSectionFirstHeaderEmptyData: UICollectionReusableView {
 
     @IBOutlet weak var viewTransfer: UIView!
     @IBOutlet weak var viewTransferHeightConstraint: NSLayoutConstraint!
-    @IBOutlet weak var buttonTransfer: UIButton!
-    @IBOutlet weak var imageButtonTransfer: UIImageView!
+    @IBOutlet weak var imageTransfer: UIImageView!
     @IBOutlet weak var labelTransfer: UILabel!
     @IBOutlet weak var progressTransfer: UIProgressView!
     @IBOutlet weak var transferSeparatorBottom: UIView!
@@ -60,7 +59,8 @@ class NCSectionFirstHeaderEmptyData: UICollectionReusableView {
         viewTransferHeightConstraint.constant = 0
         viewTransfer.isHidden = true
 
-        imageButtonTransfer.tintColor = .label
+        imageTransfer.tintColor = .label
+        imageTransfer.image = NCUtility().loadImage(named: "icloud.and.arrow.up")
 
         progressTransfer.progress = 0
         progressTransfer.tintColor = NCBrandColor.shared.customer
@@ -74,15 +74,9 @@ class NCSectionFirstHeaderEmptyData: UICollectionReusableView {
         emptyDescription.text = ""
     }
 
-    // MARK: - Action
-
-    @IBAction func touchUpTransfer(_ sender: Any) {
-       delegate?.tapButtonTransfer(sender)
-    }
-
     // MARK: - Transfer
 
-    func setViewTransfer(isHidden: Bool, stopButton: Bool? = nil, progress: Float? = nil) {
+    func setViewTransfer(isHidden: Bool, text: String? = nil, progress: Float? = nil) {
         viewTransfer.isHidden = isHidden
 
         if isHidden {
@@ -90,15 +84,7 @@ class NCSectionFirstHeaderEmptyData: UICollectionReusableView {
             progressTransfer.progress = 0
         } else {
             viewTransferHeightConstraint.constant = NCGlobal.shared.heightHeaderTransfer
-            if let stopButton {
-                if stopButton {
-                    imageButtonTransfer.image = NCUtility().loadImage(named: "stop.circle")
-                    labelTransfer.text = String(format: NSLocalizedString("_upload_foreground_msg_", comment: ""), NCBrandOptions.shared.brand)
-                } else {
-                    imageButtonTransfer.image = NCUtility().loadImage(named: "icloud.and.arrow.up")
-                    labelTransfer.text = NSLocalizedString("_upload_background_msg_", comment: "")
-                }
-            }
+            labelTransfer.text = text
             if let progress {
                 progressTransfer.progress = progress
             }
