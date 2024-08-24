@@ -51,7 +51,7 @@ extension NCNetworking {
             if resultsMetadata.error == .success {
                 NCManageDatabase.shared.setMetadataLivePhotoByServer(account: metadata.account, ocId: metadata.ocId, livePhotoFile: livePhotoFile)
             }
-            
+
             /// METADATA 1
             let serverUrlfileNamePath1 = metadata1.urlBase + metadata1.path + metadata1.fileName
             livePhotoFile = metadata.fileId
