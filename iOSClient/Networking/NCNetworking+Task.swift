@@ -28,6 +28,9 @@ import Alamofire
 import RealmSwift
 
 extension NCNetworking {
+
+    // MARK: -
+
     func cancelAllTask() {
         cancelAllQueue()
         cancelAllDataTask()
@@ -48,6 +51,8 @@ extension NCNetworking {
         cancelAllDownloadTask()
         cancelAllUploadTask()
     }
+
+    // MARK: -
 
     func cancelTask(metadata: tableMetadata) {
         utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
@@ -109,6 +114,126 @@ extension NCNetworking {
             }
         }
     }
+
+    // MARK: -
+
+    func cancelDownloadTasks(metadata: tableMetadata? = nil) {
+        NextcloudKit.shared.nkCommonInstance.nksessions.forEach { session in
+            session.sessionData.session.getTasksWithCompletionHandler { _, _, downloadTasks in
+                downloadTasks.forEach { task in
+                    if metadata == nil || (task.taskIdentifier == metadata?.sessionTaskIdentifier) {
+                        task.cancel()
+                    }
+                }
+            }
+        }
+
+        if let metadata {
+            NCManageDatabase.shared.clearMetadataSession(metadata: metadata)
+        } else if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND session == %@",
+                                                                                                   NCGlobal.shared.metadataStatusWaitDownload,
+                                                                                                   NCGlobal.shared.metadataStatusDownloading,
+                                                                                                   NCGlobal.shared.metadataStatusDownloadError,
+                                                                                                   NCNetworking.shared.sessionDownload)) {
+            NCManageDatabase.shared.clearMetadataSession(metadatas: results)
+        }
+    }
+
+    func cancelDownloadBackgroundTask(metadata: tableMetadata? = nil) {
+        NextcloudKit.shared.nkCommonInstance.nksessions.forEach { session in
+            Task {
+                let tasksBackground = await session.sessionDownloadBackground.tasks
+
+                for task in tasksBackground.2 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
+                    if metadata == nil || (task.taskIdentifier == metadata?.sessionTaskIdentifier) {
+                        task.cancel()
+                    }
+                }
+
+                if let metadata {
+                    NCManageDatabase.shared.clearMetadataSession(metadata: metadata)
+                } else if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND session == %@",
+                                                                                                           NCGlobal.shared.metadataStatusWaitDownload,
+                                                                                                           NCGlobal.shared.metadataStatusDownloading,
+                                                                                                           NCGlobal.shared.metadataStatusDownloadError,
+                                                                                                           NCNetworking.shared.sessionDownloadBackground)) {
+                    NCManageDatabase.shared.clearMetadataSession(metadatas: results)
+                }
+            }
+        }
+    }
+
+    // MARK: -
+
+    func cancelUploadTasks(metadata: tableMetadata? = nil) {
+        NextcloudKit.shared.nkCommonInstance.nksessions.forEach { nkSession in
+            nkSession.sessionData.session.getTasksWithCompletionHandler { _, uploadTasks, _ in
+                uploadTasks.forEach { task in
+                    if metadata == nil || (metadata?.account == nkSession.account && metadata?.sessionTaskIdentifier == task.taskIdentifier) {
+                        task.cancel()
+                    }
+                }
+            }
+        }
+
+        if let metadata {
+            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+        } else if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND session == %@",
+                                                                                                   NCGlobal.shared.metadataStatusWaitUpload,
+                                                                                                   NCGlobal.shared.metadataStatusUploading,
+                                                                                                   NCGlobal.shared.metadataStatusUploadError,
+                                                                                                   NCNetworking.shared.sessionUpload)) {
+            NCManageDatabase.shared.deleteMetadata(results: results)
+        }
+    }
+
+    func cancelUploadBackgroundTask(metadata: tableMetadata? = nil) {
+        NextcloudKit.shared.nkCommonInstance.nksessions.forEach { nkSession in
+            Task {
+                let tasksBackground = await nkSession.sessionUploadBackground.tasks
+                for task in tasksBackground.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
+                    if metadata == nil || (metadata?.account == nkSession.account &&
+                                           metadata?.session == NCNetworking.shared.sessionUploadBackground &&
+                                           metadata?.sessionTaskIdentifier == task.taskIdentifier) {
+                        task.cancel()
+                    }
+                }
+
+                let tasksBackgroundWWan = await nkSession.sessionUploadBackgroundWWan.tasks
+                for task in tasksBackgroundWWan.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
+                    if metadata == nil || (metadata?.account == nkSession.account &&
+                                           metadata?.session == NCNetworking.shared.sessionUploadBackgroundWWan &&
+                                           metadata?.sessionTaskIdentifier == task.taskIdentifier) {
+                        task.cancel()
+                    }
+                }
+
+                let tasksBackgroundExt = await nkSession.sessionUploadBackgroundExt.tasks
+                for task in tasksBackgroundExt.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
+                    if metadata == nil || (metadata?.account == nkSession.account &&
+                                           metadata?.session == NCNetworking.shared.sessionUploadBackgroundExt &&
+                                           metadata?.sessionTaskIdentifier == task.taskIdentifier) {
+                        task.cancel()
+                    }
+                }
+
+                if let metadata {
+                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                } else if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND (session == %@ || session == %@ || session == %@)",
+                                                                                                           NCGlobal.shared.metadataStatusWaitUpload,
+                                                                                                           NCGlobal.shared.metadataStatusUploading,
+                                                                                                           NCGlobal.shared.metadataStatusUploadError,
+                                                                                                           NCNetworking.shared.sessionUploadBackground,
+                                                                                                           NCNetworking.shared.sessionUploadBackgroundWWan,
+                                                                                                           NCNetworking.shared.sessionUploadBackgroundExt
+                                                                                                          )) {
+                    NCManageDatabase.shared.deleteMetadata(results: results)
+                }
+            }
+        }
+    }
+
+    // MARK: - Zombie
 
     func verifyZombie() async {
         var metadatas: [tableMetadata] = []

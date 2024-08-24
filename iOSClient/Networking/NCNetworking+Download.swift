@@ -295,52 +295,6 @@ extension NCNetworking {
         downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: user, fileName: fileName, fileNameLocalPath: fileNameLocalPath, account: account, cell: cell, view: view))
     }
 #endif
-
-    func cancelDownloadTasks(metadata: tableMetadata? = nil) {
-        NextcloudKit.shared.nkCommonInstance.nksessions.forEach { session in
-            session.sessionData.session.getTasksWithCompletionHandler { _, _, downloadTasks in
-                downloadTasks.forEach { task in
-                    if metadata == nil || (task.taskIdentifier == metadata?.sessionTaskIdentifier) {
-                        task.cancel()
-                    }
-                }
-            }
-        }
-
-        if let metadata {
-            NCManageDatabase.shared.clearMetadataSession(metadata: metadata)
-        } else if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND session == %@",
-                                                                                                   NCGlobal.shared.metadataStatusWaitDownload,
-                                                                                                   NCGlobal.shared.metadataStatusDownloading,
-                                                                                                   NCGlobal.shared.metadataStatusDownloadError,
-                                                                                                   NCNetworking.shared.sessionDownload)) {
-            NCManageDatabase.shared.clearMetadataSession(metadatas: results)
-        }
-    }
-
-    func cancelDownloadBackgroundTask(metadata: tableMetadata? = nil) {
-        NextcloudKit.shared.nkCommonInstance.nksessions.forEach { session in
-            Task {
-                let tasksBackground = await session.sessionDownloadBackground.tasks
-
-                for task in tasksBackground.2 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
-                    if metadata == nil || (task.taskIdentifier == metadata?.sessionTaskIdentifier) {
-                        task.cancel()
-                    }
-                }
-
-                if let metadata {
-                    NCManageDatabase.shared.clearMetadataSession(metadata: metadata)
-                } else if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND session == %@",
-                                                                                                           NCGlobal.shared.metadataStatusWaitDownload,
-                                                                                                           NCGlobal.shared.metadataStatusDownloading,
-                                                                                                           NCGlobal.shared.metadataStatusDownloadError,
-                                                                                                           NCNetworking.shared.sessionDownloadBackground)) {
-                    NCManageDatabase.shared.clearMetadataSession(metadatas: results)
-                }
-            }
-        }
-    }
 }
 
 class NCOperationDownload: ConcurrentOperation {
