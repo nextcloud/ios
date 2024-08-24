@@ -39,6 +39,7 @@ class NCNetworkingProcess: NSObject {
     func startTimer(scene: UIScene) {
         self.timerProcess?.invalidate()
         self.timerProcess = Timer.scheduledTimer(withTimeInterval: 2, repeats: true, block: { _ in
+            guard !self.pauseProcess else { return }
             guard let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status != %d", NCGlobal.shared.metadataStatusNormal)) else { return }
 
             if results.isEmpty {
