@@ -139,7 +139,7 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
             progressTransfer.progress = 0
         } else {
             viewTransferHeightConstraint.constant = NCGlobal.shared.heightHeaderTransfer
-            if NCTransferProgress.shared.haveChunkOrE2eEncrypted() {
+            if NCTransferProgress.shared.haveUploadInForeground() {
                 labelTransfer.text = String(format: NSLocalizedString("_upload_foreground_msg_", comment: ""), NCBrandOptions.shared.brand)
                 if let progress {
                     progressTransfer.progress = progress

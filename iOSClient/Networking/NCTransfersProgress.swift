@@ -50,7 +50,7 @@ public class NCTransferProgress: NSObject {
         }
     }
     private var transfers = ThreadSafeArray<Transfer>()
-    private var lastOcIdTransferChunkOrE2eEncrypted: String = ""
+    private var lastOcIdTransferInForeground: String = ""
 
     override private init() {}
 
@@ -59,7 +59,7 @@ public class NCTransferProgress: NSObject {
         remove(ocIdTransfer: transfer.ocIdTransfer)
         transfers.append(transfer)
         if transfer.chunk > 0 || transfer.e2eEncrypted {
-            lastOcIdTransferChunkOrE2eEncrypted = transfer.ocIdTransfer
+            lastOcIdTransferInForeground = transfer.ocIdTransfer
         }
         return transfer
     }
@@ -87,14 +87,15 @@ public class NCTransferProgress: NSObject {
         return transfers
     }
 
-    func getLastTransferChunkOrE2eEncrypted() -> Transfer? {
-        if !lastOcIdTransferChunkOrE2eEncrypted.isEmpty {
-            return get(ocIdTransfer: lastOcIdTransferChunkOrE2eEncrypted)
+    func getLastTransferProgressInForeground() -> Float? {
+        if !lastOcIdTransferInForeground.isEmpty {
+            let transfer = get(ocIdTransfer: lastOcIdTransferInForeground)
+            return transfer?.progressNumber.floatValue
         }
         return nil
     }
 
-    func haveChunkOrE2eEncrypted() -> Bool {
+    func haveUploadInForeground() -> Bool {
         var result: Bool = false
         transfers.forEach { transfer in
             if transfer.chunk > 0 || transfer.e2eEncrypted {
