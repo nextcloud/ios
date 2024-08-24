@@ -38,6 +38,8 @@ extension NCNetworking {
         let metadata = tableMetadata.init(value: metadata)
         var numChunks: Int = 0
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload file \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier) with size \(metadata.size) [CHUNK \(metadata.chunk), E2EE \(metadata.isDirectoryE2EE)]")
+        let transfer = NCTransferProgress.Transfer(ocId: metadata.ocId, ocIdTransfer: metadata.ocIdTransfer, session: metadata.session, chunk: metadata.chunk, e2eEncrypted: metadata.e2eEncrypted, progressNumber: 0, totalBytes: 0, totalBytesExpected: 0)
+        NCTransferProgress.shared.append(transfer)
 
         if metadata.isDirectoryE2EE {
 #if !EXTENSION_FILE_PROVIDER_EXTENSION && !EXTENSION_WIDGET

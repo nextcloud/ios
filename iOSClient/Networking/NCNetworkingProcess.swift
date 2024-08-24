@@ -152,15 +152,10 @@ class NCNetworkingProcess: NSObject {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] PROCESS (UPLOAD) find \(metadatasWaitUpload.count) items")
             }
             for metadata in metadatasWaitUpload where counterUploading < maxConcurrentOperationUpload {
-                
-                /*
-                 // Is already in upload background? skipped
-                 let fileNameLocalPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
-                 if filesNameLocalPath.contains(fileNameLocalPath) {
-                     NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Process auto upload skipped file: \(metadata.serverUrl)/\(metadata.fileNameView), because is already in session.")
-                     continue
-                 }
-                 */
+                if NCTransferProgress.shared.get(ocIdTransfer: metadata.ocIdTransfer) != nil {
+                    NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Process auto upload skipped file: \(metadata.serverUrl)/\(metadata.fileNameView), because is already in session.")
+                    continue
+                }
 
                 // Session Extension ? skipped
                 if metadata.session == NCNetworking.shared.sessionUploadBackgroundExt {
