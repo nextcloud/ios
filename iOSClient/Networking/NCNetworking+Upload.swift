@@ -171,7 +171,6 @@ extension NCNetworking {
                          progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> Void = { _, _, _ in },
                          completion: @escaping (_ account: String, _ file: NKFile?, _ afError: AFError?, _ error: NKError) -> Void) {
         let directory = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId)
-        let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
         let chunkFolder = NCManageDatabase.shared.getChunkFolder(account: metadata.account, ocId: metadata.ocId)
         let filesChunk = NCManageDatabase.shared.getChunks(account: metadata.account, ocId: metadata.ocId)
         var chunkSize = NCGlobal.shared.chunkSizeMBCellular
@@ -195,8 +194,9 @@ extension NCNetworking {
                                                                    "serverUrl": metadata.serverUrl,
                                                                    "account": metadata.account,
                                                                    "fileName": metadata.fileName,
-                                                                   "sessionSelector": metadata.sessionSelector])
-        } requestHandler: { request in
+                                                                   "sessionSelector": metadata.sessionSelector],
+                                                        second: 0.2)
+        } requestHandler: { _ in
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                        status: NCGlobal.shared.metadataStatusUploading)
         } taskHandler: { task in
