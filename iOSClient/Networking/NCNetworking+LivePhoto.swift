@@ -43,27 +43,30 @@ extension NCNetworking {
         if metadata1.status != NCGlobal.shared.metadataStatusNormal { return }
 
         Task {
+
+            /// METADATA
             let serverUrlfileNamePath = metadata.urlBase + metadata.path + metadata.fileName
             var livePhotoFile = metadata1.fileId
-            let results = await setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: livePhotoFile, account: metadata.account)
-            if results.error == .success {
+            let resultsMetadata = await setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: livePhotoFile, account: metadata.account)
+            if resultsMetadata.error == .success {
                 NCManageDatabase.shared.setMetadataLivePhotoByServer(account: metadata.account, ocId: metadata.ocId, livePhotoFile: livePhotoFile)
-            } else {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Uplod set LivePhoto with error \(results.error.errorCode)")
             }
-
+            
+            /// METADATA 1
             let serverUrlfileNamePath1 = metadata1.urlBase + metadata1.path + metadata1.fileName
             livePhotoFile = metadata.fileId
-            let results1 = await setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath1, livePhotoFile: livePhotoFile, account: metadata1.account)
-            if results1.error == .success {
+            let resultsMetadata1 = await setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath1, livePhotoFile: livePhotoFile, account: metadata1.account)
+            if resultsMetadata1.error == .success {
                 NCManageDatabase.shared.setMetadataLivePhotoByServer(account: metadata1.account, ocId: metadata1.ocId, livePhotoFile: livePhotoFile)
-            } else {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Upload set LivePhoto with error \(results.error.errorCode)")
             }
-            if results.error == .success, results1.error == .success {
+
+            if resultsMetadata.error == .success, resultsMetadata1.error == .success {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload set LivePhoto for files " + (metadata.fileName as NSString).deletingPathExtension)
 
+            } else {
+                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Upload set LivePhoto with error \(resultsMetadata.error.errorCode) - \(resultsMetadata1.error.errorCode)")
             }
+
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedLivePhoto,
                                                         object: nil,
                                                         userInfo: aUserInfo)
