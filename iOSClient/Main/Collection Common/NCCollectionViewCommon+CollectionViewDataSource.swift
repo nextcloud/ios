@@ -303,24 +303,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.setButtonMore(image: NCImageCache.shared.getImageButtonMore())
         }
 
-        // Write status on Label Info
-        switch metadata.status {
-        case NCGlobal.shared.metadataStatusWaitDownload:
-            cell.fileInfoLabel?.text = utilityFileSystem.transformedSize(metadata.size)
-            cell.fileSubinfoLabel?.text = infoLabelsSeparator + NSLocalizedString("_status_wait_download_", comment: "")
-        case NCGlobal.shared.metadataStatusDownloading:
-            cell.fileInfoLabel?.text = utilityFileSystem.transformedSize(metadata.size)
-            cell.fileSubinfoLabel?.text = infoLabelsSeparator + "↓ …"
-        case NCGlobal.shared.metadataStatusUploadError:
-            if metadata.sessionError.isEmpty {
-                cell.fileInfoLabel?.text = NSLocalizedString("_status_wait_upload_", comment: "")
-            } else {
-                cell.fileInfoLabel?.text = NSLocalizedString("_status_wait_upload_", comment: "") + " " + metadata.sessionError
-            }
-        default:
-            break
-        }
-
         // Live Photo
         if metadata.isLivePhoto {
             cell.fileStatusImage?.image = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor2])
