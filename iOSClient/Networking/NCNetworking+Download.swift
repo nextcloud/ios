@@ -306,6 +306,7 @@ extension NCNetworking {
                 }
             }
         }
+
         if let metadata {
             NCManageDatabase.shared.clearMetadataSession(metadata: metadata)
         } else if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND session == %@",
@@ -321,11 +322,13 @@ extension NCNetworking {
         NextcloudKit.shared.nkCommonInstance.nksessions.forEach { session in
             Task {
                 let tasksBackground = await session.sessionDownloadBackground.tasks
+
                 for task in tasksBackground.2 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
                     if metadata == nil || (task.taskIdentifier == metadata?.sessionTaskIdentifier) {
                         task.cancel()
                     }
                 }
+
                 if let metadata {
                     NCManageDatabase.shared.clearMetadataSession(metadata: metadata)
                 } else if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND session == %@",

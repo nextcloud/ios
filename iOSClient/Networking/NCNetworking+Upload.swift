@@ -488,6 +488,7 @@ extension NCNetworking {
                 }
             }
         }
+
         if let metadata {
             NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
         } else if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND session == %@",
@@ -502,7 +503,6 @@ extension NCNetworking {
     func cancelUploadBackgroundTask(metadata: tableMetadata? = nil) {
         NextcloudKit.shared.nkCommonInstance.nksessions.forEach { nkSession in
             Task {
-
                 let tasksBackground = await nkSession.sessionUploadBackground.tasks
                 for task in tasksBackground.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
                     if metadata == nil || (metadata?.account == nkSession.account &&
@@ -529,6 +529,7 @@ extension NCNetworking {
                         task.cancel()
                     }
                 }
+
                 if let metadata {
                     NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 } else if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND (session == %@ || session == %@ || session == %@)",
