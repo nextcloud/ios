@@ -55,12 +55,8 @@ class NCNetworkingProcess {
                         guard let self else { return }
 
                         self.lockQueue.sync {
-                            guard !self.hasRun else {
-                                print("DEBUG: hasRun return")
-                                return
-                            }
+                            guard !self.hasRun else { return }
                             self.hasRun = true
-                            print("DEBUG: hasRun ok")
 
                             Task { [weak self] in
                                 guard let self else { return }
@@ -83,12 +79,8 @@ class NCNetworkingProcess {
         self.timerProcess = Timer.scheduledTimer(withTimeInterval: 2, repeats: true, block: { _ in
 
             self.lockQueue.sync {
-                guard !self.hasRun else {
-                    print("DEBUG: hasRun return")
-                    return
-                }
+                guard !self.hasRun else { return }
                 self.hasRun = true
-                print("DEBUG: hasRun ok")
 
                 guard let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status != %d", NCGlobal.shared.metadataStatusNormal)) else { return }
 
