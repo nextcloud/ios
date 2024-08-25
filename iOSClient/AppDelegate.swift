@@ -54,10 +54,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let utilityFileSystem = NCUtilityFileSystem()
         let utility = NCUtility()
         var levelLog = 0
+        let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionApp())
 
         NCSettingsBundleHelper.checkAndExecuteSettings(delay: 0)
-
-        let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionApp())
 
         UserDefaults.standard.register(defaults: ["UserAgent": userAgent])
         if !NCKeychain().disableCrashservice, !NCBrandOptions.shared.disable_crash_service {
@@ -210,7 +209,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) disabled auto upload")
             }
 
-            let results = await NCNetworkingProcess.shared.start(scene: nil)
+            let results = await NCNetworkingProcess.shared.start()
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) networking process with download: \(results.counterDownloading) upload: \(results.counterUploading)")
 
             if taskText == "ProcessingTask",
