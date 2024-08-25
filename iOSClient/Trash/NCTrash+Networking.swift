@@ -117,6 +117,7 @@ class NCOperationDownloadThumbnailTrash: ConcurrentOperation {
             if error == .success, let imagePreview = imagePreview {
                 DispatchQueue.main.async {
                     if self.fileId == self.cell?.objectId, let imageView = self.cell?.imageItem {
+                        self.cell?.imageItem?.contentMode = .scaleAspectFill
                         UIView.transition(with: imageView,
                                           duration: 0.75,
                                           options: .transitionCrossDissolve,

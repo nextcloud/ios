@@ -70,6 +70,7 @@ extension NCTrash: UICollectionViewDataSource {
             gridCell.delegate = self
             cell = gridCell
         }
+        cell.imageItem.contentMode = .scaleAspectFit
 
         if resultTableTrash.iconName.isEmpty {
             image = NCImageCache.shared.getImageFile()
@@ -79,6 +80,7 @@ extension NCTrash: UICollectionViewDataSource {
 
         if FileManager().fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageIconOcId(resultTableTrash.fileId, etag: resultTableTrash.fileName)) {
             image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(resultTableTrash.fileId, etag: resultTableTrash.fileName))
+            cell.imageItem.contentMode = .scaleAspectFill
         } else {
             if resultTableTrash.hasPreview && !utilityFileSystem.fileProviderStoragePreviewIconExists(resultTableTrash.fileId, etag: resultTableTrash.fileName) {
                 if NCNetworking.shared.downloadThumbnailTrashQueue.operations.filter({ ($0 as? NCOperationDownloadThumbnailTrash)?.fileId == resultTableTrash.fileId }).isEmpty {
