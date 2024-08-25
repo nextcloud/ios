@@ -77,9 +77,11 @@ class NCNetworkingProcess {
     private func startTimer() {
         self.timerProcess?.invalidate()
         self.timerProcess = Timer.scheduledTimer(withTimeInterval: 2, repeats: true, block: { _ in
+
             self.lockQueue.sync {
                 guard !self.hasRun else { return }
                 self.hasRun = true
+
                 guard let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status != %d", NCGlobal.shared.metadataStatusNormal)) else { return }
 
                 if results.isEmpty {
