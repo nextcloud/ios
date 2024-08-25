@@ -32,6 +32,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
     private let appDelegate = UIApplication.shared.delegate as? AppDelegate
     private var privacyProtectionWindow: UIWindow?
+    private var isFirstScene: Bool = true
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene),
@@ -79,6 +80,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 }
             }
         }
+
+        if isFirstScene {
+            isFirstScene = false
+            NCNetworkingProcess.shared.observeTableMetadata()
+        }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
@@ -117,11 +123,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let session = SceneManager.shared.getSession(scene: scene)
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Scene did become active")
 
-        NCSettingsBundleHelper.setVersionAndBuildNumber()
-        NCSettingsBundleHelper.checkAndExecuteSettings(delay: 0.5)
-
-        NCNetworkingProcess.shared.startTimer(scene: scene)
-
         hidePrivacyProtectionWindow()
 
         NCService().startRequestServicesServer(account: session.account)
@@ -136,9 +137,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let session = SceneManager.shared.getSession(scene: scene)
         guard !session.account.isEmpty else { return }
 
-        // STOP TIMER UPLOAD PROCESS
-        NCNetworkingProcess.shared.stopTimer()
-
         if NCKeychain().privacyScreenEnabled {
             if SwiftEntryKit.isCurrentlyDisplaying {
                 SwiftEntryKit.dismiss {
@@ -148,9 +146,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 showPrivacyProtectionWindow()
             }
         }
-
-        // Reload Widget
-        // WidgetCenter.shared.reloadAllTimelines()
 
         // Clear older files
         let days = NCKeychain().cleanUpDay
