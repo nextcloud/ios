@@ -39,9 +39,10 @@ class NCNetworkingProcess {
 
     private init() {
         self.startTimer()
+        self.startObserveTableMetadata()
     }
 
-    func observeTableMetadata() {
+    private func startObserveTableMetadata() {
         do {
             let realm = try Realm()
             let results = realm.objects(tableMetadata.self).filter("status IN %d", [global.metadataStatusWaitDownload, global.metadataStatusWaitUpload, global.metadataStatusDownloadError, global.metadataStatusUploadError])
@@ -113,8 +114,24 @@ class NCNetworkingProcess {
         })
     }
 
+    func refreshProcessingTask() async -> (counterDownloading: Int, counterUploading: Int) {
+        await withCheckedContinuation { continuation in
+            self.lockQueue.sync {
+                guard !self.hasRun else { return }
+                self.hasRun = true
+
+                Task { [weak self] in
+                    guard let self else { return }
+                    let result = await self.start()
+                    self.hasRun = false
+                    continuation.resume(returning: result)
+                }
+            }
+        }
+    }
+
     @discardableResult
-    func start() async -> (counterDownloading: Int, counterUploading: Int) {
+    private func start() async -> (counterDownloading: Int, counterUploading: Int) {
         let applicationState = await checkApplicationState()
         let maxConcurrentOperationDownload = NCBrandOptions.shared.maxConcurrentOperationDownload
         var maxConcurrentOperationUpload = NCBrandOptions.shared.maxConcurrentOperationUpload

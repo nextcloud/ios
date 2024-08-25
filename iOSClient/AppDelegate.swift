@@ -73,9 +73,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NextcloudKit.shared.setup(delegate: NCNetworking.shared)
         NextcloudKit.shared.nkCommonInstance.pathLog = utilityFileSystem.directoryGroup
 
-        /// Activation singleton for receive the NSNotification
-        _ = NCActionCenter.shared
-
         if NCBrandOptions.shared.disable_log {
             utilityFileSystem.removeFile(atPath: NextcloudKit.shared.nkCommonInstance.filenamePathLog)
             utilityFileSystem.removeFile(atPath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! + "/" + NextcloudKit.shared.nkCommonInstance.filenameLog)
@@ -112,6 +109,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         DispatchQueue.global().async {
             NCImageCache.shared.createMediaCache()
         }
+
+        /// Activation singleton
+        _ = NCActionCenter.shared
+        _ = NCNetworkingProcess.shared
 
         return true
     }
@@ -209,7 +210,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) disabled auto upload")
             }
 
-            let results = await NCNetworkingProcess.shared.start()
+            let results = await NCNetworkingProcess.shared.refreshProcessingTask()
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) networking process with download: \(results.counterDownloading) upload: \(results.counterUploading)")
 
             if taskText == "ProcessingTask",

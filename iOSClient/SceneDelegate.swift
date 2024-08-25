@@ -80,11 +80,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 }
             }
         }
-
-        if isFirstScene {
-            isFirstScene = false
-            NCNetworkingProcess.shared.observeTableMetadata()
-        }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
