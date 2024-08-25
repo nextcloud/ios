@@ -168,23 +168,24 @@ class NCNetworkingProcess {
         for sessionSelector in sessionUploadSelectors where counterUploading < maxConcurrentOperationUpload {
             let limitUpload = maxConcurrentOperationUpload - counterUploading
             let metadatasWaitUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "sessionSelector == %@ AND status == %d", sessionSelector, global.metadataStatusWaitUpload), numItems: limitUpload, sorted: "sessionDate", ascending: true)
+
             if !metadatasWaitUpload.isEmpty {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] PROCESS (UPLOAD) find \(metadatasWaitUpload.count) items")
             }
+
             for metadata in metadatasWaitUpload where counterUploading < maxConcurrentOperationUpload {
+
                 if NCTransferProgress.shared.get(ocIdTransfer: metadata.ocIdTransfer) != nil {
                     NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Process auto upload skipped file: \(metadata.serverUrl)/\(metadata.fileNameView), because is already in session.")
                     continue
                 }
 
-                // Session Extension ? skipped
-                if metadata.session == NCNetworking.shared.sessionUploadBackgroundExt {
-                    continue
-                }
                 let metadatas = await NCCameraRoll().extractCameraRoll(from: metadata)
+
                 if metadatas.isEmpty {
                     NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 }
+
                 for metadata in metadatas where counterUploading < maxConcurrentOperationUpload {
                     /// isE2EE
                     let isInDirectoryE2EE = metadata.isDirectoryE2EE
