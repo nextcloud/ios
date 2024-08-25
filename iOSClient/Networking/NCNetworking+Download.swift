@@ -63,7 +63,7 @@ extension NCNetworking {
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
         let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
-        if metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusUploading {
+        if metadata.status == global.metadataStatusDownloading || metadata.status == global.metadataStatusUploading {
             return completion(nil, NKError())
         }
 
@@ -73,14 +73,14 @@ extension NCNetworking {
 
         NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account, options: options, requestHandler: { request in
             self.database.setMetadataSession(ocId: metadata.ocId,
-                                             status: NCGlobal.shared.metadataStatusDownloading)
+                                             status: self.global.metadataStatusDownloading)
             requestHandler(request)
         }, taskHandler: { task in
             downloadTask = task
             self.database.setMetadataSession(ocId: metadata.ocId,
-                                             status: NCGlobal.shared.metadataStatusDownloading,
+                                             status: self.global.metadataStatusDownloading,
                                              sessionTaskIdentifier: task.taskIdentifier)
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadStartFile,
+            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterDownloadStartFile,
                                                         object: nil,
                                                         userInfo: ["ocId": metadata.ocId,
                                                                    "ocIdTransfer": metadata.ocIdTransfer,
@@ -89,7 +89,7 @@ extension NCNetworking {
                                                                    "account": metadata.account])
             start()
         }, progressHandler: { progress in
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterProgressTask,
+            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterProgressTask,
                                                         object: nil,
                                                         userInfo: ["account": metadata.account,
                                                                    "ocId": metadata.ocId,
@@ -97,7 +97,7 @@ extension NCNetworking {
                                                                    "session": metadata.session,
                                                                    "fileName": metadata.fileName,
                                                                    "serverUrl": metadata.serverUrl,
-                                                                   "status": NSNumber(value: NCGlobal.shared.metadataStatusDownloading),
+                                                                   "status": NSNumber(value: self.global.metadataStatusDownloading),
                                                                    "progress": NSNumber(value: progress.fractionCompleted),
                                                                    "totalBytes": NSNumber(value: progress.totalUnitCount),
                                                                    "totalBytesExpected": NSNumber(value: progress.completedUnitCount)])
@@ -113,7 +113,7 @@ extension NCNetworking {
                         dateLastModified = NextcloudKit.shared.nkCommonInstance.convertDate(dateString, format: "EEE, dd MMM y HH:mm:ss zzz")
                     }
                     if afError?.isExplicitlyCancelledError ?? false {
-                        error = NKError(errorCode: NCGlobal.shared.errorRequestExplicityCancelled, errorDescription: "error request explicity cancelled")
+                        error = NKError(errorCode: self.global.errorRequestExplicityCancelled, errorDescription: "error request explicity cancelled")
                     }
                     self.downloadComplete(fileName: metadata.fileName, serverUrl: metadata.serverUrl, etag: etag, date: date, dateLastModified: dateLastModified, length: length, task: downloadTask, error: error)
                 }
@@ -135,7 +135,7 @@ extension NCNetworking {
         if let task = nkBackground.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account) {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Download file \(metadata.fileNameView) with task with taskIdentifier \(task.taskIdentifier)")
             database.setMetadataSession(ocId: metadata.ocId,
-                                        status: NCGlobal.shared.metadataStatusDownloading,
+                                        status: self.global.metadataStatusDownloading,
                                         sessionTaskIdentifier: task.taskIdentifier)
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadStartFile,
                                                         object: nil,
@@ -151,8 +151,8 @@ extension NCNetworking {
                                         sessionTaskIdentifier: 0,
                                         sessionError: "",
                                         selector: "",
-                                        status: NCGlobal.shared.metadataStatusNormal)
-            completion(nil, NKError(errorCode: NCGlobal.shared.errorResourceNotFound, errorDescription: "task null"))
+                                        status: self.global.metadataStatusNormal)
+            completion(nil, NKError(errorCode: self.global.errorResourceNotFound, errorDescription: "task null"))
         }
     }
 
@@ -199,9 +199,9 @@ extension NCNetworking {
                                                            session: "",
                                                            sessionTaskIdentifier: 0,
                                                            sessionError: "",
-                                                           status: NCGlobal.shared.metadataStatusNormal,
+                                                           status: self.global.metadataStatusNormal,
                                                            etag: etag)
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile,
+                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterDownloadedFile,
                                                             object: nil,
                                                             userInfo: ["ocId": metadata.ocId,
                                                                        "ocIdTransfer": metadata.ocIdTransfer,
@@ -210,15 +210,15 @@ extension NCNetworking {
                                                                        "account": metadata.account,
                                                                        "selector": metadata.sessionSelector,
                                                                        "error": error])
-            } else if error.errorCode == NSURLErrorCancelled || error.errorCode == NCGlobal.shared.errorRequestExplicityCancelled {
+            } else if error.errorCode == NSURLErrorCancelled || error.errorCode == self.global.errorRequestExplicityCancelled {
                 NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                            session: "",
                                                            sessionTaskIdentifier: 0,
                                                            sessionError: "",
                                                            selector: "",
-                                                           status: NCGlobal.shared.metadataStatusNormal)
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadCancelFile,
+                                                           status: self.global.metadataStatusNormal)
+                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterDownloadCancelFile,
                                                             object: nil,
                                                             userInfo: ["ocId": metadata.ocId,
                                                                        "ocIdTransfer": metadata.ocIdTransfer,
@@ -232,7 +232,7 @@ extension NCNetworking {
                                                  sessionTaskIdentifier: 0,
                                                  sessionError: "",
                                                  selector: "",
-                                                 status: NCGlobal.shared.metadataStatusNormal)
+                                                 status: self.global.metadataStatusNormal)
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile,
                                                             object: nil,
                                                             userInfo: ["ocId": metadata.ocId,
@@ -259,7 +259,7 @@ extension NCNetworking {
 
         DispatchQueue.global(qos: .userInteractive).async {
             if let metadata = self.database.getResultMetadataFromFileName(fileName, serverUrl: serverUrl, sessionTaskIdentifier: task.taskIdentifier) {
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterProgressTask,
+                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterProgressTask,
                                                             object: nil,
                                                             userInfo: ["account": metadata.account,
                                                                        "ocId": metadata.ocId,
@@ -267,7 +267,7 @@ extension NCNetworking {
                                                                        "session": metadata.session,
                                                                        "fileName": metadata.fileName,
                                                                        "serverUrl": metadata.serverUrl,
-                                                                       "status": NSNumber(value: NCGlobal.shared.metadataStatusDownloading),
+                                                                       "status": NSNumber(value: self.global.metadataStatusDownloading),
                                                                        "progress": NSNumber(value: progress),
                                                                        "totalBytes": NSNumber(value: totalBytes),
                                                                        "totalBytesExpected": NSNumber(value: totalBytesExpected)])

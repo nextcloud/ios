@@ -67,6 +67,7 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
     let database = NCManageDatabase.shared
+    let global = NCGlobal.shared
     var requestsUnifiedSearch: [DataRequest] = []
     var lastReachability: Bool = true
     var networkReachability: NKCommon.TypeReachability?
@@ -98,7 +99,7 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
             getActiveAccountCertificate(account: account)
         }
 
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { notification in
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: global.notificationCenterChangeUser), object: nil, queue: nil) { notification in
             if let userInfo = notification.userInfo {
                 if let account = userInfo["account"] as? String {
                     self.getActiveAccountCertificate(account: account)
@@ -120,8 +121,8 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
             lastReachability = true
         } else {
             if lastReachability {
-                let error = NKError(errorCode: NCGlobal.shared.errorNetworkNotAvailable, errorDescription: "")
-                NCContentPresenter().messageNotification("_network_not_available_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info)
+                let error = NKError(errorCode: global.errorNetworkNotAvailable, errorDescription: "")
+                NCContentPresenter().messageNotification("_network_not_available_", error: error, delay: global.dismissAfterSecond, type: NCContentPresenter.messageType.info)
             }
             lastReachability = false
         }

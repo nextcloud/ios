@@ -57,7 +57,7 @@ extension NCNetworking {
         /// No session found
         if metadata.session.isEmpty {
             self.database.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
+            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
             return
         }
 
@@ -71,7 +71,7 @@ extension NCNetworking {
                 cancelDownloadBackgroundTask(metadata: metadata)
             }
 
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadCancelFile,
+            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterDownloadCancelFile,
                                                         object: nil,
                                                         userInfo: ["ocId": metadata.ocId,
                                                                    "ocIdTransfer": metadata.ocIdTransfer,
@@ -91,7 +91,7 @@ extension NCNetworking {
                 cancelUploadBackgroundTask(metadata: metadata)
             }
 
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadCancelFile,
+            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadCancelFile,
                                                         object: nil,
                                                         userInfo: ["ocId": metadata.ocId,
                                                                    "ocIdTransfer": metadata.ocIdTransfer,
@@ -128,9 +128,9 @@ extension NCNetworking {
         if let metadata {
             self.database.clearMetadataSession(metadata: metadata)
         } else if let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND session == %@",
-                                                                                                   NCGlobal.shared.metadataStatusWaitDownload,
-                                                                                                   NCGlobal.shared.metadataStatusDownloading,
-                                                                                                   NCGlobal.shared.metadataStatusDownloadError,
+                                                                                         self.global.metadataStatusWaitDownload,
+                                                                                         self.global.metadataStatusDownloading,
+                                                                                         self.global.metadataStatusDownloadError,
                                                                                                    sessionDownload)) {
             self.database.clearMetadataSession(metadatas: results)
         }
@@ -150,9 +150,9 @@ extension NCNetworking {
                 if let metadata {
                     self.database.clearMetadataSession(metadata: metadata)
                 } else if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND session == %@",
-                                                                                                           NCGlobal.shared.metadataStatusWaitDownload,
-                                                                                                           NCGlobal.shared.metadataStatusDownloading,
-                                                                                                           NCGlobal.shared.metadataStatusDownloadError,
+                                                                                                           self.global.metadataStatusWaitDownload,
+                                                                                                           self.global.metadataStatusDownloading,
+                                                                                                           self.global.metadataStatusDownloadError,
                                                                                                            sessionDownloadBackground)) {
                     self.database.clearMetadataSession(metadatas: results)
                 }
@@ -176,9 +176,9 @@ extension NCNetworking {
         if let metadata {
             self.database.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
         } else if let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND session == %@",
-                                                                                                   NCGlobal.shared.metadataStatusWaitUpload,
-                                                                                                   NCGlobal.shared.metadataStatusUploading,
-                                                                                                   NCGlobal.shared.metadataStatusUploadError,
+                                                                                         self.global.metadataStatusWaitUpload,
+                                                                                         self.global.metadataStatusUploading,
+                                                                                         self.global.metadataStatusUploadError,
                                                                                                    sessionUpload)) {
             self.database.deleteMetadata(results: results)
         }
@@ -217,9 +217,9 @@ extension NCNetworking {
                 if let metadata {
                     self.database.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 } else if let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND (session == %@ || session == %@ || session == %@)",
-                                                                                                           NCGlobal.shared.metadataStatusWaitUpload,
-                                                                                                           NCGlobal.shared.metadataStatusUploading,
-                                                                                                           NCGlobal.shared.metadataStatusUploadError,
+                                                                                                 self.global.metadataStatusWaitUpload,
+                                                                                                 self.global.metadataStatusUploading,
+                                                                                                 self.global.metadataStatusUploadError,
                                                                                                            sessionUploadBackground,
                                                                                                            sessionUploadBackgroundWWan,
                                                                                                            sessionUploadBackgroundExt
@@ -239,7 +239,7 @@ extension NCNetworking {
         ///
         metadatas = self.database.getMetadatas(predicate: NSPredicate(format: "session == %@ AND status == %d",
                                                                       sessionUpload,
-                                                                      NCGlobal.shared.metadataStatusUploading))
+                                                                      self.global.metadataStatusUploading))
 
         for metadata in metadatas {
             guard let nkSession = NextcloudKit.shared.getSession(account: metadata.account) else {
@@ -260,7 +260,7 @@ extension NCNetworking {
                 if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
                     self.database.setMetadataSession(ocId: metadata.ocId,
                                                      sessionError: "",
-                                                     status: NCGlobal.shared.metadataStatusWaitUpload)
+                                                     status: self.global.metadataStatusWaitUpload)
                 } else {
                     self.database.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 }
@@ -273,7 +273,7 @@ extension NCNetworking {
                                                                       sessionUploadBackground,
                                                                       sessionUploadBackgroundWWan,
                                                                       sessionUploadBackgroundExt,
-                                                                      NCGlobal.shared.metadataStatusUploading))
+                                                                      self.global.metadataStatusUploading))
 
         for metadata in metadatas {
             guard let nkSession = NextcloudKit.shared.getSession(account: metadata.account) else {
@@ -308,7 +308,7 @@ extension NCNetworking {
                 if NCUtilityFileSystem().fileProviderStorageExists(metadata) {
                     self.database.setMetadataSession(ocId: metadata.ocId,
                                                      sessionError: "",
-                                                     status: NCGlobal.shared.metadataStatusWaitUpload)
+                                                     status: self.global.metadataStatusWaitUpload)
                 } else {
                     self.database.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 }
@@ -319,7 +319,7 @@ extension NCNetworking {
         ///
         metadatas = self.database.getMetadatas(predicate: NSPredicate(format: "session == %@ AND status == %d",
                                                                       sessionDownload,
-                                                                      NCGlobal.shared.metadataStatusDownloading))
+                                                                      self.global.metadataStatusDownloading))
 
         for metadata in metadatas {
             guard let nkSession = NextcloudKit.shared.getSession(account: metadata.account) else {
@@ -341,7 +341,7 @@ extension NCNetworking {
                                                  session: "",
                                                  sessionError: "",
                                                  selector: "",
-                                                 status: NCGlobal.shared.metadataStatusNormal)
+                                                 status: self.global.metadataStatusNormal)
             }
         }
 
@@ -349,7 +349,7 @@ extension NCNetworking {
         ///
         metadatas = self.database.getMetadatas(predicate: NSPredicate(format: "session == %@ AND status == %d",
                                                                       sessionDownloadBackground,
-                                                                      NCGlobal.shared.metadataStatusDownloading))
+                                                                      self.global.metadataStatusDownloading))
         for metadata in metadatas {
             guard let nkSession = NextcloudKit.shared.getSession(account: metadata.account) else {
                 self.database.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
@@ -370,7 +370,7 @@ extension NCNetworking {
                                                  session: "",
                                                  sessionError: "",
                                                  selector: "",
-                                                 status: NCGlobal.shared.metadataStatusNormal)
+                                                 status: self.global.metadataStatusNormal)
             }
         }
     }

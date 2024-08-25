@@ -39,7 +39,7 @@ extension NCNetworking {
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
                                              depth: "1",
                                              showHiddenFiles: NCKeychain().showHiddenFiles,
-                                             includeHiddenFiles: NCGlobal.shared.includeHiddenFiles,
+                                             includeHiddenFiles: self.global.includeHiddenFiles,
                                              account: account,
                                              options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
             taskHandler(task)
@@ -67,7 +67,7 @@ extension NCNetworking {
                     }
                 }
 #endif
-                let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal)
+                let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, self.global.metadataStatusNormal)
 
                 if forceReplaceMetadatas {
                     self.database.replaceMetadata(metadatas, predicate: predicate)
@@ -112,7 +112,7 @@ extension NCNetworking {
                                              options: options) { account, files, _, error in
             if error == .success, let file = files?.first {
                 completion(account, true, file, error)
-            } else if error.errorCode == NCGlobal.shared.errorResourceNotFound {
+            } else if error.errorCode == self.global.errorResourceNotFound {
                 completion(account, false, nil, error)
             } else {
                 completion(account, nil, nil, error)
@@ -213,8 +213,8 @@ extension NCNetworking {
         var fileNameFolder = utility.removeForbiddenCharacters(fileName)
 
         if fileName != fileNameFolder {
-            let errorDescription = String(format: NSLocalizedString("_forbidden_characters_", comment: ""), NCGlobal.shared.forbiddenCharacters.joined(separator: " "))
-            let error = NKError(errorCode: NCGlobal.shared.errorConflict, errorDescription: errorDescription)
+            let errorDescription = String(format: NSLocalizedString("_forbidden_characters_", comment: ""), self.global.forbiddenCharacters.joined(separator: " "))
+            let error = NKError(errorCode: self.global.errorConflict, errorDescription: errorDescription)
             return completion(error)
         }
         if !overwrite {
@@ -227,7 +227,7 @@ extension NCNetworking {
 
         NextcloudKit.shared.createFolder(serverUrlFileName: fileNameFolderUrl, account: session.account) { account, _, _, error in
             guard error == .success else {
-                if error.errorCode == NCGlobal.shared.errorMethodNotSupported && overwrite {
+                if error.errorCode == self.global.errorMethodNotSupported && overwrite {
                     completion(NKError())
                 } else {
                     completion(error)
@@ -248,7 +248,7 @@ extension NCNetworking {
                                                    account: account)
                     }
                     if let metadata = self.database.getMetadataFromOcId(metadataFolder?.ocId) {
-                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "withPush": withPush, "sceneIdentifier": sceneIdentifier as Any])
+                        NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterCreateFolder, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "withPush": withPush, "sceneIdentifier": sceneIdentifier as Any])
                     }
                 }
                 completion(error)
@@ -298,11 +298,11 @@ extension NCNetworking {
                 let year = subfolderArray[0]
                 let serverUrlYear = autoUploadPath
                 result = createFolder(fileName: String(year), serverUrl: serverUrlYear)  // Year always present independently of preference value
-                if result && autoUploadSubfolderGranularity >= NCGlobal.shared.subfolderGranularityMonthly {
+                if result && autoUploadSubfolderGranularity >= self.global.subfolderGranularityMonthly {
                     let month = subfolderArray[1]
                     let serverUrlMonth = autoUploadPath + "/" + year
                     result = createFolder(fileName: String(month), serverUrl: serverUrlMonth)
-                    if result && autoUploadSubfolderGranularity == NCGlobal.shared.subfolderGranularityDaily {
+                    if result && autoUploadSubfolderGranularity == self.global.subfolderGranularityDaily {
                         let day = subfolderArray[2]
                         let serverUrlDay = autoUploadPath + "/" + year + "/" + month
                         result = createFolder(fileName: String(day), serverUrl: serverUrlDay)
@@ -381,13 +381,13 @@ extension NCNetworking {
         // verify permission
         let permission = utility.permissionsContainsString(metadata.permissions, permissions: NCPermissions().permissionCanDelete)
         if !metadata.permissions.isEmpty && permission == false {
-            return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_delete_file_")
+            return NKError(errorCode: self.global.errorInternalError, errorDescription: "_no_permission_delete_file_")
         }
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let options = NKRequestOptions(customHeader: customHeader)
         let result = await deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: metadata.account, options: options)
 
-        if result.error == .success || result.error.errorCode == NCGlobal.shared.errorResourceNotFound {
+        if result.error == .success || result.error.errorCode == self.global.errorResourceNotFound {
             do {
                 try FileManager.default.removeItem(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
             } catch { }
@@ -462,12 +462,12 @@ extension NCNetworking {
                                      completion: @escaping (_ error: NKError) -> Void) {
         let permission = utility.permissionsContainsString(metadata.permissions, permissions: NCPermissions().permissionCanRename)
         if !metadata.permissions.isEmpty && !permission {
-            return completion(NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_"))
+            return completion(NKError(errorCode: self.global.errorInternalError, errorDescription: "_no_permission_modify_file_"))
         }
         let fileName = utility.removeForbiddenCharacters(fileNameNew)
         if fileName != fileNameNew {
-            let errorDescription = String(format: NSLocalizedString("_forbidden_characters_", comment: ""), NCGlobal.shared.forbiddenCharacters.joined(separator: " "))
-            let error = NKError(errorCode: NCGlobal.shared.errorConflict, errorDescription: errorDescription)
+            let errorDescription = String(format: NSLocalizedString("_forbidden_characters_", comment: ""), self.global.forbiddenCharacters.joined(separator: " "))
+            let error = NKError(errorCode: self.global.errorConflict, errorDescription: errorDescription)
             return completion(error)
         }
         let fileNameNew = fileName
@@ -501,7 +501,7 @@ extension NCNetworking {
                         self.utilityFileSystem.moveFile(atPath: atPath, toPath: toPath)
                     }
                 }
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRenameFile, userInfo: ["ocId": metadata.ocId, "account": metadata.account, "indexPath": indexPath])
+                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterRenameFile, userInfo: ["ocId": metadata.ocId, "account": metadata.account, "indexPath": indexPath])
             }
             completion(error)
         }
@@ -524,7 +524,7 @@ extension NCNetworking {
     private func moveMetadataPlain(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> NKError {
         let permission = utility.permissionsContainsString(metadata.permissions, permissions: NCPermissions().permissionCanRename)
         if !metadata.permissions.isEmpty && !permission {
-            return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_")
+            return NKError(errorCode: self.global.errorInternalError, errorDescription: "_no_permission_modify_file_")
         }
         let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
         let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
@@ -571,7 +571,7 @@ extension NCNetworking {
     private func copyMetadataPlain(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> NKError {
         let permission = utility.permissionsContainsString(metadata.permissions, permissions: NCPermissions().permissionCanRename)
         if !metadata.permissions.isEmpty && !permission {
-            return NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_")
+            return NKError(errorCode: self.global.errorInternalError, errorDescription: "_no_permission_modify_file_")
         }
         let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
         let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
@@ -608,7 +608,7 @@ extension NCNetworking {
             if error == .success {
                 metadata.favorite = favorite
                 self.database.addMetadata(metadata)
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterFavoriteFile, userInfo: ["ocId": ocId, "serverUrl": metadata.serverUrl])
+                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterFavoriteFile, userInfo: ["ocId": ocId, "serverUrl": metadata.serverUrl])
             }
             completion(error)
         }
@@ -619,15 +619,15 @@ extension NCNetworking {
     func lockUnlockFile(_ metadata: tableMetadata, shoulLock: Bool) {
         NextcloudKit.shared.lockUnlockFile(serverUrlFileName: metadata.serverUrl + "/" + metadata.fileName, shouldLock: shoulLock, account: metadata.account) { _, error in
             // 0: lock was successful; 412: lock did not change, no error, refresh
-            guard error == .success || error.errorCode == NCGlobal.shared.errorPreconditionFailed else {
+            guard error == .success || error.errorCode == self.global.errorPreconditionFailed else {
                 let error = NKError(errorCode: error.errorCode, errorDescription: "_files_lock_error_")
-                NCContentPresenter().messageNotification(metadata.fileName, error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
+                NCContentPresenter().messageNotification(metadata.fileName, error: error, delay: self.global.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
                 return
             }
             self.readFile(serverUrlFileName: metadata.serverUrl + "/" + metadata.fileName, account: metadata.account) { _, metadata, error in
                 guard error == .success, let metadata = metadata else { return }
                 self.database.addMetadata(metadata)
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
+                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
             }
         }
     }

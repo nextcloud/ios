@@ -46,9 +46,9 @@ extension NCNetworking {
             if !add {
                 if self.database.getResultMetadata(predicate: NSPredicate(format: "account == %@ AND sessionSelector == %@ AND (status == %d OR status == %d)",
                                                                           account,
-                                                                          NCGlobal.shared.selectorSynchronizationOffline,
-                                                                          NCGlobal.shared.metadataStatusWaitDownload,
-                                                                          NCGlobal.shared.metadataStatusDownloading)) != nil { return }
+                                                                          self.global.selectorSynchronizationOffline,
+                                                                          self.global.metadataStatusWaitDownload,
+                                                                          self.global.metadataStatusDownloading)) != nil { return }
             }
 
             if error == .success, let files {
@@ -62,7 +62,7 @@ extension NCNetworking {
                 self.database.addMetadatas(metadatasDirectory)
                 self.database.setMetadatasSessionInWaitDownload(metadatas: metadatasSynchronizationOffline,
                                                                 session: self.sessionDownloadBackground,
-                                                                selector: NCGlobal.shared.selectorSynchronizationOffline)
+                                                                selector: self.global.selectorSynchronizationOffline)
                 self.database.setDirectorySynchronizationDate(serverUrl: serverUrl, account: account)
                 let diffDate = Date().timeIntervalSinceReferenceDate - startDate.timeIntervalSinceReferenceDate
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Synchronization \(serverUrl) in \(diffDate)")
@@ -85,7 +85,7 @@ extension NCNetworking {
 
     func isSynchronizable(ocId: String, fileName: String, etag: String) -> Bool {
         if let metadata = self.database.getMetadataFromOcId(ocId),
-           (metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusWaitDownload) {
+           (metadata.status == self.global.metadataStatusDownloading || metadata.status == self.global.metadataStatusWaitDownload) {
             return false
         }
         let localFile = self.database.getResultsTableLocalFile(predicate: NSPredicate(format: "ocId == %@", ocId))?.first

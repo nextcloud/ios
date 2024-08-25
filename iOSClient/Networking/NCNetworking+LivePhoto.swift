@@ -36,11 +36,11 @@ extension NCNetworking {
                                                                           metadata.livePhotoFile)) else {
             metadata.livePhotoFile = ""
             NCManageDatabase.shared.addMetadata(metadata)
-            return  NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedLivePhoto,
+            return  NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadedLivePhoto,
                                                                 object: nil,
                                                                 userInfo: aUserInfo)
         }
-        if metadata1.status != NCGlobal.shared.metadataStatusNormal { return }
+        if metadata1.status != self.global.metadataStatusNormal { return }
 
         Task {
 
@@ -67,14 +67,14 @@ extension NCNetworking {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Upload set LivePhoto with error \(resultsMetadata.error.errorCode) - \(resultsMetadata1.error.errorCode)")
             }
 
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedLivePhoto,
+            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadedLivePhoto,
                                                         object: nil,
                                                         userInfo: aUserInfo)
         }
     }
 
     func convertLivePhoto(metadata: tableMetadata) {
-        guard metadata.status == NCGlobal.shared.metadataStatusNormal else { return }
+        guard metadata.status == self.global.metadataStatusNormal else { return }
         let account = metadata.account
         let livePhotoFile = metadata.livePhotoFile
         let serverUrlfileNamePath = metadata.urlBase + metadata.path + metadata.fileName
@@ -83,7 +83,7 @@ extension NCNetworking {
         DispatchQueue.global().async {
             if let result = self.database.getResultMetadata(predicate: NSPredicate(format: "account == %@ AND status == %d AND (fileName == %@ || fileId == %@)",
                                                                                    account,
-                                                                                   NCGlobal.shared.metadataStatusNormal,
+                                                                                   self.global.metadataStatusNormal,
                                                                                    livePhotoFile,
                                                                                    livePhotoFile)) {
                 if livePhotoFile == result.fileId { return }
