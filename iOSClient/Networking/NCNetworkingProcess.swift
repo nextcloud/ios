@@ -114,22 +114,6 @@ class NCNetworkingProcess {
         })
     }
 
-    func refreshProcessingTask() async -> (counterDownloading: Int, counterUploading: Int) {
-        await withCheckedContinuation { continuation in
-            self.lockQueue.sync {
-                guard !self.hasRun else { return }
-                self.hasRun = true
-
-                Task { [weak self] in
-                    guard let self else { return }
-                    let result = await self.start()
-                    self.hasRun = false
-                    continuation.resume(returning: result)
-                }
-            }
-        }
-    }
-
     @discardableResult
     private func start() async -> (counterDownloading: Int, counterUploading: Int) {
         let applicationState = await checkApplicationState()
@@ -255,7 +239,23 @@ class NCNetworkingProcess {
         }
     }
 
-    // MARK: -
+    // MARK: - Public
+
+    func refreshProcessingTask() async -> (counterDownloading: Int, counterUploading: Int) {
+        await withCheckedContinuation { continuation in
+            self.lockQueue.sync {
+                guard !self.hasRun else { return }
+                self.hasRun = true
+
+                Task { [weak self] in
+                    guard let self else { return }
+                    let result = await self.start()
+                    self.hasRun = false
+                    continuation.resume(returning: result)
+                }
+            }
+        }
+    }
 
     func createProcessUploads(metadatas: [tableMetadata], verifyAlreadyExists: Bool = false, completion: @escaping (_ items: Int) -> Void = {_ in}) {
         var metadatasForUpload: [tableMetadata] = []
