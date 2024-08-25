@@ -49,6 +49,9 @@ class NCNetworkingProcess {
                 case .update(let metadatas, let deletions, let insertions, let modifications):
                     if deletions.count > 0 || insertions.count > 0 || modifications.count > 0 {
                         guard let self else { return }
+                        metadatas.forEach { metadata in
+                            print(metadata.status)
+                        }
                         self.lockQueue.sync {
                             guard !self.hasRun else {
                                 print("XXX: STOP")

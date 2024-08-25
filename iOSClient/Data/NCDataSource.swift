@@ -32,6 +32,7 @@ class NCDataSource: NSObject {
     var layout: String?
 
     private let utilityFileSystem = NCUtilityFileSystem()
+    private let global = NCGlobal.shared
     private var sectionsValue: [String] = []
     private var providers: [NKSearchProvider]?
     private var searchResults: [NKSearchResult]?
@@ -40,6 +41,7 @@ class NCDataSource: NSObject {
     private var sort: String = ""
     private var directoryOnTop: Bool = true
     private var favoriteOnTop: Bool = true
+    private var filterLivePhoto: Bool = true
 
     override init() {
         super.init()
@@ -50,18 +52,20 @@ class NCDataSource: NSObject {
          layoutForView: NCDBLayoutForView?,
          favoriteOnTop: Bool = true,
          filterIsUpload: Bool = true,
+         filterLivePhoto: Bool = true,
          providers: [NKSearchProvider]? = nil,
          searchResults: [NKSearchResult]? = nil) {
         super.init()
 
         self.metadatas = metadatas.filter({
-            !(NCGlobal.shared.includeHiddenFiles.contains($0.fileNameView) || (filterIsUpload && $0.isUpload))
+            !(global.includeHiddenFiles.contains($0.fileNameView) || (filterIsUpload && $0.isUpload))
         })
         self.directory = directory
         self.sort = layoutForView?.sort ?? "none"
         self.ascending = layoutForView?.ascending ?? false
         self.directoryOnTop = layoutForView?.directoryOnTop ?? true
         self.favoriteOnTop = favoriteOnTop
+        self.filterLivePhoto = filterLivePhoto
         self.groupBy = layoutForView?.groupBy ?? "none"
         self.layout = layoutForView?.layout
         // unified search
@@ -110,7 +114,9 @@ class NCDataSource: NSObject {
         // get all Section
         for metadata in self.metadatas {
             // skipped livePhoto VIDEO part
-            if metadata.isLivePhoto && metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
+            if self.filterLivePhoto,
+                metadata.isLivePhoto,
+                metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
                 continue
             }
             let section = NSLocalizedString(self.getSectionValue(metadata: metadata), comment: "")
@@ -118,7 +124,7 @@ class NCDataSource: NSObject {
                 self.sectionsValue.append(section)
             }
             // image Cache
-            if (layout == NCGlobal.shared.layoutPhotoRatio || layout == NCGlobal.shared.layoutPhotoSquare),
+            if (layout == global.layoutPhotoRatio || layout == global.layoutPhotoSquare),
                (metadata.isVideo || metadata.isImage),
                NCImageCache.shared.getPreviewImageCache(ocId: metadata.ocId, etag: metadata.etag) == nil,
                let image = UIImage(contentsOfFile: self.utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
@@ -136,7 +142,7 @@ class NCDataSource: NSObject {
             self.sectionsValue.removeAll()
             let sectionsDictionarySorted = sectionsDictionary.sorted(by: {$0.value < $1.value })
             for section in sectionsDictionarySorted {
-                if section.key == NCGlobal.shared.appName {
+                if section.key == global.appName {
                     self.sectionsValue.insert(section.key, at: 0)
                 } else {
                     self.sectionsValue.append(section.key)
@@ -179,7 +185,8 @@ class NCDataSource: NSObject {
                                                       sort: self.sort,
                                                       ascending: self.ascending,
                                                       directoryOnTop: self.directoryOnTop,
-                                                      favoriteOnTop: self.favoriteOnTop)
+                                                      favoriteOnTop: self.favoriteOnTop,
+                                                      filterLivePhoto: self.filterLivePhoto)
         metadatasForSection.append(metadataForSection)
     }
 
@@ -308,6 +315,7 @@ class NCMetadataForSection: NSObject {
     private var ascending: Bool
     private var directoryOnTop: Bool
     private var favoriteOnTop: Bool
+    private var filterLivePhoto: Bool
 
     private var metadatasSorted: [tableMetadata] = []
     private var metadatasFavoriteDirectory: [tableMetadata] = []
@@ -319,7 +327,7 @@ class NCMetadataForSection: NSObject {
     public var numFile: Int = 0
     public var totalSize: Int64 = 0
 
-    init(sectionValue: String, metadatas: [tableMetadata], lastSearchResult: NKSearchResult?, sort: String, ascending: Bool, directoryOnTop: Bool, favoriteOnTop: Bool) {
+    init(sectionValue: String, metadatas: [tableMetadata], lastSearchResult: NKSearchResult?, sort: String, ascending: Bool, directoryOnTop: Bool, favoriteOnTop: Bool, filterLivePhoto: Bool) {
 
         self.sectionValue = sectionValue
         self.metadatas = metadatas
@@ -328,6 +336,7 @@ class NCMetadataForSection: NSObject {
         self.ascending = ascending
         self.directoryOnTop = directoryOnTop
         self.favoriteOnTop = favoriteOnTop
+        self.filterLivePhoto = filterLivePhoto
 
         super.init()
 
@@ -389,7 +398,9 @@ class NCMetadataForSection: NSObject {
             }
 
             // skipped livePhoto VIDEO part
-            if metadata.isLivePhoto && metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
+            if self.filterLivePhoto,
+               metadata.isLivePhoto,
+               metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
                 continue
             }
 
