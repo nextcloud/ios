@@ -35,8 +35,11 @@ class NCNetworkingProcess {
     private var hasRun: Bool = false
     private let lockQueue = DispatchQueue(label: "com.nextcloud.networkingprocess.lockqueue")
     private let global = NCGlobal.shared
+    private var timerProcess: Timer?
 
-    private init() {}
+    private init() {
+        self.startTimer()
+    }
 
     func observeTableMetadata() {
         do {
@@ -46,22 +49,16 @@ class NCNetworkingProcess {
                 switch changes {
                 case .initial:
                     print("Initial")
-                case .update(let metadatas, let deletions, let insertions, let modifications):
+                case .update(_, let deletions, let insertions, let modifications):
                     if deletions.count > 0 || insertions.count > 0 || modifications.count > 0 {
                         guard let self else { return }
-                        metadatas.forEach { metadata in
-                            print(metadata.status)
-                        }
+
                         self.lockQueue.sync {
-                            guard !self.hasRun else {
-                                print("XXX: STOP")
-                                return
-                            }
+                            guard !self.hasRun else { return }
                             self.hasRun = true
 
                             Task { [weak self] in
                                 guard let self else { return }
-                                print("XXX: VAI")
                                 await self.start()
                                 self.hasRun = false
                             }
@@ -76,56 +73,45 @@ class NCNetworkingProcess {
         }
     }
 
-    /*
-    private func startTimer(scene: UIScene) {
+    private func startTimer() {
+        self.timerProcess?.invalidate()
+        self.timerProcess = Timer.scheduledTimer(withTimeInterval: 2, repeats: true, block: { _ in
+            self.lockQueue.sync {
+                guard !self.hasRun else { return }
+                self.hasRun = true
+                guard let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status != %d", NCGlobal.shared.metadataStatusNormal)) else { return }
 
-            guard !self.hasRun else { return }
-            guard let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status != %d", NCGlobal.shared.metadataStatusNormal)) else { return }
-
-            if results.isEmpty {
-                //
-                // Remove Photo CameraRoll for session
-                //
-                let session = SceneManager.shared.getSession(scene: scene)
-                if NCKeychain().removePhotoCameraRoll,
-                   UIApplication.shared.applicationState == .active,
-                   let localIdentifiers = NCManageDatabase.shared.getAssetLocalIdentifiersUploaded(account: session.account),
-                   !localIdentifiers.isEmpty {
-                    self.hasRun = true
-                    PHPhotoLibrary.shared().performChanges({
-                        PHAssetChangeRequest.deleteAssets(PHAsset.fetchAssets(withLocalIdentifiers: localIdentifiers, options: nil) as NSFastEnumeration)
-                    }, completionHandler: { _, _ in
-                        NCManageDatabase.shared.clearAssetLocalIdentifiers(localIdentifiers, account: session.account)
+                if results.isEmpty {
+                    //
+                    // Remove Photo CameraRoll for session
+                    //
+                    if NCKeychain().removePhotoCameraRoll,
+                       UIApplication.shared.applicationState == .active,
+                       let localIdentifiers = NCManageDatabase.shared.getAssetLocalIdentifiersUploaded(),
+                       !localIdentifiers.isEmpty {
+                        PHPhotoLibrary.shared().performChanges({
+                            PHAssetChangeRequest.deleteAssets(PHAsset.fetchAssets(withLocalIdentifiers: localIdentifiers, options: nil) as NSFastEnumeration)
+                        }, completionHandler: { _, _ in
+                            NCManageDatabase.shared.clearAssetLocalIdentifiers(localIdentifiers)
+                            self.hasRun = false
+                        })
+                    } else {
                         self.hasRun = false
-                    })
-                }
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber,
-                                                            object: nil,
-                                                            userInfo: ["counterDownload": 0,
-                                                                       "counterUpload": 0])
-            } else {
-                Task {
-                    let results = await self.start()
-                    let counterDownload = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "session == %@ AND (status == %d || status == %d)",
-                                                                                                             NCNetworking.shared.sessionDownloadBackground,
-                                                                                                             NCGlobal.shared.metadataStatusWaitDownload,
-                                                                                                             NCGlobal.shared.metadataStatusDownloading))?.count ?? 0
-
-                    let counterUpload = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "session == %@ AND (status == %d || status == %d)",
-                                                                                                           NCNetworking.shared.sessionUploadBackground,
-                                                                                                           NCGlobal.shared.metadataStatusWaitUpload,
-                                                                                                           NCGlobal.shared.metadataStatusUploading))?.count ?? 0
-
-                    print("[INFO] PROCESS Download: \(results.counterDownloading)/\(counterDownload) Upload: \(results.counterUploading)/\(counterUpload)")
+                    }
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUpdateBadgeNumber,
                                                                 object: nil,
-                                                                userInfo: ["counterDownload": counterDownload,
-                                                                           "counterUpload": counterUpload])
+                                                                userInfo: ["counterDownload": 0,
+                                                                           "counterUpload": 0])
+                } else {
+                    Task { [weak self] in
+                        guard let self else { return }
+                        await self.start()
+                        self.hasRun = false
+                    }
                 }
             }
-
+        })
     }
-    */
 
     @discardableResult
     func start() async -> (counterDownloading: Int, counterUploading: Int) {

@@ -958,12 +958,12 @@ extension NCManageDatabase {
         }
     }
 
-    func getAssetLocalIdentifiersUploaded(account: String) -> [String]? {
+    func getAssetLocalIdentifiersUploaded() -> [String]? {
         var assetLocalIdentifiers: [String] = []
 
         do {
             let realm = try Realm()
-            let results = realm.objects(tableMetadata.self).filter("account == %@ AND assetLocalIdentifier != ''", account)
+            let results = realm.objects(tableMetadata.self).filter("assetLocalIdentifier != ''")
             for result in results {
                 assetLocalIdentifiers.append(result.assetLocalIdentifier)
             }
@@ -974,11 +974,11 @@ extension NCManageDatabase {
         return nil
     }
 
-    func clearAssetLocalIdentifiers(_ assetLocalIdentifiers: [String], account: String) {
+    func clearAssetLocalIdentifiers(_ assetLocalIdentifiers: [String]) {
         do {
             let realm = try Realm()
             try realm.write {
-                let results = realm.objects(tableMetadata.self).filter("account == %@ AND assetLocalIdentifier IN %@", account, assetLocalIdentifiers)
+                let results = realm.objects(tableMetadata.self).filter("assetLocalIdentifier IN %@", assetLocalIdentifiers)
                 for result in results {
                     result.assetLocalIdentifier = ""
                 }
