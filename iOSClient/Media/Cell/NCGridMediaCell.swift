@@ -51,7 +51,7 @@ class NCGridMediaCell: UICollectionViewCell {
         imageStatus.image = nil
         imageItem.image = nil
         imageVisualEffect.alpha = 0.4
-        imageSelect.image = NCImageCache.shared.getImageCheckedYes(account: account)
+        imageSelect.image = NCImageCache.shared.getImageCheckedYes()
         imageVisualEffect.isHidden = true
         imageSelect.isHidden = true
     }

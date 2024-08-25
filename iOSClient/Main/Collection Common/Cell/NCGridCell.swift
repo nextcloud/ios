@@ -108,7 +108,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         imageVisualEffect.alpha = 0.5
 
         imageSelect.isHidden = true
-        imageSelect.image = NCImageCache.shared.getImageCheckedYes(account: fileAccount)
+        imageSelect.image = NCImageCache.shared.getImageCheckedYes()
 
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPress(gestureRecognizer:)))
         longPressedGesture.minimumPressDuration = 0.5
@@ -189,7 +189,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         }
         if status {
             imageSelect.isHidden = false
-            imageSelect.image = NCImageCache.shared.getImageCheckedYes(account: account)
+            imageSelect.image = NCImageCache.shared.getImageCheckedYes()
             imageVisualEffect.isHidden = false
         } else {
             imageSelect.isHidden = true

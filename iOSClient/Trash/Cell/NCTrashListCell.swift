@@ -112,7 +112,7 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
             blurEffectView?.backgroundColor = .lightGray
             blurEffectView?.frame = self.bounds
             blurEffectView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            imageSelect.image = NCImageCache.shared.getImageCheckedYes(account: account)
+            imageSelect.image = NCImageCache.shared.getImageCheckedYes()
             backgroundView = blurEffectView
             separator.isHidden = true
         } else {
