@@ -85,9 +85,8 @@ class NCNetworkingProcess {
                 guard let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status != %d", NCGlobal.shared.metadataStatusNormal)) else { return }
 
                 if results.isEmpty {
-                    //
-                    // Remove Photo CameraRoll for session
-                    //
+                    /// Remove Photo CameraRoll
+                    ///
                     if NCKeychain().removePhotoCameraRoll,
                        UIApplication.shared.applicationState == .active,
                        let localIdentifiers = NCManageDatabase.shared.getAssetLocalIdentifiersUploaded(),
@@ -129,8 +128,8 @@ class NCNetworkingProcess {
         var counterDownloading = metadatasDownloading.count
         var counterUploading = metadatasUploading.count
 
-        // ------------------------ DOWNLOAD
-
+        /// ------------------------ DOWNLOAD
+        ///
         let limitDownload = maxConcurrentOperationDownload - counterDownloading
         let metadatasWaitDownload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "session == %@ AND status == %d", NCNetworking.shared.sessionDownloadBackground, global.metadataStatusWaitDownload), numItems: limitDownload, sorted: "sessionDate", ascending: true)
         for metadata in metadatasWaitDownload where counterDownloading < maxConcurrentOperationDownload {
@@ -151,16 +150,17 @@ class NCNetworkingProcess {
             }
         }
 
-        // ------------------------ UPLOAD
+        /// ------------------------ UPLOAD
+        ///
 
-        // E2EE - only one for time
+        /// E2EE - only one for time
         for metadata in metadatasUploading.unique(map: { $0.serverUrl }) {
             if metadata.isDirectoryE2EE {
                 return (counterDownloading, counterUploading)
             }
         }
 
-        // CHUNK - only one for time
+        /// CHUNK - only one for time
         if !metadatasUploading.filter({ $0.chunk > 0 }).isEmpty {
             return (counterDownloading, counterUploading)
         }
@@ -186,9 +186,9 @@ class NCNetworkingProcess {
                     NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
                 }
                 for metadata in metadatas where counterUploading < maxConcurrentOperationUpload {
-                    // isE2EE
+                    /// isE2EE
                     let isInDirectoryE2EE = metadata.isDirectoryE2EE
-                    // NO WiFi
+                    /// NO WiFi
                     if !isWiFi && metadata.session == NCNetworking.shared.sessionUploadBackgroundWWan { continue }
                     if applicationState != .active && (isInDirectoryE2EE || metadata.chunk > 0) { continue }
                     if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: global.metadataStatusUploading) {
@@ -202,7 +202,8 @@ class NCNetworkingProcess {
             }
         }
 
-        // No upload available ? --> Retry Upload in Error
+        /// No upload available ? --> Retry Upload in Error
+        ///
         if counterUploading == 0 {
             for metadata in metadatasUploadError {
                 // Verify COUNTER ERROR
@@ -210,7 +211,7 @@ class NCNetworkingProcess {
                    transfer.countError > 3 {
                     continue
                 }
-                // Verify QUOTA
+                /// Verify QUOTA
                 if metadata.sessionError.contains("\(global.errorQuota)") {
                     NextcloudKit.shared.getUserProfile(account: metadata.account) { _, userProfile, _, error in
                         if error == .success, let userProfile, userProfile.quotaFree > 0, userProfile.quotaFree > metadata.size {
