@@ -27,7 +27,6 @@ import NextcloudKit
 import Alamofire
 
 extension NCNetworking {
-
     func synchronization(account: String,
                          serverUrl: String,
                          add: Bool,
@@ -45,11 +44,11 @@ extension NCNetworking {
             var metadatasSynchronizationOffline: [tableMetadata] = []
 
             if !add {
-                if NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "account == %@ AND sessionSelector == %@ AND (status == %d OR status == %d)",
-                                                                                    account,
-                                                                                    NCGlobal.shared.selectorSynchronizationOffline,
-                                                                                    NCGlobal.shared.metadataStatusWaitDownload,
-                                                                                    NCGlobal.shared.metadataStatusDownloading)) != nil { return }
+                if self.database.getResultMetadata(predicate: NSPredicate(format: "account == %@ AND sessionSelector == %@ AND (status == %d OR status == %d)",
+                                                                          account,
+                                                                          NCGlobal.shared.selectorSynchronizationOffline,
+                                                                          NCGlobal.shared.metadataStatusWaitDownload,
+                                                                          NCGlobal.shared.metadataStatusDownloading)) != nil { return }
             }
 
             if error == .success, let files {
@@ -60,11 +59,11 @@ extension NCNetworking {
                         metadatasSynchronizationOffline.append(NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: false))
                     }
                 }
-                NCManageDatabase.shared.addMetadatas(metadatasDirectory)
-                NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: metadatasSynchronizationOffline,
-                                                                          session: NCNetworking.shared.sessionDownloadBackground,
-                                                                          selector: NCGlobal.shared.selectorSynchronizationOffline)
-                NCManageDatabase.shared.setDirectorySynchronizationDate(serverUrl: serverUrl, account: account)
+                self.database.addMetadatas(metadatasDirectory)
+                self.database.setMetadatasSessionInWaitDownload(metadatas: metadatasSynchronizationOffline,
+                                                                session: self.sessionDownloadBackground,
+                                                                selector: NCGlobal.shared.selectorSynchronizationOffline)
+                self.database.setDirectorySynchronizationDate(serverUrl: serverUrl, account: account)
                 let diffDate = Date().timeIntervalSinceReferenceDate - startDate.timeIntervalSinceReferenceDate
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Synchronization \(serverUrl) in \(diffDate)")
                 completion(0, metadatasSynchronizationOffline.count)
@@ -85,11 +84,11 @@ extension NCNetworking {
     }
 
     func isSynchronizable(ocId: String, fileName: String, etag: String) -> Bool {
-        if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId),
+        if let metadata = self.database.getMetadataFromOcId(ocId),
            (metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusWaitDownload) {
             return false
         }
-        let localFile = NCManageDatabase.shared.getResultsTableLocalFile(predicate: NSPredicate(format: "ocId == %@", ocId))?.first
+        let localFile = self.database.getResultsTableLocalFile(predicate: NSPredicate(format: "ocId == %@", ocId))?.first
         if localFile?.etag != etag || NCUtilityFileSystem().fileProviderStorageSize(ocId, fileNameView: fileName) == 0 {
             return true
         } else {

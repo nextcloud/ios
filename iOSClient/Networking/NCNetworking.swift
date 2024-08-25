@@ -66,6 +66,7 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
 
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
+    let database = NCManageDatabase.shared
     var requestsUnifiedSearch: [DataRequest] = []
     var lastReachability: Bool = true
     var networkReachability: NKCommon.TypeReachability?
@@ -93,7 +94,7 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
     override init() {
         super.init()
 
-        if let account = NCManageDatabase.shared.getActiveTableAccount()?.account {
+        if let account = database.getActiveTableAccount()?.account {
             getActiveAccountCertificate(account: account)
         }
 
@@ -266,12 +267,12 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
             }
 
             if error == .success {
-                NCNetworking.shared.writeCertificate(host: host)
+                self.writeCertificate(host: host)
                 completion(error)
             } else if error.errorCode == NSURLErrorServerCertificateUntrusted {
                 let alertController = UIAlertController(title: NSLocalizedString("_ssl_certificate_untrusted_", comment: ""), message: NSLocalizedString("_connect_server_anyway_", comment: ""), preferredStyle: .alert)
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { _ in
-                    NCNetworking.shared.writeCertificate(host: host)
+                    self.writeCertificate(host: host)
                     completion(.success)
                 }))
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { _ in

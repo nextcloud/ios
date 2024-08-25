@@ -35,7 +35,7 @@ extension NCNetworking {
                   requestHandler: @escaping (_ request: DownloadRequest) -> Void = { _ in },
                   progressHandler: @escaping (_ progress: Progress) -> Void = { _ in },
                   completion: @escaping (_ afError: AFError?, _ error: NKError) -> Void = { _, _ in }) {
-        if metadata.session == NCNetworking.shared.sessionDownload {
+        if metadata.session == sessionDownload {
             downloadFile(metadata: metadata, withNotificationProgressTask: withNotificationProgressTask) {
                 start()
             } requestHandler: { request in
@@ -67,19 +67,19 @@ extension NCNetworking {
             return completion(nil, NKError())
         }
 
-        if NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) == nil {
-            NCManageDatabase.shared.addMetadata(metadata)
+        if database.getMetadataFromOcId(metadata.ocId) == nil {
+            database.addMetadata(metadata)
         }
 
         NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account, options: options, requestHandler: { request in
-            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                       status: NCGlobal.shared.metadataStatusDownloading)
+            self.database.setMetadataSession(ocId: metadata.ocId,
+                                             status: NCGlobal.shared.metadataStatusDownloading)
             requestHandler(request)
         }, taskHandler: { task in
             downloadTask = task
-            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                       status: NCGlobal.shared.metadataStatusDownloading,
-                                                       sessionTaskIdentifier: task.taskIdentifier)
+            self.database.setMetadataSession(ocId: metadata.ocId,
+                                             status: NCGlobal.shared.metadataStatusDownloading,
+                                             sessionTaskIdentifier: task.taskIdentifier)
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadStartFile,
                                                         object: nil,
                                                         userInfo: ["ocId": metadata.ocId,
@@ -134,9 +134,9 @@ extension NCNetworking {
 
         if let task = nkBackground.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account) {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Download file \(metadata.fileNameView) with task with taskIdentifier \(task.taskIdentifier)")
-            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                       status: NCGlobal.shared.metadataStatusDownloading,
-                                                       sessionTaskIdentifier: task.taskIdentifier)
+            database.setMetadataSession(ocId: metadata.ocId,
+                                        status: NCGlobal.shared.metadataStatusDownloading,
+                                        sessionTaskIdentifier: task.taskIdentifier)
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadStartFile,
                                                         object: nil,
                                                         userInfo: ["ocId": metadata.ocId,
@@ -146,12 +146,12 @@ extension NCNetworking {
                                                                    "account": metadata.account])
             completion(nil, NKError())
         } else {
-            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                       session: "",
-                                                       sessionTaskIdentifier: 0,
-                                                       sessionError: "",
-                                                       selector: "",
-                                                       status: NCGlobal.shared.metadataStatusNormal)
+            database.setMetadataSession(ocId: metadata.ocId,
+                                        session: "",
+                                        sessionTaskIdentifier: 0,
+                                        sessionError: "",
+                                        selector: "",
+                                        status: NCGlobal.shared.metadataStatusNormal)
             completion(nil, NKError(errorCode: NCGlobal.shared.errorResourceNotFound, errorDescription: "task null"))
         }
     }
@@ -163,7 +163,7 @@ extension NCNetworking {
                var serverUrl = url.deletingLastPathComponent().absoluteString.removingPercentEncoding {
                 let fileName = url.lastPathComponent
                 if serverUrl.hasSuffix("/") { serverUrl = String(serverUrl.dropLast()) }
-                if let metadata = NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@", serverUrl, fileName)) {
+                if let metadata = database.getResultMetadata(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@", serverUrl, fileName)) {
                     let destinationFilePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
                     utilityFileSystem.copyFile(at: location, to: NSURL.fileURL(withPath: destinationFilePath))
                 }
@@ -185,12 +185,12 @@ extension NCNetworking {
 
         DispatchQueue.global(qos: .userInteractive).async {
             guard let url = task.currentRequest?.url,
-                  let metadata = NCManageDatabase.shared.getMetadata(from: url, sessionTaskIdentifier: task.taskIdentifier) else { return }
+                  let metadata = self.database.getMetadata(from: url, sessionTaskIdentifier: task.taskIdentifier) else { return }
 
             if error == .success {
                 NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
 #if !EXTENSION
-                if let result = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", metadata.fileName, metadata.serverUrl)) {
+                if let result = self.database.getE2eEncryption(predicate: NSPredicate(format: "fileNameIdentifier == %@ AND serverUrl == %@", metadata.fileName, metadata.serverUrl)) {
                     NCEndToEndEncryption.shared().decryptFile(metadata.fileName, fileNameView: metadata.fileNameView, ocId: metadata.ocId, key: result.key, initializationVector: result.initializationVector, authenticationTag: result.authenticationTag)
                 }
 #endif
@@ -227,12 +227,12 @@ extension NCNetworking {
                                                                        "account": metadata.account])
             } else {
                 NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
-                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                           session: "",
-                                                           sessionTaskIdentifier: 0,
-                                                           sessionError: "",
-                                                           selector: "",
-                                                           status: NCGlobal.shared.metadataStatusNormal)
+                self.database.setMetadataSession(ocId: metadata.ocId,
+                                                 session: "",
+                                                 sessionTaskIdentifier: 0,
+                                                 sessionError: "",
+                                                 selector: "",
+                                                 status: NCGlobal.shared.metadataStatusNormal)
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile,
                                                             object: nil,
                                                             userInfo: ["ocId": metadata.ocId,
@@ -258,7 +258,7 @@ extension NCNetworking {
         }
 
         DispatchQueue.global(qos: .userInteractive).async {
-            if let metadata = NCManageDatabase.shared.getResultMetadataFromFileName(fileName, serverUrl: serverUrl, sessionTaskIdentifier: task.taskIdentifier) {
+            if let metadata = self.database.getResultMetadataFromFileName(fileName, serverUrl: serverUrl, sessionTaskIdentifier: task.taskIdentifier) {
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterProgressTask,
                                                             object: nil,
                                                             userInfo: ["account": metadata.account,
@@ -284,7 +284,7 @@ extension NCNetworking {
                         view: UIView?) {
         let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
 
-        if let image = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) {
+        if let image = database.getImageAvatarLoaded(fileName: fileName) {
             cell.fileAvatarImageView?.image = image
             return
         }

@@ -29,11 +29,11 @@ import Queuer
 
 extension NCNetworking {
     func uploadLivePhoto(metadata: tableMetadata, userInfo aUserInfo: [AnyHashable: Any]) {
-        guard let metadata1 = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND urlBase == %@ AND path == %@ AND fileName == %@",
-                                                                                         metadata.account,
-                                                                                         metadata.urlBase,
-                                                                                         metadata.path,
-                                                                                         metadata.livePhotoFile)) else {
+        guard let metadata1 = database.getMetadata(predicate: NSPredicate(format: "account == %@ AND urlBase == %@ AND path == %@ AND fileName == %@",
+                                                                          metadata.account,
+                                                                          metadata.urlBase,
+                                                                          metadata.path,
+                                                                          metadata.livePhotoFile)) else {
             metadata.livePhotoFile = ""
             NCManageDatabase.shared.addMetadata(metadata)
             return  NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedLivePhoto,
@@ -49,7 +49,7 @@ extension NCNetworking {
             var livePhotoFile = metadata1.fileId
             let resultsMetadata = await setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: livePhotoFile, account: metadata.account)
             if resultsMetadata.error == .success {
-                NCManageDatabase.shared.setMetadataLivePhotoByServer(account: metadata.account, ocId: metadata.ocId, livePhotoFile: livePhotoFile)
+                database.setMetadataLivePhotoByServer(account: metadata.account, ocId: metadata.ocId, livePhotoFile: livePhotoFile)
             }
 
             /// METADATA 1
@@ -57,7 +57,7 @@ extension NCNetworking {
             livePhotoFile = metadata.fileId
             let resultsMetadata1 = await setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath1, livePhotoFile: livePhotoFile, account: metadata1.account)
             if resultsMetadata1.error == .success {
-                NCManageDatabase.shared.setMetadataLivePhotoByServer(account: metadata1.account, ocId: metadata1.ocId, livePhotoFile: livePhotoFile)
+                database.setMetadataLivePhotoByServer(account: metadata1.account, ocId: metadata1.ocId, livePhotoFile: livePhotoFile)
             }
 
             if resultsMetadata.error == .success, resultsMetadata1.error == .success {
@@ -81,11 +81,11 @@ extension NCNetworking {
         let ocId = metadata.ocId
 
         DispatchQueue.global().async {
-            if let result = NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "account == %@ AND status == %d AND (fileName == %@ || fileId == %@)",
-                                                                                             account,
-                                                                                             NCGlobal.shared.metadataStatusNormal,
-                                                                                             livePhotoFile,
-                                                                                             livePhotoFile)) {
+            if let result = self.database.getResultMetadata(predicate: NSPredicate(format: "account == %@ AND status == %d AND (fileName == %@ || fileId == %@)",
+                                                                                   account,
+                                                                                   NCGlobal.shared.metadataStatusNormal,
+                                                                                   livePhotoFile,
+                                                                                   livePhotoFile)) {
                 if livePhotoFile == result.fileId { return }
                 for case let operation as NCOperationConvertLivePhoto in self.convertLivePhotoQueue.operations where operation.serverUrlfileNamePath == serverUrlfileNamePath { continue }
                 self.convertLivePhotoQueue.addOperation(NCOperationConvertLivePhoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: result.fileId, account: account, ocId: ocId))
