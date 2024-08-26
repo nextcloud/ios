@@ -125,6 +125,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         NCAutoUpload.shared.initAutoUpload(viewController: nil, account: session.account) { num in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(num) uploads")
         }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            Task {
+                await NCNetworking.shared.verifyZombie()
+            }
+        }
     }
 
     func sceneWillResignActive(_ scene: UIScene) {

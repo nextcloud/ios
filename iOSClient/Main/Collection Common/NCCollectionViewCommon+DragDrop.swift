@@ -113,6 +113,11 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
         DragDropHover.shared.sourceMetadatas = nil
 
         if let metadatas = NCDragDrop().performDrop(collectionView, performDropWith: coordinator, serverUrl: self.serverUrl, isImageVideo: false, session: session) {
+            // TODO: NOT POSSIBLE DRAG DROP DIFFERENT ACCOUNT
+            if let metadata = metadatas.first,
+               metadata.account != self.session.account {
+                return
+            }
             DragDropHover.shared.sourceMetadatas = metadatas
             openMenu(collectionView: collectionView, location: coordinator.session.location(in: collectionView))
         }

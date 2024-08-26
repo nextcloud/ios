@@ -46,7 +46,7 @@ class NCNetworkingProcess {
     private func startObserveTableMetadata() {
         do {
             let realm = try Realm()
-            let results = realm.objects(tableMetadata.self).filter("status IN %d", [global.metadataStatusWaitDownload, global.metadataStatusWaitUpload, global.metadataStatusDownloadError, global.metadataStatusUploadError])
+            let results = realm.objects(tableMetadata.self).filter("status IN %d", [global.metadataStatusWaitDownload, global.metadataStatusWaitUpload])
             notificationToken = results.observe { [weak self] (changes: RealmCollectionChange) in
                 switch changes {
                 case .initial:
@@ -195,13 +195,26 @@ class NCNetworkingProcess {
                     if applicationState != .active && (isInDirectoryE2EE || metadata.chunk > 0) { continue }
                     if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: global.metadataStatusUploading) {
                         var hudView: UIView?
+
                         if let sceneIdentifier = metadata.sceneIdentifier, !sceneIdentifier.isEmpty {
                             let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier)
                             hudView = await controller?.view
-                        } else {
+                        }
+
+                        if hudView == nil {
+                            let controllers = SceneManager.shared.getControllers()
+                            for controller in controllers {
+                                if await controller.account == metadata.account {
+                                    hudView = await controller.view
+                                }
+                            }
+                        }
+
+                        if hudView == nil {
                             let controller = await UIApplication.shared.firstWindow?.rootViewController
                             hudView = await controller?.view
                         }
+
                         NCNetworking.shared.upload(metadata: metadata, hudView: hudView, hud: self.hud)
                         if isInDirectoryE2EE || metadata.chunk > 0 {
                             maxConcurrentOperationUpload = 1
