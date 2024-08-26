@@ -29,7 +29,7 @@ class NCMainTabBar: UITabBar {
     private var shapeLayer: CALayer?
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private let centerButtonY: CGFloat = -28
-    private var color = NCBrandColor.shared.customer
+    public var color = NCBrandColor.shared.customer
 
     public var menuRect: CGRect {
         let tabBarItemWidth = Int(self.frame.size.width) / (self.items?.count ?? 0)
@@ -42,23 +42,11 @@ class NCMainTabBar: UITabBar {
     required init?(coder: NSCoder) {
         super.init(coder: coder)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
 
         if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
             self.color = NCBrandColor.shared.getElement(account: activeTableAccount.account)
             tintColor = color
-        }
-    }
-
-    @objc func changeTheming(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as? NSDictionary else { return }
-        let account = userInfo["account"] as? String
-
-        self.color = NCBrandColor.shared.getElement(account: account)
-        tintColor = color
-        if let centerButton = self.viewWithTag(99) {
-            centerButton.backgroundColor = color
         }
     }
 

@@ -37,6 +37,12 @@ class NCMainTabBarController: UITabBarController {
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private var previousIndex: Int?
 
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         delegate = self
@@ -45,6 +51,20 @@ class NCMainTabBarController: UITabBarController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         previousIndex = selectedIndex
+    }
+
+    @objc func changeTheming(_ notification: NSNotification) {
+        guard let userInfo = notification.userInfo as? NSDictionary else { return }
+        let account = userInfo["account"] as? String
+
+        if let tabBar = self.tabBar as? NCMainTabBar,
+           self.account == account {
+            let color = NCBrandColor.shared.getElement(account: account)
+            tabBar.color = color
+            tabBar.tintColor = color
+
+            tabBar.setNeedsDisplay()
+        }
     }
 
     func currentViewController() -> UIViewController? {
