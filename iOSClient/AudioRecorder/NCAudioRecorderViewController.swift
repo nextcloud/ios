@@ -30,17 +30,17 @@ import QuartzCore
 import NextcloudKit
 
 class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
+    @IBOutlet weak var contentContainerView: UIView!
+    @IBOutlet weak var durationLabel: UILabel!
+    @IBOutlet weak var startStopLabel: UILabel!
+    @IBOutlet weak var voiceRecordHUD: VoiceRecordHUD!
 
     var recording: NCAudioRecorder!
     var startDate: Date = Date()
     var fileName: String = ""
     var serverUrl = ""
     var session: NCSession.Session!
-
-    @IBOutlet weak var contentContainerView: UIView!
-    @IBOutlet weak var durationLabel: UILabel!
-    @IBOutlet weak var startStopLabel: UILabel!
-    @IBOutlet weak var voiceRecordHUD: VoiceRecordHUD!
+    var controller: NCMainTabBarController?
 
     // MARK: - View Life Cycle
 
@@ -105,7 +105,7 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
                                                               url: "",
                                                               contentType: "",
                                                               session: self.session,
-                                                              sceneIdentifier: nil)
+                                                              sceneIdentifier: self.controller?.sceneIdentifier)
 
         metadata.session = NCNetworking.shared.sessionUploadBackground
         metadata.sessionSelector = NCGlobal.shared.selectorUploadFile

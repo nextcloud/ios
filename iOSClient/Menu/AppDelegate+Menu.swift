@@ -88,6 +88,7 @@ extension AppDelegate {
                             if let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as? NCAudioRecorderViewController {
                                 viewController.serverUrl = serverUrl
                                 viewController.session = session
+                                viewController.controller = controller
                                 viewController.modalTransitionStyle = .crossDissolve
                                 viewController.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
                                 controller.present(viewController, animated: true, completion: nil)

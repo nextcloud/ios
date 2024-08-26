@@ -259,6 +259,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                             if let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as? NCAudioRecorderViewController {
                                 viewController.serverUrl = controller.currentServerUrl()
                                 viewController.session = session
+                                viewController.controller = controller
                                 viewController.modalTransitionStyle = .crossDissolve
                                 viewController.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
                                 controller.present(viewController, animated: true, completion: nil)
