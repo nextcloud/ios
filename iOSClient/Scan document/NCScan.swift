@@ -24,6 +24,7 @@
 import UIKit
 import Photos
 import EasyTipView
+import SwiftUI
 
 class NCScan: UIViewController, NCScanCellCellDelegate {
 
@@ -37,7 +38,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     @IBOutlet weak var segmentControlFilter: UISegmentedControl!
 
     public var serverUrl: String?
-    public var session: NCSession.Session!
+    public var controller: NCMainTabBarController!
 
     // Data Source for collectionViewSource
     internal var itemsSource: [String] = []
@@ -50,7 +51,9 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     internal let utilityFileSystem = NCUtilityFileSystem()
     internal let utility = NCUtility()
     internal var filter: NCGlobal.TypeFilterScanDocument = NCKeychain().typeFilterScanDocument
-
+    internal var session: NCSession.Session {
+        NCSession.shared.getSession(controller: controller)
+    }
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -150,7 +153,11 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
             images.append(filter(image: image)!)
         }
         let serverUrl = self.serverUrl ?? utilityFileSystem.getHomeServer(session: session)
-        let vc = NCHostingUploadScanDocumentView().makeShipDetailsUI(images: images, serverUrl: serverUrl, session: session)
+        let model = NCUploadScanDocument(images: images, serverUrl: serverUrl, controller: controller)
+        let details = UploadScanDocumentView(model: model)
+        let vc = UIHostingController(rootView: details)
+
+        vc.title = NSLocalizedString("_save_", comment: "")
 
         self.navigationController?.pushViewController(vc, animated: true)
     }

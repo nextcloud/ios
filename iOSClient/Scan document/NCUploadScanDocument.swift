@@ -28,20 +28,7 @@ import VisionKit
 import Photos
 import PDFKit
 
-class NCHostingUploadScanDocumentView: NSObject {
-    func makeShipDetailsUI(images: [UIImage], serverUrl: String, session: NCSession.Session) -> UIViewController {
-        let model = NCUploadScanDocument(images: images, session: session, serverUrl: serverUrl)
-        let details = UploadScanDocumentView(model: model)
-        let vc = UIHostingController(rootView: details)
-        vc.title = NSLocalizedString("_save_", comment: "")
-        return vc
-    }
-}
-
-// MARK: - Class
-
 class NCUploadScanDocument: ObservableObject {
-    internal var session: NCSession.Session!
     internal var metadata = tableMetadata()
     internal var images: [UIImage]
     internal var password: String = ""
@@ -52,11 +39,16 @@ class NCUploadScanDocument: ObservableObject {
 
     @Published var serverUrl: String
     @Published var showHUD: Bool = false
+    @Published var controller: NCMainTabBarController?
 
-    init(images: [UIImage], session: NCSession.Session, serverUrl: String) {
+    var session: NCSession.Session {
+        NCSession.shared.getSession(controller: controller)
+    }
+
+    init(images: [UIImage], serverUrl: String, controller: NCMainTabBarController?) {
         self.images = images
-        self.session = session
         self.serverUrl = serverUrl
+        self.controller = controller
     }
 
     func save(fileName: String, password: String = "", isTextRecognition: Bool = false, removeAllFiles: Bool, quality: Double, completion: @escaping (_ openConflictViewController: Bool, _ error: Bool) -> Void) {
@@ -72,7 +64,7 @@ class NCUploadScanDocument: ObservableObject {
                                                           url: "",
                                                           contentType: "",
                                                           session: session,
-                                                          sceneIdentifier: nil)
+                                                          sceneIdentifier: controller?.sceneIdentifier)
 
         metadata.session = NCNetworking.shared.sessionUploadBackground
         metadata.sessionSelector = NCGlobal.shared.selectorUploadFile
@@ -513,7 +505,7 @@ struct PDFKitRepresentedView: UIViewRepresentable {
 
 struct UploadScanDocumentView_Previews: PreviewProvider {
     static var previews: some View {
-        let model = NCUploadScanDocument(images: [], session: NCSession.Session(account: "", urlBase: "", user: "", userId: ""), serverUrl: "ABCD")
+        let model = NCUploadScanDocument(images: [], serverUrl: "ABCD", controller: nil)
         UploadScanDocumentView(model: model)
     }
 }

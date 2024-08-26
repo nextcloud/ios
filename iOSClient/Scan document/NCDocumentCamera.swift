@@ -61,7 +61,7 @@ class NCDocumentCamera: NSObject, VNDocumentCameraViewControllerDelegate {
                     navigationController.modalPresentationStyle = UIModalPresentationStyle.pageSheet
                     if let viewController = navigationController.topMostViewController() as? NCScan {
                         viewController.serverUrl = controller.currentServerUrl()
-                        viewController.session = NCSession.shared.getSession(controller: controller)
+                        viewController.controller = controller
                     }
                     self.viewController?.present(navigationController, animated: true, completion: nil)
                 }
