@@ -165,7 +165,7 @@ extension FileProviderExtension {
                 }
                 let item = FileProviderItem(metadata: tableMetadata.init(value: metadata), parentItemIdentifier: parentItemIdentifier)
                 completionHandler(item, nil)
-            } else if error.errorCode == NCGlobal.shared.errorBadRequest  {
+            } else if error.errorCode == NCGlobal.shared.errorBadRequest {
                 completionHandler(nil, NSFileProviderError(.noSuchItem, userInfo: [NSLocalizedDescriptionKey: error.errorDescription, NSLocalizedFailureReasonErrorKey: ""]))
             } else {
                 completionHandler(nil, NSFileProviderError(.serverUnreachable))

@@ -444,7 +444,7 @@ struct UploadScanDocumentView: View {
                                 }
                             }
                         }
-                        .buttonStyle(ButtonRounded(disabled: fileName.isEmpty, account: model.session.account || !footer.isEmpty))
+                        .buttonStyle(ButtonRounded(disabled: fileName.isEmpty || !footer.isEmpty, account: model.session.account))
                         .disabled(fileName.isEmpty || !footer.isEmpty)
                     }
 

@@ -317,6 +317,8 @@
 		F7346E2328B0FEBA006CE2D2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F7346E2228B0FEBA006CE2D2 /* Assets.xcassets */; };
 		F734B06628E75C0100E180D5 /* TLPhotoPicker in Frameworks */ = {isa = PBXBuildFile; productRef = F734B06528E75C0100E180D5 /* TLPhotoPicker */; };
 		F7362A1F220C853A005101B5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7362A1E220C853A005101B5 /* LaunchScreen.storyboard */; };
+		F736F1CD2C7C894000F18C31 /* NCRenameFile.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F736F1CB2C7C894000F18C31 /* NCRenameFile.storyboard */; };
+		F736F1CE2C7C894000F18C31 /* NCRenameFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = F736F1CC2C7C894000F18C31 /* NCRenameFile.swift */; };
 		F737DA992B7B864E0063BAFC /* TOPasscodeViewController.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = F70B86822642CF5500ED5349 /* TOPasscodeViewController.xcframework */; };
 		F737DA9D2B7B893C0063BAFC /* NCPasscode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F737DA9C2B7B893C0063BAFC /* NCPasscode.swift */; };
 		F737DA9E2B7B893C0063BAFC /* NCPasscode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F737DA9C2B7B893C0063BAFC /* NCPasscode.swift */; };
@@ -1304,6 +1306,8 @@
 		F7346E2228B0FEBA006CE2D2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F7362A1E220C853A005101B5 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F736B551234DCF57008A5C9F /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage/Build/iOS/Alamofire.framework; sourceTree = "<group>"; };
+		F736F1CB2C7C894000F18C31 /* NCRenameFile.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCRenameFile.storyboard; sourceTree = "<group>"; };
+		F736F1CC2C7C894000F18C31 /* NCRenameFile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCRenameFile.swift; sourceTree = "<group>"; };
 		F737DA9C2B7B893C0063BAFC /* NCPasscode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCPasscode.swift; sourceTree = "<group>"; };
 		F7381EDA218218C9000B1560 /* NCOffline.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCOffline.swift; sourceTree = "<group>"; };
 		F7381EDE218218C9000B1560 /* NCOffline.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCOffline.storyboard; sourceTree = "<group>"; };
@@ -2212,6 +2216,15 @@
 			path = Widget;
 			sourceTree = "<group>";
 		};
+		F736F1CA2C7C894000F18C31 /* Rename file */ = {
+			isa = PBXGroup;
+			children = (
+				F736F1CB2C7C894000F18C31 /* NCRenameFile.storyboard */,
+				F736F1CC2C7C894000F18C31 /* NCRenameFile.swift */,
+			);
+			path = "Rename file";
+			sourceTree = "<group>";
+		};
 		F7381ED9218218A4000B1560 /* Offline */ = {
 			isa = PBXGroup;
 			children = (
@@ -2988,6 +3001,7 @@
 				F7C5259A1E3B441D00FFE02C /* Notification */,
 				F7381ED9218218A4000B1560 /* Offline */,
 				F713418B2597513800768D21 /* PushNotification */,
+				F736F1CA2C7C894000F18C31 /* Rename file */,
 				F765F72E25237E3F00391DBE /* Recent */,
 				F7CADB3D23CCDDA1000EEC78 /* RichWorkspace */,
 				F76882042C0DD1E7001CF441 /* Settings */,
@@ -3744,6 +3758,7 @@
 				F76D3CF32428B94E005DFA87 /* NCViewerPDFSearchCell.xib in Resources */,
 				F7CA212E25F1333300826ABB /* NCAccountRequest.storyboard in Resources */,
 				F717402D24F699A5000C87D5 /* NCFavorite.storyboard in Resources */,
+				F736F1CD2C7C894000F18C31 /* NCRenameFile.storyboard in Resources */,
 				F723B3DD22FC6D1D00301EFE /* NCShareCommentsCell.xib in Resources */,
 				F78ACD4B21903F850088454D /* NCTrashListCell.xib in Resources */,
 				AF93471927E2361E002537EE /* NCShareAdvancePermissionFooter.xib in Resources */,
@@ -4481,6 +4496,7 @@
 				F70CEF5623E9C7E50007035B /* UIColor+Extension.swift in Sources */,
 				F76882242C0DD1E7001CF441 /* NCSettingsAdvancedView.swift in Sources */,
 				F75CA1472962F13700B01130 /* HUDView.swift in Sources */,
+				F736F1CE2C7C894000F18C31 /* NCRenameFile.swift in Sources */,
 				F77BB748289985270090FC19 /* UITabBarController+Extension.swift in Sources */,
 				F763D29D2A249C4500A3C901 /* NCManageDatabase+Capabilities.swift in Sources */,
 				F76882252C0DD1E7001CF441 /* NCSettingsAdvancedModel.swift in Sources */,

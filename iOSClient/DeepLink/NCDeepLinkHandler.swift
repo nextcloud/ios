@@ -112,7 +112,8 @@ class NCDeepLinkHandler {
         controller.selectedIndex = ControllerConstants.filesIndex
         DispatchQueue.main.asyncAfter(deadline: .now() + 4) {
             let serverUrl = controller.currentServerUrl()
-            let fileFolderPath = NCUtilityFileSystem().getFileNamePath("", serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+            let session = NCSession.shared.getSession(controller: controller)
+            let fileFolderPath = NCUtilityFileSystem().getFileNamePath("", serverUrl: serverUrl, session: session)
             let fileFolderName = (serverUrl as NSString).lastPathComponent
 
             if !FileNameValidator.shared.checkFolderPath(folderPath: fileFolderPath) {

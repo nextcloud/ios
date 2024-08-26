@@ -79,7 +79,6 @@ class NCMedia: UIViewController {
         super.viewDidLoad()
 
         view.backgroundColor = .systemBackground
-        activeAccount = NCManageDatabase.shared.getActiveAccount() ?? tableAccount()
 
         collectionView.register(UINib(nibName: "NCSectionFirstHeaderEmptyData", bundle: nil), forSupplementaryViewOfKind: mediaSectionHeader, withReuseIdentifier: "sectionFirstHeaderEmptyData")
         collectionView.register(UINib(nibName: "NCGridMediaCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
@@ -146,7 +145,6 @@ class NCMedia: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
 
         navigationController?.setMediaAppreance()
         reloadDataSource()

@@ -147,7 +147,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        let folderPath = utilityFileSystem.getFileNamePath("", serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+        let folderPath = utilityFileSystem.getFileNamePath("", serverUrl: serverUrl, session: session)
 
         if serverUrl.isEmpty || !FileNameValidator.shared.checkFolderPath(folderPath: folderPath) {
             serverUrl = utilityFileSystem.getHomeServer(session: session)

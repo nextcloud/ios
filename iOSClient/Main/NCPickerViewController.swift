@@ -152,7 +152,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
             }
 
             if let fileNameError = FileNameValidator.shared.checkFileName(metadata.fileNameView) {
-                mainTabBarController.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
+                controller.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
             } else {
                 NCManageDatabase.shared.addMetadata(metadata)
                 NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
@@ -182,7 +182,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                                                                                sceneIdentifier: self.controller.sceneIdentifier)
 
                 if let fileNameError = FileNameValidator.shared.checkFileName(metadataForUpload.fileNameView) {
-                    mainTabBarController.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
+                    controller.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
                     continue
                 }
 
