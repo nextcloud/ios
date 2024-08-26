@@ -141,7 +141,7 @@ extension NCNetworking {
                           showHiddenFiles: Bool = true,
                           requestBody: Data? = nil,
                           account: String,
-                          options: NKRequestOptions = NKRequestOptions()) async -> (account: String, files: [NKFile], data: Data?, error: NKError) {
+                          options: NKRequestOptions = NKRequestOptions()) async -> (account: String, files: [NKFile]?, data: Data?, error: NKError) {
         await withUnsafeContinuation({ continuation in
             NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: depth, showHiddenFiles: showHiddenFiles, requestBody: requestBody, account: account, options: options) { account, files, data, error in
                 continuation.resume(returning: (account: account, files: files, data: data, error: error))
@@ -157,7 +157,7 @@ extension NCNetworking {
                      showHiddenFiles: Bool,
                      includeHiddenFiles: [String] = [],
                      account: String,
-                     options: NKRequestOptions = NKRequestOptions()) async -> (account: String, files: [NKFile], data: Data?, error: NKError) {
+                     options: NKRequestOptions = NKRequestOptions()) async -> (account: String, files: [NKFile]?, data: Data?, error: NKError) {
         await withUnsafeContinuation({ continuation in
             NextcloudKit.shared.searchMedia(path: path, lessDate: lessDate, greaterDate: greaterDate, elementDate: elementDate, limit: limit, showHiddenFiles: showHiddenFiles, includeHiddenFiles: includeHiddenFiles, account: account, options: options) { account, files, data, error in
                 continuation.resume(returning: (account, files, data, error))

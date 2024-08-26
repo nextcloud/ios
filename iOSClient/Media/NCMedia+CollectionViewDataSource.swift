@@ -29,7 +29,7 @@ extension NCMedia: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         if kind == mediaSectionHeader {
             guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeaderEmptyData", for: indexPath) as? NCSectionFirstHeaderEmptyData else { return NCSectionFirstHeaderEmptyData() }
-            header.emptyImage.image = utility.loadImage(named: "photo", colors: [NCBrandColor.shared.brandElement])
+            header.emptyImage.image = utility.loadImage(named: "photo", colors: [NCBrandColor.shared.getElement(account: session.account)])
             if loadingTask != nil || imageCache.createMediaCacheInProgress {
                 header.emptyTitle.text = NSLocalizedString("_search_in_progress_", comment: "")
             } else {
@@ -67,8 +67,8 @@ extension NCMedia: UICollectionViewDataSource {
         guard let metadatas else { return }
 
         if !collectionView.indexPathsForVisibleItems.contains(indexPath) && indexPath.row < metadatas.count {
-            guard let metadata = metadatas[indexPath.row] else { return }
-            for case let operation as NCMediaDownloadThumbnaill in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
+            let metadata = metadatas[indexPath.row]
+            for case let operation as NCMediaDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
                 operation.cancel()
             }
             for case let operation as NCOperationConvertLivePhoto in NCNetworking.shared.convertLivePhotoQueue.operations where operation.ocId == metadata.ocId {
@@ -79,15 +79,14 @@ extension NCMedia: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridMediaCell,
-              let metadatas = self.metadatas,
-              let metadata = metadatas[indexPath.row]
-        else {
+              let metadata = metadatas?[indexPath.row] else {
             return NCGridMediaCell()
         }
 
         cell.date = metadata.date as Date
         cell.ocId = metadata.ocId
         cell.indexPath = indexPath
+        cell.account = metadata.account
         cell.user = metadata.ownerId
         cell.imageStatus.image = nil
         cell.imageItem.contentMode = .scaleAspectFill
@@ -105,7 +104,7 @@ extension NCMedia: UICollectionViewDataSource {
         }
 
         // Convert OLD Live Photo
-        if NCGlobal.shared.isLivePhotoServerAvailable, metadata.isLivePhoto, metadata.isNotFlaggedAsLivePhotoByServer {
+        if NCCapabilities.shared.getCapabilities(account: metadata.account).isLivePhotoServerAvailable, metadata.isLivePhoto, metadata.isNotFlaggedAsLivePhotoByServer {
             NCNetworking.shared.convertLivePhoto(metadata: metadata)
         }
 

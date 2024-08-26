@@ -37,6 +37,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     @IBOutlet weak var segmentControlFilter: UISegmentedControl!
 
     public var serverUrl: String?
+    public var session: NCSession.Session!
 
     // Data Source for collectionViewSource
     internal var itemsSource: [String] = []
@@ -148,8 +149,8 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
         for image in imagesDestination {
             images.append(filter(image: image)!)
         }
-        let serverUrl = self.serverUrl ?? utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-        let vc = NCHostingUploadScanDocumentView().makeShipDetailsUI(images: images, userBaseUrl: appDelegate, serverUrl: serverUrl)
+        let serverUrl = self.serverUrl ?? utilityFileSystem.getHomeServer(session: session)
+        let vc = NCHostingUploadScanDocumentView().makeShipDetailsUI(images: images, serverUrl: serverUrl, session: session)
 
         self.navigationController?.pushViewController(vc, animated: true)
     }

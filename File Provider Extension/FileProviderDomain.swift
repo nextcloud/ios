@@ -28,7 +28,7 @@ class FileProviderDomain: NSObject {
         NSFileProviderManager.getDomainsWithCompletionHandler { fileProviderDomain, error in
             var domains: [String] = []
             let pathRelativeToDocumentStorage = NSFileProviderManager.default.documentStorageURL.absoluteString
-            let accounts = NCManageDatabase.shared.getAllAccount()
+            let accounts = NCManageDatabase.shared.getAllTableAccount()
 
             for domain in fileProviderDomain {
                 domains.append(domain.identifier.rawValue)

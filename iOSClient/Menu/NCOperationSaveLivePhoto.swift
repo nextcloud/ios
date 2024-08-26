@@ -31,7 +31,6 @@ class NCOperationSaveLivePhoto: ConcurrentOperation {
     var metadata: tableMetadata
     var metadataMOV: tableMetadata
     let hud = JGProgressHUD()
-    let appDelegate = UIApplication.shared.delegate as? AppDelegate
     let utilityFileSystem = NCUtilityFileSystem()
     let hudView: UIView
 
@@ -44,16 +43,16 @@ class NCOperationSaveLivePhoto: ConcurrentOperation {
     override func start() {
         guard !isCancelled,
             let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                     session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                                                     session: NCNetworking.shared.sessionDownload,
                                                                                      selector: ""),
             let metadataLive = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadataMOV],
-                                                                                         session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                                                         session: NCNetworking.shared.sessionDownload,
                                                                                          selector: "") else { return self.finish() }
         DispatchQueue.main.async {
             self.hud.indicatorView = JGProgressHUDRingIndicatorView()
             if let indicatorView = self.hud.indicatorView as? JGProgressHUDRingIndicatorView {
                 indicatorView.ringWidth = 1.5
-                indicatorView.ringColor = NCBrandColor.shared.brandElement
+                indicatorView.ringColor = NCBrandColor.shared.getElement(account: metadata.account)
             }
             self.hud.textLabel.text = NSLocalizedString("_download_image_", comment: "")
             self.hud.detailTextLabel.text = self.metadata.fileName
@@ -116,7 +115,7 @@ class NCOperationSaveLivePhoto: ConcurrentOperation {
                             self.hud.textLabel.text = NSLocalizedString("_livephoto_save_error_", comment: "")
                         } else {
                             self.hud.indicatorView = JGProgressHUDSuccessIndicatorView()
-                            self.hud.indicatorView?.tintColor = NCBrandColor.shared.brandElement
+                            self.hud.indicatorView?.tintColor = NCBrandColor.shared.getElement(account: metadata.account)
                             self.hud.textLabel.text = NSLocalizedString("_success_", comment: "")
                         }
                         self.hud.dismiss()

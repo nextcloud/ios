@@ -129,7 +129,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         self.navigationController?.view.backgroundColor = NCBrandColor.shared.customer
         self.navigationController?.navigationBar.tintColor = textColor
 
-        if !NCManageDatabase.shared.getAllAccount().isEmpty {
+        if !NCManageDatabase.shared.getAllTableAccount().isEmpty {
             let navigationItemCancel = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(self.actionCancel))
             navigationItemCancel.tintColor = textColor
             navigationItem.leftBarButtonItem = navigationItemCancel
@@ -137,14 +137,14 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
         if let dirGroupApps = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupApps) {
             // Nextcloud update share accounts
-            if let error = appDelegate.updateShareAccounts() {
+            if let error = NCAccount().updateAppsShareAccounts() {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Create share accounts \(error.localizedDescription)")
             }
             // Nextcloud get share accounts
             if let shareAccounts = NKShareAccounts().getShareAccount(at: dirGroupApps, application: UIApplication.shared) {
                 var accountTemp = [NKShareAccounts.DataAccounts]()
                 for shareAccount in shareAccounts {
-                    if NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "urlBase == %@ AND user == %@", shareAccount.url, shareAccount.user)) == nil {
+                    if NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "urlBase == %@ AND user == %@", shareAccount.url, shareAccount.user)) == nil {
                         accountTemp.append(shareAccount)
                     }
                 }
@@ -170,9 +170,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        appDelegate.timerErrorNetworkingDisabled = true
 
-        if self.shareAccounts != nil, let image = UIImage(systemName: "person.badge.plus")?.withTintColor(.white, renderingMode: .alwaysOriginal), let backgroundColor = NCBrandColor.shared.brandElement.lighter(by: 10) {
+        if self.shareAccounts != nil, let image = UIImage(systemName: "person.badge.plus")?.withTintColor(.white, renderingMode: .alwaysOriginal), let backgroundColor = NCBrandColor.shared.customer.lighter(by: 10) {
             let title = String(format: NSLocalizedString("_apps_nextcloud_detect_", comment: ""), NCBrandOptions.shared.brand)
             let description = String(format: NSLocalizedString("_add_existing_account_", comment: ""), NCBrandOptions.shared.brand)
             NCContentPresenter().alertAction(image: image, contentModeImage: .scaleAspectFit, sizeImage: CGSize(width: 45, height: 45), backgroundColor: backgroundColor, textColor: textColor, title: title, description: description, textCancelButton: "_cancel_", textOkButton: "_ok_", attributes: EKAttributes.topFloat) { identifier in
@@ -181,11 +180,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 }
             }
         }
-    }
-
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        appDelegate.timerErrorNetworkingDisabled = false
     }
 
     private func handleLoginWithAppConfig() {
@@ -369,7 +363,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 let user = valueArray[0].replacingOccurrences(of: "user:", with: "")
                 let password = valueArray[1].replacingOccurrences(of: "password:", with: "")
                 let urlBase = valueArray[2].replacingOccurrences(of: "server:", with: "")
-                let serverUrl = urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav
+                let serverUrl = urlBase + "/remote.php/dav"
                 loginButton.isEnabled = false
                 NextcloudKit.shared.checkServer(serverUrl: serverUrl) { error in
                     self.loginButton.isEnabled = true
@@ -400,13 +394,15 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         if let host = URL(string: urlBase)?.host {
             NCNetworking.shared.writeCertificate(host: host)
         }
-        self.appDelegate.createAccount(urlBase: urlBase, user: user, password: password) { error in
+        NCAccount().createAccount(urlBase: urlBase, user: user, password: password) { account, error in
             if error == .success {
                 let window = UIApplication.shared.firstWindow
-                if window?.rootViewController is NCMainTabBarController {
+                if let controller = window?.rootViewController as? NCMainTabBarController {
+                    controller.account = account
                     self.dismiss(animated: true)
                 } else {
                     if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+                        controller.account = account
                         controller.modalPresentationStyle = .fullScreen
                         controller.view.alpha = 0
                         window?.rootViewController = controller

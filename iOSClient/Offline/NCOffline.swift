@@ -33,7 +33,7 @@ class NCOffline: NCCollectionViewCommon {
         layoutKey = NCGlobal.shared.layoutViewOffline
         enableSearchBar = false
         headerRichWorkspaceDisable = true
-        emptyImage = NCUtility().loadImage(named: "icloud.and.arrow.down", colors: [NCBrandColor.shared.brandElement])
+        emptyImage = NCUtility().loadImage(named: "icloud.and.arrow.down", colors: [NCBrandColor.shared.getElement(account: session.account)])
         emptyTitle = "_files_no_files_"
         emptyDescription = "_tutorial_offline_view_"
         emptyDataPortaitOffset = 30
@@ -51,26 +51,25 @@ class NCOffline: NCCollectionViewCommon {
 
     override func queryDB() {
         super.queryDB()
-
         var ocIds: [String] = []
         var metadatas: [tableMetadata] = []
 
         if self.serverUrl.isEmpty {
-            if let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", self.appDelegate.account), sorted: "serverUrl", ascending: true) {
+            if let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", session.account), sorted: "serverUrl", ascending: true) {
                 for directory: tableDirectory in directories {
                     ocIds.append(directory.ocId)
                 }
             }
-            let files = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", self.appDelegate.account), sorted: "fileName", ascending: true)
+            let files = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", session.account), sorted: "fileName", ascending: true)
             for file in files {
                 ocIds.append(file.ocId)
             }
-            metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@", self.appDelegate.account, ocIds))
+            metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@", session.account, ocIds))
         } else {
-            metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
+            metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, self.serverUrl))
         }
 
-        self.dataSource = NCDataSource(metadatas: metadatas, account: self.appDelegate.account, layoutForView: layoutForView, providers: self.providers, searchResults: self.searchResults)
+        self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: layoutForView, providers: self.providers, searchResults: self.searchResults)
     }
 
     override func reloadDataSourceNetwork(withQueryDB: Bool = false) {

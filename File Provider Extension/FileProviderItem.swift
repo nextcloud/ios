@@ -36,7 +36,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         return metadata.fileNameView
     }
     var typeIdentifier: String {
-        let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: metadata.fileNameView, mimeType: "", directory: metadata.directory)
+        let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: metadata.fileNameView, mimeType: "", directory: metadata.directory, account: metadata.account)
         return results.typeIdentifier
     }
     var capabilities: NSFileProviderItemCapabilities {

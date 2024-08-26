@@ -26,7 +26,6 @@ import UniformTypeIdentifiers
 import NextcloudKit
 
 class NCDragDrop: NSObject {
-    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
 
     func performDrag(metadata: tableMetadata? = nil, selectOcId: [String]? = nil) -> [UIDragItem] {
@@ -55,7 +54,7 @@ class NCDragDrop: NSObject {
         return dragItems
     }
 
-    func performDrop(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator, serverUrl: String, isImageVideo: Bool) -> [tableMetadata]? {
+    func performDrop(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator, serverUrl: String, isImageVideo: Bool, session: NCSession.Session) -> [tableMetadata]? {
         var serverUrl = serverUrl
         var metadatas: [tableMetadata] = []
         DragDropHover.shared.cleanPushDragDropHover()
@@ -69,7 +68,7 @@ class NCDragDrop: NSObject {
                        let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
                         if !isImageVideo {
                             metadatas.append(metadata)
-                        } else if isImageVideo, (metadata.isImage || metadata.isVideo) {
+                        } else if isImageVideo, (metadata.isImageOrVideo) {
                             metadatas.append(metadata)
                         }
                     }
@@ -82,7 +81,7 @@ class NCDragDrop: NSObject {
                         if let destinationMetadata = DragDropHover.shared.destinationMetadata, destinationMetadata.directory {
                             serverUrl = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
                         }
-                        self.uploadFile(url: url, serverUrl: serverUrl)
+                        self.uploadFile(url: url, serverUrl: serverUrl, session: session)
                     }
                 }
             }
@@ -95,16 +94,25 @@ class NCDragDrop: NSObject {
         }
     }
 
-    func uploadFile(url: URL, serverUrl: String) {
+    func uploadFile(url: URL, serverUrl: String, session: NCSession.Session) {
         do {
             let data = try Data(contentsOf: url)
             Task {
                 let ocId = NSUUID().uuidString
-                let fileName = await NCNetworking.shared.createFileName(fileNameBase: url.lastPathComponent, account: appDelegate.account, serverUrl: serverUrl)
+                let fileName = await NCNetworking.shared.createFileName(fileNameBase: url.lastPathComponent, account: session.account, serverUrl: serverUrl)
                 let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
 
                 try data.write(to: URL(fileURLWithPath: fileNamePath))
-                let metadataForUpload = await NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: self.appDelegate.urlBase, url: "", contentType: "")
+
+                let metadataForUpload = NCManageDatabase.shared.createMetadata(fileName: fileName,
+                                                                               fileNameView: fileName,
+                                                                               ocId: ocId,
+                                                                               serverUrl: serverUrl,
+                                                                               url: "",
+                                                                               contentType: "",
+                                                                               session: session,
+                                                                               sceneIdentifier: nil)
+
                 metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
                 metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
                 metadataForUpload.size = utilityFileSystem.getFileSize(filePath: fileNamePath)

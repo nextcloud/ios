@@ -105,7 +105,7 @@ extension NCMedia {
     }
 
     func createMenu() {
-        let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")
+        let layoutForView = NCManageDatabase.shared.getLayoutForView(account: session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")
         let columnPhoto = layoutForView?.columnPhoto ?? 3
         let layout = layoutForView?.layout ?? NCGlobal.shared.mediaLayoutRatio
         let layoutTitle = (layout == NCGlobal.shared.mediaLayoutRatio) ? NSLocalizedString("_media_square_", comment: "") : NSLocalizedString("_media_ratio_", comment: "")
@@ -141,10 +141,10 @@ extension NCMedia {
         ])
         let viewLayoutMenu = UIAction(title: layoutTitle, image: layoutImage) { _ in
             if layout == NCGlobal.shared.mediaLayoutRatio {
-                NCManageDatabase.shared.setLayoutForView(account: self.appDelegate.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", layout: NCGlobal.shared.mediaLayoutSquare)
+                NCManageDatabase.shared.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", layout: NCGlobal.shared.mediaLayoutSquare)
                 self.layoutType = NCGlobal.shared.mediaLayoutSquare
             } else {
-                NCManageDatabase.shared.setLayoutForView(account: self.appDelegate.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", layout: NCGlobal.shared.mediaLayoutRatio)
+                NCManageDatabase.shared.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", layout: NCGlobal.shared.mediaLayoutRatio)
                 self.layoutType = NCGlobal.shared.mediaLayoutRatio
             }
             self.createMenu()
@@ -159,6 +159,7 @@ extension NCMedia {
                 viewController.delegate = self
                 viewController.typeOfCommandView = .select
                 viewController.type = "mediaFolder"
+                viewController.session = self.session
                 self.present(navigationController, animated: true)
             })
         ])
@@ -166,7 +167,7 @@ extension NCMedia {
         let zoomOut = UIAction(title: NSLocalizedString("_zoom_out_", comment: ""), image: utility.loadImage(named: "minus.magnifyingglass"), attributes: self.attributesZoomOut) { _ in
             UIView.animate(withDuration: 0.0, animations: {
                 let column = columnPhoto + 1
-                NCManageDatabase.shared.setLayoutForView(account: self.appDelegate.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: column)
+                NCManageDatabase.shared.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: column)
                 self.createMenu()
                 self.collectionViewReloadData()
             })
@@ -175,7 +176,7 @@ extension NCMedia {
         let zoomIn = UIAction(title: NSLocalizedString("_zoom_in_", comment: ""), image: utility.loadImage(named: "plus.magnifyingglass"), attributes: self.attributesZoomIn) { _ in
             UIView.animate(withDuration: 0.0, animations: {
                 let column = columnPhoto - 1
-                NCManageDatabase.shared.setLayoutForView(account: self.appDelegate.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: column)
+                NCManageDatabase.shared.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: column)
                 self.createMenu()
                 self.collectionViewReloadData()
             })
@@ -183,7 +184,7 @@ extension NCMedia {
 
         let playFile = UIAction(title: NSLocalizedString("_play_from_files_", comment: ""), image: utility.loadImage(named: "play.circle")) { _ in
             guard let controller = self.tabBarController as? NCMainTabBarController else { return }
-            self.documentPickerViewController = NCDocumentPickerViewController(controller: controller, isViewerMedia: true, allowsMultipleSelection: false, viewController: self)
+            self.documentPickerViewController = NCDocumentPickerViewController(controller: controller, isViewerMedia: true, allowsMultipleSelection: false, viewController: self, session: self.session)
         }
 
         let playURL = UIAction(title: NSLocalizedString("_play_from_url_", comment: ""), image: utility.loadImage(named: "link")) { _ in
@@ -195,7 +196,14 @@ extension NCMedia {
             alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
                 guard let stringUrl = alert.textFields?.first?.text, !stringUrl.isEmpty, let url = URL(string: stringUrl) else { return }
                 let fileName = url.lastPathComponent
-                let metadata = NCManageDatabase.shared.createMetadata(account: self.activeAccount.account, user: self.activeAccount.user, userId: self.activeAccount.userId, fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: "", urlBase: self.activeAccount.urlBase, url: stringUrl, contentType: "")
+                let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName,
+                                                                      fileNameView: fileName,
+                                                                      ocId: NSUUID().uuidString,
+                                                                      serverUrl: "",
+                                                                      url: stringUrl,
+                                                                      contentType: "",
+                                                                      session: self.session,
+                                                                      sceneIdentifier: (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier)
                 NCManageDatabase.shared.addMetadata(metadata)
                 NCViewer().view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: nil)
             }))

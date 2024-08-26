@@ -26,7 +26,6 @@
 import UIKit
 
 class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
-
     @IBOutlet weak var buttonLogin: UIButton!
     @IBOutlet weak var buttonSignUp: UIButton!
     @IBOutlet weak var buttonHost: UIButton!
@@ -99,18 +98,23 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
         view.backgroundColor = NCBrandColor.shared.customer
         timerAutoScroll = Timer.scheduledTimer(timeInterval: 5, target: self, selector: (#selector(NCIntroViewController.autoScroll)), userInfo: nil, repeats: true)
 
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
-            let window = UIApplication.shared.firstWindow
-            if window?.rootViewController is NCMainTabBarController {
-                self.dismiss(animated: true)
-            } else {
-                if let mainTabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
-                    mainTabBarController.modalPresentationStyle = .fullScreen
-                    mainTabBarController.view.alpha = 0
-                    window?.rootViewController = mainTabBarController
-                    window?.makeKeyAndVisible()
-                    UIView.animate(withDuration: 0.5) {
-                        mainTabBarController.view.alpha = 1
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { notification in
+            if let userInfo = notification.userInfo,
+               let account = userInfo["account"] as? String {
+                let window = UIApplication.shared.firstWindow
+                if let controller = window?.rootViewController as? NCMainTabBarController {
+                    controller.account = account
+                    self.dismiss(animated: true)
+                } else {
+                    if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+                        controller.account = account
+                        controller.modalPresentationStyle = .fullScreen
+                        controller.view.alpha = 0
+                        window?.rootViewController = controller
+                        window?.makeKeyAndVisible()
+                        UIView.animate(withDuration: 0.5) {
+                            controller.view.alpha = 1
+                        }
                     }
                 }
             }
@@ -179,11 +183,11 @@ class NCIntroViewController: UIViewController, UICollectionViewDataSource, UICol
     }
 
     @IBAction func login(_ sender: Any) {
-        appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
+        appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
     }
 
     @IBAction func signup(_ sender: Any) {
-        appDelegate.openLogin(selector: NCGlobal.shared.introSignup, openLoginWeb: false)
+        appDelegate.openLogin(selector: NCGlobal.shared.introSignup)
     }
 
     @IBAction func host(_ sender: Any) {

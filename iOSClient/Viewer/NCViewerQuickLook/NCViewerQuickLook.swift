@@ -219,6 +219,7 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
 
     fileprivate func saveModifiedFile(override: Bool) {
         guard let metadata = self.metadata else { return }
+        let session = NCSession.shared.getSession(account: metadata.account)
         if !uploadMetadata {
             return self.dismiss(animated: true)
         }
@@ -234,17 +235,14 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
         let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: metadata.fileNameView)
         guard utilityFileSystem.copyFile(atPath: url.path, toPath: fileNamePath) else { return }
 
-        let metadataForUpload = NCManageDatabase.shared.createMetadata(
-            account: metadata.account,
-            user: metadata.user,
-            userId: metadata.userId,
-            fileName: metadata.fileName,
-            fileNameView: metadata.fileNameView,
-            ocId: ocId,
-            serverUrl: metadata.serverUrl,
-            urlBase: metadata.urlBase,
-            url: url.path,
-            contentType: "")
+        let metadataForUpload = NCManageDatabase.shared.createMetadata(fileName: metadata.fileName,
+                                                                       fileNameView: metadata.fileNameView,
+                                                                       ocId: ocId,
+                                                                       serverUrl: metadata.serverUrl,
+                                                                       url: url.path,
+                                                                       contentType: "",
+                                                                       session: session,
+                                                                       sceneIdentifier: nil)
 
         metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
         if override {

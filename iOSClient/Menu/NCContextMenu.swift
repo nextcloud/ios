@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import UIKit
 import Alamofire
 import NextcloudKit
 import JGProgressHUD
@@ -47,7 +48,7 @@ class NCContextMenu: NSObject {
         hud.detailTextLabel.textColor = NCBrandColor.shared.iconImageColor2
         if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
             indicatorView.ringWidth = 1.5
-            indicatorView.ringColor = NCBrandColor.shared.brandElement
+            indicatorView.ringColor = NCBrandColor.shared.getElement(account: metadata.account)
         }
         hud.tapOnHUDViewBlock = { _ in
             if let request = downloadRequest {
@@ -76,16 +77,17 @@ class NCContextMenu: NSObject {
         let share = UIAction(title: NSLocalizedString("_share_", comment: ""),
                              image: utility.loadImage(named: "square.and.arrow.up") ) { _ in
             if self.utilityFileSystem.fileProviderStorageExists(metadata) {
-                NotificationCenter.default.post(
-                    name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
-                    object: nil,
-                    userInfo: ["ocId": metadata.ocId,
-                               "selector": NCGlobal.shared.selectorOpenIn,
-                               "error": NKError(),
-                               "account": metadata.account])
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile,
+                                                            object: nil,
+                                                            userInfo: ["ocId": metadata.ocId,
+                                                                       "ocIdTransfer": metadata.ocIdTransfer,
+                                                                       "session": metadata.session,
+                                                                       "selector": NCGlobal.shared.selectorOpenIn,
+                                                                       "error": NKError(),
+                                                                       "account": metadata.account])
             } else {
                 guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                               session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                                                               session: NCNetworking.shared.sessionDownload,
                                                                                                selector: NCGlobal.shared.selectorOpenIn,
                                                                                                sceneIdentifier: sceneIdentifier) else { return }
                 hud.show(in: viewController.view)
@@ -113,8 +115,7 @@ class NCContextMenu: NSObject {
             NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil, sceneIdentifier: sceneIdentifier)
         }
 
-        let livePhotoSave = UIAction(title: NSLocalizedString("_livephoto_save_", comment: ""),
-                                     image: utility.loadImage(named: "livephoto")) { _ in
+        let livePhotoSave = UIAction(title: NSLocalizedString("_livephoto_save_", comment: ""), image: utility.loadImage(named: "livephoto")) { _ in
             if let metadataMOV = metadataMOV {
                 NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, hudView: viewController.view))
             }
@@ -123,16 +124,17 @@ class NCContextMenu: NSObject {
         let modify = UIAction(title: NSLocalizedString("_modify_", comment: ""),
                               image: utility.loadImage(named: "pencil.tip.crop.circle")) { _ in
             if self.utilityFileSystem.fileProviderStorageExists(metadata) {
-                NotificationCenter.default.post(
-                    name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
-                    object: nil,
-                    userInfo: ["ocId": metadata.ocId,
-                               "selector": NCGlobal.shared.selectorLoadFileQuickLook,
-                               "error": NKError(),
-                               "account": metadata.account])
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile,
+                                                            object: nil,
+                                                            userInfo: ["ocId": metadata.ocId,
+                                                                       "ocIdTransfer": metadata.ocIdTransfer,
+                                                                       "session": metadata.session,
+                                                                       "selector": NCGlobal.shared.selectorLoadFileQuickLook,
+                                                                       "error": NKError(),
+                                                                       "account": metadata.account])
             } else {
                 guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                               session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                                                               session: NCNetworking.shared.sessionDownload,
                                                                                                selector: NCGlobal.shared.selectorLoadFileQuickLook,
                                                                                                sceneIdentifier: sceneIdentifier) else { return }
                 hud.show(in: viewController.view)

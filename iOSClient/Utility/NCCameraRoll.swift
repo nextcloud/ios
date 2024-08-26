@@ -23,26 +23,25 @@
 
 import Foundation
 import Photos
+import UIKit
 import NextcloudKit
 
 class NCCameraRoll: NSObject {
-
     let utilityFileSystem = NCUtilityFileSystem()
 
     func extractCameraRoll(from metadata: tableMetadata, completition: @escaping (_ metadatas: [tableMetadata]) -> Void) {
-
+        var metadatas: [tableMetadata] = []
+        let metadataSource = tableMetadata.init(value: metadata)
         var chunkSize = NCGlobal.shared.chunkSizeMBCellular
         if NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi {
             chunkSize = NCGlobal.shared.chunkSizeMBEthernetOrWiFi
         }
-        var metadatas: [tableMetadata] = []
-        let metadataSource = tableMetadata.init(value: metadata)
-
         guard !metadata.isExtractFile else { return  completition([metadataSource]) }
+        
         guard !metadataSource.assetLocalIdentifier.isEmpty else {
             let filePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadataSource.ocId, fileNameView: metadataSource.fileName)
             metadataSource.size = utilityFileSystem.getFileSize(filePath: filePath)
-            let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: metadataSource.fileNameView, mimeType: metadataSource.contentType, directory: false)
+            let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: metadataSource.fileNameView, mimeType: metadataSource.contentType, directory: false, account: metadataSource.account)
             metadataSource.contentType = results.mimeType
             metadataSource.iconName = results.iconName
             metadataSource.classFile = results.classFile
@@ -59,7 +58,7 @@ class NCCameraRoll: NSObject {
             }
             metadataSource.e2eEncrypted = metadata.isDirectoryE2EE
             if metadataSource.chunk > 0 || metadataSource.e2eEncrypted {
-                metadataSource.session = NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload
+                metadataSource.session = NCNetworking.shared.sessionUpload
             }
             metadataSource.isExtractFile = true
             if let metadata = NCManageDatabase.shared.addMetadata(metadataSource) {
@@ -123,7 +122,7 @@ class NCCameraRoll: NSObject {
                     }
                     metadata.e2eEncrypted = metadata.isDirectoryE2EE
                     if metadata.chunk > 0 || metadata.e2eEncrypted {
-                        metadata.session = NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload
+                        metadata.session = NCNetworking.shared.sessionUpload
                     }
                     metadata.isExtractFile = true
                     if let metadata = NCManageDatabase.shared.addMetadata(metadata) {
@@ -259,18 +258,16 @@ class NCCameraRoll: NSObject {
             guard let videoResource = videoResource else { return completion(nil) }
             self.utilityFileSystem.removeFile(atPath: fileNamePath)
             PHAssetResourceManager.default().writeData(for: videoResource, toFile: URL(fileURLWithPath: fileNamePath), options: nil) { error in
-                if error != nil { return completion(nil) }
-                let metadataLivePhoto = NCManageDatabase.shared.createMetadata(account: metadata.account,
-                                                                               user: metadata.user,
-                                                                               userId: metadata.userId,
-                                                                               fileName: fileName,
+                guard error == nil else { return completion(nil) }
+                let session = NCSession.shared.getSession(account: metadata.account)
+                let metadataLivePhoto = NCManageDatabase.shared.createMetadata(fileName: fileName,
                                                                                fileNameView: fileName,
                                                                                ocId: ocId,
                                                                                serverUrl: metadata.serverUrl,
-                                                                               urlBase: metadata.urlBase,
                                                                                url: "",
-                                                                               contentType: "")
-
+                                                                               contentType: "",
+                                                                               session: session,
+                                                                               sceneIdentifier: metadata.sceneIdentifier)
                 metadataLivePhoto.livePhotoFile = metadata.fileName
                 metadataLivePhoto.classFile = NKCommon.TypeClassFile.video.rawValue
                 metadataLivePhoto.isExtractFile = true
@@ -285,7 +282,7 @@ class NCCameraRoll: NSObject {
                 }
                 metadataLivePhoto.e2eEncrypted = metadata.isDirectoryE2EE
                 if metadataLivePhoto.chunk > 0 || metadataLivePhoto.e2eEncrypted {
-                    metadataLivePhoto.session = NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload
+                    metadataLivePhoto.session = NCNetworking.shared.sessionUpload
                 }
                 metadataLivePhoto.creationDate = metadata.creationDate
                 metadataLivePhoto.date = metadata.date

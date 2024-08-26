@@ -33,7 +33,7 @@ class NCGroupfolders: NCCollectionViewCommon {
         layoutKey = NCGlobal.shared.layoutViewGroupfolders
         enableSearchBar = false
         headerRichWorkspaceDisable = true
-        emptyImage = utility.loadImage(named: "folder_group", colors: [NCBrandColor.shared.brandElement])
+        emptyImage = utility.loadImage(named: "folder_group", colors: [NCBrandColor.shared.getElement(account: session.account)])
         emptyTitle = "_files_no_files_"
         emptyDescription = "_tutorial_groupfolders_view_"
     }
@@ -53,24 +53,22 @@ class NCGroupfolders: NCCollectionViewCommon {
 
     override func queryDB() {
         super.queryDB()
-
         var metadatas: [tableMetadata] = []
 
         if self.serverUrl.isEmpty {
-            metadatas = NCManageDatabase.shared.getMetadatasFromGroupfolders(account: self.appDelegate.account, urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
+            metadatas = NCManageDatabase.shared.getMetadatasFromGroupfolders(session: session)
         } else {
-            metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, self.serverUrl))
+            metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, self.serverUrl))
         }
 
-        self.dataSource = NCDataSource(metadatas: metadatas, account: self.appDelegate.account, layoutForView: layoutForView, providers: self.providers, searchResults: self.searchResults)
+        self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: layoutForView, providers: self.providers, searchResults: self.searchResults)
     }
 
     override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
         super.reloadDataSourceNetwork()
+        let homeServerUrl = utilityFileSystem.getHomeServer(session: session)
 
-        let homeServerUrl = utilityFileSystem.getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
-
-        NextcloudKit.shared.getGroupfolders(account: self.appDelegate.account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
+        NextcloudKit.shared.getGroupfolders(account: session.account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()
         } completion: { account, results, _, error in
@@ -80,9 +78,9 @@ class NCGroupfolders: NCCollectionViewCommon {
                     for groupfolder in groupfolders {
                         let mountPoint = groupfolder.mountPoint.hasPrefix("/") ? groupfolder.mountPoint : "/" + groupfolder.mountPoint
                         let serverUrlFileName = homeServerUrl + mountPoint
-                        if NCManageDatabase.shared.getMetadataFromDirectory(account: self.appDelegate.account, serverUrl: serverUrlFileName) == nil {
+                        if NCManageDatabase.shared.getMetadataFromDirectory(account: account, serverUrl: serverUrlFileName) == nil {
                             let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles, account: account)
-                            if results.error == .success, let file = results.files.first {
+                            if results.error == .success, let file = results.files?.first {
                                 let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
                                 let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
                                 NCManageDatabase.shared.addMetadata(metadata)

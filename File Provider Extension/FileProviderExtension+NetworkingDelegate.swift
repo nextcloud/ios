@@ -40,7 +40,7 @@ extension FileProviderExtension: NCNetworkingDelegate {
         DispatchQueue.global(qos: .userInteractive).async {
             if error == .success, let ocId {
                 /// SIGNAL
-                fileProviderData.shared.signalEnumerator(ocId: metadata.ocIdTemp, type: .delete)
+                fileProviderData.shared.signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
                 metadata.fileName = fileName
                 metadata.serverUrl = serverUrl
                 metadata.uploadDate = (date as? NSDate) ?? NSDate()
@@ -62,18 +62,18 @@ extension FileProviderExtension: NCNetworkingDelegate {
                 NCManageDatabase.shared.addMetadata(metadata)
                 NCManageDatabase.shared.addLocalFile(metadata: metadata)
                 /// NEW File
-                if !metadata.ocIdTemp.isEmpty, ocId != metadata.ocIdTemp {
-                    let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTemp)
+                if !metadata.ocIdTransfer.isEmpty, ocId != metadata.ocIdTransfer {
+                    let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer)
                     let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId)
                     self.utilityFileSystem.copyFile(atPath: atPath, toPath: toPath)
-                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocIdTemp))
+                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocIdTransfer))
                 }
                 /// SIGNAL
                 fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
             } else {
-                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocIdTemp))
+                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocIdTransfer))
                 /// SIGNAL
-                fileProviderData.shared.signalEnumerator(ocId: metadata.ocIdTemp, type: .delete)
+                fileProviderData.shared.signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
             }
         }
     }

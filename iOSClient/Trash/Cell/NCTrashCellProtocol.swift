@@ -28,9 +28,9 @@ protocol NCTrashCellProtocol {
     var labelTitle: UILabel! { get set }
     var labelInfo: UILabel! { get set }
     var imageItem: UIImageView! { get set }
-    var indexPath: IndexPath { get set }
+    var account: String { get set }
 
-    func selected(_ status: Bool, isEditMode: Bool)
+    func selected(_ status: Bool, isEditMode: Bool, account: String)
 }
 
 extension NCTrashCellProtocol where Self: UICollectionViewCell {
@@ -48,7 +48,7 @@ extension NCTrashCellProtocol where Self: UICollectionViewCell {
             self.labelInfo?.text = dateFormatter.string(from: tableTrash.trashbinDeletionTime as Date)
         }
         if tableTrash.directory {
-            self.imageItem.image = NCImageCache.images.folder
+            self.imageItem.image = NCImageCache.shared.getFolder(account: tableTrash.account)
         } else {
             self.imageItem.image = image
             self.labelInfo?.text = (self.labelInfo?.text ?? "") + " · " + NCUtilityFileSystem().transformedSize(tableTrash.size)

@@ -29,12 +29,13 @@ class NCActivityCommentView: UIView, UITextFieldDelegate {
 
     var completionHandler: ((String?) -> Void)?
 
-    func setup(urlBase: NCUserBaseUrl, account: tableAccount, completionHandler: @escaping (String?) -> Void) {
+    func setup(account: String, completionHandler: @escaping (String?) -> Void) {
+        let session = NCSession.shared.getSession(account: account)
         self.completionHandler = completionHandler
         newCommentField.placeholder = NSLocalizedString("_new_comment_", comment: "")
         newCommentField.delegate = self
 
-        let fileName = urlBase.userBaseUrl + "-" + urlBase.user + ".png"
+        let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: session.user)
         let fileNameLocalPath = NCUtilityFileSystem().directoryUserData + "/" + fileName
         if let image = UIImage(contentsOfFile: fileNameLocalPath) {
             imageItem.image = image

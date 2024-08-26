@@ -24,7 +24,7 @@
 import SwiftUI
 
 struct NCFileNameView: View {
-    @ObservedObject var model = NCFileNameModel()
+    @ObservedObject var model: NCFileNameModel
 
     var body: some View {
         Form {
@@ -33,7 +33,7 @@ struct NCFileNameView: View {
                 ///
                 Toggle(NSLocalizedString("_maintain_original_filename_", comment: ""), isOn: $model.maintainFilenameOriginal)
                     .font(.system(size: 16))
-                    .tint(Color(NCBrandColor.shared.brandElement))
+                    .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                     .onChange(of: model.maintainFilenameOriginal, perform: { newValue in
                         model.toggleMaintainFilenameOriginal(newValue: newValue)
                         model.getFileName()
@@ -42,7 +42,7 @@ struct NCFileNameView: View {
                 if !model.maintainFilenameOriginal {
                     Toggle(NSLocalizedString("_add_filenametype_", comment: ""), isOn: $model.addFileNameType)
                         .font(.system(size: 16))
-                        .tint(Color(NCBrandColor.shared.brandElement))
+                        .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                         .onChange(of: model.addFileNameType, perform: { newValue in
                             model.toggleAddFilenameType(newValue: newValue)
                             model.getFileName()
@@ -104,5 +104,5 @@ struct NCFileNameView: View {
 }
 
 #Preview {
-    NCFileNameView(model: NCFileNameModel())
+    NCFileNameView(model: NCFileNameModel(controller: nil))
 }

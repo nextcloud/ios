@@ -44,17 +44,12 @@ import Queuer
 }
 
 @objcMembers
-class NCNetworking: NSObject, NKCommonDelegate {
+class NCNetworking: NSObject, NextcloudKitDelegate {
     public static let shared: NCNetworking = {
         let instance = NCNetworking()
         NotificationCenter.default.addObserver(instance, selector: #selector(applicationDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
         return instance
     }()
-
-    public struct TransferInForegorund {
-        var ocId: String
-        var progress: Float
-    }
 
     struct FileNameServerUrl: Hashable {
         var fileName: String
@@ -62,98 +57,28 @@ class NCNetworking: NSObject, NKCommonDelegate {
 
     }
 
+    let sessionDownload = NextcloudKit.shared.nkCommonInstance.identifierSessionDownload
+    let sessionDownloadBackground = NextcloudKit.shared.nkCommonInstance.identifierSessionDownloadBackground
+    let sessionUpload = NextcloudKit.shared.nkCommonInstance.identifierSessionUpload
+    let sessionUploadBackground = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackground
+    let sessionUploadBackgroundWWan = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundWWan
+    let sessionUploadBackgroundExt = NextcloudKit.shared.nkCommonInstance.identifierSessionUploadBackgroundExt
+
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
+    let database = NCManageDatabase.shared
+    let global = NCGlobal.shared
+    var requestsUnifiedSearch: [DataRequest] = []
     var lastReachability: Bool = true
     var networkReachability: NKCommon.TypeReachability?
-    let downloadRequest = ThreadSafeDictionary<String, DownloadRequest>()
-    let uploadRequest = ThreadSafeDictionary<String, UploadRequest>()
-    let uploadMetadataInBackground = ThreadSafeDictionary<FileNameServerUrl, tableMetadata>()
-    let downloadMetadataInBackground = ThreadSafeDictionary<FileNameServerUrl, tableMetadata>()
-    var transferInForegorund: TransferInForegorund?
     weak var delegate: NCNetworkingDelegate?
     weak var certificateDelegate: ClientCertificateDelegate?
-
     var p12Data: Data?
     var p12Password: String?
-
-    let transferInError = ThreadSafeDictionary<String, Int>()
-
-    func transferInError(ocId: String) {
-        if let counter = self.transferInError[ocId] {
-            self.transferInError[ocId] = counter + 1
-        } else {
-            self.transferInError[ocId] = 1
-        }
-    }
-
-    func removeTransferInError(ocId: String) {
-        self.transferInError.removeValue(forKey: ocId)
-    }
-
     lazy var nkBackground: NKBackground = {
         let nckb = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance)
         return nckb
     }()
-
-    public let sessionMaximumConnectionsPerHost = 5
-    public let sessionDownloadBackground: String = "com.nextcloud.session.download.background"
-    public let sessionUploadBackground: String = "com.nextcloud.session.upload.background"
-    public let sessionUploadBackgroundWWan: String = "com.nextcloud.session.upload.backgroundWWan"
-    public let sessionUploadBackgroundExtension: String = "com.nextcloud.session.upload.extension"
-
-    public lazy var sessionManagerDownloadBackground: URLSession = {
-        let configuration = URLSessionConfiguration.background(withIdentifier: sessionDownloadBackground)
-        configuration.allowsCellularAccess = true
-        configuration.sessionSendsLaunchEvents = true
-        configuration.isDiscretionary = false
-        configuration.httpMaximumConnectionsPerHost = sessionMaximumConnectionsPerHost
-        configuration.requestCachePolicy = NSURLRequest.CachePolicy.reloadIgnoringLocalCacheData
-        configuration.httpCookieStorage = HTTPCookieStorage.sharedCookieStorage(forGroupContainerIdentifier: NCBrandOptions.shared.capabilitiesGroup)
-        let session = URLSession(configuration: configuration, delegate: nkBackground, delegateQueue: OperationQueue.main)
-
-        return session
-    }()
-
-    public lazy var sessionManagerUploadBackground: URLSession = {
-        let configuration = URLSessionConfiguration.background(withIdentifier: sessionUploadBackground)
-        configuration.allowsCellularAccess = true
-        configuration.sessionSendsLaunchEvents = true
-        configuration.isDiscretionary = false
-        configuration.httpMaximumConnectionsPerHost = sessionMaximumConnectionsPerHost
-        configuration.requestCachePolicy = NSURLRequest.CachePolicy.reloadIgnoringLocalCacheData
-        configuration.httpCookieStorage = HTTPCookieStorage.sharedCookieStorage(forGroupContainerIdentifier: NCBrandOptions.shared.capabilitiesGroup)
-        let session = URLSession(configuration: configuration, delegate: nkBackground, delegateQueue: OperationQueue.main)
-        return session
-    }()
-
-    public lazy var sessionManagerUploadBackgroundWWan: URLSession = {
-        let configuration = URLSessionConfiguration.background(withIdentifier: sessionUploadBackgroundWWan)
-        configuration.allowsCellularAccess = false
-        configuration.sessionSendsLaunchEvents = true
-        configuration.isDiscretionary = false
-        configuration.httpMaximumConnectionsPerHost = sessionMaximumConnectionsPerHost
-        configuration.requestCachePolicy = NSURLRequest.CachePolicy.reloadIgnoringLocalCacheData
-        configuration.httpCookieStorage = HTTPCookieStorage.sharedCookieStorage(forGroupContainerIdentifier: NCBrandOptions.shared.capabilitiesGroup)
-        let session = URLSession(configuration: configuration, delegate: nkBackground, delegateQueue: OperationQueue.main)
-        return session
-    }()
-
-    public lazy var sessionManagerUploadBackgroundExtension: URLSession = {
-        let configuration = URLSessionConfiguration.background(withIdentifier: sessionUploadBackgroundExtension)
-        configuration.allowsCellularAccess = true
-        configuration.sessionSendsLaunchEvents = true
-        configuration.isDiscretionary = false
-        configuration.httpMaximumConnectionsPerHost = sessionMaximumConnectionsPerHost
-        configuration.requestCachePolicy = NSURLRequest.CachePolicy.reloadIgnoringLocalCacheData
-        configuration.sharedContainerIdentifier = NCBrandOptions.shared.capabilitiesGroup
-        configuration.httpCookieStorage = HTTPCookieStorage.sharedCookieStorage(forGroupContainerIdentifier: NCBrandOptions.shared.capabilitiesGroup)
-        let session = URLSession(configuration: configuration, delegate: nkBackground, delegateQueue: OperationQueue.main)
-        return session
-    }()
-
-    // REQUESTS
-    var requestsUnifiedSearch: [DataRequest] = []
 
     // OPERATIONQUEUE
     let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
@@ -170,43 +95,34 @@ class NCNetworking: NSObject, NKCommonDelegate {
     override init() {
         super.init()
 
-        getActiveAccountCertificate()
-
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
-            self.getActiveAccountCertificate()
+        if let account = database.getActiveTableAccount()?.account {
+            getActiveAccountCertificate(account: account)
         }
 
-#if EXTENSION
-        print("Start Background Upload Extension: ", sessionUploadBackgroundExtension)
-#else
-        print("Start Background Download: ", sessionManagerDownloadBackground)
-        print("Start Background Upload: ", sessionManagerUploadBackground)
-        print("Start Background Upload WWan: ", sessionManagerUploadBackgroundWWan)
-#endif
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: global.notificationCenterChangeUser), object: nil, queue: nil) { notification in
+            if let userInfo = notification.userInfo {
+                if let account = userInfo["account"] as? String {
+                    self.getActiveAccountCertificate(account: account)
+                }
+            }
+        }
     }
 
     // MARK: - NotificationCenter
 
     func applicationDidEnterBackground() {
-        self.transferInError.removeAll()
+        NCTransferProgress.shared.clearAllCountError()
     }
 
     // MARK: - Communication Delegate
 
     func networkReachabilityObserver(_ typeReachability: NKCommon.TypeReachability) {
         if typeReachability == NKCommon.TypeReachability.reachableCellular || typeReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi {
-            if !lastReachability {
-#if !EXTENSION
-                if let appDelegate = UIApplication.shared.delegate as? AppDelegate {
-                    NCService().startRequestServicesServer(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId)
-                }
-#endif
-            }
             lastReachability = true
         } else {
             if lastReachability {
-                let error = NKError(errorCode: NCGlobal.shared.errorNetworkNotAvailable, errorDescription: "")
-                NCContentPresenter().messageNotification("_network_not_available_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.info)
+                let error = NKError(errorCode: global.errorNetworkNotAvailable, errorDescription: "")
+                NCContentPresenter().messageNotification("_network_not_available_", error: error, delay: global.dismissAfterSecond, type: NCContentPresenter.messageType.info)
             }
             lastReachability = false
         }
@@ -217,24 +133,19 @@ class NCNetworking: NSObject, NKCommonDelegate {
                                  didReceive challenge: URLAuthenticationChallenge,
                                  completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodClientCertificate {
-            DispatchQueue.main.async {
-                if let p12Data = self.p12Data,
-                   let cert = (p12Data, self.p12Password) as? UserCertificate,
-                   let pkcs12 = try? PKCS12(pkcs12Data: cert.data, password: cert.password, onIncorrectPassword: {
-                       self.certificateDelegate?.onIncorrectPassword()
-                   }) {
-                    let creds = PKCS12.urlCredential(for: pkcs12)
-
-                    completionHandler(URLSession.AuthChallengeDisposition.useCredential, creds)
-                } else {
-                    self.certificateDelegate?.didAskForClientCertificate()
-                    completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
-                }
+            if let p12Data = self.p12Data,
+               let cert = (p12Data, self.p12Password) as? UserCertificate,
+               let pkcs12 = try? PKCS12(pkcs12Data: cert.data, password: cert.password, onIncorrectPassword: {
+                   self.certificateDelegate?.onIncorrectPassword()
+               }) {
+                let creds = PKCS12.urlCredential(for: pkcs12)
+                completionHandler(URLSession.AuthChallengeDisposition.useCredential, creds)
+            } else {
+                self.certificateDelegate?.didAskForClientCertificate()
+                completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
             }
         } else {
-            DispatchQueue.global().async {
-                self.checkTrustedChallenge(session, didReceive: challenge, completionHandler: completionHandler)
-            }
+            self.checkTrustedChallenge(session, didReceive: challenge, completionHandler: completionHandler)
         }
     }
 
@@ -259,15 +170,6 @@ class NCNetworking: NSObject, NKCommonDelegate {
         unifiedSearchQueue.cancelAll()
         saveLivePhotoQueue.cancelAll()
         convertLivePhotoQueue.cancelAll()
-    }
-
-    func cancelAllTask() {
-        cancelAllQueue()
-        cancelDataTask()
-        cancelDownloadTasks()
-        cancelUploadTasks()
-        cancelDownloadBackgroundTask()
-        cancelUploadBackgroundTask()
     }
 
     // MARK: - Pinning check
@@ -366,12 +268,12 @@ class NCNetworking: NSObject, NKCommonDelegate {
             }
 
             if error == .success {
-                NCNetworking.shared.writeCertificate(host: host)
+                self.writeCertificate(host: host)
                 completion(error)
             } else if error.errorCode == NSURLErrorServerCertificateUntrusted {
                 let alertController = UIAlertController(title: NSLocalizedString("_ssl_certificate_untrusted_", comment: ""), message: NSLocalizedString("_connect_server_anyway_", comment: ""), preferredStyle: .alert)
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { _ in
-                    NCNetworking.shared.writeCertificate(host: host)
+                    self.writeCertificate(host: host)
                     completion(.success)
                 }))
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_no_", comment: ""), style: .default, handler: { _ in
@@ -389,9 +291,7 @@ class NCNetworking: NSObject, NKCommonDelegate {
         }
     }
 
-    private func getActiveAccountCertificate() {
-        if let account = NCManageDatabase.shared.getActiveAccount()?.account {
-            (self.p12Data, self.p12Password) = NCKeychain().getClientCertificate(account: account)
-        }
+    private func getActiveAccountCertificate(account: String) {
+        (self.p12Data, self.p12Password) = NCKeychain().getClientCertificate(account: account)
     }
 }

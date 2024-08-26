@@ -29,7 +29,7 @@ struct ToolbarWidgetProvider: TimelineProvider {
     typealias Entry = ToolbarDataEntry
 
     func placeholder(in context: Context) -> Entry {
-        return Entry(date: Date(), isPlaceholder: true, userId: "", url: "", footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " toolbar")
+        return Entry(date: Date(), isPlaceholder: true, userId: "", url: "", account: "", footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " toolbar")
     }
 
     func getSnapshot(in context: Context, completion: @escaping (Entry) -> Void) {

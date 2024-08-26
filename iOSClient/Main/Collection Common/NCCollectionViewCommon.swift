@@ -60,9 +60,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var layoutType = NCGlobal.shared.layoutList
     var literalSearch: String?
     var tabBarSelect: NCCollectionViewCommonSelectTabBar!
-    var timerNotificationCenter: Timer?
-    var notificationReloadDataSource: Int = 0
-    var notificationReloadDataSourceNetwork: Int = 0
     var attributesZoomIn: UIMenuElement.Attributes = []
     var attributesZoomOut: UIMenuElement.Attributes = []
     let maxImageGrid: CGFloat = 7
@@ -80,12 +77,34 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var emptyDataPortaitOffset: CGFloat = 0
     var emptyDataLandscapeOffset: CGFloat = -20
 
+    var session: NCSession.Session {
+        NCSession.shared.getSession(controller: tabBarController)
+    }
+
+    var isLayoutPhoto: Bool {
+        layoutForView?.layout == NCGlobal.shared.layoutPhotoRatio || layoutForView?.layout == NCGlobal.shared.layoutPhotoSquare
+    }
+
+    var isLayoutGrid: Bool {
+        layoutForView?.layout == NCGlobal.shared.layoutGrid
+    }
+
+    var isLayoutList: Bool {
+        layoutForView?.layout == NCGlobal.shared.layoutList
+    }
+
     var showDescription: Bool {
         !headerRichWorkspaceDisable && NCKeychain().showDescription
     }
 
     var infoLabelsSeparator: String {
         layoutForView?.layout == NCGlobal.shared.layoutList ? " - " : ""
+    }
+
+    var sizeImage: CGSize {
+        let columnCount: Int = self.layoutForView?.columnPhoto ?? 3
+        let size = CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
+        return size
     }
 
     // MARK: - View Life Cycle
@@ -135,7 +154,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
             self.dataSource.clearDirectory()
-            NCManageDatabase.shared.cleanEtagDirectory(account: self.appDelegate.account, serverUrl: self.serverUrl)
+            NCManageDatabase.shared.cleanEtagDirectory(serverUrl: self.serverUrl, account: self.session.account)
             self.reloadDataSourceNetwork()
         }
 
@@ -154,7 +173,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         let dropInteraction = UIDropInteraction(delegate: self)
         self.navigationController?.navigationItem.leftBarButtonItems?.first?.customView?.addInteraction(dropInteraction)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -169,11 +188,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         setNavigationLeftItems()
         setNavigationRightItems()
 
-        layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl)
-        if layoutForView?.layout == NCGlobal.shared.layoutList {
+        layoutForView = NCManageDatabase.shared.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl)
+        if isLayoutList {
             collectionView?.collectionViewLayout = listLayout
             self.layoutType = NCGlobal.shared.layoutList
-        } else if layoutForView?.layout == NCGlobal.shared.layoutGrid {
+        } else if isLayoutGrid {
             collectionView?.collectionViewLayout = gridLayout
             self.layoutType = NCGlobal.shared.layoutGrid
         } else if layoutForView?.layout == NCGlobal.shared.layoutPhotoRatio {
@@ -192,8 +211,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
-        timerNotificationCenter = Timer.scheduledTimer(timeInterval: 1.5, target: self, selector: #selector(notificationCenterEvents), userInfo: nil, repeats: true)
 
         NotificationCenter.default.addObserver(self, selector: #selector(applicationWillResignActive(_:)), name: UIApplication.willResignActiveNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(closeRichWorkspaceWebView), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCloseRichWorkspaceWebView), object: nil)
@@ -236,8 +253,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-
-        timerNotificationCenter?.invalidate()
 
         NotificationCenter.default.removeObserver(self, name: UIApplication.willResignActiveNotification, object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCloseRichWorkspaceWebView), object: nil)
@@ -296,14 +311,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     // MARK: - NotificationCenter
 
-    @objc func notificationCenterEvents() {
-        if notificationReloadDataSource > 0 {
-            print("notificationReloadDataSource: \(notificationReloadDataSource)")
-            reloadDataSource()
-            notificationReloadDataSource = 0
-        }
-    }
-
     @objc func applicationWillResignActive(_ notification: NSNotification) {
         self.refreshControl.endRefreshing()
     }
@@ -319,12 +326,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         setNavigationLeftItems()
     }
 
-    @objc func changeTheming() {
+    @objc func changeTheming(_ notification: NSNotification) {
         collectionView.reloadData()
     }
 
     @objc func reloadDataSource(_ notification: NSNotification) {
-        notificationReloadDataSource += 1
+        reloadDataSource()
     }
 
     @objc func reloadDataSourceNetwork(_ notification: NSNotification) {
@@ -341,7 +348,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func changeStatusFolderE2EE(_ notification: NSNotification) {
-        notificationReloadDataSource += 1
+        reloadDataSource()
     }
 
     @objc func closeRichWorkspaceWebView() {
@@ -394,7 +401,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func renameFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let account = userInfo["account"] as? String,
-              account == appDelegate.account
+              account == session.account
         else { return }
 
         reloadDataSource()
@@ -406,11 +413,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let serverUrl = userInfo["serverUrl"] as? String,
               serverUrl == self.serverUrl,
               let account = userInfo["account"] as? String,
-              account == appDelegate.account,
+              account == session.account,
               let withPush = userInfo["withPush"] as? Bool
         else { return }
 
-        notificationReloadDataSource += 1
+        reloadDataSource()
 
         if withPush, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
             if let sceneIdentifier = userInfo["sceneIdentifier"] as? String {
@@ -425,7 +432,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @objc func favoriteFile(_ notification: NSNotification) {
         if self is NCFavorite {
-            return notificationReloadDataSource += 1
+            return reloadDataSource()
         }
 
         guard let userInfo = notification.userInfo as NSDictionary?,
@@ -439,103 +446,82 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func downloadStartFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let serverUrl = userInfo["serverUrl"] as? String,
-              serverUrl == self.serverUrl || self.serverUrl.isEmpty,
-              let account = userInfo["account"] as? String,
-              account == appDelegate.account
+              let account = userInfo["account"] as? String
         else { return }
 
-        self.notificationReloadDataSource += 1
+        if account == self.session.account, serverUrl == self.serverUrl {
+            self.reloadDataSource()
+        } else {
+            self.collectionView?.reloadData()
+        }
     }
 
     @objc func downloadedFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let serverUrl = userInfo["serverUrl"] as? String,
-              serverUrl == self.serverUrl || self.serverUrl.isEmpty,
-              let account = userInfo["account"] as? String,
-              account == appDelegate.account,
-              let error = userInfo["error"] as? NKError
+              let account = userInfo["account"] as? String
         else { return }
 
-        if error != .success {
-            NCContentPresenter().showError(error: error)
+        if account == self.session.account, serverUrl == self.serverUrl {
+            self.reloadDataSource()
+        } else {
+            self.collectionView?.reloadData()
         }
-
-        notificationReloadDataSource += 1
     }
 
     @objc func downloadCancelFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let serverUrl = userInfo["serverUrl"] as? String,
-              serverUrl == self.serverUrl || self.serverUrl.isEmpty,
-              let account = userInfo["account"] as? String,
-              account == appDelegate.account
+              let account = userInfo["account"] as? String
         else { return }
 
-        reloadDataSource()
+        if account == self.session.account, serverUrl == self.serverUrl {
+            self.reloadDataSource()
+        } else {
+            self.collectionView?.reloadData()
+        }
     }
 
     @objc func uploadStartFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String,
-              let serverUrl = userInfo["serverUrl"] as? String,
-              let account = userInfo["account"] as? String,
-              !isSearchingMode,
-              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
-        else { return }
-
-        // Header view trasfer
-        if metadata.isTransferInForeground {
-            NCNetworking.shared.transferInForegorund = NCNetworking.TransferInForegorund(ocId: ocId, progress: 0)
-            DispatchQueue.main.async { self.collectionView?.reloadData() }
-        }
-
-        if serverUrl == self.serverUrl, account == appDelegate.account {
-            notificationReloadDataSource += 1
-        }
+        self.collectionView?.reloadData()
     }
 
     @objc func uploadedFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocIdTemp = userInfo["ocIdTemp"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
               let account = userInfo["account"] as? String
         else { return }
 
-        if ocIdTemp == NCNetworking.shared.transferInForegorund?.ocId {
-            NCNetworking.shared.transferInForegorund = nil
-            DispatchQueue.main.async { self.collectionView?.reloadData() }
-        }
-
-        if account == appDelegate.account, serverUrl == self.serverUrl {
-            notificationReloadDataSource += 1
+        if account == self.session.account, serverUrl == self.serverUrl {
+            self.reloadDataSource()
+        } else {
+            self.collectionView?.reloadData()
         }
     }
 
     @objc func uploadedLivePhoto(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let serverUrl = userInfo["serverUrl"] as? String,
-              serverUrl == self.serverUrl,
-              let account = userInfo["account"] as? String,
-              account == appDelegate.account
+              let account = userInfo["account"] as? String
         else { return }
 
-        notificationReloadDataSource += 1
+        if account == self.session.account, serverUrl == self.serverUrl {
+            self.reloadDataSource()
+        } else {
+            self.collectionView?.reloadData()
+        }
     }
 
     @objc func uploadCancelFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
               let account = userInfo["account"] as? String
         else { return }
 
-        if ocId == NCNetworking.shared.transferInForegorund?.ocId {
-            NCNetworking.shared.transferInForegorund = nil
-            DispatchQueue.main.async { self.collectionView?.reloadData() }
-        }
-
-        if account == appDelegate.account, serverUrl == self.serverUrl {
-            reloadDataSource()
+        if account == self.session.account, serverUrl == self.serverUrl {
+            self.reloadDataSource()
+        } else {
+            self.collectionView?.reloadData()
         }
     }
 
@@ -544,63 +530,31 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let progressNumber = userInfo["progress"] as? NSNumber,
               let totalBytes = userInfo["totalBytes"] as? Int64,
               let totalBytesExpected = userInfo["totalBytesExpected"] as? Int64,
-              let ocId = userInfo["ocId"] as? String
+              let ocId = userInfo["ocId"] as? String,
+              let ocIdTransfer = userInfo["ocIdTransfer"] as? String,
+              let session = userInfo["session"] as? String
         else { return }
+
         let chunk: Int = userInfo["chunk"] as? Int ?? 0
         let e2eEncrypted: Bool = userInfo["e2eEncrypted"] as? Bool ?? false
+        let status = userInfo["status"] as? Int ?? NCGlobal.shared.metadataStatusNormal
 
-        DispatchQueue.main.async {
-            if self.headerMenuTransferView && (chunk > 0 || e2eEncrypted) {
-                if NCNetworking.shared.transferInForegorund?.ocId == ocId {
-                    NCNetworking.shared.transferInForegorund?.progress = progressNumber.floatValue
-                } else {
-                    NCNetworking.shared.transferInForegorund = NCNetworking.TransferInForegorund(ocId: ocId, progress: progressNumber.floatValue)
-                    self.collectionView.reloadData()
-                }
-                self.sectionFirstHeader?.progressTransfer.progress = progressNumber.floatValue
-                self.sectionFirstHeaderEmptyData?.progressTransfer.progress = progressNumber.floatValue
-            } else {
-                guard let indexPath = self.dataSource.getIndexPathMetadata(ocId: ocId).indexPath,
-                      let cell = self.collectionView?.cellForItem(at: indexPath),
-                      let cell = cell as? NCCellProtocol else { return }
-                if progressNumber.floatValue == 1 && !(cell is NCTransferCell) {
-                    cell.fileProgressView?.isHidden = true
-                    cell.fileProgressView?.progress = .zero
-                    cell.setButtonMore(named: NCGlobal.shared.buttonMoreMore, image: NCImageCache.images.buttonMore)
-                    if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                        cell.writeInfoDateSize(date: metadata.date, size: metadata.size)
-                    } else {
-                        cell.fileInfoLabel?.text = ""
-                        cell.fileSubinfoLabel?.text = ""
-                    }
-                } else {
-                    cell.fileProgressView?.isHidden = false
-                    cell.fileProgressView?.progress = progressNumber.floatValue
-                    cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCImageCache.images.buttonStop)
-                    let status = userInfo["status"] as? Int ?? NCGlobal.shared.metadataStatusNormal
-                    if status == NCGlobal.shared.metadataStatusDownloading {
-                        cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected)
-                        cell.fileSubinfoLabel?.text = self.infoLabelsSeparator + "↓ " + self.utilityFileSystem.transformedSize(totalBytes)
-                    } else if status == NCGlobal.shared.metadataStatusUploading {
-                        if totalBytes > 0 {
-                            cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected)
-                            cell.fileSubinfoLabel?.text = self.infoLabelsSeparator + "↑ " + self.utilityFileSystem.transformedSize(totalBytes)
-                        } else {
-                            cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected)
-                            cell.fileSubinfoLabel?.text = self.infoLabelsSeparator + "↑ …"
-                        }
-                    }
-                }
-            }
+        let transfer = NCTransferProgress.shared.append(NCTransferProgress.Transfer(ocId: ocId, ocIdTransfer: ocIdTransfer, session: session, chunk: chunk, e2eEncrypted: e2eEncrypted, progressNumber: progressNumber, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected))
+
+        // HEADER
+        if self.headerMenuTransferView, transfer.session.contains("upload") {
+            self.sectionFirstHeader?.setViewTransfer(isHidden: false, progress: transfer.progressNumber.floatValue)
+            self.sectionFirstHeaderEmptyData?.setViewTransfer(isHidden: false, progress: transfer.progressNumber.floatValue)
         }
     }
 
     // MARK: - Layout
 
     func setNavigationLeftItems() {
-        guard layoutKey == NCGlobal.shared.layoutViewFiles else { return }
-        let activeAccount = NCManageDatabase.shared.getActiveAccount()
-        let image = utility.loadUserImage(for: appDelegate.user, displayName: activeAccount?.displayName, userBaseUrl: appDelegate)
+        guard layoutKey == NCGlobal.shared.layoutViewFiles,
+              let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
+            return }
+        let image = utility.loadUserImage(for: tableAccount.user, displayName: tableAccount.displayName, urlBase: tableAccount.urlBase)
         let accountButton = AccountSwitcherButton(type: .custom)
         let accounts = NCManageDatabase.shared.getAllAccountOrderAlias()
         var childrenAccountSubmenu: [UIMenuElement] = []
@@ -612,7 +566,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         if !accounts.isEmpty {
             let accountActions: [UIAction] = accounts.map { account in
-                let image = utility.loadUserImage(for: account.user, displayName: account.displayName, userBaseUrl: account)
+                let image = utility.loadUserImage(for: account.user, displayName: account.displayName, urlBase: account.urlBase)
                 var name: String = ""
                 var url: String = ""
 
@@ -625,7 +579,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
                 let action = UIAction(title: name, image: image, state: account.active ? .on : .off) { _ in
                     if !account.active {
-                        self.appDelegate.changeAccount(account.account, userProfile: nil) { }
+                        NCAccount().changeAccount(account.account, userProfile: nil, controller: self.tabBarController as? NCMainTabBarController) { }
                         self.setEditMode(false)
                     }
                 }
@@ -635,7 +589,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
 
             let addAccountAction = UIAction(title: NSLocalizedString("_add_account_", comment: ""), image: utility.loadImage(named: "person.crop.circle.badge.plus", colors: NCBrandColor.shared.iconImageMultiColors)) { _ in
-                self.appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
+                self.appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
             }
 
             let settingsAccountAction = UIAction(title: NSLocalizedString("_account_settings_", comment: ""), image: utility.loadImage(named: "gear", colors: [NCBrandColor.shared.iconImageColor])) { _ in
@@ -677,7 +631,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         let isTabBarSelectHidden = tabBarSelect.isHidden()
 
         func createMenuActions() -> [UIMenuElement] {
-            guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl) else { return [] }
+            guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl) else { return [] }
             let columnPhoto = self.layoutForView?.columnPhoto ?? 3
 
             func saveLayout(_ layoutForView: NCDBLayoutForView) {
@@ -815,9 +769,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 saveLayout(layoutForView)
             }
 
-            let personalFilesOnly = NCKeychain().getPersonalFilesOnly(account: appDelegate.account)
+            let personalFilesOnly = NCKeychain().getPersonalFilesOnly(account: session.account)
             let personalFilesOnlyAction = UIAction(title: NSLocalizedString("_personal_files_only_", comment: ""), image: utility.loadImage(named: "folder.badge.person.crop", colors: NCBrandColor.shared.iconImageMultiColors), state: personalFilesOnly ? .on : .off) { _ in
-                NCKeychain().setPersonalFilesOnly(account: self.appDelegate.account, value: !personalFilesOnly)
+                NCKeychain().setPersonalFilesOnly(account: self.session.account, value: !personalFilesOnly)
                 self.reloadDataSource()
             }
 
@@ -843,7 +797,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
 
         if isEditMode {
-            tabBarSelect.update(selectOcId: selectOcId, metadatas: getSelectedMetadatas(), userId: appDelegate.userId)
+            tabBarSelect.update(selectOcId: selectOcId, metadatas: getSelectedMetadatas(), userId: session.userId)
             tabBarSelect.show()
             let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) {
                 self.setEditMode(false)
@@ -856,6 +810,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             if layoutKey == NCGlobal.shared.layoutViewFiles {
                 let notification = UIBarButtonItem(image: utility.loadImage(named: "bell"), style: .plain) {
                     if let viewController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? NCNotification {
+                        viewController.session = self.session
                         self.navigationController?.pushViewController(viewController, animated: true)
                     }
                 }
@@ -874,14 +829,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func getNavigationTitle() -> String {
-        let activeAccount = NCManageDatabase.shared.getActiveAccount()
-        guard let userAlias = activeAccount?.alias, !userAlias.isEmpty else {
-            return NCBrandOptions.shared.brand
+        let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account))
+        if let tableAccount,
+           !tableAccount.alias.isEmpty {
+            return tableAccount.alias
         }
-        return userAlias
+        return NCBrandOptions.shared.brand
     }
 
-    func accountSettingsDidDismiss(tableAccount: tableAccount?) { }
+    func accountSettingsDidDismiss(tableAccount: tableAccount?, controller: NCMainTabBarController?) { }
 
     // MARK: - SEARCH
 
@@ -928,127 +884,23 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     // MARK: - TAP EVENT
 
-    // sessionIdentifierDownload: String = "com.nextcloud.nextcloudkit.session.download"
-    // sessionIdentifierUpload: String = "com.nextcloud.nextcloudkit.session.upload"
-
-    // sessionUploadBackground: String = "com.nextcloud.session.upload.background"
-    // sessionUploadBackgroundWWan: String = "com.nextcloud.session.upload.backgroundWWan"
-    // sessionUploadBackgroundExtension: String = "com.nextcloud.session.upload.extension"
-
-    func cancelSession(metadata: tableMetadata) async {
-        let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
-
-        utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-
-        // No session found
-        if metadata.session.isEmpty {
-            NCNetworking.shared.uploadRequest.removeValue(forKey: fileNameLocalPath)
-            NCNetworking.shared.downloadRequest.removeValue(forKey: fileNameLocalPath)
-            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
-            return
-        }
-
-        // DOWNLOAD FOREGROUND
-        if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload {
-            if let request = NCNetworking.shared.downloadRequest[fileNameLocalPath] {
-                request.cancel()
-            } else if let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) {
-                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                           session: "",
-                                                           sessionError: "",
-                                                           selector: "",
-                                                           status: NCGlobal.shared.metadataStatusNormal)
-                NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile),
-                                                object: nil,
-                                                userInfo: ["ocId": metadata.ocId,
-                                                           "serverUrl": metadata.serverUrl,
-                                                           "account": metadata.account])
-            }
-            return
-        }
-
-        // DOWNLOAD BACKGROUND
-        if metadata.session == NCNetworking.shared.sessionDownloadBackground {
-            let session: URLSession? = NCNetworking.shared.sessionManagerDownloadBackground
-            if let tasks = await session?.tasks {
-                for task in tasks.2 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
-                    if task.taskIdentifier == metadata.sessionTaskIdentifier {
-                        task.cancel()
-                    }
-                }
-            }
-            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                       session: "",
-                                                       sessionError: "",
-                                                       selector: "",
-                                                       status: NCGlobal.shared.metadataStatusNormal)
-            NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadCancelFile),
-                                            object: nil,
-                                            userInfo: ["ocId": metadata.ocId,
-                                                       "serverUrl": metadata.serverUrl,
-                                                       "account": metadata.account])
-        }
-
-        // UPLOAD FOREGROUND
-        if metadata.session == NextcloudKit.shared.nkCommonInstance.sessionIdentifierUpload {
-            if let request = NCNetworking.shared.uploadRequest[fileNameLocalPath] {
-                request.cancel()
-                NCNetworking.shared.uploadRequest.removeValue(forKey: fileNameLocalPath)
-            }
-            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
-                                            object: nil,
-                                            userInfo: ["ocId": metadata.ocId,
-                                                       "serverUrl": metadata.serverUrl,
-                                                       "account": metadata.account])
-            return
-        }
-
-        // UPLOAD BACKGROUND
-        var session: URLSession?
-        if metadata.session == NCNetworking.shared.sessionUploadBackground {
-            session = NCNetworking.shared.sessionManagerUploadBackground
-        } else if metadata.session == NCNetworking.shared.sessionUploadBackgroundWWan {
-            session = NCNetworking.shared.sessionManagerUploadBackgroundWWan
-        } else if metadata.session == NCNetworking.shared.sessionUploadBackgroundExtension {
-            session = NCNetworking.shared.sessionManagerUploadBackgroundExtension
-        }
-        if let tasks = await session?.tasks {
-            for task in tasks.1 { // ([URLSessionDataTask], [URLSessionUploadTask], [URLSessionDownloadTask])
-                if task.taskIdentifier == metadata.sessionTaskIdentifier {
-                    task.cancel()
-                }
-            }
-            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            NotificationCenter.default.post(name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterUploadCancelFile),
-                                            object: nil,
-                                            userInfo: ["ocId": metadata.ocId,
-                                                       "serverUrl": metadata.serverUrl,
-                                                       "account": metadata.account])
-        }
+    func tapMoreListItem(with ocId: String, ocIdTransfer: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
+        tapMoreGridItem(with: ocId, ocIdTransfer: ocIdTransfer, image: image, indexPath: indexPath, sender: sender)
     }
 
-    func tapMoreListItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
-        tapMoreGridItem(with: objectId, namedButtonMore: namedButtonMore, image: image, indexPath: indexPath, sender: sender)
+    func tapMorePhotoItem(with ocId: String, ocIdTransfer: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
+        tapMoreGridItem(with: ocId, ocIdTransfer: ocIdTransfer, image: image, indexPath: indexPath, sender: sender)
     }
 
-    func tapShareListItem(with objectId: String, indexPath: IndexPath, sender: Any) {
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId) else { return }
+    func tapShareListItem(with ocId: String, ocIdTransfer: String, indexPath: IndexPath, sender: Any) {
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
 
         NCActionCenter.shared.openShare(viewController: self, metadata: metadata, page: .sharing)
     }
 
-    func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId) else { return }
-
-        if namedButtonMore == NCGlobal.shared.buttonMoreMore || namedButtonMore == NCGlobal.shared.buttonMoreLock {
-            toggleMenu(metadata: metadata, indexPath: indexPath, imageIcon: image)
-        } else if namedButtonMore == NCGlobal.shared.buttonMoreStop {
-            Task {
-                await cancelSession(metadata: metadata)
-            }
-        }
+    func tapMoreGridItem(with ocId: String, ocIdTransfer: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
+        toggleMenu(metadata: metadata, indexPath: indexPath, imageIcon: image)
     }
 
     func tapRichWorkspace(_ sender: Any) {
@@ -1068,26 +920,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         unifiedSearchMore(metadataForSection: metadataForSection)
     }
 
-    func tapButtonTransfer(_ sender: Any) {
-        if let ocId = NCNetworking.shared.transferInForegorund?.ocId,
-           let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-            Task {
-                await cancelSession(metadata: metadata)
-            }
-        }
-    }
+    func longPressListItem(with ocId: String, ocIdTransfer: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) { }
 
-    func longPressListItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
-    }
+    func longPressGridItem(with ocId: String, ocIdTransfer: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) { }
 
-    func longPressGridItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
-    }
+    func longPressMoreListItem(with ocId: String, ocIdTransfer: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) { }
 
-    func longPressMoreListItem(with objectId: String, namedButtonMore: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
-    }
+    func longPressPhotoItem(with ocId: String, ocIdTransfer: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) { }
 
-    func longPressMoreGridItem(with objectId: String, namedButtonMore: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
-    }
+    func longPressMoreGridItem(with ocId: String, ocIdTransfer: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) { }
 
     @objc func longPressCollecationView(_ gestureRecognizer: UILongPressGestureRecognizer) {
         openMenuItems(with: nil, gestureRecognizer: gestureRecognizer)
@@ -1137,7 +978,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func pasteFilesMenu() {
-        NCActionCenter.shared.pastePasteboard(serverUrl: serverUrl, account: appDelegate.account, hudView: tabBarController?.view)
+        NCActionCenter.shared.pastePasteboard(serverUrl: serverUrl, account: session.account, hudView: tabBarController?.view)
     }
 
     // MARK: - DataSource + NC Endpoint
@@ -1145,13 +986,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func queryDB() { }
 
     @objc func reloadDataSource(withQueryDB: Bool = true) {
-        guard !appDelegate.account.isEmpty, !self.isSearchingMode else { return }
+        guard !session.account.isEmpty, !self.isSearchingMode else { return }
 
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()
-        autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: appDelegate.urlBase, userId: appDelegate.userId, account: appDelegate.account)
+        autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(session: session)
         // get layout for view
-        layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl)
+        layoutForView = NCManageDatabase.shared.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl)
 
         DispatchQueue.global(qos: .userInteractive).async {
             if withQueryDB { self.queryDB() }
@@ -1170,21 +1011,24 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func networkSearch() {
-        guard !appDelegate.account.isEmpty, let literalSearch = literalSearch, !literalSearch.isEmpty
-        else { return self.refreshControl.endRefreshing() }
+        guard !session.account.isEmpty,
+              let literalSearch = literalSearch,
+              !literalSearch.isEmpty else {
+            return self.refreshControl.endRefreshing()
+        }
 
         self.dataSource.clearDataSource()
         self.refreshControl.beginRefreshing()
         self.collectionView.reloadData()
 
-        if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion20 {
-            NCNetworking.shared.unifiedSearchFiles(userBaseUrl: appDelegate, literal: literalSearch) { task in
+        if NCCapabilities.shared.getCapabilities(account: session.account).capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion20 {
+            NCNetworking.shared.unifiedSearchFiles(literal: literalSearch, account: session.account) { task in
                 self.dataSourceTask = task
                 self.collectionView.reloadData()
             } providers: { _, searchProviders in
                 self.providers = searchProviders
                 self.searchResults = []
-                self.dataSource = NCDataSource(metadatas: [], account: self.appDelegate.account, layoutForView: self.layoutForView, providers: self.providers, searchResults: self.searchResults)
+                self.dataSource = NCDataSource(metadatas: [], layoutForView: self.layoutForView, providers: self.providers, searchResults: self.searchResults)
             } update: { _, _, searchResult, metadatas in
                 guard let metadatas, !metadatas.isEmpty, self.isSearchingMode, let searchResult else { return }
                 NCNetworking.shared.unifiedSearchQueue.addOperation(NCCollectionViewUnifiedSearch(collectionViewCommon: self, metadatas: metadatas, searchResult: searchResult))
@@ -1193,7 +1037,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.collectionView.reloadData()
             }
         } else {
-            NCNetworking.shared.searchFiles(urlBase: appDelegate, literal: literalSearch, account: appDelegate.account) { task in
+            NCNetworking.shared.searchFiles(literal: literalSearch, account: session.account) { task in
                 self.dataSourceTask = task
                 self.collectionView.reloadData()
             } completion: { metadatas, error in
@@ -1202,7 +1046,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     self.collectionView.reloadData()
                 }
                 guard let metadatas = metadatas, error == .success, self.isSearchingMode else { return }
-                self.dataSource = NCDataSource(metadatas: metadatas, account: self.appDelegate.account, layoutForView: self.layoutForView, providers: self.providers, searchResults: self.searchResults)
+                self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: self.layoutForView, providers: self.providers, searchResults: self.searchResults)
             }
         }
     }
@@ -1213,7 +1057,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         metadataForSection.unifiedSearchInProgress = true
         self.collectionView?.reloadData()
 
-        NCNetworking.shared.unifiedSearchFilesProvider(userBaseUrl: appDelegate, id: lastSearchResult.id, term: term, limit: 5, cursor: cursor) { task in
+        NCNetworking.shared.unifiedSearchFilesProvider(id: lastSearchResult.id, term: term, limit: 5, cursor: cursor, account: session.account) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()
         } completion: { _, searchResult, metadatas, error in
@@ -1255,11 +1099,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     // MARK: - Header size
 
-    func isHeaderMenuTransferViewEnabled() -> Bool {
-        if headerMenuTransferView {
-            return NCManageDatabase.shared.getResultMetadataFromOcId(NCNetworking.shared.transferInForegorund?.ocId)?.isTransferInForeground ?? false
+    func isHeaderMenuTransferViewEnabled() -> Results<tableMetadata>? {
+        if headerMenuTransferView,
+           let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status == %d || status == %d",
+                                                                                            NCGlobal.shared.metadataStatusWaitUpload,
+                                                                                            NCGlobal.shared.metadataStatusUploading)),
+           !results.isEmpty {
+            return results
         }
-        return false
+        return nil
     }
 
     func getHeaderHeight(section: Int) -> (heightHeaderCommands: CGFloat, heightHeaderRichWorkspace: CGFloat, heightHeaderSection: CGFloat) {
@@ -1268,12 +1116,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         func getHeaderHeight() -> CGFloat {
             var size: CGFloat = 0
 
-            if isHeaderMenuTransferViewEnabled() {
+            if isHeaderMenuTransferViewEnabled() != nil {
                 if !isSearchingMode {
                     size += NCGlobal.shared.heightHeaderTransfer
                 }
-            } else {
-                NCNetworking.shared.transferInForegorund = nil
             }
             return size
         }
@@ -1302,7 +1148,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if isEditMode {
             return CGSize.zero
         } else if dataSource.getMetadataSourceForAllSections().isEmpty {
-            height = NCGlobal.shared.getHeightHeaderEmptyData(view: view, portraitOffset: emptyDataPortaitOffset, landscapeOffset: emptyDataLandscapeOffset, isHeaderMenuTransferViewEnabled: isHeaderMenuTransferViewEnabled())
+            height = NCGlobal.shared.getHeightHeaderEmptyData(view: view, portraitOffset: emptyDataPortaitOffset, landscapeOffset: emptyDataLandscapeOffset, isHeaderMenuTransferViewEnabled: isHeaderMenuTransferViewEnabled() != nil)
         } else {
             let (heightHeaderCommands, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: section)
             height = heightHeaderCommands + heightHeaderRichWorkspace + heightHeaderSection

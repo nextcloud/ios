@@ -31,6 +31,7 @@ struct NavigationCollectionViewCommon {
 
 class NCMainTabBarController: UITabBarController {
     var sceneIdentifier: String = UUID().uuidString
+    var account = ""
     var documentPickerViewController: NCDocumentPickerViewController?
     let navigationCollectionViewCommon = ThreadSafeArray<NavigationCollectionViewCommon>()
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
@@ -51,7 +52,8 @@ class NCMainTabBarController: UITabBarController {
     }
 
     func currentServerUrl() -> String {
-        var serverUrl = NCUtilityFileSystem().getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
+        let session = NCSession.shared.getSession(account: account)
+        var serverUrl = NCUtilityFileSystem().getHomeServer(session: session)
         let viewController = currentViewController()
         if let collectionViewCommon = viewController as? NCCollectionViewCommon {
             if !collectionViewCommon.serverUrl.isEmpty {

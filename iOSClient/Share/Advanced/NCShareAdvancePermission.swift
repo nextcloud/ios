@@ -49,15 +49,14 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
             if isNewShare {
                 let serverUrl = metadata.serverUrl + "/" + metadata.fileName
                 if share.shareType != NCShareCommon().SHARE_TYPE_LINK, metadata.e2eEncrypted,
-                   NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
+                   NCCapabilities.shared.getCapabilities(account: metadata.account).capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 {
                     if NCNetworkingE2EE().isInUpload(account: metadata.account, serverUrl: serverUrl) {
                         let error = NKError(errorCode: NCGlobal.shared.errorE2EEUploadInProgress, errorDescription: NSLocalizedString("_e2e_in_upload_", comment: ""))
                         return NCContentPresenter().showInfo(error: error)
                     }
-                    let error = await NCNetworkingE2EE().uploadMetadata(account: metadata.account, serverUrl: serverUrl, userId: metadata.userId, addUserId: share.shareWith, removeUserId: nil)
+                    let error = await NCNetworkingE2EE().uploadMetadata(serverUrl: serverUrl, addUserId: share.shareWith, removeUserId: nil, account: metadata.account)
                     if error != .success {
-                        NCContentPresenter().showError(error: error)
-                        return
+                        return NCContentPresenter().showError(error: error)
                     }
                 }
                 networking?.createShare(option: share)
@@ -96,7 +95,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
 
     func setupFooterView() {
         guard let footerView = (Bundle.main.loadNibNamed("NCShareAdvancePermissionFooter", owner: self, options: nil)?.first as? NCShareAdvancePermissionFooter) else { return }
-        footerView.setupUI(delegate: self)
+        footerView.setupUI(delegate: self, account: metadata.account)
 
         // tableFooterView can't use auto layout directly
         let container = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 120))

@@ -26,7 +26,7 @@ import NextcloudKit
 
 public protocol NCAccountRequestDelegate: AnyObject {
     func accountRequestAddAccount()
-    func accountRequestChangeAccount(account: String)
+    func accountRequestChangeAccount(account: String, controller: UIViewController?)
 }
 
 class NCAccountRequest: UIViewController {
@@ -35,11 +35,12 @@ class NCAccountRequest: UIViewController {
     @IBOutlet weak var progressView: UIProgressView!
 
     public var accounts: [tableAccount] = []
-    public var activeAccount: tableAccount?
+    public var activeAccount: String?
     public let heightCell: CGFloat = 60
     public var enableTimerProgress: Bool = true
     public var enableAddAccount: Bool = false
     public var dismissDidEnterBackground: Bool = false
+    public var controller: UIViewController?
     public weak var delegate: NCAccountRequestDelegate?
     let utility = NCUtility()
     private var timer: Timer?
@@ -134,9 +135,9 @@ extension NCAccountRequest: UITableViewDelegate {
             delegate?.accountRequestAddAccount()
         } else {
             let account = accounts[indexPath.row]
-            if account.account != activeAccount?.account {
+            if account.account != activeAccount {
                 dismiss(animated: true) {
-                    self.delegate?.accountRequestChangeAccount(account: account.account)
+                    self.delegate?.accountRequestChangeAccount(account: account.account, controller: self.controller)
                 }
             } else {
                 dismiss(animated: true)
@@ -177,10 +178,7 @@ extension NCAccountRequest: UITableViewDataSource {
 
             let account = accounts[indexPath.row]
 
-            avatarImage?.image = utility.loadUserImage(
-                for: account.user,
-                   displayName: account.displayName,
-                   userBaseUrl: account)
+            avatarImage?.image = utility.loadUserImage(for: account.user, displayName: account.displayName, urlBase: account.urlBase)
 
             if account.alias.isEmpty {
                 userLabel?.text = account.user.uppercased()

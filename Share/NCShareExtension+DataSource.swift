@@ -27,11 +27,10 @@ import NextcloudKit
 // MARK: - Collection View (target folder)
 
 extension NCShareExtension: UICollectionViewDelegate {
-
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return showAlert(description: "_invalid_url_") }
         let serverUrl = utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
-        if metadata.e2eEncrypted && !NCKeychain().isEndToEndEnabled(account: activeAccount.account) {
+        if metadata.e2eEncrypted && !NCKeychain().isEndToEndEnabled(account: activeTableAccount.account) {
             showAlert(title: "_info_", description: "_e2e_goto_settings_for_enable_")
         }
 
@@ -49,11 +48,11 @@ extension NCShareExtension: UICollectionViewDelegate {
         if kind == UICollectionView.elementKindSectionHeader {
             guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeaderEmptyData", for: indexPath) as? NCSectionFirstHeaderEmptyData else { return NCSectionFirstHeaderEmptyData() }
             if self.dataSourceTask?.state == .running {
-                header.emptyImage.image = utility.loadImage(named: "wifi", colors: [NCBrandColor.shared.brandElement])
+                header.emptyImage.image = utility.loadImage(named: "wifi", colors: [NCBrandColor.shared.getElement(account: activeTableAccount.account)])
                 header.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
                 header.emptyDescription.text = ""
             } else {
-                header.emptyImage.image = NCImageCache.images.folder
+                header.emptyImage.image = NCImageCache.shared.getFolder(account: self.activeTableAccount.account)
                 header.emptyTitle.text = NSLocalizedString("_files_no_folders_", comment: "")
                 header.emptyDescription.text = ""
             }
@@ -75,7 +74,6 @@ extension NCShareExtension: UICollectionViewDelegateFlowLayout {
 }
 
 extension NCShareExtension: UICollectionViewDataSource {
-
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return dataSource.numberOfSections()
     }
@@ -89,7 +87,10 @@ extension NCShareExtension: UICollectionViewDataSource {
             return UICollectionViewCell()
         }
 
-        cell.fileObjectId = metadata.ocId
+        cell.listCellDelegate = self
+
+        cell.fileOcId = metadata.ocId
+        cell.fileOcIdTransfer = metadata.ocIdTransfer
         cell.indexPath = indexPath
         cell.fileUser = metadata.ownerId
         cell.labelTitle.text = metadata.fileNameView
@@ -102,24 +103,23 @@ extension NCShareExtension: UICollectionViewDataSource {
         cell.imageMore.image = nil
         cell.imageItem.image = nil
         cell.imageItem.backgroundColor = nil
-        cell.progressView.progress = 0.0
 
         if metadata.directory {
             setupDirectoryCell(cell, indexPath: indexPath, with: metadata)
         }
 
         if metadata.favorite {
-            cell.imageFavorite.image = NCImageCache.images.favorite
+            cell.imageFavorite.image = NCImageCache.shared.getImageFavorite()
         }
 
         cell.imageSelect.isHidden = true
         cell.backgroundView = nil
         cell.hideButtonMore(true)
         cell.hideButtonShare(true)
-        cell.selected(false, isEditMode: false)
+        cell.selected(false, isEditMode: false, account: metadata.account)
 
         if metadata.isLivePhoto {
-            cell.imageStatus.image = NCImageCache.images.livePhoto
+            cell.imageStatus.image = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor2])
         }
 
         cell.setTags(tags: Array(metadata.tags))
@@ -139,31 +139,31 @@ extension NCShareExtension: UICollectionViewDataSource {
         }
 
         if metadata.e2eEncrypted {
-            cell.imageItem.image = NCImageCache.images.folderEncrypted
+            cell.imageItem.image = NCImageCache.shared.getFolderEncrypted(account: metadata.account)
         } else if isShare {
-            cell.imageItem.image = NCImageCache.images.folderSharedWithMe
+            cell.imageItem.image = NCImageCache.shared.getFolderSharedWithMe(account: metadata.account)
         } else if !metadata.shareType.isEmpty {
             metadata.shareType.contains(3) ?
-            (cell.imageItem.image = NCImageCache.images.folderPublic) :
-            (cell.imageItem.image = NCImageCache.images.folderSharedWithMe)
+            (cell.imageItem.image = NCImageCache.shared.getFolderPublic(account: metadata.account)) :
+            (cell.imageItem.image = NCImageCache.shared.getFolderSharedWithMe(account: metadata.account))
         } else if metadata.mountType == "group" {
-            cell.imageItem.image = NCImageCache.images.folderGroup
+            cell.imageItem.image = NCImageCache.shared.getFolderGroup(account: metadata.account)
         } else if isMounted {
-            cell.imageItem.image = NCImageCache.images.folderExternal
+            cell.imageItem.image = NCImageCache.shared.getFolderExternal(account: metadata.account)
         } else if metadata.fileName == autoUploadFileName && metadata.serverUrl == autoUploadDirectory {
-            cell.imageItem.image = NCImageCache.images.folderAutomaticUpload
+            cell.imageItem.image = NCImageCache.shared.getFolderAutomaticUpload(account: metadata.account)
         } else {
-            cell.imageItem.image = NCImageCache.images.folder
+            cell.imageItem.image = NCImageCache.shared.getFolder(account: metadata.account)
         }
 
         cell.labelInfo.text = utility.dateDiff(metadata.date as Date)
 
         let lockServerUrl = utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
-        let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", activeAccount.account, lockServerUrl))
+        let tableDirectory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", activeTableAccount.account, lockServerUrl))
 
         // Local image: offline
         if tableDirectory != nil && tableDirectory!.offline {
-            cell.imageLocal.image = NCImageCache.images.offlineFlag
+            cell.imageLocal.image = NCImageCache.shared.getImageOfflineFlag()
         }
     }
 }
@@ -171,7 +171,6 @@ extension NCShareExtension: UICollectionViewDataSource {
 // MARK: - Table View (uploading files)
 
 extension NCShareExtension: UITableViewDelegate {
-
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return heightRowTableView
     }
@@ -179,12 +178,11 @@ extension NCShareExtension: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard !uploadStarted else { return }
         let fileName = filesName[indexPath.row]
-        renameFile(named: fileName)
+        renameFile(named: fileName, account: activeTableAccount.account)
     }
 }
 
 extension NCShareExtension: UITableViewDataSource {
-
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         filesName.count
     }
@@ -192,7 +190,7 @@ extension NCShareExtension: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? NCShareCell else { return UITableViewCell() }
         let fileName = filesName[indexPath.row]
-        cell.setup(fileName: fileName)
+        cell.setup(fileName: fileName, account: activeTableAccount.account)
         cell.delegate = self
         return cell
     }

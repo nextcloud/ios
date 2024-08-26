@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import UIKit
 import NextcloudKit
 import JGProgressHUD
 
@@ -40,7 +41,7 @@ extension NCCollectionViewCommon: UICollectionViewDragDelegate {
     func collectionView(_ collectionView: UICollectionView, dragPreviewParametersForItemAt indexPath: IndexPath) -> UIDragPreviewParameters? {
         let previewParameters = UIDragPreviewParameters()
 
-        if layoutForView?.layout == NCGlobal.shared.layoutList,
+        if isLayoutList,
             let cell = collectionView.cellForItem(at: indexPath) as? NCListCell {
             let width = (collectionView.frame.width / 3) * 2
             previewParameters.visiblePath = UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: width, height: cell.frame.height), cornerRadius: 10)
@@ -81,7 +82,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
                 return UICollectionViewDropProposal(operation: .forbidden)
             }
         } else {
-            if serverUrl.isEmpty || NCUtilityFileSystem().isDirectoryE2EE(account: appDelegate.account, urlBase: appDelegate.urlBase, userId: appDelegate.userId, serverUrl: serverUrl) {
+            if serverUrl.isEmpty || NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, account: self.session.account) {
                 DragDropHover.shared.cleanPushDragDropHover()
                 return UICollectionViewDropProposal(operation: .forbidden)
             }
@@ -111,7 +112,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
         DragDropHover.shared.cleanPushDragDropHover()
         DragDropHover.shared.sourceMetadatas = nil
 
-        if let metadatas = NCDragDrop().performDrop(collectionView, performDropWith: coordinator, serverUrl: self.serverUrl, isImageVideo: false) {
+        if let metadatas = NCDragDrop().performDrop(collectionView, performDropWith: coordinator, serverUrl: self.serverUrl, isImageVideo: false, session: session) {
             DragDropHover.shared.sourceMetadatas = metadatas
             openMenu(collectionView: collectionView, location: coordinator.session.location(in: collectionView))
         }

@@ -44,7 +44,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
 
     weak var appDelegate = UIApplication.shared.delegate as? AppDelegate
 
-    public var metadata: tableMetadata?
+    public var metadata: tableMetadata!
     public var sharingEnabled = true
     public var height: CGFloat = 0
     let shareCommon = NCShareCommon()
@@ -52,8 +52,11 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
     let utility = NCUtility()
 
     var canReshare: Bool {
-        guard let metadata = metadata else { return true }
         return ((metadata.sharePermissionsCollaborationServices & NCPermissions().permissionShareShare) != 0)
+    }
+
+    var session: NCSession.Session {
+        NCSession.shared.getSession(account: metadata.account)
     }
 
     var shares: (firstShareLink: tableShare?, share: [tableShare]?) = (nil, nil)
@@ -85,12 +88,11 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
 
         NotificationCenter.default.addObserver(self, selector: #selector(reloadData), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataNCShare), object: nil)
 
-        guard let metadata = metadata else { return }
-
         if metadata.e2eEncrypted {
             let direcrory = NCManageDatabase.shared.getTableDirectory(account: metadata.account, serverUrl: metadata.serverUrl)
-            if NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV12 ||
-                (NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 && direcrory?.e2eEncrypted ?? false) {
+            let capabilities = NCCapabilities.shared.getCapabilities(account: metadata.account)
+            if capabilities.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV12 ||
+                (capabilities.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 && direcrory?.e2eEncrypted ?? false) {
                 searchFieldTopConstraint.constant = -50
                 searchField.alpha = 0
                 btnContact.alpha = 0
@@ -101,7 +103,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
 
         reloadData()
 
-        networking = NCShareNetworking(metadata: metadata, view: self.view, delegate: self)
+        networking = NCShareNetworking(metadata: metadata, view: self.view, delegate: self, session: session)
         if sharingEnabled {
             let isVisible = (self.navigationController?.topViewController as? NCSharePaging)?.page == .sharing
             networking?.readShare(showLoadingIndicator: isVisible)
@@ -114,11 +116,10 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
     func makeNewLinkShare() {
         guard
             let advancePermission = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "NCShareAdvancePermission") as? NCShareAdvancePermission,
-            let navigationController = self.navigationController,
-            let metadata = self.metadata else { return }
+            let navigationController = self.navigationController else { return }
         self.checkEnforcedPassword(shareType: shareCommon.SHARE_TYPE_LINK) { password in
             advancePermission.networking = self.networking
-            advancePermission.share = NCTableShareOptions.shareLink(metadata: metadata, password: password)
+            advancePermission.share = NCTableShareOptions.shareLink(metadata: self.metadata, password: password)
             advancePermission.metadata = self.metadata
             navigationController.pushViewController(advancePermission, animated: true)
         }
@@ -126,7 +127,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
 
     // Shared with you by ...
     func checkSharedWithYou() {
-        guard let appDelegate = self.appDelegate, let metadata = metadata, !metadata.ownerId.isEmpty, metadata.ownerId != appDelegate.userId else { return }
+        guard !metadata.ownerId.isEmpty, metadata.ownerId != session.userId else { return }
 
         if !canReshare {
             searchField.isUserInteractionEnabled = false
@@ -137,18 +138,14 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         searchFieldTopConstraint.constant = 45
         sharedWithYouByView.isHidden = false
         sharedWithYouByLabel.text = NSLocalizedString("_shared_with_you_by_", comment: "") + " " + metadata.ownerDisplayName
-        sharedWithYouByImage.image = utility.loadUserImage(
-            for: metadata.ownerId,
-            displayName: metadata.ownerDisplayName,
-            userBaseUrl: appDelegate)
+        sharedWithYouByImage.image = utility.loadUserImage(for: metadata.ownerId, displayName: metadata.ownerDisplayName, urlBase: session.urlBase)
         sharedWithYouByLabel.accessibilityHint = NSLocalizedString("_show_profile_", comment: "")
 
         let shareAction = UITapGestureRecognizer(target: self, action: #selector(openShareProfile))
         sharedWithYouByImage.addGestureRecognizer(shareAction)
         let shareLabelAction = UITapGestureRecognizer(target: self, action: #selector(openShareProfile))
         sharedWithYouByLabel.addGestureRecognizer(shareLabelAction)
-
-        let fileName = appDelegate.userBaseUrl + "-" + metadata.ownerId + ".png"
+        let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: metadata.ownerId)
 
         if NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) == nil {
             let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
@@ -174,16 +171,13 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
     // MARK: - Notification Center
 
     @objc func openShareProfile() {
-        guard let metadata = metadata else { return }
-        self.showProfileMenu(userId: metadata.ownerId)
+        self.showProfileMenu(userId: metadata.ownerId, session: session)
     }
 
     // MARK: -
 
     @objc func reloadData() {
-        if let metadata = metadata {
-            shares = NCManageDatabase.shared.getTableShares(metadata: metadata)
-        }
+        shares = NCManageDatabase.shared.getTableShares(metadata: metadata)
         tableView.reloadData()
     }
 
@@ -203,7 +197,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
     }
 
     func checkEnforcedPassword(shareType: Int, completion: @escaping (String?) -> Void) {
-        guard NCGlobal.shared.capabilityFileSharingPubPasswdEnforced,
+        guard NCCapabilities.shared.getCapabilities(account: session.account).capabilityFileSharingPubPasswdEnforced,
               shareType == shareCommon.SHARE_TYPE_LINK || shareType == shareCommon.SHARE_TYPE_EMAIL
         else { return completion(nil) }
 
@@ -237,8 +231,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
     }
 
     func getSharees(sharees: [NKSharee]?) {
-
-        guard let sharees = sharees, let appDelegate = appDelegate else { return }
+        guard let sharees else { return }
 
         dropDown = DropDown()
         let appearance = DropDown.appearance()
@@ -273,20 +266,19 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         dropDown.customCellConfiguration = { (index: Index, _, cell: DropDownCell) -> Void in
             guard let cell = cell as? NCSearchUserDropDownCell else { return }
             let sharee = sharees[index]
-            cell.setupCell(sharee: sharee, userBaseUrl: appDelegate)
+            cell.setupCell(sharee: sharee, session: self.session)
         }
 
         dropDown.selectionAction = { index, _ in
             let sharee = sharees[index]
             guard
                 let advancePermission = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "NCShareAdvancePermission") as? NCShareAdvancePermission,
-                let navigationController = self.navigationController,
-                let metadata = self.metadata else { return }
+                let navigationController = self.navigationController else { return }
             self.checkEnforcedPassword(shareType: sharee.shareType) { password in
-                let shareOptions = NCTableShareOptions(sharee: sharee, metadata: metadata, password: password)
+                let shareOptions = NCTableShareOptions(sharee: sharee, metadata: self.metadata, password: password)
                 advancePermission.share = shareOptions
                 advancePermission.networking = self.networking
-                advancePermission.metadata = metadata
+                advancePermission.metadata = self.metadata
                 navigationController.pushViewController(advancePermission, animated: true)
             }
         }
@@ -317,10 +309,9 @@ extension NCShare: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard let metadata = self.metadata else { return 0}
         var numRows = shares.share?.count ?? 0
         if section == 0 {
-            if metadata.e2eEncrypted && NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV12 {
+            if metadata.e2eEncrypted, NCCapabilities.shared.getCapabilities(account: metadata.account).capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV12 {
                 numRows = 1
             } else {
                 // don't allow link creation if reshare is disabled
@@ -333,10 +324,10 @@ extension NCShare: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         // Setup default share cells
         guard indexPath.section != 0 else {
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: "cellLink", for: indexPath) as? NCShareLinkCell, let metadata = self.metadata
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "cellLink", for: indexPath) as? NCShareLinkCell
             else { return UITableViewCell() }
             cell.delegate = self
-            if metadata.e2eEncrypted && NCGlobal.shared.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV12 {
+            if metadata.e2eEncrypted, NCCapabilities.shared.getCapabilities(account: metadata.account).capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV12 {
                 cell.tableShare = shares.firstShareLink
             } else {
                 if indexPath.row == 1 {
@@ -349,7 +340,7 @@ extension NCShare: UITableViewDataSource {
             return cell
         }
 
-        guard let appDelegate = appDelegate, let tableShare = shares.share?[indexPath.row] else { return UITableViewCell() }
+        guard let tableShare = shares.share?[indexPath.row] else { return UITableViewCell() }
 
         // LINK
         if tableShare.shareType == shareCommon.SHARE_TYPE_LINK {
@@ -366,9 +357,9 @@ extension NCShare: UITableViewDataSource {
                 cell.indexPath = indexPath
                 cell.tableShare = tableShare
                 cell.delegate = self
-                cell.setupCellUI(userId: appDelegate.userId)
-                let fileName = appDelegate.userBaseUrl + "-" + tableShare.shareWith + ".png"
-                NCNetworking.shared.downloadAvatar(user: tableShare.shareWith, dispalyName: tableShare.shareWithDisplayname, fileName: fileName, cell: cell, view: tableView)
+                cell.setupCellUI(userId: session.userId)
+                let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: tableShare.shareWith)
+                NCNetworking.shared.downloadAvatar(user: tableShare.shareWith, dispalyName: tableShare.shareWithDisplayname, fileName: fileName, account: metadata.account, cell: cell, view: tableView)
                 return cell
             }
         }

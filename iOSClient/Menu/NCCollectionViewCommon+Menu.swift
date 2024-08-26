@@ -33,14 +33,16 @@ import Queuer
 extension NCCollectionViewCommon {
     func toggleMenu(metadata: tableMetadata, indexPath: IndexPath, imageIcon: UIImage?) {
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId),
-              let sceneIdentifier = (tabBarController as? NCMainTabBarController)?.sceneIdentifier else { return }
+              let sceneIdentifier = (tabBarController as? NCMainTabBarController)?.sceneIdentifier else {
+            return
+        }
         var actions = [NCMenuAction]()
         let serverUrl = metadata.serverUrl + "/" + metadata.fileName
         var isOffline: Bool = false
         let applicationHandle = NCApplicationHandle()
         var iconHeader: UIImage!
 
-        if metadata.directory, let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl)) {
+        if metadata.directory, let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl)) {
             isOffline = directory.offline
         } else if let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
             isOffline = localFile.offline
@@ -50,9 +52,9 @@ extension NCCollectionViewCommon {
             iconHeader = imageIcon!
         } else {
             if metadata.directory {
-                iconHeader = NCImageCache.images.folder
+                iconHeader = NCImageCache.shared.getFolder(account: metadata.account)
             } else {
-                iconHeader = NCImageCache.images.file
+                iconHeader = NCImageCache.shared.getImageFile()
             }
         }
 
@@ -71,7 +73,7 @@ extension NCCollectionViewCommon {
         //
         // DETAILS
         //
-        if !NCGlobal.shared.disableSharesView {
+        if !NCCapabilities.shared.disableSharesView(account: metadata.account) {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_details_", comment: ""),
@@ -86,7 +88,7 @@ extension NCCollectionViewCommon {
 
         if metadata.lock {
             var lockOwnerName = metadata.lockOwnerDisplayName.isEmpty ? metadata.lockOwner : metadata.lockOwnerDisplayName
-            var lockIcon = utility.loadUserImage(for: metadata.lockOwner, displayName: lockOwnerName, userBaseUrl: metadata)
+            var lockIcon = utility.loadUserImage(for: metadata.lockOwner, displayName: lockOwnerName, urlBase: metadata.urlBase)
             if metadata.lockOwnerType != 0 {
                 lockOwnerName += " app"
                 if !metadata.lockOwnerEditor.isEmpty, let appIcon = UIImage(named: metadata.lockOwnerEditor) {
@@ -136,7 +138,7 @@ extension NCCollectionViewCommon {
         //
         // LOCK / UNLOCK
         //
-        if !metadata.directory, metadata.canUnlock(as: appDelegate.userId), !NCGlobal.shared.capabilityFilesLockVersion.isEmpty {
+        if !metadata.directory, metadata.canUnlock(as: metadata.userId), !NCCapabilities.shared.getCapabilities(account: metadata.account).capabilityFilesLockVersion.isEmpty {
             actions.append(NCMenuAction.lockUnlockFiles(shouldLock: !metadata.lock, metadatas: [metadata], order: 30))
         }
 
@@ -173,7 +175,7 @@ extension NCCollectionViewCommon {
                     action: { _ in
                         NextcloudKit.shared.markE2EEFolder(fileId: metadata.fileId, delete: true, account: metadata.account) { _, error in
                             if error == .success {
-                                NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, serverUrl))
+                                NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrl))
                                 NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, encrypted: false, account: metadata.account)
                                 NCManageDatabase.shared.setMetadataEncrypted(ocId: metadata.ocId, encrypted: false)
 
@@ -252,16 +254,17 @@ extension NCCollectionViewCommon {
                     order: 110,
                     action: { _ in
                         if self.utilityFileSystem.fileProviderStorageExists(metadata) {
-                            NotificationCenter.default.post(
-                                name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
-                                object: nil,
-                                userInfo: ["ocId": metadata.ocId,
-                                           "selector": NCGlobal.shared.selectorSaveAsScan,
-                                           "error": NKError(),
-                                           "account": metadata.account])
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile,
+                                                                        object: nil,
+                                                                        userInfo: ["ocId": metadata.ocId,
+                                                                                   "ocIdTransfer": metadata.ocIdTransfer,
+                                                                                   "session": metadata.session,
+                                                                                   "selector": NCGlobal.shared.selectorSaveAsScan,
+                                                                                   "error": NKError(),
+                                                                                   "account": metadata.account])
                         } else {
                             guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                                           session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                                                                           session: NCNetworking.shared.sessionDownload,
                                                                                                            selector: NCGlobal.shared.selectorSaveAsScan,
                                                                                                            sceneIdentifier: sceneIdentifier) else { return }
                             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
@@ -305,16 +308,17 @@ extension NCCollectionViewCommon {
                     order: 150,
                     action: { _ in
                         if self.utilityFileSystem.fileProviderStorageExists(metadata) {
-                            NotificationCenter.default.post(
-                                name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
-                                object: nil,
-                                userInfo: ["ocId": metadata.ocId,
-                                           "selector": NCGlobal.shared.selectorLoadFileQuickLook,
-                                           "error": NKError(),
-                                           "account": metadata.account])
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile,
+                                                                        object: nil,
+                                                                        userInfo: ["ocId": metadata.ocId,
+                                                                                   "ocIdTransfer": metadata.ocIdTransfer,
+                                                                                   "session": metadata.session,
+                                                                                   "selector": NCGlobal.shared.selectorLoadFileQuickLook,
+                                                                                   "error": NKError(),
+                                                                                   "account": metadata.account])
                         } else {
                             guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                                           session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                                                                           session: NCNetworking.shared.sessionDownload,
                                                                                                            selector: NCGlobal.shared.selectorLoadFileQuickLook,
                                                                                                            sceneIdentifier: sceneIdentifier) else { return }
                             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)

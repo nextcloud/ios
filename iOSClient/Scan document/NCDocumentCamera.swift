@@ -33,7 +33,6 @@ class NCDocumentCamera: NSObject, VNDocumentCameraViewControllerDelegate {
     }()
     var viewController: UIViewController?
     let utilityFileSystem = NCUtilityFileSystem()
-    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
     func openScannerDocument(viewController: UIViewController?) {
         guard VNDocumentCameraViewController.isSupported else { return }
@@ -62,6 +61,7 @@ class NCDocumentCamera: NSObject, VNDocumentCameraViewControllerDelegate {
                     navigationController.modalPresentationStyle = UIModalPresentationStyle.pageSheet
                     if let viewController = navigationController.topMostViewController() as? NCScan {
                         viewController.serverUrl = controller.currentServerUrl()
+                        viewController.session = NCSession.shared.getSession(controller: controller)
                     }
                     self.viewController?.present(navigationController, animated: true, completion: nil)
                 }

@@ -29,8 +29,6 @@ import Combine
 import SwiftUI
 
 class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
-    /// AppDelegate
-    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     /// Keychain access
     var keychain = NCKeychain()
     /// State variable for indicating if the user is in Admin group
@@ -58,6 +56,10 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
     @Published var footerTitle: String = ""
     /// Root View Controller
     @Published var controller: NCMainTabBarController?
+    /// Get session
+    var session: NCSession.Session {
+        NCSession.shared.getSession(controller: controller)
+    }
 
     /// Initializes the view model with default values.
     init(controller: NCMainTabBarController?) {
@@ -67,7 +69,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
 
     /// Triggered when the view appears.
     func onViewAppear() {
-        let groups = NCManageDatabase.shared.getAccountGroups(account: appDelegate.account)
+        let groups = NCManageDatabase.shared.getAccountGroups(account: session.account)
         isAdminGroup = groups.contains(NCGlobal.shared.groupAdmin)
         showHiddenFiles = keychain.showHiddenFiles
         mostCompatible = keychain.formatCompatibility
@@ -127,7 +129,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
         keychain.cleanUpDay = selectedInterval.rawValue
     }
 
-    /// Clears cache associated with the specified account.
+    /// Clears cache
     func clearCache() {
         NCActivityIndicator.shared.startActivity(style: .large, blurEffect: true)
         // Cancel all networking tasks
@@ -136,7 +138,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
             URLCache.shared.memoryCapacity = 0
             URLCache.shared.diskCapacity = 0
 
-            NCManageDatabase.shared.clearDatabase(account: self.appDelegate.account, removeAccount: false)
+            NCManageDatabase.shared.clearDatabase()
 
             let ufs = NCUtilityFileSystem()
             ufs.removeGroupDirectoryProviderStorage()
@@ -145,8 +147,8 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
             ufs.removeTemporaryDirectory()
             ufs.createDirectoryStandard()
 
-            NCAutoUpload.shared.alignPhotoLibrary(viewController: self.controller)
-            NCImageCache.shared.createMediaCache(account: self.appDelegate.account, withCacheSize: true)
+            NCAutoUpload.shared.alignPhotoLibrary(viewController: self.controller, account: self.session.account)
+            NCImageCache.shared.createMediaCache()
 
             NCActivityIndicator.shared.stop()
             self.calculateSize()
@@ -168,7 +170,8 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
     /// - Parameter
     /// exit: Boolean indicating whether to reset the application.
     func resetNextCloud() {
-        self.appDelegate.resetApplication()
+        let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+        appDelegate.resetApplication()
     }
 
     /// Exits the Nextcloud application if specified.

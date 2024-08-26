@@ -41,8 +41,11 @@ class NCManageDatabase: NSObject {
 
     override init() {
         func migrationSchema(_ migration: Migration, _ oldSchemaVersion: UInt64) {
-            if oldSchemaVersion < 354 {
-                migration.deleteData(forType: NCDBLayoutForView.className())
+            if oldSchemaVersion < 357 {
+                migration.deleteData(forType: tableMetadata.className())
+                migration.enumerateObjects(ofType: tableDirectory.className()) { _, newObject in
+                    newObject?["etag"] = ""
+                }
             }
         }
 
@@ -99,7 +102,8 @@ class NCManageDatabase: NSObject {
                                     tableDirectory.self,
                                     tableTag.self,
                                     tableAccount.self,
-                                    tableCapabilities.self]
+                                    tableCapabilities.self,
+                                    tableE2eEncryption.self]
             }
             do {
                 Realm.Configuration.defaultConfiguration =
@@ -145,7 +149,6 @@ class NCManageDatabase: NSObject {
             let realm = try Realm()
             try realm.write {
                 var results: Results<Object>
-
                 if let account = account {
                     results = realm.objects(table).filter("account == %@", account)
                 } else {
@@ -159,7 +162,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    func clearDatabase(account: String?, removeAccount: Bool) {
+    func clearDatabase(account: String? = nil, removeAccount: Bool = false) {
         if removeAccount {
             self.clearTable(tableAccount.self, account: account)
         }

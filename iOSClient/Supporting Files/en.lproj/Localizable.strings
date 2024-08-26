@@ -910,6 +910,7 @@
 "_enter_passphrase_"        = "Enter passphrase (12 words)";
 "_show_more_results_"       = "Show more results";
 "_waiting_for_"             = "Waiting for:";
+"_waiting_"                 = "Waiting …";
 "_reachable_wifi_"          = "network reachable via Wi-Fi or cable";
 "_password_not_present_"    = "Please re-insert your credentials.";
 "_copy_passphrase_"         = "Copy passphrase";
@@ -994,6 +995,7 @@
 "_account_settings_"        = "Account settings";
 "_users_"                   = "Users";
 "_users_footer_"            = "Every time the app is reactivated, the account will be requested.";
+"_additional_view_options_" = "Additional view options";
 
 // Video
 "_select_trace_"            = "Select the trace";
@@ -1018,6 +1020,7 @@
 "_add_audio_"               = "Add an external audio";
 "_maintenance_mode_"        = "Server is currently in maintenance mode";
 "_upload_foreground_msg_"   = "Do not close %@ to complete the transfer …";
+"_upload_background_msg_"   = "Files upload in progress …";
 
 // Tip
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails.";

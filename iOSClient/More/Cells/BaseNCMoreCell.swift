@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import UIKit
 
 class BaseNCMoreCell: UITableViewCell {
     let selectionColor: UIView = UIView()

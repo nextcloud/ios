@@ -67,17 +67,18 @@ struct NCLoginPoll: View {
         .onChange(of: loginManager.pollFinished) { value in
             if value {
                 let window = UIApplication.shared.firstWindow
-
-                if window?.rootViewController is NCMainTabBarController {
-                    window?.rootViewController?.dismiss(animated: true, completion: nil)
+                if let controller = window?.rootViewController as? NCMainTabBarController {
+                    controller.account = loginManager.account
+                    controller.dismiss(animated: true, completion: nil)
                 } else {
-                    if let mainTabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
-                        mainTabBarController.modalPresentationStyle = .fullScreen
-                        mainTabBarController.view.alpha = 0
-                        window?.rootViewController = mainTabBarController
+                    if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+                        controller.account = loginManager.account
+                        controller.modalPresentationStyle = .fullScreen
+                        controller.view.alpha = 0
+                        window?.rootViewController = controller
                         window?.makeKeyAndVisible()
                         UIView.animate(withDuration: 0.5) {
-                            mainTabBarController.view.alpha = 1
+                            controller.view.alpha = 1
                         }
                     }
                 }
@@ -100,14 +101,13 @@ struct NCLoginPoll: View {
 }
 
 private class LoginManager: ObservableObject {
-    private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-
     var loginFlowV2Token = ""
     var loginFlowV2Endpoint = ""
     var loginFlowV2Login = ""
 
     @Published var pollFinished = false
     @Published var isLoading = false
+    @Published var account = ""
 
     init() {
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: UIApplication.didBecomeActiveNotification, object: nil)
@@ -127,8 +127,9 @@ private class LoginManager: ObservableObject {
         NextcloudKit.shared.getLoginFlowV2Poll(token: self.loginFlowV2Token, endpoint: self.loginFlowV2Endpoint) { server, loginName, appPassword, _, error in
             if error == .success, let urlBase = server, let user = loginName, let appPassword {
                 self.isLoading = true
-                self.appDelegate.createAccount(urlBase: urlBase, user: user, password: appPassword) { error in
+                NCAccount().createAccount(urlBase: urlBase, user: user, password: appPassword) { account, error in
                     if error == .success {
+                        self.account = account
                         self.pollFinished = true
                     }
                 }

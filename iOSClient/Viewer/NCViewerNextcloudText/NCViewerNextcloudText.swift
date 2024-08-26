@@ -25,8 +25,6 @@ import UIKit
 import WebKit
 
 class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMessageHandler, WKUIDelegate {
-
-    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     var webView = WKWebView()
     var bottomConstraint: NSLayoutConstraint?
     var link: String = ""
@@ -45,7 +43,7 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
         super.viewDidLoad()
 
         if !metadata.ocId.hasPrefix("TEMP") {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(image: NCImageCache.images.buttonMore, style: .plain, target: self, action: #selector(self.openMenuMore))
+            navigationItem.rightBarButtonItem = UIBarButtonItem(image: NCImageCache.shared.getImageButtonMore(), style: .plain, target: self, action: #selector(self.openMenuMore))
         }
         navigationController?.navigationBar.prefersLargeTitles = false
         navigationItem.title = metadata.fileNameView
@@ -126,7 +124,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     // MARK: - NotificationCenter
 
     @objc func favoriteFile(_ notification: NSNotification) {
-
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               ocId == self.metadata.ocId,
@@ -137,7 +134,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     }
 
     @objc func keyboardDidShow(notification: Notification) {
-
         guard let info = notification.userInfo else { return }
         guard let frameInfo = info[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
         let keyboardFrame = frameInfo.cgRectValue
@@ -159,7 +155,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
     // MARK: -
 
     public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-
         if message.name == "DirectEditingMobileInterface" {
 
             if message.body as? String == "close" {
@@ -219,7 +214,6 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
 }
 
 extension NCViewerNextcloudText: UINavigationControllerDelegate {
-
     override func didMove(toParent parent: UIViewController?) {
         super.didMove(toParent: parent)
 

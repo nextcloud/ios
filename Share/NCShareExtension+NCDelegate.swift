@@ -35,10 +35,10 @@ extension NCShareExtension: NCAccountRequestDelegate {
 
         // Only here change the active account
         for account in accounts {
-            account.active = account.account == self.activeAccount.account
+            account.active = account.account == self.activeTableAccount.account
         }
 
-        vcAccountRequest.activeAccount = self.activeAccount
+        vcAccountRequest.activeAccount = self.activeTableAccount.account
         vcAccountRequest.accounts = accounts.sorted { sorg, dest -> Bool in
             return sorg.active && !dest.active
         }
@@ -57,39 +57,36 @@ extension NCShareExtension: NCAccountRequestDelegate {
 
     func accountRequestAddAccount() { }
 
-    func accountRequestChangeAccount(account: String) {
-        guard let activeAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else {
+    func accountRequestChangeAccount(account: String, controller: UIViewController?) {
+        guard let activeTableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
+              let capabilities = NCManageDatabase.shared.setCapabilities(account: account) else {
             cancel(with: NCShareExtensionError.noAccount)
             return
         }
-        self.activeAccount = activeAccount
-
-        // CAPABILITIES
-        NCManageDatabase.shared.setCapabilities(account: account)
+        self.activeTableAccount = activeTableAccount
+        let session = NCSession.Session(account: activeTableAccount.account, urlBase: activeTableAccount.urlBase, user: activeTableAccount.user, userId: activeTableAccount.userId)
 
         // COLORS
-        NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
-        NCBrandColor.shared.createUserColors()
-        NCImageCache.shared.createImagesBrandCache()
+        NCBrandColor.shared.settingThemingColor(account: activeTableAccount.account)
 
         // NETWORKING
-        NextcloudKit.shared.setup(
-            account: activeAccount.account,
-            user: activeAccount.user,
-            userId: activeAccount.userId,
-            password: NCKeychain().getPassword(account: activeAccount.account),
-            urlBase: activeAccount.urlBase,
-            userAgent: userAgent,
-            nextcloudVersion: 0,
-            delegate: NCNetworking.shared)
+        NextcloudKit.shared.setup(delegate: NCNetworking.shared)
+        NextcloudKit.shared.appendSession(account: activeTableAccount.account,
+                                          urlBase: activeTableAccount.urlBase,
+                                          user: activeTableAccount.user,
+                                          userId: activeTableAccount.userId,
+                                          password: NCKeychain().getPassword(account: activeTableAccount.account),
+                                          userAgent: userAgent,
+                                          nextcloudVersion: capabilities.capabilityServerVersionMajor,
+                                          groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
         // get auto upload folder
         autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()
-        autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: activeAccount.urlBase, userId: activeAccount.userId, account: activeAccount.account)
+        autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(session: session)
 
-        serverUrl = utilityFileSystem.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId)
+        serverUrl = utilityFileSystem.getHomeServer(session: session)
 
-        layoutForView = NCManageDatabase.shared.getLayoutForView(account: activeAccount.account, key: keyLayout, serverUrl: serverUrl)
+        layoutForView = NCManageDatabase.shared.getLayoutForView(account: activeTableAccount.account, key: keyLayout, serverUrl: serverUrl)
 
         reloadDatasource(withLoadFolder: true)
         setNavigationBar(navigationTitle: NCBrandOptions.shared.brand)
@@ -101,6 +98,58 @@ extension NCShareExtension: NCAccountRequestDelegate {
             forbiddenFileNameExtensions: NCGlobal.shared.capabilityForbiddenFileNameExtensions
         )
     }
+}
+
+extension NCShareExtension: NCShareCellDelegate, NCRenameFileDelegate, NCListCellDelegate {
+    func removeFile(named fileName: String) {
+        guard let index = self.filesName.firstIndex(of: fileName) else {
+            return showAlert(title: "_file_not_found_", description: fileName)
+        }
+        self.filesName.remove(at: index)
+        if self.filesName.isEmpty {
+            cancel(with: NCShareExtensionError.noFiles)
+        } else {
+            self.setCommandView()
+        }
+    }
+
+    func renameFile(named fileName: String, account: String) {
+        guard let vcRename = UIStoryboard(name: "NCRenameFile", bundle: nil).instantiateInitialViewController() as? NCRenameFile else { return }
+
+        vcRename.delegate = self
+        vcRename.fileName = fileName
+        vcRename.indexPath = IndexPath()
+        vcRename.account = account
+
+        if let previewImage = UIImage.downsample(imageAt: URL(fileURLWithPath: NSTemporaryDirectory() + fileName), to: CGSize(width: 140, height: 140)) {
+            vcRename.imagePreview = previewImage
+        } else {
+            let resultInternalType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false, account: account)
+            vcRename.imagePreview = UIImage(named: resultInternalType.iconName) ?? NCImageCache.shared.getImageFile()
+        }
+
+        let popup = NCPopupViewController(contentController: vcRename, popupWidth: vcRename.width, popupHeight: vcRename.height)
+
+        self.present(popup, animated: true)
+    }
+
+    func rename(fileName: String, fileNameNew: String) {
+        guard fileName != fileNameNew else { return }
+        guard let fileIx = self.filesName.firstIndex(of: fileName),
+              !self.filesName.contains(fileNameNew),
+              utilityFileSystem.moveFile(atPath: (NSTemporaryDirectory() + fileName), toPath: (NSTemporaryDirectory() + fileNameNew)) else {
+                  return showAlert(title: "_single_file_conflict_title_", description: "'\(fileName)' -> '\(fileNameNew)'")
+              }
+
+        filesName[fileIx] = fileNameNew
+        tableView.reloadData()
+    }
+
+    func tapShareListItem(with ocId: String, ocIdTransfer: String, indexPath: IndexPath, sender: Any) { }
+
+    func tapMoreListItem(with ocId: String, ocIdTransfer: String, image: UIImage?, indexPath: IndexPath, sender: Any) { }
+
+    func longPressListItem(with ocId: String, ocIdTransfer: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) { }
 }
 
 extension NCShareExtension: NCCreateFormUploadConflictDelegate {

@@ -44,11 +44,11 @@ class NCShareHeader: UIView {
             imageView.isHidden = true
         } else {
             if metadata.directory {
-                imageView.image = metadata.e2eEncrypted ? NCImageCache.images.folderEncrypted : NCImageCache.images.folder
+                imageView.image = metadata.e2eEncrypted ? NCImageCache.shared.getFolderEncrypted(account: metadata.account) : NCImageCache.shared.getFolder(account: metadata.account)
             } else if !metadata.iconName.isEmpty {
-                imageView.image = NCUtility().loadImage(named: metadata.iconName, useTypeIconFile: true)
+                imageView.image = NCUtility().loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
             } else {
-                imageView.image = NCImageCache.images.file
+                imageView.image = NCImageCache.shared.getImageFile()
             }
 
             fileNameTopConstraint.constant -= 45

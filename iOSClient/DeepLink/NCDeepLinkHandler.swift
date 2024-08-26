@@ -103,6 +103,7 @@ class NCDeepLinkHandler {
         controller.selectedIndex = ControllerConstants.filesIndex
         guard let navigationController = controller.viewControllers?[controller.selectedIndex] as? UINavigationController,
               let viewController = UIStoryboard(name: ControllerConstants.notification, bundle: nil).instantiateInitialViewController() as? NCNotification else { return }
+        viewController.session = NCSession.shared.getSession(controller: controller)
         navigationController.pushViewController(viewController, animated: true)
     }
 

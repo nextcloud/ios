@@ -33,6 +33,7 @@ class NCGridMediaCell: UICollectionViewCell {
     var ocId: String = ""
     var user: String = ""
     var indexPath = IndexPath()
+    var account: String = ""
     var date: Date?
 
     override func awakeFromNib() {
@@ -50,7 +51,7 @@ class NCGridMediaCell: UICollectionViewCell {
         imageStatus.image = nil
         imageItem.image = nil
         imageVisualEffect.alpha = 0.4
-        imageSelect.image = NCImageCache.images.checkedYes
+        imageSelect.image = NCImageCache.shared.getImageCheckedYes()
         imageVisualEffect.isHidden = true
         imageSelect.isHidden = true
     }

@@ -36,16 +36,16 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 selectOcId.append(metadata.ocId)
             }
             collectionView.reloadItems(at: [indexPath])
-            tabBarSelect.update(selectOcId: selectOcId, metadatas: getSelectedMetadatas(), userId: appDelegate.userId)
+            tabBarSelect.update(selectOcId: selectOcId, metadatas: getSelectedMetadatas(), userId: metadata.userId)
             return
         }
 
         if metadata.e2eEncrypted {
-            if NCGlobal.shared.capabilityE2EEEnabled {
-                if !NCKeychain().isEndToEndEnabled(account: appDelegate.account) {
+            if NCCapabilities.shared.getCapabilities(account: metadata.account).capabilityE2EEEnabled {
+                if !NCKeychain().isEndToEndEnabled(account: metadata.account) {
                     let e2ee = NCEndToEndInitialize()
                     e2ee.delegate = self
-                    e2ee.initEndToEndEncryption(viewController: self.tabBarController, metadata: metadata)
+                    e2ee.initEndToEndEncryption(viewController: self.tabBarController, metadata: metadata, session: session)
                     return
                 }
             } else {
@@ -70,7 +70,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 NCViewer().view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon)
             } else if NextcloudKit.shared.isNetworkReachable(),
                       let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                               session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
+                                                                                               session: NCNetworking.shared.sessionDownload,
                                                                                                selector: NCGlobal.shared.selectorLoadFileView,
                                                                                                sceneIdentifier: (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier) {
                 NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)

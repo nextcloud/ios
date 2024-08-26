@@ -202,17 +202,18 @@ class NCUtilityFileSystem: NSObject {
         } catch { print("Error: \(error)") }
     }
 
-    func isDirectoryE2EE(serverUrl: String, userBase: NCUserBaseUrl) -> Bool {
-        return isDirectoryE2EE(account: userBase.account, urlBase: userBase.urlBase, userId: userBase.userId, serverUrl: serverUrl)
+    func isDirectoryE2EE(serverUrl: String, account: String) -> Bool {
+        return isDirectoryE2EE(session: NCSession.shared.getSession(account: account), serverUrl: serverUrl)
     }
 
     func isDirectoryE2EE(file: NKFile) -> Bool {
-        return isDirectoryE2EE(account: file.account, urlBase: file.urlBase, userId: file.userId, serverUrl: file.serverUrl)
+        let session = NCSession.Session(account: file.account, urlBase: file.urlBase, user: file.user, userId: file.userId)
+        return isDirectoryE2EE(session: session, serverUrl: file.serverUrl)
     }
 
-    func isDirectoryE2EE(account: String, urlBase: String, userId: String, serverUrl: String) -> Bool {
-        if serverUrl == getHomeServer(urlBase: urlBase, userId: userId) || serverUrl == ".." { return false }
-        if let directory = NCManageDatabase.shared.getTableDirectory(account: account, serverUrl: serverUrl) {
+    func isDirectoryE2EE(session: NCSession.Session, serverUrl: String) -> Bool {
+        if serverUrl == getHomeServer(session: session) || serverUrl == ".." { return false }
+        if let directory = NCManageDatabase.shared.getTableDirectory(account: session.account, serverUrl: serverUrl) {
             return directory.e2eEncrypted
         }
         return false
@@ -380,8 +381,8 @@ class NCUtilityFileSystem: NSObject {
 
     // MARK: - 
 
-    func getHomeServer(urlBase: String, userId: String) -> String {
-        return urlBase + "/remote.php/dav/files/" + userId
+    func getHomeServer(session: NCSession.Session) -> String {
+        return session.urlBase + "/remote.php/dav/files/" + session.userId
     }
 
     func getPath(path: String, user: String, fileName: String? = nil) -> String {
@@ -418,8 +419,8 @@ class NCUtilityFileSystem: NSObject {
         }
     }
 
-    func getFileNamePath(_ fileName: String, serverUrl: String, urlBase: String, userId: String) -> String {
-        let home = getHomeServer(urlBase: urlBase, userId: userId)
+    func getFileNamePath(_ fileName: String, serverUrl: String, session: NCSession.Session) -> String {
+        let home = getHomeServer(session: session)
         var fileNamePath = serverUrl.replacingOccurrences(of: home, with: "") + "/" + fileName
         if fileNamePath.first == "/" {
             fileNamePath.removeFirst()

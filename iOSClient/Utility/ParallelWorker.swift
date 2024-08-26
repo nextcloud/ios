@@ -54,7 +54,7 @@ class ParallelWorker {
             hud.indicatorView = JGProgressHUDRingIndicatorView()
             if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
                 indicatorView.ringWidth = 1.5
-                indicatorView.ringColor = NCBrandColor.shared.brandElement
+                indicatorView.ringColor = NCBrandColor.shared.customer
             }
             hud.textLabel.text = NSLocalizedString(self.titleKey, comment: "")
             hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
@@ -62,13 +62,8 @@ class ParallelWorker {
             hud.show(in: hudView)
             hud.tapOnHUDViewBlock = { hud in
                 self.isCancelled = true
-                // Cancel all download / upload
-                for uploadRequest in NCNetworking.shared.uploadRequest {
-                    uploadRequest.value.cancel()
-                }
-                for downloadRequest in NCNetworking.shared.downloadRequest {
-                    downloadRequest.value.cancel()
-                }
+                NCNetworking.shared.cancelUploadTasks()
+                NCNetworking.shared.cancelDownloadTasks()
                 hud.dismiss()
             }
             self.hud = hud

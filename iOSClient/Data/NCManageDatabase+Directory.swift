@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import UIKit
 import RealmSwift
 import NextcloudKit
 
@@ -142,7 +143,7 @@ extension NCManageDatabase {
         }
     }
 
-    func cleanEtagDirectory(account: String, serverUrl: String) {
+    func cleanEtagDirectory(serverUrl: String, account: String) {
         do {
             let realm = try Realm()
             try realm.write {

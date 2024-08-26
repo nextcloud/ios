@@ -78,16 +78,6 @@ class NCGlobal: NSObject {
         case original = "original"
     }
 
-    // Sharing & Comments
-    //
-    var disableSharesView: Bool {
-        if !capabilityFileSharingApiEnabled && !capabilityFilesComments && capabilityActivity.isEmpty {
-            return true
-        } else {
-            return false
-        }
-    }
-
     // Directory on Group
     //
     let directoryProviderStorage                    = "File Provider Storage"
@@ -184,7 +174,6 @@ class NCGlobal: NSObject {
     // Button Type in Cell list/grid
     //
     let buttonMoreMore                              = "more"
-    let buttonMoreStop                              = "stop"
     let buttonMoreLock                              = "moreLock"
 
     // Standard height sections header/footer
@@ -321,30 +310,28 @@ class NCGlobal: NSObject {
 
     // Notification Center
     //
-    let notificationCenterChangeUser                            = "changeUser"
-    let notificationCenterChangeTheming                         = "changeTheming"
+    let notificationCenterChangeUser                            = "changeUser"                      // userInfo: account, controller
+    let notificationCenterChangeTheming                         = "changeTheming"                   // userInfo: account
     let notificationCenterRichdocumentGrabFocus                 = "richdocumentGrabFocus"
     let notificationCenterReloadDataNCShare                     = "reloadDataNCShare"
     let notificationCenterCloseRichWorkspaceWebView             = "closeRichWorkspaceWebView"
     let notificationCenterReloadAvatar                          = "reloadAvatar"
-    let notificationCenterCreateMediaCacheEnded                 = "createMediaCacheEnded"
 
     let notificationCenterReloadDataSource                      = "reloadDataSource"
     let notificationCenterReloadDataSourceNetwork               = "reloadDataSourceNetwork"         // userInfo: withQueryDB
 
     let notificationCenterChangeStatusFolderE2EE                = "changeStatusFolderE2EE"          // userInfo: serverUrl
 
-    let notificationCenterDownloadStartFile                     = "downloadStartFile"               // userInfo: ocId, serverUrl, account
-    let notificationCenterDownloadedFile                        = "downloadedFile"                  // userInfo: ocId, serverUrl, account, selector, error
-    let notificationCenterDownloadCancelFile                    = "downloadCancelFile"              // userInfo: ocId, serverUrl, account
+    let notificationCenterDownloadStartFile                     = "downloadStartFile"               // userInfo: ocId, ocIdTransfer, session, serverUrl, account
+    let notificationCenterDownloadedFile                        = "downloadedFile"                  // userInfo: ocId, ocIdTransfer, session, session, serverUrl, account, selector, error
+    let notificationCenterDownloadCancelFile                    = "downloadCancelFile"              // userInfo: ocId, ocIdTransfer, session, serverUrl, account
 
-    let notificationCenterUploadStartFile                       = "uploadStartFile"                 // userInfo: ocId, serverUrl, account, fileName, sessionSelector
-    let notificationCenterUploadedFile                          = "uploadedFile"                    // userInfo: ocId, serverUrl, account, fileName, ocIdTemp, error
-    let notificationCenterUploadedLivePhoto                     = "uploadedLivePhoto"               // userInfo: ocId, serverUrl, account, fileName, ocIdTemp, error
+    let notificationCenterUploadStartFile                       = "uploadStartFile"                 // userInfo: ocId, ocIdTransfer, session, serverUrl, account, fileName, sessionSelector
+    let notificationCenterUploadedFile                          = "uploadedFile"                    // userInfo: ocId, ocIdTransfer, session, serverUrl, account, fileName, ocIdTransfer, error
+    let notificationCenterUploadedLivePhoto                     = "uploadedLivePhoto"               // userInfo: ocId, ocIdTransfer, session, serverUrl, account, fileName, ocIdTransfer, error
+    let notificationCenterUploadCancelFile                      = "uploadCancelFile"                // userInfo: ocId, ocIdTransfer, session, serverUrl, account
 
-    let notificationCenterUploadCancelFile                      = "uploadCancelFile"                // userInfo: ocId, serverUrl, account
-
-    let notificationCenterProgressTask                          = "progressTask"                    // userInfo: account, ocId, serverUrl, status, chunk, e2eEncrypted, progress, totalBytes, totalBytesExpected
+    let notificationCenterProgressTask                          = "progressTask"                    // userInfo: account, ocId, ocIdTransfer, session, serverUrl, status, chunk, e2eEncrypted, progress, totalBytes, totalBytesExpected
 
     let notificationCenterUpdateBadgeNumber                     = "updateBadgeNumber"               // userInfo: counterDownload, counterUpload
 
@@ -406,55 +393,6 @@ class NCGlobal: NSObject {
     let configuration_disable_log                               = "disable_log"
     let configuration_disable_more_external_site                = "disable_more_external_site"
     let configuration_disable_openin_file                       = "disable_openin_file"
-
-    // CAPABILITIES
-    //
-    var capabilityServerVersionMajor: Int                       = 0
-    var capabilityServerVersion: String                         = ""
-
-    var capabilityFileSharingApiEnabled: Bool                   = false
-    var capabilityFileSharingPubPasswdEnforced: Bool            = false
-    var capabilityFileSharingPubExpireDateEnforced: Bool        = false
-    var capabilityFileSharingPubExpireDateDays: Int             = 0
-    var capabilityFileSharingInternalExpireDateEnforced: Bool   = false
-    var capabilityFileSharingInternalExpireDateDays: Int        = 0
-    var capabilityFileSharingRemoteExpireDateEnforced: Bool     = false
-    var capabilityFileSharingRemoteExpireDateDays: Int          = 0
-    var capabilityFileSharingDefaultPermission: Int             = 0
-
-    var capabilityThemingColor: String                          = ""
-    var capabilityThemingColorElement: String                   = ""
-    var capabilityThemingColorText: String                      = ""
-    var capabilityThemingName: String                           = ""
-    var capabilityThemingSlogan: String                         = ""
-
-    var capabilityE2EEEnabled: Bool                             = false
-    var capabilityE2EEApiVersion: String                        = ""
-
-    var capabilityRichDocumentsEnabled: Bool                    = false
-    var capabilityRichDocumentsMimetypes = ThreadSafeArray<String>()
-    var capabilityActivity = ThreadSafeArray<String>()
-    var capabilityNotification = ThreadSafeArray<String>()
-
-    var capabilityFilesUndelete: Bool                           = false
-    var capabilityFilesLockVersion: String                      = ""    // NC 24
-    var capabilityFilesComments: Bool                           = false // NC 20
-    var capabilityFilesBigfilechunking: Bool                    = false
-
-    var capabilityUserStatusEnabled: Bool                       = false
-    var capabilityExternalSites: Bool                           = false
-    var capabilityGroupfoldersEnabled: Bool                     = false // NC27
-    var capabilityAssistantEnabled: Bool                        = false // NC28
-    var isLivePhotoServerAvailable: Bool {                              // NC28
-        return capabilityServerVersionMajor >= nextcloudVersion28
-    }
-
-    var capabilitySecurityGuardDiagnostics                      = false
-
-    var capabilityForbiddenFileNames: [String]                    = []
-    var capabilityForbiddenFileNameBasenames: [String]            = []
-    var capabilityForbiddenFileNameCharacters: [String]           = []
-    var capabilityForbiddenFileNameExtensions: [String]           = []
 
     // MORE NEXTCLOUD APPS
     let talkSchemeUrl                                           = "nextcloudtalk://"

@@ -123,20 +123,20 @@ struct NCUploadAssetsView: View {
                             Text(NSLocalizedString("_use_folder_auto_upload_", comment: ""))
                                 .font(.system(size: 15))
                         })
-                        .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brandElement)))
+                        .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.getElement(account: metadata?.account))))
 
                         if model.useAutoUploadFolder {
                             Toggle(isOn: $model.useAutoUploadFolder, label: {
                                 Text(NSLocalizedString("_autoupload_create_subfolder_", comment: ""))
                                     .font(.system(size: 15))
                             })
-                            .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brandElement)))
+                            .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.getElement(account: metadata?.account))))
                         }
 
                         if !model.useAutoUploadFolder {
                             HStack {
                                 Label {
-                                    if utilityFileSystem.getHomeServer(urlBase: model.userBaseUrl.urlBase, userId: model.userBaseUrl.userId) == model.serverUrl {
+                                    if utilityFileSystem.getHomeServer(session: model.session) == model.serverUrl {
                                         Text("/")
                                             .font(.system(size: 15))
                                             .frame(maxWidth: .infinity, alignment: .trailing)
@@ -150,7 +150,7 @@ struct NCUploadAssetsView: View {
                                         .renderingMode(.template)
                                         .resizable()
                                         .scaledToFit()
-                                        .foregroundColor(Color(NCBrandColor.shared.brandElement))
+                                        .foregroundColor(Color(NCBrandColor.shared.getElement(account: metadata?.account)))
                                 }
                             }
                             .contentShape(Rectangle())
@@ -176,7 +176,7 @@ struct NCUploadAssetsView: View {
                         }
                     }
                     .frame(maxWidth: .infinity)
-                    .buttonStyle(ButtonRounded(disabled: model.uploadInProgress))
+                    .buttonStyle(ButtonRounded(disabled: model.uploadInProgress, account: model.session.account))
                     .listRowBackground(Color(UIColor.systemGroupedBackground))
                     .disabled(model.uploadInProgress)
                     .hiddenConditionally(isHidden: model.hiddenSave)
@@ -190,14 +190,14 @@ struct NCUploadAssetsView: View {
                         .font(Font.system(.body).weight(.light))
                         .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
                 })
-                HUDView(showHUD: $model.showHUD, textLabel: NSLocalizedString("_wait_", comment: ""), image: "doc.badge.arrow.up")
+                HUDView(showHUD: $model.showHUD, textLabel: NSLocalizedString("_wait_", comment: ""), image: "doc.badge.arrow.up", color: NCBrandColor.shared.getElement(account: model.session.account))
                     .offset(y: model.showHUD ? 5 : -200)
                     .animation(.easeOut, value: model.showHUD)
             }
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .sheet(isPresented: $showSelect) {
-            SelectView(serverUrl: $model.serverUrl)
+            SelectView(serverUrl: $model.serverUrl, session: model.session)
         }
         .sheet(isPresented: $showUploadConflict) {
             UploadConflictView(delegate: model, serverUrl: model.serverUrl, metadatasUploadInConflict: model.metadatasUploadInConflict, metadatasNOConflict: model.metadatasNOConflict)
@@ -256,5 +256,5 @@ struct NCUploadAssetsView: View {
 }
 
 #Preview {
-    NCUploadAssetsView(model: NCUploadAssetsModel(assets: [], serverUrl: "/", userBaseUrl: (UIApplication.shared.delegate as? AppDelegate)!, controller: nil))
+    NCUploadAssetsView(model: NCUploadAssetsModel(assets: [], serverUrl: "/", controller: nil))
 }

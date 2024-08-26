@@ -26,7 +26,6 @@ import NextcloudKit
 import JGProgressHUD
 
 class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
-
     var metadataTemp: tableMetadata?
 
     required init?(coder aDecoder: NSCoder) {
@@ -36,8 +35,8 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         layoutKey = NCGlobal.shared.layoutViewTransfers
         enableSearchBar = false
         headerRichWorkspaceDisable = true
-        headerMenuTransferView = true
-        emptyImage = utility.loadImage(named: "arrow.left.arrow.right", colors: [NCBrandColor.shared.brandElement])
+        headerMenuTransferView = false
+        emptyImage = utility.loadImage(named: "arrow.left.arrow.right", colors: [NCBrandColor.shared.getElement(account: session.account)])
         emptyTitle = "_no_transfer_"
         emptyDescription = "_no_transfer_sub_"
     }
@@ -48,16 +47,14 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         super.viewDidLoad()
 
         listLayout.itemHeight = 105
-        NCManageDatabase.shared.setLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl, layout: NCGlobal.shared.layoutList)
+        NCManageDatabase.shared.setLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl, layout: NCGlobal.shared.layoutList)
         self.navigationItem.title = titleCurrentFolder
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
         reloadDataSource()
-        Task {
-            await NCNetworkingProcess.shared.verifyZombie()
-        }
     }
 
     override func setNavigationLeftItems() {
@@ -68,52 +65,64 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     // MARK: - NotificationCenter
 
     override func downloadStartFile(_ notification: NSNotification) {
-
-        notificationReloadDataSource += 1
+        reloadDataSource()
     }
 
     override func downloadedFile(_ notification: NSNotification) {
-
-        notificationReloadDataSource += 1
+        reloadDataSource()
     }
 
     override func downloadCancelFile(_ notification: NSNotification) {
-
         reloadDataSource()
     }
 
     override func uploadStartFile(_ notification: NSNotification) {
-
-        notificationReloadDataSource += 1
+        reloadDataSource()
     }
 
     override func uploadedFile(_ notification: NSNotification) {
-
-        notificationReloadDataSource += 1
+        reloadDataSource()
     }
 
     override func uploadedLivePhoto(_ notification: NSNotification) {
-
-        notificationReloadDataSource += 1
+        reloadDataSource()
     }
 
     override func uploadCancelFile(_ notification: NSNotification) {
-
         reloadDataSource()
+    }
+
+    override func triggerProgressTask(_ notification: NSNotification) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let progressNumber = userInfo["progress"] as? NSNumber,
+              let totalBytes = userInfo["totalBytes"] as? Int64,
+              let totalBytesExpected = userInfo["totalBytesExpected"] as? Int64,
+              let ocId = userInfo["ocId"] as? String,
+              let ocIdTransfer = userInfo["ocIdTransfer"] as? String,
+              let session = userInfo["session"] as? String
+        else { return }
+        let chunk: Int = userInfo["chunk"] as? Int ?? 0
+        let e2eEncrypted: Bool = userInfo["e2eEncrypted"] as? Bool ?? false
+        NCTransferProgress.shared.append(NCTransferProgress.Transfer(ocId: ocId, ocIdTransfer: ocIdTransfer, session: session, chunk: chunk, e2eEncrypted: e2eEncrypted, progressNumber: progressNumber, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected))
+
+        DispatchQueue.main.async {
+            for case let cell as NCTransferCell in self.collectionView.visibleCells {
+                if cell.fileOcIdTransfer == ocIdTransfer {
+                    cell.setProgress(progress: progressNumber.floatValue)
+                    cell.fileInfoLabel?.text = self.utilityFileSystem.transformedSize(totalBytesExpected) + " - " + self.utilityFileSystem.transformedSize(totalBytes)
+                }
+            }
+        }
     }
 
     // MARK: TAP EVENT
 
-    override func tapMoreGridItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId) else { return }
-
-        Task {
-            await cancelSession(metadata: metadata)
-        }
+    override func tapMoreGridItem(with ocId: String, ocIdTransfer: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
+        guard let metadata = NCManageDatabase.shared.getMetadataFromOcIdAndocIdTransfer(ocIdTransfer) else { return }
+        NCNetworking.shared.cancelTask(metadata: metadata)
     }
 
-    override func longPressMoreListItem(with objectId: String, namedButtonMore: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
-
+    override func longPressMoreListItem(with ocId: String, ocIdTransfer: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
         if gestureRecognizer.state != .began { return }
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .alert)
 
@@ -128,11 +137,10 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         self.present(alertController, animated: true, completion: nil)
     }
 
-    override func longPressListItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
-
+    override func longPressListItem(with ocId: String, ocIdTransfer: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
         if gestureRecognizer.state != .began { return }
 
-        if let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId) {
+        if let metadata = NCManageDatabase.shared.getMetadataFromOcIdAndocIdTransfer(ocIdTransfer) {
             metadataTemp = metadata
             let touchPoint = gestureRecognizer.location(in: collectionView)
             becomeFirstResponder()
@@ -145,16 +153,14 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     override func longPressCollecationView(_ gestureRecognizer: UILongPressGestureRecognizer) { }
 
     @objc func startTask(_ notification: Any) {
-
         guard let metadata = metadataTemp,
-              let hudView = self.tabBarController?.view,
-              appDelegate.account == metadata.account else { return }
-
+              let hudView = self.tabBarController?.view else { return }
         let cameraRoll = NCCameraRoll()
+
         cameraRoll.extractCameraRoll(from: metadata) { metadatas in
             for metadata in metadatas {
                 if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusUploading) {
-                    NCNetworking.shared.removeTransferInError(ocId: metadata.ocId)
+                    NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
                     NCNetworking.shared.upload(metadata: metadata, hudView: hudView, hud: JGProgressHUD())
                 }
             }
@@ -162,12 +168,11 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     }
 
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
-
         if action != #selector(startTask(_:)) { return false }
         guard let metadata = metadataTemp else { return false }
         if metadata.isDirectoryE2EE { return false }
 
-        if metadata.status == NCGlobal.shared.metadataStatusWaitUpload || metadata.isUpload {
+        if metadata.isUpload {
             return true
         }
 
@@ -184,56 +189,61 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         // nothing
     }
 
-    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        // nothing
+    }
 
+    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "transferCell", for: indexPath) as? NCTransferCell,
               let metadata = dataSource.cellForItemAt(indexPath: indexPath) else {
             return NCTransferCell()
         }
+        let transfer = NCTransferProgress.shared.get(ocId: metadata.ocId, ocIdTransfer: metadata.ocIdTransfer, session: metadata.session)
 
         cell.delegate = self
-
-        cell.fileObjectId = metadata.ocId
+        cell.fileOcId = metadata.ocId
+        cell.fileOcIdTransfer = metadata.ocIdTransfer
         cell.indexPath = indexPath
         cell.fileUser = metadata.ownerId
         cell.indexPath = indexPath
-        cell.imageItem.image = NCImageCache.images.file
+        cell.imageItem.image = NCImageCache.shared.getImageFile()
         cell.imageItem.backgroundColor = nil
         cell.labelTitle.text = metadata.fileNameView
         cell.labelTitle.textColor = NCBrandColor.shared.textColor
-        let serverUrlHome = utilityFileSystem.getHomeServer(urlBase: metadata.urlBase, userId: metadata.userId)
+        let serverUrlHome = utilityFileSystem.getHomeServer(session: session)
         var pathText = metadata.serverUrl.replacingOccurrences(of: serverUrlHome, with: "")
         if pathText.isEmpty { pathText = "/" }
         cell.labelPath.text = pathText
-        cell.setButtonMore(named: NCGlobal.shared.buttonMoreStop, image: NCImageCache.images.buttonStop)
-        cell.progressView.progress = 0.0
+        cell.setButtonMore(image: NCImageCache.shared.getImageButtonStop())
+        /// Progress view
+        if let transfer = NCTransferProgress.shared.get(ocIdTransfer: metadata.ocIdTransfer) {
+            cell.setProgress(progress: transfer.progressNumber.floatValue)
+        } else {
+            cell.setProgress(progress: 0.0)
+        }
+        /// Image
         if let image = utility.getIcon(metadata: metadata) {
             cell.imageItem.image = image
         } else if !metadata.iconName.isEmpty {
-            cell.imageItem.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true)
+            cell.imageItem.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
         } else {
-            cell.imageItem.image = NCImageCache.images.file
+            cell.imageItem.image = NCImageCache.shared.getImageFile()
         }
-        cell.labelInfo.text = utility.dateDiff(metadata.date as Date) + " · " + utilityFileSystem.transformedSize(metadata.size)
-        if metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusUploading {
-            cell.progressView.isHidden = false
-        } else {
-            cell.progressView.isHidden = true
-        }
-        // Write status on Label Info
+        /// Write status on Label Status / Info
         switch metadata.status {
         case NCGlobal.shared.metadataStatusWaitDownload:
             cell.labelStatus.text = NSLocalizedString("_status_wait_download_", comment: "")
             cell.labelInfo.text = utilityFileSystem.transformedSize(metadata.size)
-        case NCGlobal.shared.metadataStatusDownloading:
-            cell.labelStatus.text = NSLocalizedString("_status_downloading_", comment: "")
-            cell.labelInfo.text = utilityFileSystem.transformedSize(metadata.size) + " - ↓ …"
         case NCGlobal.shared.metadataStatusWaitUpload:
             cell.labelStatus.text = NSLocalizedString("_status_wait_upload_", comment: "")
             cell.labelInfo.text = ""
-        case NCGlobal.shared.metadataStatusUploading:
-            cell.labelStatus.text = NSLocalizedString("_status_uploading_", comment: "")
-            cell.labelInfo.text = utilityFileSystem.transformedSize(metadata.size) + " - ↑ …"
+        case NCGlobal.shared.metadataStatusUploading, NCGlobal.shared.metadataStatusDownloading:
+            if metadata.status == NCGlobal.shared.metadataStatusUploading {
+                cell.labelStatus.text = NSLocalizedString("_status_uploading_", comment: "")
+            } else {
+                cell.labelStatus.text = NSLocalizedString("_status_downloading_", comment: "")
+            }
+            cell.labelInfo.text = utilityFileSystem.transformedSize(metadata.size) + " - " + self.utilityFileSystem.transformedSize(transfer.totalBytes)
         case NCGlobal.shared.metadataStatusUploadError:
             cell.labelStatus.text = NSLocalizedString("_status_upload_error_", comment: "")
             cell.labelInfo.text = metadata.sessionError
@@ -241,15 +251,12 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             cell.labelStatus.text = ""
             cell.labelInfo.text = ""
         }
-        if self.appDelegate.account != metadata.account {
-            cell.labelInfo.text = NSLocalizedString("_waiting_for_", comment: "") + " " + NSLocalizedString("_user_", comment: "").lowercased() + " \(metadata.userId) " + NSLocalizedString("_in_", comment: "") + " \(metadata.urlBase)"
-        }
         let isWiFi = NCNetworking.shared.networkReachability == .reachableEthernetOrWiFi
         if metadata.session == NCNetworking.shared.sessionUploadBackgroundWWan && !isWiFi {
             cell.labelInfo.text = NSLocalizedString("_waiting_for_", comment: "") + " " + NSLocalizedString("_reachable_wifi_", comment: "")
         }
         cell.accessibilityLabel = metadata.fileNameView + ", " + (cell.labelInfo.text ?? "")
-        // Remove last separator
+        /// Remove last separator
         if collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1 {
             cell.separator.isHidden = true
         } else {
@@ -265,7 +272,13 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         super.queryDB()
 
         let metadatas: [tableMetadata] = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal), sorted: "sessionDate", ascending: true) ?? []
-        self.dataSource = NCDataSource(metadatas: metadatas, account: self.appDelegate.account, layoutForView: layoutForView)
+        self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: layoutForView, filterIsUpload: false, filterLivePhoto: false)
+        if self.dataSource.metadatas.isEmpty {
+            NCTransferProgress.shared.removeAll()
+        }
+        DispatchQueue.main.async {
+            self.collectionView.reloadData()
+        }
     }
 
     override func reloadDataSource(withQueryDB: Bool = true) {
@@ -273,9 +286,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     }
 
     override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
-        Task {
-            await NCNetworkingProcess.shared.verifyZombie()
-            super.reloadDataSource(withQueryDB: true)
-        }
+        super.reloadDataSource(withQueryDB: true)
     }
 }

@@ -36,7 +36,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     init(enumeratedItemIdentifier: NSFileProviderItemIdentifier) {
         self.enumeratedItemIdentifier = enumeratedItemIdentifier
         if enumeratedItemIdentifier == .rootContainer {
-            serverUrl = fileProviderData.shared.homeServerUrl
+            let session = NCSession.shared.getSession(account: fileProviderData.shared.account)
+            serverUrl = NCUtilityFileSystem().getHomeServer(session: session)
         } else {
             if let metadata = providerUtility.getTableMetadataFromItemIdentifier(enumeratedItemIdentifier),
                let directorySource = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
@@ -90,7 +91,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             self.fetchItemsForPage(serverUrl: serverUrl, pageNumber: pageNumber) { metadatas in
                 if let metadatas {
                     for metadata in metadatas {
-                        if metadata.e2eEncrypted || (!metadata.session.isEmpty && metadata.session != NCNetworking.shared.sessionUploadBackgroundExtension) {
+                        if metadata.e2eEncrypted || (!metadata.session.isEmpty && metadata.session != NCNetworking.shared.sessionUploadBackgroundExt) {
                             continue
                         }
                         if let parentItemIdentifier = self.providerUtility.getParentItemIdentifier(metadata: metadata) {
@@ -161,7 +162,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
 
         if pageNumber == 1 {
             NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: NCKeychain().showHiddenFiles, account: fileProviderData.shared.account) { _, files, _, error in
-                if error == .success {
+                if error == .success, let files {
                     NCManageDatabase.shared.convertFilesToMetadatas(files, useFirstAsMetadataFolder: true) { metadataFolder, metadatas in
                         /// FOLDER
                         NCManageDatabase.shared.addMetadata(metadataFolder)

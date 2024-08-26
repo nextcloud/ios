@@ -37,14 +37,12 @@ class NCMedia: UIViewController {
 
     let layout = NCMediaLayout()
     var layoutType = NCGlobal.shared.mediaLayoutRatio
-    var activeAccount = tableAccount()
     var documentPickerViewController: NCDocumentPickerViewController?
     var tabBarSelect: NCMediaSelectTabBar!
-    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
     let imageCache = NCImageCache.shared
-    var metadatas: ThreadSafeArray<tableMetadata>?
+    var metadatas: Results<tableMetadata>?
     var serverUrl = ""
     let refreshControl = UIRefreshControl()
     var loadingTask: Task<Void, any Error>?
@@ -62,10 +60,18 @@ class NCMedia: UIViewController {
     var timerSearchNewMedia: Timer?
     let insetsTop: CGFloat = 75
     let maxImageGrid: CGFloat = 7
-    var livePhotoImage = UIImage()
-    var playImage = UIImage()
+    let livePhotoImage = NCUtility().loadImage(named: "livephoto", colors: [.white])
+    let playImage = NCUtility().loadImage(named: "play.fill", colors: [.white])
     var photoImage = UIImage()
     var videoImage = UIImage()
+
+    let showAllPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload')"
+    let showBothPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
+    let showOnlyPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
+
+    var session: NCSession.Session {
+        NCSession.shared.getSession(controller: tabBarController)
+    }
 
     // MARK: - View Life Cycle
 
@@ -87,12 +93,9 @@ class NCMedia: UIViewController {
 
         layout.sectionInset = UIEdgeInsets(top: 0, left: 2, bottom: 0, right: 2)
         collectionView.collectionViewLayout = layout
-        layoutType = NCManageDatabase.shared.getLayoutForView(account: activeAccount.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")?.layout ?? NCGlobal.shared.mediaLayoutRatio
+        layoutType = NCManageDatabase.shared.getLayoutForView(account: session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")?.layout ?? NCGlobal.shared.mediaLayoutRatio
 
         tabBarSelect = NCMediaSelectTabBar(tabBarController: self.tabBarController, delegate: self)
-
-        livePhotoImage = utility.loadImage(named: "livephoto", colors: [.white])
-        playImage = utility.loadImage(named: "play.fill", colors: [.white])
 
         titleDate.text = ""
 
@@ -118,29 +121,26 @@ class NCMedia: UIViewController {
 
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
-            DispatchQueue.global(qos: .userInteractive).async {
-                self.reloadDataSource()
-            }
+            self.reloadDataSource()
             self.refreshControl.endRefreshing()
         }
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
-            self.activeAccount = NCManageDatabase.shared.getActiveAccount() ?? tableAccount()
-            self.layoutType = NCManageDatabase.shared.getLayoutForView(account: self.activeAccount.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")?.layout ?? NCGlobal.shared.mediaLayoutRatio
-            if let metadatas = self.metadatas,
-               let metadata = metadatas.first {
-                if metadata.account != self.activeAccount.account {
-                    self.metadatas = nil
+
+            self.layoutType = NCManageDatabase.shared.getLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")?.layout ?? NCGlobal.shared.mediaLayoutRatio
+            self.reloadDataSource()
+
+            /* DISABLED MULTI SCENE */
+            /*
+            if let userInfo = notification.userInfo, let account = userInfo["account"] as? String {
+                if let controller = userInfo["controller"] as? NCMainTabBarController,
+                   controller == currentController,
+                   let firstMetadata = self.metadatas?.first,
+                   firstMetadata.account != account {
                     self.collectionViewReloadData()
                 }
             }
-        }
-
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCreateMediaCacheEnded), object: nil, queue: nil) { _ in
-            if let metadatas = self.imageCache.initialMetadatas() {
-                self.metadatas = metadatas
-            }
-            self.collectionViewReloadData()
+            */
         }
     }
 
@@ -149,6 +149,7 @@ class NCMedia: UIViewController {
 
 
         navigationController?.setMediaAppreance()
+        reloadDataSource()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -162,18 +163,6 @@ class NCMedia: UIViewController {
 
         startTimer()
         createMenu()
-
-        if imageCache.createMediaCacheInProgress {
-            self.metadatas = nil
-            self.collectionViewReloadData()
-        } else if let metadatas = imageCache.initialMetadatas() {
-            self.metadatas = metadatas
-            self.collectionViewReloadData()
-        } else {
-            DispatchQueue.global(qos: .userInteractive).async {
-                self.reloadDataSource()
-            }
-        }
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -187,10 +176,12 @@ class NCMedia: UIViewController {
 
         // Cancel Queue & Retrieves Properties
         NCNetworking.shared.downloadThumbnailQueue.cancelAll()
-        NextcloudKit.shared.sessionManager.session.getTasksWithCompletionHandler { dataTasks, _, _ in
-            dataTasks.forEach {
-                if $0.taskDescription == self.taskDescriptionRetrievesProperties {
-                    $0.cancel()
+        if let nkSession = NextcloudKit.shared.nkCommonInstance.getSession(account: session.account) {
+            nkSession.sessionData.session.getTasksWithCompletionHandler { dataTasks, _, _ in
+                dataTasks.forEach {
+                    if $0.taskDescription == self.taskDescriptionRetrievesProperties {
+                        $0.cancel()
+                    }
                 }
             }
         }
@@ -291,8 +282,8 @@ class NCMedia: UIViewController {
             return image
         } else if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal,
                   (!utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)),
-                  NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnaill)?.metadata.ocId == metadata.ocId }).isEmpty {
-            NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnaill(metadata: metadata, media: self))
+                  NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
+            NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnail(metadata: metadata, collectioView: self.collectionView, delegate: self))
         }
         return nil
     }
@@ -363,12 +354,11 @@ extension NCMedia: UIScrollViewDelegate {
 // MARK: -
 
 extension NCMedia: NCSelectDelegate {
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
-        guard let serverUrl = serverUrl else { return }
-        let home = utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool, session: NCSession.Session) {
+        guard let serverUrl else { return }
+        let home = utilityFileSystem.getHomeServer(session: session)
         let mediaPath = serverUrl.replacingOccurrences(of: home, with: "")
-        NCManageDatabase.shared.setAccountMediaPath(mediaPath, account: activeAccount.account)
-        activeAccount = NCManageDatabase.shared.getActiveAccount() ?? tableAccount()
+        NCManageDatabase.shared.setAccountMediaPath(mediaPath, account: session.account)
         reloadDataSource()
         startTimer()
     }

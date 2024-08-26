@@ -1,5 +1,5 @@
 //
-//  NCMediaDownloadThumbnaill.swift
+//  NCMediaDownloadThumbnail.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 25/01/24.
@@ -25,18 +25,20 @@ import UIKit
 import NextcloudKit
 import Queuer
 
-class NCMediaDownloadThumbnaill: ConcurrentOperation {
+class NCMediaDownloadThumbnail: ConcurrentOperation {
     var metadata: tableMetadata
-    var media: NCMedia
+    var collectioView: UICollectionView?
     var fileNamePreviewLocalPath: String
     var fileNameIconLocalPath: String
     let utilityFileSystem = NCUtilityFileSystem()
+    let delegate: NCMedia?
 
-    init(metadata: tableMetadata, media: NCMedia) {
+    init(metadata: tableMetadata, collectioView: UICollectionView?, delegate: NCMedia?) {
         self.metadata = tableMetadata.init(value: metadata)
-        self.media = media
+        self.collectioView = collectioView
         self.fileNamePreviewLocalPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
         self.fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
+        self.delegate = delegate
     }
 
     override func start() {
@@ -57,23 +59,21 @@ class NCMediaDownloadThumbnaill: ConcurrentOperation {
                                             etag: etagResource,
                                             account: metadata.account,
                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imagePreview, _, _, etag, error in
-            if error == .success, let imagePreview {
+            if error == .success, let imagePreview, let collectionView = self.collectioView {
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
+                NCImageCache.shared.addPreviewImageCache(metadata: self.metadata, image: imagePreview)
                 DispatchQueue.main.async {
-                    if let visibleCells = self.media.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.media.collectionView?.cellForItem(at: $0) }) {
-                        for case let cell as NCGridMediaCell in visibleCells {
-                            if cell.ocId == self.metadata.ocId, let imageItem = cell.imageItem {
-                                UIView.transition(with: imageItem,
-                                                  duration: 0.75,
-                                                  options: .transitionCrossDissolve,
-                                                  animations: { imageItem.image = imagePreview },
-                                                  completion: nil)
-                                break
-                            }
+                    for case let cell as NCGridMediaCell in collectionView.visibleCells {
+                        if cell.ocId == self.metadata.ocId {
+                            UIView.transition(with: cell.imageItem,
+                                              duration: 0.75,
+                                              options: .transitionCrossDissolve,
+                                              animations: { cell.imageItem.image = imagePreview },
+                                              completion: nil)
+                            break
                         }
                     }
                 }
-                NCImageCache.shared.addPreviewImageCache(metadata: self.metadata, image: imagePreview)
             }
             self.finish()
         }
@@ -82,7 +82,7 @@ class NCMediaDownloadThumbnaill: ConcurrentOperation {
     override func finish(success: Bool = true) {
         super.finish(success: success)
         if (metadata.width == 0 && metadata.height == 0) || (NCNetworking.shared.downloadThumbnailQueue.operationCount == 0) {
-            self.media.collectionViewReloadData()
+            self.delegate?.collectionViewReloadData()
         }
     }
 }

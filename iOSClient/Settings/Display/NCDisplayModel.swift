@@ -10,14 +10,16 @@ import Foundation
 import SwiftUI
 
 class NCDisplayModel: ObservableObject, ViewOnAppearHandling {
-    /// AppDelegate
-    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     /// Keychain access
     var keychain = NCKeychain()
     /// Root View Controller
     @Published var controller: NCMainTabBarController?
     /// State variable for enabling the automatic appreance
     @Published var appearanceAutomatic: Bool = false
+    /// Get session
+    var session: NCSession.Session {
+        NCSession.shared.getSession(controller: controller)
+    }
 
     /// Initializes the view model with default values.
     init(controller: NCMainTabBarController?) {

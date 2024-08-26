@@ -26,7 +26,6 @@ import NextcloudKit
 import QuickLook
 
 class NCViewer: NSObject {
-    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
     private var viewerQuickLook: NCViewerQuickLook?
@@ -36,6 +35,7 @@ class NCViewer: NSObject {
     func view(viewController: UIViewController, metadata: tableMetadata, metadatas: [tableMetadata], imageIcon: UIImage?) {
         self.metadata = metadata
         self.metadatas = metadatas
+        let session = NCSession.shared.getSession(account: metadata.account)
 
         // URL
         if metadata.classFile == NKCommon.TypeClassFile.url.rawValue {
@@ -45,7 +45,7 @@ class NCViewer: NSObject {
                 if pathComponents.contains("call") {
                     let talkComponents = pathComponents.last?.components(separatedBy: "#")
                     if let roomToken = talkComponents?.first {
-                        let urlString = "nextcloudtalk://open-conversation?server=\(appDelegate.urlBase)&user=\(appDelegate.userId)&withRoomToken=\(roomToken)"
+                        let urlString = "nextcloudtalk://open-conversation?server=\(session.urlBase)&user=\(session.userId)&withRoomToken=\(roomToken)"
                         if let url = URL(string: urlString), UIApplication.shared.canOpenURL(url) {
                             UIApplication.shared.open(url)
                             return
@@ -97,9 +97,9 @@ class NCViewer: NSObject {
             if metadata.isAvailableRichDocumentEditorView {
                 if metadata.url.isEmpty {
                     NCActivityIndicator.shared.start(backgroundView: viewController.view)
-                    NextcloudKit.shared.createUrlRichdocuments(fileID: metadata.fileId, account: metadata.account) { account, url, _, error in
+                    NextcloudKit.shared.createUrlRichdocuments(fileID: metadata.fileId, account: metadata.account) { _, url, _, error in
                         NCActivityIndicator.shared.stop()
-                        if error == .success && account == self.appDelegate.account && url != nil {
+                        if error == .success, url != nil {
                             if let navigationController = viewController.navigationController,
                                let viewController: NCViewerRichDocument = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as? NCViewerRichDocument {
                                 viewController.metadata = metadata
@@ -135,11 +135,11 @@ class NCViewer: NSObject {
                     options = NKRequestOptions(customUserAgent: utility.getCustomUserAgentOnlyOffice())
                 }
                 if metadata.url.isEmpty {
-                    let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
+                    let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
                     NCActivityIndicator.shared.start(backgroundView: viewController.view)
-                    NextcloudKit.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: editor, account: metadata.account, options: options) { account, url, _, error in
+                    NextcloudKit.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: editor, account: metadata.account, options: options) { _, url, _, error in
                         NCActivityIndicator.shared.stop()
-                        if error == .success && account == self.appDelegate.account && url != nil {
+                        if error == .success, url != nil {
                             if let navigationController = viewController.navigationController,
                                let viewController: NCViewerNextcloudText = UIStoryboard(name: "NCViewerNextcloudText", bundle: nil).instantiateInitialViewController() as? NCViewerNextcloudText {
                                 viewController.metadata = metadata
@@ -177,31 +177,6 @@ class NCViewer: NSObject {
             // Document Interaction Controller
             if let controller = viewController.tabBarController as? NCMainTabBarController {
                 NCActionCenter.shared.openDocumentController(metadata: metadata, controller: controller)
-            }
-        }
-    }
-}
-
-// MARK: - SELECT
-
-extension NCViewer: NCSelectDelegate {
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
-        if let serverUrl = serverUrl,
-           let metadata = items[0] as? tableMetadata {
-            if move {
-                Task {
-                    let error = await NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
-                    if error != .success {
-                        NCContentPresenter().showError(error: error)
-                    }
-                }
-            } else if copy {
-                Task {
-                    let error = await NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
-                    if error != .success {
-                        NCContentPresenter().showError(error: error)
-                    }
-                }
             }
         }
     }

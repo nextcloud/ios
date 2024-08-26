@@ -33,7 +33,7 @@ import RealmSwift
 
 extension NCMedia: NCMediaLayoutDelegate {
     func getColumnCount() -> Int {
-        let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")
+        let layoutForView = NCManageDatabase.shared.getLayoutForView(account: session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")
         if let column = layoutForView?.columnPhoto, column > 0 {
             return column
         }
@@ -75,8 +75,7 @@ extension NCMedia: NCMediaLayoutDelegate {
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath, columnCount: Int, typeLayout: String) -> CGSize {
         let size = CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
         if typeLayout == NCGlobal.shared.mediaLayoutRatio {
-            guard let metadatas = self.metadatas,
-                  let metadata = metadatas[indexPath.row] else { return size }
+            guard let metadata = metadatas?[indexPath.row] else { return size }
 
             if metadata.imageSize != CGSize.zero {
                 return metadata.imageSize

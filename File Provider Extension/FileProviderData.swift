@@ -33,19 +33,12 @@ class fileProviderData: NSObject {
     var domain: NSFileProviderDomain?
     var fileProviderManager: NSFileProviderManager = NSFileProviderManager.default
     let utilityFileSystem = NCUtilityFileSystem()
-
-    var account = ""
-    var user = ""
-    var userId = ""
-    var accountUrlBase = ""
-    var homeServerUrl = ""
-
     var listFavoriteIdentifierRank: [String: NSNumber] = [:]
-
     var fileProviderSignalDeleteContainerItemIdentifier: [NSFileProviderItemIdentifier: NSFileProviderItemIdentifier] = [:]
     var fileProviderSignalUpdateContainerItem: [NSFileProviderItemIdentifier: FileProviderItem] = [:]
     var fileProviderSignalDeleteWorkingSetItemIdentifier: [NSFileProviderItemIdentifier: NSFileProviderItemIdentifier] = [:]
     var fileProviderSignalUpdateWorkingSetItem: [NSFileProviderItemIdentifier: FileProviderItem] = [:]
+    var account: String = ""
 
     enum FileProviderError: Error {
         case downloadError
@@ -83,22 +76,32 @@ class fileProviderData: NSObject {
 
         // NO DOMAIN -> Set default account
         if domain == nil {
-            guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else { return nil }
-            account = activeAccount.account
-            user = activeAccount.user
-            userId = activeAccount.userId
-            accountUrlBase = activeAccount.urlBase
-            homeServerUrl = utilityFileSystem.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId)
-
-            NCManageDatabase.shared.setCapabilities(account: account)
-            NextcloudKit.shared.setup(account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId, password: NCKeychain().getPassword(account: activeAccount.account), urlBase: activeAccount.urlBase, userAgent: userAgent, nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor, delegate: NCNetworking.shared)
+            guard let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() else { return nil }
+            self.account = activeTableAccount.account
+            /// Session
+            NCSession.shared.appendSession(account: activeTableAccount.account,
+                                           urlBase: activeTableAccount.urlBase,
+                                           user: activeTableAccount.user,
+                                           userId: activeTableAccount.userId)
+            /// NextcloudKit Session
+            NextcloudKit.shared.setup(delegate: NCNetworking.shared)
+            NextcloudKit.shared.appendSession(account: activeTableAccount.account,
+                                              urlBase: activeTableAccount.urlBase,
+                                              user: activeTableAccount.user,
+                                              userId: activeTableAccount.userId,
+                                              password: NCKeychain().getPassword(account: activeTableAccount.account),
+                                              userAgent: userAgent,
+                                              nextcloudVersion: NCCapabilities.shared.getCapabilities(account: self.account).capabilityServerVersionMajor,
+                                              groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
             NCNetworking.shared.delegate = providerExtension as? NCNetworkingDelegate
 
-            return tableAccount.init(value: activeAccount)
+            return tableAccount.init(value: activeTableAccount)
         }
 
         // DOMAIN
-        let accounts = NCManageDatabase.shared.getAllAccount()
+
+        /*
+        let accounts = NCManageDatabase.shared.getAllTableAccount()
         if accounts.isEmpty { return nil }
 
         for activeAccount in accounts {
@@ -113,13 +116,20 @@ class fileProviderData: NSObject {
                 homeServerUrl = utilityFileSystem.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId)
 
                 NCManageDatabase.shared.setCapabilities(account: account)
-
-                NextcloudKit.shared.setup(account: activeAccount.account, user: activeAccount.user, userId: activeAccount.userId, password: NCKeychain().getPassword(account: activeAccount.account), urlBase: activeAccount.urlBase, userAgent: userAgent, nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor, delegate: NCNetworking.shared)
+                NextcloudKit.shared.appendAccount(activeAccount.account,
+                                                  urlBase: activeAccount.urlBase,
+                                                  user: activeAccount.user,
+                                                  userId: activeAccount.userId,
+                                                  password: NCKeychain().getPassword(account: activeAccount.account),
+                                                  userAgent: userAgent,
+                                                  nextcloudVersion: NCGlobal.shared.capabilityServerVersionMajor,
+                                                  groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
                 NCNetworking.shared.delegate = providerExtension as? NCNetworkingDelegate
 
                 return tableAccount.init(value: activeAccount)
             }
         }
+        */
         return nil
     }
 

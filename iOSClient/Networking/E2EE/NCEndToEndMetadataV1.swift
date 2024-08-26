@@ -20,6 +20,7 @@
 //
 
 import Foundation
+import UIKit
 import NextcloudKit
 
 extension NCEndToEndMetadata {
@@ -193,14 +194,14 @@ extension NCEndToEndMetadata {
     // MARK: Decode JSON Metadata V1.2
     // --------------------------------------------------------------------------------------------
 
-    func decodeMetadataV12(_ json: String, serverUrl: String, account: String, ocIdServerUrl: String, urlBase: String, userId: String) -> NKError {
+    func decodeMetadataV12(_ json: String, serverUrl: String, ocIdServerUrl: String, session: NCSession.Session) -> NKError {
 
         guard let data = json.data(using: .utf8) else {
             return NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: "_e2e_error_")
         }
 
         let decoder = JSONDecoder()
-        let privateKey = NCKeychain().getEndToEndPrivateKey(account: account)
+        let privateKey = NCKeychain().getEndToEndPrivateKey(account: session.account)
         var metadataVersion: Double = 0
         var metadataKey = ""
 
@@ -228,7 +229,7 @@ extension NCEndToEndMetadata {
             }
 
             // DATA
-            NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
+            NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl))
 
             //
             // files
@@ -249,9 +250,9 @@ extension NCEndToEndMetadata {
                             decryptedData.printJson()
                             let encrypted = try decoder.decode(E2eeV12.Encrypted.self, from: decryptedData)
 
-                            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", account, fileNameIdentifier)) {
+                            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", session.account, fileNameIdentifier)) {
 
-                                let object = tableE2eEncryption.init(account: account, ocIdServerUrl: ocIdServerUrl, fileNameIdentifier: fileNameIdentifier)
+                                let object = tableE2eEncryption.init(account: session.account, ocIdServerUrl: ocIdServerUrl, fileNameIdentifier: fileNameIdentifier)
 
                                 object.authenticationTag = authenticationTag ?? ""
                                 object.blob = "files"
@@ -269,7 +270,7 @@ extension NCEndToEndMetadata {
                                 // Update metadata on tableMetadata
                                 metadata.fileNameView = encrypted.filename
 
-                                let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: encrypted.filename, mimeType: metadata.contentType, directory: metadata.directory)
+                                let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: encrypted.filename, mimeType: metadata.contentType, directory: metadata.directory, account: session.account)
 
                                 metadata.contentType = results.mimeType
                                 metadata.iconName = results.iconName
@@ -307,9 +308,9 @@ extension NCEndToEndMetadata {
                             decryptedData.printJson()
                             let encrypted = try decoder.decode(E2eeV1.Encrypted.self, from: decryptedData)
 
-                            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", account, fileNameIdentifier)) {
+                            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", session.account, fileNameIdentifier)) {
 
-                                let object = tableE2eEncryption.init(account: account, ocIdServerUrl: ocIdServerUrl, fileNameIdentifier: fileNameIdentifier)
+                                let object = tableE2eEncryption.init(account: session.account, ocIdServerUrl: ocIdServerUrl, fileNameIdentifier: fileNameIdentifier)
 
                                 object.authenticationTag = filedrop.authenticationTag ?? ""
                                 object.blob = "filedrop"
@@ -327,7 +328,7 @@ extension NCEndToEndMetadata {
                                 // Update metadata on tableMetadata
                                 metadata.fileNameView = encrypted.filename
 
-                                let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: encrypted.filename, mimeType: metadata.contentType, directory: metadata.directory)
+                                let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: encrypted.filename, mimeType: metadata.contentType, directory: metadata.directory, account: session.account)
 
                                 metadata.contentType = results.mimeType
                                 metadata.iconName = results.iconName
@@ -344,7 +345,7 @@ extension NCEndToEndMetadata {
             }
 
             // verify checksum
-            let passphrase = NCKeychain().getEndToEndPassphrase(account: account)?.replacingOccurrences(of: " ", with: "") ?? ""
+            let passphrase = NCKeychain().getEndToEndPassphrase(account: session.account)?.replacingOccurrences(of: " ", with: "") ?? ""
             let dataChecksum = (passphrase + fileNameIdentifiers.sorted().joined() + metadata.metadataKey).data(using: .utf8)
             let checksum = NCEndToEndEncryption.shared().createSHA256(dataChecksum)
             if metadata.checksum != checksum {
@@ -361,14 +362,14 @@ extension NCEndToEndMetadata {
     // MARK: Decode JSON Metadata V1.1
     // --------------------------------------------------------------------------------------------
 
-    func decodeMetadataV1(_ json: String, serverUrl: String, account: String, ocIdServerUrl: String, urlBase: String, userId: String) -> NKError {
+    func decodeMetadataV1(_ json: String, serverUrl: String, ocIdServerUrl: String, session: NCSession.Session) -> NKError {
 
         guard let data = json.data(using: .utf8) else {
             return NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: "_e2e_error_")
         }
 
         let decoder = JSONDecoder()
-        let privateKey = NCKeychain().getEndToEndPrivateKey(account: account)
+        let privateKey = NCKeychain().getEndToEndPrivateKey(account: session.account)
         var metadataVersion: Double = 0
 
         do {
@@ -381,7 +382,7 @@ extension NCEndToEndMetadata {
             metadataVersion = metadata.version
 
             // DATA
-            NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
+            NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl))
 
             //
             // metadata
@@ -398,7 +399,7 @@ extension NCEndToEndMetadata {
             //
             // verify version
             //
-            if let tableE2eMetadata = NCManageDatabase.shared.getE2eMetadata(account: account, serverUrl: serverUrl) {
+            if let tableE2eMetadata = NCManageDatabase.shared.getE2eMetadata(account: session.account, serverUrl: serverUrl) {
                 if tableE2eMetadata.version > metadataVersion {
                     return NKError(errorCode: NCGlobal.shared.errorE2EEVersion, errorDescription: "Version \(tableE2eMetadata.version)")
                 }
@@ -423,9 +424,9 @@ extension NCEndToEndMetadata {
                         do {
                             let encrypted = try decoder.decode(E2eeV1.Encrypted.self, from: decryptedData)
 
-                            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", account, fileNameIdentifier)) {
+                            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", session.account, fileNameIdentifier)) {
 
-                                let object = tableE2eEncryption.init(account: account, ocIdServerUrl: ocIdServerUrl, fileNameIdentifier: fileNameIdentifier)
+                                let object = tableE2eEncryption.init(account: session.account, ocIdServerUrl: ocIdServerUrl, fileNameIdentifier: fileNameIdentifier)
 
                                 object.authenticationTag = authenticationTag ?? ""
                                 object.blob = "files"
@@ -444,7 +445,7 @@ extension NCEndToEndMetadata {
                                 // Update metadata on tableMetadata
                                 metadata.fileNameView = encrypted.filename
 
-                                let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: encrypted.filename, mimeType: metadata.contentType, directory: metadata.directory)
+                                let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: encrypted.filename, mimeType: metadata.contentType, directory: metadata.directory, account: session.account)
 
                                 metadata.contentType = results.mimeType
                                 metadata.iconName = results.iconName

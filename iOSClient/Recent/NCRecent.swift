@@ -33,7 +33,7 @@ class NCRecent: NCCollectionViewCommon {
         layoutKey = NCGlobal.shared.layoutViewRecent
         enableSearchBar = false
         headerRichWorkspaceDisable = true
-        emptyImage = utility.loadImage(named: "clock.arrow.circlepath", colors: [NCBrandColor.shared.brandElement])
+        emptyImage = utility.loadImage(named: "clock.arrow.circlepath", colors: [NCBrandColor.shared.getElement(account: session.account)])
         emptyTitle = "_files_no_files_"
         emptyDescription = ""
     }
@@ -49,19 +49,17 @@ class NCRecent: NCCollectionViewCommon {
 
     override func queryDB() {
         super.queryDB()
-
-        let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@", self.appDelegate.account), numItems: 200, sorted: "date", ascending: false)
+        let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@", session.account), numItems: 200, sorted: "date", ascending: false)
 
         layoutForView?.sort = "date"
         layoutForView?.ascending = false
         layoutForView?.directoryOnTop = false
 
-        self.dataSource = NCDataSource(metadatas: metadatas, account: self.appDelegate.account, layoutForView: layoutForView, favoriteOnTop: false, providers: self.providers, searchResults: self.searchResults)
+        self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: layoutForView, favoriteOnTop: false, providers: self.providers, searchResults: self.searchResults)
     }
 
     override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
         super.reloadDataSourceNetwork()
-
         let requestBodyRecent =
         """
         <?xml version=\"1.0\"?>
@@ -128,17 +126,17 @@ class NCRecent: NCCollectionViewCommon {
         dateFormatter.locale = Locale(identifier: "en_US_POSIX")
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
         let lessDateString = dateFormatter.string(from: Date())
-        let requestBody = String(format: requestBodyRecent, "/files/" + appDelegate.userId, lessDateString)
+        let requestBody = String(format: requestBodyRecent, "/files/" + session.userId, lessDateString)
 
-        NextcloudKit.shared.searchBodyRequest(serverUrl: appDelegate.urlBase,
+        NextcloudKit.shared.searchBodyRequest(serverUrl: session.urlBase,
                                               requestBody: requestBody,
                                               showHiddenFiles: NCKeychain().showHiddenFiles,
-                                              account: appDelegate.account,
+                                              account: session.account,
                                               options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()
         } completion: { _, files, _, error in
-            if error == .success {
+            if error == .success, let files {
                 NCManageDatabase.shared.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
                     // Add metadatas
                     NCManageDatabase.shared.addMetadatas(metadatas)
