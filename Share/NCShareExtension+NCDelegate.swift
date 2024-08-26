@@ -91,65 +91,13 @@ extension NCShareExtension: NCAccountRequestDelegate {
         reloadDatasource(withLoadFolder: true)
         setNavigationBar(navigationTitle: NCBrandOptions.shared.brand)
 
-        FileNameValidator.shared.setup(
-            forbiddenFileNames: NCGlobal.shared.capabilityForbiddenFileNames,
-            forbiddenFileNameBasenames: NCGlobal.shared.capabilityForbiddenFileNameBasenames,
-            forbiddenFileNameCharacters: NCGlobal.shared.capabilityForbiddenFileNameCharacters,
-            forbiddenFileNameExtensions: NCGlobal.shared.capabilityForbiddenFileNameExtensions
-        )
+//        FileNameValidator.shared.setup(
+//            forbiddenFileNames: NCGlobal.shared.capabilityForbiddenFileNames,
+//            forbiddenFileNameBasenames: NCGlobal.shared.capabilityForbiddenFileNameBasenames,
+//            forbiddenFileNameCharacters: NCGlobal.shared.capabilityForbiddenFileNameCharacters,
+//            forbiddenFileNameExtensions: NCGlobal.shared.capabilityForbiddenFileNameExtensions
+//        )
     }
-}
-
-extension NCShareExtension: NCShareCellDelegate, NCRenameFileDelegate, NCListCellDelegate {
-    func removeFile(named fileName: String) {
-        guard let index = self.filesName.firstIndex(of: fileName) else {
-            return showAlert(title: "_file_not_found_", description: fileName)
-        }
-        self.filesName.remove(at: index)
-        if self.filesName.isEmpty {
-            cancel(with: NCShareExtensionError.noFiles)
-        } else {
-            self.setCommandView()
-        }
-    }
-
-    func renameFile(named fileName: String, account: String) {
-        guard let vcRename = UIStoryboard(name: "NCRenameFile", bundle: nil).instantiateInitialViewController() as? NCRenameFile else { return }
-
-        vcRename.delegate = self
-        vcRename.fileName = fileName
-        vcRename.indexPath = IndexPath()
-        vcRename.account = account
-
-        if let previewImage = UIImage.downsample(imageAt: URL(fileURLWithPath: NSTemporaryDirectory() + fileName), to: CGSize(width: 140, height: 140)) {
-            vcRename.imagePreview = previewImage
-        } else {
-            let resultInternalType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false, account: account)
-            vcRename.imagePreview = UIImage(named: resultInternalType.iconName) ?? NCImageCache.shared.getImageFile()
-        }
-
-        let popup = NCPopupViewController(contentController: vcRename, popupWidth: vcRename.width, popupHeight: vcRename.height)
-
-        self.present(popup, animated: true)
-    }
-
-    func rename(fileName: String, fileNameNew: String) {
-        guard fileName != fileNameNew else { return }
-        guard let fileIx = self.filesName.firstIndex(of: fileName),
-              !self.filesName.contains(fileNameNew),
-              utilityFileSystem.moveFile(atPath: (NSTemporaryDirectory() + fileName), toPath: (NSTemporaryDirectory() + fileNameNew)) else {
-                  return showAlert(title: "_single_file_conflict_title_", description: "'\(fileName)' -> '\(fileNameNew)'")
-              }
-
-        filesName[fileIx] = fileNameNew
-        tableView.reloadData()
-    }
-
-    func tapShareListItem(with ocId: String, ocIdTransfer: String, indexPath: IndexPath, sender: Any) { }
-
-    func tapMoreListItem(with ocId: String, ocIdTransfer: String, image: UIImage?, indexPath: IndexPath, sender: Any) { }
-
-    func longPressListItem(with ocId: String, ocIdTransfer: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) { }
 }
 
 extension NCShareExtension: NCCreateFormUploadConflictDelegate {
@@ -166,19 +114,7 @@ extension NCShareExtension: NCCreateFormUploadConflictDelegate {
 }
 
 extension NCShareExtension: NCShareCellDelegate {
-    func removeFile(named fileName: String) {
-        guard let index = self.filesName.firstIndex(of: fileName) else {
-            return showAlert(title: "_file_not_found_", description: fileName)
-        }
-        self.filesName.remove(at: index)
-        if self.filesName.isEmpty {
-            cancel(with: NCShareExtensionError.noFiles)
-        } else {
-            self.setCommandView()
-        }
-    }
-
-    func renameFile(named fileName: String) {
+    func renameFile(named fileName: String, account: String) {
         let alert = UIAlertController.renameFile(fileName: fileName) { [self] newFileName in
             guard let fileIx = self.filesName.firstIndex(of: fileName),
                   !self.filesName.contains(newFileName),
@@ -191,5 +127,17 @@ extension NCShareExtension: NCShareCellDelegate {
         }
 
         present(alert, animated: true)
+    }
+    
+    func removeFile(named fileName: String) {
+        guard let index = self.filesName.firstIndex(of: fileName) else {
+            return showAlert(title: "_file_not_found_", description: fileName)
+        }
+        self.filesName.remove(at: index)
+        if self.filesName.isEmpty {
+            cancel(with: NCShareExtensionError.noFiles)
+        } else {
+            self.setCommandView()
+        }
     }
 }

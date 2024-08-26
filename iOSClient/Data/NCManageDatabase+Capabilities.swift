@@ -378,14 +378,14 @@ extension NCManageDatabase {
 
             capabilities.capabilitySecurityGuardDiagnostics = data.capabilities.securityguard?.diagnostics ?? false
 
+            capabilities.capabilityForbiddenFileNames = data.capabilities.files?.forbiddenFileNames ?? []
+            capabilities.capabilityForbiddenFileNameBasenames = data.capabilities.files?.forbiddenFileNameBasenames ?? []
+            capabilities.capabilityForbiddenFileNameCharacters = data.capabilities.files?.forbiddenFileNameCharacters ?? []
+            capabilities.capabilityForbiddenFileNameExtensions = data.capabilities.files?.forbiddenFileNameExtensions ?? []
+
             NCCapabilities.shared.appendCapabilities(account: account, capabilities: capabilities)
 
             return capabilities
-
-            global.capabilityForbiddenFileNames = data.capabilities.files?.forbiddenFileNames ?? []
-            global.capabilityForbiddenFileNameBasenames = data.capabilities.files?.forbiddenFileNameBasenames ?? []
-            global.capabilityForbiddenFileNameCharacters = data.capabilities.files?.forbiddenFileNameCharacters ?? []
-            global.capabilityForbiddenFileNameExtensions = data.capabilities.files?.forbiddenFileNameExtensions ?? []
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
             return nil

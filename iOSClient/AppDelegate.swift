@@ -114,12 +114,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         _ = NCActionCenter.shared
         _ = NCNetworkingProcess.shared
 
-        FileNameValidator.shared.setup(
-            forbiddenFileNames: NCGlobal.shared.capabilityForbiddenFileNames,
-            forbiddenFileNameBasenames: NCGlobal.shared.capabilityForbiddenFileNameBasenames,
-            forbiddenFileNameCharacters: NCGlobal.shared.capabilityForbiddenFileNameCharacters,
-            forbiddenFileNameExtensions: NCGlobal.shared.capabilityForbiddenFileNameExtensions
-        )
+//        FileNameValidator.shared.setup(
+//            forbiddenFileNames: NCCapabilities.shared.capabilityForbiddenFileNames,
+//            forbiddenFileNameBasenames: NCGlobal.shared.capabilityForbiddenFileNameBasenames,
+//            forbiddenFileNameCharacters: NCGlobal.shared.capabilityForbiddenFileNameCharacters,
+//            forbiddenFileNameExtensions: NCGlobal.shared.capabilityForbiddenFileNameExtensions
+//        )
 
         return true
     }

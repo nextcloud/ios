@@ -67,6 +67,10 @@ public class NCCapabilities: NSObject {
         var capabilityAssistantEnabled: Bool                        = false // NC28
         var isLivePhotoServerAvailable: Bool                        = false // NC28
         var capabilitySecurityGuardDiagnostics                      = false
+        var capabilityForbiddenFileNames: [String]                  = []
+        var capabilityForbiddenFileNameBasenames: [String]          = []
+        var capabilityForbiddenFileNameCharacters: [String]         = []
+        var capabilityForbiddenFileNameExtensions: [String]         = []
     }
 
     private var capabilities = ThreadSafeDictionary<String, Capabilities>()

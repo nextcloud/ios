@@ -853,18 +853,6 @@ extension NCManageDatabase {
         return nil
     }
 
-    func getResultMetadataFromOcId(_ ocId: String?) -> tableMetadata? {
-        guard let ocId else { return nil }
-
-        do {
-            let realm = try Realm()
-            return realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
-        }
-        return nil
-    }
-
     func getResultMetadataFromFileName(_ fileName: String, serverUrl: String, sessionTaskIdentifier: Int) -> tableMetadata? {
         do {
             let realm = try Realm()
