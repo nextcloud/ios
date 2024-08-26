@@ -78,8 +78,8 @@ extension NCNetworking {
         }, taskHandler: { task in
             downloadTask = task
             self.database.setMetadataSession(ocId: metadata.ocId,
-                                             status: self.global.metadataStatusDownloading,
-                                             sessionTaskIdentifier: task.taskIdentifier)
+                                             sessionTaskIdentifier: task.taskIdentifier,
+                                             status: self.global.metadataStatusDownloading)
             NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterDownloadStartFile,
                                                         object: nil,
                                                         userInfo: ["ocId": metadata.ocId,
@@ -135,8 +135,8 @@ extension NCNetworking {
         if let task = nkBackground.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account) {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Download file \(metadata.fileNameView) with task with taskIdentifier \(task.taskIdentifier)")
             database.setMetadataSession(ocId: metadata.ocId,
-                                        status: self.global.metadataStatusDownloading,
-                                        sessionTaskIdentifier: task.taskIdentifier)
+                                        sessionTaskIdentifier: task.taskIdentifier,
+                                        status: self.global.metadataStatusDownloading)
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadStartFile,
                                                         object: nil,
                                                         userInfo: ["ocId": metadata.ocId,

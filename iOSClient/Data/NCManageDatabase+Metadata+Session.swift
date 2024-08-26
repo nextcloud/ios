@@ -81,31 +81,6 @@ extension NCManageDatabase {
         }
     }
 
-    func setMetadataSession(ocId: String,
-                            status: Int? = nil,
-                            sessionTaskIdentifier: Int? = nil) {
-        do {
-            let realm = try Realm()
-            try realm.write {
-                if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
-                    if let status {
-                        result.status = status
-                        if status == NCGlobal.shared.metadataStatusWaitDownload || status == NCGlobal.shared.metadataStatusWaitUpload {
-                            result.sessionDate = Date()
-                        } else if status == NCGlobal.shared.metadataStatusNormal {
-                            result.sessionDate = nil
-                        }
-                    }
-                    if let sessionTaskIdentifier {
-                        result.sessionTaskIdentifier = sessionTaskIdentifier
-                    }
-                }
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
-        }
-    }
-
     @discardableResult
     func setMetadatasSessionInWaitDownload(metadatas: [tableMetadata], session: String, selector: String, sceneIdentifier: String? = nil) -> tableMetadata? {
         if metadatas.isEmpty { return nil }

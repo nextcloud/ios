@@ -257,8 +257,8 @@ class FileProviderExtension: NSFileProviderExtension {
                                                    status: NCGlobal.shared.metadataStatusUploading)
         if let task = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: url.path, dateCreationFile: nil, dateModificationFile: nil, account: metadata.account, sessionIdentifier: metadata.session) {
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                       status: NCGlobal.shared.metadataStatusUploading,
-                                                       sessionTaskIdentifier: task.taskIdentifier)
+                                                       sessionTaskIdentifier: task.taskIdentifier,
+                                                       status: NCGlobal.shared.metadataStatusUploading)
             fileProviderData.shared.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(metadata.fileId)) { _ in }
         }
     }
@@ -323,8 +323,8 @@ class FileProviderExtension: NSFileProviderExtension {
 
                 if let task = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: nil, dateModificationFile: nil, account: metadata.account, sessionIdentifier: metadata.session) {
                     NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                               status: NCGlobal.shared.metadataStatusUploading,
-                                                               sessionTaskIdentifier: task.taskIdentifier)
+                                                               sessionTaskIdentifier: task.taskIdentifier,
+                                                               status: NCGlobal.shared.metadataStatusUploading)
                     fileProviderData.shared.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(ocIdTransfer)) { _ in }
                     fileProviderData.shared.appendUploadMetadata(id: ocIdTransfer, metadata: metadata, task: task)
                 }
