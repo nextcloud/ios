@@ -27,19 +27,17 @@ import UIKit
 import NextcloudKit
 
 class NCCameraRoll: NSObject {
-
     let utilityFileSystem = NCUtilityFileSystem()
 
     func extractCameraRoll(from metadata: tableMetadata, completition: @escaping (_ metadatas: [tableMetadata]) -> Void) {
-
+        var metadatas: [tableMetadata] = []
+        let metadataSource = tableMetadata.init(value: metadata)
         var chunkSize = NCGlobal.shared.chunkSizeMBCellular
         if NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi {
             chunkSize = NCGlobal.shared.chunkSizeMBEthernetOrWiFi
         }
-        var metadatas: [tableMetadata] = []
-        let metadataSource = tableMetadata.init(value: metadata)
-
         guard !metadata.isExtractFile else { return  completition([metadataSource]) }
+        
         guard !metadataSource.assetLocalIdentifier.isEmpty else {
             let filePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadataSource.ocId, fileNameView: metadataSource.fileName)
             metadataSource.size = utilityFileSystem.getFileSize(filePath: filePath)
@@ -268,7 +266,8 @@ class NCCameraRoll: NSObject {
                                                                                serverUrl: metadata.serverUrl,
                                                                                url: "",
                                                                                contentType: "",
-                                                                               session: session)
+                                                                               session: session,
+                                                                               sceneIdentifier: metadata.sceneIdentifier)
                 metadataLivePhoto.livePhotoFile = metadata.fileName
                 metadataLivePhoto.classFile = NKCommon.TypeClassFile.video.rawValue
                 metadataLivePhoto.isExtractFile = true

@@ -763,7 +763,8 @@ extension NCNetworking {
                                                                 subline: entry.subline,
                                                                 iconName: entry.icon,
                                                                 iconUrl: entry.thumbnailURL,
-                                                                session: session)
+                                                                session: session,
+                                                                sceneIdentifier: nil)
                     metadatas.append(metadata)
                 })
             }
@@ -834,7 +835,8 @@ extension NCNetworking {
                                                                    subline: entry.subline,
                                                                    iconName: entry.icon,
                                                                    iconUrl: entry.thumbnailURL,
-                                                                   session: session)
+                                                                   session: session,
+                                                                   sceneIdentifier: nil)
                     metadatas.append(newMetadata)
                 })
             }

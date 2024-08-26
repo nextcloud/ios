@@ -151,7 +151,15 @@ class NCAutoUpload: NSObject {
                         NCManageDatabase.shared.addPhotoLibrary([asset], account: session.account)
                     }
                 } else {
-                    let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: serverUrl, url: "", contentType: "", session: session)
+                    let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName,
+                                                                          fileNameView: fileName,
+                                                                          ocId: NSUUID().uuidString,
+                                                                          serverUrl: serverUrl,
+                                                                          url: "",
+                                                                          contentType: "",
+                                                                          session: session,
+                                                                          sceneIdentifier: nil)
+
                     if isLivePhoto {
                         metadata.livePhotoFile = (metadata.fileName as NSString).deletingPathExtension + ".mov"
                     }

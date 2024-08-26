@@ -455,7 +455,7 @@ extension NCManageDatabase {
         })
     }
 
-    func createMetadata(fileName: String, fileNameView: String, ocId: String, serverUrl: String, url: String, contentType: String, isUrl: Bool = false, name: String = NCGlobal.shared.appName, subline: String? = nil, iconName: String? = nil, iconUrl: String? = nil, session: NCSession.Session) -> tableMetadata {
+    func createMetadata(fileName: String, fileNameView: String, ocId: String, serverUrl: String, url: String, contentType: String, isUrl: Bool = false, name: String = NCGlobal.shared.appName, subline: String? = nil, iconName: String? = nil, iconUrl: String? = nil, session: NCSession.Session, sceneIdentifier: String?) -> tableMetadata {
         let metadata = tableMetadata()
 
         if isUrl {
@@ -501,6 +501,7 @@ extension NCManageDatabase {
         metadata.urlBase = session.urlBase
         metadata.user = session.user
         metadata.userId = session.userId
+        metadata.sceneIdentifier = sceneIdentifier
 
         if !metadata.urlBase.isEmpty, metadata.serverUrl.hasPrefix(metadata.urlBase) {
             metadata.path = String(metadata.serverUrl.dropFirst(metadata.urlBase.count)) + "/"

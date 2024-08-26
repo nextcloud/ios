@@ -49,7 +49,14 @@ class NCCreateDocument: NSObject {
                 }
                 if account == returnedAccount {
                     let contentType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false, account: session.account).mimeType
-                    let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: UUID, serverUrl: serverUrl, url: url, contentType: contentType, session: session)
+                    let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName,
+                                                                          fileNameView: fileName,
+                                                                          ocId: UUID,
+                                                                          serverUrl: serverUrl,
+                                                                          url: url,
+                                                                          contentType: contentType,
+                                                                          session: session,
+                                                                          sceneIdentifier: controller.sceneIdentifier)
 
                     NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
                 }
@@ -63,7 +70,14 @@ class NCCreateDocument: NSObject {
                 }
                 if account == returnedAccount {
                     let contentType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false, account: session.account).mimeType
-                    let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: UUID, serverUrl: serverUrl, url: url, contentType: contentType, session: session)
+                    let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName,
+                                                                          fileNameView: fileName,
+                                                                          ocId: UUID,
+                                                                          serverUrl: serverUrl,
+                                                                          url: url,
+                                                                          contentType: contentType,
+                                                                          session: session,
+                                                                          sceneIdentifier: controller.sceneIdentifier)
 
                     NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
                 }

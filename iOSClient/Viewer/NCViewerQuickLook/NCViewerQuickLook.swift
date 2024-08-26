@@ -241,7 +241,8 @@ extension NCViewerQuickLook: QLPreviewControllerDataSource, QLPreviewControllerD
                                                                        serverUrl: metadata.serverUrl,
                                                                        url: url.path,
                                                                        contentType: "",
-                                                                       session: session)
+                                                                       session: session,
+                                                                       sceneIdentifier: nil)
 
         metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
         if override {

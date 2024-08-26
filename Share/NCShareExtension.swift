@@ -297,16 +297,24 @@ extension NCShareExtension {
             let session = NCSession.Session(account: activeTableAccount.account, urlBase: activeTableAccount.urlBase, user: activeTableAccount.user, userId: activeTableAccount.userId)
             let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
             guard utilityFileSystem.copyFile(atPath: (NSTemporaryDirectory() + fileName), toPath: toPath) else { continue }
-            let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, url: "", contentType: "", session: session)
-            metadata.session = NCNetworking.shared.sessionUpload
-            metadata.sessionSelector = NCGlobal.shared.selectorUploadFileShareExtension
-            metadata.size = utilityFileSystem.getFileSize(filePath: toPath)
-            metadata.status = NCGlobal.shared.metadataStatusWaitUpload
-            metadata.sessionDate = Date()
+            let metadataForUpload = NCManageDatabase.shared.createMetadata(fileName: fileName,
+                                                                           fileNameView: fileName,
+                                                                           ocId: ocId,
+                                                                           serverUrl: serverUrl,
+                                                                           url: "",
+                                                                           contentType: "",
+                                                                           session: session,
+                                                                           sceneIdentifier: nil)
+
+            metadataForUpload.session = NCNetworking.shared.sessionUpload
+            metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFileShareExtension
+            metadataForUpload.size = utilityFileSystem.getFileSize(filePath: toPath)
+            metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
+            metadataForUpload.sessionDate = Date()
             if NCManageDatabase.shared.getMetadataConflict(account: activeTableAccount.account, serverUrl: serverUrl, fileNameView: fileName) != nil {
-                conflicts.append(metadata)
+                conflicts.append(metadataForUpload)
             } else {
-                uploadMetadata.append(metadata)
+                uploadMetadata.append(metadataForUpload)
             }
         }
 

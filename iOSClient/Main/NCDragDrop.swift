@@ -104,7 +104,15 @@ class NCDragDrop: NSObject {
 
                 try data.write(to: URL(fileURLWithPath: fileNamePath))
 
-                let metadataForUpload = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, url: "", contentType: "", session: session)
+                let metadataForUpload = NCManageDatabase.shared.createMetadata(fileName: fileName,
+                                                                               fileNameView: fileName,
+                                                                               ocId: ocId,
+                                                                               serverUrl: serverUrl,
+                                                                               url: "",
+                                                                               contentType: "",
+                                                                               session: session,
+                                                                               sceneIdentifier: nil)
+
                 metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
                 metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
                 metadataForUpload.size = utilityFileSystem.getFileSize(filePath: fileNamePath)

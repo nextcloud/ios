@@ -215,40 +215,46 @@ class NCUploadAssetsModel: NSObject, ObservableObject, NCCreateFormUploadConflic
                 continue
             }
 
-            let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: NSUUID().uuidString, serverUrl: serverUrl, url: "", contentType: "", session: session)
+            let metadataForUpload = NCManageDatabase.shared.createMetadata(fileName: fileName,
+                                                                           fileNameView: fileName,
+                                                                           ocId: NSUUID().uuidString,
+                                                                           serverUrl: serverUrl,
+                                                                           url: "",
+                                                                           contentType: "",
+                                                                           session: session,
+                                                                           sceneIdentifier: controller?.sceneIdentifier)
 
             if livePhoto {
-                metadata.livePhotoFile = (metadata.fileName as NSString).deletingPathExtension + ".mov"
+                metadataForUpload.livePhotoFile = (metadataForUpload.fileName as NSString).deletingPathExtension + ".mov"
             }
-            metadata.assetLocalIdentifier = asset.localIdentifier
-            metadata.session = NCNetworking.shared.sessionUploadBackground
-            metadata.sessionSelector = NCGlobal.shared.selectorUploadFile
-            metadata.status = NCGlobal.shared.metadataStatusWaitUpload
-            metadata.sessionDate = Date()
+            metadataForUpload.assetLocalIdentifier = asset.localIdentifier
+            metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
+            metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
+            metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
+            metadataForUpload.sessionDate = Date()
 
-            // Modified
             if let previewStore = self.previewStore.first(where: { $0.id == asset.localIdentifier }), let data = previewStore.data {
-                if metadata.contentType == "image/heic" {
+                if metadataForUpload.contentType == "image/heic" {
                     let fileNameNoExtension = (fileName as NSString).deletingPathExtension
-                    metadata.contentType = "image/jpeg"
-                    metadata.fileName = fileNameNoExtension + ".jpg"
-                    metadata.fileNameView = fileNameNoExtension + ".jpg"
+                    metadataForUpload.contentType = "image/jpeg"
+                    metadataForUpload.fileName = fileNameNoExtension + ".jpg"
+                    metadataForUpload.fileNameView = fileNameNoExtension + ".jpg"
                 }
-                let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+                let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadataForUpload.ocId, fileNameView: metadataForUpload.fileNameView)
                 do {
                     try data.write(to: URL(fileURLWithPath: fileNamePath))
-                    metadata.isExtractFile = true
-                    metadata.size = utilityFileSystem.getFileSize(filePath: fileNamePath)
-                    metadata.creationDate = asset.creationDate as? NSDate ?? (Date() as NSDate)
-                    metadata.date = asset.modificationDate as? NSDate ?? (Date() as NSDate)
+                    metadataForUpload.isExtractFile = true
+                    metadataForUpload.size = utilityFileSystem.getFileSize(filePath: fileNamePath)
+                    metadataForUpload.creationDate = asset.creationDate as? NSDate ?? (Date() as NSDate)
+                    metadataForUpload.date = asset.modificationDate as? NSDate ?? (Date() as NSDate)
                 } catch {  }
             }
 
             if let result = NCManageDatabase.shared.getMetadataConflict(account: session.account, serverUrl: serverUrl, fileNameView: fileName) {
-                metadata.fileName = result.fileName
-                metadatasUploadInConflict.append(metadata)
+                metadataForUpload.fileName = result.fileName
+                metadatasUploadInConflict.append(metadataForUpload)
             } else {
-                metadatasNOConflict.append(metadata)
+                metadatasNOConflict.append(metadataForUpload)
             }
         }
 

@@ -36,6 +36,7 @@ class NCNetworkingProcess {
     private let lockQueue = DispatchQueue(label: "com.nextcloud.networkingprocess.lockqueue")
     private let global = NCGlobal.shared
     private var timerProcess: Timer?
+    private let hud: JGProgressHUD = JGProgressHUD()
 
     private init() {
         self.startTimer()
@@ -193,7 +194,15 @@ class NCNetworkingProcess {
                     if !isWiFi && metadata.session == NCNetworking.shared.sessionUploadBackgroundWWan { continue }
                     if applicationState != .active && (isInDirectoryE2EE || metadata.chunk > 0) { continue }
                     if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: global.metadataStatusUploading) {
-                        NCNetworking.shared.upload(metadata: metadata, hudView: nil, hud: nil)
+                        var hudView: UIView?
+                        if let sceneIdentifier = metadata.sceneIdentifier, !sceneIdentifier.isEmpty {
+                            let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier)
+                            hudView = await controller?.view
+                        } else {
+                            let controller = await UIApplication.shared.firstWindow?.rootViewController
+                            hudView = await controller?.view
+                        }
+                        NCNetworking.shared.upload(metadata: metadata, hudView: hudView, hud: self.hud)
                         if isInDirectoryE2EE || metadata.chunk > 0 {
                             maxConcurrentOperationUpload = 1
                         }

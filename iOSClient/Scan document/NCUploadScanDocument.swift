@@ -65,7 +65,15 @@ class NCUploadScanDocument: ObservableObject {
         self.quality = quality
         self.removeAllFiles = removeAllFiles
 
-        metadata = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: UUID().uuidString, serverUrl: serverUrl, url: "", contentType: "", session: session)
+        metadata = NCManageDatabase.shared.createMetadata(fileName: fileName,
+                                                          fileNameView: fileName,
+                                                          ocId: UUID().uuidString,
+                                                          serverUrl: serverUrl,
+                                                          url: "",
+                                                          contentType: "",
+                                                          session: session,
+                                                          sceneIdentifier: nil)
+
         metadata.session = NCNetworking.shared.sessionUploadBackground
         metadata.sessionSelector = NCGlobal.shared.selectorUploadFile
         metadata.status = NCGlobal.shared.metadataStatusWaitUpload

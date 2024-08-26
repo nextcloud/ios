@@ -138,7 +138,15 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
             let viewController = self.viewController {
             let ocId = NSUUID().uuidString
             let fileName = url.lastPathComponent
-            let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: "", url: url.path, contentType: "", session: session)
+            let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName,
+                                                                  fileNameView: fileName,
+                                                                  ocId: ocId,
+                                                                  serverUrl: "",
+                                                                  url: url.path,
+                                                                  contentType: "",
+                                                                  session: session,
+                                                                  sceneIdentifier: self.controller.sceneIdentifier)
+
             if metadata.classFile == NKCommon.TypeClassFile.unknow.rawValue {
                 metadata.classFile = NKCommon.TypeClassFile.video.rawValue
             }
@@ -159,7 +167,14 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
 
                 guard self.copySecurityScopedResource(url: urlIn, urlOut: urlOut) != nil else { continue }
 
-                let metadataForUpload = NCManageDatabase.shared.createMetadata(fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, url: "", contentType: "", session: session)
+                let metadataForUpload = NCManageDatabase.shared.createMetadata(fileName: fileName,
+                                                                               fileNameView: fileName,
+                                                                               ocId: ocId,
+                                                                               serverUrl: serverUrl,
+                                                                               url: "",
+                                                                               contentType: "",
+                                                                               session: session,
+                                                                               sceneIdentifier: self.controller.sceneIdentifier)
 
                 metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
                 metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
@@ -178,7 +193,6 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
 
             if !metadatasInConflict.isEmpty {
                 if let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict {
-
                     conflict.account = self.controller.account
                     conflict.delegate = appDelegate
                     conflict.serverUrl = serverUrl
