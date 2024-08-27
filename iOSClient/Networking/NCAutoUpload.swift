@@ -34,8 +34,9 @@ class NCAutoUpload: NSObject {
 
     // MARK: -
 
-    @objc func initAutoUpload(viewController: UIViewController?, account: String, completion: @escaping (_ num: Int) -> Void) {
-        guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
+    func initAutoUpload(viewController: UIViewController?, account: String, completion: @escaping (_ num: Int) -> Void) {
+        guard NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi,
+              let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
               tableAccount.autoUpload else {
             return completion(0)
         }
@@ -62,7 +63,7 @@ class NCAutoUpload: NSObject {
         })
     }
 
-    @objc func autoUploadFullPhotos(viewController: UIViewController?, log: String, account: String) {
+    func autoUploadFullPhotos(viewController: UIViewController?, log: String, account: String) {
         applicationState = UIApplication.shared.applicationState
 
         NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
