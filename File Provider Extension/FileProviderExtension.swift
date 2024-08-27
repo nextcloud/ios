@@ -61,8 +61,6 @@ class FileProviderExtension: NSFileProviderExtension {
 
         // Create directory File Provider Storage
         _ = utilityFileSystem.directoryProviderStorage
-        // Domains - FileProviderDomain().registerDomains()
-        NSFileProviderManager.removeAllDomains { _ in }
     }
 
     deinit {
