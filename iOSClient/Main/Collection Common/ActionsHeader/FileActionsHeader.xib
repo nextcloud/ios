@@ -38,24 +38,23 @@
                                 <color key="titleColor" systemColor="labelColor"/>
                             </state>
                         </button>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RYI-12-k5i" userLabel="btnSelect">
-                            <rect key="frame" x="304" y="9" width="32" height="32"/>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RYI-12-k5i" userLabel="btnSelect">
+                            <rect key="frame" x="312" y="9" width="32" height="32"/>
                             <color key="backgroundColor" red="0.86022746360000002" green="0.88563137520000002" blue="0.91082270170000001" alpha="1" colorSpace="calibratedRGB"/>
                             <constraints>
                                 <constraint firstAttribute="width" secondItem="RYI-12-k5i" secondAttribute="height" id="G23-hh-FMt"/>
                                 <constraint firstAttribute="height" constant="32" id="f66-pf-OBU"/>
                             </constraints>
                             <color key="tintColor" systemColor="labelColor"/>
-                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                             <state key="normal" image="files_selection"/>
                             <connections>
                                 <action selector="onBtnSelectTap:" destination="-1" eventType="touchUpInside" id="G0R-TM-QuX"/>
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cqG-WX-M71" userLabel="btnViewMode">
-                            <rect key="frame" x="351" y="0.0" width="32" height="50"/>
+                            <rect key="frame" x="359" y="0.0" width="24" height="50"/>
                             <constraints>
-                                <constraint firstAttribute="width" constant="32" id="Vkb-Bp-QrC"/>
+                                <constraint firstAttribute="width" constant="24" id="Vkb-Bp-QrC"/>
                             </constraints>
                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                             <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
@@ -80,31 +79,31 @@
                     <rect key="frame" x="0.0" y="0.0" width="393" height="50"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aiH-0h-GkD" userLabel="btnSelectAll">
-                            <rect key="frame" x="20" y="9" width="32" height="32"/>
+                            <rect key="frame" x="15" y="15" width="20" height="20"/>
                             <constraints>
                                 <constraint firstAttribute="width" secondItem="aiH-0h-GkD" secondAttribute="height" id="k8z-cv-2uB"/>
-                                <constraint firstAttribute="height" constant="32" id="n5q-Ws-WGG"/>
+                                <constraint firstAttribute="height" constant="20" id="n5q-Ws-WGG"/>
                             </constraints>
                             <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                            <state key="normal" image="list_item_deselected"/>
+                            <state key="normal" backgroundImage="list_item_deselected"/>
                             <connections>
                                 <action selector="onBtnSelectAllTap:" destination="-1" eventType="touchUpInside" id="DID-ON-AlT"/>
                             </connections>
                         </button>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iLM-7O-AFE" userLabel="lblSelectionDescription">
-                            <rect key="frame" x="62" y="0.0" width="279" height="50"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <rect key="frame" x="50" y="0.0" width="298" height="50"/>
+                            <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uIk-II-rrq" userLabel="btnClose">
-                            <rect key="frame" x="351" y="9" width="32" height="32"/>
+                            <rect key="frame" x="358" y="15" width="20" height="20"/>
                             <constraints>
-                                <constraint firstAttribute="height" constant="32" id="89T-I4-G43"/>
+                                <constraint firstAttribute="height" constant="20" id="89T-I4-G43"/>
                                 <constraint firstAttribute="width" secondItem="uIk-II-rrq" secondAttribute="height" id="rdA-w1-4d4"/>
                             </constraints>
                             <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                            <state key="normal" image="selection_mode_close"/>
+                            <state key="normal" backgroundImage="selection_mode_close"/>
                             <connections>
                                 <action selector="onBtnCloseSelectionTap:" destination="-1" eventType="touchUpInside" id="DqT-hE-ND8"/>
                             </connections>
@@ -112,14 +111,14 @@
                     </subviews>
                     <color key="backgroundColor" name="SelectionModeHeaderBackground"/>
                     <constraints>
-                        <constraint firstItem="aiH-0h-GkD" firstAttribute="leading" secondItem="SEO-fb-HgO" secondAttribute="leading" constant="20" id="1rf-K0-yRX"/>
+                        <constraint firstItem="aiH-0h-GkD" firstAttribute="leading" secondItem="SEO-fb-HgO" secondAttribute="leading" constant="15" id="1rf-K0-yRX"/>
                         <constraint firstItem="uIk-II-rrq" firstAttribute="leading" secondItem="iLM-7O-AFE" secondAttribute="trailing" constant="10" id="8zi-Zv-ag1"/>
-                        <constraint firstAttribute="trailing" secondItem="uIk-II-rrq" secondAttribute="trailing" constant="10" id="BXW-FI-cae"/>
+                        <constraint firstAttribute="trailing" secondItem="uIk-II-rrq" secondAttribute="trailing" constant="15" id="BXW-FI-cae"/>
                         <constraint firstItem="iLM-7O-AFE" firstAttribute="height" secondItem="SEO-fb-HgO" secondAttribute="height" id="FmR-qM-lra"/>
                         <constraint firstItem="iLM-7O-AFE" firstAttribute="centerY" secondItem="SEO-fb-HgO" secondAttribute="centerY" id="XQa-da-ZVw"/>
                         <constraint firstItem="aiH-0h-GkD" firstAttribute="centerY" secondItem="SEO-fb-HgO" secondAttribute="centerY" id="dVC-8n-Yzx"/>
                         <constraint firstItem="uIk-II-rrq" firstAttribute="centerY" secondItem="SEO-fb-HgO" secondAttribute="centerY" id="qLt-CM-g0v"/>
-                        <constraint firstItem="iLM-7O-AFE" firstAttribute="leading" secondItem="aiH-0h-GkD" secondAttribute="trailing" constant="10" id="t4Q-xO-2a4"/>
+                        <constraint firstItem="iLM-7O-AFE" firstAttribute="leading" secondItem="aiH-0h-GkD" secondAttribute="trailing" constant="15" id="t4Q-xO-2a4"/>
                     </constraints>
                 </view>
             </subviews>

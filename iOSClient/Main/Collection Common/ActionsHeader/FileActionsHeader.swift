@@ -94,18 +94,18 @@ class FileActionsHeader: UIView {
 		
 		switch selectionState {
 		case .none:
-			textDescription = "None item selected"
+			textDescription = "select all"
 			imageName = "list_item_deselected"
 		case .some(let count):
 			textDescription = selectionDescription(for: count)
 			imageName = "list_item_some_selected"
 		case .all(let count):
-			textDescription = selectionDescription(for: count)
+			textDescription = "deselect all"
 			imageName = "list_item_selected"
 		}
 
 		lblSelectionDescription?.text = textDescription
-		btnSelectAll?.setImage(UIImage(named: imageName), for: .normal)
+		btnSelectAll?.setBackgroundImage(UIImage(named: imageName), for: .normal)
 		
 		func selectionDescription(for count: Int) -> String {
 			"\(count) item\(count > 1 ? "s" : "") selected"
@@ -117,6 +117,7 @@ class FileActionsHeader: UIView {
 		if let selectionButtonWidth = btnSelect?.bounds.width {
 			btnSelect?.layer.cornerRadius = selectionButtonWidth / 2
 		}
+		btnSelect?.imageView?.contentMode = .scaleToFill
 	}
 	
 	// MARK: -
