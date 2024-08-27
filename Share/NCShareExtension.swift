@@ -77,6 +77,7 @@ class NCShareExtension: UIViewController {
            let tableAccount = NCManageDatabase.shared.getTableAccount(account: account) {
             return NCSession.Session(account: tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId)
         } else if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
+            self.account = activeTableAccount.account
             return NCSession.Session(account: activeTableAccount.account, urlBase: activeTableAccount.urlBase, user: activeTableAccount.user, userId: activeTableAccount.userId)
         } else {
             return NCSession.Session(account: "", urlBase: "", user: "", userId: "")
@@ -148,7 +149,7 @@ class NCShareExtension: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         guard serverUrl.isEmpty,
-              let account = NCManageDatabase.shared.getActiveTableAccount()?.account,
+              !session.account.isEmpty,
               !NCPasscode.shared.isPasscodeReset else {
             return showAlert(description: "_no_active_account_") {
                 self.cancel(with: .noAccount)
@@ -223,17 +224,17 @@ class NCShareExtension: UIViewController {
             }
         }
 
-        let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount()
-        let image = utility.loadUserImage(for: session.user, displayName: activeTableAccount?.displayName, urlBase: session.urlBase)
+        let tableAccount = NCManageDatabase.shared.getTableAccount(account: session.account)
+        let image = utility.loadUserImage(for: session.user, displayName: tableAccount?.displayName, urlBase: session.urlBase)
         let profileButton = UIButton(type: .custom)
         profileButton.setImage(image, for: .normal)
 
         if serverUrl == utilityFileSystem.getHomeServer(session: self.session) {
             var title = "  "
-            if let userAlias = activeTableAccount?.alias, !userAlias.isEmpty {
+            if let userAlias = tableAccount?.alias, !userAlias.isEmpty {
                 title += userAlias
             } else {
-                title += activeTableAccount?.displayName ?? ""
+                title += tableAccount?.displayName ?? ""
             }
 
             profileButton.setTitle(title, for: .normal)
