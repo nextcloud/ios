@@ -639,7 +639,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
     
     func showBurgerMenu() {
-        (self.tabBarController as? NCMainTabBarController)?.showBurgerMenu()
+        self.mainTabBarController?.showBurgerMenu()
     }
 
     func setNavigationRightItems() {

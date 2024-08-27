@@ -107,10 +107,10 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                     }
                     let navigationController = UINavigationController(rootViewController: viewerQuickLook)
                     navigationController.modalPresentationStyle = .fullScreen
-                    controller.present(navigationController, animated: true)
+                    controller.currentViewController()?.present(navigationController, animated: true)
                 } else {
                     self.utilityFileSystem.copyFile(atPath: fileNamePath, toPath: fileNameTemp)
-                    controller.present(viewerQuickLook, animated: true)
+                    controller.currentViewController()?.present(viewerQuickLook, animated: true)
                 }
 
             case NCGlobal.shared.selectorLoadFileView:
@@ -326,7 +326,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     
     func openDocumentController(metadata: tableMetadata, viewController: UIViewController?) {
         guard let viewController, let viewToPresentOn = viewController.view else { return }
-        let rectToPresentFrom = CGRect(origin: CGPoint(x: viewToPresentOn.center.x, y: viewToPresentOn.bounds.height), size: CGSizeZero)
+        let rectToPresentFrom = viewToPresentOn.bottomCenter
         openDocumentController(metadata: metadata, viewToPresentOn: viewToPresentOn, rectToPresentFrom: rectToPresentFrom)
     }
     
@@ -343,6 +343,11 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         let metadatas = selectedMetadata.filter({ !$0.directory })
         var items: [URL] = []
         var downloadMetadata: [(tableMetadata, URL)] = []
+        
+        let currentViewController = controller.presentedNavigationController() ?? controller
+        let isMainTabBarPresenting = controller.presentedNavigationController() != nil
+        let viewToPresentFrom = isMainTabBarPresenting ? controller.view : mainTabBar
+        let rectToPresentFrom = isMainTabBarPresenting ? controller.view.bottomCenter : mainTabBar.menuRect
 
         for metadata in metadatas {
             let fileURL = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
@@ -353,7 +358,10 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             }
         }
 
-        let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadata.count, hudView: controller.view)
+        let processor = ParallelWorker(n: 5, 
+                                       titleKey: "_downloading_",
+                                       totalTasks: downloadMetadata.count,
+                                       hudView: currentViewController.view)
         for (metadata, url) in downloadMetadata {
             processor.execute { completion in
                 guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
@@ -374,9 +382,9 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             guard !items.isEmpty else { return }
             let activityViewController = UIActivityViewController(activityItems: items, applicationActivities: nil)
             activityViewController.popoverPresentationController?.permittedArrowDirections = .any
-            activityViewController.popoverPresentationController?.sourceView = mainTabBar
-            activityViewController.popoverPresentationController?.sourceRect = mainTabBar.menuRect
-            controller.present(activityViewController, animated: true)
+            activityViewController.popoverPresentationController?.sourceView = viewToPresentFrom
+            activityViewController.popoverPresentationController?.sourceRect = rectToPresentFrom
+            currentViewController.present(activityViewController, animated: true)
         }
     }
 
@@ -500,6 +508,9 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             navigationController.popToRootViewController(animated: false)
+            if controller.presentedViewController != nil {
+                controller.dismiss(animated: false)
+            }
             controller.selectedIndex = 0
             if serverUrlPush == serverUrl,
                let viewController = navigationController.topViewController as? NCFiles {
@@ -629,7 +640,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         navigationController?.modalPresentationStyle = .formSheet
 
         if let navigationController = navigationController {
-            controller?.present(navigationController, animated: true, completion: nil)
+            controller?.currentViewController()?.present(navigationController, animated: true, completion: nil)
         }
     }
 }
