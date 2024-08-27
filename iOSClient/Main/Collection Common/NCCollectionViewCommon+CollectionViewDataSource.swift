@@ -404,7 +404,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     header.emptyDescription.text = ""
                 } else {
                     if serverUrl.isEmpty {
-                        header.emptyImage.image = emptyImage
+                        if let emptyImageName {
+                            header.emptyImage.image = utility.loadImage(named: emptyImageName, colors: emptyImageColors != nil ? emptyImageColors : [NCBrandColor.shared.getElement(account: session.account)])
+                        } else {
+                            header.emptyImage.image = NCImageCache.shared.getFolder(account: session.account)
+                        }
                         header.emptyTitle.text = NSLocalizedString(emptyTitle, comment: "")
                         header.emptyDescription.text = NSLocalizedString(emptyDescription, comment: "")
                     } else {

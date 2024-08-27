@@ -76,11 +76,11 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
         labelSection.text = ""
         viewSectionHeightConstraint.constant = 0
 
-        imageTransfer.tintColor = .label
+        imageTransfer.tintColor = NCBrandColor.shared.iconImageColor
         imageTransfer.image = NCUtility().loadImage(named: "icloud.and.arrow.up")
 
         progressTransfer.progress = 0
-        progressTransfer.tintColor = NCBrandColor.shared.customer
+        progressTransfer.tintColor = NCBrandColor.shared.iconImageColor
         progressTransfer.trackTintColor = NCBrandColor.shared.customer.withAlphaComponent(0.2)
 
         transferSeparatorBottom.backgroundColor = .separator

@@ -33,7 +33,7 @@ class NCGroupfolders: NCCollectionViewCommon {
         layoutKey = NCGlobal.shared.layoutViewGroupfolders
         enableSearchBar = false
         headerRichWorkspaceDisable = true
-        emptyImage = utility.loadImage(named: "folder_group", colors: [NCBrandColor.shared.getElement(account: session.account)])
+        emptyImageName = "folder_group"
         emptyTitle = "_files_no_files_"
         emptyDescription = "_tutorial_groupfolders_view_"
     }

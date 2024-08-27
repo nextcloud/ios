@@ -71,8 +71,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var enableSearchBar: Bool = false
     var headerMenuTransferView = false
     var headerRichWorkspaceDisable: Bool = false
-    var emptyImage: UIImage?
+
+    var emptyImageName: String?
+    var emptyImageColors: [UIColor]?
     var emptyTitle: String = ""
+
     var emptyDescription: String = ""
     var emptyDataPortaitOffset: CGFloat = 0
     var emptyDataLandscapeOffset: CGFloat = -20

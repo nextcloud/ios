@@ -29,7 +29,6 @@ protocol NCSectionFirstHeaderEmptyDataDelegate: AnyObject {
 }
 
 class NCSectionFirstHeaderEmptyData: UICollectionReusableView {
-
     @IBOutlet weak var viewTransfer: UIView!
     @IBOutlet weak var viewTransferHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageTransfer: UIImageView!
@@ -58,11 +57,11 @@ class NCSectionFirstHeaderEmptyData: UICollectionReusableView {
         viewTransferHeightConstraint.constant = 0
         viewTransfer.isHidden = true
 
-        imageTransfer.tintColor = .label
+        imageTransfer.tintColor = NCBrandColor.shared.iconImageColor
         imageTransfer.image = NCUtility().loadImage(named: "icloud.and.arrow.up")
 
         progressTransfer.progress = 0
-        progressTransfer.tintColor = NCBrandColor.shared.customer
+        progressTransfer.tintColor = NCBrandColor.shared.iconImageColor
         progressTransfer.trackTintColor = NCBrandColor.shared.customer.withAlphaComponent(0.2)
 
         transferSeparatorBottom.backgroundColor = .separator
