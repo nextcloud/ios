@@ -33,7 +33,6 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
     var link: String = ""
     var metadata: tableMetadata = tableMetadata()
     var imageIcon: UIImage?
-
     var session: NCSession.Session {
         NCSession.shared.getSession(account: metadata.account)
     }

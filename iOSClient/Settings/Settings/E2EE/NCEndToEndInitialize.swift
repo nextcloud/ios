@@ -32,18 +32,19 @@ class NCEndToEndInitialize: NSObject {
     @objc weak var delegate: NCEndToEndInitializeDelegate?
     let utilityFileSystem = NCUtilityFileSystem()
     var extractedPublicKey: String?
-    var viewController: UIViewController?
+    var controller: NCMainTabBarController?
     var metadata: tableMetadata?
-    var session: NCSession.Session!
+    var session: NCSession.Session {
+        NCSession.shared.getSession(controller: controller)
+    }
 
     // --------------------------------------------------------------------------------------------
     // MARK: Initialize
     // --------------------------------------------------------------------------------------------
 
-    func initEndToEndEncryption(viewController: UIViewController?, metadata: tableMetadata?, session: NCSession.Session) {
-        self.viewController = viewController
+    func initEndToEndEncryption(controller: NCMainTabBarController?, metadata: tableMetadata?) {
+        self.controller = controller
         self.metadata = metadata
-        self.session = session
 
         // Clear all keys
         NCKeychain().clearAllKeysEndToEnd(account: session.account)
@@ -168,7 +169,7 @@ class NCEndToEndInitialize: NSObject {
                     passphraseTextField?.placeholder = NSLocalizedString("_enter_passphrase_", comment: "")
                 }
 
-                self.viewController?.present(alertController, animated: true)
+                self.controller?.present(alertController, animated: true)
             } else if error != .success {
                 switch error.errorCode {
                 case NCGlobal.shared.errorBadRequest:
@@ -189,7 +190,7 @@ class NCEndToEndInitialize: NSObject {
                     alertController.addAction(OKAction)
                     alertController.addAction(copyAction)
 
-                    self.viewController?.present(alertController, animated: true)
+                    self.controller?.present(alertController, animated: true)
                 case NCGlobal.shared.errorConflict:
                     let error = NKError(errorCode: error.errorCode, errorDescription: "Forbidden: the user can't access the private key")
                     NCContentPresenter().messageNotification("E2E get privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)

@@ -36,7 +36,7 @@ class NCPhotosPickerViewController: NSObject {
     var singleSelectedMode = false
 
     @discardableResult
-    init(controller: NCMainTabBarController, maxSelectedAssets: Int, singleSelectedMode: Bool, session: NCSession.Session) {
+    init(controller: NCMainTabBarController, maxSelectedAssets: Int, singleSelectedMode: Bool) {
         self.controller = controller
         super.init()
 
@@ -113,7 +113,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
     var controller: NCMainTabBarController
 
     @discardableResult
-    init (controller: NCMainTabBarController, isViewerMedia: Bool, allowsMultipleSelection: Bool, viewController: UIViewController? = nil, session: NCSession.Session) {
+    init (controller: NCMainTabBarController, isViewerMedia: Bool, allowsMultipleSelection: Bool, viewController: UIViewController? = nil) {
         self.controller = controller
         self.isViewerMedia = isViewerMedia
         self.viewController = viewController

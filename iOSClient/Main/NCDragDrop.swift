@@ -57,7 +57,6 @@ class NCDragDrop: NSObject {
     func performDrop(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator, serverUrl: String, isImageVideo: Bool, controller: NCMainTabBarController?) -> [tableMetadata]? {
         var serverUrl = serverUrl
         var metadatas: [tableMetadata] = []
-        let session = NCSession.shared.getSession(controller: controller)
         DragDropHover.shared.cleanPushDragDropHover()
         DragDropHover.shared.sourceMetadatas = nil
 
@@ -82,7 +81,7 @@ class NCDragDrop: NSObject {
                         if let destinationMetadata = DragDropHover.shared.destinationMetadata, destinationMetadata.directory {
                             serverUrl = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
                         }
-                        self.uploadFile(url: url, serverUrl: serverUrl, session: session)
+                        self.uploadFile(url: url, serverUrl: serverUrl, controller: controller)
                     }
                 }
             }
@@ -95,24 +94,25 @@ class NCDragDrop: NSObject {
         }
     }
 
-    func uploadFile(url: URL, serverUrl: String, session: NCSession.Session) {
+    func uploadFile(url: URL, serverUrl: String, controller: NCMainTabBarController?) {
         do {
             let data = try Data(contentsOf: url)
             Task {
                 let ocId = NSUUID().uuidString
+                let session = NCSession.shared.getSession(controller: controller)
                 let fileName = await NCNetworking.shared.createFileName(fileNameBase: url.lastPathComponent, account: session.account, serverUrl: serverUrl)
                 let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
 
                 try data.write(to: URL(fileURLWithPath: fileNamePath))
 
-                let metadataForUpload = NCManageDatabase.shared.createMetadata(fileName: fileName,
-                                                                               fileNameView: fileName,
-                                                                               ocId: ocId,
-                                                                               serverUrl: serverUrl,
-                                                                               url: "",
-                                                                               contentType: "",
-                                                                               session: session,
-                                                                               sceneIdentifier: nil)
+                let metadataForUpload = await NCManageDatabase.shared.createMetadata(fileName: fileName,
+                                                                                     fileNameView: fileName,
+                                                                                     ocId: ocId,
+                                                                                     serverUrl: serverUrl,
+                                                                                     url: "",
+                                                                                     contentType: "",
+                                                                                     session: session,
+                                                                                     sceneIdentifier: controller?.sceneIdentifier)
 
                 metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
                 metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile

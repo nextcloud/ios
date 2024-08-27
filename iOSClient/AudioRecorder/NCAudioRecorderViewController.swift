@@ -38,9 +38,10 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
     var recording: NCAudioRecorder!
     var startDate: Date = Date()
     var fileName: String = ""
-    var serverUrl = ""
-    var session: NCSession.Session!
-    var controller: NCMainTabBarController?
+    var controller: NCMainTabBarController!
+    var session: NCSession.Session {
+        NCSession.shared.getSession(controller: controller)
+    }
 
     // MARK: - View Life Cycle
 
@@ -56,7 +57,7 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
         voiceRecordHUD.fillColor = UIColor.green
 
         Task {
-            self.fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + ".m4a", account: self.session.account, serverUrl: self.serverUrl)
+            self.fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + ".m4a", account: self.session.account, serverUrl: controller.currentServerUrl())
             recording = NCAudioRecorder(to: self.fileName)
             recording.delegate = self
             do {
@@ -101,7 +102,7 @@ class NCAudioRecorderViewController: UIViewController, NCAudioRecorderDelegate {
         let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName,
                                                               fileNameView: fileName,
                                                               ocId: UUID().uuidString,
-                                                              serverUrl: self.serverUrl,
+                                                              serverUrl: controller.currentServerUrl(),
                                                               url: "",
                                                               contentType: "",
                                                               session: self.session,

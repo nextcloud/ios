@@ -46,7 +46,6 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
     var layoutKey = NCGlobal.shared.layoutViewTrash
     let refreshControl = UIRefreshControl()
     var filename: String?
-
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: tabBarController)
     }

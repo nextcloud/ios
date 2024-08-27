@@ -237,7 +237,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
                     NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: controller) { hasPermission in
                         if hasPermission {
-                            NCPhotosPickerViewController(controller: controller, maxSelectedAssets: 0, singleSelectedMode: false, session: session)
+                            NCPhotosPickerViewController(controller: controller, maxSelectedAssets: 0, singleSelectedMode: false)
                         }
                     }
 
@@ -263,8 +263,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     NCAskAuthorization().askAuthorizationAudioRecord(viewController: controller) { hasPermission in
                         if hasPermission {
                             if let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as? NCAudioRecorderViewController {
-                                viewController.serverUrl = controller.currentServerUrl()
-                                viewController.session = session
                                 viewController.controller = controller
                                 viewController.modalTransitionStyle = .crossDissolve
                                 viewController.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
