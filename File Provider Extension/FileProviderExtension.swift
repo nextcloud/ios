@@ -111,14 +111,13 @@ class FileProviderExtension: NSFileProviderExtension {
 
     override func item(for identifier: NSFileProviderItemIdentifier) throws -> NSFileProviderItem {
         if identifier == .rootContainer {
-            let session = NCSession.shared.getSession(account: fileProviderData.shared.account)
             let metadata = tableMetadata()
-            metadata.account = fileProviderData.shared.account
+            metadata.account = fileProviderData.shared.session.account
             metadata.directory = true
             metadata.ocId = NSFileProviderItemIdentifier.rootContainer.rawValue
             metadata.fileName = "root"
             metadata.fileNameView = "root"
-            metadata.serverUrl = utilityFileSystem.getHomeServer(session: session)
+            metadata.serverUrl = utilityFileSystem.getHomeServer(session: fileProviderData.shared.session)
             metadata.classFile = NKCommon.TypeClassFile.directory.rawValue
             return FileProviderItem(metadata: metadata, parentItemIdentifier: NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue))
         } else {
@@ -283,8 +282,7 @@ class FileProviderExtension: NSFileProviderExtension {
     override func importDocument(at fileURL: URL, toParentItemIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
         DispatchQueue.main.async {
             autoreleasepool {
-                let session = NCSession.shared.getSession(account: fileProviderData.shared.account)
-                guard let tableDirectory = self.providerUtility.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: session.account, homeServerUrl: self.utilityFileSystem.getHomeServer(session: session)) else {
+                guard let tableDirectory = self.providerUtility.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: fileProviderData.shared.session.account, homeServerUrl: self.utilityFileSystem.getHomeServer(session: fileProviderData.shared.session)) else {
                     return completionHandler(nil, NSFileProviderError(.noSuchItem))
                 }
                 var size = 0 as Int64
@@ -302,7 +300,7 @@ class FileProviderExtension: NSFileProviderExtension {
                     return completionHandler(nil, NSFileProviderError(.noSuchItem))
                 }
 
-                let fileName = self.utilityFileSystem.createFileName(fileURL.lastPathComponent, serverUrl: tableDirectory.serverUrl, account: fileProviderData.shared.account)
+                let fileName = self.utilityFileSystem.createFileName(fileURL.lastPathComponent, serverUrl: tableDirectory.serverUrl, account: fileProviderData.shared.session.account)
                 let ocIdTransfer = NSUUID().uuidString.lowercased()
 
                 NSFileCoordinator().coordinate(readingItemAt: fileURL, options: .withoutChanges, error: &error) { url in
@@ -317,7 +315,7 @@ class FileProviderExtension: NSFileProviderExtension {
                                                                                serverUrl: tableDirectory.serverUrl,
                                                                                url: "",
                                                                                contentType: "",
-                                                                               session: session,
+                                                                               session: fileProviderData.shared.session,
                                                                                sceneIdentifier: nil)
 
                 metadataForUpload.session = NCNetworking.shared.sessionUploadBackgroundExt

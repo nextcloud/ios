@@ -36,8 +36,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     init(enumeratedItemIdentifier: NSFileProviderItemIdentifier) {
         self.enumeratedItemIdentifier = enumeratedItemIdentifier
         if enumeratedItemIdentifier == .rootContainer {
-            let session = NCSession.shared.getSession(account: fileProviderData.shared.account)
-            serverUrl = NCUtilityFileSystem().getHomeServer(session: session)
+            serverUrl = NCUtilityFileSystem().getHomeServer(session: fileProviderData.shared.session)
         } else {
             if let metadata = providerUtility.getTableMetadataFromItemIdentifier(enumeratedItemIdentifier),
                let directorySource = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
@@ -56,13 +55,13 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         if enumeratedItemIdentifier == .workingSet {
             var itemIdentifierMetadata: [NSFileProviderItemIdentifier: tableMetadata] = [:]
             /// Tags
-            let tags = NCManageDatabase.shared.getTags(predicate: NSPredicate(format: "account == %@", fileProviderData.shared.account))
+            let tags = NCManageDatabase.shared.getTags(predicate: NSPredicate(format: "account == %@", fileProviderData.shared.session.account))
             for tag in tags {
                 guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(tag.ocId)  else { continue }
                 itemIdentifierMetadata[providerUtility.getItemIdentifier(metadata: metadata)] = metadata
             }
             /// Favorite
-            fileProviderData.shared.listFavoriteIdentifierRank = NCManageDatabase.shared.getTableMetadatasDirectoryFavoriteIdentifierRank(account: fileProviderData.shared.account)
+            fileProviderData.shared.listFavoriteIdentifierRank = NCManageDatabase.shared.getTableMetadatasDirectoryFavoriteIdentifierRank(account: fileProviderData.shared.session.account)
             for (identifier, _) in fileProviderData.shared.listFavoriteIdentifierRank {
                 guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(identifier) else { continue }
                 itemIdentifierMetadata[providerUtility.getItemIdentifier(metadata: metadata)] = metadata
@@ -158,10 +157,10 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     }
 
     func fetchItemsForPage(serverUrl: String, pageNumber: Int, completionHandler: @escaping (_ metadatas: Results<tableMetadata>?) -> Void) {
-        let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.account, serverUrl)
+        let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.session.account, serverUrl)
 
         if pageNumber == 1 {
-            NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: NCKeychain().showHiddenFiles, account: fileProviderData.shared.account) { _, files, _, error in
+            NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: NCKeychain().showHiddenFiles, account: fileProviderData.shared.session.account) { _, files, _, error in
                 if error == .success, let files {
                     NCManageDatabase.shared.convertFilesToMetadatas(files, useFirstAsMetadataFolder: true) { metadataFolder, metadatas in
                         /// FOLDER

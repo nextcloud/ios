@@ -27,16 +27,15 @@ import NextcloudKit
 
 extension FileProviderExtension {
     override func createDirectory(withName directoryName: String, inParentItemIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
-        let session = NCSession.shared.getSession(account: fileProviderData.shared.account)
-        guard let tableDirectory = providerUtility.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: session.account, homeServerUrl: utilityFileSystem.getHomeServer(session: session)) else {
+        guard let tableDirectory = providerUtility.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: fileProviderData.shared.session.account, homeServerUrl: utilityFileSystem.getHomeServer(session: fileProviderData.shared.session)) else {
             return completionHandler(nil, NSFileProviderError(.noSuchItem))
         }
-        let directoryName = utilityFileSystem.createFileName(directoryName, serverUrl: tableDirectory.serverUrl, account: fileProviderData.shared.account)
+        let directoryName = utilityFileSystem.createFileName(directoryName, serverUrl: tableDirectory.serverUrl, account: fileProviderData.shared.session.account)
         let serverUrlFileName = tableDirectory.serverUrl + "/" + directoryName
 
-        NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName, account: fileProviderData.shared.account) { _, ocId, _, error in
+        NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName, account: fileProviderData.shared.session.account) { _, ocId, _, error in
             if error == .success {
-                NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles, account: fileProviderData.shared.account) { _, files, _, error in
+                NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles, account: fileProviderData.shared.session.account) { _, files, _, error in
                     if error == .success, let file = files?.first {
                         let isDirectoryEncrypted = self.utilityFileSystem.isDirectoryE2EE(file: file)
                         let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryEncrypted)
@@ -102,8 +101,7 @@ extension FileProviderExtension {
         let ocIdFrom = metadataFrom.ocId
         let serverUrlFrom = metadataFrom.serverUrl
         let fileNameFrom = serverUrlFrom + "/" + itemFrom.filename
-        let session = NCSession.shared.getSession(account: fileProviderData.shared.account)
-        guard let tableDirectoryTo = providerUtility.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: session.account, homeServerUrl: utilityFileSystem.getHomeServer(session: session)) else {
+        guard let tableDirectoryTo = providerUtility.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: fileProviderData.shared.session.account, homeServerUrl: utilityFileSystem.getHomeServer(session: fileProviderData.shared.session)) else {
             return completionHandler(nil, NSFileProviderError(.noSuchItem))
         }
         let serverUrlTo = tableDirectoryTo.serverUrl
@@ -174,7 +172,6 @@ extension FileProviderExtension {
     }
 
     override func setFavoriteRank(_ favoriteRank: NSNumber?, forItemIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
-        let session = NCSession.shared.getSession(account: fileProviderData.shared.account)
         guard let metadata = providerUtility.getTableMetadataFromItemIdentifier(itemIdentifier) else {
             return completionHandler(nil, NSFileProviderError(.noSuchItem))
         }
@@ -191,7 +188,7 @@ extension FileProviderExtension {
         }
 
         if (favorite == true && metadata.favorite == false) || (favorite == false && metadata.favorite == true) {
-            let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
+            let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: fileProviderData.shared.session)
             NextcloudKit.shared.setFavorite(fileName: fileNamePath, favorite: favorite, account: metadata.account) { _, error in
                 if error == .success {
                     guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else {

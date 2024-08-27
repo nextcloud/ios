@@ -38,7 +38,10 @@ class fileProviderData: NSObject {
     var fileProviderSignalUpdateContainerItem: [NSFileProviderItemIdentifier: FileProviderItem] = [:]
     var fileProviderSignalDeleteWorkingSetItemIdentifier: [NSFileProviderItemIdentifier: NSFileProviderItemIdentifier] = [:]
     var fileProviderSignalUpdateWorkingSetItem: [NSFileProviderItemIdentifier: FileProviderItem] = [:]
-    var account: String = ""
+    private var account: String = ""
+    var session: NCSession.Session {
+        return NCSession.shared.getSession(account: account)
+    }
 
     enum FileProviderError: Error {
         case downloadError
