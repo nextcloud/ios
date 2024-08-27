@@ -151,7 +151,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                 metadata.classFile = NKCommon.TypeClassFile.video.rawValue
             }
 
-            if let fileNameError = FileNameValidator.shared.checkFileName(metadata.fileNameView) {
+            if let fileNameError = FileNameValidator.shared.checkFileName(metadata.fileNameView, account: self.controller.account) {
                 controller.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
             } else {
                 NCManageDatabase.shared.addMetadata(metadata)
@@ -181,7 +181,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                                                                                session: session,
                                                                                sceneIdentifier: self.controller.sceneIdentifier)
 
-                if let fileNameError = FileNameValidator.shared.checkFileName(metadataForUpload.fileNameView) {
+                if let fileNameError = FileNameValidator.shared.checkFileName(metadataForUpload.fileNameView, account: self.controller.account) {
                     controller.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
                     continue
                 }

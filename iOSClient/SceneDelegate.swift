@@ -57,6 +57,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 NCSession.shared.appendSession(account: tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId)
             }
 
+//            if let capability {
+//                FileNameValidator.shared.setup(forbiddenFileNames: capability.capabilityForbiddenFileNames, forbiddenFileNameBasenames: capability.capabilityForbiddenFileNameBasenames, forbiddenFileNameCharacters: capability.capabilityForbiddenFileNameCharacters, forbiddenFileNameExtensions: capability.capabilityForbiddenFileNameExtensions)
+//            }
+
             /// Main.storyboard
             if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
                 SceneManager.shared.register(scene: scene, withRootViewController: controller)

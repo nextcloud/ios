@@ -107,7 +107,9 @@ struct NCUploadAssetsView: View {
                                             }
                                     }
                                     .onChange(of: renameFileName) { newValue in
-                                        if let error = FileNameValidator.shared.checkFileName(newValue) {
+                                        let controller = (UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController)
+
+                                        if let error = FileNameValidator.shared.checkFileName(newValue, account: controller?.account) {
                                             renameError = error.errorDescription
                                         } else {
                                             renameError = ""

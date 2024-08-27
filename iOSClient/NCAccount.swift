@@ -70,7 +70,7 @@ class NCAccount: NSObject {
         controller?.account = account
         NCManageDatabase.shared.setAccountActive(account)
         /// Set capabilities
-        NCManageDatabase.shared.setCapabilities(account: account)
+        let capability = NCManageDatabase.shared.setCapabilities(account: account)
         /// Set User Profile
         if let userProfile {
             NCManageDatabase.shared.setAccountUserProfile(account: account, userProfile: userProfile)
@@ -85,6 +85,11 @@ class NCAccount: NSObject {
         }
         /// Color
         NCBrandColor.shared.settingThemingColor(account: account)
+
+//        if let capability {
+//            FileNameValidator.shared.setup(forbiddenFileNames: capability.capabilityForbiddenFileNames, forbiddenFileNameBasenames: capability.capabilityForbiddenFileNameBasenames, forbiddenFileNameCharacters: capability.capabilityForbiddenFileNameCharacters, forbiddenFileNameExtensions: capability.capabilityForbiddenFileNameExtensions)
+//        }
+
         /// Notification
         if let controller {
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeUser, userInfo: ["account": account, "controller": controller])

@@ -149,7 +149,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         super.viewDidAppear(animated)
         let folderPath = utilityFileSystem.getFileNamePath("", serverUrl: serverUrl, session: session)
 
-        if serverUrl.isEmpty || !FileNameValidator.shared.checkFolderPath(folderPath: folderPath) {
+        if serverUrl.isEmpty || !FileNameValidator.shared.checkFolderPath(folderPath, account: session.account) {
             serverUrl = utilityFileSystem.getHomeServer(session: session)
             titleCurrentFolder = NCBrandOptions.shared.brand
         }
@@ -248,7 +248,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         viewController.serverUrl = serverUrlPush
         viewController.session = session
 
-        if let fileNameError = FileNameValidator.shared.checkFileName(metadata.fileNameView) {
+        if let fileNameError = FileNameValidator.shared.checkFileName(metadata.fileNameView, account: session.account) {
             present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
         } else {
             navigationController?.pushViewController(viewController, animated: true)
