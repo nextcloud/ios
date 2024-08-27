@@ -142,8 +142,13 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
             if metadata.classFile == NKCommon.TypeClassFile.unknow.rawValue {
                 metadata.classFile = NKCommon.TypeClassFile.video.rawValue
             }
-            NCManageDatabase.shared.addMetadata(metadata)
-            NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+
+            if let fileNameError = FileNameValidator.shared.checkFileName(metadata.fileNameView) {
+                mainTabBarController.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
+            } else {
+                NCManageDatabase.shared.addMetadata(metadata)
+                NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+            }
 
         } else {
             let serverUrl = mainTabBarController.currentServerUrl()
@@ -160,6 +165,11 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                 guard self.copySecurityScopedResource(url: urlIn, urlOut: urlOut) != nil else { continue }
 
                 let metadataForUpload = NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: appDelegate.urlBase, url: "", contentType: "")
+
+                if let fileNameError = FileNameValidator.shared.checkFileName(metadataForUpload.fileNameView) {
+                    mainTabBarController.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
+                    continue
+                }
 
                 metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
                 metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile

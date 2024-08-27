@@ -35,6 +35,11 @@ extension NCShareExtension: UICollectionViewDelegate {
             showAlert(title: "_info_", description: "_e2e_goto_settings_for_enable_")
         }
 
+        if let fileNameError = FileNameValidator.shared.checkFileName(metadata.fileNameView) {
+            present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
+            return
+        }
+
         self.serverUrl = serverUrl
         reloadDatasource(withLoadFolder: true)
         setNavigationBar(navigationTitle: metadata.fileNameView)
@@ -83,8 +88,6 @@ extension NCShareExtension: UICollectionViewDataSource {
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath), let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell else {
             return UICollectionViewCell()
         }
-
-        cell.listCellDelegate = self
 
         cell.fileObjectId = metadata.ocId
         cell.indexPath = indexPath
