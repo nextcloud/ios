@@ -135,6 +135,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func sceneWillResignActive(_ scene: UIScene) {
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Scene will resign active")
+        /// FileProviderManager Domains
+        NSFileProviderManager.removeAllDomains { _ in
+            if !NCKeychain().disableFilesApp,
+                NCManageDatabase.shared.getAllTableAccount().count > 1 {
+                FileProviderDomain().registerDomains()
+            }
+        }
+        ///
         let session = SceneManager.shared.getSession(scene: scene)
         guard !session.account.isEmpty else { return }
 
