@@ -35,10 +35,10 @@ extension NCShareExtension: NCAccountRequestDelegate {
 
         // Only here change the active account
         for account in accounts {
-            account.active = account.account == self.activeTableAccount.account
+            account.active = account.account == session.account
         }
 
-        vcAccountRequest.activeAccount = self.activeTableAccount.account
+        vcAccountRequest.activeAccount = self.session.account
         vcAccountRequest.accounts = accounts.sorted { sorg, dest -> Bool in
             return sorg.active && !dest.active
         }
@@ -58,24 +58,24 @@ extension NCShareExtension: NCAccountRequestDelegate {
     func accountRequestAddAccount() { }
 
     func accountRequestChangeAccount(account: String, controller: UIViewController?) {
-        guard let activeTableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
+        guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
               let capabilities = NCManageDatabase.shared.setCapabilities(account: account) else {
             cancel(with: NCShareExtensionError.noAccount)
             return
         }
-        self.activeTableAccount = activeTableAccount
-        let session = NCSession.Session(account: activeTableAccount.account, urlBase: activeTableAccount.urlBase, user: activeTableAccount.user, userId: activeTableAccount.userId)
+        self.account = account
 
         // COLORS
-        NCBrandColor.shared.settingThemingColor(account: activeTableAccount.account)
+        // Colors
+        NCBrandColor.shared.settingThemingColor(account: account)
 
         // NETWORKING
         NextcloudKit.shared.setup(delegate: NCNetworking.shared)
-        NextcloudKit.shared.appendSession(account: activeTableAccount.account,
-                                          urlBase: activeTableAccount.urlBase,
-                                          user: activeTableAccount.user,
-                                          userId: activeTableAccount.userId,
-                                          password: NCKeychain().getPassword(account: activeTableAccount.account),
+        NextcloudKit.shared.appendSession(account: tableAccount.account,
+                                          urlBase: tableAccount.urlBase,
+                                          user: tableAccount.user,
+                                          userId: tableAccount.userId,
+                                          password: NCKeychain().getPassword(account: tableAccount.account),
                                           userAgent: userAgent,
                                           nextcloudVersion: capabilities.capabilityServerVersionMajor,
                                           groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
@@ -86,7 +86,7 @@ extension NCShareExtension: NCAccountRequestDelegate {
 
         serverUrl = utilityFileSystem.getHomeServer(session: session)
 
-        layoutForView = NCManageDatabase.shared.getLayoutForView(account: activeTableAccount.account, key: keyLayout, serverUrl: serverUrl)
+        layoutForView = NCManageDatabase.shared.getLayoutForView(account: tableAccount.account, key: keyLayout, serverUrl: serverUrl)
 
         reloadDatasource(withLoadFolder: true)
         setNavigationBar(navigationTitle: NCBrandOptions.shared.brand)
@@ -128,7 +128,7 @@ extension NCShareExtension: NCShareCellDelegate {
 
         present(alert, animated: true)
     }
-    
+
     func removeFile(named fileName: String) {
         guard let index = self.filesName.firstIndex(of: fileName) else {
             return showAlert(title: "_file_not_found_", description: fileName)
