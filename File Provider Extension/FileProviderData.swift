@@ -40,7 +40,15 @@ class fileProviderData: NSObject {
     var fileProviderSignalUpdateWorkingSetItem: [NSFileProviderItemIdentifier: FileProviderItem] = [:]
     private var account: String = ""
     var session: NCSession.Session {
-        return NCSession.shared.getSession(account: account)
+        if !account.isEmpty,
+           let tableAccount = NCManageDatabase.shared.getTableAccount(account: account) {
+            return NCSession.Session(account: tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId)
+        } else if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
+            self.account = activeTableAccount.account
+            return NCSession.Session(account: activeTableAccount.account, urlBase: activeTableAccount.urlBase, user: activeTableAccount.user, userId: activeTableAccount.userId)
+        } else {
+            return NCSession.Session(account: "", urlBase: "", user: "", userId: "")
+        }
     }
 
     enum FileProviderError: Error {
@@ -93,11 +101,6 @@ class fileProviderData: NSObject {
         guard let tblAccount else { return nil }
 
         self.account = tblAccount.account
-        /// Session
-        NCSession.shared.appendSession(account: tblAccount.account,
-                                       urlBase: tblAccount.urlBase,
-                                       user: tblAccount.user,
-                                       userId: tblAccount.userId)
         /// NextcloudKit Session
         NextcloudKit.shared.setup(delegate: NCNetworking.shared)
         NextcloudKit.shared.appendSession(account: tblAccount.account,
