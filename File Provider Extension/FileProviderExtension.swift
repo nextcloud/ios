@@ -62,7 +62,7 @@ class FileProviderExtension: NSFileProviderExtension {
         // Create directory File Provider Storage
         _ = utilityFileSystem.directoryProviderStorage
         // Domains
-        // FileProviderDomain().registerDomains()
+        FileProviderDomain().registerDomains()
     }
 
     deinit {
