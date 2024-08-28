@@ -225,7 +225,6 @@ extension NCNetworking {
         if fileNameFolder.isEmpty {
             return completion(.success)
         }
-
         if isOffline {
             let metadataForUpload = NCManageDatabase.shared.createMetadata(fileName: fileNameFolder,
                                                                            fileNameView: fileNameFolder,
@@ -244,26 +243,31 @@ extension NCNetworking {
         }
 
         let fileNameFolderUrl = serverUrl + "/" + fileNameFolder
-
         NextcloudKit.shared.createFolder(serverUrlFileName: fileNameFolderUrl, account: session.account) { account, _, _, error in
             self.readFile(serverUrlFileName: fileNameFolderUrl, account: account) { account, metadataFolder, error in
-                if error == .success {
-                    if let metadata = metadataFolder {
+
+                /// metadataStatusWaitCreateFolder
+                ///
+                if let metadata, metadata.status == self.global.metadataStatusWaitCreateFolder {
+                    if error == .success {
                         self.database.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@ AND serverUrl == %@", metadata.account, metadata.fileName, metadata.serverUrl))
-                        self.database.addMetadata(metadata)
-                        self.database.addDirectory(e2eEncrypted: metadata.e2eEncrypted,
-                                                   favorite: metadata.favorite,
-                                                   ocId: metadata.ocId,
-                                                   fileId: metadata.fileId,
-                                                   permissions: metadata.permissions,
-                                                   serverUrl: fileNameFolderUrl,
-                                                   account: account)
+                    } else {
+                        self.database.setMetadataSession(ocId: metadata.ocId, sessionError: error.errorDescription)
                     }
-                    if let metadata = self.database.getMetadataFromOcId(metadataFolder?.ocId) {
-                        NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterCreateFolder, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "withPush": withPush, "sceneIdentifier": sceneIdentifier as Any])
-                    }
-                } else if let metadata, metadata.status == self.global.metadataStatusWaitCreateFolder {
-                    self.database.setMetadataSession(ocId: metadata.ocId, sessionError: error.errorDescription)
+                }
+
+                if error == .success, let metadataFolder {
+                    self.database.addMetadata(metadataFolder)
+                    self.database.addDirectory(e2eEncrypted: metadataFolder.e2eEncrypted,
+                                                favorite: metadataFolder.favorite,
+                                                ocId: metadataFolder.ocId,
+                                                fileId: metadataFolder.fileId,
+                                                permissions: metadataFolder.permissions,
+                                                serverUrl: fileNameFolderUrl,
+                                                account: account)
+
+                    NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterCreateFolder, userInfo: ["ocId": metadataFolder.ocId, "serverUrl": metadataFolder.serverUrl, "account": metadataFolder.account, "withPush": withPush, "sceneIdentifier": sceneIdentifier as Any])
+
                 }
                 completion(error)
             }
