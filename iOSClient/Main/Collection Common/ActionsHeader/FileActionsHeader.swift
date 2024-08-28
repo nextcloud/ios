@@ -76,7 +76,7 @@ class FileActionsHeader: UIView {
 		btnSort?.semanticContentAttribute = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft ? .forceLeftToRight : .forceRightToLeft
 	}
 	
-	func setViewMenu(viewMenuElements: [UIMenuElement], image: UIImage?, tintColor: UIColor) {
+	func setViewModeMenu(viewMenuElements: [UIMenuElement], image: UIImage?, tintColor: UIColor) {
 		btnViewMode?.menu = UIMenu(children: viewMenuElements)
 		btnViewMode?.showsMenuAsPrimaryAction = true
 		btnViewMode?.tintColor = tintColor
@@ -92,15 +92,16 @@ class FileActionsHeader: UIView {
 		var textDescription = ""
 		var imageName = ""
 		
+		// MARK: Files Header
 		switch selectionState {
 		case .none:
-			textDescription = "select all"
+			textDescription = NSLocalizedString("_select_selectionLabel_selectAll", comment: "")
 			imageName = "FileSelection/list_item_deselected"
 		case .some(let count):
 			textDescription = selectionDescription(for: count)
 			imageName = "FileSelection/list_item_some_selected"
 		case .all:
-			textDescription = "deselect all"
+			textDescription = NSLocalizedString("_select_selectionLabel_deselectAll", comment: "")
 			imageName = "FileSelection/list_item_selected"
 		}
 
@@ -108,7 +109,10 @@ class FileActionsHeader: UIView {
 		btnSelectAll?.setBackgroundImage(UIImage(named: imageName), for: .normal)
 		
 		func selectionDescription(for count: Int) -> String {
-			"\(count) item\(count > 1 ? "s" : "") selected"
+			if count == 1 {
+				return NSLocalizedString("_select_selectionLabel_oneItemSelected", comment: "")
+			}
+			return String.localizedStringWithFormat(NSLocalizedString("_select_selectionLabel_manyItemsSelected", comment: ""), "\(count)")
 		}
 	}
 	
