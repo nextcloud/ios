@@ -244,8 +244,8 @@ class NCImageCache: NSObject {
         static var folderAutomaticUpload = UIImage()
         static var folder = UIImage()
 
-        static var checkedYes = UIImage()
-        static var checkedNo = UIImage()
+		static var checkedYes: UIImage? = UIImage()
+		static var checkedNo: UIImage? = UIImage()
 
         static var buttonMore = UIImage()
         static var buttonStop = UIImage()
@@ -276,8 +276,8 @@ class NCImageCache: NSObject {
         images.offlineFlag = utility.loadImage(named: "arrow.down.circle.fill", colors: [NCBrandColor.shared.brandElement])
         images.local = UIImage(resource: .local).withTintColor(NCBrandColor.shared.brandElement)
 
-        images.checkedYes = utility.loadImage(named: "list_item_selected")
-        images.checkedNo = utility.loadImage(named: "list_item_deselected", colors: [NCBrandColor.shared.brandElement])
+        images.checkedYes = UIImage(named: "FileSelection/list_item_selected")
+        images.checkedNo =  UIImage(named: "FileSelection/list_item_deselected")
 
         images.buttonMore = utility.loadImage(named: "ellipsis", colors: [NCBrandColor.shared.iconImageColor])
         images.buttonStop = utility.loadImage(named: "stop.circle", colors: [NCBrandColor.shared.iconImageColor])

@@ -11,7 +11,7 @@ import UIKit
 enum FileActionsHeaderSelectionState {
 	case none
 	case some(Int)
-	case all(Int)
+	case all
 }
 
 class FileActionsHeader: UIView {
@@ -72,7 +72,7 @@ class FileActionsHeader: UIView {
 		btnSort?.showsMenuAsPrimaryAction = true
 		btnSort?.setTitle(title, for: .normal)
 		btnSort?.tintColor = tintColor
-		btnSort?.setImage(formattedHeaderImage(image: image), for: .normal)
+		btnSort?.setImage(image?.templateRendered(), for: .normal)
 		btnSort?.semanticContentAttribute = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft ? .forceLeftToRight : .forceRightToLeft
 	}
 	
@@ -80,7 +80,7 @@ class FileActionsHeader: UIView {
 		btnViewMode?.menu = UIMenu(children: viewMenuElements)
 		btnViewMode?.showsMenuAsPrimaryAction = true
 		btnViewMode?.tintColor = tintColor
-		btnViewMode?.setImage(formattedHeaderImage(image: image), for: .normal)
+		btnViewMode?.setImage(image?.templateRendered(), for: .normal)
 	}
 	
 	func setIsEditingMode(isEditingMode: Bool) {
@@ -95,13 +95,13 @@ class FileActionsHeader: UIView {
 		switch selectionState {
 		case .none:
 			textDescription = "select all"
-			imageName = "list_item_deselected"
+			imageName = "FileSelection/list_item_deselected"
 		case .some(let count):
 			textDescription = selectionDescription(for: count)
-			imageName = "list_item_some_selected"
-		case .all(let count):
+			imageName = "FileSelection/list_item_some_selected"
+		case .all:
 			textDescription = "deselect all"
-			imageName = "list_item_selected"
+			imageName = "FileSelection/list_item_selected"
 		}
 
 		lblSelectionDescription?.text = textDescription
@@ -118,10 +118,12 @@ class FileActionsHeader: UIView {
 			btnSelect?.layer.cornerRadius = selectionButtonWidth / 2
 		}
 		btnSelect?.imageView?.contentMode = .scaleToFill
+		btnSelect?.setImage(UIImage(named: "FileSelection/files_selection")?.templateRendered(), for: .normal)
 	}
-	
-	// MARK: -
-	private func formattedHeaderImage(image: UIImage?) -> UIImage? {
-		return image?.withRenderingMode(.alwaysTemplate)
+}
+
+extension UIImage {
+	func templateRendered() -> UIImage? {
+		self.withRenderingMode(.alwaysTemplate)
 	}
 }

@@ -622,16 +622,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
 	// MARK: - Headers view
-	
-	@IBOutlet weak var bhSort: UIButton?
-	@IBOutlet weak var bhSelect: UIButton?
-	@IBOutlet weak var bhViewMode: UIButton?
-	
-	@IBAction func onSelectModeTap(_ sender: Any) {
-		setEditMode(true)
-		setNavigationRightItems()
-	}
-
 	private func updateHeadersView() {
 		func createSortMenuActions() -> [UIMenuElement] {
 			guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl) else { return [] }
@@ -683,9 +673,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 			return [sortSubmenu, additionalSubmenu]
 		}
 		
+		let listImage = UIImage(named: "FileSelection/view_mode_list")?.templateRendered()
+		let gridImage = UIImage(named: "FileSelection/view_mode_grid")?.templateRendered()
+
 		func createViewModeMenuActions() -> [UIMenuElement] {
 			guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl) else { return [] }
-			let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: utility.loadImage(named: "list.bullet"), state: layoutForView.layout == NCGlobal.shared.layoutList ? .on : .off) { _ in
+			let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: listImage, state: layoutForView.layout == NCGlobal.shared.layoutList ? .on : .off) { _ in
 				layoutForView.layout = NCGlobal.shared.layoutList
 				self.layoutForView = NCManageDatabase.shared.setLayoutForView(layoutForView: layoutForView)
 				self.layoutType = NCGlobal.shared.layoutList
@@ -697,7 +690,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 				self.setNavigationRightItems()
 			}
 
-			let grid = UIAction(title: NSLocalizedString("_icons_", comment: ""), image: utility.loadImage(named: "square.grid.2x2"), state: layoutForView.layout == NCGlobal.shared.layoutGrid ? .on : .off) { _ in
+			let grid = UIAction(title: NSLocalizedString("_icons_", comment: ""), image: gridImage, state: layoutForView.layout == NCGlobal.shared.layoutGrid ? .on : .off) { _ in
 				layoutForView.layout = NCGlobal.shared.layoutGrid
 				self.layoutForView = NCManageDatabase.shared.setLayoutForView(layoutForView: layoutForView)
 				self.layoutType = NCGlobal.shared.layoutGrid
@@ -710,7 +703,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 			}
 
 			let menuPhoto = UIMenu(title: "", options: .displayInline, children: [
-				UIAction(title: NSLocalizedString("_media_square_", comment: ""), image: utility.loadImage(named: "square.grid.3x3"), state: layoutForView.layout == NCGlobal.shared.layoutPhotoSquare ? .on : .off) { _ in
+				UIAction(title: NSLocalizedString("_media_square_", comment: ""), image: gridImage, state: layoutForView.layout == NCGlobal.shared.layoutPhotoSquare ? .on : .off) { _ in
 					layoutForView.layout = NCGlobal.shared.layoutPhotoSquare
 					self.layoutForView = NCManageDatabase.shared.setLayoutForView(layoutForView: layoutForView)
 					self.layoutType = NCGlobal.shared.layoutPhotoSquare
@@ -722,7 +715,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 					self.reloadDataSource()
 					self.setNavigationRightItems()
 				},
-				UIAction(title: NSLocalizedString("_media_ratio_", comment: ""), image: utility.loadImage(named: "rectangle.grid.3x2"), state: layoutForView.layout == NCGlobal.shared.layoutPhotoRatio ? .on : .off) { _ in
+				UIAction(title: NSLocalizedString("_media_ratio_", comment: ""), image: gridImage, state: layoutForView.layout == NCGlobal.shared.layoutPhotoRatio ? .on : .off) { _ in
 					layoutForView.layout = NCGlobal.shared.layoutPhotoRatio
 					self.layoutForView = NCManageDatabase.shared.setLayoutForView(layoutForView: layoutForView)
 					self.layoutType = NCGlobal.shared.layoutPhotoRatio
@@ -759,21 +752,19 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 			var imageName: String = ""
 			
 			switch layoutType {
-			case NCGlobal.shared.layoutList: imageName = "list.bullet"
-			case NCGlobal.shared.layoutGrid: imageName = "square.grid.2x2"
-			case NCGlobal.shared.layoutPhotoRatio: imageName = "rectangle.grid.3x2"
-			case NCGlobal.shared.layoutPhotoSquare: imageName = "square.grid.3x3"
+			case NCGlobal.shared.layoutList: imageName = "FileSelection/view_mode_list"
+			case NCGlobal.shared.layoutGrid, NCGlobal.shared.layoutPhotoRatio, NCGlobal.shared.layoutPhotoSquare: imageName = "FileSelection/view_mode_grid"
 			default: break
 			}
 			
-			return UIImage(systemName: imageName, withConfiguration: UIImage.SymbolConfiguration(pointSize: 24, weight: .medium))
+			return UIImage(named: imageName)
 		}
 
 		fileActionsHeader?.isHidden = isSearchingMode
 		collectionViewTop?.constant = isSearchingMode ? 0 : fileActionsHeader?.bounds.height ?? 0
 		fileActionsHeader?.setIsEditingMode(isEditingMode: isEditMode)
 		fileActionsHeader?.setSortingMenu(sortingMenuElements: createSortMenuActions(), title: sortTitle, image: sortDirectionImage, tintColor: .label)
-		fileActionsHeader?.setViewMenu(viewMenuElements: createViewModeMenuActions(), image: viewModeImage, tintColor: .label)
+		fileActionsHeader?.setViewMenu(viewMenuElements: createViewModeMenuActions(), image: viewModeImage?.templateRendered(), tintColor: .label)
 		
 		
 		fileActionsHeader?.onSelectModeChange = { [weak self] isSelectionMode in
@@ -786,7 +777,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 		fileActionsHeader?.onSelectAll = { [weak self] in
 			guard let self = self else { return }
 			self.selectAll()
-			let selectionState: FileActionsHeaderSelectionState = self.selectOcId.count == 0 ? .none : .all(self.selectOcId.count)
+			let selectionState: FileActionsHeaderSelectionState = self.selectOcId.count == 0 ? .none : .all
 			self.fileActionsHeader?.setSelectionState(selectionState: selectionState)
 		}
 	}

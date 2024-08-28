@@ -32,10 +32,10 @@
                                 </connections>
                             </collectionView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="BAN-5f-6Yg" userLabel="Headers" customClass="FileActionsHeader" customModule="Nextcloud" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="50" width="375" height="50"/>
+                                <rect key="frame" x="0.0" y="50" width="375" height="48"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="50" id="bVN-vQ-6me"/>
+                                    <constraint firstAttribute="height" constant="48" id="bVN-vQ-6me"/>
                                 </constraints>
                             </view>
                         </subviews>
