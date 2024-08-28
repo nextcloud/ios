@@ -455,7 +455,13 @@ extension NCNetworking {
         let fileNameNew = fileNameNew.trimmingCharacters(in: .whitespacesAndNewlines)
         let fileNameNewLive = (fileNameNew as NSString).deletingPathExtension + ".mov"
 
-        if metadata.isDirectoryE2EE {
+        if metadata.status == NCGlobal.shared.metadataStatusWaitCreateFolder {
+            metadata.fileName = fileNameNew
+            metadata.fileNameView = fileNameNew
+            NCManageDatabase.shared.addMetadata(metadata)
+            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterRenameFile, userInfo: ["ocId": metadata.ocId, "account": metadata.account, "indexPath": indexPath])
+            completion(.success)
+        } else if metadata.isDirectoryE2EE {
 #if !EXTENSION
             Task {
                 if let metadataLive = metadataLive {

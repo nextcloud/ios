@@ -234,7 +234,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         case NCGlobal.shared.metadataStatusWaitDownload:
             cell.labelStatus.text = NSLocalizedString("_status_wait_download_", comment: "")
             cell.labelInfo.text = utilityFileSystem.transformedSize(metadata.size)
-        case NCGlobal.shared.metadataStatusWaitUpload:
+        case NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusWaitCreateFolder:
             cell.labelStatus.text = NSLocalizedString("_status_wait_upload_", comment: "")
             cell.labelInfo.text = ""
         case NCGlobal.shared.metadataStatusUploading, NCGlobal.shared.metadataStatusDownloading:
