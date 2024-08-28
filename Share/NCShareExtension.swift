@@ -299,7 +299,7 @@ extension NCShareExtension {
 
         var conflicts: [tableMetadata] = []
         for fileName in filesName {
-            if let fileNameError = FileNameValidator.shared.checkFileName(fileName, account: activeTableAccount.account) {
+            if let fileNameError = FileNameValidator.shared.checkFileName(fileName, account: session.account) {
                 present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
 
                 continue
