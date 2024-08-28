@@ -163,12 +163,12 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell = gridCell
             }
         } else if isLayoutGrid {
-        // LAYOUT GRID
+            // LAYOUT GRID
             guard let gridCell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridCell else { return NCGridCell() }
             gridCell.gridCellDelegate = self
             cell = gridCell
         } else {
-        // LAYOUT LIST
+            // LAYOUT LIST
             guard let listCell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell else { return NCListCell() }
             listCell.listCellDelegate = self
             cell = listCell
@@ -220,6 +220,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.fileInfoLabel?.text = metadata.subline
             }
             cell.fileSubinfoLabel?.isHidden = true
+        } else if !metadata.sessionError.isEmpty {
+            cell.fileInfoLabel = metadata.sessionError
         } else {
             cell.fileSubinfoLabel?.isHidden = false
             cell.fileTitleLabel?.text = metadata.fileNameView
