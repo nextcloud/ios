@@ -184,7 +184,7 @@ class NCNetworkingProcess {
                 let metadatas = await NCCameraRoll().extractCameraRoll(from: metadata)
 
                 if metadatas.isEmpty {
-                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                    NCManageDatabase.shared.deleteMetadataOcId(metadata.ocId)
                 }
 
                 for metadata in metadatas where counterUploading < maxConcurrentOperationUpload {

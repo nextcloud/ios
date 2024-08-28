@@ -639,7 +639,7 @@ class NCUtilityFileSystem: NSObject {
                             try manager.removeItem(atPath: fileURL.path)
                         } catch { }
                         manager.createFile(atPath: fileURL.path, contents: nil, attributes: nil)
-                        NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", ocId))
+                        NCManageDatabase.shared.deleteLocalFileOcId(ocId)
                     }
                 }
             }
