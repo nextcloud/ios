@@ -309,6 +309,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             a11yValues.append(NSLocalizedString("_upload_mov_livephoto_", comment: ""))
         } else if metadata.isVideo {
             cell.fileStatusImage?.image = utility.loadImage(named: "play.circle", colors: isLayoutPhoto ? [.white] : [NCBrandColor.shared.iconImageColor2])
+        } else if metadata.status == NCGlobal.shared.metadataStatusWaitCreateFolder {
+            cell.fileStatusImage?.image = utility.loadImage(named: "exclamationmark.arrow.triangle.2.circlepath", colors: isLayoutPhoto ? [.white] : [NCBrandColor.shared.iconImageColor])
         }
 
         // URL
