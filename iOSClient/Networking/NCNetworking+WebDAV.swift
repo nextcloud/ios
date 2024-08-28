@@ -271,6 +271,8 @@ extension NCNetworking {
                     if let metadata = self.database.getMetadataFromOcId(metadataFolder?.ocId) {
                         NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterCreateFolder, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "withPush": withPush, "sceneIdentifier": sceneIdentifier as Any])
                     }
+                } else if let metadata, metadata.status == self.global.metadataStatusWaitCreateFolder {
+                    self.database.setMetadataSession(ocId: metadata.ocId, sessionError: error.description)
                 }
                 completion(error)
             }
