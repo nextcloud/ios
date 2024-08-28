@@ -185,7 +185,7 @@ extension NCNetworking {
                       serverUrl: String,
                       overwrite: Bool = false,
                       withPush: Bool,
-                      status: Int = 0,
+                      metadata: tableMetadata? = nil,
                       sceneIdentifier: String?,
                       session: NCSession.Session,
                       completion: @escaping (_ error: NKError) -> Void) {
@@ -200,7 +200,7 @@ extension NCNetworking {
             }
 #endif
         } else {
-            createFolderPlain(fileName: fileName, serverUrl: serverUrl, overwrite: overwrite, withPush: withPush, status: status, sceneIdentifier: sceneIdentifier, session: session, completion: completion)
+            createFolderPlain(fileName: fileName, serverUrl: serverUrl, overwrite: overwrite, withPush: withPush, metadata: metadata, sceneIdentifier: sceneIdentifier, session: session, completion: completion)
         }
     }
 
@@ -208,7 +208,7 @@ extension NCNetworking {
                                    serverUrl: String,
                                    overwrite: Bool,
                                    withPush: Bool,
-                                   status: Int,
+                                   metadata: tableMetadata?,
                                    sceneIdentifier: String?,
                                    session: NCSession.Session,
                                    completion: @escaping (_ error: NKError) -> Void) {
@@ -290,7 +290,7 @@ extension NCNetworking {
         func createFolder(fileName: String, serverUrl: String) -> Bool {
             var result: Bool = false
             let semaphore = DispatchSemaphore(value: 0)
-            self.createFolder(fileName: fileName, serverUrl: serverUrl, overwrite: true, withPush: withPush, status: 0, sceneIdentifier: sceneIdentifier, session: session) { error in
+            self.createFolder(fileName: fileName, serverUrl: serverUrl, overwrite: true, withPush: withPush, metadata: nil, sceneIdentifier: sceneIdentifier, session: session) { error in
                 if error == .success { result = true }
                 semaphore.signal()
             }

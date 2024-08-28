@@ -134,8 +134,7 @@ class NCNetworkingProcess {
         ///
         if let metadatasWaitCreateFolder = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitCreateFolder), sorted: "serverUrl", ascending: true) {
             for metadata in metadatasWaitCreateFolder {
-                let session = NCSession.shared.getSession(account: metadata.account)
-                let error = await NCNetworking.shared.createFolder(fileName: metadata.fileName, serverUrl: metadata.serverUrl, overwrite: true, withPush: false, status: metadata.status, sceneIdentifier: metadata.sceneIdentifier, session: session)
+                let error = await NCNetworking.shared.createFolderOffline(metadata: metadata)
                 if error != .success {
                     if !self.messageErrorCreateFolderOffline {
                         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName

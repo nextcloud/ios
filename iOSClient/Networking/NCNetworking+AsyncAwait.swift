@@ -136,15 +136,9 @@ extension NCNetworking {
         })
     }
 
-    func createFolder(fileName: String,
-                      serverUrl: String,
-                      overwrite: Bool = false,
-                      withPush: Bool,
-                      status: Int,
-                      sceneIdentifier: String?,
-                      session: NCSession.Session) async -> NKError {
+    func createFolderOffline(metadata: tableMetadata) async -> NKError {
         await withUnsafeContinuation({ continuation in
-            self.createFolder(fileName: fileName, serverUrl: serverUrl, overwrite: overwrite, withPush: withPush, status: status, sceneIdentifier: sceneIdentifier, session: session) { error in
+            self.createFolder(fileName: metadata.fileName, serverUrl: metadata.serverUrl, overwrite: true, withPush: false, metadata: metadata, sceneIdentifier: nil, session: NCSession.shared.getSession(account: metadata.account)) { error in
                 continuation.resume(returning: error)
             }
         })
