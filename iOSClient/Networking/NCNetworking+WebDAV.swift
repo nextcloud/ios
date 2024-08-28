@@ -256,6 +256,7 @@ extension NCNetworking {
             self.readFile(serverUrlFileName: fileNameFolderUrl, account: account) { account, metadataFolder, error in
                 if error == .success {
                     if let metadata = metadataFolder {
+                        self.database.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@ AND serverUrl == %@", metadata.account, metadata.fileName, metadata.serverUrl))
                         self.database.addMetadata(metadata)
                         self.database.addDirectory(e2eEncrypted: metadata.e2eEncrypted,
                                                    favorite: metadata.favorite,

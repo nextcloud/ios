@@ -136,6 +136,19 @@ extension NCNetworking {
         })
     }
 
+    func createFolder(fileName: String,
+                      serverUrl: String,
+                      overwrite: Bool = false,
+                      withPush: Bool,
+                      sceneIdentifier: String?,
+                      session: NCSession.Session) async -> NKError {
+        await withUnsafeContinuation({ continuation in
+            self.createFolder(fileName: fileName, serverUrl: serverUrl, overwrite: overwrite, withPush: withPush, sceneIdentifier: sceneIdentifier, session: session) { error in
+                continuation.resume(returning: error)
+            }
+        })
+    }
+
     func readFileOrFolder(serverUrlFileName: String,
                           depth: String,
                           showHiddenFiles: Bool = true,

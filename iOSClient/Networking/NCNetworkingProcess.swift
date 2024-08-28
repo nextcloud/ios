@@ -129,6 +129,16 @@ class NCNetworkingProcess {
         var counterDownloading = metadatasDownloading.count
         var counterUploading = metadatasUploading.count
 
+        /// ------------------------ FOLDER
+        ///
+        if let metadatasWaitCreateFolder = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitCreateFolder), sorted: "serverUrl", ascending: true) {
+            for metadata in metadatasWaitCreateFolder {
+                let session = NCSession.shared.getSession(account: metadata.account)
+                let error = await NCNetworking.shared.createFolder(fileName: metadata.fileName, serverUrl: metadata.serverUrl, overwrite: true, withPush: false, sceneIdentifier: metadata.sceneIdentifier, session: session)
+                print(error)
+            }
+        }
+
         /// ------------------------ DOWNLOAD
         ///
         let limitDownload = maxConcurrentOperationDownload - counterDownloading
