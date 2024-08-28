@@ -185,6 +185,7 @@ extension NCNetworking {
                       serverUrl: String,
                       overwrite: Bool = false,
                       withPush: Bool,
+                      status: Int = 0,
                       sceneIdentifier: String?,
                       session: NCSession.Session,
                       completion: @escaping (_ error: NKError) -> Void) {
@@ -199,7 +200,7 @@ extension NCNetworking {
             }
 #endif
         } else {
-            createFolderPlain(fileName: fileName, serverUrl: serverUrl, overwrite: overwrite, withPush: withPush, sceneIdentifier: sceneIdentifier, session: session, completion: completion)
+            createFolderPlain(fileName: fileName, serverUrl: serverUrl, overwrite: overwrite, withPush: withPush, status: status, sceneIdentifier: sceneIdentifier, session: session, completion: completion)
         }
     }
 
@@ -207,6 +208,7 @@ extension NCNetworking {
                                    serverUrl: String,
                                    overwrite: Bool,
                                    withPush: Bool,
+                                   status: Int,
                                    sceneIdentifier: String?,
                                    session: NCSession.Session,
                                    completion: @escaping (_ error: NKError) -> Void) {
@@ -234,7 +236,7 @@ extension NCNetworking {
                                                                            directory: true,
                                                                            session: session,
                                                                            sceneIdentifier: sceneIdentifier)
-            metadataForUpload.status = NCGlobal.shared.metadataStatusWaitCreateFolder
+            metadataForUpload.status = global.metadataStatusWaitCreateFolder
             NCManageDatabase.shared.addMetadata(metadataForUpload)
 
             NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterCreateFolder, userInfo: ["ocId": metadataForUpload.ocId, "serverUrl": metadataForUpload.serverUrl, "account": metadataForUpload.account, "withPush": withPush, "sceneIdentifier": sceneIdentifier as Any])
@@ -288,7 +290,7 @@ extension NCNetworking {
         func createFolder(fileName: String, serverUrl: String) -> Bool {
             var result: Bool = false
             let semaphore = DispatchSemaphore(value: 0)
-            self.createFolder(fileName: fileName, serverUrl: serverUrl, overwrite: true, withPush: withPush, sceneIdentifier: sceneIdentifier, session: session) { error in
+            self.createFolder(fileName: fileName, serverUrl: serverUrl, overwrite: true, withPush: withPush, status: 0, sceneIdentifier: sceneIdentifier, session: session) { error in
                 if error == .success { result = true }
                 semaphore.signal()
             }

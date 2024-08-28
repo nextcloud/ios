@@ -140,10 +140,11 @@ extension NCNetworking {
                       serverUrl: String,
                       overwrite: Bool = false,
                       withPush: Bool,
+                      status: Int,
                       sceneIdentifier: String?,
                       session: NCSession.Session) async -> NKError {
         await withUnsafeContinuation({ continuation in
-            self.createFolder(fileName: fileName, serverUrl: serverUrl, overwrite: overwrite, withPush: withPush, sceneIdentifier: sceneIdentifier, session: session) { error in
+            self.createFolder(fileName: fileName, serverUrl: serverUrl, overwrite: overwrite, withPush: withPush, status: status, sceneIdentifier: sceneIdentifier, session: session) { error in
                 continuation.resume(returning: error)
             }
         })
