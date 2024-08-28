@@ -79,6 +79,12 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
         let nckb = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance)
         return nckb
     }()
+    var isOffline: Bool {
+        return networkReachability == NKCommon.TypeReachability.notReachable || networkReachability == NKCommon.TypeReachability.unknown
+    }
+    var isOnline: Bool {
+        return networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi || networkReachability == NKCommon.TypeReachability.reachableCellular
+    }
 
     // OPERATIONQUEUE
     let downloadThumbnailQueue = Queuer(name: "downloadThumbnailQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
