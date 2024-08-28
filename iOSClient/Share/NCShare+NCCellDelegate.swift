@@ -30,7 +30,7 @@ extension NCShare: NCShareLinkCellDelegate, NCShareUserCellDelegate {
         guard let metadata = self.metadata, let appDelegate = appDelegate else { return }
 
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-        NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName) { _, metadata, error in
+        NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: metadata.account) { _, metadata, error in
             if error == .success, let metadata = metadata {
                 let internalLink = appDelegate.urlBase + "/index.php/f/" + metadata.fileId
                 self.shareCommon.copyLink(link: internalLink, viewController: self, sender: sender)
@@ -63,7 +63,7 @@ extension NCShare: NCShareLinkCellDelegate, NCShareUserCellDelegate {
     func quickStatus(with tableShare: tableShare?, sender: Any) {
         guard let tableShare = tableShare,
               let metadata = metadata,
-              tableShare.shareType != NCGlobal.shared.permissionDefaultFileRemoteShareNoSupportShareOption else { return }
+              tableShare.shareType != NCPermissions().permissionDefaultFileRemoteShareNoSupportShareOption else { return }
         self.toggleUserPermissionMenu(isDirectory: metadata.directory, tableShare: tableShare)
     }
 }

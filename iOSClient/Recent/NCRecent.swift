@@ -51,13 +51,12 @@ class NCRecent: NCCollectionViewCommon {
         super.queryDB()
 
         let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@", self.appDelegate.account), numItems: 200, sorted: "date", ascending: false)
-        self.dataSource = NCDataSource(metadatas: metadatas,
-                                       account: self.appDelegate.account,
-                                       directoryOnTop: false,
-                                       favoriteOnTop: false,
-                                       groupByField: self.groupByField,
-                                       providers: self.providers,
-                                       searchResults: self.searchResults)
+
+        layoutForView?.sort = "date"
+        layoutForView?.ascending = false
+        layoutForView?.directoryOnTop = false
+
+        self.dataSource = NCDataSource(metadatas: metadatas, account: self.appDelegate.account, layoutForView: layoutForView, favoriteOnTop: false, providers: self.providers, searchResults: self.searchResults)
     }
 
     override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
@@ -134,6 +133,7 @@ class NCRecent: NCCollectionViewCommon {
         NextcloudKit.shared.searchBodyRequest(serverUrl: appDelegate.urlBase,
                                               requestBody: requestBody,
                                               showHiddenFiles: NCKeychain().showHiddenFiles,
+                                              account: appDelegate.account,
                                               options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()

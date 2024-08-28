@@ -32,16 +32,16 @@ extension UIAlertController {
     ///   - urlBase: UrlBase object
     ///   - completion: If not` nil` it overrides the default behavior which shows an error using `NCContentPresenter`
     /// - Returns: The presentable alert controller
-    static func createFolder(serverUrl: String, urlBase: NCUserBaseUrl, markE2ee: Bool = false, sceneIdentifier: String? = nil, completion: ((_ error: NKError) -> Void)? = nil) -> UIAlertController {
+    static func createFolder(serverUrl: String, userBaseUrl: NCUserBaseUrl, markE2ee: Bool = false, sceneIdentifier: String? = nil, completion: ((_ error: NKError) -> Void)? = nil) -> UIAlertController {
         let alertController = UIAlertController(title: NSLocalizedString("_create_folder_", comment: ""), message: nil, preferredStyle: .alert)
 
         let okAction = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default, handler: { _ in
             guard let fileNameFolder = alertController.textFields?.first?.text else { return }
             if markE2ee {
                 Task {
-                    let createFolderResults = await NextcloudKit.shared.createFolder(serverUrlFileName: serverUrl + "/" + fileNameFolder)
+                    let createFolderResults = await NCNetworking.shared.createFolder(serverUrlFileName: serverUrl + "/" + fileNameFolder, account: userBaseUrl.account)
                     if createFolderResults.error == .success {
-                        let error = await NCNetworkingE2EEMarkFolder().markFolderE2ee(account: urlBase.account, fileName: fileNameFolder, serverUrl: serverUrl, userId: urlBase.userId)
+                        let error = await NCNetworkingE2EEMarkFolder().markFolderE2ee(account: userBaseUrl.account, fileName: fileNameFolder, serverUrl: serverUrl, userId: userBaseUrl.userId)
                         if error != .success {
                             NCContentPresenter().showError(error: error)
                         }
@@ -50,7 +50,7 @@ extension UIAlertController {
                     }
                 }
             } else {
-                NCNetworking.shared.createFolder(fileName: fileNameFolder, serverUrl: serverUrl, account: urlBase.account, urlBase: urlBase.urlBase, userId: urlBase.userId, overwrite: false, withPush: true, sceneIdentifier: sceneIdentifier) { error in
+                NCNetworking.shared.createFolder(fileName: fileNameFolder, serverUrl: serverUrl, account: userBaseUrl.account, urlBase: userBaseUrl.urlBase, userId: userBaseUrl.userId, overwrite: false, withPush: true, sceneIdentifier: sceneIdentifier) { error in
                     if let completion = completion {
                         completion(error)
                     } else if error != .success {

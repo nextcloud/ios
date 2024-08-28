@@ -26,7 +26,6 @@ import RealmSwift
 import NextcloudKit
 
 class tableUserStatus: Object {
-
     @objc dynamic var account = ""
     @objc dynamic var clearAt: NSDate?
     @objc dynamic var clearAtTime: String?
@@ -40,9 +39,7 @@ class tableUserStatus: Object {
 }
 
 extension NCManageDatabase {
-
     func addUserStatus(_ userStatuses: [NKUserStatus], account: String, predefined: Bool) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -51,7 +48,7 @@ extension NCManageDatabase {
                 for userStatus in userStatuses {
                     let object = tableUserStatus()
                     object.account = account
-                    object.clearAt = userStatus.clearAt
+                    object.clearAt = userStatus.clearAt as? NSDate
                     object.clearAtTime = userStatus.clearAtTime
                     object.clearAtType = userStatus.clearAtType
                     object.icon = userStatus.icon

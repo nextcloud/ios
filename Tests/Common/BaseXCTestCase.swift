@@ -18,7 +18,7 @@ class BaseXCTestCase: XCTestCase {
     func setupAppToken() {
         let expectation = expectation(description: "Should get app token")
 
-        NextcloudKit.shared.getAppPassword(serverUrl: TestConstants.server, username: TestConstants.username, password: TestConstants.password) { token, data, error in
+        NextcloudKit.shared.getAppPassword(url: TestConstants.server, user: TestConstants.username, password: TestConstants.password) { token, _, error in
             XCTAssertEqual(error.errorCode, 0)
             XCTAssertNotNil(token)
 

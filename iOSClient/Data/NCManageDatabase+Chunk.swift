@@ -26,7 +26,6 @@ import RealmSwift
 import NextcloudKit
 
 class tableChunk: Object {
-
     @Persisted var account = ""
     @Persisted var chunkFolder = ""
     @Persisted(primaryKey: true) var index = ""
@@ -36,9 +35,7 @@ class tableChunk: Object {
 }
 
 extension NCManageDatabase {
-
     func getChunkFolder(account: String, ocId: String) -> String {
-
         do {
             let realm = try Realm()
             realm.refresh()
@@ -47,12 +44,10 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access to database: \(error)")
         }
-
         return NSUUID().uuidString
     }
 
     func getChunks(account: String, ocId: String) -> [(fileName: String, size: Int64)] {
-
         var filesChunk: [(fileName: String, size: Int64)] = []
 
         do {
@@ -65,12 +60,10 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access to database: \(error)")
         }
-
         return filesChunk
     }
 
     func addChunks(account: String, ocId: String, chunkFolder: String, filesChunk: [(fileName: String, size: Int64)]) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -93,7 +86,6 @@ extension NCManageDatabase {
     }
 
     func deleteChunk(account: String, ocId: String, fileChunk: (fileName: String, size: Int64), directory: String) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -108,7 +100,6 @@ extension NCManageDatabase {
     }
 
     func deleteChunks(account: String, ocId: String, directory: String) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -123,5 +114,4 @@ extension NCManageDatabase {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
     }
-
 }

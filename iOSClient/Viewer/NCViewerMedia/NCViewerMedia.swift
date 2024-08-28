@@ -300,19 +300,18 @@ class NCViewerMedia: UIViewController {
         if utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
             return completion(UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)))
         } else {
-            let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
             let fileNamePreviewLocalPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
             let fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
             let sizePreview = NCUtility().getSizePreview(width: metadata.width, height: metadata.height)
 
-            NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: fileNamePath,
+            NextcloudKit.shared.downloadPreview(fileId: metadata.fileId,
                                                 fileNamePreviewLocalPath: fileNamePreviewLocalPath,
+                                                fileNameIconLocalPath: fileNameIconLocalPath,
                                                 widthPreview: Int(sizePreview.width),
                                                 heightPreview: Int(sizePreview.height),
-                                                fileNameIconLocalPath: fileNameIconLocalPath,
                                                 sizeIcon: NCGlobal.shared.sizeIcon,
+                                                account: metadata.account,
                                                 options: NKRequestOptions(queue: .main)) { _, imagePreview, _, _, etag, error in
-
                 if error == .success, let image = imagePreview {
                     NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
                     return completion(image)

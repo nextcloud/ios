@@ -29,8 +29,8 @@ class NCViewerRichWorkspaceWebView: UIViewController, WKNavigationDelegate, WKSc
     @IBOutlet weak var webView: WKWebView!
     @IBOutlet weak var webViewBottomConstraint: NSLayoutConstraint!
 
-    @objc var metadata: tableMetadata?
-    @objc var url: String = ""
+    var metadata: tableMetadata?
+    var url: String = ""
 
     // MARK: - View Life Cycle
 

@@ -34,7 +34,7 @@ protocol NCCollectionViewCommonSelectTabBarDelegate: AnyObject {
 }
 
 class NCCollectionViewCommonSelectTabBar: ObservableObject {
-    var tabBarController: NCMainTabBarController?
+    var controller: NCMainTabBarController?
     var hostingController: UIViewController?
     open weak var delegate: NCCollectionViewCommonSelectTabBarDelegate?
 
@@ -47,27 +47,27 @@ class NCCollectionViewCommonSelectTabBar: ObservableObject {
     @Published var enableLock = false
     @Published var isSelectedEmpty = true
 
-    init(tabBarController: NCMainTabBarController? = nil, delegate: NCCollectionViewCommonSelectTabBarDelegate? = nil) {
+    init(controller: NCMainTabBarController? = nil, delegate: NCCollectionViewCommonSelectTabBarDelegate? = nil) {
         let rootView = NCCollectionViewCommonSelectTabBarView(tabBarSelect: self)
         hostingController = UIHostingController(rootView: rootView)
 
-        self.tabBarController = tabBarController
+        self.controller = controller
         self.delegate = delegate
 
-        guard let tabBarController, let hostingController else { return }
+        guard let controller, let hostingController else { return }
 
-        tabBarController.view.addSubview(hostingController.view)
+        controller.view.addSubview(hostingController.view)
 
-        hostingController.view.frame = tabBarController.tabBar.frame
+        hostingController.view.frame = controller.tabBar.frame
         hostingController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         hostingController.view.backgroundColor = .clear
         hostingController.view.isHidden = true
     }
 
     func show() {
-        guard let tabBarController, let hostingController else { return }
+        guard let controller, let hostingController else { return }
 
-        tabBarController.tabBar.isHidden = true
+        controller.tabBar.isHidden = true
         if hostingController.view.isHidden {
             hostingController.view.isHidden = false
             hostingController.view.transform = .init(translationX: 0, y: hostingController.view.frame.height)
@@ -78,10 +78,10 @@ class NCCollectionViewCommonSelectTabBar: ObservableObject {
     }
 
     func hide() {
-        guard let tabBarController, let hostingController else { return }
+        guard let controller, let hostingController else { return }
 
         hostingController.view.isHidden = true
-        tabBarController.tabBar.isHidden = false
+        controller.tabBar.isHidden = false
     }
 
     func isHidden() -> Bool {

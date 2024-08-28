@@ -45,8 +45,15 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
 
     override func awakeFromNib() {
         super.awakeFromNib()
+        initCell()
+    }
 
-        // use entire cell as accessibility element
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        initCell()
+    }
+
+    func initCell() {
         accessibilityHint = nil
         accessibilityLabel = nil
         accessibilityValue = nil
@@ -62,14 +69,6 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
         labelTitle.text = ""
         labelInfo.text = ""
         labelSubinfo.text = ""
-    }
-
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        imageItem.backgroundColor = nil
-        accessibilityHint = nil
-        accessibilityLabel = nil
-        accessibilityValue = nil
     }
 
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
@@ -101,29 +100,17 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
         buttonMore.isHidden = status
     }
 
-    func selectMode(_ status: Bool) {
-        if status {
-            imageSelect.isHidden = false
+    func selected(_ status: Bool, isEditMode: Bool) {
+        if isEditMode {
             buttonMore.isHidden = true
             accessibilityCustomActions = nil
         } else {
-            imageSelect.isHidden = true
-            imageVisualEffect.isHidden = true
             buttonMore.isHidden = false
             setA11yActions()
         }
-    }
-
-    func selected(_ status: Bool) {
         if status {
-            if traitCollection.userInterfaceStyle == .dark {
-                imageVisualEffect.effect = UIBlurEffect(style: .dark)
-                imageVisualEffect.backgroundColor = .black
-            } else {
-                imageVisualEffect.effect = UIBlurEffect(style: .extraLight)
-                imageVisualEffect.backgroundColor = .lightGray
-            }
             imageSelect.image = NCImageCache.images.checkedYes
+            imageSelect.isHidden = false
             imageVisualEffect.isHidden = false
         } else {
             imageSelect.isHidden = true
@@ -132,7 +119,6 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
     }
 
     func writeInfoDateSize(date: NSDate, size: Int64) {
-
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .short
         dateFormatter.timeStyle = .none

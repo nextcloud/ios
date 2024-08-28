@@ -26,7 +26,6 @@ import RealmSwift
 import NextcloudKit
 
 class tableCapabilities: Object {
-
     @objc dynamic var account = ""
     @objc dynamic var jsondata: Data?
 
@@ -36,9 +35,7 @@ class tableCapabilities: Object {
 }
 
 extension NCManageDatabase {
-
     func addCapabilitiesJSon(_ data: Data, account: String) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -53,7 +50,6 @@ extension NCManageDatabase {
     }
 
     func getCapabilities(account: String) -> Data? {
-
         do {
             let realm = try Realm()
             realm.refresh()
@@ -67,11 +63,9 @@ extension NCManageDatabase {
     }
 
     func setCapabilities(account: String, data: Data? = nil) {
-
         let jsonData: Data?
 
         struct CapabilityNextcloud: Codable {
-
             struct Ocs: Codable {
                 let meta: Meta
                 let data: Data
@@ -360,7 +354,7 @@ extension NCManageDatabase {
             global.capabilityFilesComments = data.capabilities.files?.comments ?? false
             global.capabilityFilesBigfilechunking = data.capabilities.files?.bigfilechunking ?? false
 
-            global.capabilityUserStatusEnabled = data.capabilities.files?.undelete ?? false
+            global.capabilityUserStatusEnabled = data.capabilities.userstatus?.enabled ?? false
             if data.capabilities.external != nil {
                 global.capabilityExternalSites = true
             }

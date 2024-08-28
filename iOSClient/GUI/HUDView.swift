@@ -85,7 +85,7 @@ struct ContentView: View {
                 }
                 HUDView(showHUD: $showHUD, textLabel: NSLocalizedString("_wait_", comment: ""), image: "doc.badge.arrow.up")
                     .offset(y: showHUD ? (geo.size.height / 2) : -200)
-                    .animation(.easeOut)
+                    .animation(.easeOut, value: showHUD)
             }
         }
     }

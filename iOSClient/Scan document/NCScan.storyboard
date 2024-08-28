@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="bdK-eL-mz4">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="bdK-eL-mz4">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21678"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
+        <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -22,7 +24,7 @@
                                 <constraints>
                                     <constraint firstAttribute="height" constant="160" id="0Wb-eO-Qiu"/>
                                 </constraints>
-                                <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="Dhy-fV-Qmr">
+                                <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="20" minimumInteritemSpacing="0.0" id="Dhy-fV-Qmr">
                                     <size key="itemSize" width="140" height="140"/>
                                     <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
@@ -36,7 +38,7 @@
                                             <rect key="frame" x="0.0" y="0.0" width="140" height="140"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="sam-7M-bIk">
+                                                <imageView clipsSubviews="YES" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="sam-7M-bIk">
                                                     <rect key="frame" x="20" y="20" width="100" height="100"/>
                                                 </imageView>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="06r-jm-ARX">
@@ -45,12 +47,40 @@
                                                         <constraint firstAttribute="height" constant="23" id="BFu-CG-dUZ" userLabel="height = 23"/>
                                                         <constraint firstAttribute="width" constant="23" id="ccc-Kb-48t" userLabel="width = 23"/>
                                                     </constraints>
-                                                    <state key="normal" image="deleteScan"/>
+                                                    <state key="normal">
+                                                        <imageReference key="image" image="xmark" catalog="system" renderingMode="hierarchical" variableValue="1">
+                                                            <hierarchicalColors>
+                                                                <color systemColor="labelColor"/>
+                                                                <color systemColor="secondaryLabelColor"/>
+                                                                <color systemColor="tertiaryLabelColor"/>
+                                                            </hierarchicalColors>
+                                                        </imageReference>
+                                                        <preferredSymbolConfiguration key="preferredSymbolConfiguration" weight="light"/>
+                                                    </state>
+                                                </button>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="A6g-FH-t4H">
+                                                    <rect key="frame" x="117" y="0.0" width="23" height="23"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="23" id="JEm-cL-ox1"/>
+                                                        <constraint firstAttribute="width" constant="23" id="Wzd-bs-ACZ"/>
+                                                    </constraints>
+                                                    <state key="normal">
+                                                        <imageReference key="image" image="pencil.tip.crop.circle" catalog="system" renderingMode="hierarchical" variableValue="1">
+                                                            <hierarchicalColors>
+                                                                <color systemColor="labelColor"/>
+                                                                <color systemColor="secondaryLabelColor"/>
+                                                                <color systemColor="tertiaryLabelColor"/>
+                                                            </hierarchicalColors>
+                                                        </imageReference>
+                                                        <preferredSymbolConfiguration key="preferredSymbolConfiguration" weight="light"/>
+                                                    </state>
                                                 </button>
                                             </subviews>
                                         </view>
                                         <constraints>
                                             <constraint firstAttribute="trailing" secondItem="sam-7M-bIk" secondAttribute="trailing" constant="20" id="8AX-l8-Lm0"/>
+                                            <constraint firstItem="A6g-FH-t4H" firstAttribute="top" secondItem="Lca-vD-NY2" secondAttribute="top" id="BS2-xI-elS"/>
+                                            <constraint firstAttribute="trailing" secondItem="A6g-FH-t4H" secondAttribute="trailing" id="F5A-4O-XKv"/>
                                             <constraint firstItem="06r-jm-ARX" firstAttribute="top" secondItem="Lca-vD-NY2" secondAttribute="top" id="Wsp-Ec-BCg"/>
                                             <constraint firstItem="sam-7M-bIk" firstAttribute="top" secondItem="Lca-vD-NY2" secondAttribute="top" constant="20" id="YId-9R-Qgw"/>
                                             <constraint firstItem="06r-jm-ARX" firstAttribute="leading" secondItem="Lca-vD-NY2" secondAttribute="leading" id="ffX-tw-upp"/>
@@ -60,6 +90,7 @@
                                         <connections>
                                             <outlet property="customImageView" destination="sam-7M-bIk" id="mgQ-wh-sSH"/>
                                             <outlet property="delete" destination="06r-jm-ARX" id="gbZ-kz-MoL"/>
+                                            <outlet property="modify" destination="A6g-FH-t4H" id="FJT-mT-VLL"/>
                                         </connections>
                                     </collectionViewCell>
                                 </cells>
@@ -104,20 +135,18 @@
                                                         <constraint firstAttribute="width" constant="23" id="HRg-KR-tfA"/>
                                                         <constraint firstAttribute="height" constant="23" id="QOj-Nj-nAA"/>
                                                     </constraints>
-                                                    <state key="normal" image="deleteScan"/>
+                                                    <state key="normal">
+                                                        <imageReference key="image" image="xmark" catalog="system" renderingMode="hierarchical" variableValue="1">
+                                                            <hierarchicalColors>
+                                                                <color systemColor="labelColor"/>
+                                                                <color systemColor="secondaryLabelColor"/>
+                                                                <color systemColor="tertiaryLabelColor"/>
+                                                            </hierarchicalColors>
+                                                        </imageReference>
+                                                        <preferredSymbolConfiguration key="preferredSymbolConfiguration" weight="light"/>
+                                                    </state>
                                                     <connections>
                                                         <action selector="touchUpInsideDelete:" destination="Pph-tY-PGX" eventType="touchUpInside" id="KcT-WM-s1K"/>
-                                                    </connections>
-                                                </button>
-                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="XEo-o0-dSF" userLabel="Rotate">
-                                                    <rect key="frame" x="98" y="0.0" width="22" height="22"/>
-                                                    <constraints>
-                                                        <constraint firstAttribute="width" constant="22" id="fQB-AX-aUH"/>
-                                                        <constraint firstAttribute="height" constant="22" id="fd5-QY-wlr"/>
-                                                    </constraints>
-                                                    <state key="normal" image="rotate"/>
-                                                    <connections>
-                                                        <action selector="touchUpInsideRotate:" destination="Pph-tY-PGX" eventType="touchUpInside" id="x5z-go-m4Y"/>
                                                     </connections>
                                                 </button>
                                             </subviews>
@@ -125,21 +154,18 @@
                                         <constraints>
                                             <constraint firstItem="wSg-Gm-0s3" firstAttribute="leading" secondItem="Pph-tY-PGX" secondAttribute="leading" id="0ev-wb-Tsh"/>
                                             <constraint firstItem="sdV-W7-Hkd" firstAttribute="top" secondItem="Pph-tY-PGX" secondAttribute="top" constant="20" id="G76-6T-Zpt"/>
-                                            <constraint firstItem="XEo-o0-dSF" firstAttribute="top" secondItem="Pph-tY-PGX" secondAttribute="top" id="Hax-sJ-buG"/>
                                             <constraint firstItem="wcM-U8-GLh" firstAttribute="leading" secondItem="sdV-W7-Hkd" secondAttribute="leading" id="Ier-5Q-PmP"/>
                                             <constraint firstAttribute="trailing" secondItem="sdV-W7-Hkd" secondAttribute="trailing" constant="20" id="Jia-SE-8bu"/>
                                             <constraint firstAttribute="bottom" secondItem="sdV-W7-Hkd" secondAttribute="bottom" constant="20" id="Ljw-b9-Sp8"/>
                                             <constraint firstItem="wSg-Gm-0s3" firstAttribute="top" secondItem="Pph-tY-PGX" secondAttribute="top" id="T23-0j-7ed"/>
                                             <constraint firstItem="wcM-U8-GLh" firstAttribute="trailing" secondItem="sdV-W7-Hkd" secondAttribute="trailing" id="h6k-Kk-edu"/>
                                             <constraint firstItem="sdV-W7-Hkd" firstAttribute="leading" secondItem="Pph-tY-PGX" secondAttribute="leading" constant="20" id="kwQ-gl-6Bj"/>
-                                            <constraint firstAttribute="trailing" secondItem="XEo-o0-dSF" secondAttribute="trailing" id="m9Z-SN-0go"/>
                                             <constraint firstAttribute="bottom" secondItem="wcM-U8-GLh" secondAttribute="bottom" id="qat-UY-DBH"/>
                                         </constraints>
                                         <connections>
                                             <outlet property="customImageView" destination="sdV-W7-Hkd" id="edM-S1-vkM"/>
                                             <outlet property="customLabel" destination="wcM-U8-GLh" id="BhF-OG-y3p"/>
                                             <outlet property="delete" destination="wSg-Gm-0s3" id="x0Y-P4-EXF"/>
-                                            <outlet property="rotate" destination="XEo-o0-dSF" id="cEY-b8-2tb"/>
                                         </connections>
                                     </collectionViewCell>
                                 </cells>
@@ -268,8 +294,17 @@
     </scenes>
     <resources>
         <image name="add" width="25" height="25"/>
-        <image name="deleteScan" width="25" height="25"/>
-        <image name="rotate" width="25" height="25"/>
+        <image name="pencil.tip.crop.circle" catalog="system" width="128" height="123"/>
         <image name="transferDown" width="330" height="330"/>
+        <image name="xmark" catalog="system" width="128" height="113"/>
+        <systemColor name="labelColor">
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="secondaryLabelColor">
+            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.59999999999999998" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="tertiaryLabelColor">
+            <color red="0.23529411764705882" green="0.23529411764705882" blue="0.2627450980392157" alpha="0.29803921568627451" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
     </resources>
 </document>

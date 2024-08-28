@@ -44,42 +44,33 @@ class NCViewerProviderContextMenu: UIViewController {
 
     init(metadata: tableMetadata, image: UIImage?) {
         super.init(nibName: nil, bundle: nil)
-
         self.metadata = tableMetadata(value: metadata)
         self.metadataLivePhoto = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
         self.image = image
 
         if metadata.directory {
-
             imageView.image = NCImageCache.images.folder.colorizeFolder(metadata: metadata)
             imageView.frame = resize(CGSize(width: sizeIcon, height: sizeIcon))
-
         } else {
-
             // ICON
             let image = NCUtility().loadImage(named: metadata.iconName, useTypeIconFile: true)
             imageView.image = image
             imageView.frame = resize(CGSize(width: sizeIcon, height: sizeIcon))
-
             // PREVIEW
             if utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
-
                 if let image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
                     imageView.image = image
                     imageView.frame = resize(image.size)
                 }
             }
-
             // VIEW IMAGE
             if metadata.isImage && utilityFileSystem.fileProviderStorageExists(metadata) {
                 viewImage(metadata: metadata)
             }
-
             // VIEW LIVE PHOTO
             if let metadataLivePhoto = metadataLivePhoto, utilityFileSystem.fileProviderStorageExists(metadataLivePhoto) {
                 viewVideo(metadata: metadataLivePhoto)
             }
-
             // VIEW VIDEO
             if metadata.isVideo {
                 if !utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
@@ -90,52 +81,41 @@ class NCViewerProviderContextMenu: UIViewController {
                 }
                 viewVideo(metadata: metadata)
             }
-
             // PLAY AUDIO
             if metadata.isAudio {
-
                 var maxDownload: UInt64 = 0
-
                 if utilityFileSystem.fileProviderStorageExists(metadata) {
-
                     viewVideo(metadata: metadata)
-
                 } else {
-
                     if NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableCellular {
                         maxDownload = NCGlobal.shared.maxAutoDownloadCellular
                     } else {
                         maxDownload = NCGlobal.shared.maxAutoDownload
                     }
-
                     if metadata.size <= maxDownload,
                        NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
                         NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: ""))
                     }
                 }
             }
-
             // AUTO DOWNLOAD IMAGE GIF
             if !utilityFileSystem.fileProviderStorageExists(metadata),
                metadata.contentType == "image/gif",
                NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
                 NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: ""))
             }
-
             // AUTO DOWNLOAD IMAGE SVG
             if !utilityFileSystem.fileProviderStorageExists(metadata),
                metadata.contentType == "image/svg+xml",
                NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
                 NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: ""))
             }
-
             // AUTO DOWNLOAD LIVE PHOTO
             if let metadataLivePhoto = self.metadataLivePhoto,
                !utilityFileSystem.fileProviderStorageExists(metadataLivePhoto),
                NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
                 NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadataLivePhoto, selector: ""))
             }
-
         }
     }
 
@@ -165,7 +145,6 @@ class NCViewerProviderContextMenu: UIViewController {
     // MARK: - NotificationCenter
 
     @objc func downloadStartFile(_ notification: NSNotification) {
-
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String
         else { return }
@@ -176,7 +155,6 @@ class NCViewerProviderContextMenu: UIViewController {
     }
 
     @objc func downloadedFile(_ notification: NSNotification) {
-
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               let error = userInfo["error"] as? NKError,
@@ -203,7 +181,6 @@ class NCViewerProviderContextMenu: UIViewController {
     }
 
     @objc func downloadCancelFile(_ notification: NSNotification) {
-
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String
         else { return }
@@ -216,9 +193,7 @@ class NCViewerProviderContextMenu: UIViewController {
     // MARK: - Viewer
 
     private func viewImage(metadata: tableMetadata) {
-
         var image: UIImage?
-
         let filePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
 
         if metadata.contentType == "image/gif" {
@@ -238,7 +213,6 @@ class NCViewerProviderContextMenu: UIViewController {
     }
 
     private func viewVideo(metadata: tableMetadata) {
-
         NCNetworking.shared.getVideoUrl(metadata: metadata) { url, _, _ in
             if let url = url {
                 self.player.media = VLCMedia(url: url)
@@ -251,9 +225,7 @@ class NCViewerProviderContextMenu: UIViewController {
     }
 
     private func resize(_ size: CGSize?) -> CGRect {
-
         var frame = CGRect.zero
-
         guard let size = size else {
             preferredContentSize = frame.size
             return frame
@@ -284,9 +256,7 @@ class NCViewerProviderContextMenu: UIViewController {
 }
 
 extension NCViewerProviderContextMenu: VLCMediaPlayerDelegate {
-
     func mediaPlayerStateChanged(_ aNotification: Notification) {
-
         switch player.state {
         case .stopped:
             print("Played mode: STOPPED")

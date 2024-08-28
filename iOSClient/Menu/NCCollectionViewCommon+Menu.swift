@@ -37,18 +37,14 @@ extension NCCollectionViewCommon {
         var actions = [NCMenuAction]()
         let serverUrl = metadata.serverUrl + "/" + metadata.fileName
         var isOffline: Bool = false
+        let applicationHandle = NCApplicationHandle()
+        var iconHeader: UIImage!
 
         if metadata.directory, let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", appDelegate.account, serverUrl)) {
             isOffline = directory.offline
         } else if let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
             isOffline = localFile.offline
         }
-
-        let editors = utility.isDirectEditing(account: metadata.account, contentType: metadata.contentType)
-        let isRichDocument = utility.isRichDocument(metadata)
-        let applicationHandle = NCApplicationHandle()
-
-        var iconHeader: UIImage!
 
         if imageIcon != nil {
             iconHeader = imageIcon!
@@ -175,7 +171,7 @@ extension NCCollectionViewCommon {
                     icon: utility.loadImage(named: "lock", colors: [NCBrandColor.shared.iconImageColor]),
                     order: 30,
                     action: { _ in
-                        NextcloudKit.shared.markE2EEFolder(fileId: metadata.fileId, delete: true) { _, error in
+                        NextcloudKit.shared.markE2EEFolder(fileId: metadata.fileId, delete: true, account: metadata.account) { _, error in
                             if error == .success {
                                 NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, serverUrl))
                                 NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, encrypted: false, account: metadata.account)
@@ -219,39 +215,6 @@ extension NCCollectionViewCommon {
             actions.append(.setAvailableOfflineAction(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: self, order: 60, completion: {
                 self.reloadDataSource()
             }))
-        }
-
-        //
-        // OPEN with external editor
-        //
-        if metadata.canOpenExternalEditor {
-
-            var editor = ""
-            var title = ""
-            var icon: UIImage?
-
-            if editors.contains(NCGlobal.shared.editorOnlyoffice) {
-                editor = NCGlobal.shared.editorOnlyoffice
-                title = NSLocalizedString("_open_in_onlyoffice_", comment: "")
-                icon = utility.loadImage(named: "onlyoffice", colors: [NCBrandColor.shared.iconImageColor])
-            } else if isRichDocument {
-                editor = NCGlobal.shared.editorCollabora
-                title = NSLocalizedString("_open_in_collabora_", comment: "")
-                icon = utility.loadImage(named: "collabora", colors: [NCBrandColor.shared.iconImageColor])
-            }
-
-            if !editor.isEmpty {
-                actions.append(
-                    NCMenuAction(
-                        title: title,
-                        icon: icon!,
-                        order: 70,
-                        action: { _ in
-                            NCViewer().view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon, editor: editor, isRichDocument: isRichDocument)
-                        }
-                    )
-                )
-            }
         }
 
         //

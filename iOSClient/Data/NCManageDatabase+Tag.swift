@@ -26,7 +26,6 @@ import RealmSwift
 import NextcloudKit
 
 class tableTag: Object {
-
     @objc dynamic var account = ""
     @objc dynamic var ocId = ""
     @objc dynamic var tagIOS: Data?
@@ -37,9 +36,7 @@ class tableTag: Object {
 }
 
 extension NCManageDatabase {
-
     func addTag(_ ocId: String, tagIOS: Data?, account: String) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -55,7 +52,6 @@ extension NCManageDatabase {
     }
 
     func deleteTag(_ ocId: String) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -68,7 +64,6 @@ extension NCManageDatabase {
     }
 
     func getTags(predicate: NSPredicate) -> [tableTag] {
-
         do {
             let realm = try Realm()
             realm.refresh()
@@ -77,12 +72,10 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access to database: \(error)")
         }
-
         return []
     }
 
     func getTag(predicate: NSPredicate) -> tableTag? {
-
         do {
             let realm = try Realm()
             realm.refresh()
@@ -91,7 +84,6 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not acess to database: \(error)")
         }
-
         return nil
     }
 }

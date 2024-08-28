@@ -24,7 +24,6 @@
 import UIKit
 
 class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
-
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
@@ -86,10 +85,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         get { return progressView }
         set { progressView = newValue }
     }
-    var fileSelectImage: UIImageView? {
-        get { return imageSelect }
-        set { imageSelect = newValue }
-    }
     var fileStatusImage: UIImageView? {
         get { return imageStatus }
         set { imageStatus = newValue }
@@ -137,12 +132,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         longPressedGesture.delaysTouchesBegan = true
         self.addGestureRecognizer(longPressedGesture)
 
-        let longPressedGestureMore = UILongPressGestureRecognizer(target: self, action: #selector(longPressInsideMore(gestureRecognizer:)))
-        longPressedGestureMore.minimumPressDuration = 0.5
-        longPressedGestureMore.delegate = self
-        longPressedGestureMore.delaysTouchesBegan = true
-        buttonMore.addGestureRecognizer(longPressedGestureMore)
-
         separator.backgroundColor = .separator
         separatorHeightConstraint.constant = 0.5
 
@@ -180,10 +169,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 
     @IBAction func touchUpInsideMore(_ sender: Any) {
         listCellDelegate?.tapMoreListItem(with: objectId, namedButtonMore: namedButtonMore, image: imageItem.image, indexPath: indexPath, sender: sender)
-    }
-
-    @objc func longPressInsideMore(gestureRecognizer: UILongPressGestureRecognizer) {
-        listCellDelegate?.longPressMoreListItem(with: objectId, namedButtonMore: namedButtonMore, indexPath: indexPath, gestureRecognizer: gestureRecognizer)
     }
 
     @objc func longPress(gestureRecognizer: UILongPressGestureRecognizer) {
@@ -235,8 +220,8 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         separator.isHidden = status
     }
 
-    func selectMode(_ status: Bool) {
-        if status {
+    func selected(_ status: Bool, isEditMode: Bool) {
+        if isEditMode {
             imageItemLeftConstraint.constant = 45
             imageSelect.isHidden = false
             imageShared.isHidden = true
@@ -254,29 +239,13 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             backgroundView = nil
             setA11yActions()
         }
-    }
-
-    func selected(_ status: Bool) {
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(objectId), !metadata.isInTransfer else {
-            backgroundView = nil
-            separator.isHidden = false
-            return
-        }
         if status {
-            var blurEffect: UIVisualEffect?
             var blurEffectView: UIView?
-            imageSelect.image = NCImageCache.images.checkedYes
-            if traitCollection.userInterfaceStyle == .dark {
-                blurEffect = UIBlurEffect(style: .dark)
-                blurEffectView = UIVisualEffectView(effect: blurEffect)
-                blurEffectView?.backgroundColor = .black
-            } else {
-                blurEffect = UIBlurEffect(style: .extraLight)
-                blurEffectView = UIVisualEffectView(effect: blurEffect)
-                blurEffectView?.backgroundColor = .lightGray
-            }
+            blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .systemMaterial))
+            blurEffectView?.backgroundColor = .lightGray
             blurEffectView?.frame = self.bounds
             blurEffectView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+            imageSelect.image = NCImageCache.images.checkedYes
             backgroundView = blurEffectView
             separator.isHidden = true
         } else {
@@ -284,6 +253,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             backgroundView = nil
             separator.isHidden = false
         }
+
     }
 
     func writeInfoDateSize(date: NSDate, size: Int64) {
@@ -338,25 +308,13 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 protocol NCListCellDelegate: AnyObject {
     func tapShareListItem(with objectId: String, indexPath: IndexPath, sender: Any)
     func tapMoreListItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any)
-    func longPressMoreListItem(with objectId: String, namedButtonMore: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer)
     func longPressListItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer)
-}
-
-// optional func
-extension NCListCellDelegate {
-    func tapShareListItem(with objectId: String, indexPath: IndexPath, sender: Any) {}
-    func tapMoreListItem(with objectId: String, namedButtonMore: String, image: UIImage?, indexPath: IndexPath, sender: Any) {}
-    func longPressMoreListItem(with objectId: String, namedButtonMore: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {}
-    func longPressListItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {}
 }
 
 // MARK: - List Layout
 
 class NCListLayout: UICollectionViewFlowLayout {
-
     var itemHeight: CGFloat = 60
-
-    // MARK: - View Life Cycle
 
     override init() {
         super.init()
@@ -380,8 +338,6 @@ class NCListLayout: UICollectionViewFlowLayout {
                 let itemWidth: CGFloat = collectionView.frame.width
                 return CGSize(width: itemWidth, height: self.itemHeight)
             }
-
-            // Default fallback
             return CGSize(width: 100, height: 100)
         }
         set {

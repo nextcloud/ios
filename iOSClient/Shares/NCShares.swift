@@ -56,15 +56,7 @@ class NCShares: NCCollectionViewCommon {
         var metadatas: [tableMetadata] = []
 
         func reload() {
-            self.dataSource = NCDataSource(metadatas: metadatas,
-                                           account: appDelegate.account,
-                                           sort: layoutForView?.sort,
-                                           ascending: layoutForView?.ascending,
-                                           directoryOnTop: layoutForView?.directoryOnTop,
-                                           favoriteOnTop: true,
-                                           groupByField: groupByField,
-                                           providers: providers,
-                                           searchResults: searchResults)
+            self.dataSource = NCDataSource(metadatas: metadatas, account: appDelegate.account, layoutForView: layoutForView, providers: providers, searchResults: searchResults)
             DispatchQueue.main.async {
                 self.refreshControl.endRefreshing()
                 self.collectionView.reloadData()
@@ -79,7 +71,7 @@ class NCShares: NCCollectionViewCommon {
                 }
             } else {
                 let serverUrlFileName = share.serverUrl + "/" + share.fileName
-                NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName) { task in
+                NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: appDelegate.account) { task in
                     self.dataSourceTask = task
                     self.collectionView.reloadData()
                 } completion: { _, metadata, _ in
@@ -100,7 +92,7 @@ class NCShares: NCCollectionViewCommon {
     override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
         super.reloadDataSourceNetwork()
 
-        NextcloudKit.shared.readShares(parameters: NKShareParameter()) { task in
+        NextcloudKit.shared.readShares(parameters: NKShareParameter(), account: appDelegate.account) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()
         } completion: { account, shares, _, error in

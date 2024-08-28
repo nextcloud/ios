@@ -46,7 +46,7 @@ class NotificationService: UNNotificationServiceExtension {
                         if var json = try JSONSerialization.jsonObject(with: data) as? [String: AnyObject],
                            let subject = json["subject"] as? String {
                             bestAttemptContent.body = subject
-                            if let pref = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroups) {
+                            if let pref = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) {
                                 json["account"] = tableAccount.account as AnyObject
                                 pref.set(json, forKey: "NOTIFICATION_DATA")
                                 pref.synchronize()

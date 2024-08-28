@@ -21,6 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+import UIKit
 import WidgetKit
 
 struct ToolbarDataEntry: TimelineEntry {
@@ -33,7 +34,6 @@ struct ToolbarDataEntry: TimelineEntry {
 }
 
 func getToolbarDataEntry(isPreview: Bool, completion: @escaping (_ entry: ToolbarDataEntry) -> Void) {
-
     var userId = ""
     var url = ""
 

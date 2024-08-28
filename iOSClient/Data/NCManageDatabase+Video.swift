@@ -27,7 +27,6 @@ import NextcloudKit
 
 typealias tableVideo = tableVideoV4
 class tableVideoV4: Object {
-
     @Persisted var account = ""
     @Persisted(primaryKey: true) var ocId = ""
     @Persisted var position: Float?
@@ -45,9 +44,7 @@ class tableVideoV4: Object {
 }
 
 extension NCManageDatabase {
-
     func addVideo(metadata: tableMetadata, position: Float? = nil, width: Int? = nil, height: Int? = nil, length: Int? = nil, currentAudioTrackIndex: Int? = nil, currentVideoSubTitleIndex: Int? = nil) {
-
         if metadata.isLivePhoto { return }
 
         do {
@@ -104,7 +101,6 @@ extension NCManageDatabase {
     }
 
     func addVideoCodec(metadata: tableMetadata, codecNameVideo: String?, codecNameAudio: String?, codecAudioChannelLayout: String?, codecAudioLanguage: String?, codecMaxCompatibility: Bool, codecQuality: String?) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -135,7 +131,6 @@ extension NCManageDatabase {
     }
 
     func getVideo(metadata: tableMetadata?) -> tableVideo? {
-
         guard let metadata = metadata else { return nil }
 
         do {
@@ -146,12 +141,10 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return nil
     }
 
     func deleteVideo(metadata: tableMetadata) {
-
         do {
             let realm = try Realm()
             try realm.write {

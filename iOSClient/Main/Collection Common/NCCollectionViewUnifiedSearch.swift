@@ -24,10 +24,9 @@
 import Foundation
 import Queuer
 import NextcloudKit
-import Realm
+import RealmSwift
 
 class NCCollectionViewUnifiedSearch: ConcurrentOperation {
-
     var collectionViewCommon: NCCollectionViewCommon
     var metadatas: [tableMetadata]
     var searchResult: NKSearchResult
@@ -48,7 +47,6 @@ class NCCollectionViewUnifiedSearch: ConcurrentOperation {
     }
 
     override func start() {
-
         guard !isCancelled else { return self.finish() }
 
         self.collectionViewCommon.dataSource.addSection(metadatas: metadatas, searchResult: searchResult)

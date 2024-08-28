@@ -50,12 +50,10 @@ class NCShareCell: UITableViewCell {
 
         if let image = UIImage.downsample(imageAt: URL(fileURLWithPath: NSTemporaryDirectory() + fileName), to: CGSize(width: 80, height: 80)) {
             imageCell.image = image
+            imageCell.contentMode = .scaleAspectFill
         } else {
-            if !resultInternalType.iconName.isEmpty {
-                imageCell?.image = UIImage(named: resultInternalType.iconName)
-            } else {
-                imageCell?.image = NCImageCache.images.file
-            }
+            imageCell.image = utility.loadImage(named: resultInternalType.iconName, useTypeIconFile: true)
+            imageCell.contentMode = .scaleAspectFit
         }
 
         fileNameCell?.text = fileName

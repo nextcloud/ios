@@ -26,7 +26,6 @@ import RealmSwift
 import NextcloudKit
 
 class TableSecurityGuardDiagnostics: Object {
-
     @Persisted var account = ""
     @Persisted(primaryKey: true) var primaryKey = ""
     @Persisted var issue: String = ""
@@ -48,9 +47,7 @@ class TableSecurityGuardDiagnostics: Object {
 }
 
 extension NCManageDatabase {
-
     func addDiagnostic(account: String, issue: String, error: String? = nil) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -69,7 +66,6 @@ extension NCManageDatabase {
     }
 
     func existsDiagnostics(account: String) -> Bool {
-
         do {
             let realm = try Realm()
             let results = realm.objects(TableSecurityGuardDiagnostics.self).where({
@@ -79,12 +75,10 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return false
     }
 
     func getDiagnostics(account: String, issue: String) -> Results<TableSecurityGuardDiagnostics>? {
-
         do {
             let realm = try Realm()
             let results = realm.objects(TableSecurityGuardDiagnostics.self).where({
@@ -94,12 +88,10 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return nil
     }
 
     func deleteDiagnostics(account: String, ids: [ObjectId]) {
-
         do {
             let realm = try Realm()
             try realm.write {

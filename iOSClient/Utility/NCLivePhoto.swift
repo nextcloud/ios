@@ -11,6 +11,7 @@ import AVFoundation
 import MobileCoreServices
 import Photos
 import NextcloudKit
+import UniformTypeIdentifiers
 
 class NCLivePhoto {
 
@@ -157,27 +158,20 @@ class NCLivePhoto {
     }
 
     private func saveAssetResource(_ resource: PHAssetResource, to directory: URL, resourceData: Data) -> URL? {
-        let fileExtension = UTTypeCopyPreferredTagWithClass(resource.uniformTypeIdentifier as CFString, kUTTagClassFilenameExtension)?.takeRetainedValue()
-
-        guard let ext = fileExtension else {
-            return nil
-        }
-
+        guard let ext = UTType(tag: resource.uniformTypeIdentifier, tagClass: .filenameExtension, conformingTo: nil)?.identifier else { return nil }
         var fileUrl = directory.appendingPathComponent(NSUUID().uuidString)
         fileUrl = fileUrl.appendingPathExtension(ext as String)
-
         do {
             try resourceData.write(to: fileUrl, options: [Data.WritingOptions.atomic])
         } catch {
             print("Could not save resource \(resource) to filepath \(String(describing: fileUrl))")
             return nil
         }
-
         return fileUrl
     }
 
     func addAssetID(_ assetIdentifier: String, toImage imageURL: URL, saveTo destinationURL: URL) -> URL? {
-        guard let imageDestination = CGImageDestinationCreateWithURL(destinationURL as CFURL, kUTTypeJPEG, 1, nil),
+        guard let imageDestination = CGImageDestinationCreateWithURL(destinationURL as CFURL, UTType.jpeg.identifier as CFString, 1, nil),
             let imageSource = CGImageSourceCreateWithURL(imageURL as CFURL, nil),
             var imageProperties = CGImageSourceCopyPropertiesAtIndex(imageSource, 0, nil) as? [AnyHashable: Any] else { return nil }
         let assetIdentifierKey = "17"
@@ -469,9 +463,18 @@ fileprivate extension AVAsset {
 }
 
 extension NCLivePhoto {
+    func setLivephoto(serverUrlfileNamePath: String,
+                      livePhotoFile: String,
+                      account: String,
+                      options: NKRequestOptions = NKRequestOptions()) async -> (account: String, error: NKError) {
+        await withUnsafeContinuation({ continuation in
+            NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: livePhotoFile, account: account, options: options) { account, error in
+                continuation.resume(returning: (account: account, error: error))
+            }
+        })
+    }
 
     func setLivephotoUpload(metadata: tableMetadata) {
-
         guard NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion28 else { return }
 
         livePhotoFile = metadata.livePhotoFile
@@ -488,33 +491,31 @@ extension NCLivePhoto {
         guard metadata.isLivePhoto,
               !livePhotoFile.isEmpty,
               let metadata2 = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND urlBase == %@ AND path == %@ AND fileName == %@ AND status == %d", metadata.account, metadata.urlBase, metadata.path, livePhotoFile, NCGlobal.shared.metadataStatusNormal)) else { return }
-
         let serverUrlfileNamePath1 = metadata.urlBase + metadata.path + metadata.fileName
         let serverUrlfileNamePath2 = metadata2.urlBase + metadata2.path + livePhotoFile
 
         Task {
             if metadata.livePhotoFile.isEmpty {
-                _ = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath1, livePhotoFile: livePhotoFile)
+                _ = await setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath1, livePhotoFile: livePhotoFile, account: metadata.account)
             }
             if metadata2.livePhotoFile.isEmpty {
-                _ = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath2, livePhotoFile: livePhotoFile2)
+                _ = await setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath2, livePhotoFile: livePhotoFile2, account: metadata2.account)
             }
         }
     }
 
     func setLivePhoto(metadata1: tableMetadata, metadata2: tableMetadata) {
-
         guard NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion28,
               (!metadata1.livePhotoFile.isEmpty && !metadata2.livePhotoFile.isEmpty) else { return }
 
         Task {
             if metadata1.livePhotoFile.isEmpty {
                 let serverUrlfileNamePath = metadata1.urlBase + metadata1.path + metadata1.fileName
-                _ = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: metadata2.fileName)
+                _ = await setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: metadata2.fileName, account: metadata2.account)
             }
             if metadata2.livePhotoFile.isEmpty {
                 let serverUrlfileNamePath = metadata2.urlBase + metadata2.path + metadata2.fileName
-                _ = await NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: metadata1.fileName)
+                _ = await setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: metadata1.fileName, account: metadata1.account)
             }
         }
     }

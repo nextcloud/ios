@@ -30,8 +30,7 @@ protocol NCTrashCellProtocol {
     var imageItem: UIImageView! { get set }
     var indexPath: IndexPath { get set }
 
-    func selectMode(_ status: Bool)
-    func selected(_ status: Bool)
+    func selected(_ status: Bool, isEditMode: Bool)
 }
 
 extension NCTrashCellProtocol where Self: UICollectionViewCell {
@@ -40,13 +39,13 @@ extension NCTrashCellProtocol where Self: UICollectionViewCell {
         self.labelTitle.text = tableTrash.trashbinFileName
         self.labelTitle.textColor = NCBrandColor.shared.textColor
         if self is NCTrashListCell {
-            self.labelInfo?.text = NCUtility().dateDiff(tableTrash.date as Date)
+            self.labelInfo?.text = NCUtility().dateDiff(tableTrash.trashbinDeletionTime as Date)
         } else {
             let dateFormatter = DateFormatter()
             dateFormatter.dateStyle = .short
             dateFormatter.timeStyle = .none
             dateFormatter.locale = Locale.current
-            self.labelInfo?.text = dateFormatter.string(from: tableTrash.date as Date)
+            self.labelInfo?.text = dateFormatter.string(from: tableTrash.trashbinDeletionTime as Date)
         }
         if tableTrash.directory {
             self.imageItem.image = NCImageCache.images.folder

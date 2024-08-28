@@ -46,8 +46,8 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     internal var itemsDestination: [String] = []
 
     internal let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-    let utilityFileSystem = NCUtilityFileSystem()
-    let utility = NCUtility()
+    internal let utilityFileSystem = NCUtilityFileSystem()
+    internal let utility = NCUtility()
     internal var filter: NCGlobal.TypeFilterScanDocument = NCKeychain().typeFilterScanDocument
 
     // MARK: - View Life Cycle
@@ -155,36 +155,23 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     }
 
     @IBAction func add(sender: UIButton) {
-
         // TIP
         dismissTip()
-
         NCDocumentCamera.shared.openScannerDocument(viewController: self)
     }
 
     @IBAction func transferDown(sender: UIButton) {
-
         for fileName in itemsSource where !itemsDestination.contains(fileName) {
-
             let fileNamePathAt = utilityFileSystem.directoryScan + "/" + fileName
             guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNamePathAt)), let image = UIImage(data: data) else { return }
 
             imagesDestination.append(image)
             itemsDestination.append(fileName)
         }
-
-        // Save button
-        if imagesDestination.isEmpty {
-            save.isEnabled = false
-        } else {
-            save.isEnabled = true
-        }
-
         collectionViewDestination.reloadData()
     }
 
     @IBAction func indexChanged(_ sender: AnyObject) {
-
         switch segmentControlFilter.selectedSegmentIndex {
         case 0:
             filter = .document
@@ -199,9 +186,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     }
 
     func loadImage() {
-
         itemsSource.removeAll()
-
         do {
             let atPath = utilityFileSystem.directoryScan
             let directoryContents = try FileManager.default.contentsOfDirectory(atPath: atPath)
@@ -215,30 +200,9 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
         itemsSource = itemsSource.sorted()
 
         collectionViewSource.reloadData()
-
-        // Save button
-        if imagesDestination.isEmpty {
-            save.isEnabled = false
-        } else {
-            save.isEnabled = true
-        }
     }
 
-    /*
-     func applyGrayScaleFilter(image: UIImage?) -> UIImage? {
-             guard let ciImage = image?.ciImage else { return nil }
-             let filter = CIFilter(name: "CIColorControls",
-                                   parameters: ["inputImage" : ciImage,
-                                                "inputContrast": NSNumber(1.0),
-                                                "inputSaturation": NSNumber(0.0),
-                                                "inputBrightness": NSNumber(0.0)])
-             guard let out = filter?.outputImage else { return nil }
-             return UIImage(ciImage: out)
-         }
-     */
-
     func filter(image: UIImage) -> UIImage? {
-
         guard let ciImage = CIImage(image: image) else { return image }
 
         if filter == .document {
@@ -256,11 +220,9 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     // collectionView: collectionView in which reordering needs to be done.
 
     func reorderItems(coordinator: UICollectionViewDropCoordinator, destinationIndexPath: IndexPath, collectionView: UICollectionView) {
-
         let items = coordinator.items
 
         if items.count == 1, let item = items.first, let sourceIndexPath = item.sourceIndexPath {
-
             var dIndexPath = destinationIndexPath
 
             if dIndexPath.row >= collectionView.numberOfItems(inSection: 0) {
@@ -268,22 +230,16 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
             }
 
             collectionView.performBatchUpdates({
-
                 if collectionView === collectionViewDestination {
-
                     imagesDestination.remove(at: sourceIndexPath.row)
                     imagesDestination.insert((item.dragItem.localObject as? UIImage)!, at: dIndexPath.row)
-
                     let fileName = itemsDestination[sourceIndexPath.row]
                     itemsDestination.remove(at: sourceIndexPath.row)
                     itemsDestination.insert(fileName, at: dIndexPath.row)
-
                 } else {
-
                     itemsSource.remove(at: sourceIndexPath.row)
                     itemsSource.insert((item.dragItem.localObject as? String)!, at: dIndexPath.row)
                 }
-
                 collectionView.deleteItems(at: [sourceIndexPath])
                 collectionView.insertItems(at: [dIndexPath])
             })
@@ -294,69 +250,46 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
 
     func copyItems(coordinator: UICollectionViewDropCoordinator, destinationIndexPath: IndexPath, collectionView: UICollectionView) {
         collectionView.performBatchUpdates({
-
             var indexPaths: [IndexPath] = []
 
             for (index, item) in coordinator.items.enumerated() {
-
                 let indexPath = IndexPath(row: destinationIndexPath.row + index, section: destinationIndexPath.section)
 
                 if collectionView === collectionViewDestination {
-
                     let fileName = (item.dragItem.localObject as? String)!
                     let fileNamePathAt = utilityFileSystem.directoryScan + "/" + fileName
-
                     guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNamePathAt)), let image = UIImage(data: data) else { return }
 
                     imagesDestination.insert(image, at: indexPath.row)
                     itemsDestination.insert(fileName, at: indexPath.row)
-
                 } else {
-
                     // NOT PERMITTED
                     return
                 }
-
                 indexPaths.append(indexPath)
             }
-
             collectionView.insertItems(at: indexPaths)
         })
     }
 
     @objc func handleLongPressGesture(recognizer: UIGestureRecognizer) {
-
         if recognizer.state == UIGestureRecognizer.State.began {
-
             self.becomeFirstResponder()
-
             let pasteboard = UIPasteboard.general
-
             if let recognizerView = recognizer.view, let recognizerSuperView = recognizerView.superview, pasteboard.hasImages {
-
                 UIMenuController.shared.menuItems = [UIMenuItem(title: "Paste", action: #selector(pasteImage))]
                 UIMenuController.shared.showMenu(from: recognizerSuperView, rect: recognizerView.frame)
             }
-
             // TIP
             dismissTip()
         }
     }
 
     @objc func pasteImage() {
-
         let pasteboard = UIPasteboard.general
-
         if pasteboard.hasImages {
-
             guard let image = pasteboard.image?.fixedOrientation() else { return }
-
-            let fileName = CCUtility.createFileName("scan.png", fileDate: Date(),
-                                                    fileType: PHAssetMediaType.image,
-                                                    keyFileName: NCGlobal.shared.keyFileNameMask,
-                                                    keyFileNameType: NCGlobal.shared.keyFileNameType,
-                                                    keyFileNameOriginal: NCGlobal.shared.keyFileNameOriginal,
-                                                    forcedNewFileName: true)!
+            let fileName = utilityFileSystem.createFileName("scan.png", fileDate: Date(), fileType: PHAssetMediaType.image, notUseMask: true)
             let fileNamePath = utilityFileSystem.directoryScan + "/" + fileName
 
             do {
@@ -370,30 +303,19 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     }
 
     func delete(with imageIndex: Int, sender: Any) {
-
         imagesDestination.remove(at: imageIndex)
         itemsDestination.remove(at: imageIndex)
-
-        // Save button
-        if imagesDestination.isEmpty {
-            save.isEnabled = false
-        } else {
-            save.isEnabled = true
-        }
-
         collectionViewDestination.reloadData()
     }
 
-    func rotate(with imageIndex: Int, sender: Any) {
+    func imageTapped(with index: Int, sender: Any) {
+        let fileName = self.itemsSource[index]
+        let fileNamePath = utilityFileSystem.directoryScan + "/" + fileName
+        guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNamePath)), let image = UIImage(data: data) else { return }
 
-        let indexPath = IndexPath(row: imageIndex, section: 0)
-        if let cell = collectionViewDestination.cellForItem(at: indexPath) as? NCScanCell {
-
-            var image = imagesDestination[imageIndex]
-            image = image.rotate(radians: .pi / 2)!
-            imagesDestination[imageIndex] = image
-            cell.customImageView.image = image
-        }
+        imagesDestination.append(image)
+        itemsDestination.append(fileName)
+        collectionViewDestination.reloadData()
     }
 }
 
@@ -432,5 +354,24 @@ extension NCScan: EasyTipViewDelegate {
         }
         appDelegate.tipView?.dismiss()
         appDelegate.tipView = nil
+    }
+}
+
+extension NCScan: NCViewerQuickLookDelegate {
+    func dismissQuickLook(fileNameSource: String, hasChangesQuickLook: Bool) {
+        let fileNameAtPath = NSTemporaryDirectory() + fileNameSource
+        let fileNameToPath = utilityFileSystem.directoryScan + "/" + fileNameSource
+        utilityFileSystem.copyFile(atPath: fileNameAtPath, toPath: fileNameToPath)
+        guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNameToPath)), let image = UIImage(data: data) else { return }
+        var index = 0
+        for fileName in self.itemsDestination {
+            if fileName == fileNameSource {
+                imagesDestination[index] = image
+                index += 1
+                break
+            }
+        }
+        collectionViewSource.reloadData()
+        collectionViewDestination.reloadData()
     }
 }

@@ -21,6 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+import UIKit
 import WidgetKit
 import Intents
 import NextcloudKit
@@ -60,7 +61,6 @@ let filesDatasTest: [FilesData] = [
 ]
 
 func getTitleFilesWidget(account: tableAccount?) -> String {
-
     let hour = Calendar.current.component(.hour, from: Date())
     var good = ""
 
@@ -85,7 +85,6 @@ func getFilesItems(displaySize: CGSize) -> Int {
 }
 
 func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySize: CGSize, completion: @escaping (_ entry: FilesDataEntry) -> Void) {
-
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
     let filesItems = getFilesItems(displaySize: displaySize)
@@ -131,6 +130,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 <d:resourcetype/>
                 <d:getcontentlength/>
                 <d:getlastmodified/>
+                <d:getetag/>
                 <id xmlns=\"http://owncloud.org/ns\"/>
                 <fileid xmlns=\"http://owncloud.org/ns\"/>
                 <size xmlns=\"http://owncloud.org/ns\"/>
@@ -163,7 +163,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
         </d:order>
     </d:orderby>
     <d:limit>
-        <d:nresults>25</d:nresults>
+        <d:nresults>50</d:nresults>
     </d:limit>
     </d:basicsearch>
     </d:searchrequest>
@@ -190,15 +190,15 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
     }
 
     let options = NKRequestOptions(timeout: 30, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-    NextcloudKit.shared.searchBodyRequest(serverUrl: account.urlBase, requestBody: requestBody, showHiddenFiles: NCKeychain().showHiddenFiles, options: options) { _, files, data, error in
+    NextcloudKit.shared.searchBodyRequest(serverUrl: account.urlBase, requestBody: requestBody, showHiddenFiles: NCKeychain().showHiddenFiles, account: account.account, options: options) { _, files, data, error in
         Task {
             var datas: [FilesData] = []
             let title = getTitleFilesWidget(account: account)
             let files = files.sorted(by: { ($0.date as Date) > ($1.date as Date) })
 
             for file in files {
-                var image: UIImage?
                 var useTypeIconFile = false
+                var image: UIImage?
 
                 if file.directory || (!file.livePhotoFile.isEmpty && file.classFile == NKCommon.TypeClassFile.video.rawValue) {
                     continue
@@ -216,17 +216,15 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 guard let url = URL(string: urlString) else { continue }
 
                 // IMAGE
-                if let result = utility.createFilePreviewImage(ocId: file.ocId, etag: file.etag, fileNameView: file.fileName, classFile: file.classFile, status: 0, createPreviewMedia: false) {
-                    image = result
-                } else if file.hasPreview {
-                    let fileNamePathOrFileId = utilityFileSystem.getFileNamePath(file.fileName, serverUrl: file.serverUrl, urlBase: file.urlBase, userId: file.userId)
-                    let fileNamePreviewLocalPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(file.ocId, etag: file.etag)
-                    let fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(file.ocId, etag: file.etag)
+                let fileNamePreviewLocalPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(file.ocId, etag: file.etag)
+                let fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(file.ocId, etag: file.etag)
+                if FileManager.default.fileExists(atPath: fileNameIconLocalPath) {
+                    image = UIImage(contentsOfFile: fileNameIconLocalPath)
+                }
+                if image == nil, file.hasPreview {
                     let sizePreview = NCUtility().getSizePreview(width: Int(file.width), height: Int(file.height))
-                    let (_, _, imageIcon, _, _, _) = await NextcloudKit.shared.downloadPreview(fileNamePathOrFileId: fileNamePathOrFileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, widthPreview: Int(sizePreview.width), heightPreview: Int(sizePreview.height), fileNameIconLocalPath: fileNameIconLocalPath, sizeIcon: NCGlobal.shared.sizeIcon, options: options)
-                    if let result = imageIcon {
-                         image = result
-                    }
+                    let (_, _, imageIcon, _, _, _) = await NCNetworking.shared.downloadPreview(fileId: file.fileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, fileNameIconLocalPath: fileNameIconLocalPath, widthPreview: Int(sizePreview.width), heightPreview: Int(sizePreview.height), sizeIcon: NCGlobal.shared.sizeIcon, account: account.account, options: options)
+                    image = imageIcon
                 }
                 if image == nil {
                     image = utility.loadImage(named: file.iconName, useTypeIconFile: true)
@@ -237,7 +235,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
 
                 // DATA
-                let data = FilesData(id: metadata.ocId, image: image!, title: metadata.fileNameView, subTitle: subTitle, url: url, useTypeIconFile: useTypeIconFile)
+                let data = FilesData(id: metadata.ocId, image: image ?? UIImage(), title: metadata.fileNameView, subTitle: subTitle, url: url, useTypeIconFile: useTypeIconFile)
                 datas.append(data)
                 if datas.count == filesItems { break}
             }

@@ -27,7 +27,6 @@ import NextcloudKit
 
 typealias tableShare = tableShareV2
 class tableShareV2: Object {
-
     @objc dynamic var account = ""
     @objc dynamic var canEdit: Bool = false
     @objc dynamic var canDelete: Bool = false
@@ -75,9 +74,7 @@ class tableShareV2: Object {
 }
 
 extension NCManageDatabase {
-
     func addShare(account: String, home: String, shares: [NKShare]) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -92,7 +89,7 @@ extension NCManageDatabase {
                     object.serverUrl = serverUrl
                     object.canEdit = share.canEdit
                     object.canDelete = share.canDelete
-                    object.date = share.date
+                    object.date = share.date as? NSDate
                     object.displaynameFileOwner = share.displaynameFileOwner
                     object.displaynameOwner = share.displaynameOwner
                     object.expirationDate = share.expirationDate
@@ -122,7 +119,7 @@ extension NCManageDatabase {
                     object.uidOwner = share.uidOwner
                     object.uidFileOwner = share.uidFileOwner
                     object.url = share.url
-                    object.userClearAt = share.userClearAt
+                    object.userClearAt = share.userClearAt as? NSDate
                     object.userIcon = share.userIcon
                     object.userMessage = share.userMessage
                     object.userStatus = share.userStatus
@@ -136,7 +133,6 @@ extension NCManageDatabase {
     }
 
     func getTableShares(account: String) -> [tableShare] {
-
         do {
             let realm = try Realm()
             realm.refresh()
@@ -146,12 +142,10 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return []
     }
 
     func getTableShares(metadata: tableMetadata) -> (firstShareLink: tableShare?, share: [tableShare]?) {
-
         do {
             let realm = try Realm()
             realm.refresh()
@@ -167,12 +161,10 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return (nil, nil)
     }
 
     func getTableShare(account: String, idShare: Int) -> tableShare? {
-
         do {
             let realm = try Realm()
             realm.refresh()
@@ -181,12 +173,10 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return nil
     }
 
     func getTableShares(account: String, serverUrl: String) -> [tableShare] {
-
         do {
             let realm = try Realm()
             realm.refresh()
@@ -196,12 +186,10 @@ extension NCManageDatabase {
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-
         return []
     }
 
     func getTableShares(account: String, serverUrl: String, fileName: String) -> [tableShare] {
-
         do {
             let realm = try Realm()
             realm.refresh()
@@ -216,7 +204,6 @@ extension NCManageDatabase {
     }
 
     func deleteTableShare(account: String, idShare: Int) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -229,7 +216,6 @@ extension NCManageDatabase {
     }
 
     func deleteTableShare(account: String, path: String) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -242,7 +228,6 @@ extension NCManageDatabase {
     }
 
     func deleteTableShare(account: String) {
-
         do {
             let realm = try Realm()
             try realm.write {
@@ -280,5 +265,4 @@ extension NCManageDatabase {
         }
         return true
     }
-
 }

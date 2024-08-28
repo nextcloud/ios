@@ -42,7 +42,7 @@ extension NCShareExtension: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         if kind == UICollectionView.elementKindSectionHeader {
-            guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeaderEmptyData", for: indexPath) as? NCSectionHeaderEmptyData else { return NCSectionHeaderEmptyData() }
+            guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeaderEmptyData", for: indexPath) as? NCSectionFirstHeaderEmptyData else { return NCSectionFirstHeaderEmptyData() }
             if self.dataSourceTask?.state == .running {
                 header.emptyImage.image = utility.loadImage(named: "wifi", colors: [NCBrandColor.shared.brandElement])
                 header.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
@@ -80,7 +80,6 @@ extension NCShareExtension: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath), let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell else {
             return UICollectionViewCell()
         }
@@ -92,7 +91,6 @@ extension NCShareExtension: UICollectionViewDataSource {
         cell.fileUser = metadata.ownerId
         cell.labelTitle.text = metadata.fileNameView
         cell.labelTitle.textColor = NCBrandColor.shared.textColor
-
         cell.imageSelect.image = nil
         cell.imageStatus.image = nil
         cell.imageLocal.image = nil
@@ -101,14 +99,12 @@ extension NCShareExtension: UICollectionViewDataSource {
         cell.imageMore.image = nil
         cell.imageItem.image = nil
         cell.imageItem.backgroundColor = nil
-
         cell.progressView.progress = 0.0
 
         if metadata.directory {
             setupDirectoryCell(cell, indexPath: indexPath, with: metadata)
         }
 
-        // image Favorite
         if metadata.favorite {
             cell.imageFavorite.image = NCImageCache.images.favorite
         }
@@ -117,17 +113,14 @@ extension NCShareExtension: UICollectionViewDataSource {
         cell.backgroundView = nil
         cell.hideButtonMore(true)
         cell.hideButtonShare(true)
-        cell.selectMode(false)
+        cell.selected(false, isEditMode: false)
 
-        // Live Photo
         if metadata.isLivePhoto {
             cell.imageStatus.image = NCImageCache.images.livePhoto
         }
 
-        // Add TAGS
         cell.setTags(tags: Array(metadata.tags))
 
-        // Remove last separator
         cell.separator.isHidden = collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1
 
         return cell
@@ -136,9 +129,10 @@ extension NCShareExtension: UICollectionViewDataSource {
     func setupDirectoryCell(_ cell: NCListCell, indexPath: IndexPath, with metadata: tableMetadata) {
         var isShare = false
         var isMounted = false
+        let permissions = NCPermissions()
         if let metadataFolder = metadataFolder {
-            isShare = metadata.permissions.contains(NCGlobal.shared.permissionShared) && !metadataFolder.permissions.contains(NCGlobal.shared.permissionShared)
-            isMounted = metadata.permissions.contains(NCGlobal.shared.permissionMounted) && !metadataFolder.permissions.contains(NCGlobal.shared.permissionMounted)
+            isShare = metadata.permissions.contains(permissions.permissionShared) && !metadataFolder.permissions.contains(permissions.permissionShared)
+            isMounted = metadata.permissions.contains(permissions.permissionMounted) && !metadataFolder.permissions.contains(permissions.permissionMounted)
         }
 
         if metadata.e2eEncrypted {

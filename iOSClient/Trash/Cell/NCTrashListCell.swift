@@ -31,7 +31,6 @@ protocol NCTrashListCellDelegate: AnyObject {
 }
 
 class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
-
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageItemLeftConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageSelect: UIImageView!
@@ -50,7 +49,15 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
 
     override func awakeFromNib() {
         super.awakeFromNib()
+        initCell()
+    }
 
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        initCell()
+    }
+
+    func initCell() {
         isAccessibilityElement = true
 
         self.accessibilityCustomActions = [
@@ -82,8 +89,8 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
         delegate?.tapRestoreListItem(with: objectId, image: imageItem.image, sender: sender)
     }
 
-    func selectMode(_ status: Bool) {
-        if status {
+    func selected(_ status: Bool, isEditMode: Bool) {
+        if isEditMode {
             imageItemLeftConstraint.constant = 45
             imageSelect.isHidden = false
             imageRestore.isHidden = true
@@ -99,24 +106,13 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
             buttonMore.isHidden = false
             backgroundView = nil
         }
-    }
-
-    func selected(_ status: Bool) {
         if status {
-            var blurEffect: UIVisualEffect?
             var blurEffectView: UIView?
-            imageSelect.image = NCImageCache.images.checkedYes
-            if traitCollection.userInterfaceStyle == .dark {
-                blurEffect = UIBlurEffect(style: .dark)
-                blurEffectView = UIVisualEffectView(effect: blurEffect)
-                blurEffectView?.backgroundColor = .black
-            } else {
-                blurEffect = UIBlurEffect(style: .extraLight)
-                blurEffectView = UIVisualEffectView(effect: blurEffect)
-                blurEffectView?.backgroundColor = .lightGray
-            }
+            blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .systemMaterial))
+            blurEffectView?.backgroundColor = .lightGray
             blurEffectView?.frame = self.bounds
             blurEffectView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+            imageSelect.image = NCImageCache.images.checkedYes
             backgroundView = blurEffectView
             separator.isHidden = true
         } else {
@@ -124,5 +120,6 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
             backgroundView = nil
             separator.isHidden = false
         }
+
     }
 }

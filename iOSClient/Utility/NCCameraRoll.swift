@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import Photos
 import NextcloudKit
 
 class NCCameraRoll: NSObject {

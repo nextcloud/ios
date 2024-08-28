@@ -198,7 +198,7 @@ extension NCViewer {
         //
         // PDF
         //
-        if metadata.contentType == "com.adobe.pdf" || metadata.contentType == "application/pdf" {
+        if metadata.isPDF {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_search_", comment: ""),

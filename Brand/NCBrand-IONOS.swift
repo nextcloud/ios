@@ -6,6 +6,7 @@
 //  Copyright © 2024 Viseven Europe OÜ. All rights reserved.
 //
 
+import Foundation
 
 @objc class NCBrandOptionsIONOS: NCBrandOptions {
     
@@ -18,6 +19,6 @@
         disable_intro = true
         disable_request_login_url = true
 
-        capabilitiesGroups = "group.com.viseven.ionos.easystorage"
+        capabilitiesGroup = "group.com.viseven.ionos.easystorage"
     }
 }
