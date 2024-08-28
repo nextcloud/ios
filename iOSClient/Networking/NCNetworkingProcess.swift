@@ -46,7 +46,7 @@ class NCNetworkingProcess {
     private func startObserveTableMetadata() {
         do {
             let realm = try Realm()
-            let results = realm.objects(tableMetadata.self).filter("status IN %d", [global.metadataStatusWaitDownload, global.metadataStatusWaitUpload])
+            let results = realm.objects(tableMetadata.self).filter("status IN %d", [global.metadataStatusWaitDownload, global.metadataStatusWaitUpload, global.metadataStatusWaitCreateFolder])
             notificationToken = results.observe { [weak self] (changes: RealmCollectionChange) in
                 switch changes {
                 case .initial:
