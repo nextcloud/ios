@@ -202,7 +202,7 @@ extension NCMenuAction {
             order: order,
             action: { _ in
                 var fileNameError: NKError?
-                
+
                 for metadata in selectedMetadatas {
                     if let sceneIdentifier = metadata.sceneIdentifier,
                        let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier),

@@ -183,7 +183,7 @@ extension NCNetworking {
 
     func createFolder(fileName: String,
                       serverUrl: String,
-                      overwrite: Bool = false,
+                      overwrite: Bool,
                       withPush: Bool,
                       metadata: tableMetadata? = nil,
                       sceneIdentifier: String?,
@@ -246,15 +246,6 @@ extension NCNetworking {
         let fileNameFolderUrl = serverUrl + "/" + fileNameFolder
 
         NextcloudKit.shared.createFolder(serverUrlFileName: fileNameFolderUrl, account: session.account) { account, _, _, error in
-            guard error == .success else {
-                if error.errorCode == self.global.errorMethodNotSupported && overwrite {
-                    completion(error)
-                } else {
-                    completion(error)
-                }
-                return
-            }
-
             self.readFile(serverUrlFileName: fileNameFolderUrl, account: account) { account, metadataFolder, error in
                 if error == .success {
                     if let metadata = metadataFolder {

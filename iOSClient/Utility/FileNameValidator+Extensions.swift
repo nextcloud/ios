@@ -15,7 +15,7 @@ extension FileNameValidator {
         let capabilities = NCCapabilities.shared.getCapabilities(account: account)
         FileNameValidator.shared.setup(forbiddenFileNames: capabilities.capabilityForbiddenFileNames, forbiddenFileNameBasenames: capabilities.capabilityForbiddenFileNameBasenames, forbiddenFileNameCharacters: capabilities.capabilityForbiddenFileNameCharacters, forbiddenFileNameExtensions: capabilities.capabilityForbiddenFileNameExtensions)
     }
-    
+
     func checkFileName(_ filename: String, account: String?) -> NKError? {
         setup(account: account)
         return FileNameValidator.shared.checkFileName(filename)
