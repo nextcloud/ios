@@ -487,7 +487,7 @@ extension NCNetworking {
                         self.database.setDirectory(serverUrl: serverUrl,
                                                    serverUrlTo: serverUrlTo,
                                                    etag: "",
-                                                   encrypted:directory.e2eEncrypted,
+                                                   encrypted: directory.e2eEncrypted,
                                                    account: metadata.account)
                     }
                 } else {

@@ -37,7 +37,7 @@ class NCCameraRoll: NSObject {
             chunkSize = NCGlobal.shared.chunkSizeMBEthernetOrWiFi
         }
         guard !metadata.isExtractFile else { return  completition([metadataSource]) }
-        
+
         guard !metadataSource.assetLocalIdentifier.isEmpty else {
             let filePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadataSource.ocId, fileNameView: metadataSource.fileName)
             metadataSource.size = utilityFileSystem.getFileSize(filePath: filePath)
