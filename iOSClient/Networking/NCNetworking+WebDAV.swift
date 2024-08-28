@@ -191,7 +191,7 @@ extension NCNetworking {
         let isDirectoryEncrypted = utilityFileSystem.isDirectoryE2EE(session: session, serverUrl: serverUrl)
         let fileName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        if NCNetworking.shared.networkReachability == NKCommon.TypeReachability.notReachable {
+        if isOffline {
             createFolderOffline(fileName: fileName, serverUrl: serverUrl, overwrite: overwrite, withPush: withPush, sceneIdentifier: sceneIdentifier, session: session, completion: completion)
         } else if isDirectoryEncrypted {
 #if !EXTENSION

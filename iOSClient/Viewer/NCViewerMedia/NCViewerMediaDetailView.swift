@@ -98,7 +98,7 @@ class NCViewerMediaDetailView: UIView {
         outerMapContainer.isHidden = true
         downloadImageButtonContainer.isHidden = true
 
-        if let latitude = exif.latitude, let longitude = exif.longitude, NCNetworking.shared.networkReachability != .notReachable {
+        if let latitude = exif.latitude, let longitude = exif.longitude, NCNetworking.shared.isOnline {
             // We hide the map view on phones in landscape (aka compact height), since there is too little space to fit all of it.
             mapContainer.isHidden = traitCollection.verticalSizeClass == .compact
 

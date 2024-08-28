@@ -35,7 +35,7 @@ class NCAutoUpload: NSObject {
     // MARK: -
 
     func initAutoUpload(viewController: UIViewController?, account: String, completion: @escaping (_ num: Int) -> Void) {
-        guard NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi,
+        guard NCNetworking.shared.isOnline,
               let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
               tableAccount.autoUpload else {
             return completion(0)

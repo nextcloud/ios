@@ -56,7 +56,7 @@ class NCNetworkingProcess {
                         guard let self else { return }
 
                         self.lockQueue.sync {
-                            guard !self.hasRun, NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi else { return }
+                            guard !self.hasRun, NCNetworking.shared.isOnline else { return }
                             self.hasRun = true
 
                             Task { [weak self] in
@@ -80,7 +80,7 @@ class NCNetworkingProcess {
         self.timerProcess = Timer.scheduledTimer(withTimeInterval: 2, repeats: true, block: { _ in
 
             self.lockQueue.sync {
-                guard !self.hasRun, NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi else { return }
+                guard !self.hasRun, NCNetworking.shared.isOnline else { return }
                 self.hasRun = true
 
                 guard let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status != %d", NCGlobal.shared.metadataStatusNormal)) else { return }
@@ -270,7 +270,7 @@ class NCNetworkingProcess {
     func refreshProcessingTask() async -> (counterDownloading: Int, counterUploading: Int) {
         await withCheckedContinuation { continuation in
             self.lockQueue.sync {
-                guard !self.hasRun, NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi else { return }
+                guard !self.hasRun, NCNetworking.shared.isOnline else { return }
                 self.hasRun = true
 
                 Task { [weak self] in
