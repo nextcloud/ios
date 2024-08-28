@@ -220,7 +220,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.fileInfoLabel?.text = metadata.subline
             }
             cell.fileSubinfoLabel?.isHidden = true
-        } else if !metadata.sessionError.isEmpty {
+        } else if !metadata.sessionError.isEmpty, metadata.status != NCGlobal.shared.metadataStatusNormal {
             cell.fileSubinfoLabel?.isHidden = false
             cell.fileInfoLabel?.text = metadata.sessionError
         } else {
