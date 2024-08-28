@@ -253,7 +253,7 @@ class NCGlobal: NSObject {
     let metadataStatusUploading: Int            = 2
     let metadataStatusUploadError: Int          = 3
 
-    let metadataStatusWaitCreateFolder: Int     = 4
+    let metadataStatusWaitCreateFolder: Int     = 10
 
     //  Hidden files included in the read
     //
