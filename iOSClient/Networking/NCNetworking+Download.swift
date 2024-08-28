@@ -132,7 +132,7 @@ extension NCNetworking {
 
         start()
 
-        if let task = nkBackground.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account) {
+        if let task = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account) {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Download file \(metadata.fileNameView) with task with taskIdentifier \(task.taskIdentifier)")
             database.setMetadataSession(ocId: metadata.ocId,
                                         sessionTaskIdentifier: task.taskIdentifier,

@@ -246,7 +246,7 @@ extension NCNetworking {
         NextcloudKit.shared.createFolder(serverUrlFileName: fileNameFolderUrl, account: session.account) { account, _, _, error in
             guard error == .success else {
                 if error.errorCode == self.global.errorMethodNotSupported && overwrite {
-                    completion(NKError())
+                    completion(error)
                 } else {
                     completion(error)
                 }

@@ -37,6 +37,7 @@ class NCNetworkingProcess {
     private let global = NCGlobal.shared
     private var timerProcess: Timer?
     private let hud: JGProgressHUD = JGProgressHUD()
+    private var messageErrorCreateFolderOffline: Bool = false
 
     private init() {
         self.startTimer()
@@ -77,7 +78,7 @@ class NCNetworkingProcess {
 
     private func startTimer() {
         self.timerProcess?.invalidate()
-        self.timerProcess = Timer.scheduledTimer(withTimeInterval: 2, repeats: true, block: { _ in
+        self.timerProcess = Timer.scheduledTimer(withTimeInterval: 3, repeats: true, block: { _ in
 
             self.lockQueue.sync {
                 guard !self.hasRun, NCNetworking.shared.isOnline else { return }
@@ -135,8 +136,17 @@ class NCNetworkingProcess {
             for metadata in metadatasWaitCreateFolder {
                 let session = NCSession.shared.getSession(account: metadata.account)
                 let error = await NCNetworking.shared.createFolder(fileName: metadata.fileName, serverUrl: metadata.serverUrl, overwrite: true, withPush: false, sceneIdentifier: metadata.sceneIdentifier, session: session)
-                print(error)
+                if error != .success {
+                    if !self.messageErrorCreateFolderOffline {
+                        let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+                        let message = String(format: NSLocalizedString("_offlinefolder_error_", comment: ""), serverUrlFileName)
+                        NCContentPresenter().messageNotification(message, error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
+                        self.messageErrorCreateFolderOffline = true
+                    }
+                    return (counterDownloading, counterUploading)
+                }
             }
+            self.messageErrorCreateFolderOffline = false
         }
 
         /// ------------------------ DOWNLOAD

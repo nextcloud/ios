@@ -75,10 +75,7 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
     weak var certificateDelegate: ClientCertificateDelegate?
     var p12Data: Data?
     var p12Password: String?
-    lazy var nkBackground: NKBackground = {
-        let nckb = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance)
-        return nckb
-    }()
+
     var isOffline: Bool {
         return networkReachability == NKCommon.TypeReachability.notReachable || networkReachability == NKCommon.TypeReachability.unknown
     }

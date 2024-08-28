@@ -27,7 +27,6 @@ import CFNetwork
 import NextcloudKit
 
 class NCContentPresenter: NSObject {
-
     typealias MainFont = Font.HelveticaNeue
     enum Font {
         enum HelveticaNeue: String {
