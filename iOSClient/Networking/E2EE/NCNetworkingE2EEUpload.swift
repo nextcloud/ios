@@ -193,7 +193,7 @@ class NCNetworkingE2EEUpload: NSObject {
         if let afError = resultsSendFile.afError, afError.isExplicitlyCancelledError {
 
             utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            NCManageDatabase.shared.deleteMetadataOcId(metadata.ocId)
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile,
                                                         object: nil,
                                                         userInfo: ["ocId": metadata.ocId,
@@ -206,7 +206,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
         } else if resultsSendFile.error == .success, let ocId = resultsSendFile.ocId {
 
-            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            NCManageDatabase.shared.deleteMetadataOcId(metadata.ocId)
             utilityFileSystem.moveFileInBackground(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId), toPath: utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
 
             metadata.date = (resultsSendFile.date as? NSDate) ?? NSDate()

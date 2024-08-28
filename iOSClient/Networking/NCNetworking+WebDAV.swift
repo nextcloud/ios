@@ -353,11 +353,11 @@ extension NCNetworking {
 #endif
             func delete(metadata: tableMetadata) {
                 if let metadataLive = self.database.getMetadataLivePhoto(metadata: metadata) {
-                    self.database.deleteLocalFile(predicate: NSPredicate(format: "account == %@ AND ocId == %@", metadataLive.account, metadataLive.ocId))
+                    self.database.deleteLocalFileOcId(metadataLive.ocId)
                     utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId))
                 }
                 self.database.deleteVideo(metadata: metadata)
-                self.database.deleteLocalFile(predicate: NSPredicate(format: "account == %@ AND ocId == %@", metadata.account, metadata.ocId))
+                self.database.deleteLocalFileOcId(metadata.ocId)
                 utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
             }
 
@@ -374,10 +374,13 @@ extension NCNetworking {
 #if !EXTENSION
             NCActivityIndicator.shared.stop()
 #endif
-            return NKError()
+            return .success
         }
 
-        if metadata.isDirectoryE2EE {
+        if metadata.status == NCGlobal.shared.metadataStatusWaitCreateFolder {
+            NCManageDatabase.shared.deleteMetadataOcId(metadata.ocId)
+            return .success
+        } else if metadata.isDirectoryE2EE {
 #if !EXTENSION
             if let metadataLive = self.database.getMetadataLivePhoto(metadata: metadata) {
                 let error = await NCNetworkingE2EEDelete().delete(metadata: metadataLive)
@@ -422,8 +425,8 @@ extension NCNetworking {
             } catch { }
 
             self.database.deleteVideo(metadata: metadata)
-            self.database.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            self.database.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            self.database.deleteMetadataOcId(metadata.ocId)
+            self.database.deleteLocalFileOcId(metadata.ocId)
             // LIVE PHOTO SERVER
             if let metadataLive = self.database.getMetadataLivePhoto(metadata: metadata), metadataLive.isFlaggedAsLivePhotoByServer {
                 do {
@@ -431,8 +434,8 @@ extension NCNetworking {
                 } catch { }
 
                 self.database.deleteVideo(metadata: metadataLive)
-                self.database.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadataLive.ocId))
-                self.database.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadataLive.ocId))
+                self.database.deleteMetadataOcId(metadataLive.ocId)
+                self.database.deleteLocalFileOcId(metadataLive.ocId)
             }
 
             if metadata.directory {
@@ -566,16 +569,16 @@ extension NCNetworking {
                     try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
                 } catch { }
                 self.database.deleteVideo(metadata: metadata)
-                self.database.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                self.database.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                self.database.deleteMetadataOcId(metadata.ocId)
+                self.database.deleteLocalFileOcId(metadata.ocId)
                 // LIVE PHOTO SERVER
                 if let metadataLive = self.database.getMetadataLivePhoto(metadata: metadata), metadataLive.isFlaggedAsLivePhotoByServer {
                     do {
                         try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId))
                     } catch { }
                     self.database.deleteVideo(metadata: metadataLive)
-                    self.database.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadataLive.ocId))
-                    self.database.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadataLive.ocId))
+                    self.database.deleteMetadataOcId(metadataLive.ocId)
+                    self.database.deleteLocalFileOcId(metadataLive.ocId)
                 }
             }
         }

@@ -66,12 +66,12 @@ extension FileProviderExtension: NCNetworkingDelegate {
                     let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer)
                     let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId)
                     self.utilityFileSystem.copyFile(atPath: atPath, toPath: toPath)
-                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocIdTransfer))
+                    NCManageDatabase.shared.deleteMetadataOcId(metadata.ocIdTransfer)
                 }
                 /// SIGNAL
                 fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
             } else {
-                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocIdTransfer))
+                NCManageDatabase.shared.deleteMetadataOcId(metadata.ocIdTransfer)
                 /// SIGNAL
                 fileProviderData.shared.signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
             }
