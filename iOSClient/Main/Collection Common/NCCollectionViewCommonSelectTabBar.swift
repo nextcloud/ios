@@ -140,80 +140,95 @@ struct NCCollectionViewCommonSelectTabBarView: View {
         VStack {
             Spacer().frame(height: sizeClass == .compact ? 5 : 10)
 
-            HStack {
-                Button {
-                    tabBarSelect.delegate?.share()
-                } label: {
-                    Image(systemName: "square.and.arrow.up")
-                        .font(Font.system(.body).weight(.light))
-                        .imageScale(sizeClass == .compact ? .medium : .large)
-                }
-                .tint(Color(NCBrandColor.shared.iconImageColor))
-                .frame(maxWidth: .infinity)
-                .disabled(tabBarSelect.isSelectedEmpty || tabBarSelect.isAllDirectory)
-
-                Button {
-                    tabBarSelect.delegate?.move()
-                } label: {
-                    Image(systemName: "rectangle.portrait.and.arrow.right")
-                        .font(Font.system(.body).weight(.light))
-                        .imageScale(sizeClass == .compact ? .medium : .large)
-                }
-                .tint(Color(NCBrandColor.shared.iconImageColor))
-                .frame(maxWidth: .infinity)
-                .disabled(tabBarSelect.isSelectedEmpty)
-
-                Button {
-                    tabBarSelect.delegate?.delete()
-                } label: {
-                    Image(systemName: "trash")
-                        .font(Font.system(.body).weight(.light))
-                        .imageScale(sizeClass == .compact ? .medium : .large)
-                }
-                .tint(.red)
-                .frame(maxWidth: .infinity)
-                .disabled(tabBarSelect.isSelectedEmpty)
-
-                Menu {
-                    Button(action: {
-                        tabBarSelect.delegate?.saveAsAvailableOffline(isAnyOffline: tabBarSelect.isAnyOffline)
-                    }, label: {
-                        Label(NSLocalizedString(tabBarSelect.isAnyOffline ? "_remove_available_offline_" : "_set_available_offline_", comment: ""), systemImage: tabBarSelect.isAnyOffline ? "icloud.slash" : "icloud.and.arrow.down")
-
-                        if !tabBarSelect.canSetAsOffline && !tabBarSelect.isAnyOffline {
-                            Text(NSLocalizedString("_e2ee_set_as_offline_", comment: ""))
-                        }
-                    })
-                    .disabled(!tabBarSelect.isAnyOffline && (!tabBarSelect.canSetAsOffline || tabBarSelect.isSelectedEmpty))
-
-                    Button(action: {
-                        tabBarSelect.delegate?.lock(isAnyLocked: tabBarSelect.isAnyLocked)
-                    }, label: {
-                        Label(NSLocalizedString(tabBarSelect.isAnyLocked ? "_unlock_" : "_lock_", comment: ""), systemImage: tabBarSelect.isAnyLocked ? "lock.open" : "lock")
-
-                        if !tabBarSelect.enableLock {
-                            Text(NSLocalizedString("_lock_no_permissions_selected_", comment: ""))
-                        }
-                    })
-                    .disabled(!tabBarSelect.enableLock || tabBarSelect.isSelectedEmpty)
-
-                    Button(action: {
-                        tabBarSelect.delegate?.selectAll()
-                    }, label: {
-                        Label(NSLocalizedString("_select_all_", comment: ""), systemImage: "checkmark")
-                    })
-                } label: {
-                    Image(systemName: "ellipsis.circle")
-                        .font(Font.system(.body).weight(.light))
-                        .imageScale(sizeClass == .compact ? .medium : .large)
-                }
-                .tint(Color(NCBrandColor.shared.iconImageColor))
-                .frame(maxWidth: .infinity)
+            HStack(alignment: .top) {
+                TabButton(
+                    action: {tabBarSelect.delegate?.share()},
+                    image: .SelectTabBar.copy,
+                    label: "_share_",
+                    isDisabled: tabBarSelect.isSelectedEmpty || tabBarSelect.isAllDirectory
+                )
+                TabButton(
+                    action: {tabBarSelect.delegate?.move()},
+                    image: .SelectTabBar.share,
+                    label: "_move_or_copy_",
+                    isDisabled: tabBarSelect.isSelectedEmpty
+                )
+                TabButton(
+                    action: {tabBarSelect.delegate?.delete()},
+                    image: .SelectTabBar.delete,
+                    label: "_delete_",
+                    isDisabled: tabBarSelect.isSelectedEmpty
+                )
+                TabButton(
+                    action: {tabBarSelect.delegate?.saveAsAvailableOffline(isAnyOffline: tabBarSelect.isAnyOffline)},
+                    image: .SelectTabBar.download,
+                    label: "_download_",
+                    isDisabled: !tabBarSelect.isAnyOffline && (!tabBarSelect.canSetAsOffline || tabBarSelect.isSelectedEmpty)
+                )
+                TabButton(
+                    action: {tabBarSelect.delegate?.lock(isAnyLocked: tabBarSelect.isAnyLocked)},
+                    image: (tabBarSelect.isAnyLocked ? .SelectTabBar.unlock : .SelectTabBar.lock),
+                    label: tabBarSelect.isAnyLocked ? "_unlock_" : "_lock_",
+                    isDisabled: !tabBarSelect.enableLock || tabBarSelect.isSelectedEmpty
+                )
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .background(.thinMaterial)
         .overlay(Rectangle().frame(width: nil, height: 0.5, alignment: .top).foregroundColor(Color(UIColor.separator)), alignment: .top)
+    }
+}
+
+private struct TabButton: View {
+    let action: (() -> Void)?
+    let image: ImageResource
+    let label: String
+    let isDisabled: Bool
+    
+    var body: some View {
+        Button(action: {
+            action?()
+        }, label: {
+            IconWithText(image: image, label: label)
+        })
+        .frame(maxWidth: .infinity)
+        .buttonStyle(CustomBackgroundOnPressButtonStyle(isDisabled: isDisabled))
+        .disabled(isDisabled)
+    }
+}
+
+private struct IconWithText: View {
+    var image: ImageResource
+    var label: String
+    
+    var body: some View {
+        VStack() {
+            Image(image)
+                .resizable()
+                .font(Font.system(.body).weight(.light))
+                .scaledToFit()
+                .frame(width: 34, height: 24)
+            Text(NSLocalizedString(label, comment: ""))
+                .font(.system(size: 10))
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
+                .tint(Color(NCBrandColor.shared.textColor))
+        }
+        .frame(maxWidth: .infinity)
+    }
+}
+
+private struct CustomBackgroundOnPressButtonStyle: ButtonStyle {
+    var isDisabled: Bool
+    
+    func makeBody(configuration: Configuration) -> some View {
+        if isDisabled {
+            configuration.label.foregroundColor(Color(NCBrandColor.shared.iconImageColor2))
+        } else if configuration.isPressed {
+            configuration.label.foregroundColor(Color(NCBrandColor.shared.iconImageColor))
+        } else {
+            configuration.label.foregroundColor(Color(.SelectTabBar.buttonForeground))
+        }
     }
 }
 
