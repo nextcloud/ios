@@ -115,7 +115,7 @@ extension NCShareExtension: NCCreateFormUploadConflictDelegate {
 
 extension NCShareExtension: NCShareCellDelegate {
     func renameFile(named fileName: String, account: String) {
-        let alert = UIAlertController.renameFile(fileName: fileName) { [self] newFileName in
+        let alert = UIAlertController.renameFile(fileName: fileName, account: account) { [self] newFileName in
             guard let fileIx = self.filesName.firstIndex(of: fileName),
                   !self.filesName.contains(newFileName),
                   utilityFileSystem.moveFile(atPath: (NSTemporaryDirectory() + fileName), toPath: (NSTemporaryDirectory() + newFileName)) else {

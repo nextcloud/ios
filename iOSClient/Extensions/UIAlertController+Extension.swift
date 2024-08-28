@@ -69,6 +69,8 @@ extension UIAlertController {
             textField.autocapitalizationType = .words
         }
 
+        print(account)
+
         // only allow saving if folder name exists
         NotificationCenter.default.addObserver(
             forName: UITextField.textDidChangeNotification,
@@ -77,7 +79,7 @@ extension UIAlertController {
                 guard let text = alertController.textFields?.first?.text else { return }
                 let folderName = text.trimmingCharacters(in: .whitespaces)
 
-                let textCheck = FileNameValidator.shared.checkFileName(folderName)
+                let textCheck = FileNameValidator.shared.checkFileName(folderName, account: account)
                 okAction.isEnabled = textCheck?.error == nil && !folderName.isEmpty
                 alertController.message = textCheck?.error.localizedDescription
             }
@@ -154,7 +156,7 @@ extension UIAlertController {
         return alertController
     }
 
-    static func renameFile(fileName: String, completion: @escaping (_ newFileName: String) -> Void) -> UIAlertController {
+    static func renameFile(fileName: String, account: String, completion: @escaping (_ newFileName: String) -> Void) -> UIAlertController {
         let alertController = UIAlertController(title: NSLocalizedString("_rename_", comment: ""), message: nil, preferredStyle: .alert)
 
         let okAction = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default, handler: { _ in
@@ -191,7 +193,7 @@ extension UIAlertController {
             queue: .main) { _ in
                 guard let text = alertController.textFields?.first?.text else { return }
 
-                let textCheck = FileNameValidator.shared.checkFileName(text)
+                let textCheck = FileNameValidator.shared.checkFileName(text, account: account)
                 okAction.isEnabled = textCheck?.error == nil && !text.isEmpty
                 alertController.message = textCheck?.error.localizedDescription
             }
@@ -253,7 +255,7 @@ extension UIAlertController {
             queue: .main) { _ in
                 guard let text = alertController.textFields?.first?.text else { return }
 
-                let textCheck = FileNameValidator.shared.checkFileName(text)
+                let textCheck = FileNameValidator.shared.checkFileName(text, account: NCManageDatabase.shared.getActiveTableAccount()?.account)
                 okAction.isEnabled = textCheck?.error == nil && !text.isEmpty
                 alertController.message = textCheck?.error.localizedDescription
             }

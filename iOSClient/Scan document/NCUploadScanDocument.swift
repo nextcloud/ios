@@ -375,7 +375,9 @@ struct UploadScanDocumentView: View {
                                 .modifier(TextFieldClearButton(text: $fileName))
                                 .multilineTextAlignment(.trailing)
                                 .onChange(of: fileName) { _ in
-                                    if let fileNameError = FileNameValidator.shared.checkFileName(fileName) {
+                                    let controller = (UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController)
+
+                                    if let fileNameError = FileNameValidator.shared.checkFileName(fileName, account: controller?.account) {
                                         footer = fileNameError.errorDescription
                                     } else {
                                         footer = ""

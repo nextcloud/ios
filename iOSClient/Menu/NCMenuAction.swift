@@ -202,9 +202,12 @@ extension NCMenuAction {
             order: order,
             action: { _ in
                 var fileNameError: NKError?
-
+                
                 for metadata in selectedMetadatas {
-                    if let checkError = FileNameValidator.shared.checkFileName(metadata.fileNameView) {
+                    if let sceneIdentifier = metadata.sceneIdentifier,
+                       let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier),
+                       let checkError = FileNameValidator.shared.checkFileName(metadata.fileNameView, account: controller.account) {
+
                         fileNameError = checkError
                         break
                     }

@@ -34,7 +34,7 @@ extension NCShareExtension: UICollectionViewDelegate {
             showAlert(title: "_info_", description: "_e2e_goto_settings_for_enable_")
         }
 
-        if let fileNameError = FileNameValidator.shared.checkFileName(metadata.fileNameView) {
+        if let fileNameError = FileNameValidator.shared.checkFileName(metadata.fileNameView, account: activeTableAccount.account) {
             present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
             return
         }
