@@ -289,4 +289,14 @@ class NCUtility: NSObject {
         }
         return fileName
     }
+
+    func getHeightHeaderEmptyData(view: UIView, portraitOffset: CGFloat, landscapeOffset: CGFloat, isHeaderMenuTransferViewEnabled: Bool = false) -> CGFloat {
+        var height: CGFloat = 0
+        if UIDevice.current.orientation.isPortrait {
+            height = (view.frame.height / 2) - (view.safeAreaInsets.top / 2) + portraitOffset
+        } else {
+            height = (view.frame.height / 2) + landscapeOffset + CGFloat(isHeaderMenuTransferViewEnabled ? 35 : 0)
+        }
+        return height
+    }
 }

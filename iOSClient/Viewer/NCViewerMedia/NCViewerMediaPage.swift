@@ -206,7 +206,6 @@ class NCViewerMediaPage: UIViewController {
     }
 
     func getViewerMedia(index: Int, metadata: tableMetadata) -> NCViewerMedia {
-
         // swiftlint:disable force_cast
         let viewerMedia = UIStoryboard(name: "NCViewerMediaPage", bundle: nil).instantiateViewController(withIdentifier: "NCViewerMedia") as! NCViewerMedia
         // swiftlint:enable force_cast

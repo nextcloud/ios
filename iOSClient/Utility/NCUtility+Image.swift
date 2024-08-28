@@ -258,10 +258,38 @@ extension NCUtility {
     }
 
     func createAvatar(displayName: String, size: CGFloat) -> UIImage? {
+        func usernameToColor(_ username: String) -> CGColor {
+            // Normalize hash
+            let lowerUsername = username.lowercased()
+            var hash: String
+            // swiftlint:disable force_try
+            let regex = try! NSRegularExpression(pattern: "^([0-9a-f]{4}-?){8}$")
+            // swiftlint:enable force_try
+            let matches = regex.matches(
+                in: username,
+                range: NSRange(username.startIndex..., in: username))
+
+            if !matches.isEmpty {
+                // Already a md5 hash?
+                // done, use as is.
+                hash = lowerUsername
+            } else {
+                hash = lowerUsername.md5()
+            }
+
+            hash = hash.replacingOccurrences(of: "[^0-9a-f]", with: "", options: .regularExpression)
+
+            // userColors has 18 colors by default
+            let result = hash.compactMap(\.hexDigitValue)
+            let userColorIx = result.reduce(0, { $0 + $1 }) % 18
+
+            return NCBrandColor.shared.userColors[userColorIx]
+        }
+
         guard let initials = displayName.uppercaseInitials else {
             return nil
         }
-        let userColor = NCGlobal.shared.usernameToColor(displayName)
+        let userColor = usernameToColor(displayName)
         let rect = CGRect(x: 0, y: 0, width: size, height: size)
         var avatarImage: UIImage?
 
