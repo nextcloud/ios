@@ -417,7 +417,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         if withPush, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
             if let sceneIdentifier = userInfo["sceneIdentifier"] as? String {
-                if sceneIdentifier == (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier {
+                if sceneIdentifier == sceneIdentifier {
                     pushMetadata(metadata)
                 }
             } else {
