@@ -191,9 +191,7 @@ extension NCNetworking {
         let isDirectoryEncrypted = utilityFileSystem.isDirectoryE2EE(session: session, serverUrl: serverUrl)
         let fileName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        if isOffline {
-            createFolderOffline(fileName: fileName, serverUrl: serverUrl, overwrite: overwrite, withPush: withPush, sceneIdentifier: sceneIdentifier, session: session, completion: completion)
-        } else if isDirectoryEncrypted {
+        if isDirectoryEncrypted {
 #if !EXTENSION
             Task {
                 let error = await NCNetworkingE2EECreateFolder().createFolder(fileName: fileName, serverUrl: serverUrl, withPush: withPush, sceneIdentifier: sceneIdentifier, session: session)
@@ -223,7 +221,24 @@ extension NCNetworking {
             fileNameFolder = utilityFileSystem.createFileName(fileNameFolder, serverUrl: serverUrl, account: session.account)
         }
         if fileNameFolder.isEmpty {
-            return completion(NKError())
+            return completion(.success)
+        }
+
+        if isOffline {
+            let metadataForUpload = NCManageDatabase.shared.createMetadata(fileName: fileNameFolder,
+                                                                           fileNameView: fileNameFolder,
+                                                                           ocId: NSUUID().uuidString,
+                                                                           serverUrl: serverUrl,
+                                                                           url: "",
+                                                                           contentType: "httpd/unix-directory",
+                                                                           directory: true,
+                                                                           session: session,
+                                                                           sceneIdentifier: sceneIdentifier)
+            metadataForUpload.status = NCGlobal.shared.metadataStatusWaitCreateFolder
+            NCManageDatabase.shared.addMetadata(metadataForUpload)
+
+            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterCreateFolder, userInfo: ["ocId": metadataForUpload.ocId, "serverUrl": metadataForUpload.serverUrl, "account": metadataForUpload.account, "withPush": withPush, "sceneIdentifier": sceneIdentifier as Any])
+            return completion(.success)
         }
 
         let fileNameFolderUrl = serverUrl + "/" + fileNameFolder
@@ -316,32 +331,6 @@ extension NCNetworking {
         }
 
         return result
-    }
-
-    private func createFolderOffline(fileName: String,
-                                     serverUrl: String,
-                                     overwrite: Bool,
-                                     withPush: Bool,
-                                     sceneIdentifier: String?,
-                                     session: NCSession.Session,
-                                     completion: @escaping (_ error: NKError) -> Void) {
-
-        let metadataForUpload = NCManageDatabase.shared.createMetadata(fileName: fileName,
-                                                                       fileNameView: fileName,
-                                                                       ocId: NSUUID().uuidString,
-                                                                       serverUrl: serverUrl,
-                                                                       url: "",
-                                                                       contentType: "httpd/unix-directory",
-                                                                       directory: true,
-                                                                       session: session,
-                                                                       sceneIdentifier: sceneIdentifier)
-        metadataForUpload.status = NCGlobal.shared.metadataStatusWaitCreateFolder
-
-        NCManageDatabase.shared.addMetadata(metadataForUpload)
-
-        NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterCreateFolder, userInfo: ["ocId": metadataForUpload.ocId, "serverUrl": metadataForUpload.serverUrl, "account": metadataForUpload.account, "withPush": withPush, "sceneIdentifier": sceneIdentifier as Any])
-
-        completion(.success)
     }
 
     // MARK: - Delete
