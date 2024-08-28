@@ -289,7 +289,8 @@ extension NCCollectionViewCommon {
         //
         // RENAME
         //
-        if metadata.isRenameable {
+        if metadata.isRenameable,
+           (NCNetworking.shared.isOnline || metadata.directory ) {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_rename_", comment: ""),
