@@ -230,22 +230,23 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             cell.imageItem.image = NCImageCache.shared.getImageFile()
         }
         /// Write status on Label Status / Info
+        let user = " - " + metadata.account
         switch metadata.status {
         case NCGlobal.shared.metadataStatusWaitDownload:
-            cell.labelStatus.text = NSLocalizedString("_status_wait_download_", comment: "")
+            cell.labelStatus.text = NSLocalizedString("_status_wait_download_", comment: "") + user
             cell.labelInfo.text = utilityFileSystem.transformedSize(metadata.size)
         case NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusWaitCreateFolder:
-            cell.labelStatus.text = NSLocalizedString("_status_wait_upload_", comment: "")
+            cell.labelStatus.text = NSLocalizedString("_status_wait_upload_", comment: "") + user
             cell.labelInfo.text = ""
         case NCGlobal.shared.metadataStatusUploading, NCGlobal.shared.metadataStatusDownloading:
             if metadata.status == NCGlobal.shared.metadataStatusUploading {
-                cell.labelStatus.text = NSLocalizedString("_status_uploading_", comment: "")
+                cell.labelStatus.text = NSLocalizedString("_status_uploading_", comment: "") + user
             } else {
-                cell.labelStatus.text = NSLocalizedString("_status_downloading_", comment: "")
+                cell.labelStatus.text = NSLocalizedString("_status_downloading_", comment: "") + user
             }
             cell.labelInfo.text = utilityFileSystem.transformedSize(metadata.size) + " - " + self.utilityFileSystem.transformedSize(transfer.totalBytes)
         case NCGlobal.shared.metadataStatusUploadError:
-            cell.labelStatus.text = NSLocalizedString("_status_upload_error_", comment: "")
+            cell.labelStatus.text = NSLocalizedString("_status_upload_error_", comment: "") + user
             cell.labelInfo.text = metadata.sessionError
         default:
             cell.labelStatus.text = ""
