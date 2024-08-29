@@ -60,6 +60,7 @@ extension NCNetworking {
             let metadatas = database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND status != 0", metadata.account, metadata.serverUrl))
             for metadata in metadatas {
                 database.deleteMetadataOcId(metadata.ocId)
+                utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
             }
         }
 

@@ -255,6 +255,10 @@ class NCGlobal: NSObject {
 
     let metadataStatusWaitCreateFolder: Int     = 10
 
+    let metadataStatusWait                      = [-1, 1, 10]
+    let metadataStatusDown                      = [-1, -2, -3]
+    let metadataStatusUp                        = [1, 2, 3, 10]
+
     //  Hidden files included in the read
     //
     let includeHiddenFiles: [String] = [".LivePhoto"]
