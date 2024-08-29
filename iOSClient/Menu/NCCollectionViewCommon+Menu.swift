@@ -228,7 +228,7 @@ extension NCCollectionViewCommon {
         // SAVE LIVE PHOTO
         //
         if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata),
-           let hudView = self.tabBarController?.view {
+           let hudView = self.view {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_livephoto_save_", comment: ""),
