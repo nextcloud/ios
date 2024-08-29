@@ -52,9 +52,7 @@ class NCNetworkingProcess {
                 case .initial:
                     print("Initial")
                 case .update(let metadatas, let deletions, let insertions, let modifications):
-                    if deletions.count > 0 {
-                        // TODO: REMOVE ALL INTERNAL FILES
-                    } else if deletions.count > 0 || insertions.count > 0 || modifications.count > 0 {
+                    if insertions.count > 0 || modifications.count > 0 {
                         guard let self else { return }
 
                         self.lockQueue.sync {

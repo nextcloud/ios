@@ -1107,6 +1107,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func isHeaderMenuTransferViewEnabled() -> Results<tableMetadata>? {
         if headerMenuTransferView,
+           NCNetworking.shared.isOnline,
            let results = database.getResultsMetadatas(predicate: NSPredicate(format: "status == %d || status == %d",
                                                                                             global.metadataStatusWaitUpload,
                                                                                             global.metadataStatusUploading)),
