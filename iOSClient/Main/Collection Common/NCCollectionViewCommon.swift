@@ -1267,8 +1267,8 @@ extension NCCollectionViewCommon {
 		collectionViewTop?.constant = isSearchingMode ? 0 : fileActionsHeader?.bounds.height ?? 0
 		fileActionsHeader?.setIsEditingMode(isEditingMode: isEditMode)
 		
-		fileActionsHeader?.setSortingMenu(sortingMenuElements: createSortMenuActions(), title: sortTitle, image: sortDirectionImage, tintColor: .label)
-		fileActionsHeader?.setViewModeMenu(viewMenuElements: createViewModeMenuActions(), image: viewModeImage?.templateRendered(), tintColor: .label)
+		fileActionsHeader?.setSortingMenu(sortingMenuElements: createSortMenuActions(), title: sortTitle, image: sortDirectionImage)
+		fileActionsHeader?.setViewModeMenu(viewMenuElements: createViewModeMenuActions(), image: viewModeImage?.templateRendered())
 		
 		fileActionsHeader?.onSelectModeChange = { [weak self] isSelectionMode in
 			self?.setEditMode(isSelectionMode)

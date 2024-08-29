@@ -67,19 +67,17 @@ class FileActionsHeader: UIView {
 	var onSelectModeChange: ((_ isSelectionMode: Bool) -> Void)?
 	var onSelectAll: (() -> Void)?
 	
-	func setSortingMenu(sortingMenuElements: [UIMenuElement], title: String?, image: UIImage?, tintColor: UIColor) {
+	func setSortingMenu(sortingMenuElements: [UIMenuElement], title: String?, image: UIImage?) {
 		btnSort?.menu = UIMenu(children: sortingMenuElements)
 		btnSort?.showsMenuAsPrimaryAction = true
 		btnSort?.setTitle(title, for: .normal)
-		btnSort?.tintColor = tintColor
 		btnSort?.setImage(image?.templateRendered(), for: .normal)
 		btnSort?.semanticContentAttribute = UIApplication.shared.userInterfaceLayoutDirection == .rightToLeft ? .forceLeftToRight : .forceRightToLeft
 	}
 	
-	func setViewModeMenu(viewMenuElements: [UIMenuElement], image: UIImage?, tintColor: UIColor) {
+	func setViewModeMenu(viewMenuElements: [UIMenuElement], image: UIImage?) {
 		btnViewMode?.menu = UIMenu(children: viewMenuElements)
 		btnViewMode?.showsMenuAsPrimaryAction = true
-		btnViewMode?.tintColor = tintColor
 		btnViewMode?.setImage(image?.templateRendered(), for: .normal)
 	}
 	
