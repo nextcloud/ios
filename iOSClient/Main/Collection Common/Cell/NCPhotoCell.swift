@@ -33,7 +33,6 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
 
     var ocId = ""
     var ocIdTransfer = ""
-    var indexPath = IndexPath()
     private var user = ""
     weak var photoCellDelegate: NCPhotoCellDelegate?
 
@@ -107,11 +106,11 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
     }
 
     @IBAction func touchUpInsideMore(_ sender: Any) {
-        photoCellDelegate?.tapMorePhotoItem(with: ocId, ocIdTransfer: ocIdTransfer, image: imageItem.image, indexPath: indexPath, sender: sender)
+        photoCellDelegate?.tapMorePhotoItem(with: ocId, ocIdTransfer: ocIdTransfer, image: imageItem.image, sender: sender)
     }
 
     @objc func longPress(gestureRecognizer: UILongPressGestureRecognizer) {
-        photoCellDelegate?.longPressPhotoItem(with: ocId, ocIdTransfer: ocIdTransfer, indexPath: indexPath, gestureRecognizer: gestureRecognizer)
+        photoCellDelegate?.longPressPhotoItem(with: ocId, ocIdTransfer: ocIdTransfer, gestureRecognizer: gestureRecognizer)
     }
 
     fileprivate func setA11yActions() {
@@ -150,6 +149,6 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
 }
 
 protocol NCPhotoCellDelegate: AnyObject {
-    func tapMorePhotoItem(with ocId: String, ocIdTransfer: String, image: UIImage?, indexPath: IndexPath, sender: Any)
-    func longPressPhotoItem(with objectId: String, ocIdTransfer: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer)
+    func tapMorePhotoItem(with ocId: String, ocIdTransfer: String, image: UIImage?, sender: Any)
+    func longPressPhotoItem(with objectId: String, ocIdTransfer: String, gestureRecognizer: UILongPressGestureRecognizer)
 }

@@ -196,7 +196,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         cell.fileAccount = metadata.account
         cell.fileOcId = metadata.ocId
         cell.fileOcIdTransfer = metadata.ocIdTransfer
-        cell.indexPath = indexPath
         cell.fileUser = metadata.ownerId
 
         cell.hideImageItem(false)

@@ -28,7 +28,7 @@ class NCNetworkingE2EERename: NSObject {
     let networkingE2EE = NCNetworkingE2EE()
     let utilityFileSystem = NCUtilityFileSystem()
 
-    func rename(metadata: tableMetadata, fileNameNew: String, indexPath: IndexPath) async -> NKError {
+    func rename(metadata: tableMetadata, fileNameNew: String) async -> NKError {
         let session = NCSession.shared.getSession(account: metadata.account)
         // verify if exists the new fileName
         if NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameNew)) != nil {
@@ -91,7 +91,7 @@ class NCNetworkingE2EERename: NSObject {
         //
         await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
 
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRenameFile, userInfo: ["ocId": metadata.ocId, "account": metadata.account, "indexPath": indexPath])
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRenameFile, userInfo: ["ocId": metadata.ocId, "account": metadata.account])
 
         return NKError()
     }

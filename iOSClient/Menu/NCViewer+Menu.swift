@@ -155,7 +155,7 @@ extension NCViewer {
                     title: NSLocalizedString("_rename_", comment: ""),
                     icon: utility.loadImage(named: "text.cursor", colors: [NCBrandColor.shared.iconImageColor]),
                     action: { _ in
-                        viewController.present(UIAlertController.renameFile(metadata: metadata, indexPath: indexPath), animated: true)
+                        viewController.present(UIAlertController.renameFile(metadata: metadata), animated: true)
                     }
                 )
             )
@@ -165,7 +165,7 @@ extension NCViewer {
         // COPY - MOVE
         //
         if !webView, metadata.isCopyableMovable {
-            actions.append(.moveOrCopyAction(selectedMetadatas: [metadata], viewController: viewController, indexPath: []))
+            actions.append(.moveOrCopyAction(selectedMetadatas: [metadata], viewController: viewController))
         }
 
         //
@@ -247,7 +247,7 @@ extension NCViewer {
         // DELETE
         //
         if !webView, metadata.isDeletable {
-            actions.append(.deleteAction(selectedMetadatas: [metadata], indexPaths: [], metadataFolder: nil, viewController: viewController))
+            actions.append(.deleteAction(selectedMetadatas: [metadata], metadataFolder: nil, viewController: viewController))
         }
 
         viewController.presentMenu(with: actions)

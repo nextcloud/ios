@@ -444,7 +444,6 @@ extension NCNetworking {
 
     func renameMetadata(_ metadata: tableMetadata,
                         fileNameNew: String,
-                        indexPath: IndexPath,
                         completion: @escaping (_ error: NKError) -> Void) {
         let metadataLive = self.database.getMetadataLivePhoto(metadata: metadata)
         let fileNameNew = fileNameNew.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -454,43 +453,42 @@ extension NCNetworking {
             metadata.fileName = fileNameNew
             metadata.fileNameView = fileNameNew
             NCManageDatabase.shared.addMetadata(metadata)
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterRenameFile, userInfo: ["ocId": metadata.ocId, "account": metadata.account, "indexPath": indexPath])
+            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterRenameFile, userInfo: ["ocId": metadata.ocId, "account": metadata.account])
             completion(.success)
         } else if metadata.isDirectoryE2EE {
 #if !EXTENSION
             Task {
                 if let metadataLive = metadataLive {
-                    let error = await NCNetworkingE2EERename().rename(metadata: metadataLive, fileNameNew: fileNameNew, indexPath: indexPath)
+                    let error = await NCNetworkingE2EERename().rename(metadata: metadataLive, fileNameNew: fileNameNew)
                     if error == .success {
-                        let error = await NCNetworkingE2EERename().rename(metadata: metadata, fileNameNew: fileNameNew, indexPath: indexPath)
+                        let error = await NCNetworkingE2EERename().rename(metadata: metadata, fileNameNew: fileNameNew)
                         DispatchQueue.main.async { completion(error) }
                     } else {
                         DispatchQueue.main.async { completion(error) }
                     }
                 } else {
-                    let error = await NCNetworkingE2EERename().rename(metadata: metadata, fileNameNew: fileNameNew, indexPath: indexPath)
+                    let error = await NCNetworkingE2EERename().rename(metadata: metadata, fileNameNew: fileNameNew)
                     DispatchQueue.main.async { completion(error) }
                 }
             }
 #endif
         } else {
             if let metadataLive, metadata.isNotFlaggedAsLivePhotoByServer {
-                renameMetadataPlain(metadataLive, fileNameNew: fileNameNewLive, indexPath: indexPath) { error in
+                renameMetadataPlain(metadataLive, fileNameNew: fileNameNewLive) { error in
                     if error == .success {
-                        self.renameMetadataPlain(metadata, fileNameNew: fileNameNew, indexPath: indexPath, completion: completion)
+                        self.renameMetadataPlain(metadata, fileNameNew: fileNameNew, completion: completion)
                     } else {
                         completion(error)
                     }
                 }
             } else {
-                renameMetadataPlain(metadata, fileNameNew: fileNameNew, indexPath: indexPath, completion: completion)
+                renameMetadataPlain(metadata, fileNameNew: fileNameNew, completion: completion)
             }
         }
     }
 
     private func renameMetadataPlain(_ metadata: tableMetadata,
                                      fileNameNew: String,
-                                     indexPath: IndexPath,
                                      completion: @escaping (_ error: NKError) -> Void) {
         let permission = utility.permissionsContainsString(metadata.permissions, permissions: NCPermissions().permissionCanRename)
         if !metadata.permissions.isEmpty && !permission {
@@ -533,7 +531,7 @@ extension NCNetworking {
                         self.utilityFileSystem.moveFile(atPath: atPath, toPath: toPath)
                     }
                 }
-                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterRenameFile, userInfo: ["ocId": metadata.ocId, "account": metadata.account, "indexPath": indexPath])
+                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterRenameFile, userInfo: ["ocId": metadata.ocId, "account": metadata.account])
             }
             completion(error)
         }

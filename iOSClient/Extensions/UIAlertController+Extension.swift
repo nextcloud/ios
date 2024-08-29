@@ -203,7 +203,7 @@ extension UIAlertController {
         return alertController
     }
 
-    static func renameFile(metadata: tableMetadata, indexPath: IndexPath) -> UIAlertController {
+    static func renameFile(metadata: tableMetadata) -> UIAlertController {
         let alertController = UIAlertController(title: NSLocalizedString("_rename_", comment: ""), message: nil, preferredStyle: .alert)
 
         let okAction = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default, handler: { _ in
@@ -217,7 +217,7 @@ extension UIAlertController {
 
             NCActivityIndicator.shared.start()
 
-            NCNetworking.shared.renameMetadata(metadata, fileNameNew: newFileName, indexPath: indexPath) { error in
+            NCNetworking.shared.renameMetadata(metadata, fileNameNew: newFileName) { error in
 
                 NCActivityIndicator.shared.stop()
 

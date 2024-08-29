@@ -117,12 +117,12 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     // MARK: TAP EVENT
 
-    override func tapMoreGridItem(with ocId: String, ocIdTransfer: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
+    override func tapMoreGridItem(with ocId: String, ocIdTransfer: String, image: UIImage?, sender: Any) {
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcIdAndocIdTransfer(ocIdTransfer) else { return }
         NCNetworking.shared.cancelTask(metadata: metadata)
     }
 
-    override func longPressMoreListItem(with ocId: String, ocIdTransfer: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
+    override func longPressMoreListItem(with ocId: String, ocIdTransfer: String, gestureRecognizer: UILongPressGestureRecognizer) {
         if gestureRecognizer.state != .began { return }
         let alertController = UIAlertController(title: nil, message: nil, preferredStyle: .alert)
 
@@ -137,7 +137,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         self.present(alertController, animated: true, completion: nil)
     }
 
-    override func longPressListItem(with ocId: String, ocIdTransfer: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer) {
+    override func longPressListItem(with ocId: String, ocIdTransfer: String, gestureRecognizer: UILongPressGestureRecognizer) {
         if gestureRecognizer.state != .began { return }
 
         if let metadata = NCManageDatabase.shared.getMetadataFromOcIdAndocIdTransfer(ocIdTransfer) {
@@ -203,9 +203,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         cell.delegate = self
         cell.fileOcId = metadata.ocId
         cell.fileOcIdTransfer = metadata.ocIdTransfer
-        cell.indexPath = indexPath
         cell.fileUser = metadata.ownerId
-        cell.indexPath = indexPath
         cell.imageItem.image = NCImageCache.shared.getImageFile()
         cell.imageItem.backgroundColor = nil
         cell.labelTitle.text = metadata.fileNameView

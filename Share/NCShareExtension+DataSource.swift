@@ -89,7 +89,6 @@ extension NCShareExtension: UICollectionViewDataSource {
 
         cell.fileOcId = metadata.ocId
         cell.fileOcIdTransfer = metadata.ocIdTransfer
-        cell.indexPath = indexPath
         cell.fileUser = metadata.ownerId
         cell.labelTitle.text = metadata.fileNameView
         cell.labelTitle.textColor = NCBrandColor.shared.textColor

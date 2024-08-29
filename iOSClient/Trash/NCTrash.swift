@@ -185,7 +185,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         } // else: undefined sender
     }
 
-    func tapMoreGridItem(with objectId: String, image: UIImage?, indexPath: IndexPath, sender: Any) {
+    func tapMoreGridItem(with objectId: String, image: UIImage?, sender: Any) {
         if !isEditMode {
             toggleMenuMore(with: objectId, image: image, isGridCell: true)
         } else if let button = sender as? UIView {

@@ -24,7 +24,7 @@
 import UIKit
 
 protocol NCTrashGridCellDelegate: AnyObject {
-    func tapMoreGridItem(with objectId: String, image: UIImage?, indexPath: IndexPath, sender: Any)
+    func tapMoreGridItem(with objectId: String, image: UIImage?, sender: Any)
 }
 
 class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
@@ -76,7 +76,7 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
     }
 
     @IBAction func touchUpInsideMore(_ sender: Any) {
-        delegate?.tapMoreGridItem(with: objectId, image: imageItem.image, indexPath: indexPath, sender: sender)
+        delegate?.tapMoreGridItem(with: objectId, image: imageItem.image, sender: sender)
     }
 
     fileprivate func setA11yActions() {

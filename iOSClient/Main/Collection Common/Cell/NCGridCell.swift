@@ -37,7 +37,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 
     var ocId = ""
     var ocIdTransfer = ""
-    var indexPath = IndexPath()
     var account = ""
     private var user = ""
 
@@ -126,11 +125,11 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     }
 
     @IBAction func touchUpInsideMore(_ sender: Any) {
-        gridCellDelegate?.tapMoreGridItem(with: ocId, ocIdTransfer: ocIdTransfer, image: imageItem.image, indexPath: indexPath, sender: sender)
+        gridCellDelegate?.tapMoreGridItem(with: ocId, ocIdTransfer: ocIdTransfer, image: imageItem.image, sender: sender)
     }
 
     @objc func longPress(gestureRecognizer: UILongPressGestureRecognizer) {
-        gridCellDelegate?.longPressGridItem(with: ocId, ocIdTransfer: ocIdTransfer, indexPath: indexPath, gestureRecognizer: gestureRecognizer)
+        gridCellDelegate?.longPressGridItem(with: ocId, ocIdTransfer: ocIdTransfer, gestureRecognizer: gestureRecognizer)
     }
 
     fileprivate func setA11yActions() {
@@ -222,8 +221,8 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 }
 
 protocol NCGridCellDelegate: AnyObject {
-    func tapMoreGridItem(with ocId: String, ocIdTransfer: String, image: UIImage?, indexPath: IndexPath, sender: Any)
-    func longPressGridItem(with ocId: String, ocIdTransfer: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer)
+    func tapMoreGridItem(with ocId: String, ocIdTransfer: String, image: UIImage?, sender: Any)
+    func longPressGridItem(with ocId: String, ocIdTransfer: String, gestureRecognizer: UILongPressGestureRecognizer)
 }
 
 // MARK: - Grid Layout

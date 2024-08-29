@@ -31,7 +31,7 @@ import NextcloudKit
 import Queuer
 
 extension NCCollectionViewCommon {
-    func toggleMenu(metadata: tableMetadata, indexPath: IndexPath, imageIcon: UIImage?) {
+    func toggleMenu(metadata: tableMetadata, imageIcon: UIImage?) {
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId),
               let sceneIdentifier = (tabBarController as? NCMainTabBarController)?.sceneIdentifier else {
             return
@@ -298,7 +298,7 @@ extension NCCollectionViewCommon {
                     icon: utility.loadImage(named: "text.cursor", colors: [NCBrandColor.shared.iconImageColor]),
                     order: 120,
                     action: { _ in
-                        self.present(UIAlertController.renameFile(metadata: metadata, indexPath: indexPath), animated: true)
+                        self.present(UIAlertController.renameFile(metadata: metadata), animated: true)
                     }
                 )
             )
@@ -309,7 +309,7 @@ extension NCCollectionViewCommon {
         //
         if NCNetworking.shared.isOnline,
            metadata.isCopyableMovable {
-            actions.append(.moveOrCopyAction(selectedMetadatas: [metadata], viewController: self, indexPath: [indexPath], order: 130))
+            actions.append(.moveOrCopyAction(selectedMetadatas: [metadata], viewController: self, order: 130))
         }
 
         //
@@ -371,7 +371,7 @@ extension NCCollectionViewCommon {
         // DELETE
         //
         if metadata.isDeletable {
-            actions.append(.deleteAction(selectedMetadatas: [metadata], indexPaths: [indexPath], metadataFolder: metadataFolder, viewController: self, order: 170))
+            actions.append(.deleteAction(selectedMetadatas: [metadata], metadataFolder: metadataFolder, viewController: self, order: 170))
         }
 
         applicationHandle.addCollectionViewCommonMenu(metadata: metadata, imageIcon: imageIcon, actions: &actions)
