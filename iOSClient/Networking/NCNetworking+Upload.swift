@@ -353,7 +353,8 @@ extension NCNetworking {
                     } else {
                         NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadedFile,
                                                                     object: nil,
-                                                                    userInfo: userInfo)
+                                                                    userInfo: userInfo,
+                                                                    second: 0.5)
                     }
                 } else {
                     if error.errorCode == NSURLErrorCancelled || error.errorCode == self.global.errorRequestExplicityCancelled {
@@ -366,7 +367,8 @@ extension NCNetworking {
                                                                                "ocIdTransfer": metadata.ocIdTransfer,
                                                                                "session": metadata.session,
                                                                                "serverUrl": metadata.serverUrl,
-                                                                               "account": metadata.account])
+                                                                               "account": metadata.account],
+                                                                    second: 0.5)
                     } else if error.errorCode == self.global.errorBadRequest || error.errorCode == self.global.errorUnsupportedMediaType {
                         NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
                         self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
@@ -377,7 +379,8 @@ extension NCNetworking {
                                                                                "ocIdTransfer": metadata.ocIdTransfer,
                                                                                "session": metadata.session,
                                                                                "serverUrl": metadata.serverUrl,
-                                                                               "account": metadata.account])
+                                                                               "account": metadata.account],
+                                                                    second: 0.5)
                         if isApplicationStateActive {
                             NCContentPresenter().showError(error: NKError(errorCode: error.errorCode, errorDescription: "_virus_detect_"))
                         }
@@ -410,7 +413,8 @@ extension NCNetworking {
                                                                                        "ocIdTransfer": metadata.ocIdTransfer,
                                                                                        "session": metadata.session,
                                                                                        "serverUrl": metadata.serverUrl,
-                                                                                       "account": metadata.account])
+                                                                                       "account": metadata.account],
+                                                                            second: 0.5)
                             }))
 
                             // Select UIWindowScene active in serverUrl
@@ -446,7 +450,8 @@ extension NCNetworking {
                                                                                "serverUrl": metadata.serverUrl,
                                                                                "account": metadata.account,
                                                                                "fileName": metadata.fileName,
-                                                                               "error": error])
+                                                                               "error": error],
+                                                                    second: 0.5)
                         // Client Diagnostic
                         if error.errorCode == self.global.errorInternalServerError {
                             self.database.addDiagnostic(account: metadata.account,

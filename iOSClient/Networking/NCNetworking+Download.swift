@@ -209,7 +209,8 @@ extension NCNetworking {
                                                                        "serverUrl": metadata.serverUrl,
                                                                        "account": metadata.account,
                                                                        "selector": metadata.sessionSelector,
-                                                                       "error": error])
+                                                                       "error": error],
+                                                            second: 0.5)
             } else if error.errorCode == NSURLErrorCancelled || error.errorCode == self.global.errorRequestExplicityCancelled {
                 NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
@@ -224,7 +225,8 @@ extension NCNetworking {
                                                                        "ocIdTransfer": metadata.ocIdTransfer,
                                                                        "session": metadata.session,
                                                                        "serverUrl": metadata.serverUrl,
-                                                                       "account": metadata.account])
+                                                                       "account": metadata.account],
+                                                            second: 0.5)
             } else {
                 NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
                 self.database.setMetadataSession(ocId: metadata.ocId,
@@ -241,7 +243,8 @@ extension NCNetworking {
                                                                        "serverUrl": metadata.serverUrl,
                                                                        "account": metadata.account,
                                                                        "selector": metadata.sessionSelector,
-                                                                       "error": error])
+                                                                       "error": error],
+                                                            second: 0.5)
             }
         }
     }

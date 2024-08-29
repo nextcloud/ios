@@ -273,7 +273,8 @@ extension NCCollectionViewCommon {
                                                                                    "session": metadata.session,
                                                                                    "selector": NCGlobal.shared.selectorSaveAsScan,
                                                                                    "error": NKError(),
-                                                                                   "account": metadata.account])
+                                                                                   "account": metadata.account],
+                                                                        second: 0.5)
                         } else {
                             guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                            session: NCNetworking.shared.sessionDownload,
@@ -330,7 +331,8 @@ extension NCCollectionViewCommon {
                                                                                    "session": metadata.session,
                                                                                    "selector": NCGlobal.shared.selectorLoadFileQuickLook,
                                                                                    "error": NKError(),
-                                                                                   "account": metadata.account])
+                                                                                   "account": metadata.account],
+                                                                        second: 0.5)
                         } else {
                             guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                            session: NCNetworking.shared.sessionDownload,

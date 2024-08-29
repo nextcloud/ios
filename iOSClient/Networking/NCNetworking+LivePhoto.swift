@@ -38,7 +38,8 @@ extension NCNetworking {
             NCManageDatabase.shared.addMetadata(metadata)
             return  NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadedLivePhoto,
                                                                 object: nil,
-                                                                userInfo: aUserInfo)
+                                                                userInfo: aUserInfo,
+                                                                second: 0.5)
         }
         if metadata1.status != self.global.metadataStatusNormal { return }
 
@@ -69,7 +70,8 @@ extension NCNetworking {
 
             NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadedLivePhoto,
                                                         object: nil,
-                                                        userInfo: aUserInfo)
+                                                        userInfo: aUserInfo,
+                                                        second: 0.5)
         }
     }
 

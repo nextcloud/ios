@@ -130,7 +130,8 @@ class NCNetworkingE2EEUpload: NSObject {
                            "serverUrl": metadata.serverUrl,
                            "account": metadata.account,
                            "fileName": metadata.fileName,
-                           "error": NKError(errorCode: NCGlobal.shared.errorE2EELock, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))])
+                           "error": NKError(errorCode: NCGlobal.shared.errorE2EELock, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))],
+                second: 0.5)
             return NKError(errorCode: NCGlobal.shared.errorE2EELock, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
         }
 
@@ -157,7 +158,8 @@ class NCNetworkingE2EEUpload: NSObject {
                                                                    "serverUrl": metadata.serverUrl,
                                                                    "account": metadata.account,
                                                                    "fileName": metadata.fileName,
-                                                                   "error": sendE2eeError])
+                                                                   "error": sendE2eeError],
+                                                        second: 0.5)
             await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
             return sendE2eeError
         }
@@ -202,7 +204,8 @@ class NCNetworkingE2EEUpload: NSObject {
                                                                    "serverUrl": metadata.serverUrl,
                                                                    "account": metadata.account,
                                                                    "fileName": metadata.fileName,
-                                                                   "error": resultsSendFile.error])
+                                                                   "error": resultsSendFile.error],
+                                                        second: 0.5)
 
         } else if resultsSendFile.error == .success, let ocId = resultsSendFile.ocId {
 
@@ -230,7 +233,8 @@ class NCNetworkingE2EEUpload: NSObject {
                                                                    "serverUrl": metadata.serverUrl,
                                                                    "account": metadata.account,
                                                                    "fileName": metadata.fileName,
-                                                                   "error": resultsSendFile.error])
+                                                                   "error": resultsSendFile.error],
+                                                        second: 0.5)
         } else {
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                        sessionTaskIdentifier: 0,
@@ -245,7 +249,8 @@ class NCNetworkingE2EEUpload: NSObject {
                                                                    "serverUrl": metadata.serverUrl,
                                                                    "account": metadata.account,
                                                                    "fileName": metadata.fileName,
-                                                                   "error": resultsSendFile.error])
+                                                                   "error": resultsSendFile.error],
+                                                        second: 0.5)
         }
 
         return (resultsSendFile.error)
