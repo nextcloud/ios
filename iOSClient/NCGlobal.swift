@@ -24,52 +24,7 @@
 import UIKit
 
 class NCGlobal: NSObject {
-    static let shared: NCGlobal = {
-        let instance = NCGlobal()
-        return instance
-    }()
-
-    func usernameToColor(_ username: String) -> CGColor {
-        // Normalize hash
-        let lowerUsername = username.lowercased()
-        var hash: String
-
-        let regex = try! NSRegularExpression(pattern: "^([0-9a-f]{4}-?){8}$")
-        let matches = regex.matches(
-            in: username,
-            range: NSRange(username.startIndex..., in: username))
-
-        if !matches.isEmpty {
-            // Already a md5 hash?
-            // done, use as is.
-            hash = lowerUsername
-        } else {
-            hash = lowerUsername.md5()
-        }
-
-        hash = hash.replacingOccurrences(of: "[^0-9a-f]", with: "", options: .regularExpression)
-
-        // userColors has 18 colors by default
-        let userColorIx = NCGlobal.hashToInt(hash: hash, maximum: 18)
-        return NCBrandColor.shared.userColors[userColorIx]
-    }
-
-    func getHeightHeaderEmptyData(view: UIView, portraitOffset: CGFloat, landscapeOffset: CGFloat, isHeaderMenuTransferViewEnabled: Bool = false) -> CGFloat {
-        var height: CGFloat = 0
-        if UIDevice.current.orientation.isPortrait {
-            height = (view.frame.height / 2) - (view.safeAreaInsets.top / 2) + portraitOffset
-        } else {
-            height = (view.frame.height / 2) + landscapeOffset + CGFloat(isHeaderMenuTransferViewEnabled ? 35 : 0)
-        }
-        return height
-    }
-
-    // Convert a string to an integer evenly
-    // hash is hex string
-    static func hashToInt(hash: String, maximum: Int) -> Int {
-        let result = hash.compactMap(\.hexDigitValue)
-        return result.reduce(0, { $0 + $1 }) % maximum
-    }
+    static let shared = NCGlobal()
 
     // ENUM
     //
@@ -297,6 +252,12 @@ class NCGlobal: NSObject {
     let metadataStatusWaitUpload: Int           = 1
     let metadataStatusUploading: Int            = 2
     let metadataStatusUploadError: Int          = 3
+
+    let metadataStatusWaitCreateFolder: Int     = 10
+
+    let metadataStatusFileDown                  = [-1, -2, -3]
+    let metadataStatusFileUp                    = [1, 2, 3]
+    let metadataStatusAllUp                     = [1, 2, 3, 10]
 
     //  Hidden files included in the read
     //

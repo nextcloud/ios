@@ -132,7 +132,7 @@ extension NCNetworking {
 
         start()
 
-        if let task = nkBackground.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account) {
+        if let task = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account) {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Download file \(metadata.fileNameView) with task with taskIdentifier \(task.taskIdentifier)")
             database.setMetadataSession(ocId: metadata.ocId,
                                         sessionTaskIdentifier: task.taskIdentifier,
@@ -209,7 +209,8 @@ extension NCNetworking {
                                                                        "serverUrl": metadata.serverUrl,
                                                                        "account": metadata.account,
                                                                        "selector": metadata.sessionSelector,
-                                                                       "error": error])
+                                                                       "error": error],
+                                                            second: 0.5)
             } else if error.errorCode == NSURLErrorCancelled || error.errorCode == self.global.errorRequestExplicityCancelled {
                 NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
                 NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
@@ -224,7 +225,8 @@ extension NCNetworking {
                                                                        "ocIdTransfer": metadata.ocIdTransfer,
                                                                        "session": metadata.session,
                                                                        "serverUrl": metadata.serverUrl,
-                                                                       "account": metadata.account])
+                                                                       "account": metadata.account],
+                                                            second: 0.5)
             } else {
                 NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
                 self.database.setMetadataSession(ocId: metadata.ocId,
@@ -241,7 +243,8 @@ extension NCNetworking {
                                                                        "serverUrl": metadata.serverUrl,
                                                                        "account": metadata.account,
                                                                        "selector": metadata.sessionSelector,
-                                                                       "error": error])
+                                                                       "error": error],
+                                                            second: 0.5)
             }
         }
     }

@@ -49,7 +49,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                     return
                 }
             } else {
-                NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorE2EENotEnabled, errorDescription: "_e2e_server_disabled_"))
+                NCContentPresenter().showInfo(error: NKError(errorCode: global.errorE2EENotEnabled, errorDescription: "_e2e_server_disabled_"))
                 return
             }
         }
@@ -69,13 +69,13 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             } else if metadata.isAvailableEditorView || utilityFileSystem.fileProviderStorageExists(metadata) {
                 NCViewer().view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon)
             } else if NextcloudKit.shared.isNetworkReachable(),
-                      let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
+                      let metadata = database.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                session: NCNetworking.shared.sessionDownload,
-                                                                                               selector: NCGlobal.shared.selectorLoadFileView,
+                                                                                               selector: global.selectorLoadFileView,
                                                                                                sceneIdentifier: (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier) {
                 NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
             } else {
-                let error = NKError(errorCode: NCGlobal.shared.errorOffline, errorDescription: "_go_online_")
+                let error = NKError(errorCode: global.errorOffline, errorDescription: "_go_online_")
                 NCContentPresenter().showInfo(error: error)
             }
         }

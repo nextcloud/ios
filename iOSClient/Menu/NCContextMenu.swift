@@ -84,7 +84,8 @@ class NCContextMenu: NSObject {
                                                                        "session": metadata.session,
                                                                        "selector": NCGlobal.shared.selectorOpenIn,
                                                                        "error": NKError(),
-                                                                       "account": metadata.account])
+                                                                       "account": metadata.account],
+                                                            second: 0.5)
             } else {
                 guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                session: NCNetworking.shared.sessionDownload,
@@ -131,7 +132,8 @@ class NCContextMenu: NSObject {
                                                                        "session": metadata.session,
                                                                        "selector": NCGlobal.shared.selectorLoadFileQuickLook,
                                                                        "error": NKError(),
-                                                                       "account": metadata.account])
+                                                                       "account": metadata.account],
+                                                            second: 0.5)
             } else {
                 guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                session: NCNetworking.shared.sessionDownload,
@@ -204,56 +206,57 @@ class NCContextMenu: NSObject {
 
         var menu: [UIMenuElement] = []
 
-        if metadata.directory {
-
-            if metadata.isDirectoryE2EE || metadata.e2eEncrypted {
-                menu.append(favorite)
-            } else {
-                menu.append(favorite)
-                menu.append(deleteConfirmFile)
-            }
-            return UIMenu(title: "", children: [detail, UIMenu(title: "", options: .displayInline, children: menu)])
-
-        } else {
-
-            if metadata.lock {
-                menu.append(favorite)
-                if metadata.isDocumentViewableOnly {
-                    //
+        if NCNetworking.shared.isOnline {
+            if metadata.directory {
+                if metadata.isDirectoryE2EE || metadata.e2eEncrypted {
+                    menu.append(favorite)
                 } else {
-                    menu.append(share)
-                    if NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) != nil {
-                        menu.append(livePhotoSave)
-                    }
-                }
-            } else {
-                menu.append(favorite)
-                if metadata.isDocumentViewableOnly {
-                    if viewController is NCMedia {
-                        menu.append(viewInFolder)
-                    }
-                } else {
-                    menu.append(share)
-                    if NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) != nil {
-                        menu.append(livePhotoSave)
-                    }
-
-                    if viewController is NCMedia {
-                        menu.append(viewInFolder)
-                    }
-
-                    // MODIFY WITH QUICK LOOK
-                    if metadata.isModifiableWithQuickLook {
-                        menu.append(modify)
-                    }
-                }
-                if viewController is NCMedia {
+                    menu.append(favorite)
                     menu.append(deleteConfirmFile)
-                } else {
-                    menu.append(deleteSubMenu)
                 }
+                return UIMenu(title: "", children: [detail, UIMenu(title: "", options: .displayInline, children: menu)])
+            } else {
+                if metadata.lock {
+                    menu.append(favorite)
+                    if metadata.isDocumentViewableOnly {
+                        //
+                    } else {
+                        menu.append(share)
+                        if NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) != nil {
+                            menu.append(livePhotoSave)
+                        }
+                    }
+                } else {
+                    menu.append(favorite)
+                    if metadata.isDocumentViewableOnly {
+                        if viewController is NCMedia {
+                            menu.append(viewInFolder)
+                        }
+                    } else {
+                        menu.append(share)
+                        if NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) != nil {
+                            menu.append(livePhotoSave)
+                        }
+
+                        if viewController is NCMedia {
+                            menu.append(viewInFolder)
+                        }
+
+                        // MODIFY WITH QUICK LOOK
+                        if metadata.isModifiableWithQuickLook {
+                            menu.append(modify)
+                        }
+                    }
+                    if viewController is NCMedia {
+                        menu.append(deleteConfirmFile)
+                    } else {
+                        menu.append(deleteSubMenu)
+                    }
+                }
+                return UIMenu(title: "", children: [detail, UIMenu(title: "", options: .displayInline, children: menu)])
             }
-            return UIMenu(title: "", children: [detail, UIMenu(title: "", options: .displayInline, children: menu)])
+        } else {
+            return UIMenu()
         }
     }
 }

@@ -54,9 +54,20 @@ extension NCNetworking {
     func cancelTask(metadata: tableMetadata) {
         utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
 
-        /// No session found
+        /// DIRECTORY
+        ///
+        if metadata.status == global.metadataStatusWaitCreateFolder {
+            let metadatas = database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND status != 0", metadata.account, metadata.serverUrl))
+            for metadata in metadatas {
+                database.deleteMetadataOcId(metadata.ocId)
+                utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+            }
+        }
+
+        /// NO SESSION
+        ///
         if metadata.session.isEmpty {
-            self.database.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            self.database.deleteMetadataOcId(metadata.ocId)
             NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
             return
         }
@@ -174,7 +185,7 @@ extension NCNetworking {
         }
 
         if let metadata {
-            self.database.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            self.database.deleteMetadataOcId(metadata.ocId)
         } else if let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND session == %@",
                                                                                          self.global.metadataStatusWaitUpload,
                                                                                          self.global.metadataStatusUploading,
@@ -215,7 +226,7 @@ extension NCNetworking {
                 }
 
                 if let metadata {
-                    self.database.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                    self.database.deleteMetadataOcId(metadata.ocId)
                 } else if let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND (session == %@ || session == %@ || session == %@)",
                                                                                                  self.global.metadataStatusWaitUpload,
                                                                                                  self.global.metadataStatusUploading,
@@ -243,7 +254,7 @@ extension NCNetworking {
 
         for metadata in metadatas {
             guard let nkSession = NextcloudKit.shared.getSession(account: metadata.account) else {
-                self.database.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                self.database.deleteMetadataOcId(metadata.ocId)
                 utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
                 continue
             }
@@ -262,7 +273,7 @@ extension NCNetworking {
                                                      sessionError: "",
                                                      status: self.global.metadataStatusWaitUpload)
                 } else {
-                    self.database.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                    self.database.deleteMetadataOcId(metadata.ocId)
                 }
             }
         }
@@ -277,7 +288,7 @@ extension NCNetworking {
 
         for metadata in metadatas {
             guard let nkSession = NextcloudKit.shared.getSession(account: metadata.account) else {
-                self.database.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                self.database.deleteMetadataOcId(metadata.ocId)
                 utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
                 continue
             }
@@ -293,7 +304,7 @@ extension NCNetworking {
 
             var foundTask = false
             guard let tasks = await session?.allTasks else {
-                self.database.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                self.database.deleteMetadataOcId(metadata.ocId)
                 utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
                 continue
             }
@@ -310,7 +321,7 @@ extension NCNetworking {
                                                      sessionError: "",
                                                      status: self.global.metadataStatusWaitUpload)
                 } else {
-                    self.database.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                    self.database.deleteMetadataOcId(metadata.ocId)
                 }
             }
         }
@@ -323,7 +334,7 @@ extension NCNetworking {
 
         for metadata in metadatas {
             guard let nkSession = NextcloudKit.shared.getSession(account: metadata.account) else {
-                self.database.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                self.database.deleteMetadataOcId(metadata.ocId)
                 utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
                 continue
             }
@@ -352,7 +363,7 @@ extension NCNetworking {
                                                                       self.global.metadataStatusDownloading))
         for metadata in metadatas {
             guard let nkSession = NextcloudKit.shared.getSession(account: metadata.account) else {
-                self.database.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                self.database.deleteMetadataOcId(metadata.ocId)
                 utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
                 continue
             }

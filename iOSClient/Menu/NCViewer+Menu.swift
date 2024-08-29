@@ -68,7 +68,8 @@ extension NCViewer {
         // FAVORITE
         // Workaround: PROPPATCH doesn't work
         // https://github.com/nextcloud/files_lock/issues/68
-        if !metadata.lock {
+        if NCNetworking.shared.isOnline,
+           !metadata.lock {
             actions.append(
                 NCMenuAction(
                     title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
@@ -131,7 +132,8 @@ extension NCViewer {
                                                                                    "session": metadata.session,
                                                                                    "selector": NCGlobal.shared.selectorSaveAsScan,
                                                                                    "error": NKError(),
-                                                                                   "account": metadata.account])
+                                                                                   "account": metadata.account],
+                                                                        second: 0.5)
                         } else {
                             guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                            session: NCNetworking.shared.sessionDownload,
@@ -227,7 +229,8 @@ extension NCViewer {
                                                                                    "session": metadata.session,
                                                                                    "selector": NCGlobal.shared.selectorLoadFileQuickLook,
                                                                                    "error": NKError(),
-                                                                                   "account": metadata.account])
+                                                                                   "account": metadata.account],
+                                                                        second: 0.5)
                         } else {
                             guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                            session: NCNetworking.shared.sessionDownload,

@@ -46,17 +46,17 @@ class NCNetworkingProcess {
     private func startObserveTableMetadata() {
         do {
             let realm = try Realm()
-            let results = realm.objects(tableMetadata.self).filter("status IN %d", [global.metadataStatusWaitDownload, global.metadataStatusWaitUpload])
+            let results = realm.objects(tableMetadata.self).filter(NSPredicate(format: "status IN %@", [global.metadataStatusWaitDownload, global.metadataStatusWaitUpload]))
             notificationToken = results.observe { [weak self] (changes: RealmCollectionChange) in
                 switch changes {
                 case .initial:
                     print("Initial")
-                case .update(_, let deletions, let insertions, let modifications):
-                    if deletions.count > 0 || insertions.count > 0 || modifications.count > 0 {
+                case .update(_, _, let insertions, let modifications):
+                    if insertions.count > 0 || modifications.count > 0 {
                         guard let self else { return }
 
                         self.lockQueue.sync {
-                            guard !self.hasRun, NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi else { return }
+                            guard !self.hasRun, NCNetworking.shared.isOnline else { return }
                             self.hasRun = true
 
                             Task { [weak self] in
@@ -77,10 +77,10 @@ class NCNetworkingProcess {
 
     private func startTimer() {
         self.timerProcess?.invalidate()
-        self.timerProcess = Timer.scheduledTimer(withTimeInterval: 2, repeats: true, block: { _ in
+        self.timerProcess = Timer.scheduledTimer(withTimeInterval: 3, repeats: true, block: { _ in
 
             self.lockQueue.sync {
-                guard !self.hasRun, NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi else { return }
+                guard !self.hasRun, NCNetworking.shared.isOnline else { return }
                 self.hasRun = true
 
                 guard let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status != %d", NCGlobal.shared.metadataStatusNormal)) else { return }
@@ -128,6 +128,22 @@ class NCNetworkingProcess {
         let isWiFi = NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi
         var counterDownloading = metadatasDownloading.count
         var counterUploading = metadatasUploading.count
+
+        /// ------------------------ FOLDER
+        ///
+        if let metadatasWaitCreateFolder = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitCreateFolder), sorted: "serverUrl", ascending: true) {
+            for metadata in metadatasWaitCreateFolder {
+                let error = await NCNetworking.shared.createFolderOffline(metadata: metadata)
+                if error != .success {
+                    if metadata.sessionError.isEmpty {
+                        let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+                        let message = String(format: NSLocalizedString("_offlinefolder_error_", comment: ""), serverUrlFileName)
+                        NCContentPresenter().messageNotification(message, error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
+                    }
+                    return (counterDownloading, counterUploading)
+                }
+            }
+        }
 
         /// ------------------------ DOWNLOAD
         ///
@@ -184,7 +200,7 @@ class NCNetworkingProcess {
                 let metadatas = await NCCameraRoll().extractCameraRoll(from: metadata)
 
                 if metadatas.isEmpty {
-                    NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                    NCManageDatabase.shared.deleteMetadataOcId(metadata.ocId)
                 }
 
                 for metadata in metadatas where counterUploading < maxConcurrentOperationUpload {
@@ -270,7 +286,7 @@ class NCNetworkingProcess {
     func refreshProcessingTask() async -> (counterDownloading: Int, counterUploading: Int) {
         await withCheckedContinuation { continuation in
             self.lockQueue.sync {
-                guard !self.hasRun, NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi else { return }
+                guard !self.hasRun, NCNetworking.shared.isOnline else { return }
                 self.hasRun = true
 
                 Task { [weak self] in

@@ -82,7 +82,7 @@ extension NCNetworking {
                 }
                 switch error.errorCode {
                 case NKError.chunkNoEnoughMemory, NKError.chunkCreateFolder, NKError.chunkFilesNull, NKError.chunkFileNull:
-                    self.database.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                    self.database.deleteMetadataOcId(metadata.ocId)
                     self.database.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
                     NCContentPresenter().messageNotification("_error_files_upload_", error: error, delay: self.global.dismissAfterSecond, type: .error, afterDelay: 0.5)
                 case NKError.chunkFileUpload:
@@ -253,10 +253,10 @@ extension NCNetworking {
 
         // Check file dim > 0
         if utilityFileSystem.getFileSize(filePath: fileNameLocalPath) == 0 && metadata.size != 0 {
-            self.database.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            self.database.deleteMetadataOcId(metadata.ocId)
             completion(NKError(errorCode: self.global.errorResourceNotFound, errorDescription: NSLocalizedString("_error_not_found_", value: "The requested resource could not be found", comment: "")))
         } else {
-            if let task = nkBackground.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, account: metadata.account, sessionIdentifier: metadata.session) {
+            if let task = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, dateCreationFile: metadata.creationDate as Date, dateModificationFile: metadata.date as Date, account: metadata.account, sessionIdentifier: metadata.session) {
 
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload file \(metadata.fileNameView) with task with taskIdentifier \(task.taskIdentifier)")
                 self.database.setMetadataSession(ocId: metadata.ocId,
@@ -273,7 +273,7 @@ extension NCNetworking {
                                                                        "sessionSelector": metadata.sessionSelector])
                 completion(NKError())
             } else {
-                self.database.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                self.database.deleteMetadataOcId(metadata.ocId)
                 completion(NKError(errorCode: self.global.errorResourceNotFound, errorDescription: "task null"))
             }
         }
@@ -353,31 +353,34 @@ extension NCNetworking {
                     } else {
                         NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadedFile,
                                                                     object: nil,
-                                                                    userInfo: userInfo)
+                                                                    userInfo: userInfo,
+                                                                    second: 0.5)
                     }
                 } else {
                     if error.errorCode == NSURLErrorCancelled || error.errorCode == self.global.errorRequestExplicityCancelled {
                         NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
                         self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-                        self.database.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                        self.database.deleteMetadataOcId(metadata.ocId)
                         NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadCancelFile,
                                                                     object: nil,
                                                                     userInfo: ["ocId": metadata.ocId,
                                                                                "ocIdTransfer": metadata.ocIdTransfer,
                                                                                "session": metadata.session,
                                                                                "serverUrl": metadata.serverUrl,
-                                                                               "account": metadata.account])
+                                                                               "account": metadata.account],
+                                                                    second: 0.5)
                     } else if error.errorCode == self.global.errorBadRequest || error.errorCode == self.global.errorUnsupportedMediaType {
                         NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
                         self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-                        self.database.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                        self.database.deleteMetadataOcId(metadata.ocId)
                         NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadCancelFile,
                                                                     object: nil,
                                                                     userInfo: ["ocId": metadata.ocId,
                                                                                "ocIdTransfer": metadata.ocIdTransfer,
                                                                                "session": metadata.session,
                                                                                "serverUrl": metadata.serverUrl,
-                                                                               "account": metadata.account])
+                                                                               "account": metadata.account],
+                                                                    second: 0.5)
                         if isApplicationStateActive {
                             NCContentPresenter().showError(error: NKError(errorCode: error.errorCode, errorDescription: "_virus_detect_"))
                         }
@@ -403,14 +406,15 @@ extension NCNetworking {
                             }))
                             alertController.addAction(UIAlertAction(title: NSLocalizedString("_discard_changes_", comment: ""), style: .destructive, handler: { _ in
                                 self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-                                self.database.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                                self.database.deleteMetadataOcId(metadata.ocId)
                                 NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadCancelFile,
                                                                             object: nil,
                                                                             userInfo: ["ocId": metadata.ocId,
                                                                                        "ocIdTransfer": metadata.ocIdTransfer,
                                                                                        "session": metadata.session,
                                                                                        "serverUrl": metadata.serverUrl,
-                                                                                       "account": metadata.account])
+                                                                                       "account": metadata.account],
+                                                                            second: 0.5)
                             }))
 
                             // Select UIWindowScene active in serverUrl
@@ -446,7 +450,8 @@ extension NCNetworking {
                                                                                "serverUrl": metadata.serverUrl,
                                                                                "account": metadata.account,
                                                                                "fileName": metadata.fileName,
-                                                                               "error": error])
+                                                                               "error": error],
+                                                                    second: 0.5)
                         // Client Diagnostic
                         if error.errorCode == self.global.errorInternalServerError {
                             self.database.addDiagnostic(account: metadata.account,

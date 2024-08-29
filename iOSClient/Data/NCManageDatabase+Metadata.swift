@@ -455,7 +455,7 @@ extension NCManageDatabase {
         })
     }
 
-    func createMetadata(fileName: String, fileNameView: String, ocId: String, serverUrl: String, url: String, contentType: String, isUrl: Bool = false, name: String = NCGlobal.shared.appName, subline: String? = nil, iconName: String? = nil, iconUrl: String? = nil, session: NCSession.Session, sceneIdentifier: String?) -> tableMetadata {
+    func createMetadata(fileName: String, fileNameView: String, ocId: String, serverUrl: String, url: String, contentType: String, isUrl: Bool = false, name: String = NCGlobal.shared.appName, subline: String? = nil, iconName: String? = nil, iconUrl: String? = nil, directory: Bool = false, session: NCSession.Session, sceneIdentifier: String?) -> tableMetadata {
         let metadata = tableMetadata()
 
         if isUrl {
@@ -467,7 +467,7 @@ extension NCManageDatabase {
             }
             metadata.classFile = NKCommon.TypeClassFile.url.rawValue
         } else {
-            let (mimeType, classFile, iconName, _, _, _) = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: contentType, directory: false, account: session.account)
+            let (mimeType, classFile, iconName, _, _, _) = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: contentType, directory: directory, account: session.account)
             metadata.contentType = mimeType
             metadata.iconName = iconName
             metadata.classFile = classFile
@@ -486,6 +486,7 @@ extension NCManageDatabase {
         metadata.account = session.account
         metadata.creationDate = Date() as NSDate
         metadata.date = Date() as NSDate
+        metadata.directory = directory
         metadata.hasPreview = true
         metadata.etag = ocId
         metadata.fileName = fileName
@@ -563,6 +564,20 @@ extension NCManageDatabase {
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
+        }
+    }
+
+    func deleteMetadataOcId(_ ocId: String?) {
+        guard let ocId else { return }
+
+        do {
+            let realm = try Realm()
+            try realm.write {
+                let results = realm.objects(tableMetadata.self).filter("ocId == %@", ocId)
+                realm.delete(results)
+            }
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
     }
 

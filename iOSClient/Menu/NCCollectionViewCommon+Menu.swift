@@ -73,7 +73,8 @@ extension NCCollectionViewCommon {
         //
         // DETAILS
         //
-        if !NCCapabilities.shared.disableSharesView(account: metadata.account) {
+        if NCNetworking.shared.isOnline,
+           !NCCapabilities.shared.disableSharesView(account: metadata.account) {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_details_", comment: ""),
@@ -122,7 +123,8 @@ extension NCCollectionViewCommon {
         //
         // VIEW IN FOLDER
         //
-        if layoutKey != NCGlobal.shared.layoutViewFiles {
+        if NCNetworking.shared.isOnline,
+           layoutKey != NCGlobal.shared.layoutViewFiles {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_view_in_folder_", comment: ""),
@@ -138,14 +140,18 @@ extension NCCollectionViewCommon {
         //
         // LOCK / UNLOCK
         //
-        if !metadata.directory, metadata.canUnlock(as: metadata.userId), !NCCapabilities.shared.getCapabilities(account: metadata.account).capabilityFilesLockVersion.isEmpty {
+        if NCNetworking.shared.isOnline,
+           !metadata.directory,
+           metadata.canUnlock(as: metadata.userId),
+           !NCCapabilities.shared.getCapabilities(account: metadata.account).capabilityFilesLockVersion.isEmpty {
             actions.append(NCMenuAction.lockUnlockFiles(shouldLock: !metadata.lock, metadatas: [metadata], order: 30))
         }
 
         //
         // SET FOLDER E2EE
         //
-        if metadata.canSetDirectoryAsE2EE {
+        if NCNetworking.shared.isOnline,
+           metadata.canSetDirectoryAsE2EE {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_e2e_set_folder_encrypted_", comment: ""),
@@ -166,7 +172,8 @@ extension NCCollectionViewCommon {
         //
         // UNSET FOLDER E2EE
         //
-        if metadata.canUnsetDirectoryAsE2EE {
+        if NCNetworking.shared.isOnline,
+           metadata.canUnsetDirectoryAsE2EE {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_e2e_remove_folder_encrypted_", comment: ""),
@@ -193,7 +200,8 @@ extension NCCollectionViewCommon {
         // FAVORITE
         // FIXME: PROPPATCH doesn't work
         // https://github.com/nextcloud/files_lock/issues/68
-        if !metadata.lock {
+        if NCNetworking.shared.isOnline,
+           !metadata.lock {
             actions.append(
                 NCMenuAction(
                     title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
@@ -213,7 +221,8 @@ extension NCCollectionViewCommon {
         //
         // OFFLINE
         //
-        if metadata.canSetAsAvailableOffline {
+        if NCNetworking.shared.isOnline,
+           metadata.canSetAsAvailableOffline {
             actions.append(.setAvailableOfflineAction(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: self, order: 60, completion: {
                 self.reloadDataSource()
             }))
@@ -222,14 +231,16 @@ extension NCCollectionViewCommon {
         //
         // SHARE
         //
-        if metadata.canShare {
+        if NCNetworking.shared.isOnline,
+           metadata.canShare {
             actions.append(.share(selectedMetadatas: [metadata], viewController: self, order: 80))
         }
 
         //
         // SAVE LIVE PHOTO
         //
-        if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata),
+        if NCNetworking.shared.isOnline,
+           let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata),
            let hudView = self.tabBarController?.view {
             actions.append(
                 NCMenuAction(
@@ -246,7 +257,8 @@ extension NCCollectionViewCommon {
         //
         // SAVE AS SCAN
         //
-        if metadata.isSavebleAsImage {
+        if NCNetworking.shared.isOnline,
+           metadata.isSavebleAsImage {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_save_as_scan_", comment: ""),
@@ -261,7 +273,8 @@ extension NCCollectionViewCommon {
                                                                                    "session": metadata.session,
                                                                                    "selector": NCGlobal.shared.selectorSaveAsScan,
                                                                                    "error": NKError(),
-                                                                                   "account": metadata.account])
+                                                                                   "account": metadata.account],
+                                                                        second: 0.5)
                         } else {
                             guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                            session: NCNetworking.shared.sessionDownload,
@@ -277,7 +290,8 @@ extension NCCollectionViewCommon {
         //
         // RENAME
         //
-        if metadata.isRenameable {
+        if NCNetworking.shared.isOnline,
+           metadata.isRenameable {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_rename_", comment: ""),
@@ -293,14 +307,16 @@ extension NCCollectionViewCommon {
         //
         // COPY - MOVE
         //
-        if metadata.isCopyableMovable {
+        if NCNetworking.shared.isOnline,
+           metadata.isCopyableMovable {
             actions.append(.moveOrCopyAction(selectedMetadatas: [metadata], viewController: self, indexPath: [indexPath], order: 130))
         }
 
         //
         // MODIFY WITH QUICK LOOK
         //
-        if metadata.isModifiableWithQuickLook {
+        if NCNetworking.shared.isOnline,
+           metadata.isModifiableWithQuickLook {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_modify_", comment: ""),
@@ -315,7 +331,8 @@ extension NCCollectionViewCommon {
                                                                                    "session": metadata.session,
                                                                                    "selector": NCGlobal.shared.selectorLoadFileQuickLook,
                                                                                    "error": NKError(),
-                                                                                   "account": metadata.account])
+                                                                                   "account": metadata.account],
+                                                                        second: 0.5)
                         } else {
                             guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                            session: NCNetworking.shared.sessionDownload,
@@ -331,7 +348,8 @@ extension NCCollectionViewCommon {
         //
         // COLOR FOLDER
         //
-        if self is NCFiles, metadata.directory {
+        if self is NCFiles,
+           metadata.directory {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_change_color_", comment: ""),

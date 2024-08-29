@@ -103,7 +103,7 @@ extension NCManageDatabase {
             let results = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl BEGINSWITH %@", account, serverUrl)
             for result in results {
                 self.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", result.account, result.serverUrl))
-                self.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", result.ocId))
+                self.deleteLocalFileOcId(result.ocId)
             }
             try realm.write {
                 realm.delete(results)

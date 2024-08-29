@@ -130,7 +130,8 @@ class NCNetworkingE2EEUpload: NSObject {
                            "serverUrl": metadata.serverUrl,
                            "account": metadata.account,
                            "fileName": metadata.fileName,
-                           "error": NKError(errorCode: NCGlobal.shared.errorE2EELock, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))])
+                           "error": NKError(errorCode: NCGlobal.shared.errorE2EELock, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))],
+                second: 0.5)
             return NKError(errorCode: NCGlobal.shared.errorE2EELock, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
         }
 
@@ -157,7 +158,8 @@ class NCNetworkingE2EEUpload: NSObject {
                                                                    "serverUrl": metadata.serverUrl,
                                                                    "account": metadata.account,
                                                                    "fileName": metadata.fileName,
-                                                                   "error": sendE2eeError])
+                                                                   "error": sendE2eeError],
+                                                        second: 0.5)
             await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
             return sendE2eeError
         }
@@ -193,7 +195,7 @@ class NCNetworkingE2EEUpload: NSObject {
         if let afError = resultsSendFile.afError, afError.isExplicitlyCancelledError {
 
             utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            NCManageDatabase.shared.deleteMetadataOcId(metadata.ocId)
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile,
                                                         object: nil,
                                                         userInfo: ["ocId": metadata.ocId,
@@ -202,11 +204,12 @@ class NCNetworkingE2EEUpload: NSObject {
                                                                    "serverUrl": metadata.serverUrl,
                                                                    "account": metadata.account,
                                                                    "fileName": metadata.fileName,
-                                                                   "error": resultsSendFile.error])
+                                                                   "error": resultsSendFile.error],
+                                                        second: 0.5)
 
         } else if resultsSendFile.error == .success, let ocId = resultsSendFile.ocId {
 
-            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            NCManageDatabase.shared.deleteMetadataOcId(metadata.ocId)
             utilityFileSystem.moveFileInBackground(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId), toPath: utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
 
             metadata.date = (resultsSendFile.date as? NSDate) ?? NSDate()
@@ -230,7 +233,8 @@ class NCNetworkingE2EEUpload: NSObject {
                                                                    "serverUrl": metadata.serverUrl,
                                                                    "account": metadata.account,
                                                                    "fileName": metadata.fileName,
-                                                                   "error": resultsSendFile.error])
+                                                                   "error": resultsSendFile.error],
+                                                        second: 0.5)
         } else {
             NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
                                                        sessionTaskIdentifier: 0,
@@ -245,7 +249,8 @@ class NCNetworkingE2EEUpload: NSObject {
                                                                    "serverUrl": metadata.serverUrl,
                                                                    "account": metadata.account,
                                                                    "fileName": metadata.fileName,
-                                                                   "error": resultsSendFile.error])
+                                                                   "error": resultsSendFile.error],
+                                                        second: 0.5)
         }
 
         return (resultsSendFile.error)

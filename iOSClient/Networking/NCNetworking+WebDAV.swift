@@ -183,8 +183,9 @@ extension NCNetworking {
 
     func createFolder(fileName: String,
                       serverUrl: String,
-                      overwrite: Bool = false,
+                      overwrite: Bool,
                       withPush: Bool,
+                      metadata: tableMetadata? = nil,
                       sceneIdentifier: String?,
                       session: NCSession.Session,
                       completion: @escaping (_ error: NKError) -> Void) {
@@ -199,7 +200,7 @@ extension NCNetworking {
             }
 #endif
         } else {
-            createFolderPlain(fileName: fileName, serverUrl: serverUrl, overwrite: overwrite, withPush: withPush, sceneIdentifier: sceneIdentifier, session: session, completion: completion)
+            createFolderPlain(fileName: fileName, serverUrl: serverUrl, overwrite: overwrite, withPush: withPush, metadata: metadata, sceneIdentifier: sceneIdentifier, session: session, completion: completion)
         }
     }
 
@@ -207,6 +208,7 @@ extension NCNetworking {
                                    serverUrl: String,
                                    overwrite: Bool,
                                    withPush: Bool,
+                                   metadata: tableMetadata?,
                                    sceneIdentifier: String?,
                                    session: NCSession.Session,
                                    completion: @escaping (_ error: NKError) -> Void) {
@@ -221,36 +223,51 @@ extension NCNetworking {
             fileNameFolder = utilityFileSystem.createFileName(fileNameFolder, serverUrl: serverUrl, account: session.account)
         }
         if fileNameFolder.isEmpty {
-            return completion(NKError())
+            return completion(.success)
+        }
+        if isOffline {
+            let metadataForUpload = NCManageDatabase.shared.createMetadata(fileName: fileNameFolder,
+                                                                           fileNameView: fileNameFolder,
+                                                                           ocId: NSUUID().uuidString,
+                                                                           serverUrl: serverUrl,
+                                                                           url: "",
+                                                                           contentType: "httpd/unix-directory",
+                                                                           directory: true,
+                                                                           session: session,
+                                                                           sceneIdentifier: sceneIdentifier)
+            metadataForUpload.status = global.metadataStatusWaitCreateFolder
+            NCManageDatabase.shared.addMetadata(metadataForUpload)
+
+            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterCreateFolder, userInfo: ["ocId": metadataForUpload.ocId, "serverUrl": metadataForUpload.serverUrl, "account": metadataForUpload.account, "withPush": withPush, "sceneIdentifier": sceneIdentifier as Any])
+            return completion(.success)
         }
 
         let fileNameFolderUrl = serverUrl + "/" + fileNameFolder
-
         NextcloudKit.shared.createFolder(serverUrlFileName: fileNameFolderUrl, account: session.account) { account, _, _, error in
-            guard error == .success else {
-                if error.errorCode == self.global.errorMethodNotSupported && overwrite {
-                    completion(NKError())
-                } else {
-                    completion(error)
-                }
-                return
-            }
-
             self.readFile(serverUrlFileName: fileNameFolderUrl, account: account) { account, metadataFolder, error in
-                if error == .success {
-                    if let metadata = metadataFolder {
-                        self.database.addMetadata(metadata)
-                        self.database.addDirectory(e2eEncrypted: metadata.e2eEncrypted,
-                                                   favorite: metadata.favorite,
-                                                   ocId: metadata.ocId,
-                                                   fileId: metadata.fileId,
-                                                   permissions: metadata.permissions,
-                                                   serverUrl: fileNameFolderUrl,
-                                                   account: account)
+
+                /// metadataStatusWaitCreateFolder
+                ///
+                if let metadata, metadata.status == self.global.metadataStatusWaitCreateFolder {
+                    if error == .success {
+                        self.database.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@ AND serverUrl == %@", metadata.account, metadata.fileName, metadata.serverUrl))
+                    } else {
+                        self.database.setMetadataSession(ocId: metadata.ocId, sessionError: error.errorDescription)
                     }
-                    if let metadata = self.database.getMetadataFromOcId(metadataFolder?.ocId) {
-                        NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterCreateFolder, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl, "account": metadata.account, "withPush": withPush, "sceneIdentifier": sceneIdentifier as Any])
-                    }
+                }
+
+                if error == .success, let metadataFolder {
+                    self.database.addMetadata(metadataFolder)
+                    self.database.addDirectory(e2eEncrypted: metadataFolder.e2eEncrypted,
+                                                favorite: metadataFolder.favorite,
+                                                ocId: metadataFolder.ocId,
+                                                fileId: metadataFolder.fileId,
+                                                permissions: metadataFolder.permissions,
+                                                serverUrl: fileNameFolderUrl,
+                                                account: account)
+
+                    NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterCreateFolder, userInfo: ["ocId": metadataFolder.ocId, "serverUrl": metadataFolder.serverUrl, "account": metadataFolder.account, "withPush": withPush, "sceneIdentifier": sceneIdentifier as Any])
+
                 }
                 completion(error)
             }
@@ -270,7 +287,7 @@ extension NCNetworking {
         func createFolder(fileName: String, serverUrl: String) -> Bool {
             var result: Bool = false
             let semaphore = DispatchSemaphore(value: 0)
-            self.createFolder(fileName: fileName, serverUrl: serverUrl, overwrite: true, withPush: withPush, sceneIdentifier: sceneIdentifier, session: session) { error in
+            self.createFolder(fileName: fileName, serverUrl: serverUrl, overwrite: true, withPush: withPush, metadata: nil, sceneIdentifier: sceneIdentifier, session: session) { error in
                 if error == .success { result = true }
                 semaphore.signal()
             }
@@ -319,17 +336,23 @@ extension NCNetworking {
     // MARK: - Delete
 
     func deleteMetadata(_ metadata: tableMetadata, onlyLocalCache: Bool) async -> (NKError) {
-        if onlyLocalCache {
+        if metadata.status == global.metadataStatusWaitCreateFolder {
+            let metadatas = database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND status IN %@", metadata.account, metadata.serverUrl, global.metadataStatusAllUp))
+            for metadata in metadatas {
+                database.deleteMetadataOcId(metadata.ocId)
+                utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+            }
+        } else if onlyLocalCache {
 #if !EXTENSION
             NCActivityIndicator.shared.start()
 #endif
             func delete(metadata: tableMetadata) {
                 if let metadataLive = self.database.getMetadataLivePhoto(metadata: metadata) {
-                    self.database.deleteLocalFile(predicate: NSPredicate(format: "account == %@ AND ocId == %@", metadataLive.account, metadataLive.ocId))
+                    self.database.deleteLocalFileOcId(metadataLive.ocId)
                     utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId))
                 }
                 self.database.deleteVideo(metadata: metadata)
-                self.database.deleteLocalFile(predicate: NSPredicate(format: "account == %@ AND ocId == %@", metadata.account, metadata.ocId))
+                self.database.deleteLocalFileOcId(metadata.ocId)
                 utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
             }
 
@@ -346,10 +369,13 @@ extension NCNetworking {
 #if !EXTENSION
             NCActivityIndicator.shared.stop()
 #endif
-            return NKError()
+            return .success
         }
 
-        if metadata.isDirectoryE2EE {
+        if metadata.status == NCGlobal.shared.metadataStatusWaitCreateFolder {
+            NCManageDatabase.shared.deleteMetadataOcId(metadata.ocId)
+            return .success
+        } else if metadata.isDirectoryE2EE {
 #if !EXTENSION
             if let metadataLive = self.database.getMetadataLivePhoto(metadata: metadata) {
                 let error = await NCNetworkingE2EEDelete().delete(metadata: metadataLive)
@@ -394,8 +420,8 @@ extension NCNetworking {
             } catch { }
 
             self.database.deleteVideo(metadata: metadata)
-            self.database.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-            self.database.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+            self.database.deleteMetadataOcId(metadata.ocId)
+            self.database.deleteLocalFileOcId(metadata.ocId)
             // LIVE PHOTO SERVER
             if let metadataLive = self.database.getMetadataLivePhoto(metadata: metadata), metadataLive.isFlaggedAsLivePhotoByServer {
                 do {
@@ -403,8 +429,8 @@ extension NCNetworking {
                 } catch { }
 
                 self.database.deleteVideo(metadata: metadataLive)
-                self.database.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadataLive.ocId))
-                self.database.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadataLive.ocId))
+                self.database.deleteMetadataOcId(metadataLive.ocId)
+                self.database.deleteLocalFileOcId(metadataLive.ocId)
             }
 
             if metadata.directory {
@@ -424,7 +450,13 @@ extension NCNetworking {
         let fileNameNew = fileNameNew.trimmingCharacters(in: .whitespacesAndNewlines)
         let fileNameNewLive = (fileNameNew as NSString).deletingPathExtension + ".mov"
 
-        if metadata.isDirectoryE2EE {
+        if metadata.status == NCGlobal.shared.metadataStatusWaitCreateFolder {
+            metadata.fileName = fileNameNew
+            metadata.fileNameView = fileNameNew
+            NCManageDatabase.shared.addMetadata(metadata)
+            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterRenameFile, userInfo: ["ocId": metadata.ocId, "account": metadata.account, "indexPath": indexPath])
+            completion(.success)
+        } else if metadata.isDirectoryE2EE {
 #if !EXTENSION
             Task {
                 if let metadataLive = metadataLive {
@@ -487,7 +519,7 @@ extension NCNetworking {
                         self.database.setDirectory(serverUrl: serverUrl,
                                                    serverUrlTo: serverUrlTo,
                                                    etag: "",
-                                                   encrypted:directory.e2eEncrypted,
+                                                   encrypted: directory.e2eEncrypted,
                                                    account: metadata.account)
                     }
                 } else {
@@ -538,16 +570,16 @@ extension NCNetworking {
                     try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
                 } catch { }
                 self.database.deleteVideo(metadata: metadata)
-                self.database.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
-                self.database.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+                self.database.deleteMetadataOcId(metadata.ocId)
+                self.database.deleteLocalFileOcId(metadata.ocId)
                 // LIVE PHOTO SERVER
                 if let metadataLive = self.database.getMetadataLivePhoto(metadata: metadata), metadataLive.isFlaggedAsLivePhotoByServer {
                     do {
                         try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId))
                     } catch { }
                     self.database.deleteVideo(metadata: metadataLive)
-                    self.database.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", metadataLive.ocId))
-                    self.database.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", metadataLive.ocId))
+                    self.database.deleteMetadataOcId(metadataLive.ocId)
+                    self.database.deleteLocalFileOcId(metadataLive.ocId)
                 }
             }
         }

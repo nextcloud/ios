@@ -160,7 +160,7 @@ extension NCTrash: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         var height: Double = 0
         if let datasource, datasource.isEmpty {
-            height = NCGlobal.shared.getHeightHeaderEmptyData(view: view, portraitOffset: 0, landscapeOffset: 0)
+            height = utility.getHeightHeaderEmptyData(view: view, portraitOffset: 0, landscapeOffset: 0)
         }
         return CGSize(width: collectionView.frame.width, height: height)
     }

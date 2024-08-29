@@ -84,8 +84,8 @@ extension FileProviderExtension {
                     NCManageDatabase.shared.deleteDirectoryAndSubDirectory(serverUrl: dirForDelete, account: account)
                 }
 
-                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocId))
-                NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", ocId))
+                NCManageDatabase.shared.deleteMetadataOcId(ocId)
+                NCManageDatabase.shared.deleteLocalFileOcId(ocId)
                 completionHandler(nil)
             } else {
                 completionHandler(NSFileProviderError(.serverUnreachable))

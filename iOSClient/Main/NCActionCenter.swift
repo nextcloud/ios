@@ -75,8 +75,8 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 do {
                     try FileManager.default.removeItem(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
                 } catch { }
-                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocId))
-                NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", ocId))
+                NCManageDatabase.shared.deleteMetadataOcId(ocId)
+                NCManageDatabase.shared.deleteLocalFileOcId(ocId)
             } else {
                 NCContentPresenter().messageNotification("_download_file_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
             }
