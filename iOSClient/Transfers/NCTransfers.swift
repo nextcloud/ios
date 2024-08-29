@@ -230,7 +230,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             cell.imageItem.image = NCImageCache.shared.getImageFile()
         }
         /// Write status on Label Status / Info
-        let user = " - " + metadata.account
+        let user = (metadata.user == session.user ? "" : " - " + metadata.account)
         switch metadata.status {
         case NCGlobal.shared.metadataStatusWaitDownload:
             cell.labelStatus.text = NSLocalizedString("_status_wait_download_", comment: "") + user
