@@ -44,7 +44,7 @@ extension NCMedia: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         var numberOfItemsInSection = 0
         if let metadatas { numberOfItemsInSection = metadatas.count }
-        if numberOfItemsInSection == 0 {
+        if numberOfItemsInSection == 0 || NCNetworking.shared.isOffline {
             selectOrCancelButton.isHidden = true
             menuButton.isHidden = false
             gradientView.alpha = 0

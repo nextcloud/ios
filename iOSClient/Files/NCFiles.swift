@@ -50,13 +50,6 @@ class NCFiles: NCCollectionViewCommon {
             NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { notification in
                 let currentController = (self.tabBarController as? NCMainTabBarController)
 
-                /* DISABLED MULTI SCENE */
-                /*
-                if let userInfo = notification.userInfo, let account = userInfo["account"] as? String {
-                    currentController?.account = account
-                }
-                */
-
                 if let userInfo = notification.userInfo, let account = userInfo["account"] as? String {
                     if let controller = userInfo["controller"] as? NCMainTabBarController,
                        controller == currentController {

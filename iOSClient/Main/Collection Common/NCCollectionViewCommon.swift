@@ -660,7 +660,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.attributesZoomOut = []
             }
 
-            let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: utility.loadImage(named: "checkmark.circle"), attributes: self.dataSource.getMetadataSourceForAllSections().isEmpty ? .disabled : []) { _ in
+            let select = UIAction(title: NSLocalizedString("_select_", comment: ""),
+                                  image: utility.loadImage(named: "checkmark.circle"),
+                                  attributes: (self.dataSource.getMetadataSourceForAllSections().isEmpty || NCNetworking.shared.isOffline) ? .disabled : []) { _ in
                 self.setEditMode(true)
             }
 

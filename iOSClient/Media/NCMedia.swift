@@ -128,18 +128,6 @@ class NCMedia: UIViewController {
 
             self.layoutType = NCManageDatabase.shared.getLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")?.layout ?? NCGlobal.shared.mediaLayoutRatio
             self.reloadDataSource()
-
-            /* DISABLED MULTI SCENE */
-            /*
-            if let userInfo = notification.userInfo, let account = userInfo["account"] as? String {
-                if let controller = userInfo["controller"] as? NCMainTabBarController,
-                   controller == currentController,
-                   let firstMetadata = self.metadatas?.first,
-                   firstMetadata.account != account {
-                    self.collectionViewReloadData()
-                }
-            }
-            */
         }
     }
 
