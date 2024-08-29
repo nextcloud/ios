@@ -543,7 +543,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         let chunk: Int = userInfo["chunk"] as? Int ?? 0
         let e2eEncrypted: Bool = userInfo["e2eEncrypted"] as? Bool ?? false
-        let status = userInfo["status"] as? Int ?? global.metadataStatusNormal
 
         let transfer = NCTransferProgress.shared.append(NCTransferProgress.Transfer(ocId: ocId, ocIdTransfer: ocIdTransfer, session: session, chunk: chunk, e2eEncrypted: e2eEncrypted, progressNumber: progressNumber, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected))
 
@@ -1110,9 +1109,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func isHeaderMenuTransferViewEnabled() -> Results<tableMetadata>? {
         if headerMenuTransferView,
            NCNetworking.shared.isOnline,
-           let results = database.getResultsMetadatas(predicate: NSPredicate(format: "status == %d || status == %d",
-                                                                                            global.metadataStatusWaitUpload,
-                                                                                            global.metadataStatusUploading)),
+           let results = database.getResultsMetadatas(predicate: NSPredicate(format: "status IN %@", [global.metadataStatusWaitUpload, global.metadataStatusUploading])),
            !results.isEmpty {
             return results
         }
