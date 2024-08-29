@@ -138,10 +138,12 @@ class NCViewerMediaPage: UIViewController {
 
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: UIApplication.didBecomeActiveNotification, object: nil)
 
-        if currentViewController.metadata.isImage {
-            navigationItem.rightBarButtonItems = [moreNavigationItem, imageDetailNavigationItem]
-        } else {
-            navigationItem.rightBarButtonItems = [moreNavigationItem]
+        if NCNetworking.shared.isOnline {
+            if currentViewController.metadata.isImage {
+                navigationItem.rightBarButtonItems = [moreNavigationItem, imageDetailNavigationItem]
+            } else {
+                navigationItem.rightBarButtonItems = [moreNavigationItem]
+            }
         }
 
         for view in self.pageViewController.view.subviews {
