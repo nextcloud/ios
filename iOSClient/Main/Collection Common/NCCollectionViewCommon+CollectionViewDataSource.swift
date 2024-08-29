@@ -311,16 +311,16 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.fileStatusImage?.image = utility.loadImage(named: "livephoto", colors: isLayoutPhoto ? [.white] : [NCBrandColor.shared.iconImageColor2])
             a11yValues.append(NSLocalizedString("_upload_mov_livephoto_", comment: ""))
         } else if metadata.isVideo {
-            cell.fileStatusImage?.image = utility.loadImage(named: "play.circle", colors: isLayoutPhoto ? [.white] : [NCBrandColor.shared.iconImageColor2])
+            cell.fileStatusImage?.image = utility.loadImage(named: "play.circle", colors: NCBrandColor.shared.iconImageMultiColors)
         }
         if metadata.status == global.metadataStatusWaitCreateFolder {
-            cell.fileStatusImage?.image = utility.loadImage(named: "exclamationmark.arrow.triangle.2.circlepath", colors: isLayoutPhoto ? [.white] : [NCBrandColor.shared.iconImageColor])
+            cell.fileStatusImage?.image = utility.loadImage(named: "exclamationmark.arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
         }
         if global.metadataStatusFileUp.contains(metadata.status) {
-            cell.fileStatusImage?.image = utility.loadImage(named: "arrowshape.up.circle", colors: isLayoutPhoto ? [.white] : [NCBrandColor.shared.iconImageColor])
+            cell.fileStatusImage?.image = utility.loadImage(named: "arrowshape.up.circle", colors: NCBrandColor.shared.iconImageMultiColors)
         }
         if global.metadataStatusFileDown.contains(metadata.status) {
-            cell.fileStatusImage?.image = utility.loadImage(named: "arrowshape.down.circle", colors: isLayoutPhoto ? [.white] : [NCBrandColor.shared.iconImageColor])
+            cell.fileStatusImage?.image = utility.loadImage(named: "arrowshape.down.circle", colors: NCBrandColor.shared.iconImageMultiColors)
         }
 
         // URL
