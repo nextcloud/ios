@@ -55,7 +55,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
                             ocId.append(metadata.ocId)
                         }
                     }
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "onlyLocalCache": false, "error": error])
+                    NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "onlyLocalCache": false, "error": error])
                 }
                 self.setEditMode(false)
             })
@@ -76,7 +76,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
                 if error != .success {
                     NCContentPresenter().showError(error: error)
                 }
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "onlyLocalCache": true, "error": error])
+                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "onlyLocalCache": true, "error": error])
                 self.setEditMode(false)
             }
         })
@@ -128,7 +128,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
     func getSelectedMetadatas() -> [tableMetadata] {
         var selectedMetadatas: [tableMetadata] = []
         for ocId in selectOcId {
-            guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { continue }
+            guard let metadata = database.getMetadataFromOcId(ocId) else { continue }
             selectedMetadatas.append(metadata)
         }
         return selectedMetadatas
