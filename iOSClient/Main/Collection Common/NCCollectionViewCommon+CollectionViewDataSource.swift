@@ -312,8 +312,15 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             a11yValues.append(NSLocalizedString("_upload_mov_livephoto_", comment: ""))
         } else if metadata.isVideo {
             cell.fileStatusImage?.image = utility.loadImage(named: "play.circle", colors: isLayoutPhoto ? [.white] : [NCBrandColor.shared.iconImageColor2])
-        } else if metadata.status == global.metadataStatusWaitCreateFolder {
+        }
+        if metadata.status == global.metadataStatusWaitCreateFolder {
             cell.fileStatusImage?.image = utility.loadImage(named: "exclamationmark.arrow.triangle.2.circlepath", colors: isLayoutPhoto ? [.white] : [NCBrandColor.shared.iconImageColor])
+        }
+        if global.metadataStatusFileUp.contains(metadata.status) {
+            cell.fileStatusImage?.image = utility.loadImage(named: "arrowshape.up.circle", colors: isLayoutPhoto ? [.white] : [NCBrandColor.shared.iconImageColor])
+        }
+        if global.metadataStatusFileDown.contains(metadata.status) {
+            cell.fileStatusImage?.image = utility.loadImage(named: "arrowshape.down.circle", colors: isLayoutPhoto ? [.white] : [NCBrandColor.shared.iconImageColor])
         }
 
         // URL
