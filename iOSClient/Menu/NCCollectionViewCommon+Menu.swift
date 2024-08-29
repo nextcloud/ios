@@ -33,7 +33,7 @@ import Queuer
 extension NCCollectionViewCommon {
     func toggleMenu(metadata: tableMetadata, indexPath: IndexPath, imageIcon: UIImage?) {
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId),
-              let sceneIdentifier = (tabBarController as? NCMainTabBarController)?.sceneIdentifier else { return }
+              let sceneIdentifier = sceneIdentifier else { return }
         var actions = [NCMenuAction]()
         let serverUrl = metadata.serverUrl + "/" + metadata.fileName
         var isOffline: Bool = false

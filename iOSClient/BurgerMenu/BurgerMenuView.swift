@@ -142,16 +142,38 @@ private struct BurgerMenuViewButton: View {
 }
 
 private struct CustomProgressView: View {
-    private let height: CGFloat = 9
+    private let height: CGFloat = 8
+    private let cornerRadius: CGFloat = 13
+    private let blurRadius: CGFloat = 2
     let progress: Double
     var body: some View {
         GeometryReader { geometry in
-            Color(.BurgerMenu.progressBarBackground)
+            ZStack {
+                Color(.BurgerMenu.progressBarBackground)
+                    .overlay {
+                        RoundedRectangle(cornerRadius: cornerRadius)
+                            .stroke(Color(.BurgerMenu.commonShadow).opacity(0.6), 
+                                    lineWidth: 1)
+                            .frame(width: geometry.size.width+blurRadius,
+                                   height: 2*geometry.size.height)
+                            .blur(radius: blurRadius)
+                            .offset(x: blurRadius/2,
+                                    y: geometry.size.height/2)
+                            .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+                    }
+            }
+            .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
             Color(NCBrandColor.shared.brandElement)
-                .frame(width: geometry.size.width * progress)
+                .frame(width: geometry.size.width * progress + height)
+                .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+                .offset(x: -height)
+                .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+                .shadow(color: Color(.BurgerMenu.commonShadow).opacity(0.25),
+                        radius: 2,
+                        x: 0,
+                        y: 1)
         }
         .frame(height: height)
-        .clipShape(RoundedRectangle(cornerRadius: height/2))
     }
 }
 
@@ -192,7 +214,7 @@ private extension View {
     class BurgerMenuViewModelMock: BurgerMenuViewModel {
         override init(delegate: (any BurgerMenuViewModelDelegate)?) {
             super.init(delegate: delegate)
-            progressUsedSpace = 0.005
+            progressUsedSpace = 0.3
             messageUsedSpace = "You are using 62,5 MB of 607,21 GB"
             isVisible = true
         }

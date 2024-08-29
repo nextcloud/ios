@@ -87,13 +87,13 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
 
     func move() {
         let metadatas = getSelectedMetadatas()
-        NCActionCenter.shared.openSelectView(items: metadatas, controller: self.tabBarController as? NCMainTabBarController)
+        NCActionCenter.shared.openSelectView(items: metadatas, controller: self.mainTabBarController)
         setEditMode(false)
     }
 
     func share() {
         let metadatas = getSelectedMetadatas()
-        NCActionCenter.shared.openActivityViewController(selectedMetadata: metadatas, controller: self.tabBarController as? NCMainTabBarController)
+        NCActionCenter.shared.openActivityViewController(selectedMetadata: metadatas, controller: self.mainTabBarController)
         setEditMode(false)
     }
 
