@@ -69,13 +69,6 @@ struct NCSettingsAdvancedView: View {
                         model.updateLivePhoto()
                 }
                 .font(.system(size: 16))
-            }, footer: {
-                (
-                    Text(NSLocalizedString("_format_compatibility_footer_", comment: ""))
-                    +
-                    Text(NSLocalizedString("_upload_mov_livephoto_footer_", comment: ""))
-                ).font(.system(size: 12))
-                    .multilineTextAlignment(.leading)
             })
             /// Remove from Camera Roll
             Section(content: {
@@ -85,10 +78,6 @@ struct NCSettingsAdvancedView: View {
                         model.updateRemoveFromCameraRoll()
                 }
                 .font(.system(size: 16))
-            }, footer: {
-                Text(NSLocalizedString("_remove_photo_CameraRoll_desc_", comment: ""))
-                    .font(.system(size: 12))
-                    .multilineTextAlignment(.leading)
             })
             /// Section : Files App
             if !NCBrandOptions.shared.disable_openin_file {
@@ -99,10 +88,6 @@ struct NCSettingsAdvancedView: View {
                             model.updateAppIntegration()
                     }
                     .font(.system(size: 16))
-                }, footer: {
-                    Text(NSLocalizedString("_disable_files_app_footer_", comment: ""))
-                        .font(.system(size: 12))
-                        .multilineTextAlignment(.leading)
                 })
             }
             /// Section: Privacy
@@ -124,10 +109,6 @@ struct NCSettingsAdvancedView: View {
                     })
                 }, header: {
                     Text(NSLocalizedString("_privacy_", comment: ""))
-                }, footer: {
-                    Text(NSLocalizedString("_privacy_footer_", comment: ""))
-                        .font(.system(size: 12))
-                        .multilineTextAlignment(.leading)
                 })
             }
             /// Section: Diagnostic LOG
@@ -181,6 +162,29 @@ struct NCSettingsAdvancedView: View {
                 }, header: {
                     Text(NSLocalizedString("_diagnostics_", comment: ""))
                 }, footer: { })
+                /// Set Log Level() & Capabilities
+                if model.isAdminGroup {
+                    Section(content: {
+                        NavigationLink(destination: LazyView {
+                            NCCapabilitiesView(model: NCCapabilitiesModel())
+                        }) {
+                            HStack {
+                                Image(systemName: "list.bullet")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .font(Font.system(.body).weight(.light))
+                                    .frame(width: 25, height: 25)
+                                    .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
+                                Text(NSLocalizedString("_capabilities_", comment: ""))
+                            }
+                            .font(.system(size: 16))
+                        }
+                    }, header: {
+                        Text(NSLocalizedString("_capabilities_", comment: ""))
+                    }, footer: {
+                        Text(NSLocalizedString("_capabilities_footer_", comment: ""))
+                    })
+                }
             }
             /// Delete in Cache & Clear Cache
             Section(content: {
