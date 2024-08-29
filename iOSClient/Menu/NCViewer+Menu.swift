@@ -102,7 +102,7 @@ extension NCViewer {
         // SAVE LIVE PHOTO
         //
         if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata),
-           let hudView = viewController.tabBarController?.view {
+           let hudView = viewController.view {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_livephoto_save_", comment: ""),
