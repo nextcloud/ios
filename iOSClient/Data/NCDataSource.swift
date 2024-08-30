@@ -65,12 +65,6 @@ class NCDataSource: NSObject {
         }
         return nil
     }
-    func getMetadata(indexPath: NSIndexPath) -> tableMetadata? {
-        if indexPath.row < metadatas.count {
-            return metadatas[indexPath.row]
-        }
-        return nil
-    }
     func getIndexPathMetadata(ocId: String) -> IndexPath? {
         return nil
     }

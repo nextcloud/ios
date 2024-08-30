@@ -25,7 +25,7 @@ public let mediaSectionHeader = "mediaSectionHeader"
 public let mediaSectionFooter = "mediaSectionFooter"
 
 protocol NCMediaLayoutDelegate: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath, columnCount: Int, typeLayout: String) -> CGSize
+    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: IndexPath, columnCount: Int, typeLayout: String) -> CGSize
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, heightForHeaderInSection section: Int) -> Float
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, heightForFooterInSection section: Int) -> Float
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, insetForSection section: Int) -> UIEdgeInsets
@@ -176,7 +176,7 @@ public class NCMediaLayout: UICollectionViewLayout {
 
             // Item will be put into shortest column.
             for idx in 0..<itemCount {
-                let indexPath = NSIndexPath(item: idx, section: section)
+                let indexPath = IndexPath(item: idx, section: section)
                 let columnIndex = shortestColumnIndex()
 
                 let xOffset = Float(sectionInset.left) + Float(itemWidth + minimumColumnSpacing) * Float(columnIndex)
