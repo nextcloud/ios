@@ -471,6 +471,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
         } else {
             guard let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as? NCSectionFooter else { return NCSectionFooter() }
+            /*
             let sections = self.dataSource.numberOfSections()
             let section = indexPath.section
             let metadataForSection = self.dataSource.getMetadataForSection(indexPath.section)
@@ -512,6 +513,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     footer.separatorIsHidden(false)
                 }
             }
+            */
             return footer
         }
     }
