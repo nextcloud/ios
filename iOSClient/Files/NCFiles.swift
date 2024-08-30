@@ -109,13 +109,12 @@ class NCFiles: NCCollectionViewCommon {
         super.queryDB()
         var metadatas: [tableMetadata] = []
         let predicateDirectory = NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, self.serverUrl)
-        var predicate = NSPredicate()
 
         if NCKeychain().getPersonalFilesOnly(account: session.account) {
             let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND (ownerId == %@ || ownerId == '') AND mountType == '' AND NOT (status IN %@)", session.account, self.serverUrl, session.userId, global.metadataStatusFileUp)
             metadatas = self.database.getMetadatas(predicate: predicate)
         } else {
-            metadatas = self.database.getMetadatasAccount(session.account, serverUrl: self.serverUrl)
+            metadatas = self.database.getMetadatasAccount(session.account, serverUrl: self.serverUrl, sortedByKeyPath: layoutForView?.sort, ascending: layoutForView?.ascending)
         }
 
         self.metadataFolder = NCManageDatabase.shared.getMetadataFolder(session: session, serverUrl: self.serverUrl)
