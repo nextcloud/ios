@@ -31,7 +31,7 @@ import NextcloudKit
 import Queuer
 
 extension NCCollectionViewCommon {
-    func toggleMenu(metadata: tableMetadata, imageIcon: UIImage?) {
+    func toggleMenu(metadata: tableMetadata, image: UIImage?) {
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId),
               let sceneIdentifier = (tabBarController as? NCMainTabBarController)?.sceneIdentifier else {
             return
@@ -48,8 +48,8 @@ extension NCCollectionViewCommon {
             isOffline = localFile.offline
         }
 
-        if imageIcon != nil {
-            iconHeader = imageIcon!
+        if let image {
+            iconHeader = image
         } else {
             if metadata.directory {
                 iconHeader = NCImageCache.shared.getFolder(account: metadata.account)
@@ -374,7 +374,7 @@ extension NCCollectionViewCommon {
             actions.append(.deleteAction(selectedMetadatas: [metadata], metadataFolder: metadataFolder, viewController: self, order: 170))
         }
 
-        applicationHandle.addCollectionViewCommonMenu(metadata: metadata, imageIcon: imageIcon, actions: &actions)
+        applicationHandle.addCollectionViewCommonMenu(metadata: metadata, image: image, actions: &actions)
 
         presentMenu(with: actions)
     }

@@ -907,7 +907,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func tapMoreGridItem(with ocId: String, ocIdTransfer: String, image: UIImage?, sender: Any) {
         guard let metadata = self.database.getMetadataFromOcId(ocId) else { return }
-        toggleMenu(metadata: metadata, imageIcon: image)
+        toggleMenu(metadata: metadata, image: image)
     }
 
     func tapRichWorkspace(_ sender: Any) {
