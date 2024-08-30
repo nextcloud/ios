@@ -28,7 +28,7 @@ import NextcloudKit
 
 extension NCShareExtension: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let metadata = self.dataSource.cellForItemAt(indexPath: indexPath) else { return showAlert(description: "_invalid_url_") }
+        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else { return showAlert(description: "_invalid_url_") }
         let serverUrl = utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
         if metadata.e2eEncrypted && !NCKeychain().isEndToEndEnabled(account: session.account) {
             showAlert(title: "_info_", description: "_e2e_goto_settings_for_enable_")
@@ -83,7 +83,7 @@ extension NCShareExtension: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let metadata = self.dataSource.cellForItemAt(indexPath: indexPath), let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell else {
+        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath), let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell else {
             return UICollectionViewCell()
         }
 
@@ -102,7 +102,7 @@ extension NCShareExtension: UICollectionViewDataSource {
         cell.imageItem.backgroundColor = nil
 
         if metadata.directory {
-            setupDirectoryCell(cell, indexPath: indexPath, with: metadata)
+            setupDirectoryCell(cell, indexPath: indexPath, with: tableMetadata(value: metadata))
         }
 
         if metadata.favorite {

@@ -35,7 +35,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let metadata = self.dataSource.cellForItemAt(indexPath: indexPath),
+        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath),
               let cell = (cell as? NCCellProtocol) else { return }
         let existsIcon = utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)
 
@@ -92,7 +92,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     }
                     if metadata.hasPreview && metadata.status == global.metadataStatusNormal && !existsIcon {
                         for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { return }
-                        NCNetworking.shared.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, collectionView: collectionView))
+                        NCNetworking.shared.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: tableMetadata(value: metadata), collectionView: collectionView))
                     }
                 }
             } else {
@@ -118,7 +118,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     cell.filePreviewImageView?.image = utility.loadImage(named: "doc", colors: [NCBrandColor.shared.iconImageColor])
                 }
                 if !metadata.iconUrl.isEmpty {
-                    if let ownerId = getAvatarFromIconUrl(metadata: metadata) {
+                    if let ownerId = getAvatarFromIconUrl(metadata: tableMetadata(value: metadata)) {
                         let fileName = NCSession.shared.getFileName(urlBase: metadata.urlBase, user: ownerId)
                         downloadAvatar(fileName: fileName, user: ownerId, dispalyName: nil)
                     }
@@ -136,7 +136,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if !collectionView.indexPathsForVisibleItems.contains(indexPath) {
-            guard let metadata = self.dataSource.cellForItemAt(indexPath: indexPath) else { return }
+            guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else { return }
             for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
                 operation.cancel()
             }
@@ -149,7 +149,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         var isShare = false
         var isMounted = false
         var a11yValues: [String] = []
-        let metadata = self.dataSource.cellForItemAt(indexPath: indexPath) ?? tableMetadata()
+        let metadata = self.dataSource.getMetadata(indexPath: indexPath) ?? tableMetadata()
 
         // LAYOUT PHOTO
         if isLayoutPhoto {
@@ -173,7 +173,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             listCell.listCellDelegate = self
             cell = listCell
         }
-        guard let metadata = self.dataSource.cellForItemAt(indexPath: indexPath) else { return cell }
+        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else { return cell }
 
         defer {
             if !metadata.isSharable() || NCCapabilities.shared.disableSharesView(account: metadata.account) {

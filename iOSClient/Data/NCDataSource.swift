@@ -59,17 +59,15 @@ class NCDataSource: NSObject {
     func isEmpty() -> Bool {
         return metadatas.isEmpty
     }
-    func cellForItemAt(indexPath: IndexPath) -> tableMetadata? {
+    func getMetadata(indexPath: IndexPath) -> tableMetadata? {
         if indexPath.row < metadatas.count {
-            let metadata = tableMetadata(value: metadatas[indexPath.row])
-            return metadata
+            return metadatas[indexPath.row]
         }
         return nil
     }
-    func cellForItemAt(indexPath: NSIndexPath) -> tableMetadata? {
+    func getMetadata(indexPath: NSIndexPath) -> tableMetadata? {
         if indexPath.row < metadatas.count {
-            let metadata = tableMetadata(value: metadatas[indexPath.row])
-            return metadata
+            return metadatas[indexPath.row]
         }
         return nil
     }

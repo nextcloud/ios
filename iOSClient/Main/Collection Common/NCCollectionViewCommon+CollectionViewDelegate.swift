@@ -27,7 +27,8 @@ import NextcloudKit
 
 extension NCCollectionViewCommon: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let metadata = self.dataSource.cellForItemAt(indexPath: indexPath), !metadata.isInvalidated else { return }
+        guard var metadata = self.dataSource.getMetadata(indexPath: indexPath), !metadata.isInvalidated else { return }
+        metadata = tableMetadata(value: metadata)
 
         if isEditMode {
             if let index = selectOcId.firstIndex(of: metadata.ocId) {
@@ -82,8 +83,9 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        guard let metadata = self.dataSource.cellForItemAt(indexPath: indexPath) else { return nil }
+        guard var metadata = self.dataSource.getMetadata(indexPath: indexPath) else { return nil }
         if isEditMode || metadata.classFile == NKCommon.TypeClassFile.url.rawValue { return nil }
+        metadata = tableMetadata(value: metadata)
         let identifier = indexPath as NSCopying
         var image: UIImage?
         let cell = collectionView.cellForItem(at: indexPath)

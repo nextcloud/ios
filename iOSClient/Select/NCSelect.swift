@@ -259,10 +259,9 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 // MARK: - Collection View
 
 extension NCSelect: UICollectionViewDelegate {
-
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-
-        guard let metadata = self.dataSource.cellForItemAt(indexPath: indexPath) else { return }
+        guard var metadata = self.dataSource.getMetadata(indexPath: indexPath) else { return }
+        metadata = tableMetadata(value: metadata)
 
         if metadata.directory {
             pushMetadata(metadata)
@@ -276,7 +275,7 @@ extension NCSelect: UICollectionViewDelegate {
 
 extension NCSelect: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let metadata = self.dataSource.cellForItemAt(indexPath: indexPath) else { return }
+        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else { return }
 
         // Thumbnail
         if !metadata.directory {
@@ -290,7 +289,7 @@ extension NCSelect: UICollectionViewDataSource {
                 }
                 if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal && (!utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)) {
                     for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { return }
-                    NCNetworking.shared.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, collectionView: collectionView))
+                    NCNetworking.shared.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: tableMetadata(value: metadata), collectionView: collectionView))
                 }
             }
         }
@@ -310,7 +309,7 @@ extension NCSelect: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell,
-              let metadata = self.dataSource.cellForItemAt(indexPath: indexPath) else { return UICollectionViewCell() }
+              let metadata = self.dataSource.getMetadata(indexPath: indexPath) else { return UICollectionViewCell() }
         var isShare = false
         var isMounted = false
         let permissions = NCPermissions()
