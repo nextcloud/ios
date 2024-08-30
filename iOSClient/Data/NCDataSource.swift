@@ -51,15 +51,12 @@ class NCDataSource: NSObject {
          directory: tableDirectory? = nil,
          layoutForView: NCDBLayoutForView?,
          favoriteOnTop: Bool = true,
-         filterIsUpload: Bool = true,
          filterLivePhoto: Bool = true,
          providers: [NKSearchProvider]? = nil,
          searchResults: [NKSearchResult]? = nil) {
         super.init()
 
-        self.metadatas = metadatas.filter({
-            !(global.includeHiddenFiles.contains($0.fileNameView) || (filterIsUpload && $0.isUpload))
-        })
+        self.metadatas = metadatas
         self.directory = directory
         self.sort = layoutForView?.sort ?? "none"
         self.ascending = layoutForView?.ascending ?? false

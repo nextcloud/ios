@@ -284,7 +284,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         super.queryDB()
         let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal), sorted: "sessionDate", ascending: true, arraySlice: 50)
 
-        self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: layoutForView, filterIsUpload: false, filterLivePhoto: false)
+        self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: layoutForView, filterLivePhoto: false)
         if self.dataSource.metadatas.isEmpty {
             NCTransferProgress.shared.removeAll()
         }

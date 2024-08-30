@@ -66,7 +66,7 @@ class NCOffline: NCCollectionViewCommon {
             }
             metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@", session.account, ocIds))
         } else {
-            metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, self.serverUrl))
+            metadatas = NCManageDatabase.shared.getMetadatasAccount(session.account, serverUrl: self.serverUrl)
         }
 
         self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: layoutForView, providers: self.providers, searchResults: self.searchResults)

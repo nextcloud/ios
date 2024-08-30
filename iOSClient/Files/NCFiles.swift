@@ -108,19 +108,23 @@ class NCFiles: NCCollectionViewCommon {
     override func queryDB() {
         super.queryDB()
         var metadatas: [tableMetadata] = []
+        let predicateDirectory = NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, self.serverUrl)
+        var predicate = NSPredicate()
 
         if NCKeychain().getPersonalFilesOnly(account: session.account) {
-            metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (ownerId == %@ || ownerId == '') AND mountType == ''", session.account, self.serverUrl, session.userId))
+            let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND (ownerId == %@ || ownerId == '') AND mountType == '' AND NOT (status IN %@)", session.account, self.serverUrl, session.userId, global.metadataStatusFileUp)
+            metadatas = self.database.getMetadatas(predicate: predicate)
         } else {
-            metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, self.serverUrl))
-        }
-        let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, self.serverUrl))
-        if self.metadataFolder == nil {
-            self.metadataFolder = NCManageDatabase.shared.getMetadataFolder(session: session, serverUrl: self.serverUrl)
+            metadatas = self.database.getMetadatasAccount(session.account, serverUrl: self.serverUrl)
         }
 
-        self.richWorkspaceText = directory?.richWorkspace
-        self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: layoutForView, providers: self.providers, searchResults: self.searchResults)
+        self.metadataFolder = NCManageDatabase.shared.getMetadataFolder(session: session, serverUrl: self.serverUrl)
+        self.richWorkspaceText = NCManageDatabase.shared.getTableDirectory(predicate: predicateDirectory)?.richWorkspace
+
+        self.dataSource = NCDataSource(metadatas: metadatas,
+                                       layoutForView: layoutForView,
+                                       providers: self.providers,
+                                       searchResults: self.searchResults)
     }
 
     override func reloadDataSource(withQueryDB: Bool = true) {

@@ -745,6 +745,19 @@ extension NCManageDatabase {
         return []
     }
 
+    func getMetadatasAccount(_ account: String, serverUrl: String) -> [tableMetadata] {
+        let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND NOT (status IN %@)", account, serverUrl, NCGlobal.shared.metadataStatusFileUp)
+        do {
+            let realm = try Realm()
+            realm.refresh()
+            let results = realm.objects(tableMetadata.self).filter(predicate)
+            return Array(results.map { tableMetadata(value: $0) })
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
+        }
+        return []
+    }
+
     func getMetadatas(predicate: NSPredicate, sorted: String, ascending: Bool = false) -> [tableMetadata]? {
         do {
             let realm = try Realm()

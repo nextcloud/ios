@@ -259,10 +259,6 @@ class NCGlobal: NSObject {
     let metadataStatusFileUp                    = [1, 2, 3]
     let metadataStatusAllUp                     = [1, 2, 3, 10]
 
-    //  Hidden files included in the read
-    //
-    let includeHiddenFiles: [String] = [".LivePhoto"]
-
     // Auto upload subfolder granularity
     //
     let subfolderGranularityDaily               = 2
