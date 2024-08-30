@@ -213,6 +213,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         if pathText.isEmpty { pathText = "/" }
         cell.labelPath.text = pathText
         cell.setButtonMore(image: NCImageCache.shared.getImageButtonStop())
+
         /// Progress view
         if let transfer = NCTransferProgress.shared.get(ocIdTransfer: metadata.ocIdTransfer) {
             cell.setProgress(progress: transfer.progressNumber.floatValue)
@@ -255,6 +256,23 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             cell.labelInfo.text = NSLocalizedString("_waiting_for_", comment: "") + " " + NSLocalizedString("_reachable_wifi_", comment: "")
         }
         cell.accessibilityLabel = metadata.fileNameView + ", " + (cell.labelInfo.text ?? "")
+
+        /// Staus image
+        if metadata.status == global.metadataStatusWaitCreateFolder {
+            cell.fileStatusImage?.image = utility.loadImage(named: "exclamationmark.arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
+        } else if metadata.status == global.metadataStatusWaitDownload || metadata.status == global.metadataStatusWaitUpload {
+            cell.fileStatusImage?.image = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
+        }
+        if global.metadataStatusFileUp.contains(metadata.status) {
+            cell.fileStatusImage?.image = utility.loadImage(named: "arrowshape.up.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+        }
+        if global.metadataStatusFileDown.contains(metadata.status) {
+            cell.fileStatusImage?.image = utility.loadImage(named: "arrowshape.down.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+        }
+        if metadata.status == global.metadataStatusDownloadError || metadata.status == global.metadataStatusUploadError {
+            cell.fileStatusImage?.image = utility.loadImage(named: "exclamationmark.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+        }
+
         /// Remove last separator
         if collectionView.numberOfItems(inSection: indexPath.section) == indexPath.row + 1 {
             cell.separator.isHidden = true

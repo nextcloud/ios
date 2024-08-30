@@ -26,6 +26,7 @@ import UIKit
 class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProtocol {
 
     @IBOutlet weak var imageItem: UIImageView!
+    @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelPath: UILabel!
     @IBOutlet weak var labelStatus: UILabel!
@@ -53,6 +54,10 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
     var filePreviewImageView: UIImageView? {
         get { return imageItem }
         set { imageItem = newValue }
+    }
+    var fileStatusImage: UIImageView? {
+        get { return imageStatus }
+        set { imageStatus = newValue }
     }
     var fileUser: String? {
         get { return user }
@@ -153,6 +158,14 @@ class NCTransferCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellP
 
     func writeInfoDateSize(date: NSDate, size: Int64) {
         labelInfo.text = NCUtility().dateDiff(date as Date) + " · " + NCUtilityFileSystem().transformedSize(size)
+    }
+
+    func setIconOutlines() {
+        if imageStatus.image != nil {
+            imageStatus.makeCircularBackground(withColor: .systemBackground)
+        } else {
+            imageStatus.backgroundColor = .clear
+        }
     }
 }
 

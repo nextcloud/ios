@@ -305,7 +305,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.setButtonMore(image: NCImageCache.shared.getImageButtonMore())
         }
 
-        // STATUS
+        /// Staus image
         if metadata.isLivePhoto {
             cell.fileStatusImage?.image = utility.loadImage(named: "livephoto", colors: isLayoutPhoto ? [.white] : [NCBrandColor.shared.iconImageColor2])
             a11yValues.append(NSLocalizedString("_upload_mov_livephoto_", comment: ""))
@@ -314,12 +314,17 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
         if metadata.status == global.metadataStatusWaitCreateFolder {
             cell.fileStatusImage?.image = utility.loadImage(named: "exclamationmark.arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
+        } else if metadata.status == global.metadataStatusWaitDownload || metadata.status == global.metadataStatusWaitUpload {
+            cell.fileStatusImage?.image = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
         }
         if global.metadataStatusFileUp.contains(metadata.status) {
             cell.fileStatusImage?.image = utility.loadImage(named: "arrowshape.up.circle", colors: NCBrandColor.shared.iconImageMultiColors)
         }
         if global.metadataStatusFileDown.contains(metadata.status) {
             cell.fileStatusImage?.image = utility.loadImage(named: "arrowshape.down.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+        }
+        if metadata.status == global.metadataStatusDownloadError || metadata.status == global.metadataStatusUploadError {
+            cell.fileStatusImage?.image = utility.loadImage(named: "exclamationmark.circle", colors: NCBrandColor.shared.iconImageMultiColors)
         }
 
         // URL
