@@ -59,7 +59,7 @@ class NCFavorite: NCCollectionViewCommon {
         if self.serverUrl.isEmpty {
             metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND favorite == true", session.account))
         } else {
-            metadatas = NCManageDatabase.shared.getMetadatasAccount(session.account, serverUrl: self.serverUrl, sortedByKeyPath: layoutForView?.sort, ascending: layoutForView?.ascending)
+            metadatas = NCManageDatabase.shared.getMetadatasAccount(session.account, serverUrl: self.serverUrl, layoutForView: layoutForView)
         }
 
         self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: layoutForView, providers: self.providers, searchResults: self.searchResults)

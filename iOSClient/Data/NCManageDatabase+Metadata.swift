@@ -745,14 +745,18 @@ extension NCManageDatabase {
         return []
     }
 
-    func getMetadatasAccount(_ account: String, serverUrl: String, sortedByKeyPath: String?, ascending: Bool?) -> [tableMetadata] {
-        let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND NOT (status IN %@)", account, serverUrl, NCGlobal.shared.metadataStatusFileUp)
+    func getMetadatasAccount(_ account: String, serverUrl: String, layoutForView: NCDBLayoutForView?) -> [tableMetadata] {
+        let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND NOT (status IN %@) AND NOT (livePhotoFile != '' AND classFile == %@)", account, serverUrl, NCGlobal.shared.metadataStatusFileUp, NKCommon.TypeClassFile.video.rawValue)
         do {
             let realm = try Realm()
             realm.refresh()
             var results = realm.objects(tableMetadata.self).filter(predicate)
-            if let sortedByKeyPath, let ascending {
-                results = results.sorted(byKeyPath: sortedByKeyPath, ascending: ascending).sorted(byKeyPath: "directory", ascending: false).sorted(byKeyPath: "favorite", ascending: false)
+            if let layoutForView {
+                if layoutForView.directoryOnTop {
+                    results = results.sorted(byKeyPath: layoutForView.sort, ascending: layoutForView.ascending).sorted(byKeyPath: "directory", ascending: false).sorted(byKeyPath: "favorite", ascending: false)
+                } else {
+                    results = results.sorted(byKeyPath: layoutForView.sort, ascending: layoutForView.ascending).sorted(byKeyPath: "favorite", ascending: false)
+                }
             }
             results.forEach { metadata in
                 print("XXX " + metadata.fileName)
