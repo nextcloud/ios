@@ -27,7 +27,7 @@ import NextcloudKit
 
 extension NCCollectionViewCommon: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath), !metadata.isInvalidated else { return }
+        guard let metadata = self.dataSource.cellForItemAt(indexPath: indexPath), !metadata.isInvalidated else { return }
 
         if isEditMode {
             if let index = selectOcId.firstIndex(of: metadata.ocId) {
@@ -60,7 +60,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             let imageIcon = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
             if !metadata.isDirectoryE2EE && (metadata.isImage || metadata.isAudioOrVideo) {
                 var metadatas: [tableMetadata] = []
-                for metadata in dataSource.getMetadataSourceForAllSections() {
+                for metadata in self.dataSource.getMetadataSourceForAllSections() {
                     if metadata.isImage || metadata.isAudioOrVideo {
                         metadatas.append(metadata)
                     }
@@ -82,7 +82,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return nil }
+        guard let metadata = self.dataSource.cellForItemAt(indexPath: indexPath) else { return nil }
         if isEditMode || metadata.classFile == NKCommon.TypeClassFile.url.rawValue { return nil }
         let identifier = indexPath as NSCopying
         var image: UIImage?

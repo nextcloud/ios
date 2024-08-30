@@ -43,7 +43,7 @@ class NCGroupfolders: NCCollectionViewCommon {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        if dataSource.metadatas.isEmpty {
+        if self.dataSource.metadatas.isEmpty {
             reloadDataSource()
         }
         reloadDataSourceNetwork()

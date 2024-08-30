@@ -1137,7 +1137,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
         }
 
-        if isSearchingMode || layoutForView?.groupBy != "none" || dataSource.numberOfSections() > 1 {
+        if isSearchingMode || layoutForView?.groupBy != "none" || self.dataSource.numberOfSections() > 1 {
             if section == 0 {
                 return (getHeaderHeight(), headerRichWorkspace, global.heightSection)
             } else {
@@ -1153,7 +1153,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         if isEditMode {
             return CGSize.zero
-        } else if dataSource.getMetadataSourceForAllSections().isEmpty {
+        } else if self.dataSource.getMetadataSourceForAllSections().isEmpty {
             height = utility.getHeightHeaderEmptyData(view: view, portraitOffset: emptyDataPortaitOffset, landscapeOffset: emptyDataLandscapeOffset, isHeaderMenuTransferViewEnabled: isHeaderMenuTransferViewEnabled() != nil)
         } else {
             let (heightHeaderCommands, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: section)
@@ -1165,7 +1165,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - Footer size
 
     func sizeForFooterInSection(section: Int) -> CGSize {
-        let sections = dataSource.numberOfSections()
+        let sections = self.dataSource.numberOfSections()
         let metadataForSection = self.dataSource.getMetadataForSection(section)
         let isPaginated = metadataForSection?.lastSearchResult?.isPaginated ?? false
         let metadatasCount: Int = metadataForSection?.lastSearchResult?.entries.count ?? 0

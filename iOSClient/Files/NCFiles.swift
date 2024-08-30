@@ -90,7 +90,7 @@ class NCFiles: NCCollectionViewCommon {
         }
         super.viewWillAppear(animated)
 
-        if dataSource.metadatas.isEmpty {
+        if self.dataSource.metadatas.isEmpty {
             reloadDataSource(withQueryDB: true)
         }
         reloadDataSourceNetwork(withQueryDB: true)

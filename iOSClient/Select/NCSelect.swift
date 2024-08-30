@@ -262,7 +262,7 @@ extension NCSelect: UICollectionViewDelegate {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
 
-        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
+        guard let metadata = self.dataSource.cellForItemAt(indexPath: indexPath) else { return }
 
         if metadata.directory {
             pushMetadata(metadata)
@@ -275,9 +275,8 @@ extension NCSelect: UICollectionViewDelegate {
 }
 
 extension NCSelect: UICollectionViewDataSource {
-
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
+        guard let metadata = self.dataSource.cellForItemAt(indexPath: indexPath) else { return }
 
         // Thumbnail
         if !metadata.directory {
@@ -302,16 +301,16 @@ extension NCSelect: UICollectionViewDataSource {
     }
 
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return dataSource.numberOfSections()
+        return self.dataSource.numberOfSections()
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return dataSource.numberOfItemsInSection(section)
+        return self.dataSource.numberOfItemsInSection(section)
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell,
-              let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return UICollectionViewCell() }
+              let metadata = self.dataSource.cellForItemAt(indexPath: indexPath) else { return UICollectionViewCell() }
         var isShare = false
         var isMounted = false
         let permissions = NCPermissions()
@@ -404,7 +403,7 @@ extension NCSelect: UICollectionViewDataSource {
 
         if kind == UICollectionView.elementKindSectionHeader {
 
-            if dataSource.getMetadataSourceForAllSections().isEmpty {
+            if self.dataSource.getMetadataSourceForAllSections().isEmpty {
 
                 guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeaderEmptyData", for: indexPath) as? NCSectionFirstHeaderEmptyData else { return NCSectionFirstHeaderEmptyData() }
                 if self.dataSourceTask?.state == .running {
@@ -439,14 +438,14 @@ extension NCSelect: UICollectionViewDataSource {
         } else {
 
             guard let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as? NCSectionFooter else { return NCSectionFooter() }
-            let sections = dataSource.numberOfSections()
+            let sections = self.dataSource.numberOfSections()
             let section = indexPath.section
 
             footer.setTitleLabel("")
             footer.separatorIsHidden(true)
 
             if sections == 1 || section == sections - 1 {
-                let info = dataSource.getFooterInformationAllMetadatas()
+                let info = self.dataSource.getFooterInformationAllMetadatas()
                 footer.setTitleLabel(directories: info.directories, files: info.files, size: info.size)
             } else {
                 footer.separatorIsHidden(false)
@@ -475,7 +474,7 @@ extension NCSelect: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         var height: CGFloat = 0
-        if dataSource.getMetadataSourceForAllSections().isEmpty {
+        if self.dataSource.getMetadataSourceForAllSections().isEmpty {
             height = utility.getHeightHeaderEmptyData(view: view, portraitOffset: 0, landscapeOffset: -20)
         } else {
             let (heightHeaderCommands, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: section)
@@ -485,7 +484,7 @@ extension NCSelect: UICollectionViewDelegateFlowLayout {
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
-        let sections = dataSource.numberOfSections()
+        let sections = self.dataSource.numberOfSections()
         if section == sections - 1 {
             return CGSize(width: collectionView.frame.width, height: NCGlobal.shared.endHeightFooter)
         } else {
