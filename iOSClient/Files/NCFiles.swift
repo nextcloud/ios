@@ -265,7 +265,7 @@ class NCFiles: NCCollectionViewCommon {
 
     func blinkCell(fileName: String?) {
         if let fileName = fileName, let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", session.account, self.serverUrl, fileName)) {
-            let (indexPath, _) = self.dataSource.getIndexPathMetadata(ocId: metadata.ocId)
+            let indexPath = self.dataSource.getIndexPathMetadata(ocId: metadata.ocId)
             if let indexPath = indexPath {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     UIView.animate(withDuration: 0.3) {
@@ -285,7 +285,7 @@ class NCFiles: NCCollectionViewCommon {
 
     func openFile(fileName: String?) {
         if let fileName = fileName, let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", session.account, self.serverUrl, fileName)) {
-            let (indexPath, _) = self.dataSource.getIndexPathMetadata(ocId: metadata.ocId)
+            let indexPath = self.dataSource.getIndexPathMetadata(ocId: metadata.ocId)
             if let indexPath = indexPath {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     self.collectionView(self.collectionView, didSelectItemAt: indexPath)
