@@ -14,14 +14,11 @@ class NCDisplayModel: ObservableObject, ViewOnAppearHandling {
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     /// Keychain access
     var keychain = NCKeychain()
-    /// Root View Controller
-    @Published var controller: NCMainTabBarController?
     /// State variable for enabling the automatic appreance
     @Published var appearanceAutomatic: Bool = false
 
     /// Initializes the view model with default values.
-    init(controller: NCMainTabBarController?) {
-        self.controller = controller
+    init() {
         onViewAppear()
     }
 

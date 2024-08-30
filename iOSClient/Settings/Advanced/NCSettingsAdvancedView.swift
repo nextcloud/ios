@@ -285,5 +285,5 @@ struct NCSettingsAdvancedView: View {
 }
 
 #Preview {
-    NCSettingsAdvancedView(model: NCSettingsAdvancedModel(controller: nil), showExitAlert: false, showCacheAlert: false)
+    NCSettingsAdvancedView(model: NCSettingsAdvancedModel(viewController: nil), showExitAlert: false, showCacheAlert: false)
 }
