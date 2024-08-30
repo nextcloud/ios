@@ -758,10 +758,7 @@ extension NCManageDatabase {
                     results = results.sorted(byKeyPath: layoutForView.sort, ascending: layoutForView.ascending).sorted(byKeyPath: "favorite", ascending: false)
                 }
             }
-            results.forEach { metadata in
-                print("XXX " + metadata.fileName)
-            }
-            return Array(results.map { tableMetadata(value: $0) })
+            return Array(results)
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }

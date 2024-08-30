@@ -163,7 +163,7 @@ class NCFiles: NCCollectionViewCommon {
         super.reloadDataSourceNetwork()
 
         networkReadFolder { tableDirectory, metadatas, metadatasDifferentCount, metadatasModified, error in
-            DispatchQueue.global(qos: .userInteractive).async {
+            DispatchQueue.main.async {
                 if error == .success {
                     for metadata in metadatas ?? [] where !metadata.directory && downloadMetadata(metadata) {
                         if NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {

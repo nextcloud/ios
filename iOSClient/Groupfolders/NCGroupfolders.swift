@@ -23,6 +23,7 @@
 
 import UIKit
 import NextcloudKit
+import RealmSwift
 
 class NCGroupfolders: NCCollectionViewCommon {
 

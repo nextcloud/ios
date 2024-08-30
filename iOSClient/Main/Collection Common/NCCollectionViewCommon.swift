@@ -1000,20 +1000,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         // get layout for view
         layoutForView = database.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl)
 
-        DispatchQueue.global(qos: .userInteractive).async {
-            if withQueryDB { self.queryDB() }
-            DispatchQueue.main.async {
-                self.refreshControl.endRefreshing()
-                self.collectionView.reloadData()
-                self.setNavigationRightItems()
-            }
-        }
+        if withQueryDB { self.queryDB() }
+
+        self.refreshControl.endRefreshing()
+        self.collectionView.reloadData()
+        self.setNavigationRightItems()
     }
 
     @objc func reloadDataSourceNetwork(withQueryDB: Bool = false) {
-        DispatchQueue.main.async {
-            self.collectionView?.reloadData()
-        }
+        self.collectionView?.reloadData()
     }
 
     @objc func networkSearch() {
