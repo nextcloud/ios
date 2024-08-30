@@ -214,13 +214,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         cell.labelPath.text = pathText
         cell.setButtonMore(image: NCImageCache.shared.getImageButtonStop())
 
-        /// Progress view
-        if let transfer = NCTransferProgress.shared.get(ocIdTransfer: metadata.ocIdTransfer) {
-            cell.setProgress(progress: transfer.progressNumber.floatValue)
-        } else {
-            cell.setProgress(progress: 0.0)
-        }
-        /// Image
+        /// Image item
         if let image = utility.getIcon(metadata: metadata) {
             cell.imageItem.image = image
         } else if !metadata.iconName.isEmpty {
@@ -228,49 +222,50 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         } else {
             cell.imageItem.image = NCImageCache.shared.getImageFile()
         }
-        /// Write status on Label Status / Info
+
+        /// Status and Info
         let user = (metadata.user == session.user ? "" : " - " + metadata.account)
         switch metadata.status {
         case NCGlobal.shared.metadataStatusWaitDownload:
+            cell.fileStatusImage?.image = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
             cell.labelStatus.text = NSLocalizedString("_status_wait_download_", comment: "") + user
             cell.labelInfo.text = utilityFileSystem.transformedSize(metadata.size)
-        case NCGlobal.shared.metadataStatusWaitUpload, NCGlobal.shared.metadataStatusWaitCreateFolder:
+        case NCGlobal.shared.metadataStatusWaitUpload:
+            cell.fileStatusImage?.image = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
             cell.labelStatus.text = NSLocalizedString("_status_wait_upload_", comment: "") + user
             cell.labelInfo.text = ""
-        case NCGlobal.shared.metadataStatusUploading, NCGlobal.shared.metadataStatusDownloading:
-            if metadata.status == NCGlobal.shared.metadataStatusUploading {
-                cell.labelStatus.text = NSLocalizedString("_status_uploading_", comment: "") + user
-            } else {
-                cell.labelStatus.text = NSLocalizedString("_status_downloading_", comment: "") + user
-            }
+        case NCGlobal.shared.metadataStatusWaitCreateFolder:
+            cell.fileStatusImage?.image = utility.loadImage(named: "exclamationmark.arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.labelStatus.text = NSLocalizedString("_status_wait_create_folder_", comment: "") + user
+            cell.labelInfo.text = ""
+        case NCGlobal.shared.metadataStatusDownloading:
+            cell.fileStatusImage?.image = utility.loadImage(named: "arrowshape.down.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.labelStatus.text = NSLocalizedString("_status_downloading_", comment: "") + user
             cell.labelInfo.text = utilityFileSystem.transformedSize(metadata.size) + " - " + self.utilityFileSystem.transformedSize(transfer.totalBytes)
-        case NCGlobal.shared.metadataStatusUploadError:
+        case NCGlobal.shared.metadataStatusUploading:
+            cell.fileStatusImage?.image = utility.loadImage(named: "arrowshape.up.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.labelStatus.text = NSLocalizedString("_status_uploading_", comment: "") + user
+            cell.labelInfo.text = utilityFileSystem.transformedSize(metadata.size) + " - " + self.utilityFileSystem.transformedSize(transfer.totalBytes)
+        case NCGlobal.shared.metadataStatusDownloadError, NCGlobal.shared.metadataStatusUploadError:
+            cell.fileStatusImage?.image = utility.loadImage(named: "exclamationmark.circle", colors: NCBrandColor.shared.iconImageMultiColors)
             cell.labelStatus.text = NSLocalizedString("_status_upload_error_", comment: "") + user
             cell.labelInfo.text = metadata.sessionError
         default:
+            cell.fileStatusImage?.image = nil
             cell.labelStatus.text = ""
             cell.labelInfo.text = ""
         }
-        let isWiFi = NCNetworking.shared.networkReachability == .reachableEthernetOrWiFi
-        if metadata.session == NCNetworking.shared.sessionUploadBackgroundWWan && !isWiFi {
+
+        if metadata.session == NCNetworking.shared.sessionUploadBackgroundWWan && !(NCNetworking.shared.networkReachability == .reachableEthernetOrWiFi) {
             cell.labelInfo.text = NSLocalizedString("_waiting_for_", comment: "") + " " + NSLocalizedString("_reachable_wifi_", comment: "")
         }
         cell.accessibilityLabel = metadata.fileNameView + ", " + (cell.labelInfo.text ?? "")
 
-        /// Staus image
-        if metadata.status == global.metadataStatusWaitCreateFolder {
-            cell.fileStatusImage?.image = utility.loadImage(named: "exclamationmark.arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
-        } else if metadata.status == global.metadataStatusWaitDownload || metadata.status == global.metadataStatusWaitUpload {
-            cell.fileStatusImage?.image = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
-        }
-        if global.metadataStatusFileUp.contains(metadata.status) {
-            cell.fileStatusImage?.image = utility.loadImage(named: "arrowshape.up.circle", colors: NCBrandColor.shared.iconImageMultiColors)
-        }
-        if global.metadataStatusFileDown.contains(metadata.status) {
-            cell.fileStatusImage?.image = utility.loadImage(named: "arrowshape.down.circle", colors: NCBrandColor.shared.iconImageMultiColors)
-        }
-        if metadata.status == global.metadataStatusDownloadError || metadata.status == global.metadataStatusUploadError {
-            cell.fileStatusImage?.image = utility.loadImage(named: "exclamationmark.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+        /// Progress view
+        if let transfer = NCTransferProgress.shared.get(ocIdTransfer: metadata.ocIdTransfer) {
+            cell.setProgress(progress: transfer.progressNumber.floatValue)
+        } else {
+            cell.setProgress(progress: 0.0)
         }
 
         /// Remove last separator

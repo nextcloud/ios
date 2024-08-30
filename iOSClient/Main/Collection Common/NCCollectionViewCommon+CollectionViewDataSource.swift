@@ -305,29 +305,31 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.setButtonMore(image: NCImageCache.shared.getImageButtonMore())
         }
 
-        /// Staus image
+        /// Staus
         if metadata.isLivePhoto {
             cell.fileStatusImage?.image = utility.loadImage(named: "livephoto", colors: isLayoutPhoto ? [.white] : [NCBrandColor.shared.iconImageColor2])
             a11yValues.append(NSLocalizedString("_upload_mov_livephoto_", comment: ""))
         } else if metadata.isVideo {
             cell.fileStatusImage?.image = utility.loadImage(named: "play.circle", colors: NCBrandColor.shared.iconImageMultiColors)
         }
-        if metadata.status == global.metadataStatusWaitCreateFolder {
-            cell.fileStatusImage?.image = utility.loadImage(named: "exclamationmark.arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
-        } else if metadata.status == global.metadataStatusWaitDownload || metadata.status == global.metadataStatusWaitUpload {
+        switch metadata.status {
+        case NCGlobal.shared.metadataStatusWaitDownload:
             cell.fileStatusImage?.image = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
-        }
-        if global.metadataStatusFileUp.contains(metadata.status) {
-            cell.fileStatusImage?.image = utility.loadImage(named: "arrowshape.up.circle", colors: NCBrandColor.shared.iconImageMultiColors)
-        }
-        if global.metadataStatusFileDown.contains(metadata.status) {
+        case NCGlobal.shared.metadataStatusWaitUpload:
+            cell.fileStatusImage?.image = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
+        case NCGlobal.shared.metadataStatusWaitCreateFolder:
+            cell.fileStatusImage?.image = utility.loadImage(named: "exclamationmark.arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
+        case NCGlobal.shared.metadataStatusDownloading:
             cell.fileStatusImage?.image = utility.loadImage(named: "arrowshape.down.circle", colors: NCBrandColor.shared.iconImageMultiColors)
-        }
-        if metadata.status == global.metadataStatusDownloadError || metadata.status == global.metadataStatusUploadError {
+        case NCGlobal.shared.metadataStatusUploading:
+            cell.fileStatusImage?.image = utility.loadImage(named: "arrowshape.up.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+        case NCGlobal.shared.metadataStatusDownloadError, NCGlobal.shared.metadataStatusUploadError:
             cell.fileStatusImage?.image = utility.loadImage(named: "exclamationmark.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+        default:
+            break
         }
 
-        // URL
+        /// URL
         if metadata.classFile == NKCommon.TypeClassFile.url.rawValue {
             cell.fileLocalImage?.image = nil
             cell.hideButtonShare(true)
