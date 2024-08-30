@@ -90,7 +90,7 @@ class NCFiles: NCCollectionViewCommon {
         }
         super.viewWillAppear(animated)
 
-        if self.dataSource.metadatas.isEmpty {
+        if self.dataSource.isEmpty() {
             reloadDataSource(withQueryDB: true)
         }
         reloadDataSourceNetwork(withQueryDB: true)
@@ -129,7 +129,7 @@ class NCFiles: NCCollectionViewCommon {
     override func reloadDataSource(withQueryDB: Bool = true) {
         super.reloadDataSource(withQueryDB: withQueryDB)
 
-        if !self.dataSource.metadatas.isEmpty {
+        if !self.dataSource.isEmpty() {
             self.blinkCell(fileName: self.fileNameBlink)
             self.openFile(fileName: self.fileNameOpen)
             self.fileNameBlink = nil

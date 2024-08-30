@@ -285,7 +285,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal), sortedByKeyPath: "sessionDate", ascending: true, arraySlice: 50)
 
         self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: layoutForView)
-        if self.dataSource.metadatas.isEmpty {
+        if self.dataSource.isEmpty() {
             NCTransferProgress.shared.removeAll()
         }
         DispatchQueue.main.async {

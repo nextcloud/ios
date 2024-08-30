@@ -25,30 +25,17 @@ import UIKit
 import NextcloudKit
 
 class NCDataSource: NSObject {
-    var metadatas: [tableMetadata] = []
-    var metadatasForSection: [NCMetadataForSection] = []
-
+    private var metadatas: [tableMetadata] = []
+    private var metadatasForSection: [NCMetadataForSection] = []
     private let utilityFileSystem = NCUtilityFileSystem()
     private let global = NCGlobal.shared
-    private var sectionsValue: [String] = []
-    private var providers: [NKSearchProvider]?
-    private var searchResults: [NKSearchResult]?
-
-    private var ascending: Bool = true
-    private var sort: String = ""
-    private var directoryOnTop: Bool = true
-    private var favoriteOnTop: Bool = true
-    private var filterLivePhoto: Bool = true
 
     override init() {
         super.init()
     }
 
     init(metadatas: [tableMetadata],
-         directory: tableDirectory? = nil,
          layoutForView: NCDBLayoutForView?,
-         favoriteOnTop: Bool = true,
-         filterLivePhoto: Bool = true,
          providers: [NKSearchProvider]? = nil,
          searchResults: [NKSearchResult]? = nil) {
         super.init()
@@ -66,11 +53,25 @@ class NCDataSource: NSObject {
     func numberOfItemsInSection(_ section: Int) -> Int {
         return metadatas.count
     }
-    func getMetadataSourceForAllSections() -> [tableMetadata] {
+    func getMetadatas() -> [tableMetadata] {
         return metadatas
     }
+    func isEmpty() -> Bool {
+        return metadatas.isEmpty
+    }
     func cellForItemAt(indexPath: IndexPath) -> tableMetadata? {
-        return metadatas[indexPath.row]
+        if indexPath.row < metadatas.count {
+            let metadata = tableMetadata(value: metadatas[indexPath.row])
+            return metadata
+        }
+        return nil
+    }
+    func cellForItemAt(indexPath: NSIndexPath) -> tableMetadata? {
+        if indexPath.row < metadatas.count {
+            let metadata = tableMetadata(value: metadatas[indexPath.row])
+            return metadata
+        }
+        return nil
     }
     func getIndexPathMetadata(ocId: String) -> IndexPath? {
         return nil

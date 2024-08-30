@@ -660,7 +660,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
             let select = UIAction(title: NSLocalizedString("_select_", comment: ""),
                                   image: utility.loadImage(named: "checkmark.circle"),
-                                  attributes: (self.dataSource.getMetadataSourceForAllSections().isEmpty || NCNetworking.shared.isOffline) ? .disabled : []) { _ in
+                                  attributes: (self.dataSource.isEmpty() || NCNetworking.shared.isOffline) ? .disabled : []) { _ in
                 self.setEditMode(true)
             }
 
@@ -1154,7 +1154,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         if isEditMode {
             return CGSize.zero
-        } else if self.dataSource.getMetadataSourceForAllSections().isEmpty {
+        } else if self.dataSource.isEmpty() {
             height = utility.getHeightHeaderEmptyData(view: view, portraitOffset: emptyDataPortaitOffset, landscapeOffset: emptyDataLandscapeOffset, isHeaderMenuTransferViewEnabled: isHeaderMenuTransferViewEnabled() != nil)
         } else {
             let (heightHeaderCommands, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: section)

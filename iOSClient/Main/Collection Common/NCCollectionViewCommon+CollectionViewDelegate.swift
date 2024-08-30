@@ -60,7 +60,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             let imageIcon = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
             if !metadata.isDirectoryE2EE && (metadata.isImage || metadata.isAudioOrVideo) {
                 var metadatas: [tableMetadata] = []
-                for metadata in self.dataSource.getMetadataSourceForAllSections() {
+                for metadata in self.dataSource.getMetadatas() {
                     if metadata.isImage || metadata.isAudioOrVideo {
                         metadatas.append(metadata)
                     }
