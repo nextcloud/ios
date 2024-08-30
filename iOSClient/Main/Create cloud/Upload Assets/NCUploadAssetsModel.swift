@@ -211,7 +211,7 @@ class NCUploadAssetsModel: NSObject, ObservableObject, NCCreateFormUploadConflic
             if let results = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@ AND session != ''",
                                                                                          session.account,
                                                                                          serverUrl,
-                                                                                         fileName), sorted: "fileName", ascending: false), !results.isEmpty {
+                                                                                         fileName), sortedByKeyPath: "fileName", ascending: false), !results.isEmpty {
                 continue
             }
 

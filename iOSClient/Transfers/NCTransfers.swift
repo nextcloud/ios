@@ -282,7 +282,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     override func queryDB() {
         super.queryDB()
-        let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal), sorted: "sessionDate", ascending: true, arraySlice: 50)
+        let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal), sortedByKeyPath: "sessionDate", ascending: true, arraySlice: 50)
 
         self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: layoutForView, filterLivePhoto: false)
         if self.dataSource.metadatas.isEmpty {

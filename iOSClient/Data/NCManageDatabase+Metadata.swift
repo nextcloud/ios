@@ -764,10 +764,10 @@ extension NCManageDatabase {
         return []
     }
 
-    func getMetadatas(predicate: NSPredicate, sorted: String, ascending: Bool = false) -> [tableMetadata]? {
+    func getMetadatas(predicate: NSPredicate, sortedByKeyPath: String, ascending: Bool = false) -> [tableMetadata]? {
         do {
             let realm = try Realm()
-            let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
+            let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sortedByKeyPath, ascending: ascending)
             return Array(results.map { tableMetadata(value: $0) })
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
@@ -775,10 +775,10 @@ extension NCManageDatabase {
         return nil
     }
 
-    func getMetadatas(predicate: NSPredicate, sorted: String, ascending: Bool, arraySlice: Int = 0) -> [tableMetadata] {
+    func getMetadatas(predicate: NSPredicate, sortedByKeyPath: String, ascending: Bool, arraySlice: Int = 0) -> [tableMetadata] {
         do {
             let realm = try Realm()
-            let results = realm.objects(tableMetadata.self).filter(predicate).prefix(arraySlice)
+            let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sortedByKeyPath, ascending: ascending).prefix(arraySlice)
             return Array(results.map { tableMetadata(value: $0) })
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
