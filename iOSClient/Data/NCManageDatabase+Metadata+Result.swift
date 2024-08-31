@@ -37,7 +37,7 @@ extension NCManageDatabase {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
     }
-    
+
     func deleteMetadata(predicate: NSPredicate) {
         do {
             let realm = try Realm()
@@ -168,9 +168,9 @@ extension NCManageDatabase {
 
     func getResultsMetadatasAccount(_ account: String, serverUrl: String, layoutForView: NCDBLayoutForView?) -> [tableMetadata] {
         let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND NOT (status IN %@) AND NOT (livePhotoFile != '' AND classFile == %@)", account, serverUrl, NCGlobal.shared.metadataStatusFileUp, NKCommon.TypeClassFile.video.rawValue)
+
         do {
             let realm = try Realm()
-            realm.refresh()
             var results = realm.objects(tableMetadata.self).filter(predicate)
             if let layoutForView {
                 if layoutForView.directoryOnTop {
@@ -237,7 +237,6 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
-            realm.refresh()
             let groupfolders = realm.objects(TableGroupfolders.self).filter("account == %@", session.account)
             for groupfolder in groupfolders {
                 let mountPoint = groupfolder.mountPoint.hasPrefix("/") ? groupfolder.mountPoint : "/" + groupfolder.mountPoint
