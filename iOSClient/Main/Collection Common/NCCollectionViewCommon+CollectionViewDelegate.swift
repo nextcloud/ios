@@ -78,7 +78,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        guard var metadata = self.dataSource.getMetadata(indexPath: indexPath) else { return nil }
+        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else { return nil }
         if isEditMode || metadata.classFile == NKCommon.TypeClassFile.url.rawValue { return nil }
         let identifier = indexPath as NSCopying
         var image: UIImage?

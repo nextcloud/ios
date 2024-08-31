@@ -878,14 +878,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        DispatchQueue.global().async {
-            NCNetworking.shared.cancelUnifiedSearchFiles()
-            self.isSearchingMode = false
-            self.literalSearch = ""
-            self.providers?.removeAll()
-            self.dataSource.removeAll()
-            self.reloadDataSource()
-        }
+        NCNetworking.shared.cancelUnifiedSearchFiles()
+        self.isSearchingMode = false
+        self.literalSearch = ""
+        self.providers?.removeAll()
+        self.dataSource.removeAll()
+        self.reloadDataSource()
     }
 
     // MARK: - TAP EVENT
@@ -1053,7 +1051,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func unifiedSearchMore(metadataForSection: NCMetadataForSection?) {
-        /*
         guard let metadataForSection = metadataForSection, let lastSearchResult = metadataForSection.lastSearchResult, let cursor = lastSearchResult.cursor, let term = literalSearch else { return }
 
         metadataForSection.unifiedSearchInProgress = true
@@ -1075,7 +1072,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.collectionView?.reloadData()
             }
         }
-        */
     }
 
     // MARK: - Push metadata
