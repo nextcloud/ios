@@ -375,14 +375,9 @@ class NCViewerMediaPage: UIViewController {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               let error = userInfo["error"] as? NKError,
-              error == .success,
-              let index = metadatas.firstIndex(where: {$0.ocId == ocId}),
-              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
-        else {
-            return
-        }
+              error == .success
+        else { return }
 
-        self.metadatas[index] = metadata
         if self.currentViewController.metadata.ocId == ocId {
             self.currentViewController.loadImage()
         } else {
@@ -393,13 +388,11 @@ class NCViewerMediaPage: UIViewController {
     @objc func deleteFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary? else { return }
 
-        if let ocIds = userInfo["ocId"] as? [String] {
-            // Stop media
-            if let ncplayer = currentViewController.ncplayer, ncplayer.isPlay() {
-                ncplayer.playerPause()
-            }
-            self.viewUnload()
+        // Stop media
+        if let ncplayer = currentViewController.ncplayer, ncplayer.isPlay() {
+            ncplayer.playerPause()
         }
+        self.viewUnload()
     }
 
     @objc func moveFile(_ notification: NSNotification) {
@@ -418,8 +411,7 @@ class NCViewerMediaPage: UIViewController {
     @objc func renameFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
-              let index = metadatas.firstIndex(where: {$0.ocId == ocId}),
-              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
+              let index = metadatas.firstIndex(where: {$0.ocId == ocId})
         else { return }
 
         // Stop media
@@ -427,7 +419,7 @@ class NCViewerMediaPage: UIViewController {
             ncplayer.playerPause()
         }
 
-        metadatas[index] = metadata
+        let metadata = metadatas[index]
         if index == currentIndex {
             navigationItem.title = metadata.fileNameView
             currentViewController.metadata = metadata
