@@ -62,7 +62,7 @@ class NCCameraRoll: NSObject {
             }
             metadataSource.isExtractFile = true
             if let metadata = NCManageDatabase.shared.addMetadata(metadataSource) {
-                metadatas.append(metadata)
+                metadatas.append(tableMetadata(value: metadata))
             }
             return completition(metadatas)
         }
@@ -75,8 +75,8 @@ class NCCameraRoll: NSObject {
                 let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadataSource.assetLocalIdentifier], options: nil)
                 if metadata.isLivePhoto, fetchAssets.count > 0 {
                     self.createMetadataLivePhoto(metadata: metadata, asset: fetchAssets.firstObject) { metadata in
-                        if let metadata = metadata, let metadata = NCManageDatabase.shared.addMetadata(metadata) {
-                            metadatas.append(metadata)
+                        if let metadata, let metadata = NCManageDatabase.shared.addMetadata(metadata) {
+                            metadatas.append(tableMetadata(value: metadata))
                         }
                         completition(metadatas)
                     }
@@ -126,7 +126,7 @@ class NCCameraRoll: NSObject {
                     }
                     metadata.isExtractFile = true
                     if let metadata = NCManageDatabase.shared.addMetadata(metadata) {
-                        metadataReturn = metadata
+                        metadataReturn = tableMetadata(value: metadata)
                     }
                 }
                 completion(metadataReturn, fileNamePath, error)
@@ -287,7 +287,8 @@ class NCCameraRoll: NSObject {
                 metadataLivePhoto.creationDate = metadata.creationDate
                 metadataLivePhoto.date = metadata.date
                 metadataLivePhoto.uploadDate = metadata.uploadDate
-                return completion(NCManageDatabase.shared.addMetadata(metadataLivePhoto))
+                let returnMetadata = tableMetadata(value: NCManageDatabase.shared.addMetadata(metadataLivePhoto))
+                return completion(returnMetadata)
             }
         }
     }
