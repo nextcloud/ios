@@ -59,7 +59,7 @@ class NCDataSource: NSObject {
     func isEmpty() -> Bool {
         return metadatas.isEmpty
     }
-    func getResultttMetadata(indexPath: IndexPath) -> tableMetadata? {
+    func getResultMetadata(indexPath: IndexPath) -> tableMetadata? {
         if indexPath.row < metadatas.count {
             return metadatas[indexPath.row]
         }

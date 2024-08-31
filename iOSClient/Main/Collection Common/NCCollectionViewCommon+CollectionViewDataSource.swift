@@ -136,7 +136,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if !collectionView.indexPathsForVisibleItems.contains(indexPath) {
-            guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else { return }
+            guard let metadata = self.dataSource.getResultMetadata(indexPath: indexPath) else { return }
             for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
                 operation.cancel()
             }
@@ -149,7 +149,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         var isShare = false
         var isMounted = false
         var a11yValues: [String] = []
-        let metadata = self.dataSource.getMetadata(indexPath: indexPath) ?? tableMetadata()
+        let metadata = self.dataSource.getResultMetadata(indexPath: indexPath) ?? tableMetadata()
 
         // LAYOUT PHOTO
         if isLayoutPhoto {
