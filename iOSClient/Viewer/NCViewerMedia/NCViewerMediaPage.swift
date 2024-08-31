@@ -116,7 +116,7 @@ class NCViewerMediaPage: UIViewController {
         progressView.trackTintColor = .clear
         progressView.progress = 0
 
-        let viewerMedia = getViewerMedia(index: currentIndex, metadata: metadatas[currentIndex])
+        let viewerMedia = getViewerMedia(index: currentIndex, metadata: tableMetadata(value: metadatas[currentIndex]))
         pageViewController.setViewControllers([viewerMedia], direction: .forward, animated: true, completion: nil)
         changeScreenMode(mode: viewerMediaScreenMode)
 
@@ -541,18 +541,18 @@ class NCViewerMediaPage: UIViewController {
 extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerDataSource {
 
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
-
         if currentIndex == 0 { return nil }
+        let metadata = tableMetadata(value: metadatas[currentIndex - 1])
 
-        let viewerMedia = getViewerMedia(index: currentIndex - 1, metadata: metadatas[currentIndex - 1])
+        let viewerMedia = getViewerMedia(index: currentIndex - 1, metadata: metadata)
         return viewerMedia
     }
 
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
-
         if currentIndex == metadatas.count - 1 { return nil }
+        let metadata = tableMetadata(value: metadatas[currentIndex + 1])
 
-        let viewerMedia = getViewerMedia(index: currentIndex + 1, metadata: metadatas[currentIndex + 1])
+        let viewerMedia = getViewerMedia(index: currentIndex + 1, metadata: metadata)
         return viewerMedia
     }
 
