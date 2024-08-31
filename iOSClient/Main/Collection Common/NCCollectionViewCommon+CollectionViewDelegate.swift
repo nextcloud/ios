@@ -28,7 +28,6 @@ import NextcloudKit
 extension NCCollectionViewCommon: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard var metadata = self.dataSource.getMetadata(indexPath: indexPath), !metadata.isInvalidated else { return }
-        metadata = tableMetadata(value: metadata)
 
         if isEditMode {
             if let index = selectOcId.firstIndex(of: metadata.ocId) {
@@ -60,13 +59,9 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         } else {
             let imageIcon = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
             if !metadata.isDirectoryE2EE && (metadata.isImage || metadata.isAudioOrVideo) {
-                var metadatas: [tableMetadata] = []
-                for metadata in self.dataSource.getMetadatas() {
-                    if metadata.isImage || metadata.isAudioOrVideo {
-                        metadatas.append(metadata)
-                    }
-                }
-                return NCViewer().view(viewController: self, metadata: metadata, metadatas: metadatas, imageIcon: imageIcon)
+                let metadatas = self.dataSource.getResultsMetadatas()
+                let metadatasMedia = metadatas.filter { $0.classFile == NKCommon.TypeClassFile.image.rawValue || $0.classFile == NKCommon.TypeClassFile.video.rawValue}
+                return NCViewer().view(viewController: self, metadata: metadata, metadatas: metadatasMedia, imageIcon: imageIcon)
             } else if metadata.isAvailableEditorView || utilityFileSystem.fileProviderStorageExists(metadata) {
                 NCViewer().view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon)
             } else if NextcloudKit.shared.isNetworkReachable(),
@@ -85,7 +80,6 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         guard var metadata = self.dataSource.getMetadata(indexPath: indexPath) else { return nil }
         if isEditMode || metadata.classFile == NKCommon.TypeClassFile.url.rawValue { return nil }
-        metadata = tableMetadata(value: metadata)
         let identifier = indexPath as NSCopying
         var image: UIImage?
         let cell = collectionView.cellForItem(at: indexPath)

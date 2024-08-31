@@ -33,7 +33,7 @@ extension NCCollectionViewCommon: UICollectionViewDragDelegate {
         if isEditMode {
             return NCDragDrop().performDrag(selectOcId: selectOcId)
         } else if let metadata = self.dataSource.getMetadata(indexPath: indexPath) {
-            return NCDragDrop().performDrag(metadata: tableMetadata(value: metadata))
+            return NCDragDrop().performDrag(metadata: metadata)
         }
         return []
     }
@@ -68,7 +68,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
         var destinationMetadata: tableMetadata?
 
         if let destinationIndexPath, let metadata = self.dataSource.getMetadata(indexPath: destinationIndexPath) {
-            destinationMetadata = tableMetadata(value: metadata)
+            destinationMetadata = metadata
         }
         DragDropHover.shared.destinationMetadata = destinationMetadata
 
@@ -101,7 +101,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
                    let metadata = self.dataSource.getMetadata(indexPath: destinationIndexPath),
                    metadata.directory {
                     DragDropHover.shared.cleanPushDragDropHover()
-                    self.pushMetadata(tableMetadata(value: metadata))
+                    self.pushMetadata(metadata)
                 }
             }
         }

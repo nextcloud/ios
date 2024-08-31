@@ -102,7 +102,7 @@ extension NCShareExtension: UICollectionViewDataSource {
         cell.imageItem.backgroundColor = nil
 
         if metadata.directory {
-            setupDirectoryCell(cell, indexPath: indexPath, with: tableMetadata(value: metadata))
+            setupDirectoryCell(cell, indexPath: indexPath, with: metadata)
         }
 
         if metadata.favorite {

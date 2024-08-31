@@ -53,18 +53,25 @@ class NCDataSource: NSObject {
     func numberOfItemsInSection(_ section: Int) -> Int {
         return metadatas.count
     }
-    func getMetadatas() -> [tableMetadata] {
+    func getResultsMetadatas() -> [tableMetadata] {
         return metadatas
     }
     func isEmpty() -> Bool {
         return metadatas.isEmpty
     }
-    func getMetadata(indexPath: IndexPath) -> tableMetadata? {
+    func getResultttMetadata(indexPath: IndexPath) -> tableMetadata? {
         if indexPath.row < metadatas.count {
             return metadatas[indexPath.row]
         }
         return nil
     }
+    func getMetadata(indexPath: IndexPath) -> tableMetadata? {
+        if indexPath.row < metadatas.count {
+            return tableMetadata(value: metadatas[indexPath.row])
+        }
+        return nil
+    }
+
     func getIndexPathMetadata(ocId: String) -> IndexPath? {
         return nil
     }

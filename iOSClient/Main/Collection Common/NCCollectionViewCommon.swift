@@ -1162,7 +1162,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func sizeForFooterInSection(section: Int) -> CGSize {
         let sections = self.dataSource.numberOfSections()
-        let metadataForSection = self.dataSource.getMetadataForSection(section)
         let isPaginated = false
         let metadatasCount = 0
         var size = CGSize(width: collectionView.frame.width, height: 0)
