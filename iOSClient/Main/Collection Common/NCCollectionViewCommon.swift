@@ -159,6 +159,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         // Refresh Control
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
+            self.dataSource.removeAll()
             self.database.cleanEtagDirectory(serverUrl: self.serverUrl, account: self.session.account)
             self.reloadDataSourceNetwork()
         }
@@ -1157,9 +1158,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - Footer size
 
     func sizeForFooterInSection(section: Int) -> CGSize {
-        let sections = self.dataSource.numberOfSections()
-        let isPaginated = false
-        let metadatasCount = 0
+        let sections = dataSource.numberOfSections()
+        let metadataForSection = self.dataSource.getMetadataForSection(section)
+        let isPaginated = metadataForSection?.lastSearchResult?.isPaginated ?? false
+        let metadatasCount: Int = metadataForSection?.lastSearchResult?.entries.count ?? 0
         var size = CGSize(width: collectionView.frame.width, height: 0)
 
         if section == sections - 1 {
