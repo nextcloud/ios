@@ -196,12 +196,12 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         guard let hudView = viewController.tabBarController?.view else { return }
         var downloadRequest: DownloadRequest?
 
-        if let metadata = NCManageDatabase.shared.getMetadataFromFileId(fileId) {
+        if let metadata = NCManageDatabase.shared.getResultMetadataFromFileId(fileId) {
             do {
                 let attr = try FileManager.default.attributesOfItem(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
                 let fileSize = attr[FileAttributeKey.size] as? UInt64 ?? 0
                 if fileSize > 0 {
-                    NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+                    NCViewer().view(viewController: viewController, metadata: tableMetadata(value: metadata), metadatas: [metadata], imageIcon: nil)
                     return
                 }
             } catch {

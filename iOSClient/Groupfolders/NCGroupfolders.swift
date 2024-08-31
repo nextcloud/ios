@@ -79,7 +79,7 @@ class NCGroupfolders: NCCollectionViewCommon {
                     for groupfolder in groupfolders {
                         let mountPoint = groupfolder.mountPoint.hasPrefix("/") ? groupfolder.mountPoint : "/" + groupfolder.mountPoint
                         let serverUrlFileName = homeServerUrl + mountPoint
-                        if NCManageDatabase.shared.getMetadataFromDirectory(account: account, serverUrl: serverUrlFileName) == nil {
+                        if NCManageDatabase.shared.getMetadataFromDirectory(account: account, serverUrl: serverUrlFileName) {
                             let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles, account: account)
                             if results.error == .success, let file = results.files?.first {
                                 let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)

@@ -618,18 +618,6 @@ extension NCManageDatabase {
         return nil
     }
 
-    func getMetadataFromFileId(_ fileId: String?) -> tableMetadata? {
-        do {
-            let realm = try Realm()
-            guard let fileId = fileId else { return nil }
-            guard let result = realm.objects(tableMetadata.self).filter("fileId == %@", fileId).first else { return nil }
-            return tableMetadata(value: result)
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
-        }
-        return nil
-    }
-
     func getMetadataFolder(session: NCSession.Session, serverUrl: String) -> tableMetadata? {
         var serverUrl = serverUrl
         var fileName = ""
@@ -704,66 +692,5 @@ extension NCManageDatabase {
                                                   account,
                                                   serverUrl,
                                                   fileNameConflict))
-    }
-
-    func getMetadataFromDirectory(account: String, serverUrl: String) -> tableMetadata? {
-        do {
-            let realm = try Realm()
-            guard let directory = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first else { return nil }
-            guard let result = realm.objects(tableMetadata.self).filter("ocId == %@", directory.ocId).first else { return nil }
-            return tableMetadata(value: result)
-        } catch let error as NSError {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
-        }
-        return nil
-    }
-
-    @discardableResult
-    func updateMetadatas(_ metadatas: [tableMetadata], predicate: NSPredicate) -> (metadatasDifferentCount: Int, metadatasModified: Int) {
-        var metadatasDifferentCount: Int = 0
-        var metadatasModified: Int = 0
-
-        do {
-            let realm = try Realm()
-            try realm.write {
-                let results = realm.objects(tableMetadata.self).filter(predicate)
-                metadatasDifferentCount = metadatas.count - results.count
-                for metadata in metadatas {
-                    if let result = results.first(where: { $0.ocId == metadata.ocId }) {
-                        // before realm.add copy the value not available from server
-                        metadata.assetLocalIdentifier = result.assetLocalIdentifier
-                        if !metadata.isEqual(result) { metadatasModified += 1 }
-                    }
-                }
-                if metadatasDifferentCount != 0 || metadatasModified > 0 {
-                    realm.delete(results)
-                    for metadata in metadatas {
-                        realm.add(tableMetadata(value: metadata), update: .all)
-                    }
-                }
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
-        }
-        return (metadatasDifferentCount, metadatasModified)
-    }
-
-    func replaceMetadata(_ metadatas: [tableMetadata], predicate: NSPredicate) {
-        do {
-            let realm = try Realm()
-            try realm.write {
-                let results = realm.objects(tableMetadata.self).filter(predicate)
-                realm.delete(results)
-                for metadata in metadatas {
-                    if results.where({ $0.ocId == metadata.ocId }).isEmpty {
-                        realm.add(tableMetadata(value: metadata), update: .modified)
-                    } else {
-                        continue
-                    }
-                }
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
-        }
     }
 }
