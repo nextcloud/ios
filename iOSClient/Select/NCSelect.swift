@@ -499,7 +499,8 @@ extension NCSelect {
     }
 
     @objc func loadDatasource(withLoadFolder: Bool) {
-        var predicate: NSPredicate?
+        var predicate = NSPredicate()
+        self.dataSource.removeAll()
 
         if includeDirectoryE2EEncryption {
             if includeImages {
@@ -517,8 +518,9 @@ extension NCSelect {
             }
         }
 
-        let metadatas = NCManageDatabase.shared.getMetadatas(predicate: predicate!)
-        self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: nil)
+        if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: predicate) {
+            self.dataSource = NCDataSource(metadatas: Array(results), layoutForView: nil)
+        }
 
         if withLoadFolder {
             loadFolder()

@@ -745,7 +745,7 @@ extension NCManageDatabase {
         return []
     }
 
-    func getMetadatasAccount(_ account: String, serverUrl: String, layoutForView: NCDBLayoutForView?) -> [tableMetadata] {
+    func getResultsMetadatasAccount(_ account: String, serverUrl: String, layoutForView: NCDBLayoutForView?) -> [tableMetadata] {
         let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND NOT (status IN %@) AND NOT (livePhotoFile != '' AND classFile == %@)", account, serverUrl, NCGlobal.shared.metadataStatusFileUp, NKCommon.TypeClassFile.video.rawValue)
         do {
             let realm = try Realm()
@@ -776,22 +776,22 @@ extension NCManageDatabase {
         return nil
     }
 
-    func getMetadatas(predicate: NSPredicate, sortedByKeyPath: String, ascending: Bool, arraySlice: Int = 0) -> [tableMetadata] {
+    func getResultsMetadatas(predicate: NSPredicate, sortedByKeyPath: String, ascending: Bool, arraySlice: Int = 0) -> [tableMetadata] {
         do {
             let realm = try Realm()
             let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sortedByKeyPath, ascending: ascending).prefix(arraySlice)
-            return Array(results.map { tableMetadata(value: $0) })
+            return Array(results)
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
         return []
     }
 
-    func getResultsMetadatas(predicate: NSPredicate, sorted: String? = nil, ascending: Bool = false) -> Results<tableMetadata>? {
+    func getResultsMetadatas(predicate: NSPredicate, sortedByKeyPath: String? = nil, ascending: Bool = false) -> Results<tableMetadata>? {
         do {
             let realm = try Realm()
-            if let sorted {
-                return realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sorted, ascending: ascending)
+            if let sortedByKeyPath {
+                return realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sortedByKeyPath, ascending: ascending)
             } else {
                 return realm.objects(tableMetadata.self).filter(predicate)
             }
@@ -1110,7 +1110,7 @@ extension NCManageDatabase {
         return nil
     }
 
-    func getMetadatasFromGroupfolders(session: NCSession.Session) -> [tableMetadata] {
+    func getResultsMetadatasFromGroupfolders(session: NCSession.Session) -> [tableMetadata] {
         var metadatas: [tableMetadata] = []
         let homeServerUrl = utilityFileSystem.getHomeServer(session: session)
 
@@ -1123,7 +1123,7 @@ extension NCManageDatabase {
                 let serverUrlFileName = homeServerUrl + mountPoint
                 if let directory = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", session.account, serverUrlFileName).first,
                    let metadata = realm.objects(tableMetadata.self).filter("ocId == %@", directory.ocId).first {
-                    metadatas.append(tableMetadata(value: metadata))
+                    metadatas.append(metadata)
                 }
             }
         } catch let error as NSError {

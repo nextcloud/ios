@@ -44,7 +44,9 @@ class NCDataSource: NSObject {
 
     // MARK: -
 
-    func clearDataSource() { }
+    func removeAll() { 
+        self.metadatas = []
+    }
     func addSection(metadatas: [tableMetadata], searchResult: NKSearchResult?) { }
     func appendMetadatasToSection(_ metadatas: [tableMetadata], metadataForSection: NCMetadataForSection, lastSearchResult: NKSearchResult) { }
     func numberOfSections() -> Int {

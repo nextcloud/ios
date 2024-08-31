@@ -57,9 +57,9 @@ class NCGroupfolders: NCCollectionViewCommon {
         var metadatas: [tableMetadata] = []
 
         if self.serverUrl.isEmpty {
-            metadatas = NCManageDatabase.shared.getMetadatasFromGroupfolders(session: session)
+            metadatas = NCManageDatabase.shared.getResultsMetadatasFromGroupfolders(session: session)
         } else {
-            metadatas = NCManageDatabase.shared.getMetadatasAccount(session.account, serverUrl: self.serverUrl, layoutForView: layoutForView)
+            metadatas = NCManageDatabase.shared.getResultsMetadatasAccount(session.account, serverUrl: self.serverUrl, layoutForView: layoutForView)
         }
 
         self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: layoutForView)

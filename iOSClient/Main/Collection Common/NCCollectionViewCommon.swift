@@ -865,7 +865,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         isSearchingMode = true
         self.providers?.removeAll()
-        self.dataSource.clearDataSource()
+        self.dataSource.removeAll()
         self.collectionView.reloadData()
         // TIP
         dismissTip()
@@ -883,7 +883,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             self.isSearchingMode = false
             self.literalSearch = ""
             self.providers?.removeAll()
-            self.dataSource.clearDataSource()
+            self.dataSource.removeAll()
             self.reloadDataSource()
         }
     }
@@ -1018,7 +1018,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             return self.refreshControl.endRefreshing()
         }
 
-        self.dataSource.clearDataSource()
+        self.dataSource.removeAll()
         self.refreshControl.beginRefreshing()
         self.collectionView.reloadData()
 
