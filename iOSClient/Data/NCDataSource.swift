@@ -44,29 +44,37 @@ class NCDataSource: NSObject {
 
     // MARK: -
 
-    func removeAll() { 
+    func removeAll() {
         self.metadatas = []
     }
+
     func addSection(metadatas: [tableMetadata], searchResult: NKSearchResult?) { }
+
     func appendMetadatasToSection(_ metadatas: [tableMetadata], metadataForSection: NCMetadataForSection, lastSearchResult: NKSearchResult) { }
+
     func numberOfSections() -> Int {
        return 1
     }
+
     func numberOfItemsInSection(_ section: Int) -> Int {
         return metadatas.count
     }
+
     func getResultsMetadatas() -> [tableMetadata] {
         return metadatas
     }
+
     func isEmpty() -> Bool {
         return metadatas.isEmpty
     }
+
     func getResultMetadata(indexPath: IndexPath) -> tableMetadata? {
         if indexPath.row < metadatas.count {
             return metadatas[indexPath.row]
         }
         return nil
     }
+
     func getMetadata(indexPath: IndexPath) -> tableMetadata? {
         if indexPath.row < metadatas.count {
             return tableMetadata(value: metadatas[indexPath.row])
@@ -75,8 +83,16 @@ class NCDataSource: NSObject {
     }
 
     func getIndexPathMetadata(ocId: String) -> IndexPath? {
+        var row = 0
+        for metadata in metadatas {
+            if metadata.ocId == ocId {
+                return IndexPath(row: row, section: 0)
+            }
+            row += 1
+        }
         return nil
     }
+
     func getSectionValueLocalization(indexPath: IndexPath) -> String {
         return ""
     }
@@ -86,18 +102,15 @@ class NCDataSource: NSObject {
     }
 
     func getFooterInformationAllMetadatas() -> (directories: Int, files: Int, size: Int64) {
-        var directories: Int = 0
-        var files: Int = 0
+        let directories = metadatas.filter({ $0.directory == true})
+        let files = metadatas.filter({ $0.directory == false})
         var size: Int64 = 0
 
-        /*
-        for metadataForSection in metadatasForSection {
-            directories += metadataForSection.numDirectory
-            files += metadataForSection.numFile
-            size += metadataForSection.totalSize
+        files.forEach { metadata in
+            size += metadata.size
         }
-        */
-        return (directories, files, size)
+
+        return (directories.count, files.count, size)
     }
 }
 
