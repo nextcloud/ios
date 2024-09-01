@@ -178,53 +178,63 @@ class NCDataSource: NSObject {
 
     func getResultsMetadatas() -> [tableMetadata] {
         let validMetadatas = metadatas.filter { !$0.isInvalidated }
+
         return validMetadatas
     }
 
     func isEmpty() -> Bool {
-        return metadatas.isEmpty
+        let validMetadatas = metadatas.filter { !$0.isInvalidated }
+
+        return validMetadatas.isEmpty
     }
 
     func getIndexPathMetadata(ocId: String) -> IndexPath? {
-        guard let metadata = self.metadatas.filter({ $0.ocId == ocId}).first else { return nil }
-        let sectionValue = getSectionValue(metadata: metadata)
-        guard let sectionIndex = getSectionIndex(sectionValue), let metadataForSection = getMetadataForSection(sectionValue), let rowIndex = metadataForSection.metadatas.firstIndex(where: {$0.ocId == ocId}) else { return nil }
+        guard self.sectionsValue.isEmpty else { return nil }
+        let validMetadatas = self.metadatas.filter { !$0.isInvalidated }
 
-        return IndexPath(row: rowIndex, section: sectionIndex)
+        if let rowIndex = validMetadatas.firstIndex(where: {$0.ocId == ocId}) {
+            return IndexPath(row: rowIndex, section: 1)
+        }
+
+        return nil
     }
 
     func numberOfSections() -> Int {
         guard !self.sectionsValue.isEmpty else { return 1 }
+
         return self.sectionsValue.count
     }
 
     func numberOfItemsInSection(_ section: Int) -> Int {
         if self.sectionsValue.isEmpty {
-            return metadatas.count
+            let validMetadatas = metadatas.filter { !$0.isInvalidated }
+            return validMetadatas.count
         }
         guard !self.metadatas.isEmpty,
               let metadataForSection = getMetadataForSection(section)
         else { return 0}
+
         return metadataForSection.metadatas.count
     }
 
     func getSectionValueLocalization(indexPath: IndexPath) -> String {
         guard !metadatasForSection.isEmpty, let metadataForSection = self.getMetadataForSection(indexPath.section) else { return ""}
+
         if let searchResults = self.searchResults, let searchResult = searchResults.filter({ $0.id == metadataForSection.sectionValue}).first {
             return searchResult.name
         }
+
         return metadataForSection.sectionValue
     }
 
     func getFooterInformation() -> (directories: Int, files: Int, size: Int64) {
-        let directories = metadatas.filter({ $0.directory == true})
-        let files = metadatas.filter({ $0.directory == false})
+        let validMetadatas = metadatas.filter { !$0.isInvalidated }
+        let directories = validMetadatas.filter({ $0.directory == true})
+        let files = validMetadatas.filter({ $0.directory == false})
         var size: Int64 = 0
 
         files.forEach { metadata in
-            if !metadata.isInvalidated {
-                size += metadata.size
-            }
+            size += metadata.size
         }
 
         return (directories.count, files.count, size)
@@ -233,25 +243,28 @@ class NCDataSource: NSObject {
     // MARK: -
 
     func getMetadata(indexPath: IndexPath) -> tableMetadata? {
+        let validMetadatas = metadatas.filter { !$0.isInvalidated }
+
         if !metadatasForSection.isEmpty, indexPath.section < metadatasForSection.count {
             if let metadataForSection = getMetadataForSection(indexPath.section),
                indexPath.row < metadataForSection.metadatas.count,
                !metadataForSection.metadatas[indexPath.row].isInvalidated {
                 return tableMetadata(value: metadataForSection.metadatas[indexPath.row])
             }
-        } else if indexPath.row < metadatas.count,
-                  !metadatas[indexPath.row].isInvalidated {
-            return tableMetadata(value: metadatas[indexPath.row])
+        } else if indexPath.row < validMetadatas.count {
+            return tableMetadata(value: validMetadatas[indexPath.row])
         }
 
         return nil
     }
 
     func getResultMetadata(indexPath: IndexPath) -> tableMetadata? {
-        if indexPath.row < metadatas.count,
-           !metadatas[indexPath.row].isInvalidated {
-            return metadatas[indexPath.row]
+        let validMetadatas = metadatas.filter { !$0.isInvalidated }
+
+        if indexPath.row < validMetadatas.count {
+            return validMetadatas[indexPath.row]
         }
+
         return nil
     }
 
