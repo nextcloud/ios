@@ -291,9 +291,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         if self.dataSource.isEmpty() {
             NCTransferProgress.shared.removeAll()
         }
-        DispatchQueue.main.async {
-            self.collectionView.reloadData()
-        }
     }
 
     override func reloadDataSource(withQueryDB: Bool = true) {

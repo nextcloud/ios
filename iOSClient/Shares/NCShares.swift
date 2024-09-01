@@ -57,10 +57,8 @@ class NCShares: NCCollectionViewCommon {
 
         func reload() {
             self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: layoutForView)
-            DispatchQueue.main.async {
-                self.refreshControl.endRefreshing()
-                self.collectionView.reloadData()
-            }
+            self.refreshControl.endRefreshing()
+            self.collectionView.reloadData()
         }
 
         let sharess = NCManageDatabase.shared.getTableShares(account: session.account)

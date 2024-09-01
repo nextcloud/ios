@@ -365,26 +365,26 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard let userInfo = notification.userInfo as NSDictionary?,
               let error = userInfo["error"] as? NKError else { return }
 
-        if error == .success {
-            reloadDataSource()
-        } else {
+        if error != .success {
             NCContentPresenter().showError(error: error)
         }
+
+        reloadDataSource()
     }
 
     @objc func moveFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let error = userInfo["error"] as? NKError else { return }
 
-        if error == .success {
-            if !isSearchingMode, let dragDrop = userInfo["dragdrop"] as? Bool, dragDrop {
-                setEditMode(false)
-                reloadDataSourceNetwork(withQueryDB: true)
-            } else {
-                reloadDataSource()
-            }
-        } else {
+        if error != .success {
             NCContentPresenter().showError(error: error)
+        }
+
+        if !isSearchingMode, let dragDrop = userInfo["dragdrop"] as? Bool, dragDrop {
+            setEditMode(false)
+            reloadDataSourceNetwork(withQueryDB: true)
+        } else {
+            reloadDataSource()
         }
     }
 
@@ -392,15 +392,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard let userInfo = notification.userInfo as NSDictionary?,
               let error = userInfo["error"] as? NKError else { return }
 
-        if error == .success {
-            if !isSearchingMode, let dragDrop = userInfo["dragdrop"] as? Bool, dragDrop {
-                setEditMode(false)
-                reloadDataSourceNetwork(withQueryDB: true)
-            } else {
-                reloadDataSource()
-            }
-        } else {
+        if error != .success {
             NCContentPresenter().showError(error: error)
+        }
+
+        if !isSearchingMode, let dragDrop = userInfo["dragdrop"] as? Bool, dragDrop {
+            setEditMode(false)
+            reloadDataSourceNetwork(withQueryDB: true)
+        } else {
+            reloadDataSource()
         }
     }
 
