@@ -131,8 +131,7 @@ class NCRecent: NCCollectionViewCommon {
         NextcloudKit.shared.searchBodyRequest(serverUrl: session.urlBase,
                                               requestBody: requestBody,
                                               showHiddenFiles: NCKeychain().showHiddenFiles,
-                                              account: session.account,
-                                              options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
+                                              account: session.account) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()
         } completion: { _, files, _, error in

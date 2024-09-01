@@ -111,22 +111,17 @@ class NCOperationDownloadThumbnailTrash: ConcurrentOperation {
                                                  widthPreview: NCGlobal.shared.sizePreview,
                                                  heightPreview: NCGlobal.shared.sizePreview,
                                                  sizeIcon: NCGlobal.shared.sizeIcon,
-                                                 account: account,
-                                                 options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imagePreview, _, _, _, error in
-
-            if error == .success, let imagePreview = imagePreview {
-                DispatchQueue.main.async {
-                    if self.fileId == self.cell?.objectId, let imageView = self.cell?.imageItem {
-                        self.cell?.imageItem?.contentMode = .scaleAspectFill
-                        UIView.transition(with: imageView,
-                                          duration: 0.75,
-                                          options: .transitionCrossDissolve,
-                                          animations: { imageView.image = imagePreview },
-                                          completion: nil)
-                    } else {
-                        self.collectionView?.reloadData()
-                    }
-                }
+                                                 account: account) { _, imagePreview, _, _, _, error in
+            if error == .success,
+               let imagePreview = imagePreview,
+               self.fileId == self.cell?.objectId,
+               let imageView = self.cell?.imageItem {
+                    self.cell?.imageItem?.contentMode = .scaleAspectFill
+                    UIView.transition(with: imageView,
+                                      duration: 0.75,
+                                      options: .transitionCrossDissolve,
+                                      animations: { imageView.image = imagePreview },
+                                      completion: nil)
             }
             self.finish()
         }

@@ -69,7 +69,7 @@ class NCGroupfolders: NCCollectionViewCommon {
         super.reloadDataSourceNetwork()
         let homeServerUrl = utilityFileSystem.getHomeServer(session: session)
 
-        NextcloudKit.shared.getGroupfolders(account: session.account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
+        NextcloudKit.shared.getGroupfolders(account: session.account) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()
         } completion: { account, results, _, error in
