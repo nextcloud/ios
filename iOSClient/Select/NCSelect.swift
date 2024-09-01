@@ -260,7 +260,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
 extension NCSelect: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard var metadata = self.dataSource.getMetadata(indexPath: indexPath) else { return }
+        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else { return }
 
         if metadata.directory {
             pushMetadata(metadata)
@@ -529,9 +529,7 @@ extension NCSelect {
         let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl))
         richWorkspaceText = directory?.richWorkspace
 
-        DispatchQueue.main.async {
-            self.collectionView.reloadData()
-        }
+        self.collectionView.reloadData()
     }
 
     func loadFolder() {
@@ -540,10 +538,12 @@ extension NCSelect {
             self.dataSourceTask = task
             self.collectionView.reloadData()
         } completion: { _, _, _, _, _, error in
-            if error != .success {
-                NCContentPresenter().showError(error: error)
+            DispatchQueue.main.async {
+                if error != .success {
+                    NCContentPresenter().showError(error: error)
+                }
+                self.loadDatasource(withLoadFolder: false)
             }
-            self.loadDatasource(withLoadFolder: false)
         }
     }
 }
