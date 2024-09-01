@@ -215,13 +215,15 @@ class NCDataSource: NSObject {
         return metadataForSection.sectionValue
     }
 
-    func getFooterInformationAllMetadatas() -> (directories: Int, files: Int, size: Int64) {
+    func getFooterInformation() -> (directories: Int, files: Int, size: Int64) {
         let directories = metadatas.filter({ $0.directory == true})
         let files = metadatas.filter({ $0.directory == false})
         var size: Int64 = 0
 
         files.forEach { metadata in
-            size += metadata.size
+            if !metadata.isInvalidated {
+                size += metadata.size
+            }
         }
 
         return (directories.count, files.count, size)
