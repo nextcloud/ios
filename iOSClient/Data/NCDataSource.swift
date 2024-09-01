@@ -177,7 +177,8 @@ class NCDataSource: NSObject {
     // MARK: -
 
     func getResultsMetadatas() -> [tableMetadata] {
-        return metadatas
+        let validMetadatas = metadatas.filter { !$0.isInvalidated }
+        return validMetadatas
     }
 
     func isEmpty() -> Bool {
