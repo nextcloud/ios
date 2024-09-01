@@ -207,11 +207,6 @@ class NCDataSource: NSObject {
         return metadataForSection.metadatas.count
     }
 
-    func cellForItemAt(indexPath: IndexPath) -> tableMetadata? {
-        guard !metadatasForSection.isEmpty && indexPath.section < metadatasForSection.count, let metadataForSection = getMetadataForSection(indexPath.section), indexPath.row < metadataForSection.metadatas.count else { return nil }
-        return metadataForSection.metadatas[indexPath.row]
-    }
-
     func getSectionValueLocalization(indexPath: IndexPath) -> String {
         guard !metadatasForSection.isEmpty, let metadataForSection = self.getMetadataForSection(indexPath.section) else { return ""}
         if let searchResults = self.searchResults, let searchResult = searchResults.filter({ $0.id == metadataForSection.sectionValue}).first {
@@ -234,16 +229,22 @@ class NCDataSource: NSObject {
 
     // MARK: -
 
-    func getResultMetadata(indexPath: IndexPath) -> tableMetadata? {
-        if indexPath.row < metadatas.count {
-            return metadatas[indexPath.row]
+    func getMetadata(indexPath: IndexPath) -> tableMetadata? {
+        if !metadatasForSection.isEmpty && indexPath.section < metadatasForSection.count {
+            if let metadataForSection = getMetadataForSection(indexPath.section),
+               indexPath.row < metadataForSection.metadatas.count {
+                return tableMetadata(value: metadataForSection.metadatas[indexPath.row])
+            }
+        } else if indexPath.row < metadatas.count {
+            return tableMetadata(value: metadatas[indexPath.row])
         }
+
         return nil
     }
 
-    func getMetadata(indexPath: IndexPath) -> tableMetadata? {
+    func getResultMetadata(indexPath: IndexPath) -> tableMetadata? {
         if indexPath.row < metadatas.count {
-            return tableMetadata(value: metadatas[indexPath.row])
+            return metadatas[indexPath.row]
         }
         return nil
     }
