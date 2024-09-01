@@ -159,7 +159,7 @@ class NCGlobal: NSObject {
 
     // Rich Workspace
     //
-    let fileNameRichWorkspace = "Readme.md"
+    let fileNameRichWorkspace                       = "Readme.md"
 
     // Image extension
     //

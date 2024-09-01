@@ -27,7 +27,10 @@ import NextcloudKit
 
 extension NCCollectionViewCommon: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard var metadata = self.dataSource.getMetadata(indexPath: indexPath), !metadata.isInvalidated else { return }
+        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath),
+              !metadata.isInvalidated,
+              (metadata.name == global.appName || metadata.name == NCGlobal.shared.talkName)
+        else { return }
 
         if isEditMode {
             if let index = selectOcId.firstIndex(of: metadata.ocId) {
