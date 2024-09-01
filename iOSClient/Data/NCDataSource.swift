@@ -232,10 +232,12 @@ class NCDataSource: NSObject {
     func getMetadata(indexPath: IndexPath) -> tableMetadata? {
         if !metadatasForSection.isEmpty, indexPath.section < metadatasForSection.count {
             if let metadataForSection = getMetadataForSection(indexPath.section),
-               indexPath.row < metadataForSection.metadatas.count {
+               indexPath.row < metadataForSection.metadatas.count,
+               !metadataForSection.metadatas[indexPath.row].isInvalidated {
                 return tableMetadata(value: metadataForSection.metadatas[indexPath.row])
             }
-        } else if indexPath.row < metadatas.count {
+        } else if indexPath.row < metadatas.count,
+                  !metadatas[indexPath.row].isInvalidated {
             return tableMetadata(value: metadatas[indexPath.row])
         }
 
@@ -243,7 +245,8 @@ class NCDataSource: NSObject {
     }
 
     func getResultMetadata(indexPath: IndexPath) -> tableMetadata? {
-        if indexPath.row < metadatas.count {
+        if indexPath.row < metadatas.count,
+           !metadatas[indexPath.row].isInvalidated {
             return metadatas[indexPath.row]
         }
         return nil
