@@ -401,7 +401,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             navigationController.modalPresentationStyle = UIModalPresentationStyle.pageSheet
             let viewController = navigationController.presentedViewController as? NCScan
             viewController?.serverUrl = controller?.currentServerUrl()
-            controller?.present(navigationController, animated: true, completion: nil)
+            controller?.currentViewController()?.present(navigationController, animated: true, completion: nil)
         }
     }
 
