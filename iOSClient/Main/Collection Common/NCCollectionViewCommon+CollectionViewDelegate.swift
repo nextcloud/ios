@@ -61,11 +61,11 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             pushMetadata(metadata)
         } else {
             let imageIcon = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
-            if !metadata.isDirectoryE2EE && (metadata.isImage || metadata.isAudioOrVideo) {
+            if !metadata.isDirectoryE2EE, (metadata.isImage || metadata.isAudioOrVideo) {
                 let metadatas = self.dataSource.getResultsMetadatas()
                 let metadatasMedia = metadatas.filter { $0.classFile == NKCommon.TypeClassFile.image.rawValue || $0.classFile == NKCommon.TypeClassFile.video.rawValue}
                 return NCViewer().view(viewController: self, metadata: metadata, metadatas: metadatasMedia, imageIcon: imageIcon)
-            } else if metadata.isAvailableEditorView || utilityFileSystem.fileProviderStorageExists(metadata) {
+            } else if metadata.isAvailableEditorView || utilityFileSystem.fileProviderStorageExists(metadata) || metadata.name == NCGlobal.shared.talkName {
                 NCViewer().view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon)
             } else if NextcloudKit.shared.isNetworkReachable(),
                       let metadata = database.setMetadatasSessionInWaitDownload(metadatas: [metadata],
