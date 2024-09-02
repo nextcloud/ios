@@ -189,12 +189,10 @@ class NCUploadAssetsModel: NSObject, ObservableObject, NCCreateFormUploadConflic
 
         for tlAsset in assets {
             guard let asset = tlAsset.phAsset, let previewStore = previewStore.first(where: { $0.id == asset.localIdentifier }) else { continue }
-
             let assetFileName = asset.originalFilename
             var livePhoto: Bool = false
             let creationDate = asset.creationDate ?? Date()
             let ext = assetFileName.pathExtension.lowercased()
-
             let fileName = previewStore.fileName.isEmpty ? utilityFileSystem.createFileName(assetFileName as String, fileDate: creationDate, fileType: asset.mediaType)
             : (previewStore.fileName + "." + ext)
 
@@ -204,7 +202,7 @@ class NCUploadAssetsModel: NSObject, ObservableObject, NCCreateFormUploadConflic
 
             // Auto upload with subfolder
             if useAutoUploadSubFolder {
-                serverUrl = utilityFileSystem.createGranularityPath(serverUrl: serverUrl)
+                serverUrl = utilityFileSystem.createGranularityPath(asset: asset, serverUrl: serverUrl)
             }
 
             // Check if is in upload

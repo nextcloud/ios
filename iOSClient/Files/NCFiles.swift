@@ -123,10 +123,7 @@ class NCFiles: NCCollectionViewCommon {
         self.metadataFolder = NCManageDatabase.shared.getMetadataFolder(session: session, serverUrl: self.serverUrl)
         self.richWorkspaceText = NCManageDatabase.shared.getTableDirectory(predicate: predicateDirectory)?.richWorkspace
 
-        self.dataSource = NCDataSource(metadatas: metadatas,
-                                       layoutForView: layoutForView,
-                                       providers: self.providers,
-                                       searchResults: self.searchResults)
+        self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: layoutForView)
     }
 
     override func reloadDataSource(withQueryDB: Bool = true) {

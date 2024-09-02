@@ -25,15 +25,14 @@ import UIKit
 import NextcloudKit
 
 class NCDataSource: NSObject {
-    var metadatas: [tableMetadata] = []
-    var metadatasForSection: [NCMetadataForSection] = []
-    var layoutForView: NCDBLayoutForView?
-
     private let utilityFileSystem = NCUtilityFileSystem()
     private let global = NCGlobal.shared
     private var sectionsValue: [String] = []
     private var providers: [NKSearchProvider]?
     private var searchResults: [NKSearchResult]?
+    private var metadatas: [tableMetadata] = []
+    private var metadatasForSection: [NCMetadataForSection] = []
+    private var layoutForView: NCDBLayoutForView?
 
     override init() { super.init() }
 
@@ -45,12 +44,11 @@ class NCDataSource: NSObject {
 
         self.metadatas = metadatas
         self.layoutForView = layoutForView
-
-        // unified search
+        /// unified search
         self.providers = providers
         self.searchResults = searchResults
 
-        if let providers, !providers.isEmpty {
+        if let providers, !providers.isEmpty || (layoutForView?.groupBy != "none") {
             createSections()
         }
     }
@@ -77,26 +75,17 @@ class NCDataSource: NSObject {
     }
 
     internal func createSections() {
-        // get all Section
         for metadata in self.metadatas {
-            // skipped livePhoto VIDEO part
-            if metadata.isLivePhoto,
-               metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
+            /// skipped livePhoto VIDEO part
+            if metadata.isLivePhoto, metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
                 continue
             }
             let section = NSLocalizedString(self.getSectionValue(metadata: metadata), comment: "")
             if !self.sectionsValue.contains(section) {
                 self.sectionsValue.append(section)
             }
-            // image Cache
-            if (layoutForView?.layout == global.layoutPhotoRatio || layoutForView?.layout == global.layoutPhotoSquare),
-               (metadata.isVideo || metadata.isImage),
-               NCImageCache.shared.getPreviewImageCache(ocId: metadata.ocId, etag: metadata.etag) == nil,
-               let image = UIImage(contentsOfFile: self.utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
-                NCImageCache.shared.addPreviewImageCache(metadata: metadata, image: image)
-            }
         }
-        // Unified search
+        /// Unified search
         if let providers = self.providers, !providers.isEmpty {
             let sectionsDictionary = ThreadSafeDictionary<String, Int>()
             for section in self.sectionsValue {
@@ -114,7 +103,7 @@ class NCDataSource: NSObject {
                 }
             }
         } else {
-            // normal
+            /// normal
             let directory = NSLocalizedString("directory", comment: "").lowercased().firstUppercased
             self.sectionsValue = self.sectionsValue.sorted {
                 if let directoryOnTop = layoutForView?.directoryOnTop,
@@ -329,7 +318,6 @@ class NCMetadataForSection: NSObject {
     public var totalSize: Int64 = 0
 
     init(sectionValue: String, metadatas: [tableMetadata], lastSearchResult: NKSearchResult?, layoutForView: NCDBLayoutForView?) {
-
         self.sectionValue = sectionValue
         self.metadatas = metadatas
         self.lastSearchResult = lastSearchResult
