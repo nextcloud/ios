@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0F911CA82C85A5C400B0A6F7 /* Font Awesome 6 Pro-Solid-900.otf in Resources */ = {isa = PBXBuildFile; fileRef = 0F911CA42C85A5C300B0A6F7 /* Font Awesome 6 Pro-Solid-900.otf */; };
+		0F911CA92C85A5C400B0A6F7 /* Font Awesome 6 Pro-Thin-100.otf in Resources */ = {isa = PBXBuildFile; fileRef = 0F911CA52C85A5C300B0A6F7 /* Font Awesome 6 Pro-Thin-100.otf */; };
+		0F911CAA2C85A5C400B0A6F7 /* Font Awesome 6 Pro-Light-300.otf in Resources */ = {isa = PBXBuildFile; fileRef = 0F911CA62C85A5C400B0A6F7 /* Font Awesome 6 Pro-Light-300.otf */; };
+		0F911CAB2C85A5C400B0A6F7 /* Font Awesome 6 Pro-Regular-400.otf in Resources */ = {isa = PBXBuildFile; fileRef = 0F911CA72C85A5C400B0A6F7 /* Font Awesome 6 Pro-Regular-400.otf */; };
 		2C1D5D7623E2DE3300334ABB /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
 		2C1D5D7923E2DE9100334ABB /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
 		2C33C48223E2C475005F963B /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C33C48123E2C475005F963B /* NotificationService.swift */; };
@@ -1095,6 +1099,10 @@
 		08EA97451E6554FC004C83FA /* FirebaseCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseCore.framework; sourceTree = "<group>"; };
 		08EA97461E6554FC004C83FA /* FirebaseInstanceID.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseInstanceID.framework; sourceTree = "<group>"; };
 		08EA97471E6554FC004C83FA /* GoogleToolboxForMac.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleToolboxForMac.framework; sourceTree = "<group>"; };
+		0F911CA42C85A5C300B0A6F7 /* Font Awesome 6 Pro-Solid-900.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Font Awesome 6 Pro-Solid-900.otf"; sourceTree = "<group>"; };
+		0F911CA52C85A5C300B0A6F7 /* Font Awesome 6 Pro-Thin-100.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Font Awesome 6 Pro-Thin-100.otf"; sourceTree = "<group>"; };
+		0F911CA62C85A5C400B0A6F7 /* Font Awesome 6 Pro-Light-300.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Font Awesome 6 Pro-Light-300.otf"; sourceTree = "<group>"; };
+		0F911CA72C85A5C400B0A6F7 /* Font Awesome 6 Pro-Regular-400.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Font Awesome 6 Pro-Regular-400.otf"; sourceTree = "<group>"; };
 		2C33C47F23E2C475005F963B /* Notification Service Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Notification Service Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C33C48123E2C475005F963B /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		2C33C48A23E2CC26005F963B /* Notification_Service_Extension-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Notification_Service_Extension-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -1911,6 +1919,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0F911CA32C85A5AF00B0A6F7 /* Font Awesome 6 Pro */ = {
+			isa = PBXGroup;
+			children = (
+				0F911CA62C85A5C400B0A6F7 /* Font Awesome 6 Pro-Light-300.otf */,
+				0F911CA72C85A5C400B0A6F7 /* Font Awesome 6 Pro-Regular-400.otf */,
+				0F911CA42C85A5C300B0A6F7 /* Font Awesome 6 Pro-Solid-900.otf */,
+				0F911CA52C85A5C300B0A6F7 /* Font Awesome 6 Pro-Thin-100.otf */,
+			);
+			path = "Font Awesome 6 Pro";
+			sourceTree = "<group>";
+		};
 		2C33C48023E2C475005F963B /* Notification Service Extension */ = {
 			isa = PBXGroup;
 			children = (
@@ -2930,6 +2949,7 @@
 		F7F4F0FB27ECDBDA008676F9 /* Font */ = {
 			isa = PBXGroup;
 			children = (
+				0F911CA32C85A5AF00B0A6F7 /* Font Awesome 6 Pro */,
 				F7F4F0FC27ECDBDB008676F9 /* Inconsolata */,
 			);
 			path = Font;
@@ -3749,6 +3769,7 @@
 				F723985C253C95CE00257F49 /* NCViewerRichdocument.storyboard in Resources */,
 				F758B45A212C564000515F55 /* NCScan.storyboard in Resources */,
 				F70D87CF25EE6E58008CBBBD /* NCRenameFile.storyboard in Resources */,
+				0F911CA92C85A5C400B0A6F7 /* Font Awesome 6 Pro-Thin-100.otf in Resources */,
 				F765F73225237E3F00391DBE /* NCRecent.storyboard in Resources */,
 				F78F74342163757000C2ADAD /* NCTrash.storyboard in Resources */,
 				F702F30225EE5D2C008F8E80 /* english.txt in Resources */,
@@ -3772,6 +3793,7 @@
 				F7CA212E25F1333300826ABB /* NCAccountRequest.storyboard in Resources */,
 				F717402D24F699A5000C87D5 /* NCFavorite.storyboard in Resources */,
 				F723B3DD22FC6D1D00301EFE /* NCShareCommentsCell.xib in Resources */,
+				0F911CA82C85A5C400B0A6F7 /* Font Awesome 6 Pro-Solid-900.otf in Resources */,
 				F78ACD4B21903F850088454D /* NCTrashListCell.xib in Resources */,
 				AF93471927E2361E002537EE /* NCShareAdvancePermissionFooter.xib in Resources */,
 				F7725A61251F33BB00D125E0 /* NCFiles.storyboard in Resources */,
@@ -3786,8 +3808,10 @@
 				F719D9E0288D37A300762E33 /* NCColorPicker.storyboard in Resources */,
 				F7F4F10A27ECDBDB008676F9 /* Inconsolata-ExtraBold.ttf in Resources */,
 				F704B5E72430C06700632F5F /* NCCreateFormUploadConflictCell.xib in Resources */,
+				0F911CAB2C85A5C400B0A6F7 /* Font Awesome 6 Pro-Regular-400.otf in Resources */,
 				F7E402292BA85D1D007E5609 /* PrivacyInfo.xcprivacy in Resources */,
 				F7C9555321F0C4CA0024296E /* NCActivity.storyboard in Resources */,
+				0F911CAA2C85A5C400B0A6F7 /* Font Awesome 6 Pro-Light-300.otf in Resources */,
 				F7BC287E26663F6C004D46C5 /* NCViewCertificateDetails.storyboard in Resources */,
 				625EC2712C6CAABD006411D1 /* GoogleService-Info.plist in Resources */,
 				F78ACD54219047D40088454D /* NCSectionFooter.xib in Resources */,

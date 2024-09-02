@@ -119,11 +119,11 @@ struct NCSettingsAdvancedView: View {
                         model.viewLogFile()
                     }, label: {
                         HStack {
-                            Image(systemName: "doc.badge.gearshape")
+                            Image("Settings/folder.gear")
                                 .resizable()
+								.renderingMode(.template)
                                 .scaledToFit()
-                                .font(Font.system(.body).weight(.light))
-                                .frame(width: 25, height: 25)
+                                .frame(width: 20, height: 20)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             Text(NSLocalizedString("_view_log_", comment: ""))
                         }
@@ -148,8 +148,8 @@ struct NCSettingsAdvancedView: View {
                             Image(systemName: "xmark")
                                 .resizable()
                                 .scaledToFit()
-                                .font(Font.system(.body).weight(.light))
-                                .frame(width: 25, height: 15)
+								.font(.settingsIconsFont)
+                                .frame(width: 15, height: 20)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             Text(NSLocalizedString("_clear_log_", comment: ""))
                         }
@@ -172,8 +172,8 @@ struct NCSettingsAdvancedView: View {
                                 Image(systemName: "list.bullet")
                                     .resizable()
                                     .scaledToFit()
-                                    .font(Font.system(.body).weight(.light))
-                                    .frame(width: 25, height: 25)
+									.font(.settingsIconsFont)
+                                    .frame(width: 20, height: 20)
                                     .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                                 Text(NSLocalizedString("_capabilities_", comment: ""))
                             }
@@ -205,8 +205,8 @@ struct NCSettingsAdvancedView: View {
                         Image(systemName: "xmark")
                             .resizable()
                             .scaledToFit()
-                            .font(Font.system(.body).weight(.light))
-                            .frame(width: 15, height: 15)
+							.font(.settingsIconsFont)
+                            .frame(width: 15, height: 20)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_clear_cache_", comment: ""))
                     }
@@ -235,8 +235,8 @@ struct NCSettingsAdvancedView: View {
                         Image(systemName: "xmark")
                             .resizable()
                             .scaledToFit()
-                            .font(Font.system(.body).weight(.light))
-                            .frame(width: 15, height: 15)
+							.font(.settingsIconsFont)
+                            .frame(width: 15, height: 20)
                             .foregroundColor(Color(UIColor.systemRed))
                         Text(NSLocalizedString("_exit_", comment: ""))
                             .foregroundColor(Color(UIColor.systemRed))

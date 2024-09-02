@@ -63,11 +63,11 @@ struct NCAutoUploadView: View {
                 model.autoUploadFolder.toggle()
             }, label: {
                 HStack {
-                    Image(systemName: "folder")
+                    Image("Settings/autoupload.folder")
                         .resizable()
+						.renderingMode(.template)
                         .scaledToFit()
-                        .font(Font.system(.body).weight(.light))
-                        .frame(width: 25, height: 25)
+                        .frame(width: 20, height: 20)
                         .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                     Text(NSLocalizedString("_autoupload_select_folder_", comment: ""))
                 }

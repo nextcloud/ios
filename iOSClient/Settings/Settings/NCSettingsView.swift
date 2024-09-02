@@ -46,11 +46,11 @@ struct NCSettingsView: View {
                     NCAutoUploadView(model: NCAutoUploadModel(viewController: model.controller?.currentViewController()))
                 }) {
                     HStack {
-                        Image(systemName: "photo.circle")
+                        Image(systemName: "camera")
                             .resizable()
                             .scaledToFit()
-                            .font(Font.system(.body).weight(.light))
-                            .frame(width: 25, height: 25)
+							.font(.settingsIconsFont)
+                            .frame(width: 20, height: 20)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_settings_autoupload_", comment: ""))
                     }
@@ -66,7 +66,7 @@ struct NCSettingsView: View {
                         Image(systemName: model.isLockActive ? "lock" : "lock.open")
                             .resizable()
                             .scaledToFit()
-                            .font(Font.system(.body).weight(.light))
+							.font(.settingsIconsFont)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             .frame(width: 20, height: 20)
                         Text(model.isLockActive ? NSLocalizedString("_lock_active_", comment: "") : NSLocalizedString("_lock_not_active_", comment: ""))
@@ -105,11 +105,11 @@ struct NCSettingsView: View {
                         model.getConfigFiles()
                     }, label: {
                         HStack {
-                            Image(systemName: "calendar.badge.plus")
+							Image("Settings/calendar.user")
                                 .resizable()
+								.renderingMode(.template)
                                 .scaledToFit()
-                                .font(Font.system(.body).weight(.light))
-                                .frame(width: 25, height: 25)
+                                .frame(width: 23, height: 20)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             Text(NSLocalizedString("_mobile_config_", comment: ""))
                         }
@@ -137,11 +137,11 @@ struct NCSettingsView: View {
                                            showCacheAlert: false)
                 }) {
                     HStack {
-                        Image(systemName: "gear")
+                        Image("Settings/gear")
                             .resizable()
+							.renderingMode(.template)
                             .scaledToFit()
-                            .font(Font.system(.body).weight(.light))
-                            .frame(width: 25, height: 25)
+                            .frame(width: 20, height: 20)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_advanced_", comment: ""))
                     }
@@ -155,11 +155,12 @@ struct NCSettingsView: View {
                     showAcknowledgements.toggle()
                 }, label: {
                     HStack {
-                        Image("acknowledgements")
+                        Image("Settings/handshake")
                             .resizable()
                             .renderingMode(.template)
-                            .frame(width: 25, height: 25)
-                            .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
+							.scaledToFit()
+                            .frame(width: 25, height: 20)
+							.foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_acknowledgements_", comment: ""))
                     }
                     .font(.system(size: 16))
@@ -173,11 +174,11 @@ struct NCSettingsView: View {
                     showBrowser.toggle()
                 }, label: {
                     HStack {
-                        Image(systemName: "shield.checkerboard")
+                        Image("Settings/shield.halved")
                             .resizable()
+							.renderingMode(.template)
                             .scaledToFit()
-                            .font(Font.system(.body).weight(.light))
-                            .frame(width: 25, height: 25)
+                            .frame(width: 20, height: 20)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_privacy_legal_", comment: ""))
                     }
@@ -192,10 +193,10 @@ struct NCSettingsView: View {
                     showSourceCode.toggle()
                 }, label: {
                     HStack {
-                        Image("gitHub")
+                        Image("Settings/github")
                             .resizable()
                             .renderingMode(.template)
-                            .frame(width: 25, height: 25)
+                            .frame(width: 20, height: 20)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_source_code_", comment: ""))
                     }
@@ -248,6 +249,12 @@ struct E2EESection: View {
             }
         })
     }
+}
+
+extension Font {
+	static var settingsIconsFont: Font {
+		return Font(UIFont.settingsIconsFont)
+	}
 }
 
 #Preview {
