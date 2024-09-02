@@ -25,16 +25,18 @@ import UIKit
 import CoreLocation
 import NextcloudKit
 import Photos
+import JGProgressHUD
 
 class NCAutoUpload: NSObject {
     static let shared = NCAutoUpload()
 
     private var endForAssetToUpload: Bool = false
     private var applicationState = UIApplication.shared.applicationState
+    private let hud = JGProgressHUD()
 
     // MARK: -
 
-    func initAutoUpload(viewController: UIViewController?, account: String, completion: @escaping (_ num: Int) -> Void) {
+    func initAutoUpload(controller: UIViewController?, account: String, completion: @escaping (_ num: Int) -> Void) {
         guard NCNetworking.shared.isOnline,
               let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
               tableAccount.autoUpload else {
@@ -42,44 +44,54 @@ class NCAutoUpload: NSObject {
         }
         applicationState = UIApplication.shared.applicationState
 
-        NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
+        NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { hasPermission in
             guard hasPermission else {
                 NCManageDatabase.shared.setAccountAutoUploadProperty("autoUpload", state: false)
                 return completion(0)
             }
             DispatchQueue.global(qos: .userInteractive).async {
-                self.uploadAssetsNewAndFull(viewController: viewController, selector: NCGlobal.shared.selectorUploadAutoUpload, log: "Init Auto Upload", account: account) { num in
+                self.uploadAssetsNewAndFull(controller: controller, selector: NCGlobal.shared.selectorUploadAutoUpload, log: "Init Auto Upload", account: account) { num in
                     completion(num)
                 }
             }
         }
     }
 
-    func initAutoUpload(viewController: UIViewController? = nil, account: String) async -> Int {
+    func initAutoUpload(controller: UIViewController? = nil, account: String) async -> Int {
         await withUnsafeContinuation({ continuation in
-            initAutoUpload(viewController: viewController, account: account) { num in
+            initAutoUpload(controller: controller, account: account) { num in
                 continuation.resume(returning: num)
             }
         })
     }
 
-    func autoUploadFullPhotos(viewController: UIViewController?, log: String, account: String) {
+    func autoUploadFullPhotos(controller: UIViewController?, log: String, account: String) {
         applicationState = UIApplication.shared.applicationState
+        hud.indicatorView = JGProgressHUDRingIndicatorView()
+        if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
+            indicatorView.ringWidth = 1.5
+            indicatorView.ringColor = NCBrandColor.shared.getElement(account: account)
+        }
+        hud.tapOnHUDViewBlock = { _ in
 
-        NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
+        }
+        if let controller {
+            hud.show(in: controller.view)
+        }
+
+        NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { hasPermission in
             guard hasPermission else { return }
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_create_full_upload_")
             NCContentPresenter().showWarning(error: error, priority: .max)
-            NCActivityIndicator.shared.start()
             DispatchQueue.global(qos: .userInteractive).async {
-                self.uploadAssetsNewAndFull(viewController: viewController, selector: NCGlobal.shared.selectorUploadAutoUploadAll, log: log, account: account) { _ in
-                    NCActivityIndicator.shared.stop()
+                self.uploadAssetsNewAndFull(controller: controller, selector: NCGlobal.shared.selectorUploadAutoUploadAll, log: log, account: account) { _ in
+                    self.hud.dismiss()
                 }
             }
         }
     }
 
-    private func uploadAssetsNewAndFull(viewController: UIViewController?, selector: String, log: String, account: String, completion: @escaping (_ num: Int) -> Void) {
+    private func uploadAssetsNewAndFull(controller: UIViewController?, selector: String, log: String, account: String, completion: @escaping (_ num: Int) -> Void) {
         guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) else {
             return completion(0)
         }
@@ -87,7 +99,7 @@ class NCAutoUpload: NSObject {
         let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(session: session)
         var metadatas: [tableMetadata] = []
 
-        self.getCameraRollAssets(viewController: viewController, selector: selector, alignPhotoLibrary: false, account: account) { assets in
+        self.getCameraRollAssets(controller: controller, selector: selector, alignPhotoLibrary: false, account: account) { assets in
             guard let assets, !assets.isEmpty else {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Automatic upload, no new assets found [" + log + "]")
                 return completion(0)
@@ -191,8 +203,8 @@ class NCAutoUpload: NSObject {
 
     // MARK: -
 
-    @objc func alignPhotoLibrary(viewController: UIViewController?, account: String) {
-        getCameraRollAssets(viewController: viewController, selector: NCGlobal.shared.selectorUploadAutoUploadAll, alignPhotoLibrary: true, account: account) { assets in
+    @objc func alignPhotoLibrary(controller: UIViewController?, account: String) {
+        getCameraRollAssets(controller: controller, selector: NCGlobal.shared.selectorUploadAutoUploadAll, alignPhotoLibrary: true, account: account) { assets in
             NCManageDatabase.shared.clearTable(tablePhotoLibrary.self, account: account)
             guard let assets = assets else { return }
 
@@ -201,8 +213,8 @@ class NCAutoUpload: NSObject {
         }
     }
 
-    private func getCameraRollAssets(viewController: UIViewController?, selector: String, alignPhotoLibrary: Bool, account: String, completion: @escaping (_ assets: [PHAsset]?) -> Void) {
-        NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: viewController) { hasPermission in
+    private func getCameraRollAssets(controller: UIViewController?, selector: String, alignPhotoLibrary: Bool, account: String, completion: @escaping (_ assets: [PHAsset]?) -> Void) {
+        NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { hasPermission in
             guard hasPermission,
                   let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) else {
                 return completion(nil)

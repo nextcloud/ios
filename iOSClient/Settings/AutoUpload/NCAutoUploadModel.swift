@@ -117,7 +117,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
                 self.updateAccountProperty(\.autoUpload, value: value)
                 NCManageDatabase.shared.setAccountAutoUploadFileName("")
                 NCManageDatabase.shared.setAccountAutoUploadDirectory("", session: self.session)
-                NCAutoUpload.shared.alignPhotoLibrary(viewController: self.controller, account: self.session.account)
+                NCAutoUpload.shared.alignPhotoLibrary(controller: self.controller, account: self.session.account)
             }
         } else {
             updateAccountProperty(\.autoUpload, value: newValue)
@@ -130,7 +130,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     func handleAutoUploadImageChange(newValue: Bool) {
         updateAccountProperty(\.autoUploadImage, value: newValue)
         if newValue {
-            NCAutoUpload.shared.alignPhotoLibrary(viewController: controller, account: session.account)
+            NCAutoUpload.shared.alignPhotoLibrary(controller: controller, account: session.account)
         }
     }
 
@@ -143,7 +143,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     func handleAutoUploadVideoChange(newValue: Bool) {
         updateAccountProperty(\.autoUploadVideo, value: newValue)
         if newValue {
-            NCAutoUpload.shared.alignPhotoLibrary(viewController: controller, account: session.account)
+            NCAutoUpload.shared.alignPhotoLibrary(controller: controller, account: session.account)
         }
     }
 
@@ -156,7 +156,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     func handleAutoUploadFullChange(newValue: Bool) {
         updateAccountProperty(\.autoUploadFull, value: newValue)
         if newValue {
-            NCAutoUpload.shared.autoUploadFullPhotos(viewController: self.controller, log: "Auto upload full", account: session.account)
+            NCAutoUpload.shared.autoUploadFullPhotos(controller: self.controller, log: "Auto upload full", account: session.account)
         } else {
             NCManageDatabase.shared.clearMetadatasUpload(account: session.account)
         }

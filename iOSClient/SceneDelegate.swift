@@ -122,7 +122,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         NCService().startRequestServicesServer(account: session.account)
 
-        NCAutoUpload.shared.initAutoUpload(viewController: nil, account: session.account) { num in
+        NCAutoUpload.shared.initAutoUpload(controller: nil, account: session.account) { num in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(num) uploads")
         }
 
@@ -244,7 +244,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 switch actionScheme {
                 case NCGlobal.shared.actionUploadAsset:
 
-                    NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: controller) { hasPermission in
+                    NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { hasPermission in
                         if hasPermission {
                             NCPhotosPickerViewController(controller: controller, maxSelectedAssets: 0, singleSelectedMode: false)
                         }
