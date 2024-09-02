@@ -17,7 +17,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bouncesZoom="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="Zaz-Cl-qpZ">
-                                <rect key="frame" x="0.0" y="100" width="375" height="678"/>
+                                <rect key="frame" x="0.0" y="100" width="375" height="712"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="fF1-wd-0xN">
                                     <size key="itemSize" width="0.0" height="0.0"/>
@@ -47,7 +47,7 @@
                             <constraint firstItem="BAN-5f-6Yg" firstAttribute="centerX" secondItem="QEs-gO-Cmp" secondAttribute="centerX" id="W0h-In-iBI"/>
                             <constraint firstItem="Zaz-Cl-qpZ" firstAttribute="width" secondItem="Meh-VD-wWh" secondAttribute="width" id="XZm-hS-nQO"/>
                             <constraint firstItem="BAN-5f-6Yg" firstAttribute="top" secondItem="Meh-VD-wWh" secondAttribute="top" id="kfA-Lr-Sr4"/>
-                            <constraint firstAttribute="bottom" secondItem="Zaz-Cl-qpZ" secondAttribute="bottom" constant="34" id="qa0-Gh-9JM"/>
+                            <constraint firstAttribute="bottom" secondItem="Zaz-Cl-qpZ" secondAttribute="bottom" id="qa0-Gh-9JM"/>
                             <constraint firstItem="BAN-5f-6Yg" firstAttribute="width" secondItem="Meh-VD-wWh" secondAttribute="width" id="vkW-5S-tUE"/>
                         </constraints>
                     </view>
