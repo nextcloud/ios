@@ -54,6 +54,12 @@ struct NCAutoUploadView: View {
         .alert(model.error, isPresented: $model.showErrorAlert) {
             Button(NSLocalizedString("_ok_", comment: ""), role: .cancel) { }
         }
+        .sheet(isPresented: $model.autoUploadFolder) {
+            SelectView(serverUrl: $model.serverUrl, session: model.session)
+            .onDisappear {
+                model.setAutoUploadDirectory(serverUrl: model.serverUrl)
+            }
+        }
     }
 
     @ViewBuilder
@@ -77,12 +83,6 @@ struct NCAutoUploadView: View {
         }, footer: {
             Text("\(NSLocalizedString("_autoupload_current_folder_", comment: "")): \(model.returnPath())")
         })
-        .sheet(isPresented: $model.autoUploadFolder) {
-            SelectView(serverUrl: $model.serverUrl, session: model.session)
-                .onDisappear {
-                    model.setAutoUploadDirectory(serverUrl: model.serverUrl)
-                }
-        }
         /// Auto Upload Photo
         Section(content: {
             Toggle(NSLocalizedString("_autoupload_photos_", comment: ""), isOn: $model.autoUploadImage)
