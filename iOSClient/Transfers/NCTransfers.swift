@@ -239,11 +239,15 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             cell.labelStatus.text = NSLocalizedString("_status_wait_create_folder_", comment: "") + user
             cell.labelInfo.text = ""
         case NCGlobal.shared.metadataStatusDownloading:
-            cell.fileStatusImage?.image = utility.loadImage(named: "arrowshape.down.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            if #available(iOS 17.0, *) {
+                cell.fileStatusImage?.image = utility.loadImage(named: "arrowshape.down.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            }
             cell.labelStatus.text = NSLocalizedString("_status_downloading_", comment: "") + user
             cell.labelInfo.text = utilityFileSystem.transformedSize(metadata.size) + " - " + self.utilityFileSystem.transformedSize(transfer.totalBytes)
         case NCGlobal.shared.metadataStatusUploading:
-            cell.fileStatusImage?.image = utility.loadImage(named: "arrowshape.up.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            if #available(iOS 17.0, *) {
+                cell.fileStatusImage?.image = utility.loadImage(named: "arrowshape.up.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            }
             cell.labelStatus.text = NSLocalizedString("_status_uploading_", comment: "") + user
             cell.labelInfo.text = utilityFileSystem.transformedSize(metadata.size) + " - " + self.utilityFileSystem.transformedSize(transfer.totalBytes)
         case NCGlobal.shared.metadataStatusDownloadError, NCGlobal.shared.metadataStatusUploadError:
