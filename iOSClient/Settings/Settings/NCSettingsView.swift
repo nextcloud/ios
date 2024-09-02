@@ -43,7 +43,7 @@ struct NCSettingsView: View {
             /// `Auto Upload` Section
             Section(content: {
                 NavigationLink(destination: LazyView {
-                    NCAutoUploadView(model: NCAutoUploadModel(controller: model.controller))
+                    NCAutoUploadView(model: NCAutoUploadModel(viewController: model.controller?.currentViewController()))
                 }) {
                     HStack {
                         Image(systemName: "photo.circle")
@@ -98,6 +98,23 @@ struct NCSettingsView: View {
                     .font(.system(size: 12))
                     .lineSpacing(1)
             })
+            /// Display
+            Section(header: Text(NSLocalizedString("_display_", comment: "")), content: {
+                NavigationLink(destination: LazyView {
+                    NCDisplayView(model: NCDisplayModel())
+                }) {
+                    HStack {
+                        Image(systemName: "sun.max.circle")
+                            .resizable()
+                            .scaledToFit()
+                            .font(Font.system(.body).weight(.light))
+                            .frame(width: 20, height: 20)
+                            .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
+                        Text(NSLocalizedString("_display_", comment: ""))
+                    }
+                    .font(.system(size: 16))
+                }
+            })
             /// Calender & Contacts
             if !NCBrandOptions.shared.disable_mobileconfig {
                 Section(content: {
@@ -132,7 +149,9 @@ struct NCSettingsView: View {
             /// `Advanced` Section
             Section {
                 NavigationLink(destination: LazyView {
-                    NCSettingsAdvancedView(model: NCSettingsAdvancedModel(controller: model.controller), showExitAlert: false, showCacheAlert: false)
+                    NCSettingsAdvancedView(model: NCSettingsAdvancedModel(viewController: model.controller?.currentViewController()),
+                                           showExitAlert: false,
+                                           showCacheAlert: false)
                 }) {
                     HStack {
                         Image(systemName: "gear")
@@ -231,7 +250,7 @@ struct E2EESection: View {
     var body: some View {
         Section(header: Text(NSLocalizedString("_e2e_settings_title_", comment: "")), content: {
             NavigationLink(destination: LazyView {
-                NCManageE2EEView(model: NCManageE2EE(controller: model.controller))
+                NCManageE2EEView(model: NCManageE2EE(viewController: model.controller?.currentViewController()))
             }) {
                 HStack {
                     Image(systemName: "lock")
