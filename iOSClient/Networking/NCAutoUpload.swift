@@ -36,7 +36,7 @@ class NCAutoUpload: NSObject {
 
     // MARK: -
 
-    func initAutoUpload(controller: UIViewController?, account: String, completion: @escaping (_ num: Int) -> Void) {
+    func initAutoUpload(controller: NCMainTabBarController?, account: String, completion: @escaping (_ num: Int) -> Void) {
         guard NCNetworking.shared.isOnline,
               let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
               tableAccount.autoUpload else {
@@ -57,7 +57,7 @@ class NCAutoUpload: NSObject {
         }
     }
 
-    func initAutoUpload(controller: UIViewController? = nil, account: String) async -> Int {
+    func initAutoUpload(controller: NCMainTabBarController? = nil, account: String) async -> Int {
         await withUnsafeContinuation({ continuation in
             initAutoUpload(controller: controller, account: account) { num in
                 continuation.resume(returning: num)
@@ -65,15 +65,13 @@ class NCAutoUpload: NSObject {
         })
     }
 
-    func autoUploadFullPhotos(controller: UIViewController?, log: String, account: String) {
+    func autoUploadFullPhotos(controller: NCMainTabBarController?, log: String, account: String) {
         applicationState = UIApplication.shared.applicationState
         hud.indicatorView = JGProgressHUDRingIndicatorView()
+        hud.detailTextLabel.textColor = NCBrandColor.shared.iconImageColor2
         if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
             indicatorView.ringWidth = 1.5
             indicatorView.ringColor = NCBrandColor.shared.getElement(account: account)
-        }
-        hud.tapOnHUDViewBlock = { _ in
-
         }
         if let controller {
             hud.show(in: controller.view)
@@ -85,13 +83,13 @@ class NCAutoUpload: NSObject {
             NCContentPresenter().showWarning(error: error, priority: .max)
             DispatchQueue.global(qos: .userInteractive).async {
                 self.uploadAssetsNewAndFull(controller: controller, selector: NCGlobal.shared.selectorUploadAutoUploadAll, log: log, account: account) { _ in
-                    self.hud.dismiss()
+                    DispatchQueue.main.async { self.hud.dismiss() }
                 }
             }
         }
     }
 
-    private func uploadAssetsNewAndFull(controller: UIViewController?, selector: String, log: String, account: String, completion: @escaping (_ num: Int) -> Void) {
+    private func uploadAssetsNewAndFull(controller: NCMainTabBarController?, selector: String, log: String, account: String, completion: @escaping (_ num: Int) -> Void) {
         guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) else {
             return completion(0)
         }
@@ -107,7 +105,8 @@ class NCAutoUpload: NSObject {
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Automatic upload, new \(assets.count) assets found [" + log + "]")
             // Create the folder for auto upload & if request the subfolders
-            if !NCNetworking.shared.createFolder(assets: assets, useSubFolder: tableAccount.autoUploadCreateSubfolder, withPush: false, session: session) {
+            DispatchQueue.main.async { self.hud.textLabel.text = NSLocalizedString("_creating_dir_progress_", comment: "") }
+            if !NCNetworking.shared.createFolder(assets: assets, useSubFolder: tableAccount.autoUploadCreateSubfolder, withPush: false, hud: self.hud, session: session) {
                 if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
                     let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_error_createsubfolders_upload_")
                     NCContentPresenter().showError(error: error, priority: .max)
@@ -115,6 +114,7 @@ class NCAutoUpload: NSObject {
                 return completion(0)
             }
 
+            DispatchQueue.main.async { self.hud.textLabel.text = NSLocalizedString("_creating_dir_progress_", comment: "") }
             self.endForAssetToUpload = false
 
             for asset in assets {
@@ -203,7 +203,7 @@ class NCAutoUpload: NSObject {
 
     // MARK: -
 
-    @objc func alignPhotoLibrary(controller: UIViewController?, account: String) {
+    @objc func alignPhotoLibrary(controller: NCMainTabBarController?, account: String) {
         getCameraRollAssets(controller: controller, selector: NCGlobal.shared.selectorUploadAutoUploadAll, alignPhotoLibrary: true, account: account) { assets in
             NCManageDatabase.shared.clearTable(tablePhotoLibrary.self, account: account)
             guard let assets = assets else { return }
@@ -213,7 +213,7 @@ class NCAutoUpload: NSObject {
         }
     }
 
-    private func getCameraRollAssets(controller: UIViewController?, selector: String, alignPhotoLibrary: Bool, account: String, completion: @escaping (_ assets: [PHAsset]?) -> Void) {
+    private func getCameraRollAssets(controller: NCMainTabBarController?, selector: String, alignPhotoLibrary: Bool, account: String, completion: @escaping (_ assets: [PHAsset]?) -> Void) {
         NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { hasPermission in
             guard hasPermission,
                   let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) else {
