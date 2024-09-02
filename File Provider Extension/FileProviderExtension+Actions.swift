@@ -101,31 +101,37 @@ extension FileProviderExtension {
         let ocIdFrom = metadataFrom.ocId
         let serverUrlFrom = metadataFrom.serverUrl
         let fileNameFrom = serverUrlFrom + "/" + itemFrom.filename
+
         guard let tableDirectoryTo = providerUtility.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: fileProviderData.shared.session.account, homeServerUrl: utilityFileSystem.getHomeServer(session: fileProviderData.shared.session)) else {
             return completionHandler(nil, NSFileProviderError(.noSuchItem))
         }
         let serverUrlTo = tableDirectoryTo.serverUrl
-        let fileNameTo = serverUrlTo + "/" + itemFrom.filename
+        var fileNameTo = serverUrlTo + "/" + itemFrom.filename
+        if let newName {
+            fileNameTo = serverUrlTo + "/" + newName
+        }
 
-        NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: false, account: metadataFrom.account) { account, error in
-            if error == .success {
-                if metadataFrom.directory {
-                    NCManageDatabase.shared.deleteDirectoryAndSubDirectory(serverUrl: serverUrlFrom, account: account)
-                    NCManageDatabase.shared.renameDirectory(ocId: ocIdFrom, serverUrl: serverUrlTo)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: true, account: metadataFrom.account) { account, error in
+                if error == .success {
+                    if metadataFrom.directory {
+                        NCManageDatabase.shared.deleteDirectoryAndSubDirectory(serverUrl: serverUrlFrom, account: account)
+                        NCManageDatabase.shared.renameDirectory(ocId: ocIdFrom, serverUrl: serverUrlTo)
+                    }
+                    NCManageDatabase.shared.moveMetadata(ocId: ocIdFrom, serverUrlTo: serverUrlTo)
+
+                    guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocIdFrom) else {
+                        return completionHandler(nil, NSFileProviderError(.noSuchItem))
+
+                    }
+                    let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
+
+                    completionHandler(item, nil)
+                } else if error.errorCode == NCGlobal.shared.errorBadRequest {
+                    completionHandler(nil, NSFileProviderError(.noSuchItem, userInfo: [NSLocalizedDescriptionKey: error.errorDescription, NSLocalizedFailureReasonErrorKey: ""]))
+                } else {
+                    completionHandler(nil, NSFileProviderError(.serverUnreachable))
                 }
-                NCManageDatabase.shared.moveMetadata(ocId: ocIdFrom, serverUrlTo: serverUrlTo)
-
-                guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocIdFrom) else {
-                    return completionHandler(nil, NSFileProviderError(.noSuchItem))
-
-                }
-                let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
-
-                completionHandler(item, nil)
-            } else if error.errorCode == NCGlobal.shared.errorBadRequest {
-                completionHandler(nil, NSFileProviderError(.noSuchItem, userInfo: [NSLocalizedDescriptionKey: error.errorDescription, NSLocalizedFailureReasonErrorKey: ""]))
-            } else {
-                completionHandler(nil, NSFileProviderError(.serverUnreachable))
             }
         }
     }

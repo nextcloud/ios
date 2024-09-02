@@ -70,7 +70,7 @@ class NCAccount: NSObject {
         controller?.account = account
         NCManageDatabase.shared.setAccountActive(account)
         /// Set capabilities
-        let capability = NCManageDatabase.shared.setCapabilities(account: account)
+        NCManageDatabase.shared.setCapabilities(account: account)
         /// Set User Profile
         if let userProfile {
             NCManageDatabase.shared.setAccountUserProfile(account: account, userProfile: userProfile)
