@@ -90,7 +90,7 @@ class NCFiles: NCCollectionViewCommon {
         }
         super.viewWillAppear(animated)
 
-        if dataSource.metadatas.isEmpty {
+        if self.dataSource.isEmpty() {
             reloadDataSource(withQueryDB: true)
         }
         reloadDataSourceNetwork(withQueryDB: true)
@@ -107,26 +107,32 @@ class NCFiles: NCCollectionViewCommon {
 
     override func queryDB() {
         super.queryDB()
+        self.dataSource.removeAll()
+
         var metadatas: [tableMetadata] = []
+        let predicateDirectory = NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, self.serverUrl)
+        let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND (ownerId == %@ || ownerId == '') AND mountType == '' AND NOT (status IN %@)", session.account, self.serverUrl, session.userId, global.metadataStatusFileUp)
 
-        if NCKeychain().getPersonalFilesOnly(account: session.account) {
-            metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND (ownerId == %@ || ownerId == '') AND mountType == ''", session.account, self.serverUrl, session.userId))
+        if NCKeychain().getPersonalFilesOnly(account: session.account),
+           let results = self.database.getResultsMetadatas(predicate: predicate) {
+            metadatas = Array(results)
         } else {
-            metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, self.serverUrl))
-        }
-        let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, self.serverUrl))
-        if self.metadataFolder == nil {
-            self.metadataFolder = NCManageDatabase.shared.getMetadataFolder(session: session, serverUrl: self.serverUrl)
+            metadatas = self.database.getResultsMetadatasAccount(session.account, serverUrl: self.serverUrl, layoutForView: layoutForView)
         }
 
-        self.richWorkspaceText = directory?.richWorkspace
-        self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: layoutForView, providers: self.providers, searchResults: self.searchResults)
+        self.metadataFolder = NCManageDatabase.shared.getMetadataFolder(session: session, serverUrl: self.serverUrl)
+        self.richWorkspaceText = NCManageDatabase.shared.getTableDirectory(predicate: predicateDirectory)?.richWorkspace
+
+        self.dataSource = NCDataSource(metadatas: metadatas,
+                                       layoutForView: layoutForView,
+                                       providers: self.providers,
+                                       searchResults: self.searchResults)
     }
 
     override func reloadDataSource(withQueryDB: Bool = true) {
         super.reloadDataSource(withQueryDB: withQueryDB)
 
-        if !self.dataSource.metadatas.isEmpty {
+        if !self.dataSource.isEmpty() {
             self.blinkCell(fileName: self.fileNameBlink)
             self.openFile(fileName: self.fileNameOpen)
             self.fileNameBlink = nil
@@ -144,7 +150,6 @@ class NCFiles: NCCollectionViewCommon {
         }
 
         func downloadMetadata(_ metadata: tableMetadata) -> Bool {
-
             let fileSize = utilityFileSystem.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView)
             guard fileSize > 0 else { return false }
 
@@ -160,7 +165,7 @@ class NCFiles: NCCollectionViewCommon {
         super.reloadDataSourceNetwork()
 
         networkReadFolder { tableDirectory, metadatas, metadatasDifferentCount, metadatasModified, error in
-            DispatchQueue.global(qos: .userInteractive).async {
+            DispatchQueue.main.async {
                 if error == .success {
                     for metadata in metadatas ?? [] where !metadata.directory && downloadMetadata(metadata) {
                         if NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
@@ -262,7 +267,7 @@ class NCFiles: NCCollectionViewCommon {
 
     func blinkCell(fileName: String?) {
         if let fileName = fileName, let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", session.account, self.serverUrl, fileName)) {
-            let (indexPath, _) = self.dataSource.getIndexPathMetadata(ocId: metadata.ocId)
+            let indexPath = self.dataSource.getIndexPathMetadata(ocId: metadata.ocId)
             if let indexPath = indexPath {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     UIView.animate(withDuration: 0.3) {
@@ -282,7 +287,7 @@ class NCFiles: NCCollectionViewCommon {
 
     func openFile(fileName: String?) {
         if let fileName = fileName, let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", session.account, self.serverUrl, fileName)) {
-            let (indexPath, _) = self.dataSource.getIndexPathMetadata(ocId: metadata.ocId)
+            let indexPath = self.dataSource.getIndexPathMetadata(ocId: metadata.ocId)
             if let indexPath = indexPath {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     self.collectionView(self.collectionView, didSelectItemAt: indexPath)

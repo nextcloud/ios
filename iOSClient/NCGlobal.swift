@@ -159,7 +159,7 @@ class NCGlobal: NSObject {
 
     // Rich Workspace
     //
-    let fileNameRichWorkspace = "Readme.md"
+    let fileNameRichWorkspace                       = "Readme.md"
 
     // Image extension
     //
@@ -258,10 +258,6 @@ class NCGlobal: NSObject {
     let metadataStatusFileDown                  = [-1, -2, -3]
     let metadataStatusFileUp                    = [1, 2, 3]
     let metadataStatusAllUp                     = [1, 2, 3, 10]
-
-    //  Hidden files included in the read
-    //
-    let includeHiddenFiles: [String] = [".LivePhoto"]
 
     // Auto upload subfolder granularity
     //

@@ -23,6 +23,7 @@
 
 import UIKit
 import NextcloudKit
+import RealmSwift
 
 class NCGroupfolders: NCCollectionViewCommon {
 
@@ -43,7 +44,7 @@ class NCGroupfolders: NCCollectionViewCommon {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        if dataSource.metadatas.isEmpty {
+        if self.dataSource.isEmpty() {
             reloadDataSource()
         }
         reloadDataSourceNetwork()
@@ -56,19 +57,19 @@ class NCGroupfolders: NCCollectionViewCommon {
         var metadatas: [tableMetadata] = []
 
         if self.serverUrl.isEmpty {
-            metadatas = NCManageDatabase.shared.getMetadatasFromGroupfolders(session: session)
+            metadatas = NCManageDatabase.shared.getResultsMetadatasFromGroupfolders(session: session)
         } else {
-            metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, self.serverUrl))
+            metadatas = NCManageDatabase.shared.getResultsMetadatasAccount(session.account, serverUrl: self.serverUrl, layoutForView: layoutForView)
         }
 
-        self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: layoutForView, providers: self.providers, searchResults: self.searchResults)
+        self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: layoutForView)
     }
 
     override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
         super.reloadDataSourceNetwork()
         let homeServerUrl = utilityFileSystem.getHomeServer(session: session)
 
-        NextcloudKit.shared.getGroupfolders(account: session.account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
+        NextcloudKit.shared.getGroupfolders(account: session.account) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()
         } completion: { account, results, _, error in
@@ -78,7 +79,7 @@ class NCGroupfolders: NCCollectionViewCommon {
                     for groupfolder in groupfolders {
                         let mountPoint = groupfolder.mountPoint.hasPrefix("/") ? groupfolder.mountPoint : "/" + groupfolder.mountPoint
                         let serverUrlFileName = homeServerUrl + mountPoint
-                        if NCManageDatabase.shared.getMetadataFromDirectory(account: account, serverUrl: serverUrlFileName) == nil {
+                        if NCManageDatabase.shared.getMetadataFromDirectory(account: account, serverUrl: serverUrlFileName) {
                             let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles, account: account)
                             if results.error == .success, let file = results.files?.first {
                                 let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)

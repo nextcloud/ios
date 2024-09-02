@@ -57,21 +57,20 @@ class NCMediaDownloadThumbnail: ConcurrentOperation {
                                             heightPreview: Int(sizePreview.height),
                                             sizeIcon: NCGlobal.shared.sizeIcon,
                                             etag: etagResource,
-                                            account: metadata.account,
-                                            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imagePreview, _, _, etag, error in
+                                            account: metadata.account) { _, imagePreview, _, _, etag, error in
             if error == .success, let imagePreview, let collectionView = self.collectioView {
+
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
                 NCImageCache.shared.addPreviewImageCache(metadata: self.metadata, image: imagePreview)
-                DispatchQueue.main.async {
-                    for case let cell as NCGridMediaCell in collectionView.visibleCells {
-                        if cell.ocId == self.metadata.ocId {
-                            UIView.transition(with: cell.imageItem,
-                                              duration: 0.75,
-                                              options: .transitionCrossDissolve,
-                                              animations: { cell.imageItem.image = imagePreview },
-                                              completion: nil)
-                            break
-                        }
+
+                for case let cell as NCGridMediaCell in collectionView.visibleCells {
+                    if cell.ocId == self.metadata.ocId {
+                        UIView.transition(with: cell.imageItem,
+                                          duration: 0.75,
+                                          options: .transitionCrossDissolve,
+                                          animations: { cell.imageItem.image = imagePreview },
+                                          completion: nil)
+                        break
                     }
                 }
             }

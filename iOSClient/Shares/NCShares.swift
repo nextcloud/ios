@@ -43,7 +43,7 @@ class NCShares: NCCollectionViewCommon {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        if dataSource.metadatas.isEmpty {
+        if self.dataSource.isEmpty() {
             reloadDataSource()
         }
         reloadDataSourceNetwork()
@@ -56,11 +56,9 @@ class NCShares: NCCollectionViewCommon {
         var metadatas: [tableMetadata] = []
 
         func reload() {
-            self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: layoutForView, providers: providers, searchResults: searchResults)
-            DispatchQueue.main.async {
-                self.refreshControl.endRefreshing()
-                self.collectionView.reloadData()
-            }
+            self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: layoutForView)
+            self.refreshControl.endRefreshing()
+            self.collectionView.reloadData()
         }
 
         let sharess = NCManageDatabase.shared.getTableShares(account: session.account)

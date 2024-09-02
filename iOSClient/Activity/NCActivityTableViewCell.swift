@@ -223,18 +223,15 @@ class NCOperationDownloadThumbnailActivity: ConcurrentOperation {
 
         NextcloudKit.shared.downloadPreview(fileId: fileId,
                                             fileNamePreviewLocalPath: fileNamePreviewLocalPath,
-                                            account: account,
-                                            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imagePreview, _, _, _, error in
+                                            account: account) { _, imagePreview, _, _, _, error in
             if error == .success, let imagePreview, let collectionView = self.collectionView {
-                DispatchQueue.main.async {
-                    for case let cell as NCActivityCollectionViewCell in collectionView.visibleCells {
-                        if self.fileId == cell.fileId {
-                            UIView.transition(with: cell.imageView,
-                                              duration: 0.75,
-                                              options: .transitionCrossDissolve,
-                                              animations: { cell.imageView.image = imagePreview },
-                                              completion: nil)
-                        }
+                for case let cell as NCActivityCollectionViewCell in collectionView.visibleCells {
+                    if self.fileId == cell.fileId {
+                        UIView.transition(with: cell.imageView,
+                                          duration: 0.75,
+                                          options: .transitionCrossDissolve,
+                                          animations: { cell.imageView.image = imagePreview },
+                                          completion: nil)
                     }
                 }
             }

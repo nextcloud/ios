@@ -27,9 +27,7 @@ import NextcloudKit
 class NCDataSource: NSObject {
     var metadatas: [tableMetadata] = []
     var metadatasForSection: [NCMetadataForSection] = []
-    var directory: tableDirectory?
-    var groupBy: String?
-    var layout: String?
+    var layoutForView: NCDBLayoutForView?
 
     private let utilityFileSystem = NCUtilityFileSystem()
     private let global = NCGlobal.shared
@@ -37,67 +35,35 @@ class NCDataSource: NSObject {
     private var providers: [NKSearchProvider]?
     private var searchResults: [NKSearchResult]?
 
-    private var ascending: Bool = true
-    private var sort: String = ""
-    private var directoryOnTop: Bool = true
-    private var favoriteOnTop: Bool = true
-    private var filterLivePhoto: Bool = true
-
-    override init() {
-        super.init()
-    }
+    override init() { super.init() }
 
     init(metadatas: [tableMetadata],
-         directory: tableDirectory? = nil,
          layoutForView: NCDBLayoutForView?,
-         favoriteOnTop: Bool = true,
-         filterIsUpload: Bool = true,
-         filterLivePhoto: Bool = true,
          providers: [NKSearchProvider]? = nil,
          searchResults: [NKSearchResult]? = nil) {
         super.init()
 
-        self.metadatas = metadatas.filter({
-            !(global.includeHiddenFiles.contains($0.fileNameView) || (filterIsUpload && $0.isUpload))
-        })
-        self.directory = directory
-        self.sort = layoutForView?.sort ?? "none"
-        self.ascending = layoutForView?.ascending ?? false
-        self.directoryOnTop = layoutForView?.directoryOnTop ?? true
-        self.favoriteOnTop = favoriteOnTop
-        self.filterLivePhoto = filterLivePhoto
-        self.groupBy = layoutForView?.groupBy ?? "none"
-        self.layout = layoutForView?.layout
+        self.metadatas = metadatas
+        self.layoutForView = layoutForView
+
         // unified search
         self.providers = providers
         self.searchResults = searchResults
 
-        createSections()
+        if let providers, !providers.isEmpty {
+            createSections()
+        }
     }
 
     // MARK: -
 
-    func clearDataSource() {
-        self.metadatas.removeAll()
+    func removeAll() {
+        self.metadatas = []
+
         self.metadatasForSection.removeAll()
-        self.directory = nil
         self.sectionsValue.removeAll()
         self.providers = nil
         self.searchResults = nil
-    }
-
-    func clearDirectory() {
-        self.directory = nil
-    }
-
-    func changeGroupByField(_ groupBy: String) {
-        self.groupBy = groupBy
-        print("DATASOURCE: set group by filed " + groupBy)
-        self.metadatasForSection.removeAll()
-        self.sectionsValue.removeAll()
-        print("DATASOURCE: remove  all sections")
-
-        createSections()
     }
 
     func addSection(metadatas: [tableMetadata], searchResult: NKSearchResult?) {
@@ -114,9 +80,8 @@ class NCDataSource: NSObject {
         // get all Section
         for metadata in self.metadatas {
             // skipped livePhoto VIDEO part
-            if self.filterLivePhoto,
-                metadata.isLivePhoto,
-                metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
+            if metadata.isLivePhoto,
+               metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
                 continue
             }
             let section = NSLocalizedString(self.getSectionValue(metadata: metadata), comment: "")
@@ -124,7 +89,7 @@ class NCDataSource: NSObject {
                 self.sectionsValue.append(section)
             }
             // image Cache
-            if (layout == global.layoutPhotoRatio || layout == global.layoutPhotoSquare),
+            if (layoutForView?.layout == global.layoutPhotoRatio || layoutForView?.layout == global.layoutPhotoSquare),
                (metadata.isVideo || metadata.isImage),
                NCImageCache.shared.getPreviewImageCache(ocId: metadata.ocId, etag: metadata.etag) == nil,
                let image = UIImage(contentsOfFile: self.utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
@@ -152,12 +117,17 @@ class NCDataSource: NSObject {
             // normal
             let directory = NSLocalizedString("directory", comment: "").lowercased().firstUppercased
             self.sectionsValue = self.sectionsValue.sorted {
-                if directoryOnTop && $0 == directory {
+                if let directoryOnTop = layoutForView?.directoryOnTop,
+                   directoryOnTop,
+                   $0 == directory {
                     return true
-                } else if directoryOnTop && $1 == directory {
+                } else if let directoryOnTop = layoutForView?.directoryOnTop,
+                          directoryOnTop,
+                          $1 == directory {
                     return false
                 }
-                if self.ascending {
+                if let ascending = layoutForView?.ascending,
+                    ascending {
                     return $0 < $1
                 } else {
                     return $0 > $1
@@ -182,21 +152,8 @@ class NCDataSource: NSObject {
         let metadataForSection = NCMetadataForSection(sectionValue: sectionValue,
                                                       metadatas: metadatas,
                                                       lastSearchResult: searchResult,
-                                                      sort: self.sort,
-                                                      ascending: self.ascending,
-                                                      directoryOnTop: self.directoryOnTop,
-                                                      favoriteOnTop: self.favoriteOnTop,
-                                                      filterLivePhoto: self.filterLivePhoto)
+                                                      layoutForView: self.layoutForView)
         metadatasForSection.append(metadataForSection)
-    }
-
-    func getMetadataSourceForAllSections() -> [tableMetadata] {
-        var metadatas: [tableMetadata] = []
-
-        for section in metadatasForSection {
-            metadatas.append(contentsOf: section.metadatas)
-        }
-        return metadatas
     }
 
     // MARK: -
@@ -219,47 +176,96 @@ class NCDataSource: NSObject {
 
     // MARK: -
 
-    func getIndexPathMetadata(ocId: String) -> (indexPath: IndexPath?, metadataForSection: NCMetadataForSection?) {
-        guard let metadata = self.metadatas.filter({ $0.ocId == ocId}).first else { return (nil, nil) }
-        let sectionValue = getSectionValue(metadata: metadata)
-        guard let sectionIndex = getSectionIndex(sectionValue), let metadataForSection = getMetadataForSection(sectionValue), let rowIndex = metadataForSection.metadatas.firstIndex(where: {$0.ocId == ocId}) else { return (nil, nil) }
-        return (IndexPath(row: rowIndex, section: sectionIndex), metadataForSection)
+    func getResultsMetadatas() -> [tableMetadata] {
+        let validMetadatas = metadatas.filter { !$0.isInvalidated }
+
+        return validMetadatas
+    }
+
+    func isEmpty() -> Bool {
+        let validMetadatas = metadatas.filter { !$0.isInvalidated }
+
+        return validMetadatas.isEmpty
+    }
+
+    func getIndexPathMetadata(ocId: String) -> IndexPath? {
+        guard self.sectionsValue.isEmpty else { return nil }
+        let validMetadatas = self.metadatas.filter { !$0.isInvalidated }
+
+        if let rowIndex = validMetadatas.firstIndex(where: {$0.ocId == ocId}) {
+            return IndexPath(row: rowIndex, section: 1)
+        }
+
+        return nil
     }
 
     func numberOfSections() -> Int {
         guard !self.sectionsValue.isEmpty else { return 1 }
+
         return self.sectionsValue.count
     }
 
     func numberOfItemsInSection(_ section: Int) -> Int {
-        guard !self.sectionsValue.isEmpty && !self.metadatas.isEmpty, let metadataForSection = getMetadataForSection(section) else { return 0}
-        return metadataForSection.metadatas.count
-    }
+        if self.sectionsValue.isEmpty {
+            let validMetadatas = metadatas.filter { !$0.isInvalidated }
+            return validMetadatas.count
+        }
+        guard !self.metadatas.isEmpty,
+              let metadataForSection = getMetadataForSection(section)
+        else { return 0}
 
-    func cellForItemAt(indexPath: IndexPath) -> tableMetadata? {
-        guard !metadatasForSection.isEmpty && indexPath.section < metadatasForSection.count, let metadataForSection = getMetadataForSection(indexPath.section), indexPath.row < metadataForSection.metadatas.count else { return nil }
-        return metadataForSection.metadatas[indexPath.row]
+        return metadataForSection.metadatas.count
     }
 
     func getSectionValueLocalization(indexPath: IndexPath) -> String {
         guard !metadatasForSection.isEmpty, let metadataForSection = self.getMetadataForSection(indexPath.section) else { return ""}
+
         if let searchResults = self.searchResults, let searchResult = searchResults.filter({ $0.id == metadataForSection.sectionValue}).first {
             return searchResult.name
         }
+
         return metadataForSection.sectionValue
     }
 
-    func getFooterInformationAllMetadatas() -> (directories: Int, files: Int, size: Int64) {
-        var directories: Int = 0
-        var files: Int = 0
+    func getFooterInformation() -> (directories: Int, files: Int, size: Int64) {
+        let validMetadatas = metadatas.filter { !$0.isInvalidated }
+        let directories = validMetadatas.filter({ $0.directory == true})
+        let files = validMetadatas.filter({ $0.directory == false})
         var size: Int64 = 0
 
-        for metadataForSection in metadatasForSection {
-            directories += metadataForSection.numDirectory
-            files += metadataForSection.numFile
-            size += metadataForSection.totalSize
+        files.forEach { metadata in
+            size += metadata.size
         }
-        return (directories, files, size)
+
+        return (directories.count, files.count, size)
+    }
+
+    // MARK: -
+
+    func getMetadata(indexPath: IndexPath) -> tableMetadata? {
+        let validMetadatas = metadatas.filter { !$0.isInvalidated }
+
+        if !metadatasForSection.isEmpty, indexPath.section < metadatasForSection.count {
+            if let metadataForSection = getMetadataForSection(indexPath.section),
+               indexPath.row < metadataForSection.metadatas.count,
+               !metadataForSection.metadatas[indexPath.row].isInvalidated {
+                return tableMetadata(value: metadataForSection.metadatas[indexPath.row])
+            }
+        } else if indexPath.row < validMetadatas.count {
+            return tableMetadata(value: validMetadatas[indexPath.row])
+        }
+
+        return nil
+    }
+
+    func getResultMetadata(indexPath: IndexPath) -> tableMetadata? {
+        let validMetadatas = metadatas.filter { !$0.isInvalidated }
+
+        if indexPath.row < validMetadatas.count {
+            return validMetadatas[indexPath.row]
+        }
+
+        return nil
     }
 
     // MARK: -
@@ -270,7 +276,7 @@ class NCDataSource: NSObject {
     }
 
     internal func getSectionValue(metadata: tableMetadata) -> String {
-        switch self.groupBy {
+        switch self.layoutForView?.groupBy {
         case "name", "none":
             return NSLocalizedString(metadata.name, comment: "")
         case "classFile":
@@ -310,12 +316,7 @@ class NCMetadataForSection: NSObject {
     var metadatas: [tableMetadata]
     var lastSearchResult: NKSearchResult?
     var unifiedSearchInProgress: Bool = false
-
-    private var sort: String
-    private var ascending: Bool
-    private var directoryOnTop: Bool
-    private var favoriteOnTop: Bool
-    private var filterLivePhoto: Bool
+    var layoutForView: NCDBLayoutForView?
 
     private var metadatasSorted: [tableMetadata] = []
     private var metadatasFavoriteDirectory: [tableMetadata] = []
@@ -327,16 +328,12 @@ class NCMetadataForSection: NSObject {
     public var numFile: Int = 0
     public var totalSize: Int64 = 0
 
-    init(sectionValue: String, metadatas: [tableMetadata], lastSearchResult: NKSearchResult?, sort: String, ascending: Bool, directoryOnTop: Bool, favoriteOnTop: Bool, filterLivePhoto: Bool) {
+    init(sectionValue: String, metadatas: [tableMetadata], lastSearchResult: NKSearchResult?, layoutForView: NCDBLayoutForView?) {
 
         self.sectionValue = sectionValue
         self.metadatas = metadatas
         self.lastSearchResult = lastSearchResult
-        self.sort = sort
-        self.ascending = ascending
-        self.directoryOnTop = directoryOnTop
-        self.favoriteOnTop = favoriteOnTop
-        self.filterLivePhoto = filterLivePhoto
+        self.layoutForView = layoutForView
 
         super.init()
 
@@ -361,23 +358,23 @@ class NCMetadataForSection: NSObject {
 
         // Metadata order
         //
-        if sort != "none" && !sort.isEmpty {
+        if let layoutForView = self.layoutForView, layoutForView.sort != "none" && !layoutForView.sort.isEmpty {
             metadatasSorted = metadatas.sorted {
-                switch sort {
+                switch layoutForView.sort {
                 case "date":
-                    if ascending {
+                    if layoutForView.ascending {
                         return ($0.date as Date) < ($1.date as Date)
                     } else {
                         return ($0.date as Date) > ($1.date as Date)
                     }
                 case "size":
-                    if ascending {
+                    if layoutForView.ascending {
                         return $0.size < $1.size
                     } else {
                         return $0.size > $1.size
                     }
                 default:
-                    if ascending {
+                    if layoutForView.ascending {
                         return $0.fileNameView.lowercased() < $1.fileNameView.lowercased()
                     } else {
                         return $0.fileNameView.lowercased() > $1.fileNameView.lowercased()
@@ -398,8 +395,7 @@ class NCMetadataForSection: NSObject {
             }
 
             // skipped livePhoto VIDEO part
-            if self.filterLivePhoto,
-               metadata.isLivePhoto,
+            if metadata.isLivePhoto,
                metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
                 continue
             }
@@ -415,13 +411,13 @@ class NCMetadataForSection: NSObject {
             }
 
             // Organized the metadata
-            if metadata.favorite && favoriteOnTop {
+            if metadata.favorite {
                 if metadata.directory {
                     metadatasFavoriteDirectory.append(metadata)
                 } else {
                     metadatasFavoriteFile.append(metadata)
                 }
-            } else if  metadata.directory && directoryOnTop {
+            } else if metadata.directory && layoutForView?.directoryOnTop ?? true {
                 metadatasDirectory.append(metadata)
             } else {
                 metadatasFile.append(metadata)

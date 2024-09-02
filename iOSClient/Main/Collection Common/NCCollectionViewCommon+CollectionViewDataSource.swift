@@ -27,15 +27,15 @@ import NextcloudKit
 
 extension NCCollectionViewCommon: UICollectionViewDataSource {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return dataSource.numberOfSections()
+        return self.dataSource.numberOfSections()
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return dataSource.numberOfItemsInSection(section)
+        return self.dataSource.numberOfItemsInSection(section)
     }
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath),
+        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath),
               let cell = (cell as? NCCellProtocol) else { return }
         let existsIcon = utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)
 
@@ -136,7 +136,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if !collectionView.indexPathsForVisibleItems.contains(indexPath) {
-            guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
+            guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else { return }
             for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
                 operation.cancel()
             }
@@ -149,7 +149,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         var isShare = false
         var isMounted = false
         var a11yValues: [String] = []
-        let metadata = dataSource.cellForItemAt(indexPath: indexPath) ?? tableMetadata()
+        let metadata = self.dataSource.getMetadata(indexPath: indexPath) ?? tableMetadata()
 
         // LAYOUT PHOTO
         if isLayoutPhoto {
@@ -173,7 +173,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             listCell.listCellDelegate = self
             cell = listCell
         }
-        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return cell }
+        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else { return cell }
 
         defer {
             if !metadata.isSharable() || NCCapabilities.shared.disableSharesView(account: metadata.account) {
@@ -320,9 +320,13 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         case NCGlobal.shared.metadataStatusWaitCreateFolder:
             cell.fileStatusImage?.image = utility.loadImage(named: "exclamationmark.arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
         case NCGlobal.shared.metadataStatusDownloading:
-            cell.fileStatusImage?.image = utility.loadImage(named: "arrowshape.down.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            if #available(iOS 17.0, *) {
+                cell.fileStatusImage?.image = utility.loadImage(named: "arrowshape.down.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            }
         case NCGlobal.shared.metadataStatusUploading:
-            cell.fileStatusImage?.image = utility.loadImage(named: "arrowshape.up.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            if #available(iOS 17.0, *) {
+                cell.fileStatusImage?.image = utility.loadImage(named: "arrowshape.up.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            }
         case NCGlobal.shared.metadataStatusDownloadError, NCGlobal.shared.metadataStatusUploadError:
             cell.fileStatusImage?.image = utility.loadImage(named: "exclamationmark.circle", colors: NCBrandColor.shared.iconImageMultiColors)
         default:
@@ -397,7 +401,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         if kind == UICollectionView.elementKindSectionHeader || kind == mediaSectionHeader {
-            if dataSource.getMetadataSourceForAllSections().isEmpty {
+            if self.dataSource.isEmpty() {
                 guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeaderEmptyData", for: indexPath) as? NCSectionFirstHeaderEmptyData else { return NCSectionFirstHeaderEmptyData() }
                 self.sectionFirstHeaderEmptyData = header
                 header.delegate = self
@@ -471,7 +475,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
         } else {
             guard let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as? NCSectionFooter else { return NCSectionFooter() }
-            let sections = dataSource.numberOfSections()
+            let sections = self.dataSource.numberOfSections()
             let section = indexPath.section
             let metadataForSection = self.dataSource.getMetadataForSection(indexPath.section)
             let isPaginated = metadataForSection?.lastSearchResult?.isPaginated ?? false
@@ -506,7 +510,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 }
             } else {
                 if sections == 1 || section == sections - 1 {
-                    let info = dataSource.getFooterInformationAllMetadatas()
+                    let info = self.dataSource.getFooterInformation()
                     footer.setTitleLabel(directories: info.directories, files: info.files, size: info.size)
                 } else {
                     footer.separatorIsHidden(false)

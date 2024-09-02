@@ -39,7 +39,6 @@ extension NCNetworking {
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
                                              depth: "1",
                                              showHiddenFiles: NCKeychain().showHiddenFiles,
-                                             includeHiddenFiles: self.global.includeHiddenFiles,
                                              account: account,
                                              options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
             taskHandler(task)
@@ -278,6 +277,7 @@ extension NCNetworking {
                       useSubFolder: Bool,
                       withPush: Bool,
                       sceneIdentifier: String? = nil,
+                      hud: JGProgressHUD? = nil,
                       session: NCSession.Session) -> Bool {
         let autoUploadPath = self.database.getAccountAutoUploadPath(session: session)
         let serverUrlBase = self.database.getAccountAutoUploadDirectory(session: session)
@@ -305,13 +305,15 @@ extension NCNetworking {
                 datesSubFolder.append(utilityFileSystem.createGranularityPath())
             }
 
-            return Array(Set(datesSubFolder))
+            return Array(Set(datesSubFolder)).sorted()
         }
 
         var result = createFolder(fileName: fileNameBase, serverUrl: serverUrlBase)
 
         if useSubFolder && result {
-            for dateSubFolder in createNameSubFolder() {
+            let folders = createNameSubFolder()
+            var num: Float = 0
+            for dateSubFolder in folders {
                 let subfolderArray = dateSubFolder.split(separator: "/")
                 let year = subfolderArray[0]
                 let serverUrlYear = autoUploadPath
@@ -327,6 +329,12 @@ extension NCNetworking {
                     }
                 }
                 if !result { break }
+                if let hud {
+                    num += 1
+                    DispatchQueue.main.async {
+                        hud.progress = num / Float(folders.count)
+                    }
+                }
             }
         }
 

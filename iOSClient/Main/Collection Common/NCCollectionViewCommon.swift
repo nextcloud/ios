@@ -159,7 +159,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         // Refresh Control
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
-            self.dataSource.clearDirectory()
+            self.dataSource.removeAll()
             self.database.cleanEtagDirectory(serverUrl: self.serverUrl, account: self.session.account)
             self.reloadDataSourceNetwork()
         }
@@ -365,26 +365,26 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard let userInfo = notification.userInfo as NSDictionary?,
               let error = userInfo["error"] as? NKError else { return }
 
-        if error == .success {
-            reloadDataSource()
-        } else {
+        if error != .success {
             NCContentPresenter().showError(error: error)
         }
+
+        reloadDataSource()
     }
 
     @objc func moveFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let error = userInfo["error"] as? NKError else { return }
 
-        if error == .success {
-            if !isSearchingMode, let dragDrop = userInfo["dragdrop"] as? Bool, dragDrop {
-                setEditMode(false)
-                reloadDataSourceNetwork(withQueryDB: true)
-            } else {
-                reloadDataSource()
-            }
-        } else {
+        if error != .success {
             NCContentPresenter().showError(error: error)
+        }
+
+        if !isSearchingMode, let dragDrop = userInfo["dragdrop"] as? Bool, dragDrop {
+            setEditMode(false)
+            reloadDataSourceNetwork(withQueryDB: true)
+        } else {
+            reloadDataSource()
         }
     }
 
@@ -392,15 +392,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard let userInfo = notification.userInfo as NSDictionary?,
               let error = userInfo["error"] as? NKError else { return }
 
-        if error == .success {
-            if !isSearchingMode, let dragDrop = userInfo["dragdrop"] as? Bool, dragDrop {
-                setEditMode(false)
-                reloadDataSourceNetwork(withQueryDB: true)
-            } else {
-                reloadDataSource()
-            }
-        } else {
+        if error != .success {
             NCContentPresenter().showError(error: error)
+        }
+
+        if !isSearchingMode, let dragDrop = userInfo["dragdrop"] as? Bool, dragDrop {
+            setEditMode(false)
+            reloadDataSourceNetwork(withQueryDB: true)
+        } else {
+            reloadDataSource()
         }
     }
 
@@ -661,7 +661,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
             let select = UIAction(title: NSLocalizedString("_select_", comment: ""),
                                   image: utility.loadImage(named: "checkmark.circle"),
-                                  attributes: (self.dataSource.getMetadataSourceForAllSections().isEmpty || NCNetworking.shared.isOffline) ? .disabled : []) { _ in
+                                  attributes: (self.dataSource.isEmpty() || NCNetworking.shared.isOffline) ? .disabled : []) { _ in
                 self.setEditMode(true)
             }
 
@@ -866,7 +866,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         isSearchingMode = true
         self.providers?.removeAll()
-        self.dataSource.clearDataSource()
+        self.dataSource.removeAll()
         self.collectionView.reloadData()
         // TIP
         dismissTip()
@@ -879,14 +879,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        DispatchQueue.global().async {
-            NCNetworking.shared.cancelUnifiedSearchFiles()
-            self.isSearchingMode = false
-            self.literalSearch = ""
-            self.providers?.removeAll()
-            self.dataSource.clearDataSource()
-            self.reloadDataSource()
-        }
+        NCNetworking.shared.cancelUnifiedSearchFiles()
+        self.isSearchingMode = false
+        self.literalSearch = ""
+        self.providers?.removeAll()
+        self.dataSource.removeAll()
+        self.reloadDataSource()
     }
 
     // MARK: - TAP EVENT
@@ -1001,20 +999,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         // get layout for view
         layoutForView = database.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl)
 
-        DispatchQueue.global(qos: .userInteractive).async {
-            if withQueryDB { self.queryDB() }
-            DispatchQueue.main.async {
-                self.refreshControl.endRefreshing()
-                self.collectionView.reloadData()
-                self.setNavigationRightItems()
-            }
-        }
+        if withQueryDB { self.queryDB() }
+
+        self.refreshControl.endRefreshing()
+        self.collectionView.reloadData()
+        self.setNavigationRightItems()
     }
 
     @objc func reloadDataSourceNetwork(withQueryDB: Bool = false) {
-        DispatchQueue.main.async {
-            self.collectionView?.reloadData()
-        }
+        self.collectionView?.reloadData()
     }
 
     @objc func networkSearch() {
@@ -1024,7 +1017,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             return self.refreshControl.endRefreshing()
         }
 
-        self.dataSource.clearDataSource()
+        self.dataSource.removeAll()
         self.refreshControl.beginRefreshing()
         self.collectionView.reloadData()
 
@@ -1052,7 +1045,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     self.refreshControl.endRefreshing()
                     self.collectionView.reloadData()
                 }
-                guard let metadatas = metadatas, error == .success, self.isSearchingMode else { return }
+                guard let metadatas, error == .success, self.isSearchingMode else { return }
                 self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: self.layoutForView, providers: self.providers, searchResults: self.searchResults)
             }
         }
@@ -1137,7 +1130,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
         }
 
-        if isSearchingMode || layoutForView?.groupBy != "none" || dataSource.numberOfSections() > 1 {
+        if isSearchingMode || layoutForView?.groupBy != "none" || self.dataSource.numberOfSections() > 1 {
             if section == 0 {
                 return (getHeaderHeight(), headerRichWorkspace, global.heightSection)
             } else {
@@ -1153,7 +1146,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         if isEditMode {
             return CGSize.zero
-        } else if dataSource.getMetadataSourceForAllSections().isEmpty {
+        } else if self.dataSource.isEmpty() {
             height = utility.getHeightHeaderEmptyData(view: view, portraitOffset: emptyDataPortaitOffset, landscapeOffset: emptyDataLandscapeOffset, isHeaderMenuTransferViewEnabled: isHeaderMenuTransferViewEnabled() != nil)
         } else {
             let (heightHeaderCommands, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: section)

@@ -195,7 +195,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "transferCell", for: indexPath) as? NCTransferCell,
-              let metadata = dataSource.cellForItemAt(indexPath: indexPath) else {
+              let metadata = self.dataSource.getResultMetadata(indexPath: indexPath) else {
             return NCTransferCell()
         }
         let transfer = NCTransferProgress.shared.get(ocId: metadata.ocId, ocIdTransfer: metadata.ocIdTransfer, session: metadata.session)
@@ -239,11 +239,15 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             cell.labelStatus.text = NSLocalizedString("_status_wait_create_folder_", comment: "") + user
             cell.labelInfo.text = ""
         case NCGlobal.shared.metadataStatusDownloading:
-            cell.fileStatusImage?.image = utility.loadImage(named: "arrowshape.down.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            if #available(iOS 17.0, *) {
+                cell.fileStatusImage?.image = utility.loadImage(named: "arrowshape.down.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            }
             cell.labelStatus.text = NSLocalizedString("_status_downloading_", comment: "") + user
             cell.labelInfo.text = utilityFileSystem.transformedSize(metadata.size) + " - " + self.utilityFileSystem.transformedSize(transfer.totalBytes)
         case NCGlobal.shared.metadataStatusUploading:
-            cell.fileStatusImage?.image = utility.loadImage(named: "arrowshape.up.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            if #available(iOS 17.0, *) {
+                cell.fileStatusImage?.image = utility.loadImage(named: "arrowshape.up.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            }
             cell.labelStatus.text = NSLocalizedString("_status_uploading_", comment: "") + user
             cell.labelInfo.text = utilityFileSystem.transformedSize(metadata.size) + " - " + self.utilityFileSystem.transformedSize(transfer.totalBytes)
         case NCGlobal.shared.metadataStatusDownloadError, NCGlobal.shared.metadataStatusUploadError:
@@ -282,14 +286,14 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     override func queryDB() {
         super.queryDB()
-        let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal), sorted: "sessionDate", ascending: true, arraySlice: 50)
+        self.dataSource.removeAll()
 
-        self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: layoutForView, filterIsUpload: false, filterLivePhoto: false)
-        if self.dataSource.metadatas.isEmpty {
-            NCTransferProgress.shared.removeAll()
+        if let metadatas = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal), sortedByKeyPath: "sessionDate", ascending: true) {
+            self.dataSource = NCDataSource(metadatas: Array(metadatas), layoutForView: layoutForView)
         }
-        DispatchQueue.main.async {
-            self.collectionView.reloadData()
+
+        if self.dataSource.isEmpty() {
+            NCTransferProgress.shared.removeAll()
         }
     }
 

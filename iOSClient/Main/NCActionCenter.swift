@@ -196,12 +196,12 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         guard let hudView = viewController.tabBarController?.view else { return }
         var downloadRequest: DownloadRequest?
 
-        if let metadata = NCManageDatabase.shared.getMetadataFromFileId(fileId) {
+        if let metadata = NCManageDatabase.shared.getResultMetadataFromFileId(fileId) {
             do {
                 let attr = try FileManager.default.attributesOfItem(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
                 let fileSize = attr[FileAttributeKey.size] as? UInt64 ?? 0
                 if fileSize > 0 {
-                    NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+                    NCViewer().view(viewController: viewController, metadata: tableMetadata(value: metadata), metadatas: [metadata], imageIcon: nil)
                     return
                 }
             } catch {
@@ -414,7 +414,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     func saveAlbum(metadata: tableMetadata, controller: NCMainTabBarController?) {
         let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
 
-        NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: controller) { hasPermission in
+        NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { hasPermission in
             guard hasPermission else {
                 let error = NKError(errorCode: NCGlobal.shared.errorFileNotSaved, errorDescription: "_access_photo_not_enabled_msg_")
                 return NCContentPresenter().messageNotification("_access_photo_not_enabled_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error)

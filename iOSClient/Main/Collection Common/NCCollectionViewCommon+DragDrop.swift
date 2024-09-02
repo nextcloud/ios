@@ -32,7 +32,7 @@ extension NCCollectionViewCommon: UICollectionViewDragDelegate {
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
         if isEditMode {
             return NCDragDrop().performDrag(selectOcId: selectOcId)
-        } else if let metadata = dataSource.cellForItemAt(indexPath: indexPath) {
+        } else if let metadata = self.dataSource.getMetadata(indexPath: indexPath) {
             return NCDragDrop().performDrag(metadata: metadata)
         }
         return []
@@ -67,8 +67,8 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
     func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
         var destinationMetadata: tableMetadata?
 
-        if let destinationIndexPath {
-            destinationMetadata = dataSource.cellForItemAt(indexPath: destinationIndexPath)
+        if let destinationIndexPath, let metadata = self.dataSource.getMetadata(indexPath: destinationIndexPath) {
+            destinationMetadata = metadata
         }
         DragDropHover.shared.destinationMetadata = destinationMetadata
 
@@ -98,7 +98,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
                 if let destinationIndexPath,
                    DragDropHover.shared.pushIndexPath == destinationIndexPath,
                    DragDropHover.shared.pushCollectionView == collectionView,
-                   let metadata = self.dataSource.cellForItemAt(indexPath: destinationIndexPath),
+                   let metadata = self.dataSource.getMetadata(indexPath: destinationIndexPath),
                    metadata.directory {
                     DragDropHover.shared.cleanPushDragDropHover()
                     self.pushMetadata(metadata)

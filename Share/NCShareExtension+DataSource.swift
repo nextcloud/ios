@@ -28,7 +28,7 @@ import NextcloudKit
 
 extension NCShareExtension: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return showAlert(description: "_invalid_url_") }
+        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else { return showAlert(description: "_invalid_url_") }
         let serverUrl = utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
         if metadata.e2eEncrypted && !NCKeychain().isEndToEndEnabled(account: session.account) {
             showAlert(title: "_info_", description: "_e2e_goto_settings_for_enable_")
@@ -66,7 +66,7 @@ extension NCShareExtension: UICollectionViewDelegate {
 extension NCShareExtension: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         var height: CGFloat = 0
-        if dataSource.getMetadataSourceForAllSections().isEmpty {
+        if self.dataSource.isEmpty() {
             height = NCUtility().getHeightHeaderEmptyData(view: view, portraitOffset: 0, landscapeOffset: -50)
         }
         return CGSize(width: collectionView.frame.width, height: height)
@@ -79,11 +79,11 @@ extension NCShareExtension: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return dataSource.numberOfItemsInSection(section)
+        return self.dataSource.numberOfItemsInSection(section)
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let metadata = dataSource.cellForItemAt(indexPath: indexPath), let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell else {
+        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath), let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell else {
             return UICollectionViewCell()
         }
 

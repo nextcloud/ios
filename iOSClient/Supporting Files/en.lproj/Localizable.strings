@@ -473,7 +473,6 @@
 "_access_photo_location_not_enabled_"       = "Access to Photos and Location not enabled";
 "_access_photo_location_not_enabled_msg_"   = "Please go to \"Settings\" and turn on \"Photo Access\" and \"Location Services\"";
 "_tutorial_photo_view_"                     = "No photos or videos uploaded yet";
-"_create_full_upload_"                      = "Creating archive … May take a long time. During this process, keep the application active during the transfer as well.";
 "_error_createsubfolders_upload_"           = "Error creating subfolders";
 "_activate_autoupload_"                     = "Enable auto upload";
 "_remove_photo_CameraRoll_"                 = "Remove from camera roll";
@@ -1023,6 +1022,8 @@
 "_upload_foreground_msg_"   = "Do not close %@ to complete the transfer …";
 "_upload_background_msg_"   = "Files upload in progress …";
 "_offlinefolder_error_"     = "An error has occurred while creating the folder set as offline:\n%@.\n\nPlease resolve the issue as soon as possible.\n\nAll uploads are suspended until the problem is resolved.\n";
+"_creating_dir_progress_"   = "Creating directories in progress … keep the application active";
+"_creating_db_photo_progress"   = "Creating photo archive in progress … keep the application active";
 
 // Tip
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails.";

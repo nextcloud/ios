@@ -57,25 +57,23 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
                                             heightPreview: Int(sizePreview.height),
                                             sizeIcon: NCGlobal.shared.sizeIcon,
                                             etag: etagResource,
-                                            account: self.metadata.account,
-                                            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, _, imageIcon, _, etag, error in
+                                            account: self.metadata.account) { _, _, imageIcon, _, etag, error in
             if error == .success, let imageIcon, let collectionView = self.collectionView {
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
-                DispatchQueue.main.async {
-                    for case let cell as NCCellProtocol in collectionView.visibleCells {
-                        if cell.fileOcId == self.metadata.ocId, let filePreviewImageView = cell.filePreviewImageView {
-                            cell.filePreviewImageView?.contentMode = .scaleAspectFill
-                            if self.metadata.hasPreviewBorder {
-                                cell.filePreviewImageView?.layer.borderWidth = 0.2
-                                cell.filePreviewImageView?.layer.borderColor = UIColor.systemGray3.cgColor
-                            }
-                            UIView.transition(with: filePreviewImageView,
-                                              duration: 0.75,
-                                              options: .transitionCrossDissolve,
-                                              animations: { filePreviewImageView.image = imageIcon },
-                                              completion: nil)
-                            break
+
+                for case let cell as NCCellProtocol in collectionView.visibleCells {
+                    if cell.fileOcId == self.metadata.ocId, let filePreviewImageView = cell.filePreviewImageView {
+                        cell.filePreviewImageView?.contentMode = .scaleAspectFill
+                        if self.metadata.hasPreviewBorder {
+                            cell.filePreviewImageView?.layer.borderWidth = 0.2
+                            cell.filePreviewImageView?.layer.borderColor = UIColor.systemGray3.cgColor
                         }
+                        UIView.transition(with: filePreviewImageView,
+                                          duration: 0.75,
+                                          options: .transitionCrossDissolve,
+                                          animations: { filePreviewImageView.image = imageIcon },
+                                          completion: nil)
+                        break
                     }
                 }
             }
