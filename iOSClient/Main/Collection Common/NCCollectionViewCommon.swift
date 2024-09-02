@@ -736,7 +736,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
             
             let settingsAccountAction = UIAction(title: NSLocalizedString("_account_settings_", comment: ""), image: utility.loadImage(named: "gear", colors: [NCBrandColor.shared.iconImageColor])) { _ in
-                let accountSettingsModel = NCAccountSettingsModel(controller: self.tabBarController as? NCMainTabBarController, delegate: self)
+                let accountSettingsModel = NCAccountSettingsModel(delegate: self)
                 let accountSettingsView = NCAccountSettingsView(model: accountSettingsModel)
                 let accountSettingsController = UIHostingController(rootView: accountSettingsView)
                 self.present(accountSettingsController, animated: true, completion: nil)
