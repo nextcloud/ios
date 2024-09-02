@@ -98,23 +98,6 @@ struct NCSettingsView: View {
                     .font(.system(size: 12))
                     .lineSpacing(1)
             })
-            /// Display
-            Section(header: Text(NSLocalizedString("_display_", comment: "")), content: {
-                NavigationLink(destination: LazyView {
-                    NCDisplayView(model: NCDisplayModel())
-                }) {
-                    HStack {
-                        Image(systemName: "sun.max.circle")
-                            .resizable()
-                            .scaledToFit()
-                            .font(Font.system(.body).weight(.light))
-                            .frame(width: 20, height: 20)
-                            .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
-                        Text(NSLocalizedString("_display_", comment: ""))
-                    }
-                    .font(.system(size: 16))
-                }
-            })
             /// Calender & Contacts
             if !NCBrandOptions.shared.disable_mobileconfig {
                 Section(content: {
