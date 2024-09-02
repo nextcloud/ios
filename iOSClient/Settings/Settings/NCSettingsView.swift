@@ -105,7 +105,7 @@ struct NCSettingsView: View {
                         model.getConfigFiles()
                     }, label: {
                         HStack {
-							Image("Settings/calendar.user")
+							Image(.Settings.calendarUser)
                                 .resizable()
 								.renderingMode(.template)
                                 .scaledToFit()
@@ -137,7 +137,7 @@ struct NCSettingsView: View {
                                            showCacheAlert: false)
                 }) {
                     HStack {
-                        Image("Settings/gear")
+						Image(.Settings.gear)
                             .resizable()
 							.renderingMode(.template)
                             .scaledToFit()
@@ -155,7 +155,7 @@ struct NCSettingsView: View {
                     showAcknowledgements.toggle()
                 }, label: {
                     HStack {
-                        Image("Settings/handshake")
+						Image(.Settings.handshake)
                             .resizable()
                             .renderingMode(.template)
 							.scaledToFit()
@@ -174,7 +174,7 @@ struct NCSettingsView: View {
                     showBrowser.toggle()
                 }, label: {
                     HStack {
-                        Image("Settings/shield.halved")
+						Image(.Settings.shieldHalved)
                             .resizable()
 							.renderingMode(.template)
                             .scaledToFit()
@@ -193,7 +193,7 @@ struct NCSettingsView: View {
                     showSourceCode.toggle()
                 }, label: {
                     HStack {
-                        Image("Settings/github")
+						Image(.Settings.github)
                             .resizable()
                             .renderingMode(.template)
                             .frame(width: 20, height: 20)

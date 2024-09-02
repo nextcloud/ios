@@ -119,7 +119,7 @@ struct NCSettingsAdvancedView: View {
                         model.viewLogFile()
                     }, label: {
                         HStack {
-                            Image("Settings/folder.gear")
+							Image(.Settings.folderGear)
                                 .resizable()
 								.renderingMode(.template)
                                 .scaledToFit()

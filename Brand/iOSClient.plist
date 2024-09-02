@@ -93,9 +93,6 @@
 		<string>Inconsolata-ExtraBold.ttf</string>
 		<string>Inconsolata-Black.ttf</string>
 		<string>Font Awesome 6 Pro-Light-300.otf</string>
-		<string>Font Awesome 6 Pro-Regular-400.otf</string>
-		<string>Font Awesome 6 Pro-Solid-900.otf</string>
-		<string>Font Awesome 6 Pro-Thin-100.otf</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>

@@ -63,7 +63,7 @@ struct NCAutoUploadView: View {
                 model.autoUploadFolder.toggle()
             }, label: {
                 HStack {
-                    Image("Settings/autoupload.folder")
+					Image(.Settings.autouploadFolder)
                         .resizable()
 						.renderingMode(.template)
                         .scaledToFit()
