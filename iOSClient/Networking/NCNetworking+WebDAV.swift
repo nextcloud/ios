@@ -329,9 +329,11 @@ extension NCNetworking {
                     }
                 }
                 if !result { break }
-                num += 1
                 if let hud {
-                    hud.progress = num / Float(folders.count)
+                    num += 1
+                    DispatchQueue.main.async {
+                        hud.progress = num / Float(folders.count)
+                    }
                 }
             }
         }

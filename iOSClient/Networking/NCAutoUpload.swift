@@ -79,8 +79,6 @@ class NCAutoUpload: NSObject {
 
         NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { hasPermission in
             guard hasPermission else { return }
-            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_create_full_upload_")
-            NCContentPresenter().showWarning(error: error, priority: .max)
             DispatchQueue.global(qos: .userInteractive).async {
                 self.uploadAssetsNewAndFull(controller: controller, selector: NCGlobal.shared.selectorUploadAutoUploadAll, log: log, account: account) { _ in
                     DispatchQueue.main.async { self.hud.dismiss() }
@@ -102,6 +100,7 @@ class NCAutoUpload: NSObject {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Automatic upload, no new assets found [" + log + "]")
                 return completion(0)
             }
+            var num: Float = 0
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Automatic upload, new \(assets.count) assets found [" + log + "]")
             // Create the folder for auto upload & if request the subfolders
@@ -114,7 +113,10 @@ class NCAutoUpload: NSObject {
                 return completion(0)
             }
 
-            DispatchQueue.main.async { self.hud.textLabel.text = NSLocalizedString("_creating_dir_progress_", comment: "") }
+            DispatchQueue.main.async {
+                self.hud.textLabel.text = NSLocalizedString("_creating_db_photo_progress", comment: "")
+                self.hud.progress = 0
+            }
             self.endForAssetToUpload = false
 
             for asset in assets {
@@ -191,6 +193,11 @@ class NCAutoUpload: NSObject {
                         NCManageDatabase.shared.addPhotoLibrary([asset], account: account)
                     }
                     metadatas.append(metadata)
+                }
+
+                DispatchQueue.main.async {
+                    num += 1
+                    self.hud.progress = num / Float(assets.count)
                 }
             }
 
