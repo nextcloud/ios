@@ -141,6 +141,23 @@ private struct BurgerMenuViewButton: View {
     }
 }
 
+private struct CustomBackgroundOnPressButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration
+            .label
+            .background {
+                if configuration.isPressed {
+                    GeometryReader { geometry in
+                        Color(.BurgerMenu.pressedButton)
+                            .clipShape(RoundedRectangle(cornerRadius: geometry.size.height/2))
+                    }
+                } else {
+                    EmptyView()
+                }
+            }
+    }
+}
+
 private struct CustomProgressView: View {
     private let height: CGFloat = 8
     private let cornerRadius: CGFloat = 13
@@ -184,23 +201,6 @@ private extension Image {
             .resizable()
             .aspectRatio(contentMode: .fit)
             .frame(width: 28, height: 28)
-    }
-}
-
-private struct CustomBackgroundOnPressButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        if configuration.isPressed {
-            configuration
-                .label
-                .background {
-                    GeometryReader { geometry in
-                        Color(.BurgerMenu.pressedButton)
-                            .clipShape(RoundedRectangle(cornerRadius: geometry.size.height/2))
-                    }
-                }
-        } else {
-            configuration.label
-        }
     }
 }
 
