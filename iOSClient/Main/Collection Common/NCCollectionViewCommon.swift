@@ -417,7 +417,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         if withPush, let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
             if let sceneIdentifier = userInfo["sceneIdentifier"] as? String {
-                if sceneIdentifier == (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier {
+                if sceneIdentifier == sceneIdentifier {
                     pushMetadata(metadata)
                 }
             } else {
@@ -639,7 +639,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
     
     func showBurgerMenu() {
-        (self.tabBarController as? NCMainTabBarController)?.showBurgerMenu()
+        self.mainTabBarController?.showBurgerMenu()
     }
 
     func setNavigationRightItems() {
@@ -1127,7 +1127,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func pasteFilesMenu() {
-        NCActionCenter.shared.pastePasteboard(serverUrl: serverUrl, account: appDelegate.account, hudView: tabBarController?.view)
+        NCActionCenter.shared.pastePasteboard(serverUrl: serverUrl, account: appDelegate.account, hudView: mainTabBarController?.currentViewController()?.view)
     }
 
     // MARK: - DataSource + NC Endpoint

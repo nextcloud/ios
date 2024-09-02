@@ -33,7 +33,7 @@ import Queuer
 extension NCCollectionViewCommon {
     func toggleMenu(metadata: tableMetadata, indexPath: IndexPath, imageIcon: UIImage?) {
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId),
-              let sceneIdentifier = (tabBarController as? NCMainTabBarController)?.sceneIdentifier else { return }
+              let sceneIdentifier = sceneIdentifier else { return }
         var actions = [NCMenuAction]()
         let serverUrl = metadata.serverUrl + "/" + metadata.fileName
         var isOffline: Bool = false
@@ -228,7 +228,7 @@ extension NCCollectionViewCommon {
         // SAVE LIVE PHOTO
         //
         if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata),
-           let hudView = self.tabBarController?.view {
+           let hudView = self.view {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_livephoto_save_", comment: ""),

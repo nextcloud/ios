@@ -119,8 +119,17 @@ class NCMenu: UITableViewController {
             actionIconView?.tintColor = .red
             actionNameLabel?.textColor = .red
         }
-
-        cell.accessoryType = action.selectable && action.selected ? .checkmark : .none
+        
+        if (action.selectable && action.selected) {
+            let checkmarkImage = UIImage(named: "checkmarkIcon")
+            let checkmarkImageView = UIImageView(image: checkmarkImage)
+            checkmarkImageView.frame = CGRect(x: 0, y: 0, width: 19, height: 19)
+            checkmarkImageView.contentMode = .scaleAspectFit
+            
+            cell.accessoryView = checkmarkImageView
+        } else {
+            cell.accessoryView = .none
+        }
 
         return cell
     }

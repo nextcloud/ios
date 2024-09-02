@@ -102,7 +102,7 @@ extension NCMenuAction {
     static func deleteAction(selectedMetadatas: [tableMetadata], indexPaths: [IndexPath], metadataFolder: tableMetadata? = nil, viewController: UIViewController, order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
         var titleDelete = NSLocalizedString("_delete_", comment: "")
         var message = NSLocalizedString("_want_delete_", comment: "")
-        var icon = "delete"
+        var icon = "trash_icon"
         var destructive = false
         var color = NCBrandColor.shared.iconImageColor
         let permissions = NCPermissions()
@@ -162,7 +162,7 @@ extension NCMenuAction {
             icon: NCUtility().loadImage(named: "square.and.arrow.up", colors: [NCBrandColor.shared.iconImageColor]),
             order: order,
             action: { _ in
-                let controller = viewController.tabBarController as? NCMainTabBarController
+                let controller = viewController.mainTabBarController
                 NCActionCenter.shared.openActivityViewController(selectedMetadata: selectedMetadatas, controller: controller)
                 completion?()
             }
@@ -204,7 +204,7 @@ extension NCMenuAction {
             icon: NCUtility().loadImage(named: "moveOrCopy", colors: [NCBrandColor.shared.iconImageColor]),
             order: order,
             action: { _ in
-                let controller = viewController.tabBarController as? NCMainTabBarController
+                let controller = viewController.mainTabBarController
                 NCActionCenter.shared.openSelectView(items: selectedMetadatas, controller: controller)
                 completion?()
             }

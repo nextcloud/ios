@@ -93,7 +93,8 @@ class NCNetworkingProcess: NSObject {
     @discardableResult
     func start(scene: UIScene?) async -> (counterDownloading: Int, counterUploading: Int) {
         self.pauseProcess = true
-        let hudView = await SceneManager.shared.getController(scene: scene)?.view
+        let mainTabBarController = SceneManager.shared.getController(scene: scene) as? NCMainTabBarController
+        let hudView = await (mainTabBarController?.presentedNavigationController() ?? mainTabBarController)?.view
         let applicationState = await checkApplicationState()
         let maxConcurrentOperationDownload = NCBrandOptions.shared.maxConcurrentOperationDownload
         var maxConcurrentOperationUpload = NCBrandOptions.shared.maxConcurrentOperationUpload

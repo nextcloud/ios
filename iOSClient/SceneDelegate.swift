@@ -31,6 +31,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
     private let appDelegate = UIApplication.shared.delegate as? AppDelegate
     private var privacyProtectionWindow: UIWindow?
+    
+    let sceneIdentifier: String = UUID().uuidString
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene),
@@ -172,8 +174,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         guard let controller = SceneManager.shared.getController(scene: scene) as? NCMainTabBarController,
               let url = URLContexts.first?.url,
+              let sceneIdentifier = controller.sceneIdentifier,
               let appDelegate else { return }
-        let sceneIdentifier = controller.sceneIdentifier
+
         let account = appDelegate.account
         let scheme = url.scheme
         let action = url.host
@@ -437,7 +440,10 @@ class SceneManager {
     func getSceneIdentifier() -> [String] {
         var results: [String] = []
         for controller in sceneController.keys {
-            results.append(controller.sceneIdentifier)
+            guard let sceneIdentifier = controller.sceneIdentifier else {
+                continue
+            }
+            results.append(sceneIdentifier)
         }
         return results
     }

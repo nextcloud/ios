@@ -29,7 +29,7 @@ extension NCViewer {
 
     func toggleMenu(viewController: UIViewController, metadata: tableMetadata, webView: Bool, imageIcon: UIImage?, indexPath: IndexPath = IndexPath()) {
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId),
-              let sceneIdentifier = (viewController.tabBarController as? NCMainTabBarController)?.sceneIdentifier else { return }
+              let sceneIdentifier = viewController.sceneIdentifier else { return }
         var actions = [NCMenuAction]()
         let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
         let isOffline = localFile?.offline == true
@@ -41,7 +41,7 @@ extension NCViewer {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_details_", comment: ""),
-                    icon: utility.loadImage(named: "info.circle", colors: [NCBrandColor.shared.iconImageColor]),
+                    icon: utility.loadImage(named: "info", colors: [NCBrandColor.shared.iconImageColor]),
                     action: { _ in
                         NCActionCenter.shared.openShare(viewController: viewController, metadata: metadata, page: .activity)
                     }
@@ -72,7 +72,7 @@ extension NCViewer {
             actions.append(
                 NCMenuAction(
                     title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
-                    icon: utility.loadImage(named: metadata.favorite ? "star.slash" : "star", colors: [NCBrandColor.shared.yellowFavorite]),
+                    icon: utility.loadImage(named: metadata.favorite ? "star.fill" : "star", colors: [NCBrandColor.shared.iconImageColor]),
                     action: { _ in
                         NCNetworking.shared.favoriteMetadata(metadata) { error in
                             if error != .success {
@@ -102,7 +102,7 @@ extension NCViewer {
         // SAVE LIVE PHOTO
         //
         if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata),
-           let hudView = viewController.tabBarController?.view {
+           let hudView = viewController.view {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_livephoto_save_", comment: ""),
@@ -150,7 +150,7 @@ extension NCViewer {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_rename_", comment: ""),
-                    icon: utility.loadImage(named: "text.cursor", colors: [NCBrandColor.shared.iconImageColor]),
+                    icon: utility.loadImage(named: "rename", colors: [NCBrandColor.shared.iconImageColor]),
                     action: { _ in
 
                         if let vcRename = UIStoryboard(name: "NCRenameFile", bundle: nil).instantiateInitialViewController() as? NCRenameFile {
@@ -183,7 +183,7 @@ extension NCViewer {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_try_download_full_resolution_", comment: ""),
-                    icon: utility.loadImage(named: "photo", colors: [NCBrandColor.shared.iconImageColor]),
+                    icon: utility.loadImage(named: "media", colors: [NCBrandColor.shared.iconImageColor]),
                     action: { _ in
                         guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                        session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,

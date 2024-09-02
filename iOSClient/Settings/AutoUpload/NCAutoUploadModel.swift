@@ -57,13 +57,13 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     private let manageDatabase = NCManageDatabase.shared
     @Published var autoUploadPath = "\(NCManageDatabase.shared.getAccountAutoUploadFileName())"
     /// Root View Controller
-    var controller: NCMainTabBarController?
+    private var viewController: UIViewController?
     /// A variable user for change the auto upload directory
     var serverUrl: String = ""
 
     /// Initialization code to set up the ViewModel with the active account
-    init(controller: NCMainTabBarController?) {
-        self.controller = controller
+    init(viewController: UIViewController?) {
+        self.viewController = viewController
         onViewAppear()
     }
 
@@ -115,7 +115,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
                 self.updateAccountProperty(\.autoUpload, value: value)
                 NCManageDatabase.shared.setAccountAutoUploadFileName("")
                 NCManageDatabase.shared.setAccountAutoUploadDirectory("", urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId, account: self.appDelegate.account)
-                NCAutoUpload.shared.alignPhotoLibrary(viewController: self.controller)
+                NCAutoUpload.shared.alignPhotoLibrary(viewController: self.viewController)
             }
         } else {
             updateAccountProperty(\.autoUpload, value: newValue)
@@ -128,7 +128,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     func handleAutoUploadImageChange(newValue: Bool) {
         updateAccountProperty(\.autoUploadImage, value: newValue)
         if newValue {
-            NCAutoUpload.shared.alignPhotoLibrary(viewController: controller)
+            NCAutoUpload.shared.alignPhotoLibrary(viewController: viewController)
         }
     }
 
@@ -141,7 +141,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     func handleAutoUploadVideoChange(newValue: Bool) {
         updateAccountProperty(\.autoUploadVideo, value: newValue)
         if newValue {
-            NCAutoUpload.shared.alignPhotoLibrary(viewController: controller)
+            NCAutoUpload.shared.alignPhotoLibrary(viewController: viewController)
         }
     }
 
@@ -154,7 +154,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     func handleAutoUploadFullChange(newValue: Bool) {
         updateAccountProperty(\.autoUploadFull, value: newValue)
         if newValue {
-            NCAutoUpload.shared.autoUploadFullPhotos(viewController: self.controller, log: "Auto upload full")
+            NCAutoUpload.shared.autoUploadFullPhotos(viewController: self.viewController, log: "Auto upload full")
         } else {
             NCManageDatabase.shared.clearMetadatasUpload(account: appDelegate.account)
         }
