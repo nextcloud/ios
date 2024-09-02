@@ -227,13 +227,9 @@ private struct CustomBackgroundOnPressButtonStyle: ButtonStyle {
         } else if configuration.isPressed {
             configuration.label.foregroundColor(Color(NCBrandColor.shared.iconImageColor))
         } else {
-			configuration.label.foregroundColor(.selectTabBarButtonForeground)
+            configuration.label.foregroundColor(Color(.SelectTabbar.buttonForeground))
         }
     }
-}
-
-extension Color {
-	static let selectTabBarButtonForeground = Color("SelectTabBar.buttonForeground")
 }
 
 #Preview {
