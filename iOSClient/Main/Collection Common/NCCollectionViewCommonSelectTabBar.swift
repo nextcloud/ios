@@ -24,7 +24,7 @@
 import Foundation
 import SwiftUI
 
-protocol NCCollectionViewCommonSelectTabBarDelegate: AnyObject {
+protocol NCCollectionViewCommonSelectToolbarDelegate: AnyObject {
     func selectAll()
     func delete()
     func move()
@@ -33,10 +33,9 @@ protocol NCCollectionViewCommonSelectTabBarDelegate: AnyObject {
     func lock(isAnyLocked: Bool)
 }
 
-class NCCollectionViewCommonSelectTabBar: ObservableObject {
-    var controller: NCMainTabBarController?
+class NCCollectionViewCommonSelectToolbar: ObservableObject {
     var hostingController: UIViewController?
-    open weak var delegate: NCCollectionViewCommonSelectTabBarDelegate?
+    open weak var delegate: NCCollectionViewCommonSelectToolbarDelegate?
 
     @Published var isAnyOffline = false
     @Published var canSetAsOffline = false
@@ -47,191 +46,143 @@ class NCCollectionViewCommonSelectTabBar: ObservableObject {
     @Published var enableLock = false
     @Published var isSelectedEmpty = true
 
-    init(controller: NCMainTabBarController? = nil, delegate: NCCollectionViewCommonSelectTabBarDelegate? = nil) {
-        let rootView = NCCollectionViewCommonSelectTabBarView(tabBarSelect: self)
-        hostingController = UIHostingController(rootView: rootView)
-
-        self.controller = controller
+    init(delegate: NCCollectionViewCommonSelectToolbarDelegate? = nil) {
         self.delegate = delegate
-
-        guard let controller, let hostingController else { return }
-
-        controller.view.addSubview(hostingController.view)
-
-        hostingController.view.frame = controller.tabBar.frame
-        hostingController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        hostingController.view.backgroundColor = .clear
-        hostingController.view.isHidden = true
+        setupHostingController()
+        setupOrientationObserver()
+    }
+    
+    private func setupOrientationObserver() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(deviceOrientationDidChange),
+            name: UIDevice.orientationDidChangeNotification,
+            object: nil
+        )
+    }
+    
+    @objc private func deviceOrientationDidChange() {
+        if hostingController != nil {
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self, let hostingController = self.hostingController else { return }
+                self.updateToolbarFrame(for: hostingController)
+            }
+        }
+    }
+    
+    private func setupHostingController() {
+        let rootView = NCCollectionViewCommonSelectToolbarView(tabBarSelect: self)
+        hostingController = UIHostingController(rootView: rootView)
     }
 
+    private func updateToolbarFrame(for hostingController: UIViewController) {
+        let screenSize = UIScreen.main.bounds.size
+        let height = screenSize.width > 400 ? 60.0 : 80.0
+        let frame = CGRect(x: 0, y: screenSize.height - height, width: screenSize.width, height: height)
+        
+        hostingController.view.frame = frame
+        hostingController.view.backgroundColor = .clear
+    }
+    
     func show() {
-        guard let controller, let hostingController else { return }
-
-        controller.tabBar.isHidden = true
+        guard let hostingController, let controller = getTopViewController() else { return }
+        
         if hostingController.view.isHidden {
-            hostingController.view.isHidden = false
-            hostingController.view.transform = .init(translationX: 0, y: hostingController.view.frame.height)
-            UIView.animate(withDuration: 0.2) {
-                hostingController.view.transform = .init(translationX: 0, y: 0)
-            }
+            controller.view.addSubview(hostingController.view)
+            
+            updateToolbarFrame(for: hostingController)
+            animateToolbarAppearance(for: hostingController)
+        }
+    }
+    
+    private func getTopViewController() -> UIViewController? {
+        guard let windowScene = UIApplication.shared.connectedScenes
+                .filter({ $0.activationState == .foregroundActive })
+                .first as? UIWindowScene,
+              let keyWindow = windowScene.windows.first(where: { $0.isKeyWindow }) else {
+            return nil
+        }
+        
+        var topController: UIViewController? = keyWindow.rootViewController
+        
+        while let presentedController = topController?.presentedViewController {
+            topController = presentedController
+        }
+        
+        return topController
+    }
+    
+    private func animateToolbarAppearance(for hostingController: UIViewController) {
+        hostingController.view.isHidden = false
+        hostingController.view.transform = CGAffineTransform(translationX: 0, y: hostingController.view.frame.height)
+        
+        UIView.animate(withDuration: 0.2) {
+            hostingController.view.transform = .identity
         }
     }
 
     func hide() {
-        guard let controller, let hostingController else { return }
-
-        hostingController.view.isHidden = true
-        controller.tabBar.isHidden = false
+        hostingController?.view.isHidden = true
     }
 
     func isHidden() -> Bool {
-        guard let hostingController else { return false }
-        return hostingController.view.isHidden
+        return hostingController?.view.isHidden ?? false
     }
 
     func update(selectOcId: [String], metadatas: [tableMetadata]? = nil, userId: String? = nil) {
-        if let metadatas {
-
-            isAnyOffline = false
-            canSetAsOffline = true
-            isAnyDirectory = false
-            isAllDirectory = true
-            isAnyLocked = false
-            canUnlock = true
-
-            for metadata in metadatas {
-                if metadata.directory {
-                    isAnyDirectory = true
-                } else {
-                    isAllDirectory = false
-                }
-
-                if !metadata.canSetAsAvailableOffline {
-                    canSetAsOffline = false
-                }
-
-                if metadata.lock {
-                    isAnyLocked = true
-                    if metadata.lockOwner != userId {
-                        canUnlock = false
-                    }
-                }
-
-                guard !isAnyOffline else { continue }
-
-                if metadata.directory,
-                   let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl + "/" + metadata.fileName)) {
-                    isAnyOffline = directory.offline
-                } else if let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
-                    isAnyOffline = localFile.offline
-                } // else: file is not offline, continue
-            }
-            enableLock = !isAnyDirectory && canUnlock && !NCGlobal.shared.capabilityFilesLockVersion.isEmpty
+        guard let metadatas else {
+            isSelectedEmpty = selectOcId.isEmpty
+            return
         }
+        
+        resetStates()
+        
+        for metadata in metadatas {
+            updateStates(for: metadata, userId: userId)
+        }
+        
+        enableLock = !isAnyDirectory && canUnlock && !NCGlobal.shared.capabilityFilesLockVersion.isEmpty
         isSelectedEmpty = selectOcId.isEmpty
     }
-}
-
-struct NCCollectionViewCommonSelectTabBarView: View {
-    @ObservedObject var tabBarSelect: NCCollectionViewCommonSelectTabBar
-    @Environment(\.verticalSizeClass) var sizeClass
-
-    var body: some View {
-        VStack {
-            Spacer().frame(height: sizeClass == .compact ? 5 : 10)
-
-            HStack(alignment: .top) {
-                TabButton(
-                    action: {tabBarSelect.delegate?.share()},
-                    image: .SelectTabBar.copy,
-                    label: "_share_",
-                    isDisabled: tabBarSelect.isSelectedEmpty || tabBarSelect.isAllDirectory
-                )
-                TabButton(
-                    action: {tabBarSelect.delegate?.move()},
-                    image: .SelectTabBar.share,
-                    label: "_move_or_copy_",
-                    isDisabled: tabBarSelect.isSelectedEmpty
-                )
-                TabButton(
-                    action: {tabBarSelect.delegate?.delete()},
-                    image: .SelectTabBar.delete,
-                    label: "_delete_",
-                    isDisabled: tabBarSelect.isSelectedEmpty
-                )
-                TabButton(
-                    action: {tabBarSelect.delegate?.saveAsAvailableOffline(isAnyOffline: tabBarSelect.isAnyOffline)},
-                    image: .SelectTabBar.download,
-                    label: "_download_",
-                    isDisabled: !tabBarSelect.isAnyOffline && (!tabBarSelect.canSetAsOffline || tabBarSelect.isSelectedEmpty)
-                )
-                TabButton(
-                    action: {tabBarSelect.delegate?.lock(isAnyLocked: tabBarSelect.isAnyLocked)},
-                    image: (tabBarSelect.isAnyLocked ? .SelectTabBar.unlock : .SelectTabBar.lock),
-                    label: tabBarSelect.isAnyLocked ? "_unlock_" : "_lock_",
-                    isDisabled: !tabBarSelect.enableLock || tabBarSelect.isSelectedEmpty
-                )
+    
+    private func resetStates() {
+        isAnyOffline = false
+        canSetAsOffline = true
+        isAnyDirectory = false
+        isAllDirectory = true
+        isAnyLocked = false
+        canUnlock = true
+    }
+    
+    private func updateStates(for metadata: tableMetadata, userId: String?) {
+        if metadata.directory {
+            isAnyDirectory = true
+        } else {
+            isAllDirectory = false
+        }
+        
+        if !metadata.canSetAsAvailableOffline {
+            canSetAsOffline = false
+        }
+        
+        if metadata.lock {
+            isAnyLocked = true
+            if metadata.lockOwner != userId {
+                canUnlock = false
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(.thinMaterial)
-        .overlay(Rectangle().frame(width: nil, height: 0.5, alignment: .top).foregroundColor(Color(UIColor.separator)), alignment: .top)
-    }
-}
-
-private struct TabButton: View {
-    let action: (() -> Void)?
-    let image: ImageResource
-    let label: String
-    let isDisabled: Bool
-    
-    var body: some View {
-        Button(action: {
-            action?()
-        }, label: {
-            IconWithText(image: image, label: label)
-        })
-        .frame(maxWidth: .infinity)
-        .buttonStyle(CustomBackgroundOnPressButtonStyle(isDisabled: isDisabled))
-        .disabled(isDisabled)
-    }
-}
-
-private struct IconWithText: View {
-    var image: ImageResource
-    var label: String
-    
-    var body: some View {
-        VStack() {
-            Image(image)
-                .resizable()
-                .font(Font.system(.body).weight(.light))
-                .scaledToFit()
-                .frame(width: 34, height: 24)
-            Text(NSLocalizedString(label, comment: ""))
-                .font(.system(size: 10))
-                .multilineTextAlignment(.center)
-                .lineLimit(2)
-                .tint(Color(NCBrandColor.shared.textColor))
-        }
-        .frame(maxWidth: .infinity)
-    }
-}
-
-private struct CustomBackgroundOnPressButtonStyle: ButtonStyle {
-    var isDisabled: Bool
-    
-    func makeBody(configuration: Configuration) -> some View {
-        if isDisabled {
-            configuration.label.foregroundColor(Color(NCBrandColor.shared.iconImageColor2))
-        } else if configuration.isPressed {
-            configuration.label.foregroundColor(Color(NCBrandColor.shared.iconImageColor))
-        } else {
-            configuration.label.foregroundColor(Color(.SelectTabbar.buttonForeground))
+        
+        if !isAnyOffline {
+            updateOfflineStatus(for: metadata)
         }
     }
-}
-
-#Preview {
-    NCCollectionViewCommonSelectTabBarView(tabBarSelect: NCCollectionViewCommonSelectTabBar())
+    
+    private func updateOfflineStatus(for metadata: tableMetadata) {
+        if metadata.directory,
+           let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl + "/" + metadata.fileName)) {
+            isAnyOffline = directory.offline
+        } else if let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
+            isAnyOffline = localFile.offline
+        }
+    }
 }

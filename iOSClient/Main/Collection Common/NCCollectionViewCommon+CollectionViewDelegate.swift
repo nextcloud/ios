@@ -45,7 +45,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 selectOcId.append(metadata.ocId)
             }
             collectionView.reloadItems(at: [indexPath])
-            tabBarSelect.update(selectOcId: selectOcId, metadatas: getSelectedMetadatas(), userId: appDelegate.userId)
+            commonSelectToolbar.update(selectOcId: selectOcId, metadatas: getSelectedMetadatas(), userId: appDelegate.userId)
 			fileActionsHeader?.setSelectionState(selectionState: selectionState)
             return
         }

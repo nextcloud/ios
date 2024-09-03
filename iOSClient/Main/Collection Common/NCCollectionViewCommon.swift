@@ -80,7 +80,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 		}
 	}
     var literalSearch: String?
-    var tabBarSelect: NCCollectionViewCommonSelectTabBar!
+    var commonSelectToolbar: NCCollectionViewCommonSelectToolbar!
     var timerNotificationCenter: Timer?
     var notificationReloadDataSource: Int = 0
     var notificationReloadDataSourceNetwork: Int = 0
@@ -114,7 +114,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        tabBarSelect = NCCollectionViewCommonSelectTabBar(controller: tabBarController as? NCMainTabBarController, delegate: self)
+        commonSelectToolbar = NCCollectionViewCommonSelectToolbar(delegate: self)
         self.navigationController?.presentationController?.delegate = self
         collectionView.alwaysBounceVertical = true
 
@@ -314,10 +314,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-
-        if let frame = tabBarController?.tabBar.frame {
-            tabBarSelect.hostingController?.view.frame = frame
-        }
     }
 
     // MARK: - NotificationCenter
@@ -679,19 +675,22 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
 
         guard layoutKey != NCGlobal.shared.layoutViewTransfers else { return }
-        let isTabBarHidden = self.tabBarController?.tabBar.isHidden ?? true
-        let isTabBarSelectHidden = tabBarSelect.isHidden()
+        let tabBar = self.tabBarController?.tabBar
+        let isTabBarHidden = tabBar?.isHidden ?? true
+        let isTabBarSelectHidden = commonSelectToolbar.isHidden()
 
         if isEditMode {
-            tabBarSelect.update(selectOcId: selectOcId, metadatas: getSelectedMetadatas(), userId: appDelegate.userId)
-            tabBarSelect.show()
+            commonSelectToolbar.update(selectOcId: selectOcId, metadatas: getSelectedMetadatas(), userId: appDelegate.userId)
+            tabBar?.isHidden = true
+            commonSelectToolbar.show()
         } else {
-            tabBarSelect.hide()
+            commonSelectToolbar.hide()
+            tabBar?.isHidden = false
 			navigationItem.rightBarButtonItems = layoutKey == NCGlobal.shared.layoutViewFiles ? [createAccountButton()] : []
         }
         // fix, if the tabbar was hidden before the update, set it in hidden
         if isTabBarHidden, isTabBarSelectHidden {
-            self.tabBarController?.tabBar.isHidden = true
+            tabBar?.isHidden = true
         }
     }
     
