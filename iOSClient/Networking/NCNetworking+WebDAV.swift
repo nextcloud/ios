@@ -344,6 +344,24 @@ extension NCNetworking {
     // MARK: - Delete
 
     func deleteMetadata(_ metadata: tableMetadata, onlyLocalCache: Bool, sceneIdentifier: String?) async -> (NKError) {
+        let hud = await JGProgressHUD()
+        var num: Float = 0
+
+        func numIncrement() -> Float {
+            num += 1
+            return num
+        }
+
+        func deleteLocalFile(metadata: tableMetadata) {
+            if let metadataLive = self.database.getMetadataLivePhoto(metadata: metadata) {
+                self.database.deleteLocalFileOcId(metadataLive.ocId)
+                utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId))
+            }
+            self.database.deleteVideo(metadata: metadata)
+            self.database.deleteLocalFileOcId(metadata.ocId)
+            utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+        }
+
         if metadata.status == global.metadataStatusWaitCreateFolder {
             let metadatas = database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND status IN %@", metadata.account, metadata.serverUrl, global.metadataStatusAllUp))
             for metadata in metadatas {
@@ -351,32 +369,34 @@ extension NCNetworking {
                 utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
             }
         } else if onlyLocalCache {
-#if !EXTENSION
 
-            NCActivityIndicator.shared.start()
-#endif
-            func delete(metadata: tableMetadata) {
-                if let metadataLive = self.database.getMetadataLivePhoto(metadata: metadata) {
-                    self.database.deleteLocalFileOcId(metadataLive.ocId)
-                    utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId))
+#if !EXTENSION
+            if let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier) {
+                await MainActor.run {
+                    hud.indicatorView = JGProgressHUDRingIndicatorView()
+                    if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
+                        indicatorView.ringWidth = 1.5
+                        indicatorView.ringColor = NCBrandColor.shared.getElement(account: metadata.account)
+                        hud.show(in: controller.view)
+                    }
                 }
-                self.database.deleteVideo(metadata: metadata)
-                self.database.deleteLocalFileOcId(metadata.ocId)
-                utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
             }
+#endif
 
             if metadata.directory {
                 let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-                if let metadatas = self.database.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == false", metadata.account, serverUrl)) {
-                    for metadata in metadatas {
-                        delete(metadata: metadata)
-                    }
+                let metadatas = self.database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == false", metadata.account, serverUrl))
+                let numMetadatas = Float(metadatas.count)
+                for metadata in metadatas {
+                    deleteLocalFile(metadata: metadata)
+                    let num = numIncrement()
+                    await MainActor.run { hud.progress = num / numMetadatas }
                 }
             } else {
-                delete(metadata: metadata)
+                deleteLocalFile(metadata: metadata)
             }
 #if !EXTENSION
-            NCActivityIndicator.shared.stop()
+            await MainActor.run { hud.dismiss() }
 #endif
             return .success
         }

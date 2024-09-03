@@ -147,7 +147,7 @@ extension NCMenuAction {
             icon: NCUtility().loadImage(named: icon, colors: [color]),
             order: order,
             action: { _ in
-                let alertController = UIAlertController.deleteFileOrFolder(titleString: titleDelete + "?", message: message + fileList, canDeleteServer: canDeleteServer, selectedMetadatas: selectedMetadatas, sceneIdentifier: nil) { _ in
+                let alertController = UIAlertController.deleteFileOrFolder(titleString: titleDelete + "?", message: message + fileList, canDeleteServer: canDeleteServer, selectedMetadatas: selectedMetadatas, sceneIdentifier: controller?.sceneIdentifier) { _ in
                     completion?()
                 }
 

@@ -437,10 +437,12 @@ class SceneManager {
         return nil
     }
 
-    func getController(sceneIdentifier: String) -> NCMainTabBarController? {
-        for controller in sceneController.keys {
-            if sceneIdentifier == controller.sceneIdentifier {
-                return controller
+    func getController(sceneIdentifier: String?) -> NCMainTabBarController? {
+        if let sceneIdentifier {
+            for controller in sceneController.keys {
+                if sceneIdentifier == controller.sceneIdentifier {
+                    return controller
+                }
             }
         }
         return nil
