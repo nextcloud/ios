@@ -112,7 +112,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
         DragDropHover.shared.cleanPushDragDropHover()
         DragDropHover.shared.sourceMetadatas = nil
 
-        if let metadatas = NCDragDrop().performDrop(collectionView, performDropWith: coordinator, serverUrl: self.serverUrl, isImageVideo: false, controller: self.tabBarController as? NCMainTabBarController) {
+        if let metadatas = NCDragDrop().performDrop(collectionView, performDropWith: coordinator, serverUrl: self.serverUrl, isImageVideo: false, controller: self.controller) {
             // TODO: NOT POSSIBLE DRAG DROP DIFFERENT ACCOUNT
             if let metadata = metadatas.first,
                metadata.account != self.session.account {

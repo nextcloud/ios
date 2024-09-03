@@ -73,6 +73,10 @@ class NCMedia: UIViewController {
         NCSession.shared.getSession(controller: tabBarController)
     }
 
+    var controller: NCMainTabBarController? {
+        self.tabBarController as? NCMainTabBarController
+    }
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {

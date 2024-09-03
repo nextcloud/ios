@@ -48,7 +48,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 if !NCKeychain().isEndToEndEnabled(account: metadata.account) {
                     let e2ee = NCEndToEndInitialize()
                     e2ee.delegate = self
-                    e2ee.initEndToEndEncryption(controller: self.tabBarController as? NCMainTabBarController, metadata: metadata)
+                    e2ee.initEndToEndEncryption(controller: self.controller, metadata: metadata)
                     return
                 }
             } else {
@@ -71,7 +71,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                       let metadata = database.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                session: NCNetworking.shared.sessionDownload,
                                                                                                selector: global.selectorLoadFileView,
-                                                                                               sceneIdentifier: (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier) {
+                                                                                               sceneIdentifier: self.controller?.sceneIdentifier) {
                 NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
             } else {
                 let error = NKError(errorCode: global.errorOffline, errorDescription: "_go_online_")

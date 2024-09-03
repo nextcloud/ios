@@ -50,7 +50,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
                     var error = NKError()
                     var ocId: [String] = []
                     for metadata in copyMetadatas where error == .success {
-                        error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
+                        error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false, sceneIdentifier: self.controller?.sceneIdentifier)
                         if error == .success {
                             ocId.append(metadata.ocId)
                         }
@@ -68,7 +68,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
                 var error = NKError()
                 var ocId: [String] = []
                 for metadata in copyMetadatas where error == .success {
-                    error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true)
+                    error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true, sceneIdentifier: self.controller?.sceneIdentifier)
                     if error == .success {
                         ocId.append(metadata.ocId)
                     }
@@ -88,13 +88,13 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
     func move() {
         let metadatas = getSelectedMetadatas()
 
-        NCActionCenter.shared.openSelectView(items: metadatas, controller: self.tabBarController as? NCMainTabBarController)
+        NCActionCenter.shared.openSelectView(items: metadatas, controller: self.controller)
         setEditMode(false)
     }
 
     func share() {
         let metadatas = getSelectedMetadatas()
-        NCActionCenter.shared.openActivityViewController(selectedMetadata: metadatas, controller: self.tabBarController as? NCMainTabBarController)
+        NCActionCenter.shared.openActivityViewController(selectedMetadata: metadatas, controller: self.controller)
         setEditMode(false)
     }
 

@@ -27,9 +27,9 @@ import NextcloudKit
 
 extension NCViewer {
 
-    func toggleMenu(viewController: UIViewController, metadata: tableMetadata, webView: Bool, imageIcon: UIImage?, indexPath: IndexPath = IndexPath()) {
+    func toggleMenu(controller: NCMainTabBarController?, metadata: tableMetadata, webView: Bool, imageIcon: UIImage?, indexPath: IndexPath = IndexPath()) {
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId),
-              let sceneIdentifier = (viewController.tabBarController as? NCMainTabBarController)?.sceneIdentifier else { return }
+              let controller else { return }
         var actions = [NCMenuAction]()
         let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
         let isOffline = localFile?.offline == true
@@ -43,7 +43,7 @@ extension NCViewer {
                     title: NSLocalizedString("_details_", comment: ""),
                     icon: utility.loadImage(named: "info.circle", colors: [NCBrandColor.shared.iconImageColor]),
                     action: { _ in
-                        NCActionCenter.shared.openShare(viewController: viewController, metadata: metadata, page: .activity)
+                        NCActionCenter.shared.openShare(viewController: controller, metadata: metadata, page: .activity)
                     }
                 )
             )
@@ -58,7 +58,7 @@ extension NCViewer {
                     title: NSLocalizedString("_view_in_folder_", comment: ""),
                     icon: utility.loadImage(named: "questionmark.folder", colors: [NCBrandColor.shared.iconImageColor]),
                     action: { _ in
-                       NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil, sceneIdentifier: sceneIdentifier)
+                        NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil, sceneIdentifier: controller.sceneIdentifier)
                     }
                 )
             )
@@ -89,21 +89,21 @@ extension NCViewer {
         // OFFLINE
         //
         if !webView, metadata.canSetAsAvailableOffline {
-            actions.append(.setAvailableOfflineAction(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: viewController))
+            actions.append(.setAvailableOfflineAction(selectedMetadatas: [metadata], isAnyOffline: isOffline, viewController: controller))
         }
 
         //
         // SHARE
         //
         if !webView, metadata.canShare {
-            actions.append(.share(selectedMetadatas: [metadata], viewController: viewController))
+            actions.append(.share(selectedMetadatas: [metadata], controller: controller))
         }
 
         //
         // SAVE LIVE PHOTO
         //
         if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata),
-           let hudView = viewController.tabBarController?.view {
+           let hudView = controller.view {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_livephoto_save_", comment: ""),
@@ -138,7 +138,7 @@ extension NCViewer {
                             guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                            session: NCNetworking.shared.sessionDownload,
                                                                                                            selector: NCGlobal.shared.selectorSaveAsScan,
-                                                                                                           sceneIdentifier: sceneIdentifier) else { return }
+                                                                                                           sceneIdentifier: controller.sceneIdentifier) else { return }
                             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                         }
                     }
@@ -155,7 +155,7 @@ extension NCViewer {
                     title: NSLocalizedString("_rename_", comment: ""),
                     icon: utility.loadImage(named: "text.cursor", colors: [NCBrandColor.shared.iconImageColor]),
                     action: { _ in
-                        viewController.present(UIAlertController.renameFile(metadata: metadata), animated: true)
+                        controller.present(UIAlertController.renameFile(metadata: metadata), animated: true)
                     }
                 )
             )
@@ -165,7 +165,7 @@ extension NCViewer {
         // COPY - MOVE
         //
         if !webView, metadata.isCopyableMovable {
-            actions.append(.moveOrCopyAction(selectedMetadatas: [metadata], viewController: viewController))
+            actions.append(.moveOrCopyAction(selectedMetadatas: [metadata], viewController: controller))
         }
 
         //
@@ -180,7 +180,7 @@ extension NCViewer {
                         guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                        session: NCNetworking.shared.sessionDownload,
                                                                                                        selector: "",
-                                                                                                       sceneIdentifier: sceneIdentifier) else { return }
+                                                                                                       sceneIdentifier: controller.sceneIdentifier) else { return }
                         NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                     }
                 )
@@ -235,7 +235,7 @@ extension NCViewer {
                             guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                            session: NCNetworking.shared.sessionDownload,
                                                                                                            selector: NCGlobal.shared.selectorLoadFileQuickLook,
-                                                                                                           sceneIdentifier: sceneIdentifier) else { return }
+                                                                                                           sceneIdentifier: controller.sceneIdentifier) else { return }
                             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                         }
                     }
@@ -247,9 +247,9 @@ extension NCViewer {
         // DELETE
         //
         if !webView, metadata.isDeletable {
-            actions.append(.deleteAction(selectedMetadatas: [metadata], metadataFolder: nil, viewController: viewController))
+            actions.append(.deleteAction(selectedMetadatas: [metadata], metadataFolder: nil, controller: controller))
         }
 
-        viewController.presentMenu(with: actions)
+        controller.presentMenu(with: actions)
     }
 }

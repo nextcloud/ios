@@ -110,7 +110,7 @@ extension UIAlertController {
         }, completion: completion)
     }
 
-    static func deleteFileOrFolder(titleString: String, message: String?, canDeleteServer: Bool, selectedMetadatas: [tableMetadata], completion: @escaping (_ cancelled: Bool) -> Void) -> UIAlertController {
+    static func deleteFileOrFolder(titleString: String, message: String?, canDeleteServer: Bool, selectedMetadatas: [tableMetadata], sceneIdentifier: String?, completion: @escaping (_ cancelled: Bool) -> Void) -> UIAlertController {
         let alertController = UIAlertController(
             title: titleString,
             message: message,
@@ -121,7 +121,7 @@ extension UIAlertController {
                     var error = NKError()
                     var ocId: [String] = []
                     for metadata in selectedMetadatas where error == .success {
-                        error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
+                        error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false, sceneIdentifier: sceneIdentifier)
                         if error == .success {
                             ocId.append(metadata.ocId)
                         }
@@ -137,7 +137,7 @@ extension UIAlertController {
                 var error = NKError()
                 var ocId: [String] = []
                 for metadata in selectedMetadatas where error == .success {
-                    error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true)
+                    error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true, sceneIdentifier: sceneIdentifier)
                     if error == .success {
                         ocId.append(metadata.ocId)
                     }

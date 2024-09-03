@@ -183,7 +183,7 @@ extension NCMedia {
         }
 
         let playFile = UIAction(title: NSLocalizedString("_play_from_files_", comment: ""), image: utility.loadImage(named: "play.circle")) { _ in
-            guard let controller = self.tabBarController as? NCMainTabBarController else { return }
+            guard let controller = self.controller else { return }
             self.documentPickerViewController = NCDocumentPickerViewController(controller: controller, isViewerMedia: true, allowsMultipleSelection: false, viewController: self)
         }
 
@@ -203,7 +203,7 @@ extension NCMedia {
                                                                       url: stringUrl,
                                                                       contentType: "",
                                                                       session: self.session,
-                                                                      sceneIdentifier: (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier)
+                                                                      sceneIdentifier: self.controller?.sceneIdentifier)
                 NCManageDatabase.shared.addMetadata(metadata)
                 NCViewer().view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: nil)
             }))
@@ -227,7 +227,7 @@ extension NCMedia: NCMediaSelectTabBarDelegate {
                     var ocIds: [String] = []
                     for ocId in selectOcId where error == .success {
                         if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                            error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
+                            error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false, sceneIdentifier: self.controller?.sceneIdentifier)
                             if error == .success {
                                 ocIds.append(metadata.ocId)
                             }

@@ -99,7 +99,7 @@ extension NCMenuAction {
     }
 
     /// Delete files either from cache or from Nextcloud
-    static func deleteAction(selectedMetadatas: [tableMetadata], metadataFolder: tableMetadata? = nil, viewController: UIViewController, order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
+    static func deleteAction(selectedMetadatas: [tableMetadata], metadataFolder: tableMetadata? = nil, controller: NCMainTabBarController?, order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
         var titleDelete = NSLocalizedString("_delete_", comment: "")
         var message = NSLocalizedString("_want_delete_", comment: "")
         var icon = "trash"
@@ -147,22 +147,21 @@ extension NCMenuAction {
             icon: NCUtility().loadImage(named: icon, colors: [color]),
             order: order,
             action: { _ in
-                let alertController = UIAlertController.deleteFileOrFolder(titleString: titleDelete + "?", message: message + fileList, canDeleteServer: canDeleteServer, selectedMetadatas: selectedMetadatas) { _ in
+                let alertController = UIAlertController.deleteFileOrFolder(titleString: titleDelete + "?", message: message + fileList, canDeleteServer: canDeleteServer, selectedMetadatas: selectedMetadatas, sceneIdentifier: nil) { _ in
                     completion?()
                 }
 
-                viewController.present(alertController, animated: true, completion: nil)
+                controller?.present(alertController, animated: true, completion: nil)
             })
     }
 
     /// Open "share view" (activity VC) to open files in another app
-    static func share(selectedMetadatas: [tableMetadata], viewController: UIViewController, order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
+    static func share(selectedMetadatas: [tableMetadata], controller: NCMainTabBarController?, order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
         NCMenuAction(
             title: NSLocalizedString("_share_", comment: ""),
             icon: NCUtility().loadImage(named: "square.and.arrow.up", colors: [NCBrandColor.shared.iconImageColor]),
             order: order,
             action: { _ in
-                let controller = viewController.tabBarController as? NCMainTabBarController
                 NCActionCenter.shared.openActivityViewController(selectedMetadata: selectedMetadatas, controller: controller)
                 completion?()
             }

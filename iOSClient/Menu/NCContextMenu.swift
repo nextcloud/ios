@@ -170,7 +170,7 @@ class NCContextMenu: NSObject {
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_delete_file_", comment: ""), style: .destructive) { _ in
                 Task {
                     var ocId: [String] = []
-                    let error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
+                    let error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false, sceneIdentifier: sceneIdentifier)
                     if error == .success {
                         ocId.append(metadata.ocId)
                     } else {
@@ -187,7 +187,7 @@ class NCContextMenu: NSObject {
                                           image: utility.loadImage(named: "trash"), attributes: .destructive) { _ in
             Task {
                 var ocId: [String] = []
-                let error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true)
+                let error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true, sceneIdentifier: sceneIdentifier)
                 if error == .success {
                     ocId.append(metadata.ocId)
                 } else {

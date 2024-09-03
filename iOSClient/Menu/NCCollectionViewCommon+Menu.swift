@@ -33,7 +33,7 @@ import Queuer
 extension NCCollectionViewCommon {
     func toggleMenu(metadata: tableMetadata, image: UIImage?) {
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId),
-              let sceneIdentifier = (tabBarController as? NCMainTabBarController)?.sceneIdentifier else {
+              let sceneIdentifier = self.controller?.sceneIdentifier else {
             return
         }
         var actions = [NCMenuAction]()
@@ -233,7 +233,7 @@ extension NCCollectionViewCommon {
         //
         if NCNetworking.shared.isOnline,
            metadata.canShare {
-            actions.append(.share(selectedMetadatas: [metadata], viewController: self, order: 80))
+            actions.append(.share(selectedMetadatas: [metadata], controller: self.controller, order: 80))
         }
 
         //
@@ -371,7 +371,7 @@ extension NCCollectionViewCommon {
         // DELETE
         //
         if metadata.isDeletable {
-            actions.append(.deleteAction(selectedMetadatas: [metadata], metadataFolder: metadataFolder, viewController: self, order: 170))
+            actions.append(.deleteAction(selectedMetadatas: [metadata], metadataFolder: metadataFolder, controller: self.controller, order: 170))
         }
 
         applicationHandle.addCollectionViewCommonMenu(metadata: metadata, image: image, actions: &actions)

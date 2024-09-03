@@ -230,7 +230,7 @@ class NCViewerMediaPage: UIViewController {
 
         let imageIcon = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(currentViewController.metadata.ocId, etag: currentViewController.metadata.etag))
 
-        NCViewer().toggleMenu(viewController: self, metadata: currentViewController.metadata, webView: false, imageIcon: imageIcon)
+        NCViewer().toggleMenu(controller: self.tabBarController as? NCMainTabBarController, metadata: currentViewController.metadata, webView: false, imageIcon: imageIcon)
     }
 
     @objc private func toggleDetail() {

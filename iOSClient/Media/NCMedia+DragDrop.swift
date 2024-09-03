@@ -51,7 +51,7 @@ extension NCMedia: UICollectionViewDropDelegate {
         guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else { return }
         let serverUrl = NCUtilityFileSystem().getHomeServer(session: session) + tableAccount.mediaPath
 
-        if let metadatas = NCDragDrop().performDrop(collectionView, performDropWith: coordinator, serverUrl: serverUrl, isImageVideo: true, controller: self.tabBarController as? NCMainTabBarController) {
+        if let metadatas = NCDragDrop().performDrop(collectionView, performDropWith: coordinator, serverUrl: serverUrl, isImageVideo: true, controller: self.controller) {
             DragDropHover.shared.sourceMetadatas = metadatas
             openMenu(collectionView: collectionView, location: coordinator.session.location(in: collectionView))
         }

@@ -343,7 +343,7 @@ extension NCNetworking {
 
     // MARK: - Delete
 
-    func deleteMetadata(_ metadata: tableMetadata, onlyLocalCache: Bool) async -> (NKError) {
+    func deleteMetadata(_ metadata: tableMetadata, onlyLocalCache: Bool, sceneIdentifier: String?) async -> (NKError) {
         if metadata.status == global.metadataStatusWaitCreateFolder {
             let metadatas = database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND status IN %@", metadata.account, metadata.serverUrl, global.metadataStatusAllUp))
             for metadata in metadatas {
@@ -352,6 +352,7 @@ extension NCNetworking {
             }
         } else if onlyLocalCache {
 #if !EXTENSION
+
             NCActivityIndicator.shared.start()
 #endif
             func delete(metadata: tableMetadata) {

@@ -48,11 +48,10 @@ class NCFiles: NCCollectionViewCommon {
 
         if isRoot {
             NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { notification in
-                let currentController = (self.tabBarController as? NCMainTabBarController)
 
                 if let userInfo = notification.userInfo, let account = userInfo["account"] as? String {
                     if let controller = userInfo["controller"] as? NCMainTabBarController,
-                       controller == currentController {
+                       controller == self.controller {
                         controller.account = account
                     } else {
                         return

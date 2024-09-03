@@ -112,13 +112,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         let size = CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
         return size
     }
+    var controller: NCMainTabBarController? {
+        self.tabBarController as? NCMainTabBarController
+    }
 
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        tabBarSelect = NCCollectionViewCommonSelectTabBar(controller: tabBarController as? NCMainTabBarController, delegate: self)
+        tabBarSelect = NCCollectionViewCommonSelectTabBar(controller: self.controller, delegate: self)
         self.navigationController?.presentationController?.delegate = self
         collectionView.alwaysBounceVertical = true
 
@@ -427,7 +430,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         if withPush, let metadata = database.getMetadataFromOcId(ocId) {
             if let sceneIdentifier = userInfo["sceneIdentifier"] as? String {
-                if sceneIdentifier == (self.tabBarController as? NCMainTabBarController)?.sceneIdentifier {
+                if sceneIdentifier == controller?.sceneIdentifier {
                     pushMetadata(metadata)
                 }
             } else {
@@ -584,7 +587,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
                 let action = UIAction(title: name, image: image, state: account.active ? .on : .off) { _ in
                     if !account.active {
-                        NCAccount().changeAccount(account.account, userProfile: nil, controller: self.tabBarController as? NCMainTabBarController) { }
+                        NCAccount().changeAccount(account.account, userProfile: nil, controller: self.controller) { }
                         self.setEditMode(false)
                     }
                 }
@@ -598,7 +601,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
 
             let settingsAccountAction = UIAction(title: NSLocalizedString("_account_settings_", comment: ""), image: utility.loadImage(named: "gear", colors: [NCBrandColor.shared.iconImageColor])) { _ in
-                let accountSettingsModel = NCAccountSettingsModel(controller: self.tabBarController as? NCMainTabBarController, delegate: self)
+                let accountSettingsModel = NCAccountSettingsModel(controller: self.controller, delegate: self)
                 let accountSettingsView = NCAccountSettingsView(model: accountSettingsModel)
                 let accountSettingsController = UIHostingController(rootView: accountSettingsView)
                 self.present(accountSettingsController, animated: true, completion: nil)
@@ -1078,7 +1081,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - Push metadata
 
     func pushMetadata(_ metadata: tableMetadata) {
-        guard let navigationCollectionViewCommon = (tabBarController as? NCMainTabBarController)?.navigationCollectionViewCommon else { return }
+        guard let navigationCollectionViewCommon = self.controller?.navigationCollectionViewCommon else { return }
         let serverUrlPush = utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
 
         if let viewController = navigationCollectionViewCommon.first(where: { $0.navigationController == self.navigationController && $0.serverUrl == serverUrlPush})?.viewController, viewController.isViewLoaded {
