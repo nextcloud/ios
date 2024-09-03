@@ -59,8 +59,8 @@ class FileProviderExtension: NSFileProviderExtension {
     override init() {
         super.init()
 
-        // Create directory File Provider Storage
         _ = utilityFileSystem.directoryProviderStorage
+        _ = fileProviderData.shared.setupAccount(domain: domain, providerExtension: self)
     }
 
     deinit {
