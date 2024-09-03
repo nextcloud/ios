@@ -45,12 +45,11 @@ extension FileProviderExtension: NCNetworkingDelegate {
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             if error == .success, let ocId {
+                /// SIGNAL
+                fileProviderData.shared.signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
                 if !metadata.ocIdTransfer.isEmpty, ocId != metadata.ocIdTransfer {
                     NCManageDatabase.shared.deleteMetadataOcId(metadata.ocIdTransfer)
                 }
-                /// SIGNAL
-                fileProviderData.shared.signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
-
                 metadata.fileName = fileName
                 metadata.serverUrl = serverUrl
                 metadata.uploadDate = (date as? NSDate) ?? NSDate()
