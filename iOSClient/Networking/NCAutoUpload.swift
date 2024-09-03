@@ -173,7 +173,7 @@ class NCAutoUpload: NSObject {
                                                                           url: "",
                                                                           contentType: "",
                                                                           session: session,
-                                                                          sceneIdentifier: nil)
+                                                                          sceneIdentifier: controller?.sceneIdentifier)
 
                     if isLivePhoto {
                         metadata.livePhotoFile = (metadata.fileName as NSString).deletingPathExtension + ".mov"
