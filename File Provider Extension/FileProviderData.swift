@@ -121,7 +121,9 @@ class fileProviderData: NSObject {
     @discardableResult
     func signalEnumerator(ocId: String, type: TypeSignal) -> FileProviderItem? {
         guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId),
-              let parentItemIdentifier = fileProviderUtility().getParentItemIdentifier(metadata: metadata) else { return nil }
+              let parentItemIdentifier = fileProviderUtility().getParentItemIdentifier(metadata: metadata) else {
+            return nil
+        }
         let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
 
         if type == .delete {

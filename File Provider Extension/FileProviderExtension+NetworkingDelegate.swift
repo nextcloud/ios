@@ -37,44 +37,42 @@ extension FileProviderExtension: NCNetworkingDelegate {
         guard let url = task.currentRequest?.url,
               let metadata = NCManageDatabase.shared.getMetadata(from: url, sessionTaskIdentifier: task.taskIdentifier) else { return }
 
-        DispatchQueue.global(qos: .userInteractive).async {
-            if error == .success, let ocId {
-                /// SIGNAL
-                fileProviderData.shared.signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
-                metadata.fileName = fileName
-                metadata.serverUrl = serverUrl
-                metadata.uploadDate = (date as? NSDate) ?? NSDate()
-                metadata.etag = etag ?? ""
-                metadata.ocId = ocId
-                metadata.size = size
-                if let fileId = NCUtility().ocIdToFileId(ocId: ocId) {
-                    metadata.fileId = fileId
-                }
-
-                metadata.sceneIdentifier = nil
-                metadata.session = ""
-                metadata.sessionError = ""
-                metadata.sessionSelector = ""
-                metadata.sessionDate = nil
-                metadata.sessionTaskIdentifier = 0
-                metadata.status = NCGlobal.shared.metadataStatusNormal
-
-                NCManageDatabase.shared.addMetadata(metadata)
-                NCManageDatabase.shared.addLocalFile(metadata: metadata)
-                /// NEW File
-                if !metadata.ocIdTransfer.isEmpty, ocId != metadata.ocIdTransfer {
-                    let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer)
-                    let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId)
-                    self.utilityFileSystem.copyFile(atPath: atPath, toPath: toPath)
-                    NCManageDatabase.shared.deleteMetadataOcId(metadata.ocIdTransfer)
-                }
-                /// SIGNAL
-                fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
-            } else {
-                NCManageDatabase.shared.deleteMetadataOcId(metadata.ocIdTransfer)
-                /// SIGNAL
-                fileProviderData.shared.signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
+        if error == .success, let ocId {
+            /// SIGNAL
+            fileProviderData.shared.signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
+            metadata.fileName = fileName
+            metadata.serverUrl = serverUrl
+            metadata.uploadDate = (date as? NSDate) ?? NSDate()
+            metadata.etag = etag ?? ""
+            metadata.ocId = ocId
+            metadata.size = size
+            if let fileId = NCUtility().ocIdToFileId(ocId: ocId) {
+                metadata.fileId = fileId
             }
+
+            metadata.sceneIdentifier = nil
+            metadata.session = ""
+            metadata.sessionError = ""
+            metadata.sessionSelector = ""
+            metadata.sessionDate = nil
+            metadata.sessionTaskIdentifier = 0
+            metadata.status = NCGlobal.shared.metadataStatusNormal
+
+            NCManageDatabase.shared.addMetadata(metadata)
+            NCManageDatabase.shared.addLocalFile(metadata: metadata)
+            /// NEW File
+            if !metadata.ocIdTransfer.isEmpty, ocId != metadata.ocIdTransfer {
+                let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer)
+                let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId)
+                self.utilityFileSystem.copyFile(atPath: atPath, toPath: toPath)
+                NCManageDatabase.shared.deleteMetadataOcId(metadata.ocIdTransfer)
+            }
+            /// SIGNAL
+            fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
+        } else {
+            NCManageDatabase.shared.deleteMetadataOcId(metadata.ocIdTransfer)
+            /// SIGNAL
+            fileProviderData.shared.signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
         }
     }
 }

@@ -111,7 +111,7 @@ extension FileProviderExtension {
             fileNameTo = serverUrlTo + "/" + newName
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: true, account: metadataFrom.account) { account, error in
                 if error == .success {
                     if metadataFrom.directory {
@@ -127,10 +127,8 @@ extension FileProviderExtension {
                     let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
 
                     completionHandler(item, nil)
-                } else if error.errorCode == NCGlobal.shared.errorBadRequest {
-                    completionHandler(nil, NSFileProviderError(.noSuchItem, userInfo: [NSLocalizedDescriptionKey: error.errorDescription, NSLocalizedFailureReasonErrorKey: ""]))
                 } else {
-                    completionHandler(nil, NSFileProviderError(.serverUnreachable))
+                    completionHandler(nil, NSFileProviderError(.noSuchItem, userInfo: [NSLocalizedDescriptionKey: error.errorDescription, NSLocalizedFailureReasonErrorKey: ""]))
                 }
             }
         }
