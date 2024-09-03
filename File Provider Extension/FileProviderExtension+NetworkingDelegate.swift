@@ -37,42 +37,50 @@ extension FileProviderExtension: NCNetworkingDelegate {
         guard let url = task.currentRequest?.url,
               let metadata = NCManageDatabase.shared.getMetadata(from: url, sessionTaskIdentifier: task.taskIdentifier) else { return }
 
-        if error == .success, let ocId {
-            /// SIGNAL
-            fileProviderData.shared.signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
-            metadata.fileName = fileName
-            metadata.serverUrl = serverUrl
-            metadata.uploadDate = (date as? NSDate) ?? NSDate()
-            metadata.etag = etag ?? ""
-            metadata.ocId = ocId
-            metadata.size = size
-            if let fileId = NCUtility().ocIdToFileId(ocId: ocId) {
-                metadata.fileId = fileId
-            }
+        if let ocId, !metadata.ocIdTransfer.isEmpty {
+            let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer)
+            let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId)
+            self.utilityFileSystem.copyFile(atPath: atPath, toPath: toPath)
+        }
 
-            metadata.sceneIdentifier = nil
-            metadata.session = ""
-            metadata.sessionError = ""
-            metadata.sessionSelector = ""
-            metadata.sessionDate = nil
-            metadata.sessionTaskIdentifier = 0
-            metadata.status = NCGlobal.shared.metadataStatusNormal
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            if error == .success, let ocId {
+                /// SIGNAL
+                if !metadata.ocIdTransfer.isEmpty, ocId != metadata.ocIdTransfer {
+                    NCManageDatabase.shared.deleteMetadataOcId(metadata.ocIdTransfer)
+                }
+                fileProviderData.shared.signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
 
-            NCManageDatabase.shared.addMetadata(metadata)
-            NCManageDatabase.shared.addLocalFile(metadata: metadata)
-            /// NEW File
-            if !metadata.ocIdTransfer.isEmpty, ocId != metadata.ocIdTransfer {
-                let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer)
-                let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId)
-                self.utilityFileSystem.copyFile(atPath: atPath, toPath: toPath)
+                metadata.fileName = fileName
+                metadata.serverUrl = serverUrl
+                metadata.uploadDate = (date as? NSDate) ?? NSDate()
+                metadata.etag = etag ?? ""
+                metadata.ocId = ocId
+                metadata.size = size
+                if let fileId = NCUtility().ocIdToFileId(ocId: ocId) {
+                    metadata.fileId = fileId
+                }
+
+                metadata.sceneIdentifier = nil
+                metadata.session = ""
+                metadata.sessionError = ""
+                metadata.sessionSelector = ""
+                metadata.sessionDate = nil
+                metadata.sessionTaskIdentifier = 0
+                metadata.status = NCGlobal.shared.metadataStatusNormal
+
+                NCManageDatabase.shared.addMetadata(metadata)
+                NCManageDatabase.shared.addLocalFile(metadata: metadata)
+
+                /// SIGNAL
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
+                }
+            } else {
                 NCManageDatabase.shared.deleteMetadataOcId(metadata.ocIdTransfer)
+                /// SIGNAL
+                fileProviderData.shared.signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
             }
-            /// SIGNAL
-            fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
-        } else {
-            NCManageDatabase.shared.deleteMetadataOcId(metadata.ocIdTransfer)
-            /// SIGNAL
-            fileProviderData.shared.signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
         }
     }
 }
