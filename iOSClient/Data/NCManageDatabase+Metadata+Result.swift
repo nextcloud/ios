@@ -411,7 +411,7 @@ extension NCManageDatabase {
         do {
             let realm = try Realm()
             guard let directory = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first,
-                  let result = realm.objects(tableMetadata.self).filter("ocId == %@", directory.ocId).first else { return false }
+                  realm.objects(tableMetadata.self).filter("ocId == %@", directory.ocId).first != nil else { return false }
             return true
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")

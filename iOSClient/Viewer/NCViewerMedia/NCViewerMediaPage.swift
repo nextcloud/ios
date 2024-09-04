@@ -385,8 +385,6 @@ class NCViewerMediaPage: UIViewController {
     }
 
     @objc func deleteFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary? else { return }
-
         // Stop media
         if let ncplayer = currentViewController.ncplayer, ncplayer.isPlay() {
             ncplayer.playerPause()
