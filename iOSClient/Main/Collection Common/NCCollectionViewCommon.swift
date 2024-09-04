@@ -1324,13 +1324,7 @@ extension NCCollectionViewCommon {
 			   self?.saveLayout(layoutForView)
 		   }
 
-		   let personalFilesOnly = NCKeychain().getPersonalFilesOnly(account: appDelegate.account)
-		   let personalFilesOnlyAction = UIAction(title: NSLocalizedString("_personal_files_only_", comment: ""), image: utility.loadImage(named: "folder.badge.person.crop", colors: NCBrandColor.shared.iconImageMultiColors), state: personalFilesOnly ? .on : .off) { _ in
-			   NCKeychain().setPersonalFilesOnly(account: self.appDelegate.account, value: !personalFilesOnly)
-			   self.reloadDataSource()
-		   }
-
-		   let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [foldersOnTop, personalFilesOnlyAction])
+		   let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [foldersOnTop])
 		   return [sortSubmenu, additionalSubmenu]
 	   }
 	
