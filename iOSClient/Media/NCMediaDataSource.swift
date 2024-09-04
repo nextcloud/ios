@@ -26,7 +26,7 @@ import NextcloudKit
 
 extension NCMedia {
     func reloadDataSource() {
-        self.metadatas = NCManageDatabase.shared.getResultsMediaMetadatas(predicate: getPredicate())
+        self.metadatas = database.getResultsMediaMetadatas(predicate: getPredicate())
         self.collectionViewReloadData()
     }
 
@@ -120,7 +120,7 @@ extension NCMedia {
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Media not reload datasource network with the application in background")
             return(lessDate, greaterDate, 0, false, NKError())
         }
-        guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
+        guard let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
             return(lessDate, greaterDate, 0, false, NKError())
         }
         NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate)")
@@ -130,10 +130,10 @@ extension NCMedia {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "User changed")
             return(lessDate, greaterDate, 0, false, error)
         } else if results.error == .success, let files = results.files {
-            let metadatas = await NCManageDatabase.shared.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false).metadatas
+            let metadatas = await database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false).metadatas
             var predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
             predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, getPredicate(showAll: true)])
-            let resultsUpdate = NCManageDatabase.shared.updateMetadatas(metadatas, predicate: predicate)
+            let resultsUpdate = database.updateMetadatas(metadatas, predicate: predicate)
             let isChaged: Bool = (resultsUpdate.metadatasDifferentCount != 0 || resultsUpdate.metadatasModified != 0)
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] End searchMedia UpdateMetadatas with differentCount \(resultsUpdate.metadatasDifferentCount), modified \(resultsUpdate.metadatasModified)")
             return(lessDate, greaterDate, metadatas.count, isChaged, results.error)
@@ -143,7 +143,7 @@ extension NCMedia {
     }
 
     private func getPredicate(showAll: Bool = false) -> NSPredicate {
-        guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else { return NSPredicate() }
+        guard let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else { return NSPredicate() }
         let startServerUrl = NCUtilityFileSystem().getHomeServer(session: session) + tableAccount.mediaPath
 
         if showAll {

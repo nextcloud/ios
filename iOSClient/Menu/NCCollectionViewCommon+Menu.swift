@@ -32,7 +32,7 @@ import Queuer
 
 extension NCCollectionViewCommon {
     func toggleMenu(metadata: tableMetadata, image: UIImage?) {
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId),
+        guard let metadata = database.getMetadataFromOcId(metadata.ocId),
               let sceneIdentifier = self.controller?.sceneIdentifier else {
             return
         }
@@ -42,9 +42,9 @@ extension NCCollectionViewCommon {
         let applicationHandle = NCApplicationHandle()
         var iconHeader: UIImage!
 
-        if metadata.directory, let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl)) {
+        if metadata.directory, let directory = database.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl)) {
             isOffline = directory.offline
-        } else if let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
+        } else if let localFile = database.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
             isOffline = localFile.offline
         }
 
@@ -182,9 +182,9 @@ extension NCCollectionViewCommon {
                     action: { _ in
                         NextcloudKit.shared.markE2EEFolder(fileId: metadata.fileId, delete: true, account: metadata.account) { _, error in
                             if error == .success {
-                                NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrl))
-                                NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, encrypted: false, account: metadata.account)
-                                NCManageDatabase.shared.setMetadataEncrypted(ocId: metadata.ocId, encrypted: false)
+                                self.database.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrl))
+                                self.database.setDirectory(serverUrl: serverUrl, encrypted: false, account: metadata.account)
+                                self.database.setMetadataEncrypted(ocId: metadata.ocId, encrypted: false)
 
                                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeStatusFolderE2EE, userInfo: ["serverUrl": metadata.serverUrl])
                             } else {
@@ -240,7 +240,7 @@ extension NCCollectionViewCommon {
         // SAVE LIVE PHOTO
         //
         if NCNetworking.shared.isOnline,
-           let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata),
+           let metadataMOV = database.getMetadataLivePhoto(metadata: metadata),
            let hudView = self.tabBarController?.view {
             actions.append(
                 NCMenuAction(
@@ -276,10 +276,10 @@ extension NCCollectionViewCommon {
                                                                                    "account": metadata.account],
                                                                         second: 0.5)
                         } else {
-                            guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                                           session: NCNetworking.shared.sessionDownload,
-                                                                                                           selector: NCGlobal.shared.selectorSaveAsScan,
-                                                                                                           sceneIdentifier: sceneIdentifier) else { return }
+                            guard let metadata = self.database.setMetadatasSessionInWaitDownload(metadatas: [metadata],
+                                                                                                 session: NCNetworking.shared.sessionDownload,
+                                                                                                 selector: NCGlobal.shared.selectorSaveAsScan,
+                                                                                                 sceneIdentifier: sceneIdentifier) else { return }
                             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                         }
                     }
@@ -334,10 +334,10 @@ extension NCCollectionViewCommon {
                                                                                    "account": metadata.account],
                                                                         second: 0.5)
                         } else {
-                            guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                                           session: NCNetworking.shared.sessionDownload,
-                                                                                                           selector: NCGlobal.shared.selectorLoadFileQuickLook,
-                                                                                                           sceneIdentifier: sceneIdentifier) else { return }
+                            guard let metadata = self.database.setMetadatasSessionInWaitDownload(metadatas: [metadata],
+                                                                                                 session: NCNetworking.shared.sessionDownload,
+                                                                                                 selector: NCGlobal.shared.selectorLoadFileQuickLook,
+                                                                                                 sceneIdentifier: sceneIdentifier) else { return }
                             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                         }
                     }

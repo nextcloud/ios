@@ -47,6 +47,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     var documentController: UIDocumentInteractionController?
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
+    let database = NCManageDatabase.shared
 
     // MARK: - Download
 
@@ -74,14 +75,14 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 do {
                     try FileManager.default.removeItem(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
                 } catch { }
-                NCManageDatabase.shared.deleteMetadataOcId(ocId)
-                NCManageDatabase.shared.deleteLocalFileOcId(ocId)
+                database.deleteMetadataOcId(ocId)
+                database.deleteLocalFileOcId(ocId)
             } else {
                 NCContentPresenter().messageNotification("_download_file_", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
             }
             return
         }
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { return }
+        guard let metadata = database.getMetadataFromOcId(ocId) else { return }
         /// Select UIWindowScene active in serverUrl
         var controller: NCMainTabBarController?
         let windowScenes = UIApplication.shared.connectedScenes.compactMap { $0 as? UIWindowScene }
@@ -164,30 +165,30 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         let serverUrl = metadata.serverUrl + "/" + metadata.fileName
         if isOffline {
             if metadata.directory {
-                NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: false, metadata: metadata)
-                if let metadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND sessionSelector == %@ AND status == %d",
-                                                                                                      metadata.account,
-                                                                                                      serverUrl,
-                                                                                                      NCGlobal.shared.selectorSynchronizationOffline,
-                                                                                                      NCGlobal.shared.metadataStatusWaitDownload)) {
-                    NCManageDatabase.shared.clearMetadataSession(metadatas: metadatas)
+                self.database.setDirectory(serverUrl: serverUrl, offline: false, metadata: metadata)
+                if let metadatas = database.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND sessionSelector == %@ AND status == %d",
+                                                                                       metadata.account,
+                                                                                       serverUrl,
+                                                                                       NCGlobal.shared.selectorSynchronizationOffline,
+                                                                                       NCGlobal.shared.metadataStatusWaitDownload)) {
+                    database.clearMetadataSession(metadatas: metadatas)
                 }
             } else {
-                NCManageDatabase.shared.setOffLocalFile(ocId: metadata.ocId)
+                database.setOffLocalFile(ocId: metadata.ocId)
             }
         } else if metadata.directory {
-            NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, offline: true, metadata: metadata)
+            database.setDirectory(serverUrl: serverUrl, offline: true, metadata: metadata)
             NCNetworking.shared.synchronization(account: metadata.account, serverUrl: serverUrl, add: true)
         } else {
             var metadatasSynchronizationOffline: [tableMetadata] = []
             metadatasSynchronizationOffline.append(metadata)
-            if let metadata = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) {
+            if let metadata = database.getMetadataLivePhoto(metadata: metadata) {
                 metadatasSynchronizationOffline.append(metadata)
             }
-            NCManageDatabase.shared.addLocalFile(metadata: metadata, offline: true)
-            NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: metadatasSynchronizationOffline,
-                                                                      session: NCNetworking.shared.sessionDownloadBackground,
-                                                                      selector: NCGlobal.shared.selectorSynchronizationOffline)
+            database.addLocalFile(metadata: metadata, offline: true)
+            database.setMetadatasSessionInWaitDownload(metadatas: metadatasSynchronizationOffline,
+                                                       session: NCNetworking.shared.sessionDownloadBackground,
+                                                       selector: NCGlobal.shared.selectorSynchronizationOffline)
         }
     }
 
@@ -195,7 +196,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         var downloadRequest: DownloadRequest?
         let hud = NCHud(viewController.tabBarController?.view)
 
-        if let metadata = NCManageDatabase.shared.getResultMetadataFromFileId(fileId) {
+        if let metadata = database.getResultMetadataFromFileId(fileId) {
             do {
                 let attr = try FileManager.default.attributesOfItem(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
                 let fileSize = attr[FileAttributeKey.size] as? UInt64 ?? 0
@@ -221,8 +222,8 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 NCContentPresenter().showError(error: error)
             } else if let file {
                 let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
-                let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
-                NCManageDatabase.shared.addMetadata(metadata)
+                let metadata = self.database.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
+                self.database.addMetadata(metadata)
 
                 let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
                 let fileNameLocalPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
@@ -239,7 +240,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                     }) { accountDownload, _, _, _, _, _, error in
                         hud.dismiss()
                         if account == accountDownload && error == .success {
-                            NCManageDatabase.shared.addLocalFile(metadata: metadata)
+                            self.database.addLocalFile(metadata: metadata)
                             NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
                         }
                     }
@@ -359,10 +360,10 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadata.count, controller: controller)
         for (metadata, url) in downloadMetadata {
             processor.execute { completion in
-                guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                               session: NCNetworking.shared.sessionDownload,
-                                                                                               selector: "",
-                                                                                               sceneIdentifier: controller.sceneIdentifier) else { return completion() }
+                guard let metadata = self.database.setMetadatasSessionInWaitDownload(metadatas: [metadata],
+                                                                                     session: NCNetworking.shared.sessionDownload,
+                                                                                     selector: "",
+                                                                                     sceneIdentifier: controller.sceneIdentifier) else { return completion() }
                 NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
                 } progressHandler: { progress in
                     processor.hud.progress(progress.fractionCompleted)
@@ -460,7 +461,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 if error == .success && etag != nil && ocId != nil {
                     let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId!, fileNameView: fileName)
                     self.utilityFileSystem.moveFile(atPath: fileNameLocalPath, toPath: toPath)
-                    NCManageDatabase.shared.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName)
+                    self.database.addLocalFile(account: account, etag: etag!, ocId: ocId!, fileName: fileName)
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetwork)
                 } else if afError?.isExplicitlyCancelledError ?? false {
                     print("cancel")

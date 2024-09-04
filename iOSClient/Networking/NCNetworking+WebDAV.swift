@@ -224,17 +224,17 @@ extension NCNetworking {
             return completion(.success)
         }
         if isOffline {
-            let metadataForUpload = NCManageDatabase.shared.createMetadata(fileName: fileNameFolder,
-                                                                           fileNameView: fileNameFolder,
-                                                                           ocId: NSUUID().uuidString,
-                                                                           serverUrl: serverUrl,
-                                                                           url: "",
-                                                                           contentType: "httpd/unix-directory",
-                                                                           directory: true,
-                                                                           session: session,
-                                                                           sceneIdentifier: sceneIdentifier)
+            let metadataForUpload = self.database.createMetadata(fileName: fileNameFolder,
+                                                                 fileNameView: fileNameFolder,
+                                                                 ocId: NSUUID().uuidString,
+                                                                 serverUrl: serverUrl,
+                                                                 url: "",
+                                                                 contentType: "httpd/unix-directory",
+                                                                 directory: true,
+                                                                 session: session,
+                                                                 sceneIdentifier: sceneIdentifier)
             metadataForUpload.status = global.metadataStatusWaitCreateFolder
-            NCManageDatabase.shared.addMetadata(metadataForUpload)
+            self.database.addMetadata(metadataForUpload)
 
             NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterCreateFolder, userInfo: ["ocId": metadataForUpload.ocId, "serverUrl": metadataForUpload.serverUrl, "account": metadataForUpload.account, "withPush": withPush, "sceneIdentifier": sceneIdentifier as Any])
             return completion(.success)
@@ -398,7 +398,7 @@ extension NCNetworking {
         }
 
         if metadata.status == NCGlobal.shared.metadataStatusWaitCreateFolder {
-            NCManageDatabase.shared.deleteMetadataOcId(metadata.ocId)
+            self.database.deleteMetadataOcId(metadata.ocId)
             return .success
         } else if metadata.isDirectoryE2EE {
 #if !EXTENSION
@@ -477,7 +477,7 @@ extension NCNetworking {
         if metadata.status == NCGlobal.shared.metadataStatusWaitCreateFolder {
             metadata.fileName = fileNameNew
             metadata.fileNameView = fileNameNew
-            NCManageDatabase.shared.addMetadata(metadata)
+            self.database.addMetadata(metadata)
             NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterRenameFile, userInfo: ["ocId": metadata.ocId, "account": metadata.account])
             completion(.success)
         } else if metadata.isDirectoryE2EE {

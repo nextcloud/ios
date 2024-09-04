@@ -29,13 +29,14 @@ import NextcloudKit
 class NCContextMenu: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
+    let database = NCManageDatabase.shared
 
     func viewMenu(ocId: String, viewController: UIViewController, image: UIImage?) -> UIMenu {
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId),
+        guard let metadata = self.database.getMetadataFromOcId(ocId),
               let sceneIdentifier = (viewController.tabBarController as? NCMainTabBarController)?.sceneIdentifier else { return UIMenu() }
         var downloadRequest: DownloadRequest?
         var titleDeleteConfirmFile = NSLocalizedString("_delete_file_", comment: "")
-        let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
+        let metadataMOV = self.database.getMetadataLivePhoto(metadata: metadata)
         let hud = NCHud(viewController.view)
 
         if metadata.directory { titleDeleteConfirmFile = NSLocalizedString("_delete_folder_", comment: "") }
@@ -71,10 +72,10 @@ class NCContextMenu: NSObject {
                                                                        "account": metadata.account],
                                                             second: 0.5)
             } else {
-                guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                               session: NCNetworking.shared.sessionDownload,
-                                                                                               selector: NCGlobal.shared.selectorOpenIn,
-                                                                                               sceneIdentifier: sceneIdentifier) else { return }
+                guard let metadata = self.database.setMetadatasSessionInWaitDownload(metadatas: [metadata],
+                                                                                     session: NCNetworking.shared.sessionDownload,
+                                                                                     selector: NCGlobal.shared.selectorOpenIn,
+                                                                                     sceneIdentifier: sceneIdentifier) else { return }
 
                 hud.initHudRing(text: NSLocalizedString("_downloading_", comment: ""), tapToCancelDetailText: true) {
                     if let request = downloadRequest {
@@ -121,10 +122,10 @@ class NCContextMenu: NSObject {
                                                                        "account": metadata.account],
                                                             second: 0.5)
             } else {
-                guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                               session: NCNetworking.shared.sessionDownload,
-                                                                                               selector: NCGlobal.shared.selectorLoadFileQuickLook,
-                                                                                               sceneIdentifier: sceneIdentifier) else { return }
+                guard let metadata = self.database.setMetadatasSessionInWaitDownload(metadatas: [metadata],
+                                                                                     session: NCNetworking.shared.sessionDownload,
+                                                                                     selector: NCGlobal.shared.selectorLoadFileQuickLook,
+                                                                                     sceneIdentifier: sceneIdentifier) else { return }
 
                 hud.initHudRing(text: NSLocalizedString("_downloading_", comment: "")) {
                     if let request = downloadRequest {
@@ -210,7 +211,7 @@ class NCContextMenu: NSObject {
                         //
                     } else {
                         menu.append(share)
-                        if NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) != nil {
+                        if self.database.getMetadataLivePhoto(metadata: metadata) != nil {
                             menu.append(livePhotoSave)
                         }
                     }
@@ -222,7 +223,7 @@ class NCContextMenu: NSObject {
                         }
                     } else {
                         menu.append(share)
-                        if NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) != nil {
+                        if self.database.getMetadataLivePhoto(metadata: metadata) != nil {
                             menu.append(livePhotoSave)
                         }
 

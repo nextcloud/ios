@@ -27,7 +27,6 @@ import NextcloudKit
 import Gzip
 
 extension NCEndToEndMetadata {
-
     struct E2eeV20: Codable {
 
         struct Metadata: Codable {
@@ -118,7 +117,7 @@ extension NCEndToEndMetadata {
 
             if let metadataKeyEncrypted = NCEndToEndEncryption.shared().encryptAsymmetricData(key, certificate: certificate) {
                 let encryptedMetadataKey = metadataKeyEncrypted.base64EncodedString()
-                NCManageDatabase.shared.addE2EUsers(account: session.account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, userId: userId, certificate: certificate, encryptedMetadataKey: encryptedMetadataKey, metadataKey: key)
+                self.database.addE2EUsers(account: session.account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, userId: userId, certificate: certificate, encryptedMetadataKey: encryptedMetadataKey, metadataKey: key)
             }
         }
 
@@ -127,7 +126,7 @@ extension NCEndToEndMetadata {
             guard var key = NCEndToEndEncryption.shared().generateKey() else {
                 return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_"))
             }
-            if let tableUserId = NCManageDatabase.shared.getE2EUser(account: session.account, ocIdServerUrl: directoryTop.ocId, userId: session.userId),
+            if let tableUserId = self.database.getE2EUser(account: session.account, ocIdServerUrl: directoryTop.ocId, userId: session.userId),
                let metadataKey = tableUserId.metadataKey {
                 key = metadataKey
             } else {
@@ -139,10 +138,10 @@ extension NCEndToEndMetadata {
             }
             // REMOVEUSERID
             if let removeUserId {
-                NCManageDatabase.shared.deleteE2EUsers(account: session.account, ocIdServerUrl: ocIdServerUrl, userId: removeUserId)
+                self.database.deleteE2EUsers(account: session.account, ocIdServerUrl: ocIdServerUrl, userId: removeUserId)
             }
             // FOR SECURITY recreate all users with key
-            if let users = NCManageDatabase.shared.getE2EUsers(account: session.account, ocIdServerUrl: ocIdServerUrl) {
+            if let users = self.database.getE2EUsers(account: session.account, ocIdServerUrl: ocIdServerUrl) {
                 for user in users {
                     addUser(userId: user.userId, certificate: user.certificate, key: key)
                 }
@@ -152,7 +151,7 @@ extension NCEndToEndMetadata {
 
         } else {
 
-            guard let tableUserId = NCManageDatabase.shared.getE2EUser(account: session.account, ocIdServerUrl: directoryTop.ocId, userId: session.userId), let key = tableUserId.metadataKey else {
+            guard let tableUserId = self.database.getE2EUser(account: session.account, ocIdServerUrl: directoryTop.ocId, userId: session.userId), let key = tableUserId.metadataKey else {
                 return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_"))
             }
 
@@ -162,7 +161,7 @@ extension NCEndToEndMetadata {
         // USERS
         // CHECKSUM
         //
-        if let users = NCManageDatabase.shared.getE2EUsers(account: session.account, ocIdServerUrl: directoryTop.ocId) {
+        if let users = self.database.getE2EUsers(account: session.account, ocIdServerUrl: directoryTop.ocId) {
             for user in users {
                 if isDirectoryTop {
                     usersCodable.append(E2eeV20.Users(userId: user.userId, certificate: user.certificate, encryptedMetadataKey: user.encryptedMetadataKey))
@@ -175,13 +174,13 @@ extension NCEndToEndMetadata {
 
         // COUNTER + 1
         //
-        if let resultCounter = NCManageDatabase.shared.getCounterE2eMetadata(account: session.account, ocIdServerUrl: ocIdServerUrl) {
+        if let resultCounter = self.database.getCounterE2eMetadata(account: session.account, ocIdServerUrl: ocIdServerUrl) {
             counter = resultCounter + 1
         }
 
         // CIPERTEXT
         //
-        let e2eEncryptions = NCManageDatabase.shared.getE2eEncryptions(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl))
+        let e2eEncryptions = self.database.getE2eEncryptions(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl))
 
         for e2eEncryption in e2eEncryptions {
             if e2eEncryption.mimeType == "httpd/unix-directory" {
@@ -235,7 +234,7 @@ extension NCEndToEndMetadata {
 
         func addE2eEncryption(fileNameIdentifier: String, filename: String, authenticationTag: String, key: String, initializationVector: String, metadataKey: String, mimetype: String) {
 
-            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", session.account, fileNameIdentifier)) {
+            if let metadata = self.database.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", session.account, fileNameIdentifier)) {
 
                 let object = tableE2eEncryption.init(account: session.account, ocIdServerUrl: ocIdServerUrl, fileNameIdentifier: fileNameIdentifier)
 
@@ -249,7 +248,7 @@ extension NCEndToEndMetadata {
                 object.version = NCGlobal.shared.e2eeVersionV20
 
                 // Write file parameter for decrypted on DB
-                NCManageDatabase.shared.addE2eEncryption(object)
+                self.database.addE2eEncryption(object)
 
                 // Update metadata on tableMetadata
                 metadata.fileNameView = filename
@@ -260,7 +259,7 @@ extension NCEndToEndMetadata {
                 metadata.iconName = results.iconName
                 metadata.classFile = results.classFile
 
-                NCManageDatabase.shared.addMetadata(metadata)
+                self.database.addMetadata(metadata)
             }
         }
 
@@ -285,14 +284,14 @@ extension NCEndToEndMetadata {
                                 metadataKey = decrypted
                             }
                         }
-                        NCManageDatabase.shared.addE2EUsers(account: session.account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, userId: user.userId, certificate: user.certificate, encryptedMetadataKey: user.encryptedMetadataKey, metadataKey: metadataKey)
+                        self.database.addE2EUsers(account: session.account, serverUrl: serverUrl, ocIdServerUrl: ocIdServerUrl, userId: user.userId, certificate: user.certificate, encryptedMetadataKey: user.encryptedMetadataKey, metadataKey: metadataKey)
                     }
                 }
             }
 
             // GET metadataKey, decryptedMetadataKey
             //
-            guard let tableUser = NCManageDatabase.shared.getE2EUser(account: session.account, ocIdServerUrl: directoryTop.ocId, userId: session.userId),
+            guard let tableUser = self.database.getE2EUser(account: session.account, ocIdServerUrl: directoryTop.ocId, userId: session.userId),
                   let metadataKey = tableUser.metadataKey?.base64EncodedString(),
                   let decryptedMetadataKey = tableUser.metadataKey else {
                 return NKError(errorCode: NCGlobal.shared.errorE2EENoUserFound, errorDescription: "_e2e_error_")
@@ -357,18 +356,18 @@ extension NCEndToEndMetadata {
 
             // COUNTER CHECK
             //
-            if let resultCounter = NCManageDatabase.shared.getCounterE2eMetadata(account: session.account, ocIdServerUrl: ocIdServerUrl) {
+            if let resultCounter = self.database.getCounterE2eMetadata(account: session.account, ocIdServerUrl: ocIdServerUrl) {
                 print("Counter saved: \(resultCounter)")
                 if jsonCiphertextMetadata.counter < resultCounter {
                     // TODO: whats happen with < ?
                     NCContentPresenter().showError(error: NKError(errorCode: NCGlobal.shared.errorE2EECounter, errorDescription: NSLocalizedString("_e2e_error_", comment: "")))
                 } else if jsonCiphertextMetadata.counter > resultCounter {
                     print("Counter UPDATED: \(jsonCiphertextMetadata.counter)")
-                    NCManageDatabase.shared.updateCounterE2eMetadata(account: session.account, ocIdServerUrl: ocIdServerUrl, counter: jsonCiphertextMetadata.counter)
+                    self.database.updateCounterE2eMetadata(account: session.account, ocIdServerUrl: ocIdServerUrl, counter: jsonCiphertextMetadata.counter)
                 }
             } else {
                 print("Counter RESET: \(jsonCiphertextMetadata.counter)")
-                NCManageDatabase.shared.updateCounterE2eMetadata(account: session.account, ocIdServerUrl: ocIdServerUrl, counter: jsonCiphertextMetadata.counter)
+                self.database.updateCounterE2eMetadata(account: session.account, ocIdServerUrl: ocIdServerUrl, counter: jsonCiphertextMetadata.counter)
             }
 
             // DELETE CHECK
@@ -377,13 +376,13 @@ extension NCEndToEndMetadata {
                 // TODO: We need to check deleted, id yes ???
             }
 
-            NCManageDatabase.shared.addE2eMetadata(account: session.account,
-                                                   serverUrl: serverUrl,
-                                                   ocIdServerUrl: ocIdServerUrl,
-                                                   keyChecksums: jsonCiphertextMetadata.keyChecksums,
-                                                   deleted: jsonCiphertextMetadata.deleted ?? false,
-                                                   folders: jsonCiphertextMetadata.folders,
-                                                   version: version)
+            self.database.addE2eMetadata(account: session.account,
+                                         serverUrl: serverUrl,
+                                         ocIdServerUrl: ocIdServerUrl,
+                                         keyChecksums: jsonCiphertextMetadata.keyChecksums,
+                                         deleted: jsonCiphertextMetadata.deleted ?? false,
+                                         folders: jsonCiphertextMetadata.folders,
+                                         version: version)
 
             if let files = jsonCiphertextMetadata.files {
                 print("\nFILES ---------------------------------\n")

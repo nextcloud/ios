@@ -25,8 +25,8 @@ import UIKit
 import NextcloudKit
 
 class NCEndToEndMetadata: NSObject {
-
     let utilityFileSystem = NCUtilityFileSystem()
+    let database = NCManageDatabase.shared
 
     // --------------------------------------------------------------------------------------------
     // MARK: Encode JSON Metadata Bridge
@@ -34,7 +34,7 @@ class NCEndToEndMetadata: NSObject {
 
     func encodeMetadata(serverUrl: String, addUserId: String? = nil, addCertificate: String? = nil, removeUserId: String? = nil, session: NCSession.Session) -> (metadata: String?, signature: String?, counter: Int, error: NKError) {
 
-        guard let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl)) else {
+        guard let directory = self.database.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl)) else {
             return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_"))
         }
         let capabilities = NCCapabilities.shared.getCapabilities(account: session.account)
@@ -53,7 +53,7 @@ class NCEndToEndMetadata: NSObject {
     // --------------------------------------------------------------------------------------------
 
     func decodeMetadata(_ metadata: String, signature: String?, serverUrl: String, session: NCSession.Session) -> NKError {
-        guard let data = metadata.data(using: .utf8), let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl)) else {
+        guard let data = metadata.data(using: .utf8), let directory = self.database.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl)) else {
             return (NKError(errorCode: NCGlobal.shared.errorE2EEJSon, errorDescription: "_e2e_error_"))
         }
 

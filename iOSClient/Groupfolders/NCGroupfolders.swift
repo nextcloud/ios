@@ -57,7 +57,7 @@ class NCGroupfolders: NCCollectionViewCommon {
         var metadatas: [tableMetadata] = []
 
         if self.serverUrl.isEmpty {
-            metadatas = NCManageDatabase.shared.getResultsMetadatasFromGroupfolders(session: session)
+            metadatas = database.getResultsMetadatasFromGroupfolders(session: session)
         } else {
             metadatas = self.database.getResultsMetadatasPredicate(self.defaultPredicate, layoutForView: layoutForView)
         }
@@ -74,18 +74,18 @@ class NCGroupfolders: NCCollectionViewCommon {
             self.collectionView.reloadData()
         } completion: { account, results, _, error in
             if error == .success, let groupfolders = results {
-                NCManageDatabase.shared.addGroupfolders(account: account, groupfolders: groupfolders)
+                self.database.addGroupfolders(account: account, groupfolders: groupfolders)
                 Task {
                     for groupfolder in groupfolders {
                         let mountPoint = groupfolder.mountPoint.hasPrefix("/") ? groupfolder.mountPoint : "/" + groupfolder.mountPoint
                         let serverUrlFileName = homeServerUrl + mountPoint
-                        if NCManageDatabase.shared.getMetadataFromDirectory(account: account, serverUrl: serverUrlFileName) {
+                        if self.database.getMetadataFromDirectory(account: account, serverUrl: serverUrlFileName) {
                             let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles, account: account)
                             if results.error == .success, let file = results.files?.first {
                                 let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
-                                let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
-                                NCManageDatabase.shared.addMetadata(metadata)
-                                NCManageDatabase.shared.addDirectory(e2eEncrypted: isDirectoryE2EE, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
+                                let metadata = self.database.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
+                                self.database.addMetadata(metadata)
+                                self.database.addDirectory(e2eEncrypted: isDirectoryE2EE, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
                             }
                         }
                     }

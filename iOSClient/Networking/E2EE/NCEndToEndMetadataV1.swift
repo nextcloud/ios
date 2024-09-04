@@ -99,7 +99,7 @@ extension NCEndToEndMetadata {
         let privateKey = NCKeychain().getEndToEndPrivateKey(account: account)
         var fileNameIdentifiers: [String] = []
 
-        let e2eEncryptions = NCManageDatabase.shared.getE2eEncryptions(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
+        let e2eEncryptions = self.database.getE2eEncryptions(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", account, serverUrl))
 
         //
         // metadata
@@ -181,8 +181,8 @@ extension NCEndToEndMetadata {
             data.printJson()
             let jsonString = String(data: data, encoding: .utf8)
             // Updated metadata to 1.2
-            if NCManageDatabase.shared.getE2eMetadata(account: account, serverUrl: serverUrl) == nil {
-                NCManageDatabase.shared.setE2eMetadata(account: account, serverUrl: serverUrl, metadataKey: metadataKey, version: metadataVersion)
+            if self.database.getE2eMetadata(account: account, serverUrl: serverUrl) == nil {
+                self.database.setE2eMetadata(account: account, serverUrl: serverUrl, metadataKey: metadataKey, version: metadataVersion)
             }
             return (jsonString, nil, 0, NKError())
         } catch let error {
@@ -229,7 +229,7 @@ extension NCEndToEndMetadata {
             }
 
             // DATA
-            NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl))
+            self.database.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl))
 
             //
             // files
@@ -250,7 +250,7 @@ extension NCEndToEndMetadata {
                             decryptedData.printJson()
                             let encrypted = try decoder.decode(E2eeV12.Encrypted.self, from: decryptedData)
 
-                            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", session.account, fileNameIdentifier)) {
+                            if let metadata = self.database.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", session.account, fileNameIdentifier)) {
 
                                 let object = tableE2eEncryption.init(account: session.account, ocIdServerUrl: ocIdServerUrl, fileNameIdentifier: fileNameIdentifier)
 
@@ -265,7 +265,7 @@ extension NCEndToEndMetadata {
                                 object.serverUrl = serverUrl
 
                                 // Write file parameter for decrypted on DB
-                                NCManageDatabase.shared.addE2eEncryption(object)
+                                self.database.addE2eEncryption(object)
 
                                 // Update metadata on tableMetadata
                                 metadata.fileNameView = encrypted.filename
@@ -276,7 +276,7 @@ extension NCEndToEndMetadata {
                                 metadata.iconName = results.iconName
                                 metadata.classFile = results.classFile
 
-                                NCManageDatabase.shared.addMetadata(metadata)
+                                self.database.addMetadata(metadata)
                             }
 
                         } catch let error {
@@ -308,7 +308,7 @@ extension NCEndToEndMetadata {
                             decryptedData.printJson()
                             let encrypted = try decoder.decode(E2eeV1.Encrypted.self, from: decryptedData)
 
-                            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", session.account, fileNameIdentifier)) {
+                            if let metadata = self.database.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", session.account, fileNameIdentifier)) {
 
                                 let object = tableE2eEncryption.init(account: session.account, ocIdServerUrl: ocIdServerUrl, fileNameIdentifier: fileNameIdentifier)
 
@@ -323,7 +323,7 @@ extension NCEndToEndMetadata {
                                 object.serverUrl = serverUrl
 
                                 // Write file parameter for decrypted on DB
-                                NCManageDatabase.shared.addE2eEncryption(object)
+                                self.database.addE2eEncryption(object)
 
                                 // Update metadata on tableMetadata
                                 metadata.fileNameView = encrypted.filename
@@ -334,7 +334,7 @@ extension NCEndToEndMetadata {
                                 metadata.iconName = results.iconName
                                 metadata.classFile = results.classFile
 
-                                NCManageDatabase.shared.addMetadata(metadata)
+                                self.database.addMetadata(metadata)
                             }
 
                         } catch let error {
@@ -382,7 +382,7 @@ extension NCEndToEndMetadata {
             metadataVersion = metadata.version
 
             // DATA
-            NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl))
+            self.database.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, serverUrl))
 
             //
             // metadata
@@ -399,7 +399,7 @@ extension NCEndToEndMetadata {
             //
             // verify version
             //
-            if let tableE2eMetadata = NCManageDatabase.shared.getE2eMetadata(account: session.account, serverUrl: serverUrl) {
+            if let tableE2eMetadata = self.database.getE2eMetadata(account: session.account, serverUrl: serverUrl) {
                 if tableE2eMetadata.version > metadataVersion {
                     return NKError(errorCode: NCGlobal.shared.errorE2EEVersion, errorDescription: "Version \(tableE2eMetadata.version)")
                 }
@@ -424,7 +424,7 @@ extension NCEndToEndMetadata {
                         do {
                             let encrypted = try decoder.decode(E2eeV1.Encrypted.self, from: decryptedData)
 
-                            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", session.account, fileNameIdentifier)) {
+                            if let metadata = self.database.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", session.account, fileNameIdentifier)) {
 
                                 let object = tableE2eEncryption.init(account: session.account, ocIdServerUrl: ocIdServerUrl, fileNameIdentifier: fileNameIdentifier)
 
@@ -440,7 +440,7 @@ extension NCEndToEndMetadata {
                                 object.serverUrl = serverUrl
 
                                 // Write file parameter for decrypted on DB
-                                NCManageDatabase.shared.addE2eEncryption(object)
+                                self.database.addE2eEncryption(object)
 
                                 // Update metadata on tableMetadata
                                 metadata.fileNameView = encrypted.filename
@@ -451,7 +451,7 @@ extension NCEndToEndMetadata {
                                 metadata.iconName = results.iconName
                                 metadata.classFile = results.classFile
 
-                                NCManageDatabase.shared.addMetadata(metadata)
+                                self.database.addMetadata(metadata)
                             }
 
                         } catch let error {

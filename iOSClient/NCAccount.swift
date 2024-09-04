@@ -26,6 +26,8 @@ import UIKit
 import NextcloudKit
 
 class NCAccount: NSObject {
+    let database = NCManageDatabase.shared
+
     func createAccount(urlBase: String,
                        user: String,
                        password: String,
@@ -47,7 +49,7 @@ class NCAccount: NSObject {
             if error == .success, let userProfile {
                 NextcloudKit.shared.updateSession(account: account, userId: userProfile.userId)
                 NCSession.shared.appendSession(account: account, urlBase: urlBase, user: user, userId: userProfile.userId)
-                NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
+                self.database.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
                 self.changeAccount(account, userProfile: userProfile, controller: nil) {
                     NCKeychain().setClientCertificate(account: account, p12Data: NCNetworking.shared.p12Data, p12Password: NCNetworking.shared.p12Password)
                     completion(account, error)
@@ -68,12 +70,12 @@ class NCAccount: NSObject {
                        completion: () -> Void) {
         /// Set account
         controller?.account = account
-        NCManageDatabase.shared.setAccountActive(account)
+        database.setAccountActive(account)
         /// Set capabilities
-        NCManageDatabase.shared.setCapabilities(account: account)
+        database.setCapabilities(account: account)
         /// Set User Profile
         if let userProfile {
-            NCManageDatabase.shared.setAccountUserProfile(account: account, userProfile: userProfile)
+            database.setAccountUserProfile(account: account, userProfile: userProfile)
         }
         /// Start Push Notification
         NCPushNotification.shared.pushNotification()
@@ -100,17 +102,17 @@ class NCAccount: NSObject {
         UIApplication.shared.allSceneSessionDestructionExceptFirst()
 
         /// Unsubscribing Push Notification
-        if let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) {
+        if let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) {
             NCPushNotification.shared.unsubscribingNextcloudServerPushNotification(account: tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, withSubscribing: false)
         }
         /// Remove al local files
-        let results = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "account == %@", account), sorted: "ocId", ascending: false)
+        let results = database.getTableLocalFiles(predicate: NSPredicate(format: "account == %@", account), sorted: "ocId", ascending: false)
         let utilityFileSystem = NCUtilityFileSystem()
         for result in results {
             utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId))
         }
         /// Remove account in all database
-        NCManageDatabase.shared.clearDatabase(account: account, removeAccount: true)
+        database.clearDatabase(account: account, removeAccount: true)
         /// Remove session in NextcloudKit
         NextcloudKit.shared.removeSession(account: account)
         /// Remove session
@@ -122,7 +124,7 @@ class NCAccount: NSObject {
     }
 
     func deleteAllAccounts() {
-        let accounts = NCManageDatabase.shared.getAccounts()
+        let accounts = database.getAccounts()
         accounts?.forEach({ account in
             deleteAccount(account)
         })
@@ -132,7 +134,7 @@ class NCAccount: NSObject {
         guard let dirGroupApps = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupApps) else { return nil }
         var accounts = [NKShareAccounts.DataAccounts]()
 
-        for account in NCManageDatabase.shared.getAllTableAccount() {
+        for account in database.getAllTableAccount() {
             let name = account.alias.isEmpty ? account.displayName : account.alias
             let fileName = NCSession.shared.getFileName(urlBase: account.urlBase, user: account.user)
             let fileNamePath = NCUtilityFileSystem().directoryUserData + "/" + fileName

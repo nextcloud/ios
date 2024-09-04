@@ -160,11 +160,11 @@ extension NCNetworking {
 
                 if let metadata {
                     self.database.clearMetadataSession(metadata: metadata)
-                } else if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND session == %@",
-                                                                                                           self.global.metadataStatusWaitDownload,
-                                                                                                           self.global.metadataStatusDownloading,
-                                                                                                           self.global.metadataStatusDownloadError,
-                                                                                                           sessionDownloadBackground)) {
+                } else if let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND session == %@",
+                                                                                                 self.global.metadataStatusWaitDownload,
+                                                                                                 self.global.metadataStatusDownloading,
+                                                                                                 self.global.metadataStatusDownloadError,
+                                                                                                 sessionDownloadBackground)) {
                     self.database.clearMetadataSession(metadatas: results)
                 }
             }

@@ -38,6 +38,7 @@ class NCActivity: UIViewController, NCSharePagingContent {
 
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
+    let database = NCManageDatabase.shared
     var allItems: [DateCompareable] = []
     var sectionDates: [Date] = []
     var dataSourceTask: URLSessionTask?
@@ -307,7 +308,7 @@ extension NCActivity: UITableViewDataSource {
             }
 
             for key in keys {
-                if let result = NCManageDatabase.shared.getActivitySubjectRich(account: session.account, idActivity: activity.idActivity, key: key) {
+                if let result = database.getActivitySubjectRich(account: session.account, idActivity: activity.idActivity, key: key) {
                     orderKeysId.append(result.id)
                     subject = subject.replacingOccurrences(of: "{\(key)}", with: "<bold>" + result.name + "</bold>")
                 }
@@ -379,11 +380,11 @@ extension NCActivity {
         var newItems = [DateCompareable]()
 
         if showComments, let metadata {
-            let comments = NCManageDatabase.shared.getComments(account: metadata.account, objectId: metadata.fileId)
+            let comments = database.getComments(account: metadata.account, objectId: metadata.fileId)
             newItems += comments
         }
 
-        let activities = NCManageDatabase.shared.getActivity(
+        let activities = database.getActivity(
             predicate: NSPredicate(format: "account == %@", session.account),
             filterFileId: metadata?.fileId)
         newItems += activities.filter
@@ -402,7 +403,7 @@ extension NCActivity {
 
         NextcloudKit.shared.getComments(fileId: metadata.fileId, account: metadata.account) { _, comments, _, error in
             if error == .success, let comments = comments {
-                NCManageDatabase.shared.addComments(comments, account: metadata.account, objectId: metadata.fileId)
+                self.database.addComments(comments, account: metadata.account, objectId: metadata.fileId)
             } else if error.errorCode != NCGlobal.shared.errorResourceNotFound {
                 NCContentPresenter().showError(error: error)
             }
@@ -417,7 +418,7 @@ extension NCActivity {
 
     /// Check if most recent activivities are loaded, if not trigger reload
     func checkRecentActivity(disptachGroup: DispatchGroup) {
-        guard let result = NCManageDatabase.shared.getLatestActivityId(account: session.account), metadata == nil, hasActivityToLoad else {
+        guard let result = database.getLatestActivityId(account: session.account), metadata == nil, hasActivityToLoad else {
             return self.loadActivity(idActivity: 0, disptachGroup: disptachGroup)
         }
         let resultActivityId = max(result.activityFirstKnown, result.activityLastGiven)
@@ -470,15 +471,15 @@ extension NCActivity {
                     self.hasActivityToLoad = error.errorCode == NCGlobal.shared.errorNotModified ? false : self.hasActivityToLoad
                     return
                 }
-                NCManageDatabase.shared.addActivity(activities, account: account)
+                self.database.addActivity(activities, account: account)
 
                 // update most recently loaded activity only when all activities are loaded (not filtered)
                 let largestActivityId = max(activityFirstKnown, activityLastGiven)
-                if let result = NCManageDatabase.shared.getLatestActivityId(account: self.session.account) {
+                if let result = self.database.getLatestActivityId(account: self.session.account) {
                     resultActivityId = max(result.activityFirstKnown, result.activityLastGiven)
                 }
                 if self.metadata == nil, largestActivityId > resultActivityId {
-                    NCManageDatabase.shared.updateLatestActivityId(activityFirstKnown: activityFirstKnown, activityLastGiven: activityLastGiven, account: account)
+                    self.database.updateLatestActivityId(activityFirstKnown: activityFirstKnown, activityLastGiven: activityLastGiven, account: account)
                 }
             }
     }

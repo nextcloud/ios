@@ -41,6 +41,7 @@ class NCMedia: UIViewController {
     var tabBarSelect: NCMediaSelectTabBar!
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
+    let database = NCManageDatabase.shared
     let imageCache = NCImageCache.shared
     var metadatas: Results<tableMetadata>?
     var serverUrl = ""
@@ -96,7 +97,7 @@ class NCMedia: UIViewController {
 
         layout.sectionInset = UIEdgeInsets(top: 0, left: 2, bottom: 0, right: 2)
         collectionView.collectionViewLayout = layout
-        layoutType = NCManageDatabase.shared.getLayoutForView(account: session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")?.layout ?? NCGlobal.shared.mediaLayoutRatio
+        layoutType = database.getLayoutForView(account: session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")?.layout ?? NCGlobal.shared.mediaLayoutRatio
 
         tabBarSelect = NCMediaSelectTabBar(tabBarController: self.tabBarController, delegate: self)
 
@@ -129,8 +130,7 @@ class NCMedia: UIViewController {
         }
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
-
-            self.layoutType = NCManageDatabase.shared.getLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")?.layout ?? NCGlobal.shared.mediaLayoutRatio
+            self.layoutType = self.database.getLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")?.layout ?? NCGlobal.shared.mediaLayoutRatio
             self.reloadDataSource()
         }
     }
@@ -232,7 +232,7 @@ class NCMedia: UIViewController {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String else { return }
 
-        if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId),
+        if let metadata = database.getMetadataFromOcId(ocId),
            (metadata.isVideo || metadata.isImage) {
             self.reloadDataSource()
         }
@@ -348,7 +348,7 @@ extension NCMedia: NCSelectDelegate {
         guard let serverUrl else { return }
         let home = utilityFileSystem.getHomeServer(session: session)
         let mediaPath = serverUrl.replacingOccurrences(of: home, with: "")
-        NCManageDatabase.shared.setAccountMediaPath(mediaPath, account: session.account)
+        database.setAccountMediaPath(mediaPath, account: session.account)
         reloadDataSource()
         startTimer()
     }

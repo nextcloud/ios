@@ -53,9 +53,9 @@ extension NCNetworking {
             if error == .success, let files {
                 for file in files {
                     if file.directory {
-                        metadatasDirectory.append(NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: false))
+                        metadatasDirectory.append(self.database.convertFileToMetadata(file, isDirectoryE2EE: false))
                     } else if self.isSynchronizable(ocId: file.ocId, fileName: file.fileName, etag: file.etag) {
-                        metadatasSynchronizationOffline.append(NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: false))
+                        metadatasSynchronizationOffline.append(self.database.convertFileToMetadata(file, isDirectoryE2EE: false))
                     }
                 }
                 self.database.addMetadatas(metadatasDirectory)

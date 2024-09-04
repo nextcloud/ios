@@ -48,7 +48,7 @@ extension NCMedia: UICollectionViewDropDelegate {
     func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
         DragDropHover.shared.cleanPushDragDropHover()
         DragDropHover.shared.sourceMetadatas = nil
-        guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else { return }
+        guard let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else { return }
         let serverUrl = NCUtilityFileSystem().getHomeServer(session: session) + tableAccount.mediaPath
 
         if let metadatas = NCDragDrop().performDrop(collectionView, performDropWith: coordinator, serverUrl: serverUrl, isImageVideo: true, controller: self.controller) {
@@ -79,7 +79,7 @@ extension NCMedia: UICollectionViewDropDelegate {
     @objc func copyMenuFile() {
         guard let sourceMetadatas = DragDropHover.shared.sourceMetadatas else { return }
 
-        if let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) {
+        if let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) {
             let serverUrl = NCUtilityFileSystem().getHomeServer(session: session) + tableAccount.mediaPath
             NCDragDrop().copyFile(metadatas: sourceMetadatas, serverUrl: serverUrl)
         }
@@ -88,7 +88,7 @@ extension NCMedia: UICollectionViewDropDelegate {
     @objc func moveMenuFile() {
         guard let sourceMetadatas = DragDropHover.shared.sourceMetadatas else { return }
 
-        if let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) {
+        if let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) {
             let serverUrl = NCUtilityFileSystem().getHomeServer(session: session) + tableAccount.mediaPath
             NCDragDrop().moveFile(metadatas: sourceMetadatas, serverUrl: serverUrl)
         }

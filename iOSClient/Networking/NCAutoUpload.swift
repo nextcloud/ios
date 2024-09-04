@@ -29,6 +29,7 @@ import Photos
 class NCAutoUpload: NSObject {
     static let shared = NCAutoUpload()
 
+    private let database = NCManageDatabase.shared
     private var endForAssetToUpload: Bool = false
     private var applicationState = UIApplication.shared.applicationState
     private let hud = NCHud()
@@ -37,7 +38,7 @@ class NCAutoUpload: NSObject {
 
     func initAutoUpload(controller: NCMainTabBarController?, account: String, completion: @escaping (_ num: Int) -> Void) {
         guard NCNetworking.shared.isOnline,
-              let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
+              let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
               tableAccount.autoUpload else {
             return completion(0)
         }
@@ -45,7 +46,7 @@ class NCAutoUpload: NSObject {
 
         NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { hasPermission in
             guard hasPermission else {
-                NCManageDatabase.shared.setAccountAutoUploadProperty("autoUpload", state: false)
+                self.database.setAccountAutoUploadProperty("autoUpload", state: false)
                 return completion(0)
             }
             DispatchQueue.global(qos: .userInteractive).async {
@@ -79,11 +80,11 @@ class NCAutoUpload: NSObject {
     }
 
     private func uploadAssetsNewAndFull(controller: NCMainTabBarController?, selector: String, log: String, account: String, completion: @escaping (_ num: Int) -> Void) {
-        guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) else {
+        guard let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) else {
             return completion(0)
         }
         let session = NCSession.shared.getSession(account: account)
-        let autoUploadPath = NCManageDatabase.shared.getAccountAutoUploadPath(session: session)
+        let autoUploadPath = self.database.getAccountAutoUploadPath(session: session)
         var metadatas: [tableMetadata] = []
 
         self.getCameraRollAssets(controller: controller, selector: selector, alignPhotoLibrary: false, account: account) { assets in
@@ -150,19 +151,19 @@ class NCAutoUpload: NSObject {
                     fileNameSearchMetadata = (fileNameSearchMetadata as NSString).deletingPathExtension + ".jpg"
                 }
 
-                if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", session.account, serverUrl, fileNameSearchMetadata)) != nil {
+                if self.database.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@", session.account, serverUrl, fileNameSearchMetadata)) != nil {
                     if selector == NCGlobal.shared.selectorUploadAutoUpload {
-                        NCManageDatabase.shared.addPhotoLibrary([asset], account: session.account)
+                        self.database.addPhotoLibrary([asset], account: session.account)
                     }
                 } else {
-                    let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName,
-                                                                          fileNameView: fileName,
-                                                                          ocId: NSUUID().uuidString,
-                                                                          serverUrl: serverUrl,
-                                                                          url: "",
-                                                                          contentType: "",
-                                                                          session: session,
-                                                                          sceneIdentifier: controller?.sceneIdentifier)
+                    let metadata = self.database.createMetadata(fileName: fileName,
+                                                                fileNameView: fileName,
+                                                                ocId: NSUUID().uuidString,
+                                                                serverUrl: serverUrl,
+                                                                url: "",
+                                                                contentType: "",
+                                                                session: session,
+                                                                sceneIdentifier: controller?.sceneIdentifier)
 
                     if isLivePhoto {
                         metadata.livePhotoFile = (metadata.fileName as NSString).deletingPathExtension + ".mov"
@@ -179,7 +180,7 @@ class NCAutoUpload: NSObject {
                     }
                     if selector == NCGlobal.shared.selectorUploadAutoUpload {
                         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Automatic upload added \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier)")
-                        NCManageDatabase.shared.addPhotoLibrary([asset], account: account)
+                        self.database.addPhotoLibrary([asset], account: account)
                     }
                     metadatas.append(metadata)
                 }
@@ -199,10 +200,10 @@ class NCAutoUpload: NSObject {
 
     @objc func alignPhotoLibrary(controller: NCMainTabBarController?, account: String) {
         getCameraRollAssets(controller: controller, selector: NCGlobal.shared.selectorUploadAutoUploadAll, alignPhotoLibrary: true, account: account) { assets in
-            NCManageDatabase.shared.clearTable(tablePhotoLibrary.self, account: account)
+            self.database.clearTable(tablePhotoLibrary.self, account: account)
             guard let assets = assets else { return }
 
-            NCManageDatabase.shared.addPhotoLibrary(assets, account: account)
+            self.database.addPhotoLibrary(assets, account: account)
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Align Photo Library \(assets.count)")
         }
     }
@@ -210,7 +211,7 @@ class NCAutoUpload: NSObject {
     private func getCameraRollAssets(controller: NCMainTabBarController?, selector: String, alignPhotoLibrary: Bool, account: String, completion: @escaping (_ assets: [PHAsset]?) -> Void) {
         NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { hasPermission in
             guard hasPermission,
-                  let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) else {
+                  let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) else {
                 return completion(nil)
             }
             let assetCollection = PHAssetCollection.fetchAssetCollections(with: PHAssetCollectionType.smartAlbum, subtype: PHAssetCollectionSubtype.smartAlbumUserLibrary, options: nil)
@@ -235,7 +236,7 @@ class NCAutoUpload: NSObject {
             let assets: PHFetchResult<PHAsset> = PHAsset.fetchAssets(in: assetCollection, options: fetchOptions)
 
             if selector == NCGlobal.shared.selectorUploadAutoUpload {
-                let idAssets = NCManageDatabase.shared.getPhotoLibraryIdAsset(image: tableAccount.autoUploadImage, video: tableAccount.autoUploadVideo, account: account)
+                let idAssets = self.database.getPhotoLibraryIdAsset(image: tableAccount.autoUploadImage, video: tableAccount.autoUploadVideo, account: account)
                 assets.enumerateObjects { asset, _, _ in
                     var creationDateString = ""
                     if let creationDate = asset.creationDate {

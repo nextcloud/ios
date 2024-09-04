@@ -108,6 +108,7 @@ class customPhotoPickerViewController: TLPhotosPickerViewController {
 class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
+    let database = NCManageDatabase.shared
     var isViewerMedia: Bool
     var viewController: UIViewController?
     var controller: NCMainTabBarController
@@ -138,14 +139,14 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
             let viewController = self.viewController {
             let ocId = NSUUID().uuidString
             let fileName = url.lastPathComponent
-            let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName,
-                                                                  fileNameView: fileName,
-                                                                  ocId: ocId,
-                                                                  serverUrl: "",
-                                                                  url: url.path,
-                                                                  contentType: "",
-                                                                  session: session,
-                                                                  sceneIdentifier: self.controller.sceneIdentifier)
+            let metadata = database.createMetadata(fileName: fileName,
+                                                   fileNameView: fileName,
+                                                   ocId: ocId,
+                                                   serverUrl: "",
+                                                   url: url.path,
+                                                   contentType: "",
+                                                   session: session,
+                                                   sceneIdentifier: self.controller.sceneIdentifier)
 
             if metadata.classFile == NKCommon.TypeClassFile.unknow.rawValue {
                 metadata.classFile = NKCommon.TypeClassFile.video.rawValue
@@ -154,7 +155,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
             if let fileNameError = FileNameValidator.shared.checkFileName(metadata.fileNameView, account: self.controller.account) {
                 controller.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
             } else {
-                NCManageDatabase.shared.addMetadata(metadata)
+                database.addMetadata(metadata)
                 NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
             }
 
@@ -172,14 +173,14 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
 
                 guard self.copySecurityScopedResource(url: urlIn, urlOut: urlOut) != nil else { continue }
 
-                let metadataForUpload = NCManageDatabase.shared.createMetadata(fileName: fileName,
-                                                                               fileNameView: fileName,
-                                                                               ocId: ocId,
-                                                                               serverUrl: serverUrl,
-                                                                               url: "",
-                                                                               contentType: "",
-                                                                               session: session,
-                                                                               sceneIdentifier: self.controller.sceneIdentifier)
+                let metadataForUpload = database.createMetadata(fileName: fileName,
+                                                                fileNameView: fileName,
+                                                                ocId: ocId,
+                                                                serverUrl: serverUrl,
+                                                                url: "",
+                                                                contentType: "",
+                                                                session: session,
+                                                                sceneIdentifier: self.controller.sceneIdentifier)
 
                 if let fileNameError = FileNameValidator.shared.checkFileName(metadataForUpload.fileNameView, account: self.controller.account) {
                     controller.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
@@ -192,7 +193,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                 metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
                 metadataForUpload.sessionDate = Date()
 
-                if NCManageDatabase.shared.getMetadataConflict(account: session.account, serverUrl: serverUrl, fileNameView: fileName) != nil {
+                if database.getMetadataConflict(account: session.account, serverUrl: serverUrl, fileNameView: fileName) != nil {
                     metadatasInConflict.append(metadataForUpload)
                 } else {
                     metadatas.append(metadataForUpload)

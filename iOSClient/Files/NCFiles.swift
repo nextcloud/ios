@@ -63,7 +63,7 @@ class NCFiles: NCCollectionViewCommon {
                 self.isSearchingMode = false
                 self.isEditMode = false
                 self.selectOcId.removeAll()
-                self.layoutForView = NCManageDatabase.shared.getLayoutForView(account: self.session.account, key: self.layoutKey, serverUrl: self.serverUrl)
+                self.layoutForView = self.database.getLayoutForView(account: self.session.account, key: self.layoutKey, serverUrl: self.serverUrl)
 
                 if self.isLayoutList {
                     self.collectionView?.collectionViewLayout = self.listLayout
@@ -115,8 +115,8 @@ class NCFiles: NCCollectionViewCommon {
             predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND (ownerId == %@ || ownerId == '') AND mountType == '' AND NOT (status IN %@)", session.account, self.serverUrl, session.userId, global.metadataStatusFileUp)
         }
 
-        self.metadataFolder = NCManageDatabase.shared.getMetadataFolder(session: session, serverUrl: self.serverUrl)
-        self.richWorkspaceText = NCManageDatabase.shared.getTableDirectory(predicate: predicateDirectory)?.richWorkspace
+        self.metadataFolder = database.getMetadataFolder(session: session, serverUrl: self.serverUrl)
+        self.richWorkspaceText = database.getTableDirectory(predicate: predicateDirectory)?.richWorkspace
 
         let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: layoutForView)
         self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: layoutForView)
@@ -146,7 +146,7 @@ class NCFiles: NCCollectionViewCommon {
             let fileSize = utilityFileSystem.fileProviderStorageSize(metadata.ocId, fileNameView: metadata.fileNameView)
             guard fileSize > 0 else { return false }
 
-            if let localFile = NCManageDatabase.shared.getResultsTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))?.first {
+            if let localFile = database.getResultsTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))?.first {
                 if localFile.etag != metadata.etag {
                     return true
                 }
@@ -188,7 +188,7 @@ class NCFiles: NCCollectionViewCommon {
             guard error == .success, let metadata else {
                 return completion(nil, nil, 0, 0, error)
             }
-            tableDirectory = NCManageDatabase.shared.setDirectory(serverUrl: self.serverUrl, richWorkspace: metadata.richWorkspace, account: account)
+            tableDirectory = self.database.setDirectory(serverUrl: self.serverUrl, richWorkspace: metadata.richWorkspace, account: account)
             // swiftlint:disable empty_string
             let forceReplaceMetadatas = tableDirectory?.etag == ""
             // swiftlint:enable empty_string
@@ -209,7 +209,7 @@ class NCFiles: NCCollectionViewCommon {
                        metadataFolder.e2eEncrypted,
                        NCKeychain().isEndToEndEnabled(account: account),
                        !NCNetworkingE2EE().isInUpload(account: account, serverUrl: self.serverUrl) {
-                        let lock = NCManageDatabase.shared.getE2ETokenLock(account: account, serverUrl: self.serverUrl)
+                        let lock = self.database.getE2ETokenLock(account: account, serverUrl: self.serverUrl)
                         NCNetworkingE2EE().getMetadata(fileId: metadataFolder.ocId, e2eToken: lock?.e2eToken, account: account) { account, version, e2eMetadata, signature, _, error in
                             if error == .success, let e2eMetadata = e2eMetadata {
                                 let error = NCEndToEndMetadata().decodeMetadata(e2eMetadata, signature: signature, serverUrl: self.serverUrl, session: self.session)
@@ -231,7 +231,7 @@ class NCFiles: NCCollectionViewCommon {
                                     }
                                 } else {
                                     // Client Diagnostic
-                                    NCManageDatabase.shared.addDiagnostic(account: account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)
+                                    self.database.addDiagnostic(account: account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)
                                     NCContentPresenter().showError(error: error)
                                 }
                             } else if error.errorCode == NCGlobal.shared.errorResourceNotFound {
@@ -259,7 +259,7 @@ class NCFiles: NCCollectionViewCommon {
     }
 
     func blinkCell(fileName: String?) {
-        if let fileName = fileName, let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", session.account, self.serverUrl, fileName)) {
+        if let fileName = fileName, let metadata = database.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", session.account, self.serverUrl, fileName)) {
             let indexPath = self.dataSource.getIndexPathMetadata(ocId: metadata.ocId)
             if let indexPath = indexPath {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -279,7 +279,7 @@ class NCFiles: NCCollectionViewCommon {
     }
 
     func openFile(fileName: String?) {
-        if let fileName = fileName, let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", session.account, self.serverUrl, fileName)) {
+        if let fileName = fileName, let metadata = database.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", session.account, self.serverUrl, fileName)) {
             let indexPath = self.dataSource.getIndexPathMetadata(ocId: metadata.ocId)
             if let indexPath = indexPath {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -293,7 +293,7 @@ class NCFiles: NCCollectionViewCommon {
 
     override func accountSettingsDidDismiss(tableAccount: tableAccount?, controller: NCMainTabBarController?) {
         let currentAccount = session.account
-        if NCManageDatabase.shared.getAllTableAccount().isEmpty {
+        if database.getAllTableAccount().isEmpty {
             appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
         } else if let account = tableAccount?.account, account != currentAccount {
             NCAccount().changeAccount(account, userProfile: nil, controller: controller) { }

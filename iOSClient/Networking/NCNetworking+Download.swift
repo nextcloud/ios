@@ -193,13 +193,13 @@ extension NCNetworking {
                     NCEndToEndEncryption.shared().decryptFile(metadata.fileName, fileNameView: metadata.fileNameView, ocId: metadata.ocId, key: result.key, initializationVector: result.initializationVector, authenticationTag: result.authenticationTag)
                 }
 #endif
-                NCManageDatabase.shared.addLocalFile(metadata: metadata)
-                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                           session: "",
-                                                           sessionTaskIdentifier: 0,
-                                                           sessionError: "",
-                                                           status: self.global.metadataStatusNormal,
-                                                           etag: etag)
+                self.database.addLocalFile(metadata: metadata)
+                self.database.setMetadataSession(ocId: metadata.ocId,
+                                                 session: "",
+                                                 sessionTaskIdentifier: 0,
+                                                 sessionError: "",
+                                                 status: self.global.metadataStatusNormal,
+                                                 etag: etag)
                 NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterDownloadedFile,
                                                             object: nil,
                                                             userInfo: ["ocId": metadata.ocId,
@@ -212,12 +212,12 @@ extension NCNetworking {
                                                             second: 0.5)
             } else if error.errorCode == NSURLErrorCancelled || error.errorCode == self.global.errorRequestExplicityCancelled {
                 NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
-                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                           session: "",
-                                                           sessionTaskIdentifier: 0,
-                                                           sessionError: "",
-                                                           selector: "",
-                                                           status: self.global.metadataStatusNormal)
+                self.database.setMetadataSession(ocId: metadata.ocId,
+                                                 session: "",
+                                                 sessionTaskIdentifier: 0,
+                                                 sessionError: "",
+                                                 selector: "",
+                                                 status: self.global.metadataStatusNormal)
                 NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterDownloadCancelFile,
                                                             object: nil,
                                                             userInfo: ["ocId": metadata.ocId,

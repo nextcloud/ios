@@ -24,12 +24,12 @@ import UIKit
 import NextcloudKit
 
 class NCNetworkingE2EEDelete: NSObject {
-
+    let database = NCManageDatabase.shared
     let networkingE2EE = NCNetworkingE2EE()
 
     func delete(metadata: tableMetadata) async -> NKError {
         let session = NCSession.shared.getSession(account: metadata.account)
-        guard let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
+        guard let directory = self.database.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
             return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_")
         }
 
@@ -62,10 +62,10 @@ class NCNetworkingE2EEDelete: NSObject {
 
         // UPDATE DB
         //
-        NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@",
-                                                                           metadata.account,
-                                                                           metadata.serverUrl,
-                                                                           metadata.fileName))
+        self.database.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@",
+                                                                 metadata.account,
+                                                                 metadata.serverUrl,
+                                                                 metadata.fileName))
 
         // UPLOAD METADATA
         //

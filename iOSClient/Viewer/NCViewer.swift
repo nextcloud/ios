@@ -28,6 +28,7 @@ import QuickLook
 class NCViewer: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
+    let database = NCManageDatabase.shared
     private var viewerQuickLook: NCViewerQuickLook?
     private var metadata = tableMetadata()
     private var metadatas: [tableMetadata] = []
@@ -81,7 +82,7 @@ class NCViewer: NSObject {
         // DOCUMENTS
         if metadata.classFile == NKCommon.TypeClassFile.document.rawValue {
             // Set Last Opening Date
-            NCManageDatabase.shared.setLastOpeningDate(metadata: metadata)
+            self.database.setLastOpeningDate(metadata: metadata)
             // PDF
             if metadata.isPDF {
                 if let navigationController = viewController.navigationController,

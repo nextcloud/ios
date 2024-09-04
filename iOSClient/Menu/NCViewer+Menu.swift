@@ -26,12 +26,11 @@ import FloatingPanel
 import NextcloudKit
 
 extension NCViewer {
-
     func toggleMenu(controller: NCMainTabBarController?, metadata: tableMetadata, webView: Bool, imageIcon: UIImage?, indexPath: IndexPath = IndexPath()) {
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId),
+        guard let metadata = self.database.getMetadataFromOcId(metadata.ocId),
               let controller else { return }
         var actions = [NCMenuAction]()
-        let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
+        let localFile = self.database.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))
         let isOffline = localFile?.offline == true
 
         //
@@ -102,7 +101,7 @@ extension NCViewer {
         //
         // SAVE LIVE PHOTO
         //
-        if let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata),
+        if let metadataMOV = self.database.getMetadataLivePhoto(metadata: metadata),
            let hudView = controller.view {
             actions.append(
                 NCMenuAction(
@@ -135,10 +134,10 @@ extension NCViewer {
                                                                                    "account": metadata.account],
                                                                         second: 0.5)
                         } else {
-                            guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                                           session: NCNetworking.shared.sessionDownload,
-                                                                                                           selector: NCGlobal.shared.selectorSaveAsScan,
-                                                                                                           sceneIdentifier: controller.sceneIdentifier) else { return }
+                            guard let metadata = self.database.setMetadatasSessionInWaitDownload(metadatas: [metadata],
+                                                                                                 session: NCNetworking.shared.sessionDownload,
+                                                                                                 selector: NCGlobal.shared.selectorSaveAsScan,
+                                                                                                 sceneIdentifier: controller.sceneIdentifier) else { return }
                             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                         }
                     }
@@ -177,10 +176,10 @@ extension NCViewer {
                     title: NSLocalizedString("_try_download_full_resolution_", comment: ""),
                     icon: utility.loadImage(named: "photo", colors: [NCBrandColor.shared.iconImageColor]),
                     action: { _ in
-                        guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                                       session: NCNetworking.shared.sessionDownload,
-                                                                                                       selector: "",
-                                                                                                       sceneIdentifier: controller.sceneIdentifier) else { return }
+                        guard let metadata = self.database.setMetadatasSessionInWaitDownload(metadatas: [metadata],
+                                                                                             session: NCNetworking.shared.sessionDownload,
+                                                                                             selector: "",
+                                                                                             sceneIdentifier: controller.sceneIdentifier) else { return }
                         NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                     }
                 )
@@ -232,10 +231,10 @@ extension NCViewer {
                                                                                    "account": metadata.account],
                                                                         second: 0.5)
                         } else {
-                            guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                                           session: NCNetworking.shared.sessionDownload,
-                                                                                                           selector: NCGlobal.shared.selectorLoadFileQuickLook,
-                                                                                                           sceneIdentifier: controller.sceneIdentifier) else { return }
+                            guard let metadata = self.database.setMetadatasSessionInWaitDownload(metadatas: [metadata],
+                                                                                                 session: NCNetworking.shared.sessionDownload,
+                                                                                                 selector: NCGlobal.shared.selectorLoadFileQuickLook,
+                                                                                                 sceneIdentifier: controller.sceneIdentifier) else { return }
                             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
                         }
                     }

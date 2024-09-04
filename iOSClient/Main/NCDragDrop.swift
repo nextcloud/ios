@@ -27,6 +27,7 @@ import NextcloudKit
 
 class NCDragDrop: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
+    let database = NCManageDatabase.shared
 
     func performDrag(metadata: tableMetadata? = nil, selectOcId: [String]? = nil) -> [UIDragItem] {
         var metadatas: [tableMetadata] = []
@@ -35,7 +36,7 @@ class NCDragDrop: NSObject {
             metadatas.append(metadata)
         } else if let selectOcId {
             for ocId in selectOcId {
-                if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), metadata.status == 0, !metadata.isDirectoryE2EE, !metadata.e2eEncrypted {
+                if let metadata = database.getMetadataFromOcId(ocId), metadata.status == 0, !metadata.isDirectoryE2EE, !metadata.e2eEncrypted {
                     metadatas.append(metadata)
                 }
             }
@@ -65,7 +66,7 @@ class NCDragDrop: NSObject {
                 let semaphore = DispatchSemaphore(value: 0)
                 item.itemProvider.loadDataRepresentation(forTypeIdentifier: NCGlobal.shared.metadataOcIdDataRepresentation) { data, error in
                     if error == nil, let data, let ocId = String(data: data, encoding: .utf8),
-                       let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                       let metadata = self.database.getMetadataFromOcId(ocId) {
                         if !isImageVideo {
                             metadatas.append(metadata)
                         } else if isImageVideo, (metadata.isImageOrVideo) {
@@ -105,14 +106,14 @@ class NCDragDrop: NSObject {
 
                 try data.write(to: URL(fileURLWithPath: fileNamePath))
 
-                let metadataForUpload = await NCManageDatabase.shared.createMetadata(fileName: fileName,
-                                                                                     fileNameView: fileName,
-                                                                                     ocId: ocId,
-                                                                                     serverUrl: serverUrl,
-                                                                                     url: "",
-                                                                                     contentType: "",
-                                                                                     session: session,
-                                                                                     sceneIdentifier: controller?.sceneIdentifier)
+                let metadataForUpload = await database.createMetadata(fileName: fileName,
+                                                                      fileNameView: fileName,
+                                                                      ocId: ocId,
+                                                                      serverUrl: serverUrl,
+                                                                      url: "",
+                                                                      contentType: "",
+                                                                      session: session,
+                                                                      sceneIdentifier: controller?.sceneIdentifier)
 
                 metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
                 metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
@@ -120,7 +121,7 @@ class NCDragDrop: NSObject {
                 metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
                 metadataForUpload.sessionDate = Date()
 
-                NCManageDatabase.shared.addMetadata(metadataForUpload)
+                database.addMetadata(metadataForUpload)
             }
         } catch {
             NCContentPresenter().showError(error: NKError(error: error))

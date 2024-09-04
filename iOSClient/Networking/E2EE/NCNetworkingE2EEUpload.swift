@@ -39,6 +39,7 @@ class NCNetworkingE2EEUpload: NSObject {
     let networkingE2EE = NCNetworkingE2EE()
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
+    let database = NCManageDatabase.shared
     var numChunks: Int = 0
 
     func upload(metadata: tableMetadata, uploadE2EEDelegate: uploadE2EEDelegate?, controller: UIViewController?) async -> NKError {
@@ -46,15 +47,15 @@ class NCNetworkingE2EEUpload: NSObject {
         let session = NCSession.shared.getSession(account: metadata.account)
         let hud = await NCHud(controller?.view)
 
-        if let result = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "serverUrl == %@ AND fileNameView == %@ AND ocId != %@", metadata.serverUrl, metadata.fileNameView, metadata.ocId)) {
+        if let result = self.database.getMetadata(predicate: NSPredicate(format: "serverUrl == %@ AND fileNameView == %@ AND ocId != %@", metadata.serverUrl, metadata.fileNameView, metadata.ocId)) {
             metadata.fileName = result.fileName
         } else {
             metadata.fileName = networkingE2EE.generateRandomIdentifier()
         }
         metadata.session = NCNetworking.shared.sessionUpload
         metadata.sessionError = ""
-        guard let result = NCManageDatabase.shared.addMetadata(metadata),
-              let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
+        guard let result = self.database.addMetadata(metadata),
+              let directory = self.database.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
             return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
         }
         metadata = result
@@ -83,9 +84,9 @@ class NCNetworkingE2EEUpload: NSObject {
 
             // CREATE E2E METADATA
             //
-            NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, metadata.fileNameView))
+            self.database.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, metadata.fileNameView))
             let object = tableE2eEncryption.init(account: metadata.account, ocIdServerUrl: directory.ocId, fileNameIdentifier: metadata.fileName)
-            if let results = NCManageDatabase.shared.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
+            if let results = self.database.getE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
                 object.metadataKey = results.metadataKey
                 object.metadataKeyIndex = results.metadataKeyIndex
             } else {
@@ -101,7 +102,7 @@ class NCNetworkingE2EEUpload: NSObject {
             object.initializationVector = initializationVector
             object.mimeType = metadata.contentType
             object.serverUrl = metadata.serverUrl
-            NCManageDatabase.shared.addE2eEncryption(object)
+            self.database.addE2eEncryption(object)
 
             // UPLOAD METADATA
             //
@@ -119,7 +120,7 @@ class NCNetworkingE2EEUpload: NSObject {
         //
         let resultsLock = await networkingE2EE.lock(account: metadata.account, serverUrl: metadata.serverUrl)
         guard let e2eToken = resultsLock.e2eToken, let fileId = resultsLock.fileId, resultsLock.error == .success else {
-            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocIdTransfer == %@", metadata.ocIdTransfer))
+            self.database.deleteMetadata(predicate: NSPredicate(format: "ocIdTransfer == %@", metadata.ocIdTransfer))
             NotificationCenter.default.postOnMainThread(
                 name: NCGlobal.shared.notificationCenterUploadedFile,
                 object: nil,
@@ -143,7 +144,7 @@ class NCNetworkingE2EEUpload: NSObject {
         let sendE2eeError = await sendE2ee(e2eToken: e2eToken, fileId: fileId)
         guard sendE2eeError == .success else {
             hud.dismiss()
-            NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocIdTransfer == %@", metadata.ocIdTransfer))
+            self.database.deleteMetadata(predicate: NSPredicate(format: "ocIdTransfer == %@", metadata.ocIdTransfer))
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile,
                                                         object: nil,
                                                         userInfo: ["ocId": metadata.ocId,
@@ -176,7 +177,7 @@ class NCNetworkingE2EEUpload: NSObject {
         if let afError = resultsSendFile.afError, afError.isExplicitlyCancelledError {
 
             utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-            NCManageDatabase.shared.deleteMetadataOcId(metadata.ocId)
+            self.database.deleteMetadataOcId(metadata.ocId)
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile,
                                                         object: nil,
                                                         userInfo: ["ocId": metadata.ocId,
@@ -190,7 +191,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
         } else if resultsSendFile.error == .success, let ocId = resultsSendFile.ocId {
 
-            NCManageDatabase.shared.deleteMetadataOcId(metadata.ocId)
+            self.database.deleteMetadataOcId(metadata.ocId)
             utilityFileSystem.moveFileInBackground(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId), toPath: utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
 
             metadata.date = (resultsSendFile.date as? NSDate) ?? NSDate()
@@ -203,8 +204,8 @@ class NCNetworkingE2EEUpload: NSObject {
             metadata.sessionError = ""
             metadata.status = NCGlobal.shared.metadataStatusNormal
 
-            NCManageDatabase.shared.addMetadata(metadata)
-            NCManageDatabase.shared.addLocalFile(metadata: metadata)
+            self.database.addMetadata(metadata)
+            self.database.addLocalFile(metadata: metadata)
             utility.createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile,
                                                         object: nil,
@@ -217,11 +218,11 @@ class NCNetworkingE2EEUpload: NSObject {
                                                                    "error": resultsSendFile.error],
                                                         second: 0.5)
         } else {
-            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                       sessionTaskIdentifier: 0,
-                                                       sessionError: resultsSendFile.error.errorDescription,
-                                                       status: NCGlobal.shared.metadataStatusUploadError,
-                                                       errorCode: resultsSendFile.error.errorCode)
+            self.database.setMetadataSession(ocId: metadata.ocId,
+                                             sessionTaskIdentifier: 0,
+                                             sessionError: resultsSendFile.error.errorDescription,
+                                             status: NCGlobal.shared.metadataStatusUploadError,
+                                             errorCode: resultsSendFile.error.errorCode)
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile,
                                                         object: nil,
                                                         userInfo: ["ocId": metadata.ocId,
