@@ -57,7 +57,6 @@ extension NCNetworking {
                             tapToCancelDetailText: true,
                             tapOperation: tapOperation)
 
-
             uploadChunkFile(metadata: metadata) { num in
                 numChunks = num
             } counterChunk: { counter in

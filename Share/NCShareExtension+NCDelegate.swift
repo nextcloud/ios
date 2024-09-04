@@ -86,17 +86,8 @@ extension NCShareExtension: NCAccountRequestDelegate {
 
         serverUrl = utilityFileSystem.getHomeServer(session: session)
 
-        layoutForView = NCManageDatabase.shared.getLayoutForView(account: tableAccount.account, key: keyLayout, serverUrl: serverUrl)
-
         reloadDatasource(withLoadFolder: true)
         setNavigationBar(navigationTitle: NCBrandOptions.shared.brand)
-
-//        FileNameValidator.shared.setup(
-//            forbiddenFileNames: NCGlobal.shared.capabilityForbiddenFileNames,
-//            forbiddenFileNameBasenames: NCGlobal.shared.capabilityForbiddenFileNameBasenames,
-//            forbiddenFileNameCharacters: NCGlobal.shared.capabilityForbiddenFileNameCharacters,
-//            forbiddenFileNameExtensions: NCGlobal.shared.capabilityForbiddenFileNameExtensions
-//        )
     }
 }
 

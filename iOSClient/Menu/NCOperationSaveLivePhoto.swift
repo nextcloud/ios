@@ -74,6 +74,7 @@ class NCOperationSaveLivePhoto: ConcurrentOperation {
         let fileNameImage = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
         let fileNameMov = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataMov.ocId, fileNameView: metadataMov.fileNameView))
 
+        self.hud?.progress(0)
         self.hud?.setText(text: NSLocalizedString("_livephoto_save_", comment: ""))
 
         NCLivePhoto.generate(from: fileNameImage, videoURL: fileNameMov, progress: { progress in
