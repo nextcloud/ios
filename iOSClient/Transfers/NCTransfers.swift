@@ -152,8 +152,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     override func longPressCollecationView(_ gestureRecognizer: UILongPressGestureRecognizer) { }
 
     @objc func startTask(_ notification: Any) {
-        guard let metadata = metadataTemp,
-              let hudView = self.tabBarController?.view else { return }
+        guard let metadata = metadataTemp else { return }
         let cameraRoll = NCCameraRoll()
 
         cameraRoll.extractCameraRoll(from: metadata) { metadatas in
