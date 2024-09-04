@@ -838,14 +838,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         let image = utility.loadUserImage(for: appDelegate.user, displayName: activeAccount?.displayName, userBaseUrl: appDelegate)
         let accountButton = AccountSwitcherButton(type: .custom)
         let accounts = NCManageDatabase.shared.getAllAccountOrderAlias()
-        var childrenAccountSubmenu: [UIMenuElement] = []
         
         accountButton.setImage(image, for: .normal)
         accountButton.setImage(image, for: .highlighted)
         accountButton.semanticContentAttribute = .forceLeftToRight
         accountButton.sizeToFit()
         accountButton.action(for: .touchUpInside, { _ in
-           let accountSettingsModel = NCAccountSettingsModel(controller: self.tabBarController as? NCMainTabBarController, delegate: self)
+           let accountSettingsModel = NCAccountSettingsModel(delegate: self)
            let accountSettingsView = NCAccountSettingsView(model: accountSettingsModel)
            let accountSettingsController = UIHostingController(rootView: accountSettingsView)
            self.present(accountSettingsController, animated: true, completion: nil)

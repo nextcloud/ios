@@ -41,10 +41,10 @@ struct NCAccountSettingsView: View {
             Form {
                 userAccountsSection
                 changeAliasSection
-                if true {
+                if NCGlobal.shared.capabilityUserStatusEnabled {
                     userStatusButtonView
                 }
-                if true {
+                if model.isAdminGroup() {
                     sertificateDetailsButtonView
                     sertificatePNButtonView
                 }
