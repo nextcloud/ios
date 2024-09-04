@@ -44,12 +44,13 @@ class NCHud: NSObject {
 
             self.hud.textLabel.text = textLabel
             self.hud.textLabel.textColor = NCBrandColor.shared.iconImageColor
-            self.hud.detailTextLabel.text = detailTextLabel
-            self.hud.detailTextLabel.textColor = NCBrandColor.shared.iconImageColor2
 
             if tapToCancelText {
                 self.hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
+            } else {
+                self.hud.detailTextLabel.text = detailTextLabel
             }
+            self.hud.detailTextLabel.textColor = NCBrandColor.shared.iconImageColor2
 
             self.hud.show(in: self.view)
         }
@@ -84,7 +85,8 @@ class NCHud: NSObject {
             self.hud.indicatorView = JGProgressHUDSuccessIndicatorView()
             self.hud.indicatorView?.tintColor = .green
             self.hud.textLabel.text = NSLocalizedString("_success_", comment: "")
-            self.hud.dismiss(afterDelay: 2.0)
+            self.hud.detailTextLabel.text = nil
+            self.hud.dismiss(afterDelay: 1.0)
         }
     }
 

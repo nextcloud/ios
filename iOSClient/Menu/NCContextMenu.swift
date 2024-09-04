@@ -28,7 +28,6 @@ import NextcloudKit
 import JGProgressHUD
 
 class NCContextMenu: NSObject {
-
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
 
@@ -38,23 +37,15 @@ class NCContextMenu: NSObject {
         var downloadRequest: DownloadRequest?
         var titleDeleteConfirmFile = NSLocalizedString("_delete_file_", comment: "")
         let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
+        let ncHud = NCHud(view: viewController.view, account: metadata.account)
 
-        if metadata.directory { titleDeleteConfirmFile = NSLocalizedString("_delete_folder_", comment: "") }
-
-        let hud = JGProgressHUD()
-        hud.indicatorView = JGProgressHUDRingIndicatorView()
-        hud.textLabel.text = NSLocalizedString("_downloading_", comment: "")
-        hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
-        hud.detailTextLabel.textColor = NCBrandColor.shared.iconImageColor2
-        if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
-            indicatorView.ringWidth = 1.5
-            indicatorView.ringColor = NCBrandColor.shared.getElement(account: metadata.account)
-        }
-        hud.tapOnHUDViewBlock = { _ in
+        func tapOperation() {
             if let request = downloadRequest {
                 request.cancel()
             }
         }
+
+        if metadata.directory { titleDeleteConfirmFile = NSLocalizedString("_delete_folder_", comment: "") }
 
         // MENU ITEMS
 
@@ -91,21 +82,21 @@ class NCContextMenu: NSObject {
                                                                                                session: NCNetworking.shared.sessionDownload,
                                                                                                selector: NCGlobal.shared.selectorOpenIn,
                                                                                                sceneIdentifier: sceneIdentifier) else { return }
-                hud.show(in: viewController.view)
+
+                ncHud.initIndicatorView(textLabel: NSLocalizedString("_downloading_", comment: ""),
+                                        tapToCancelText: true,
+                                        tapOperation: tapOperation)
+
                 NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
                 } requestHandler: { request in
                     downloadRequest = request
                 } progressHandler: { progress in
-                    hud.progress = Float(progress.fractionCompleted)
+                    ncHud.progress(progress.fractionCompleted)
                 } completion: { afError, error in
-                    DispatchQueue.main.async {
-                        if error == .success || afError?.isExplicitlyCancelledError ?? false {
-                            hud.dismiss()
-                        } else {
-                            hud.indicatorView = JGProgressHUDErrorIndicatorView()
-                            hud.textLabel.text = error.description
-                            hud.dismiss(afterDelay: NCGlobal.shared.dismissAfterSecond)
-                        }
+                    if error == .success || afError?.isExplicitlyCancelledError ?? false {
+                        ncHud.success()
+                    } else {
+                        ncHud.error(textLabel: error.description)
                     }
                 }
             }
@@ -139,21 +130,21 @@ class NCContextMenu: NSObject {
                                                                                                session: NCNetworking.shared.sessionDownload,
                                                                                                selector: NCGlobal.shared.selectorLoadFileQuickLook,
                                                                                                sceneIdentifier: sceneIdentifier) else { return }
-                hud.show(in: viewController.view)
+
+                ncHud.initIndicatorView(textLabel: NSLocalizedString("_downloading_", comment: ""),
+                                        tapToCancelText: true,
+                                        tapOperation: tapOperation)
+
                 NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
                 } requestHandler: { request in
                     downloadRequest = request
                 } progressHandler: { progress in
-                    hud.progress = Float(progress.fractionCompleted)
+                    ncHud.progress(progress.fractionCompleted)
                 } completion: { afError, error in
-                    DispatchQueue.main.async {
-                        if error == .success || afError?.isExplicitlyCancelledError ?? false {
-                            hud.dismiss()
-                        } else {
-                            hud.indicatorView = JGProgressHUDErrorIndicatorView()
-                            hud.textLabel.text = error.description
-                            hud.dismiss(afterDelay: NCGlobal.shared.dismissAfterSecond)
-                        }
+                    if error == .success || afError?.isExplicitlyCancelledError ?? false {
+                        ncHud.success()
+                    } else {
+                        ncHud.error(textLabel: error.description)
                     }
                 }
             }
