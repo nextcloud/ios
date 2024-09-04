@@ -108,20 +108,17 @@ class NCFiles: NCCollectionViewCommon {
         super.queryDB()
         self.dataSource.removeAll()
 
-        var metadatas: [tableMetadata] = []
+        var predicate = self.defaultPredicate
         let predicateDirectory = NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, self.serverUrl)
-        let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND (ownerId == %@ || ownerId == '') AND mountType == '' AND NOT (status IN %@)", session.account, self.serverUrl, session.userId, global.metadataStatusFileUp)
 
-        if NCKeychain().getPersonalFilesOnly(account: session.account),
-           let results = self.database.getResultsMetadatas(predicate: predicate) {
-            metadatas = Array(results)
-        } else {
-            metadatas = self.database.getResultsMetadatasAccount(session.account, serverUrl: self.serverUrl, layoutForView: layoutForView)
+        if NCKeychain().getPersonalFilesOnly(account: session.account) {
+            predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND (ownerId == %@ || ownerId == '') AND mountType == '' AND NOT (status IN %@)", session.account, self.serverUrl, session.userId, global.metadataStatusFileUp)
         }
 
         self.metadataFolder = NCManageDatabase.shared.getMetadataFolder(session: session, serverUrl: self.serverUrl)
         self.richWorkspaceText = NCManageDatabase.shared.getTableDirectory(predicate: predicateDirectory)?.richWorkspace
 
+        let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: layoutForView)
         self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: layoutForView)
     }
 

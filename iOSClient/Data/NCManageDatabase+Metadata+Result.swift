@@ -182,9 +182,7 @@ extension NCManageDatabase {
         }
     }
 
-    func getResultsMetadatasAccount(_ account: String, serverUrl: String, layoutForView: NCDBLayoutForView?) -> [tableMetadata] {
-        let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND NOT (status IN %@) AND NOT (livePhotoFile != '' AND classFile == %@)", account, serverUrl, NCGlobal.shared.metadataStatusFileUp, NKCommon.TypeClassFile.video.rawValue)
-
+    func getResultsMetadatasPredicate(_ predicate: NSPredicate, layoutForView: NCDBLayoutForView?) -> [tableMetadata] {
         do {
             let realm = try Realm()
             var results = realm.objects(tableMetadata.self).filter(predicate)

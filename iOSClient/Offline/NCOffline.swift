@@ -69,7 +69,7 @@ class NCOffline: NCCollectionViewCommon {
                 metadatas = Array(results)
             }
         } else {
-            metadatas = NCManageDatabase.shared.getResultsMetadatasAccount(session.account, serverUrl: self.serverUrl, layoutForView: layoutForView)
+            metadatas = self.database.getResultsMetadatasPredicate(self.defaultPredicate, layoutForView: layoutForView)
         }
 
         self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: layoutForView)

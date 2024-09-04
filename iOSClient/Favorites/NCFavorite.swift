@@ -54,16 +54,13 @@ class NCFavorite: NCCollectionViewCommon {
 
     override func queryDB() {
         super.queryDB()
-        var metadatas: [tableMetadata] = []
-        self.dataSource.removeAll()
+        var predicate = self.defaultPredicate
 
-        if self.serverUrl.isEmpty,
-           let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND favorite == true", session.account)) {
-            metadatas = Array(results)
-        } else {
-            metadatas = NCManageDatabase.shared.getResultsMetadatasAccount(session.account, serverUrl: self.serverUrl, layoutForView: layoutForView)
+        if self.serverUrl.isEmpty {
+           predicate = NSPredicate(format: "account == %@ AND favorite == true", session.account)
         }
 
+        let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: layoutForView)
         self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: layoutForView)
     }
 

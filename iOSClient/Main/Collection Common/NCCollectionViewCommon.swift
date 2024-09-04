@@ -112,8 +112,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         let size = CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
         return size
     }
+
     var controller: NCMainTabBarController? {
         self.tabBarController as? NCMainTabBarController
+    }
+
+    var defaultPredicate: NSPredicate {
+        let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND NOT (status IN %@) AND NOT (livePhotoFile != '' AND classFile == %@)", session.account, self.serverUrl, NCGlobal.shared.metadataStatusFileUp, NKCommon.TypeClassFile.video.rawValue)
+        return predicate
     }
 
     // MARK: - View Life Cycle
