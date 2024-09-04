@@ -23,7 +23,7 @@
 
 import SwiftUI
 
-struct HUDView: View {
+struct NCHUDView: View {
     @Binding var showHUD: Bool
     @State var textLabel: String
     @State var image: String
@@ -83,7 +83,7 @@ struct ContentView: View {
                     }
                     .navigationTitle("Content View")
                 }
-                HUDView(showHUD: $showHUD, textLabel: NSLocalizedString("_wait_", comment: ""), image: "doc.badge.arrow.up", color: color)
+                NCHUDView(showHUD: $showHUD, textLabel: NSLocalizedString("_wait_", comment: ""), image: "doc.badge.arrow.up", color: color)
                     .offset(y: showHUD ? (geo.size.height / 2) : -200)
                     .animation(.easeOut, value: showHUD)
             }

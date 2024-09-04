@@ -190,7 +190,7 @@ struct NCUploadAssetsView: View {
                         .font(Font.system(.body).weight(.light))
                         .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
                 })
-                HUDView(showHUD: $model.showHUD, textLabel: NSLocalizedString("_wait_", comment: ""), image: "doc.badge.arrow.up", color: NCBrandColor.shared.getElement(account: model.session.account))
+                NCHUDView(showHUD: $model.showHUD, textLabel: NSLocalizedString("_wait_", comment: ""), image: "doc.badge.arrow.up", color: NCBrandColor.shared.getElement(account: model.session.account))
                     .offset(y: model.showHUD ? 5 : -200)
                     .animation(.easeOut, value: model.showHUD)
             }

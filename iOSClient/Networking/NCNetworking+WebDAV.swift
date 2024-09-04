@@ -343,8 +343,12 @@ extension NCNetworking {
 
     // MARK: - Delete
 
+    func tapHudDeleteMetadata() {
+        tapHudStopDelete = true
+    }
+
     func deleteMetadata(_ metadata: tableMetadata, onlyLocalCache: Bool, sceneIdentifier: String?) async -> (NKError) {
-        let hud = await JGProgressHUD()
+        let ncHud = NCHud(account: metadata.account)
         var num: Float = 0
 
         func numIncrement() -> Float {
@@ -362,6 +366,8 @@ extension NCNetworking {
             utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
         }
 
+        self.tapHudStopDelete = false
+
         if metadata.status == global.metadataStatusWaitCreateFolder {
             let metadatas = database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND status IN %@", metadata.account, metadata.serverUrl, global.metadataStatusAllUp))
             for metadata in metadatas {
@@ -373,12 +379,7 @@ extension NCNetworking {
 #if !EXTENSION
             if let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier) {
                 await MainActor.run {
-                    hud.indicatorView = JGProgressHUDRingIndicatorView()
-                    if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
-                        indicatorView.ringWidth = 1.5
-                        indicatorView.ringColor = NCBrandColor.shared.getElement(account: metadata.account)
-                        hud.show(in: controller.view)
-                    }
+                    ncHud.initIndicatorView(view: controller.view, tapOperation: tapHudDeleteMetadata)
                 }
             }
 #endif
@@ -390,13 +391,14 @@ extension NCNetworking {
                 for metadata in metadatas {
                     deleteLocalFile(metadata: metadata)
                     let num = numIncrement()
-                    await MainActor.run { hud.progress = num / numMetadatas }
+                    await MainActor.run { ncHud.hud.progress = num / numMetadatas }
+                    if tapHudStopDelete { break }
                 }
             } else {
                 deleteLocalFile(metadata: metadata)
             }
 #if !EXTENSION
-            await MainActor.run { hud.dismiss() }
+            await MainActor.run { ncHud.hud.dismiss() }
 #endif
             return .success
         }
