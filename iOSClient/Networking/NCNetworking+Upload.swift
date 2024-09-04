@@ -22,59 +22,51 @@
 //
 
 import UIKit
-import JGProgressHUD
 import NextcloudKit
 import Alamofire
 
 extension NCNetworking {
     func upload(metadata: tableMetadata,
                 uploadE2EEDelegate: uploadE2EEDelegate? = nil,
-                hudView: UIView?,
-                hud: JGProgressHUD?,
+                controller: UIViewController? = nil,
                 start: @escaping () -> Void = { },
                 requestHandler: @escaping (_ request: UploadRequest) -> Void = { _ in },
                 progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> Void = { _, _, _ in },
                 completion: @escaping (_ afError: AFError?, _ error: NKError) -> Void = { _, _ in }) {
         let metadata = tableMetadata.init(value: metadata)
         var numChunks: Int = 0
+        let hud = NCHud()
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload file \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier) with size \(metadata.size) [CHUNK \(metadata.chunk), E2EE \(metadata.isDirectoryE2EE)]")
         let transfer = NCTransferProgress.Transfer(ocId: metadata.ocId, ocIdTransfer: metadata.ocIdTransfer, session: metadata.session, chunk: metadata.chunk, e2eEncrypted: metadata.e2eEncrypted, progressNumber: 0, totalBytes: 0, totalBytesExpected: 0)
         NCTransferProgress.shared.append(transfer)
 
+        func tapOperation() {
+            NotificationCenter.default.postOnMainThread(name: NextcloudKit.shared.nkCommonInstance.notificationCenterChunkedFileStop.rawValue)
+        }
+
         if metadata.isDirectoryE2EE {
 #if !EXTENSION_FILE_PROVIDER_EXTENSION && !EXTENSION_WIDGET
             Task {
-                let error = await NCNetworkingE2EEUpload().upload(metadata: metadata, uploadE2EEDelegate: uploadE2EEDelegate, hudView: hudView, hud: hud)
+                let error = await NCNetworkingE2EEUpload().upload(metadata: metadata, uploadE2EEDelegate: uploadE2EEDelegate, controller: controller)
                 completion(nil, error)
             }
 #endif
         } else if metadata.chunk > 0 {
-                if let hudView {
-                    DispatchQueue.main.async {
-                        if let hud {
-                            hud.indicatorView = JGProgressHUDRingIndicatorView()
-                            if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
-                                indicatorView.ringWidth = 1.5
-                                indicatorView.ringColor = NCBrandColor.shared.getElement(account: metadata.account)
-                            }
-                            hud.tapOnHUDViewBlock = { _ in
-                                NotificationCenter.default.postOnMainThread(name: NextcloudKit.shared.nkCommonInstance.notificationCenterChunkedFileStop.rawValue)
-                            }
-                            hud.textLabel.text = NSLocalizedString("_wait_file_preparation_", comment: "")
-                            hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
-                            hud.detailTextLabel.textColor = NCBrandColor.shared.iconImageColor2
-                            hud.show(in: hudView)
-                        }
-                    }
-                }
+            if let controller {
+                hud.initHudRing(view: controller.view,
+                                text: NSLocalizedString("_wait_file_preparation_", comment: ""),
+                                tapToCancelDetailText: true,
+                                tapOperation: tapOperation)
+            }
+
             uploadChunkFile(metadata: metadata) { num in
                 numChunks = num
             } counterChunk: { counter in
-                DispatchQueue.main.async { hud?.progress = Float(counter) / Float(numChunks) }
+                hud.progress(num: Float(counter), total: Float(numChunks))
             } start: {
-                DispatchQueue.main.async { hud?.dismiss() }
+                hud.dismiss()
             } completion: { account, _, afError, error in
-                DispatchQueue.main.async { hud?.dismiss() }
+                hud.dismiss()
                 var sessionTaskFailedCode = 0
                 let directory = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId)
                 if let error = NextcloudKit.shared.nkCommonInstance.getSessionErrorFromAFError(afError) {
@@ -98,11 +90,15 @@ extension NCNetworking {
             }
         } else if metadata.session == sessionUpload {
             let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
-            uploadFile(metadata: metadata, fileNameLocalPath: fileNameLocalPath, start: start, progressHandler: progressHandler) { _, _, _, _, _, _, afError, error in
+            uploadFile(metadata: metadata,
+                       fileNameLocalPath: fileNameLocalPath,
+                       controller: controller,
+                       start: start,
+                       progressHandler: progressHandler) { _, _, _, _, _, _, afError, error in
                 completion(afError, error)
             }
         } else {
-            uploadFileInBackground(metadata: metadata, start: start) { error in
+            uploadFileInBackground(metadata: metadata, controller: controller, start: start) { error in
                 completion(nil, error)
             }
         }
@@ -112,6 +108,7 @@ extension NCNetworking {
                     fileNameLocalPath: String,
                     withUploadComplete: Bool = true,
                     customHeaders: [String: String]? = nil,
+                    controller: UIViewController?,
                     start: @escaping () -> Void = { },
                     requestHandler: @escaping (_ request: UploadRequest) -> Void = { _ in },
                     progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> Void = { _, _, _ in },
@@ -243,6 +240,7 @@ extension NCNetworking {
     }
 
     private func uploadFileInBackground(metadata: tableMetadata,
+                                        controller: UIViewController?,
                                         start: @escaping () -> Void = { },
                                         completion: @escaping (_ error: NKError) -> Void) {
         let metadata = tableMetadata.init(value: metadata)

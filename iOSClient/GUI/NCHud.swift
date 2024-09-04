@@ -12,18 +12,34 @@ import JGProgressHUD
 
 class NCHud: NSObject {
     private let hud = JGProgressHUD()
-    private var account: String
     private var view = UIView()
 
-    public init(view: UIView? = nil, account: String) {
+    public init(_ view: UIView? = nil) {
         if let view {
             self.view = view
         }
-        self.account = account
         super.init()
     }
 
-    func initIndicatorView(view: UIView? = nil, textLabel: String? = nil, detailTextLabel: String? = nil, tapToCancelText: Bool, tapOperation: (() -> Void)?) {
+    func initHud(view: UIView? = nil, text: String? = nil, detailText: String? = nil) {
+        DispatchQueue.main.async {
+            if let view {
+                self.view = view
+            }
+
+            self.hud.indicatorView = JGProgressHUDIndicatorView()
+
+            self.hud.textLabel.text = text
+            self.hud.textLabel.textColor = NCBrandColor.shared.iconImageColor
+
+            self.hud.detailTextLabel.text = detailText
+            self.hud.detailTextLabel.textColor = NCBrandColor.shared.iconImageColor2
+
+            self.hud.show(in: self.view)
+        }
+    }
+
+    func initHudRing(view: UIView? = nil, text: String? = nil, detailText: String? = nil, tapToCancelDetailText: Bool = false, tapOperation: (() -> Void)? = nil) {
         DispatchQueue.main.async {
             self.hud.tapOnHUDViewBlock = { hud in
                 if let tapOperation {
@@ -37,18 +53,19 @@ class NCHud: NSObject {
             }
 
             self.hud.indicatorView = JGProgressHUDRingIndicatorView()
+            self.hud.progress = 0.0
 
             let indicatorView = self.hud.indicatorView as? JGProgressHUDRingIndicatorView
             indicatorView?.ringWidth = 1.5
-            indicatorView?.ringColor = NCBrandColor.shared.getElement(account: self.account)
+            indicatorView?.ringColor = NCBrandColor.shared.iconImageColor
 
-            self.hud.textLabel.text = textLabel
+            self.hud.textLabel.text = text
             self.hud.textLabel.textColor = NCBrandColor.shared.iconImageColor
 
-            if tapToCancelText {
+            if tapToCancelDetailText {
                 self.hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
             } else {
-                self.hud.detailTextLabel.text = detailTextLabel
+                self.hud.detailTextLabel.text = detailText
             }
             self.hud.detailTextLabel.textColor = NCBrandColor.shared.iconImageColor2
 
@@ -90,19 +107,19 @@ class NCHud: NSObject {
         }
     }
 
-    func error(textLabel: String?) {
+    func error(text: String?) {
         DispatchQueue.main.async {
             self.hud.indicatorView = JGProgressHUDErrorIndicatorView()
             self.hud.indicatorView?.tintColor = .red
-            self.hud.textLabel.text = textLabel
+            self.hud.textLabel.text = text
             self.hud.dismiss(afterDelay: 2.0)
         }
     }
 
-    func setText(textLabel: String?, detailTextLabel: String? = nil) {
+    func setText(text: String?, detailText: String? = nil) {
         DispatchQueue.main.async {
-            self.hud.textLabel.text = textLabel
-            self.hud.detailTextLabel.text = detailTextLabel
+            self.hud.textLabel.text = text
+            self.hud.detailTextLabel.text = detailText
         }
     }
 }

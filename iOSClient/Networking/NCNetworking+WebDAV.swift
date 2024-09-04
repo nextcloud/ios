@@ -22,7 +22,6 @@
 //
 
 import UIKit
-import JGProgressHUD
 import NextcloudKit
 import Alamofire
 import Queuer
@@ -277,7 +276,7 @@ extension NCNetworking {
                       useSubFolder: Bool,
                       withPush: Bool,
                       sceneIdentifier: String? = nil,
-                      hud: JGProgressHUD? = nil,
+                      hud: NCHud? = nil,
                       session: NCSession.Session) -> Bool {
         let autoUploadPath = self.database.getAccountAutoUploadPath(session: session)
         let serverUrlBase = self.database.getAccountAutoUploadDirectory(session: session)
@@ -329,12 +328,8 @@ extension NCNetworking {
                     }
                 }
                 if !result { break }
-                if let hud {
-                    num += 1
-                    DispatchQueue.main.async {
-                        hud.progress = num / Float(folders.count)
-                    }
-                }
+                num += 1
+                hud?.progress(num: num, total: Float(folders.count))
             }
         }
 
@@ -348,7 +343,7 @@ extension NCNetworking {
     }
 
     func deleteMetadata(_ metadata: tableMetadata, onlyLocalCache: Bool, sceneIdentifier: String?) async -> (NKError) {
-        let ncHud = NCHud(account: metadata.account)
+        let ncHud = NCHud()
         var num: Float = 0
 
         func numIncrement() -> Float {
@@ -379,7 +374,7 @@ extension NCNetworking {
                 #if !EXTENSION
                 if let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier) {
                     await MainActor.run {
-                        ncHud.initIndicatorView(view: controller.view, tapToCancelText: true, tapOperation: tapHudDeleteMetadata)
+                        ncHud.initHudRing(view: controller.view, tapToCancelDetailText: true, tapOperation: tapHudDeleteMetadata)
                     }
                 }
                 #endif

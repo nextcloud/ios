@@ -210,28 +210,24 @@ class NCNetworkingProcess {
                     if !isWiFi && metadata.session == NCNetworking.shared.sessionUploadBackgroundWWan { continue }
                     if applicationState != .active && (isInDirectoryE2EE || metadata.chunk > 0) { continue }
                     if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: global.metadataStatusUploading) {
-                        var hudView: UIView?
-
+                        /// find controller
+                        var controller: NCMainTabBarController?
                         if let sceneIdentifier = metadata.sceneIdentifier, !sceneIdentifier.isEmpty {
-                            let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier)
-                            hudView = await controller?.view
-                        }
-
-                        if hudView == nil {
-                            let controllers = SceneManager.shared.getControllers()
-                            for controller in controllers {
-                                if await controller.account == metadata.account {
-                                    hudView = await controller.view
+                            controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier)
+                        } else {
+                            for ctlr in SceneManager.shared.getControllers() {
+                                let account = await ctlr.account
+                                if account == metadata.account {
+                                    controller = ctlr
                                 }
+                            }
+
+                            if controller == nil {
+                                controller = await UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
                             }
                         }
 
-                        if hudView == nil {
-                            let controller = await UIApplication.shared.firstWindow?.rootViewController
-                            hudView = await controller?.view
-                        }
-
-                        NCNetworking.shared.upload(metadata: metadata, hudView: hudView, hud: self.hud)
+                        NCNetworking.shared.upload(metadata: metadata, controller: controller)
                         if isInDirectoryE2EE || metadata.chunk > 0 {
                             maxConcurrentOperationUpload = 1
                         }

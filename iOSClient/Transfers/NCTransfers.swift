@@ -161,7 +161,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             for metadata in metadatas {
                 if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusUploading) {
                     NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
-                    NCNetworking.shared.upload(metadata: metadata, hudView: hudView, hud: JGProgressHUD())
+                    NCNetworking.shared.upload(metadata: metadata)
                 }
             }
         }

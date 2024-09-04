@@ -25,14 +25,13 @@ import UIKit
 import CoreLocation
 import NextcloudKit
 import Photos
-import JGProgressHUD
 
 class NCAutoUpload: NSObject {
     static let shared = NCAutoUpload()
 
     private var endForAssetToUpload: Bool = false
     private var applicationState = UIApplication.shared.applicationState
-    private let hud = JGProgressHUD()
+    private let hud = NCHud()
 
     // MARK: -
 
@@ -67,21 +66,13 @@ class NCAutoUpload: NSObject {
 
     func autoUploadFullPhotos(controller: NCMainTabBarController?, log: String, account: String) {
         applicationState = UIApplication.shared.applicationState
-        hud.indicatorView = JGProgressHUDRingIndicatorView()
-        hud.detailTextLabel.textColor = NCBrandColor.shared.iconImageColor2
-        if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
-            indicatorView.ringWidth = 1.5
-            indicatorView.ringColor = NCBrandColor.shared.getElement(account: account)
-        }
-        if let controller {
-            hud.show(in: controller.view)
-        }
+        hud.initHudRing(view: controller?.view, text: nil, detailText: nil, tapToCancelDetailText: false)
 
         NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { hasPermission in
             guard hasPermission else { return }
             DispatchQueue.global(qos: .userInteractive).async {
                 self.uploadAssetsNewAndFull(controller: controller, selector: NCGlobal.shared.selectorUploadAutoUploadAll, log: log, account: account) { _ in
-                    DispatchQueue.main.async { self.hud.dismiss() }
+                    self.hud.dismiss()
                 }
             }
         }
@@ -104,7 +95,7 @@ class NCAutoUpload: NSObject {
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Automatic upload, new \(assets.count) assets found [" + log + "]")
             // Create the folder for auto upload & if request the subfolders
-            DispatchQueue.main.async { self.hud.textLabel.text = NSLocalizedString("_creating_dir_progress_", comment: "") }
+            self.hud.setText(text: NSLocalizedString("_creating_dir_progress_", comment: ""))
             if !NCNetworking.shared.createFolder(assets: assets, useSubFolder: tableAccount.autoUploadCreateSubfolder, withPush: false, hud: self.hud, session: session) {
                 if selector == NCGlobal.shared.selectorUploadAutoUploadAll {
                     let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_error_createsubfolders_upload_")
@@ -113,10 +104,8 @@ class NCAutoUpload: NSObject {
                 return completion(0)
             }
 
-            DispatchQueue.main.async {
-                self.hud.textLabel.text = NSLocalizedString("_creating_db_photo_progress", comment: "")
-                self.hud.progress = 0
-            }
+            self.hud.setText(text: NSLocalizedString("_creating_db_photo_progress", comment: ""))
+            self.hud.progress(0.0)
             self.endForAssetToUpload = false
 
             for asset in assets {
@@ -195,10 +184,8 @@ class NCAutoUpload: NSObject {
                     metadatas.append(metadata)
                 }
 
-                DispatchQueue.main.async {
-                    num += 1
-                    self.hud.progress = num / Float(assets.count)
-                }
+                num += 1
+                self.hud.progress(num: num, total: Float(assets.count))
             }
 
             self.endForAssetToUpload = true

@@ -37,13 +37,7 @@ class NCContextMenu: NSObject {
         var downloadRequest: DownloadRequest?
         var titleDeleteConfirmFile = NSLocalizedString("_delete_file_", comment: "")
         let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
-        let ncHud = NCHud(view: viewController.view, account: metadata.account)
-
-        func tapOperation() {
-            if let request = downloadRequest {
-                request.cancel()
-            }
-        }
+        let hud = NCHud(viewController.view)
 
         if metadata.directory { titleDeleteConfirmFile = NSLocalizedString("_delete_folder_", comment: "") }
 
@@ -83,20 +77,22 @@ class NCContextMenu: NSObject {
                                                                                                selector: NCGlobal.shared.selectorOpenIn,
                                                                                                sceneIdentifier: sceneIdentifier) else { return }
 
-                ncHud.initIndicatorView(textLabel: NSLocalizedString("_downloading_", comment: ""),
-                                        tapToCancelText: true,
-                                        tapOperation: tapOperation)
+                hud.initHudRing(text: NSLocalizedString("_downloading_", comment: ""), tapToCancelDetailText: true) {
+                    if let request = downloadRequest {
+                        request.cancel()
+                    }
+                }
 
                 NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
                 } requestHandler: { request in
                     downloadRequest = request
                 } progressHandler: { progress in
-                    ncHud.progress(progress.fractionCompleted)
+                    hud.progress(progress.fractionCompleted)
                 } completion: { afError, error in
                     if error == .success || afError?.isExplicitlyCancelledError ?? false {
-                        ncHud.success()
+                        hud.success()
                     } else {
-                        ncHud.error(textLabel: error.description)
+                        hud.error(text: error.description)
                     }
                 }
             }
@@ -131,20 +127,22 @@ class NCContextMenu: NSObject {
                                                                                                selector: NCGlobal.shared.selectorLoadFileQuickLook,
                                                                                                sceneIdentifier: sceneIdentifier) else { return }
 
-                ncHud.initIndicatorView(textLabel: NSLocalizedString("_downloading_", comment: ""),
-                                        tapToCancelText: true,
-                                        tapOperation: tapOperation)
+                hud.initHudRing(text: NSLocalizedString("_downloading_", comment: "")) {
+                    if let request = downloadRequest {
+                        request.cancel()
+                    }
+                }
 
                 NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
                 } requestHandler: { request in
                     downloadRequest = request
                 } progressHandler: { progress in
-                    ncHud.progress(progress.fractionCompleted)
+                    hud.progress(progress.fractionCompleted)
                 } completion: { afError, error in
                     if error == .success || afError?.isExplicitlyCancelledError ?? false {
-                        ncHud.success()
+                        hud.success()
                     } else {
-                        ncHud.error(textLabel: error.description)
+                        hud.error(text: error.description)
                     }
                 }
             }
