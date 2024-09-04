@@ -356,7 +356,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             }
         }
 
-        let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadata.count, hudView: controller.view)
+        let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadata.count, controller: controller)
         for (metadata, url) in downloadMetadata {
             processor.execute { completion in
                 guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
@@ -365,7 +365,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                                                                                                sceneIdentifier: controller.sceneIdentifier) else { return completion() }
                 NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
                 } progressHandler: { progress in
-                    processor.hud?.progress = Float(progress.fractionCompleted)
+                    processor.hud.progress(progress.fractionCompleted)
                 } completion: { _, _ in
                     if self.utilityFileSystem.fileProviderStorageExists(metadata) { items.append(url) }
                     completion()
@@ -445,15 +445,15 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     // MARK: - Copy & Paste
 
-    func pastePasteboard(serverUrl: String, account: String, hudView: UIView?) {
+    func pastePasteboard(serverUrl: String, account: String, controller: NCMainTabBarController?) {
         var fractionCompleted: Float = 0
-        let processor = ParallelWorker(n: 5, titleKey: "_uploading_", totalTasks: nil, hudView: hudView)
+        let processor = ParallelWorker(n: 5, titleKey: "_uploading_", totalTasks: nil, controller: controller)
 
         func uploadPastePasteboard(fileName: String, serverUrlFileName: String, fileNameLocalPath: String, serverUrl: String, completion: @escaping () -> Void) {
             NextcloudKit.shared.upload(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: account) { _ in
             } progressHandler: { progress in
                 if Float(progress.fractionCompleted) > fractionCompleted || fractionCompleted == 0 {
-                    processor.hud?.progress = Float(progress.fractionCompleted)
+                    processor.hud.progress(progress.fractionCompleted)
                     fractionCompleted = Float(progress.fractionCompleted)
                 }
             } completionHandler: { account, ocId, etag, _, _, _, afError, error in

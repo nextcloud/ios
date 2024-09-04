@@ -22,7 +22,6 @@
 //
 
 import UIKit
-import JGProgressHUD
 import NextcloudKit
 import Alamofire
 import Queuer

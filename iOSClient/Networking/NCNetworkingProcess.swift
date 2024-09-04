@@ -24,7 +24,6 @@
 import UIKit
 import NextcloudKit
 import Photos
-import JGProgressHUD
 import RealmSwift
 
 class NCNetworkingProcess {
@@ -36,7 +35,6 @@ class NCNetworkingProcess {
     private let lockQueue = DispatchQueue(label: "com.nextcloud.networkingprocess.lockqueue")
     private let global = NCGlobal.shared
     private var timerProcess: Timer?
-    private let hud: JGProgressHUD = JGProgressHUD()
 
     private init() {
         self.startTimer()

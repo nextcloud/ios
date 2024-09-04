@@ -23,7 +23,6 @@
 
 import UIKit
 import Queuer
-import JGProgressHUD
 import NextcloudKit
 
 class NCOperationSaveLivePhoto: ConcurrentOperation {

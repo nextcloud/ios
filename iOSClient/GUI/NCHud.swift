@@ -12,7 +12,7 @@ import JGProgressHUD
 
 class NCHud: NSObject {
     private let hud = JGProgressHUD()
-    private var view = UIView()
+    private var view: UIView?
 
     public init(_ view: UIView? = nil) {
         if let view {
@@ -35,7 +35,9 @@ class NCHud: NSObject {
             self.hud.detailTextLabel.text = detailText
             self.hud.detailTextLabel.textColor = NCBrandColor.shared.iconImageColor2
 
-            self.hud.show(in: self.view)
+            if let view = self.view {
+                self.hud.show(in: view)
+            }
         }
     }
 
@@ -69,7 +71,9 @@ class NCHud: NSObject {
             }
             self.hud.detailTextLabel.textColor = NCBrandColor.shared.iconImageColor2
 
-            self.hud.show(in: self.view)
+            if let view = self.view {
+                self.hud.show(in: view)
+            }
         }
     }
 
@@ -81,7 +85,9 @@ class NCHud: NSObject {
 
     func show() {
         DispatchQueue.main.async {
-            self.hud.show(in: self.view)
+            if let view = self.view {
+                self.hud.show(in: view)
+            }
         }
     }
 

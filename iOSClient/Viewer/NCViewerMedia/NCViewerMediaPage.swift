@@ -25,7 +25,6 @@ import UIKit
 import NextcloudKit
 import MediaPlayer
 import Alamofire
-import JGProgressHUD
 
 enum ScreenMode {
     case full, normal

@@ -25,7 +25,6 @@
 import Foundation
 import UIKit
 import NextcloudKit
-import JGProgressHUD
 
 class NCMenuAction {
     let title: String

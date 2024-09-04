@@ -287,8 +287,11 @@ class NCCameraRoll: NSObject {
                 metadataLivePhoto.creationDate = metadata.creationDate
                 metadataLivePhoto.date = metadata.date
                 metadataLivePhoto.uploadDate = metadata.uploadDate
-                let returnMetadata = tableMetadata(value: NCManageDatabase.shared.addMetadata(metadataLivePhoto))
-                return completion(returnMetadata)
+                if let metadata = NCManageDatabase.shared.addMetadata(metadataLivePhoto) {
+                    let returnMetadata = tableMetadata(value: metadata)
+                    return completion(returnMetadata)
+                }
+                completion(nil)
             }
         }
     }

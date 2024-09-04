@@ -25,7 +25,6 @@
 import UIKit
 import NextcloudKit
 import SwiftyJSON
-import JGProgressHUD
 
 class NCNotification: UITableViewController, NCNotificationCellDelegate {
     let utilityFileSystem = NCUtilityFileSystem()

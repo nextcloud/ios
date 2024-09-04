@@ -25,7 +25,6 @@
 
 import UIKit
 import NextcloudKit
-import JGProgressHUD
 import TOPasscodeViewController
 
 enum NCShareExtensionError: Error {
@@ -68,7 +67,7 @@ class NCShareExtension: UIViewController {
     var uploadErrors: [tableMetadata] = []
     var uploadMetadata: [tableMetadata] = []
     var uploadStarted = false
-    let hud = JGProgressHUD()
+    let hud = NCHud()
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
     var account: String = ""
@@ -136,12 +135,6 @@ class NCShareExtension: UIViewController {
         }
 
         NCBrandColor.shared.createUserColors()
-
-        hud.indicatorView = JGProgressHUDRingIndicatorView()
-        if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
-            indicatorView.ringWidth = 1.5
-            indicatorView.ringColor = NCBrandColor.shared.iconImageColor
-        }
 
         NotificationCenter.default.addObserver(self, selector: #selector(didCreateFolder(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCreateFolder), object: nil)
     }
@@ -365,19 +358,13 @@ extension NCShareExtension {
         // E2EE
         metadata.e2eEncrypted = metadata.isDirectoryE2EE
 
-        DispatchQueue.main.async {
-            self.hud.show(in: self.view)
-            self.hud.textLabel.text = NSLocalizedString("_upload_file_", comment: "") + " \(self.counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(self.filesName.count)"
-        }
+        hud.initHudRing(view: self.view,
+                        text: NSLocalizedString("_upload_file_", comment: "") + " \(self.counterUploaded + 1) " + NSLocalizedString("_of_", comment: "") + " \(self.filesName.count)")
 
         NCNetworking.shared.upload(metadata: metadata, uploadE2EEDelegate: self, controller: self) {
-            DispatchQueue.main.async {
-                self.hud.progress = 0
-            }
+            self.hud.progress(0)
         } progressHandler: { _, _, fractionCompleted in
-            DispatchQueue.main.async {
-                self.hud.progress = Float(fractionCompleted)
-            }
+            self.hud.progress(fractionCompleted)
         } completion: { _, error in
             if error != .success {
                 NCManageDatabase.shared.deleteMetadataOcId(metadata.ocId)
@@ -397,9 +384,7 @@ extension NCShareExtension {
                 self.extensionContext?.cancelRequest(withError: NCShareExtensionError.fileUpload)
             }
         } else {
-            hud.indicatorView = JGProgressHUDSuccessIndicatorView()
-            hud.indicatorView?.tintColor = NCBrandColor.shared.iconImageColor
-            hud.textLabel.text = NSLocalizedString("_success_", comment: "")
+            hud.success()
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
             }
@@ -409,11 +394,11 @@ extension NCShareExtension {
 
 extension NCShareExtension: uploadE2EEDelegate {
     func start() {
-        self.hud.progress = 0
+        self.hud.progress(0)
     }
 
     func uploadE2EEProgress(_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) {
-        self.hud.progress = Float(fractionCompleted)
+        self.hud.progress(fractionCompleted)
     }
 }
 

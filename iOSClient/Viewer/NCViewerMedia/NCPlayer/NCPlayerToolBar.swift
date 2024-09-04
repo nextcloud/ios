@@ -29,7 +29,6 @@ import AVKit
 import MediaPlayer
 import MobileVLCKit
 import FloatingPanel
-import JGProgressHUD
 import Alamofire
 
 class NCPlayerToolBar: UIView {
@@ -59,7 +58,7 @@ class NCPlayerToolBar: UIView {
     var isFullscreen: Bool = false
     var playRepeat: Bool = false
 
-    private let hud = JGProgressHUD()
+    private let hud = NCHud()
     private var ncplayer: NCPlayer?
     private var metadata: tableMetadata?
     private let audioSession = AVAudioSession.sharedInstance()
@@ -452,32 +451,26 @@ extension NCPlayerToolBar: NCSelectDelegate {
                 addPlaybackSlave(type: type, metadata: metadata)
             } else {
                 var downloadRequest: DownloadRequest?
-                hud.indicatorView = JGProgressHUDRingIndicatorView()
-                hud.textLabel.text = NSLocalizedString("_downloading_", comment: "")
-                hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
-                hud.detailTextLabel.textColor = NCBrandColor.shared.iconImageColor2
-                if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
-                    indicatorView.ringWidth = 1.5
-                    indicatorView.ringColor = NCBrandColor.shared.getElement(account: metadata.account)
-                }
-                hud.tapOnHUDViewBlock = { _ in
+                hud.initHudRing(view: viewerMediaPage.view,
+                                text: NSLocalizedString("_downloading_", comment: ""),
+                                tapToCancelDetailText: true) {
                     if let request = downloadRequest {
                         request.cancel()
                     }
                 }
-                hud.show(in: viewerMediaPage.view)
 
                 NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account, requestHandler: { request in
                     downloadRequest = request
                 }, taskHandler: { _ in
                 }, progressHandler: { progress in
-                    self.hud.progress = Float(progress.fractionCompleted)
+                    self.hud.progress(progress.fractionCompleted)
                 }) { _, _, _, _, _, _, error in
                     self.hud.dismiss()
                     if error == .success {
+                        self.hud.success()
                         self.addPlaybackSlave(type: type, metadata: metadata)
                     } else if error.errorCode != 200 {
-                        NCContentPresenter().showError(error: error)
+                        self.hud.error(text: error.errorDescription)
                     }
                 }
             }

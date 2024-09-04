@@ -23,7 +23,6 @@
 
 import UIKit
 import NextcloudKit
-import JGProgressHUD
 
 class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     var metadataTemp: tableMetadata?

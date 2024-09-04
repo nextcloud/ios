@@ -25,7 +25,6 @@ import Foundation
 import UIKit
 import Alamofire
 import NextcloudKit
-import JGProgressHUD
 
 class NCContextMenu: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()

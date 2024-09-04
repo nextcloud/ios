@@ -25,7 +25,6 @@ import UIKit
 import PDFKit
 import EasyTipView
 import NextcloudKit
-import JGProgressHUD
 
 class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 

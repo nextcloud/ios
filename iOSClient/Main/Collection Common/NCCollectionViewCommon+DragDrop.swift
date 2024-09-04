@@ -24,7 +24,6 @@
 import Foundation
 import UIKit
 import NextcloudKit
-import JGProgressHUD
 
 // MARK: - Drag
 

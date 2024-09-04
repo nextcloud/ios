@@ -35,7 +35,7 @@ extension NCNetworking {
                 completion: @escaping (_ afError: AFError?, _ error: NKError) -> Void = { _, _ in }) {
         let metadata = tableMetadata.init(value: metadata)
         var numChunks: Int = 0
-        let hud = NCHud()
+        let hud = NCHud(controller?.view)
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload file \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier) with size \(metadata.size) [CHUNK \(metadata.chunk), E2EE \(metadata.isDirectoryE2EE)]")
         let transfer = NCTransferProgress.Transfer(ocId: metadata.ocId, ocIdTransfer: metadata.ocIdTransfer, session: metadata.session, chunk: metadata.chunk, e2eEncrypted: metadata.e2eEncrypted, progressNumber: 0, totalBytes: 0, totalBytesExpected: 0)
         NCTransferProgress.shared.append(transfer)
@@ -52,12 +52,11 @@ extension NCNetworking {
             }
 #endif
         } else if metadata.chunk > 0 {
-            if let controller {
-                hud.initHudRing(view: controller.view,
-                                text: NSLocalizedString("_wait_file_preparation_", comment: ""),
-                                tapToCancelDetailText: true,
-                                tapOperation: tapOperation)
-            }
+
+            hud.initHudRing(text: NSLocalizedString("_wait_file_preparation_", comment: ""),
+                            tapToCancelDetailText: true,
+                            tapOperation: tapOperation)
+
 
             uploadChunkFile(metadata: metadata) { num in
                 numChunks = num

@@ -24,7 +24,6 @@ import NextcloudKit
 import CFNetwork
 import Alamofire
 import Foundation
-import JGProgressHUD
 
 protocol uploadE2EEDelegate: AnyObject {
     func start()

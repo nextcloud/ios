@@ -27,7 +27,6 @@ import NextcloudKit
 import EasyTipView
 import SwiftUI
 import MobileVLCKit
-import JGProgressHUD
 import Alamofire
 
 public protocol NCViewerMediaViewDelegate: AnyObject {
@@ -159,40 +158,29 @@ class NCViewerMedia: UIViewController {
                                                                                                            session: NCNetworking.shared.sessionDownload,
                                                                                                            selector: "") else { return }
                             var downloadRequest: DownloadRequest?
-                            let hud = JGProgressHUD()
-                            hud.indicatorView = JGProgressHUDRingIndicatorView()
-                            hud.textLabel.text = NSLocalizedString("_downloading_", comment: "")
-                            hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
-                            hud.detailTextLabel.textColor = NCBrandColor.shared.iconImageColor2
-                            if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
-                                indicatorView.ringWidth = 1.5
-                                indicatorView.ringColor = NCBrandColor.shared.getElement(account: metadata.account)
-                            }
-                            hud.tapOnHUDViewBlock = { _ in
+                            let hud = NCHud(self.tabBarController?.view)
+                            hud.initHudRing(text: NSLocalizedString("_downloading_", comment: ""),
+                                            tapToCancelDetailText: true) {
                                 if let request = downloadRequest {
                                     request.cancel()
                                 }
                             }
-                            if let view = self.tabBarController?.view {
-                                hud.show(in: view)
-                            }
+
                             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
                             } requestHandler: { request in
                                 downloadRequest = request
                             } progressHandler: { progress in
-                                hud.progress = Float(progress.fractionCompleted)
+                                hud.progress(progress.fractionCompleted)
                             } completion: { _, error in
                                 DispatchQueue.main.async {
                                     if error == .success {
-                                        hud.dismiss()
+                                        hud.success()
                                         if self.utilityFileSystem.fileProviderStorageExists(self.metadata) {
                                             let url = URL(fileURLWithPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(self.metadata.ocId, fileNameView: self.metadata.fileNameView))
                                             ncplayer.openAVPlayer(url: url, autoplay: autoplay)
                                         }
                                     } else {
-                                        hud.indicatorView = JGProgressHUDErrorIndicatorView()
-                                        hud.textLabel.text = error.errorDescription
-                                        hud.dismiss(afterDelay: NCGlobal.shared.dismissAfterSecond)
+                                        hud.error(text: error.errorDescription)
                                     }
                                 }
                             }
