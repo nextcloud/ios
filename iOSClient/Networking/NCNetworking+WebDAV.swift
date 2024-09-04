@@ -375,31 +375,30 @@ extension NCNetworking {
                 utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
             }
         } else if onlyLocalCache {
-
-#if !EXTENSION
-            if let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier) {
-                await MainActor.run {
-                    ncHud.initIndicatorView(view: controller.view, tapOperation: tapHudDeleteMetadata)
-                }
-            }
-#endif
-
             if metadata.directory {
+                #if !EXTENSION
+                if let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier) {
+                    await MainActor.run {
+                        ncHud.initIndicatorView(view: controller.view, tapToCancelText: true, tapOperation: tapHudDeleteMetadata)
+                    }
+                }
+                #endif
                 let serverUrl = metadata.serverUrl + "/" + metadata.fileName
                 let metadatas = self.database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == false", metadata.account, serverUrl))
                 let numMetadatas = Float(metadatas.count)
                 for metadata in metadatas {
                     deleteLocalFile(metadata: metadata)
                     let num = numIncrement()
-                    await MainActor.run { ncHud.hud.progress = num / numMetadatas }
+                    ncHud.progress(num: num, total: numMetadatas)
                     if tapHudStopDelete { break }
                 }
+                #if !EXTENSION
+                ncHud.dismiss()
+                #endif
             } else {
                 deleteLocalFile(metadata: metadata)
             }
-#if !EXTENSION
-            await MainActor.run { ncHud.hud.dismiss() }
-#endif
+
             return .success
         }
 
@@ -419,7 +418,7 @@ extension NCNetworking {
                 return await NCNetworkingE2EEDelete().delete(metadata: metadata)
             }
 #else
-            return NKError()
+            return .success
 #endif
         } else {
             if let metadataLive = self.database.getMetadataLivePhoto(metadata: metadata), metadata.isNotFlaggedAsLivePhotoByServer {

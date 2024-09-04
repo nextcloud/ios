@@ -195,6 +195,13 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     func viewerFile(account: String, fileId: String, viewController: UIViewController) {
         guard let hudView = viewController.tabBarController?.view else { return }
         var downloadRequest: DownloadRequest?
+        let ncHud = NCHud(view: hudView, account: account)
+
+        func tapOperation() {
+            if let request = downloadRequest {
+                request.cancel()
+            }
+        }
 
         if let metadata = NCManageDatabase.shared.getResultMetadataFromFileId(fileId) {
             do {
@@ -209,21 +216,10 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             }
         }
 
-        let hud = JGProgressHUD()
-        hud.indicatorView = JGProgressHUDRingIndicatorView()
-        if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
-            indicatorView.ringWidth = 1.5
-            indicatorView.ringColor = NCBrandColor.shared.getElement(account: account)
-        }
-        hud.tapOnHUDViewBlock = { _ in
-            if let request = downloadRequest {
-                request.cancel()
-            }
-        }
-        hud.show(in: hudView)
+        ncHud.initIndicatorView(tapToCancelText: true, tapOperation: tapOperation)
 
         NextcloudKit.shared.getFileFromFileId(fileId: fileId, account: account) { account, file, _, error in
-            hud.dismiss()
+            ncHud.dismiss()
 
             if error != .success {
                 NCContentPresenter().showError(error: error)
@@ -238,14 +234,14 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 if metadata.isAudioOrVideo {
                     NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
                 } else {
-                    hud.show(in: hudView)
+                    ncHud.show()
                     NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: account, requestHandler: { request in
                         downloadRequest = request
                     }, taskHandler: { _ in
                     }, progressHandler: { progress in
-                        hud.progress = Float(progress.fractionCompleted)
+                        ncHud.progress(progress.fractionCompleted)
                     }) { accountDownload, _, _, _, _, _, error in
-                        hud.dismiss()
+                        ncHud.dismiss()
                         if account == accountDownload && error == .success {
                             NCManageDatabase.shared.addLocalFile(metadata: metadata)
                             NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
