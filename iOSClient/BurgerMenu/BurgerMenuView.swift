@@ -49,7 +49,7 @@ struct BurgerMenuView: View {
                         }
                     }
                     .padding(EdgeInsets(top: 0, leading: 19, bottom: 0, trailing: 28))
-                    .frame(width: width*0.85, alignment: .leading)
+                    .frame(width: min(width*0.85, 400), alignment: .leading)
                     .background(Color(.BurgerMenu.background))
                     .offset(x: viewModel.isVisible ? 0 : -width)
                 })
