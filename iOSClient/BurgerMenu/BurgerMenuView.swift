@@ -29,6 +29,8 @@ struct BurgerMenuView: View {
                     VStack(alignment: .leading, spacing: _Constants.spacingBetweenItems) {
                         Image(.ionosEasyStorageLogo)
                             .resizable()
+                            .renderingMode(.template)
+                            .foregroundStyle(Color(.BurgerMenu.logoTint))
                             .scaledToFit()
                             .padding(EdgeInsets(top: 24,
                                                 leading: 0,
