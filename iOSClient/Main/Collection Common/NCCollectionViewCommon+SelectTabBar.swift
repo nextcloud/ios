@@ -149,4 +149,12 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectToolbarDelegate {
         searchController(enabled: !editMode)
         collectionView.reloadData()
     }
+    
+    func toolbarWillAppear() {
+        self.tabBarController?.tabBar.isHidden = true
+    }
+    
+    func toolbarWillDisappear() {
+        self.tabBarController?.tabBar.isHidden = false
+    }
 }

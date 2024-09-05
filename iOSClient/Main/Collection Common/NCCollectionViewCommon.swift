@@ -681,11 +681,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         if isEditMode {
             commonSelectToolbar.update(selectOcId: selectOcId, metadatas: getSelectedMetadatas(), userId: appDelegate.userId)
-            tabBar?.isHidden = true
             commonSelectToolbar.show()
         } else {
             commonSelectToolbar.hide()
-            tabBar?.isHidden = false
 			navigationItem.rightBarButtonItems = layoutKey == NCGlobal.shared.layoutViewFiles ? [createAccountButton()] : []
         }
         // fix, if the tabbar was hidden before the update, set it in hidden

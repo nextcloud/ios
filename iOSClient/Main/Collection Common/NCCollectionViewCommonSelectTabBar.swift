@@ -31,6 +31,8 @@ protocol NCCollectionViewCommonSelectToolbarDelegate: AnyObject {
     func share()
     func saveAsAvailableOffline(isAnyOffline: Bool)
     func lock(isAnyLocked: Bool)
+    func toolbarWillAppear()
+    func toolbarWillDisappear()
 }
 
 class NCCollectionViewCommonSelectToolbar: ObservableObject {
@@ -77,7 +79,7 @@ class NCCollectionViewCommonSelectToolbar: ObservableObject {
 
     private func updateToolbarFrame(for hostingController: UIViewController) {
         let screenSize = UIScreen.main.bounds.size
-        let height = screenSize.width > 400 ? 60.0 : 80.0
+        let height = screenSize.width > 460 ? 60.0 : 80.0
         let frame = CGRect(x: 0, y: screenSize.height - height, width: screenSize.width, height: height)
         
         hostingController.view.frame = frame
@@ -88,6 +90,7 @@ class NCCollectionViewCommonSelectToolbar: ObservableObject {
         guard let hostingController, let controller = getTopViewController() else { return }
         
         if hostingController.view.isHidden {
+            delegate?.toolbarWillAppear()
             controller.view.addSubview(hostingController.view)
             
             updateToolbarFrame(for: hostingController)
@@ -122,6 +125,7 @@ class NCCollectionViewCommonSelectToolbar: ObservableObject {
     }
 
     func hide() {
+        delegate?.toolbarWillDisappear()
         hostingController?.view.isHidden = true
     }
 

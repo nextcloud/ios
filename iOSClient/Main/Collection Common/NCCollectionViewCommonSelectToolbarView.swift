@@ -15,8 +15,8 @@ struct NCCollectionViewCommonSelectToolbarView: View {
 
     var body: some View {
         GeometryReader { geometry in
-            let isWideScreen = geometry.size.width > 400
-            let eightyPercentOfWidth = geometry.size.width * 0.8
+            let isWideScreen = geometry.size.width > 460
+            let eightyPercentOfWidth = geometry.size.width * 0.85
             VStack {
                 Spacer().frame(height: 10)
 
