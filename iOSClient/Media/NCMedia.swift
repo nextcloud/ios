@@ -241,7 +241,12 @@ class NCMedia: UIViewController {
 
     @objc func moveFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
+              let error = userInfo["error"] as? NKError,
               let dragDrop = userInfo["dragdrop"] as? Bool, dragDrop else { return }
+
+        if error != .success {
+            NCContentPresenter().showError(error: error)
+        }
 
         setEditMode(false)
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
@@ -252,7 +257,12 @@ class NCMedia: UIViewController {
 
     @objc func copyFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
+              let error = userInfo["error"] as? NKError,
               let dragDrop = userInfo["dragdrop"] as? Bool, dragDrop else { return }
+
+        if error != .success {
+            NCContentPresenter().showError(error: error)
+        }
 
         setEditMode(false)
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {

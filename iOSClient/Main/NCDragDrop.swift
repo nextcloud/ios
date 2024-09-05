@@ -139,9 +139,6 @@ class NCDragDrop: NSObject {
                     ocId.append(metadata.ocId)
                 }
             }
-            if error != .success {
-                NCContentPresenter().showError(error: error)
-            }
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyFile, userInfo: ["ocId": ocId, "error": error, "dragdrop": true])
         }
     }
@@ -155,9 +152,6 @@ class NCDragDrop: NSObject {
                 if error == .success {
                     ocId.append(metadata.ocId)
                 }
-            }
-            if error != .success {
-                NCContentPresenter().showError(error: error)
             }
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMoveFile, userInfo: ["ocId": ocId, "error": error, "dragdrop": true])
         }
