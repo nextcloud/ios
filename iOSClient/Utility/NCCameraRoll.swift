@@ -28,6 +28,7 @@ import NextcloudKit
 
 class NCCameraRoll: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
+    let database = NCManageDatabase.shared
 
     func extractCameraRoll(from metadata: tableMetadata, completition: @escaping (_ metadatas: [tableMetadata]) -> Void) {
         var metadatas: [tableMetadata] = []
@@ -61,7 +62,7 @@ class NCCameraRoll: NSObject {
                 metadataSource.session = NCNetworking.shared.sessionUpload
             }
             metadataSource.isExtractFile = true
-            if let metadata = NCManageDatabase.shared.addMetadata(metadataSource) {
+            if let metadata = self.database.addMetadata(metadataSource) {
                 metadatas.append(tableMetadata(value: metadata))
             }
             return completition(metadatas)
@@ -75,7 +76,7 @@ class NCCameraRoll: NSObject {
                 let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadataSource.assetLocalIdentifier], options: nil)
                 if metadata.isLivePhoto, fetchAssets.count > 0 {
                     self.createMetadataLivePhoto(metadata: metadata, asset: fetchAssets.firstObject) { metadata in
-                        if let metadata, let metadata = NCManageDatabase.shared.addMetadata(metadata) {
+                        if let metadata, let metadata = self.database.addMetadata(metadata) {
                             metadatas.append(tableMetadata(value: metadata))
                         }
                         completition(metadatas)
@@ -125,7 +126,7 @@ class NCCameraRoll: NSObject {
                         metadata.session = NCNetworking.shared.sessionUpload
                     }
                     metadata.isExtractFile = true
-                    if let metadata = NCManageDatabase.shared.addMetadata(metadata) {
+                    if let metadata = self.database.addMetadata(metadata) {
                         metadataReturn = tableMetadata(value: metadata)
                     }
                 }
@@ -260,14 +261,14 @@ class NCCameraRoll: NSObject {
             PHAssetResourceManager.default().writeData(for: videoResource, toFile: URL(fileURLWithPath: fileNamePath), options: nil) { error in
                 guard error == nil else { return completion(nil) }
                 let session = NCSession.shared.getSession(account: metadata.account)
-                let metadataLivePhoto = NCManageDatabase.shared.createMetadata(fileName: fileName,
-                                                                               fileNameView: fileName,
-                                                                               ocId: ocId,
-                                                                               serverUrl: metadata.serverUrl,
-                                                                               url: "",
-                                                                               contentType: "",
-                                                                               session: session,
-                                                                               sceneIdentifier: metadata.sceneIdentifier)
+                let metadataLivePhoto = self.database.createMetadata(fileName: fileName,
+                                                                     fileNameView: fileName,
+                                                                     ocId: ocId,
+                                                                     serverUrl: metadata.serverUrl,
+                                                                     url: "",
+                                                                     contentType: "",
+                                                                     session: session,
+                                                                     sceneIdentifier: metadata.sceneIdentifier)
                 metadataLivePhoto.livePhotoFile = metadata.fileName
                 metadataLivePhoto.classFile = NKCommon.TypeClassFile.video.rawValue
                 metadataLivePhoto.isExtractFile = true
@@ -287,7 +288,7 @@ class NCCameraRoll: NSObject {
                 metadataLivePhoto.creationDate = metadata.creationDate
                 metadataLivePhoto.date = metadata.date
                 metadataLivePhoto.uploadDate = metadata.uploadDate
-                if let metadata = NCManageDatabase.shared.addMetadata(metadataLivePhoto) {
+                if let metadata = self.database.addMetadata(metadataLivePhoto) {
                     let returnMetadata = tableMetadata(value: metadata)
                     return completion(returnMetadata)
                 }

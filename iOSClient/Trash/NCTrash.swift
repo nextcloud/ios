@@ -35,6 +35,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
     var blinkFileId: String?
     var dataSourceTask: URLSessionTask?
     let utilityFileSystem = NCUtilityFileSystem()
+    let database = NCManageDatabase.shared
     let utility = NCUtility()
     var isEditMode = false
     var selectOcId: [String] = []
@@ -86,7 +87,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         navigationController?.setNavigationBarAppearance()
         navigationItem.title = titleCurrentFolder
 
-        layoutForView = NCManageDatabase.shared.getLayoutForView(account: session.account, key: NCGlobal.shared.layoutViewTrash, serverUrl: "")
+        layoutForView = self.database.getLayoutForView(account: session.account, key: NCGlobal.shared.layoutViewTrash, serverUrl: "")
 
         if layoutForView?.layout == NCGlobal.shared.layoutList {
             collectionView.collectionViewLayout = listLayout
@@ -129,7 +130,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
     func setNavigationRightItems() {
         func createMenuActions() -> [UIMenuElement] {
-            guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: session.account, key: layoutKey, serverUrl: ""),
+            guard let layoutForView = self.database.getLayoutForView(account: session.account, key: layoutKey, serverUrl: ""),
                   let datasource else { return [] }
             let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: utility.loadImage(named: "checkmark.circle", colors: [NCBrandColor.shared.iconImageColor]), attributes: datasource.isEmpty ? .disabled : []) { _ in
                 self.setEditMode(true)
@@ -202,7 +203,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
     // MARK: - DataSource
 
     @objc func reloadDataSource(withQueryDB: Bool = true) {
-        datasource = NCManageDatabase.shared.getResultsTrash(filePath: getFilePath(), account: session.account)
+        datasource = self.database.getResultsTrash(filePath: getFilePath(), account: session.account)
         collectionView.reloadData()
         setNavigationRightItems()
 

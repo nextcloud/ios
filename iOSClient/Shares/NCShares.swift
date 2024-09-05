@@ -61,9 +61,9 @@ class NCShares: NCCollectionViewCommon {
             self.collectionView.reloadData()
         }
 
-        let sharess = NCManageDatabase.shared.getTableShares(account: session.account)
+        let sharess = self.database.getTableShares(account: session.account)
         for share in sharess {
-            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", session.account, share.serverUrl, share.fileName)) {
+            if let metadata = self.database.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", session.account, share.serverUrl, share.fileName)) {
                 if !(metadatas.contains { $0.ocId == metadata.ocId }) {
                     metadatas.append(metadata)
                 }
@@ -74,7 +74,7 @@ class NCShares: NCCollectionViewCommon {
                     self.collectionView.reloadData()
                 } completion: { _, metadata, _ in
                     if let metadata {
-                        NCManageDatabase.shared.addMetadata(metadata)
+                        self.database.addMetadata(metadata)
                         if !(metadatas.contains { $0.ocId == metadata.ocId }) {
                             metadatas.append(metadata)
                             reload()
@@ -95,10 +95,10 @@ class NCShares: NCCollectionViewCommon {
             self.collectionView.reloadData()
         } completion: { account, shares, _, error in
             if error == .success {
-                NCManageDatabase.shared.deleteTableShare(account: account)
+                self.database.deleteTableShare(account: account)
                 if let shares = shares, !shares.isEmpty {
                     let home = self.utilityFileSystem.getHomeServer(session: self.session)
-                    NCManageDatabase.shared.addShare(account: account, home: home, shares: shares)
+                    self.database.addShare(account: account, home: home, shares: shares)
                 }
                 self.reloadDataSource()
             } else {

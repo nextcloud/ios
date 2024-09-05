@@ -69,12 +69,13 @@ class NCShareExtension: UIViewController {
     let hud = NCHud()
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
+    let database = NCManageDatabase.shared
     var account: String = ""
     var session: NCSession.Session {
         if !account.isEmpty,
-           let tableAccount = NCManageDatabase.shared.getTableAccount(account: account) {
+           let tableAccount = self.database.getTableAccount(account: account) {
             return NCSession.Session(account: tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId)
-        } else if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
+        } else if let activeTableAccount = self.database.getActiveTableAccount() {
             self.account = activeTableAccount.account
             return NCSession.Session(account: activeTableAccount.account, urlBase: activeTableAccount.urlBase, user: activeTableAccount.user, userId: activeTableAccount.userId)
         } else {
@@ -215,7 +216,7 @@ class NCShareExtension: UIViewController {
             }
         }
 
-        let tableAccount = NCManageDatabase.shared.getTableAccount(account: session.account)
+        let tableAccount = self.database.getTableAccount(account: session.account)
         let image = utility.loadUserImage(for: session.user, displayName: tableAccount?.displayName, urlBase: session.urlBase)
         let profileButton = UIButton(type: .custom)
         profileButton.setImage(image, for: .normal)
@@ -299,21 +300,21 @@ extension NCShareExtension {
             let ocId = NSUUID().uuidString
             let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
             guard utilityFileSystem.copyFile(atPath: (NSTemporaryDirectory() + fileName), toPath: toPath) else { continue }
-            let metadataForUpload = NCManageDatabase.shared.createMetadata(fileName: fileName,
-                                                                           fileNameView: fileName,
-                                                                           ocId: ocId,
-                                                                           serverUrl: serverUrl,
-                                                                           url: "",
-                                                                           contentType: "",
-                                                                           session: session,
-                                                                           sceneIdentifier: nil)
+            let metadataForUpload = self.database.createMetadata(fileName: fileName,
+                                                                 fileNameView: fileName,
+                                                                 ocId: ocId,
+                                                                 serverUrl: serverUrl,
+                                                                 url: "",
+                                                                 contentType: "",
+                                                                 session: session,
+                                                                 sceneIdentifier: nil)
 
             metadataForUpload.session = NCNetworking.shared.sessionUpload
             metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFileShareExtension
             metadataForUpload.size = utilityFileSystem.getFileSize(filePath: toPath)
             metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
             metadataForUpload.sessionDate = Date()
-            if NCManageDatabase.shared.getMetadataConflict(account: session.account, serverUrl: serverUrl, fileNameView: fileName) != nil {
+            if self.database.getMetadataConflict(account: session.account, serverUrl: serverUrl, fileNameView: fileName) != nil {
                 conflicts.append(metadataForUpload)
             } else {
                 uploadMetadata.append(metadataForUpload)
@@ -365,7 +366,7 @@ extension NCShareExtension {
             self.hud.progress(fractionCompleted)
         } completion: { _, error in
             if error != .success {
-                NCManageDatabase.shared.deleteMetadataOcId(metadata.ocId)
+                self.database.deleteMetadataOcId(metadata.ocId)
                 self.utilityFileSystem.removeFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
                 self.uploadErrors.append(metadata)
             }

@@ -26,7 +26,7 @@ extension NCTrash: NCTrashSelectTabBarDelegate {
     func onListSelected() {
         if layoutForView?.layout == NCGlobal.shared.layoutGrid {
             layoutForView?.layout = NCGlobal.shared.layoutList
-            NCManageDatabase.shared.setLayoutForView(account: session.account, key: layoutKey, serverUrl: "", layout: layoutForView?.layout)
+            self.database.setLayoutForView(account: session.account, key: layoutKey, serverUrl: "", layout: layoutForView?.layout)
 
             self.collectionView.reloadData()
             self.collectionView.collectionViewLayout.invalidateLayout()
@@ -37,7 +37,7 @@ extension NCTrash: NCTrashSelectTabBarDelegate {
     func onGridSelected() {
         if layoutForView?.layout == NCGlobal.shared.layoutList {
             layoutForView?.layout = NCGlobal.shared.layoutGrid
-            NCManageDatabase.shared.setLayoutForView(account: session.account, key: layoutKey, serverUrl: "", layout: layoutForView?.layout)
+            self.database.setLayoutForView(account: session.account, key: layoutKey, serverUrl: "", layout: layoutForView?.layout)
 
             self.collectionView.reloadData()
             self.collectionView.collectionViewLayout.invalidateLayout()

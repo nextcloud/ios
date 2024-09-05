@@ -53,7 +53,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     @Published var isAuthorized: Bool = false
     /// A string variable that contains error text
     @Published var error: String = ""
-    private let manageDatabase = NCManageDatabase.shared
+    let database = NCManageDatabase.shared
     @Published var autoUploadPath = "\(NCManageDatabase.shared.getAccountAutoUploadFileName())"
     /// Root View Controller
     var controller: NCMainTabBarController?
@@ -72,7 +72,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
 
     /// Triggered when the view appears.
     func onViewAppear() {
-        if let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) {
+        if let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) {
             autoUpload = tableAccount.autoUpload
             autoUploadImage = tableAccount.autoUploadImage
             autoUploadWWAnPhoto = tableAccount.autoUploadWWAnPhoto
@@ -115,14 +115,14 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
             requestAuthorization { value in
                 self.autoUpload = value
                 self.updateAccountProperty(\.autoUpload, value: value)
-                NCManageDatabase.shared.setAccountAutoUploadFileName("")
-                NCManageDatabase.shared.setAccountAutoUploadDirectory("", session: self.session)
+                self.database.setAccountAutoUploadFileName("")
+                self.database.setAccountAutoUploadDirectory("", session: self.session)
                 NCAutoUpload.shared.alignPhotoLibrary(controller: self.controller, account: self.session.account)
             }
         } else {
             updateAccountProperty(\.autoUpload, value: newValue)
             updateAccountProperty(\.autoUploadFull, value: newValue)
-            NCManageDatabase.shared.clearMetadatasUpload(account: session.account)
+            self.database.clearMetadatasUpload(account: session.account)
         }
     }
 
@@ -158,7 +158,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         if newValue {
             NCAutoUpload.shared.autoUploadFullPhotos(controller: self.controller, log: "Auto upload full", account: session.account)
         } else {
-            NCManageDatabase.shared.clearMetadatasUpload(account: session.account)
+            self.database.clearMetadatasUpload(account: session.account)
         }
     }
 
@@ -174,16 +174,16 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
 
     /// Updates a property of the active account in the database.
     private func updateAccountProperty<T>(_ keyPath: ReferenceWritableKeyPath<tableAccount, T>, value: T) {
-        guard let activeAccount = manageDatabase.getActiveTableAccount() else { return }
+        guard let activeAccount = self.database.getActiveTableAccount() else { return }
         activeAccount[keyPath: keyPath] = value
-        manageDatabase.updateAccount(activeAccount)
+        self.database.updateAccount(activeAccount)
     }
 
     /// Returns the path for auto-upload based on the active account's settings.
     ///
     /// - Returns: The path for auto-upload.
     func returnPath() -> String {
-        let autoUploadPath = manageDatabase.getAccountAutoUploadDirectory(session: session) + "/" + manageDatabase.getAccountAutoUploadFileName()
+        let autoUploadPath = self.database.getAccountAutoUploadDirectory(session: session) + "/" + self.database.getAccountAutoUploadFileName()
         let homeServer = NCUtilityFileSystem().getHomeServer(session: session)
         let path = autoUploadPath.replacingOccurrences(of: homeServer, with: "")
         return path
@@ -198,9 +198,9 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         let home = NCUtilityFileSystem().getHomeServer(session: session)
         if home != serverUrl {
             let fileName = (serverUrl as NSString).lastPathComponent
-            NCManageDatabase.shared.setAccountAutoUploadFileName(fileName)
+            self.database.setAccountAutoUploadFileName(fileName)
             if let path = NCUtilityFileSystem().deleteLastPath(serverUrlPath: serverUrl, home: home) {
-                NCManageDatabase.shared.setAccountAutoUploadDirectory(path, session: session)
+                self.database.setAccountAutoUploadDirectory(path, session: session)
             }
         }
         onViewAppear()

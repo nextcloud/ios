@@ -29,7 +29,7 @@ extension NCShareExtension: NCAccountRequestDelegate {
     // MARK: - Account
 
     func showAccountPicker() {
-        let accounts = NCManageDatabase.shared.getAllAccountOrderAlias()
+        let accounts = self.database.getAllAccountOrderAlias()
         guard accounts.count > 1,
               let vcAccountRequest = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest else { return }
 
@@ -58,8 +58,8 @@ extension NCShareExtension: NCAccountRequestDelegate {
     func accountRequestAddAccount() { }
 
     func accountRequestChangeAccount(account: String, controller: UIViewController?) {
-        guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
-              let capabilities = NCManageDatabase.shared.setCapabilities(account: account) else {
+        guard let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
+              let capabilities = self.database.setCapabilities(account: account) else {
             cancel(with: NCShareExtensionError.noAccount)
             return
         }
@@ -81,8 +81,8 @@ extension NCShareExtension: NCAccountRequestDelegate {
                                           groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
         // get auto upload folder
-        autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()
-        autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(session: session)
+        autoUploadFileName = self.database.getAccountAutoUploadFileName()
+        autoUploadDirectory = self.database.getAccountAutoUploadDirectory(session: session)
 
         serverUrl = utilityFileSystem.getHomeServer(session: session)
 

@@ -36,6 +36,7 @@ class NCUploadScanDocument: ObservableObject {
     internal var quality: Double = 0
     internal var removeAllFiles: Bool = false
     internal let utilityFileSystem = NCUtilityFileSystem()
+    internal let database = NCManageDatabase.shared
 
     @Published var serverUrl: String
     @Published var showHUD: Bool = false
@@ -57,21 +58,21 @@ class NCUploadScanDocument: ObservableObject {
         self.quality = quality
         self.removeAllFiles = removeAllFiles
 
-        metadata = NCManageDatabase.shared.createMetadata(fileName: fileName,
-                                                          fileNameView: fileName,
-                                                          ocId: UUID().uuidString,
-                                                          serverUrl: serverUrl,
-                                                          url: "",
-                                                          contentType: "",
-                                                          session: session,
-                                                          sceneIdentifier: controller?.sceneIdentifier)
+        metadata = self.database.createMetadata(fileName: fileName,
+                                                fileNameView: fileName,
+                                                ocId: UUID().uuidString,
+                                                serverUrl: serverUrl,
+                                                url: "",
+                                                contentType: "",
+                                                session: session,
+                                                sceneIdentifier: controller?.sceneIdentifier)
 
         metadata.session = NCNetworking.shared.sessionUploadBackground
         metadata.sessionSelector = NCGlobal.shared.selectorUploadFile
         metadata.status = NCGlobal.shared.metadataStatusWaitUpload
         metadata.sessionDate = Date()
 
-        if NCManageDatabase.shared.getMetadataConflict(account: session.account, serverUrl: serverUrl, fileNameView: fileName) != nil {
+        if self.database.getMetadataConflict(account: session.account, serverUrl: serverUrl, fileNameView: fileName) != nil {
             completion(true, false)
         } else {
             createPDF(metadata: metadata) { error in

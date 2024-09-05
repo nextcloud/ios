@@ -50,6 +50,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     internal let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     internal let utilityFileSystem = NCUtilityFileSystem()
     internal let utility = NCUtility()
+    internal let database = NCManageDatabase.shared
     internal var filter: NCGlobal.TypeFilterScanDocument = NCKeychain().typeFilterScanDocument
     internal var session: NCSession.Session {
         NCSession.shared.getSession(controller: controller)
@@ -329,7 +330,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
 
 extension NCScan: EasyTipViewDelegate {
     func showTip() {
-        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCScanAddImage) {
+        if !self.database.tipExists(NCGlobal.shared.tipNCScanAddImage) {
             var preferences = EasyTipView.Preferences()
             preferences.drawing.foregroundColor = .white
             preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
@@ -351,14 +352,14 @@ extension NCScan: EasyTipViewDelegate {
     }
 
     func easyTipViewDidTap(_ tipView: EasyTipView) {
-        NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCScanAddImage)
+        self.database.addTip(NCGlobal.shared.tipNCScanAddImage)
     }
 
     func easyTipViewDidDismiss(_ tipView: EasyTipView) { }
 
     func dismissTip() {
-        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCScanAddImage) {
-            NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCScanAddImage)
+        if !self.database.tipExists(NCGlobal.shared.tipNCScanAddImage) {
+            self.database.addTip(NCGlobal.shared.tipNCScanAddImage)
         }
         appDelegate.tipView?.dismiss()
         appDelegate.tipView = nil

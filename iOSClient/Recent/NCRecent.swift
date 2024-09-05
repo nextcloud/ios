@@ -49,7 +49,7 @@ class NCRecent: NCCollectionViewCommon {
 
     override func queryDB() {
         super.queryDB()
-        let metadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == %@", session.account), sortedByKeyPath: "date", ascending: false, arraySlice: 200)
+        let metadatas = self.database.getResultsMetadatas(predicate: NSPredicate(format: "account == %@", session.account), sortedByKeyPath: "date", ascending: false, arraySlice: 200)
 
         layoutForView?.sort = "date"
         layoutForView?.ascending = false
@@ -136,9 +136,9 @@ class NCRecent: NCCollectionViewCommon {
             self.collectionView.reloadData()
         } completion: { _, files, _, error in
             if error == .success, let files {
-                NCManageDatabase.shared.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
+                self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
                     // Add metadatas
-                    NCManageDatabase.shared.addMetadatas(metadatas)
+                    self.database.addMetadatas(metadatas)
                     self.reloadDataSource()
                 }
             } else {

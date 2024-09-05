@@ -33,7 +33,6 @@ protocol NCSharePagingContent {
 }
 
 class NCSharePaging: UIViewController {
-
     private let pagingViewController = NCShareHeaderViewController()
     private weak var appDelegate = UIApplication.shared.delegate as? AppDelegate
     private var currentVC: NCSharePagingContent?

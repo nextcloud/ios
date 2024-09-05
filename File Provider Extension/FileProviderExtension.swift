@@ -55,6 +55,7 @@ import Alamofire
 class FileProviderExtension: NSFileProviderExtension {
     let providerUtility = fileProviderUtility()
     let utilityFileSystem = NCUtilityFileSystem()
+    let database = NCManageDatabase.shared
 
     override init() {
         super.init()
@@ -166,7 +167,7 @@ class FileProviderExtension: NSFileProviderExtension {
         if let result = fileProviderData.shared.getUploadMetadata(id: itemIdentifier.rawValue) {
             metadata = result.metadata
         } else {
-            metadata = NCManageDatabase.shared.getMetadataFromOcIdAndocIdTransfer(itemIdentifier.rawValue)
+            metadata = self.database.getMetadataFromOcIdAndocIdTransfer(itemIdentifier.rawValue)
         }
         guard let metadata else {
             return completionHandler(NSFileProviderError(.noSuchItem))
@@ -177,25 +178,25 @@ class FileProviderExtension: NSFileProviderExtension {
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
         // Exists ? return
-        if let tableLocalFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)),
+        if let tableLocalFile = self.database.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)),
            utilityFileSystem.fileProviderStorageExists(metadata),
            tableLocalFile.etag == metadata.etag {
             return completionHandler(nil)
         } else {
-            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                       session: NCNetworking.shared.sessionDownload,
-                                                       sessionTaskIdentifier: 0,
-                                                       sessionError: "",
-                                                       selector: "",
-                                                       status: NCGlobal.shared.metadataStatusDownloading)
+            self.database.setMetadataSession(ocId: metadata.ocId,
+                                             session: NCNetworking.shared.sessionDownload,
+                                             sessionTaskIdentifier: 0,
+                                             sessionError: "",
+                                             selector: "",
+                                             status: NCGlobal.shared.metadataStatusDownloading)
         }
         /// SIGNAL
         fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
 
         NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account, requestHandler: { _ in
         }, taskHandler: { task in
-            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                       sessionTaskIdentifier: task.taskIdentifier)
+            self.database.setMetadataSession(ocId: metadata.ocId,
+                                             sessionTaskIdentifier: task.taskIdentifier)
             fileProviderData.shared.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(itemIdentifier.rawValue)) { _ in }
         }, progressHandler: { _ in
         }) { _, etag, date, _, _, _, error in
@@ -212,16 +213,16 @@ class FileProviderExtension: NSFileProviderExtension {
                 metadata.status = NCGlobal.shared.metadataStatusNormal
                 metadata.date = (date as? NSDate) ?? NSDate()
                 metadata.etag = etag ?? ""
-                NCManageDatabase.shared.addLocalFile(metadata: metadata)
-                NCManageDatabase.shared.addMetadata(metadata)
+                self.database.addLocalFile(metadata: metadata)
+                self.database.addMetadata(metadata)
                 completionHandler(nil)
             } else if error.errorCode == 200 {
-                NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusNormal)
+                self.database.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusNormal)
                 completionHandler(nil)
             } else {
                 metadata.status = NCGlobal.shared.metadataStatusDownloadError
                 metadata.sessionError = error.errorDescription
-                NCManageDatabase.shared.addMetadata(metadata)
+                self.database.addMetadata(metadata)
                 completionHandler(NSFileProviderError(.noSuchItem))
             }
             /// SIGNAL
@@ -239,19 +240,19 @@ class FileProviderExtension: NSFileProviderExtension {
         if let result = fileProviderData.shared.getUploadMetadata(id: itemIdentifier.rawValue) {
             metadata = result.metadata
         } else {
-            metadata = NCManageDatabase.shared.getMetadataFromOcIdAndocIdTransfer(itemIdentifier.rawValue)
+            metadata = self.database.getMetadataFromOcIdAndocIdTransfer(itemIdentifier.rawValue)
         }
         guard let metadata else {
             return
         }
         let serverUrlFileName = metadata.serverUrl + "/" + fileName
 
-        NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                   session: NCNetworking.shared.sessionUploadBackgroundExt,
-                                                   sessionTaskIdentifier: 0,
-                                                   sessionError: "",
-                                                   selector: "",
-                                                   status: NCGlobal.shared.metadataStatusUploading)
+        self.database.setMetadataSession(ocId: metadata.ocId,
+                                         session: NCNetworking.shared.sessionUploadBackgroundExt,
+                                         sessionTaskIdentifier: 0,
+                                         sessionError: "",
+                                         selector: "",
+                                         status: NCGlobal.shared.metadataStatusUploading)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             if let task = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).upload(serverUrlFileName: serverUrlFileName,
@@ -261,9 +262,9 @@ class FileProviderExtension: NSFileProviderExtension {
                                                                                                       overwrite: true,
                                                                                                       account: metadata.account,
                                                                                                       sessionIdentifier: metadata.session) {
-                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                           sessionTaskIdentifier: task.taskIdentifier,
-                                                           status: NCGlobal.shared.metadataStatusUploading)
+                self.database.setMetadataSession(ocId: metadata.ocId,
+                                                 sessionTaskIdentifier: task.taskIdentifier,
+                                                 status: NCGlobal.shared.metadataStatusUploading)
                 fileProviderData.shared.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(metadata.fileId)) { _ in }
             }
         }
@@ -273,7 +274,7 @@ class FileProviderExtension: NSFileProviderExtension {
         let pathComponents = url.pathComponents
         assert(pathComponents.count > 2)
         let itemIdentifier = NSFileProviderItemIdentifier(pathComponents[pathComponents.count - 2])
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcIdAndocIdTransfer(itemIdentifier.rawValue) else { return }
+        guard let metadata = self.database.getMetadataFromOcIdAndocIdTransfer(itemIdentifier.rawValue) else { return }
         if metadata.session == NCNetworking.shared.sessionDownload {
             let session = NextcloudKit.shared.nkCommonInstance.getSession(account: metadata.session)?.sessionData.session
             session?.getTasksWithCompletionHandler { _, _, downloadTasks in
@@ -316,20 +317,20 @@ class FileProviderExtension: NSFileProviderExtension {
 
                 fileURL.stopAccessingSecurityScopedResource()
 
-                let metadataForUpload = NCManageDatabase.shared.createMetadata(fileName: fileName,
-                                                                               fileNameView: fileName,
-                                                                               ocId: ocIdTransfer,
-                                                                               serverUrl: tableDirectory.serverUrl,
-                                                                               url: "",
-                                                                               contentType: "",
-                                                                               session: fileProviderData.shared.session,
-                                                                               sceneIdentifier: nil)
+                let metadataForUpload = self.database.createMetadata(fileName: fileName,
+                                                                     fileNameView: fileName,
+                                                                     ocId: ocIdTransfer,
+                                                                     serverUrl: tableDirectory.serverUrl,
+                                                                     url: "",
+                                                                     contentType: "",
+                                                                     session: fileProviderData.shared.session,
+                                                                     sceneIdentifier: nil)
 
                 metadataForUpload.session = NCNetworking.shared.sessionUploadBackgroundExt
                 metadataForUpload.size = size
                 metadataForUpload.status = NCGlobal.shared.metadataStatusUploading
 
-                NCManageDatabase.shared.addMetadata(metadataForUpload)
+                self.database.addMetadata(metadataForUpload)
 
                 let serverUrlFileName = tableDirectory.serverUrl + "/" + fileName
                 let fileNameLocalPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTransfer, fileNameView: fileName)
@@ -341,9 +342,9 @@ class FileProviderExtension: NSFileProviderExtension {
                                                                                                           overwrite: true,
                                                                                                           account: metadataForUpload.account,
                                                                                                           sessionIdentifier: metadataForUpload.session) {
-                    NCManageDatabase.shared.setMetadataSession(ocId: metadataForUpload.ocId,
-                                                               sessionTaskIdentifier: task.taskIdentifier,
-                                                               status: NCGlobal.shared.metadataStatusUploading)
+                    self.database.setMetadataSession(ocId: metadataForUpload.ocId,
+                                                     sessionTaskIdentifier: task.taskIdentifier,
+                                                     status: NCGlobal.shared.metadataStatusUploading)
                     fileProviderData.shared.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(ocIdTransfer)) { _ in }
                     fileProviderData.shared.appendUploadMetadata(id: ocIdTransfer, metadata: metadataForUpload, task: task)
                 }

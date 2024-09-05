@@ -29,7 +29,7 @@ import NextcloudKit
 extension NCShareExtension {
     @objc func reloadDatasource(withLoadFolder: Bool) {
         let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", session.account, serverUrl)
-        let metadatas = NCManageDatabase.shared.getResultsMetadatasPredicate(predicate, layoutForView: NCDBLayoutForView())
+        let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: NCDBLayoutForView())
 
         self.dataSource = NCDataSource(metadatas: metadatas)
 
@@ -44,7 +44,7 @@ extension NCShareExtension {
     @objc func didCreateFolder(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
-              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
+              let metadata = self.database.getMetadataFromOcId(ocId)
         else { return }
 
         self.serverUrl += "/" + metadata.fileName

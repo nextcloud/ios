@@ -48,6 +48,7 @@ class NCViewerMedia: UIViewController {
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
+    let database = NCManageDatabase.shared
     weak var viewerMediaPage: NCViewerMediaPage?
     var playerToolBar: NCPlayerToolBar?
     var ncplayer: NCPlayer?
@@ -78,7 +79,6 @@ class NCViewerMedia: UIViewController {
 
     deinit {
         print("deinit NCViewerMedia")
-
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterOpenMediaDetail), object: nil)
     }
 
@@ -91,7 +91,7 @@ class NCViewerMedia: UIViewController {
 
         view.addGestureRecognizer(doubleTapGestureRecognizer)
 
-        if NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) != nil {
+        if self.database.getMetadataLivePhoto(metadata: metadata) != nil {
             statusViewImage.image = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor2])
             statusLabel.text = "LIVE"
         } else {
@@ -100,7 +100,6 @@ class NCViewerMedia: UIViewController {
         }
 
         if metadata.isAudioOrVideo {
-
             playerToolBar = Bundle.main.loadNibNamed("NCPlayerToolBar", owner: self, options: nil)?.first as? NCPlayerToolBar
             if let playerToolBar = playerToolBar {
                 view.addSubview(playerToolBar)
@@ -141,7 +140,7 @@ class NCViewerMedia: UIViewController {
         super.viewDidAppear(animated)
 
         // Set Last Opening Date
-        NCManageDatabase.shared.setLastOpeningDate(metadata: metadata)
+        self.database.setLastOpeningDate(metadata: metadata)
 
         viewerMediaPage?.clearCommandCenter()
 
@@ -154,9 +153,9 @@ class NCViewerMedia: UIViewController {
                         if error == .success, let url = url {
                             ncplayer.openAVPlayer(url: url, autoplay: autoplay)
                         } else {
-                            guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [self.metadata],
-                                                                                                           session: NCNetworking.shared.sessionDownload,
-                                                                                                           selector: "") else { return }
+                            guard let metadata = self.database.setMetadatasSessionInWaitDownload(metadatas: [self.metadata],
+                                                                                                 session: NCNetworking.shared.sessionDownload,
+                                                                                                 selector: "") else { return }
                             var downloadRequest: DownloadRequest?
                             let hud = NCHud(self.tabBarController?.view)
                             hud.initHudRing(text: NSLocalizedString("_downloading_", comment: ""),
@@ -188,7 +187,7 @@ class NCViewerMedia: UIViewController {
                     }
                 } else {
                     var position: Float = 0
-                    if let result = NCManageDatabase.shared.getVideo(metadata: metadata), let resultPosition = result.position {
+                    if let result = self.database.getVideo(metadata: metadata), let resultPosition = result.position {
                         position = resultPosition
                     }
                     ncplayer.restartAVPlayer(position: position, pauseAfterPlay: true)
@@ -251,15 +250,15 @@ class NCViewerMedia: UIViewController {
 
     func loadImage() {
 
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else { return }
+        guard let metadata = self.database.getMetadataFromOcId(metadata.ocId) else { return }
         self.metadata = metadata
 
         if metadata.isLivePhoto,
-           let metadata = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata),
+           let metadata = self.database.getMetadataLivePhoto(metadata: metadata),
            !utilityFileSystem.fileProviderStorageExists(metadata),
-           let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                    session: NCNetworking.shared.sessionDownload,
-                                                                                    selector: "") {
+           let metadata = self.database.setMetadatasSessionInWaitDownload(metadatas: [metadata],
+                                                                          session: NCNetworking.shared.sessionDownload,
+                                                                          selector: "") {
             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
         }
 
@@ -301,7 +300,7 @@ class NCViewerMedia: UIViewController {
                                                 account: metadata.account,
                                                 options: NKRequestOptions(queue: .main)) { _, imagePreview, _, _, etag, error in
                 if error == .success, let image = imagePreview {
-                    NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
+                    self.database.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
                     return completion(image)
                 } else {
                     return completion(self.utility.loadImage(named: "photo", colors: [NCBrandColor.shared.iconImageColor2]))
@@ -311,7 +310,7 @@ class NCViewerMedia: UIViewController {
     }
 
     func downloadImage(withSelector selector: String = "") {
-        guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
+        guard let metadata = self.database.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                        session: NCNetworking.shared.sessionDownload,
                                                                                        selector: selector) else { return }
         NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true) {
@@ -333,7 +332,6 @@ class NCViewerMedia: UIViewController {
     // MARK: - Live Photo
 
     func playLivePhoto(filePath: String) {
-
         updateViewConstraints()
         statusViewImage.isHidden = true
         statusLabel.isHidden = true
@@ -344,7 +342,6 @@ class NCViewerMedia: UIViewController {
     }
 
     func stopLivePhoto() {
-
         player.stop()
 
         statusViewImage.isHidden = false
@@ -354,9 +351,7 @@ class NCViewerMedia: UIViewController {
     // MARK: - Gesture
 
     @objc func didDoubleTapWith(gestureRecognizer: UITapGestureRecognizer) {
-
         guard metadata.isImage, !detailView.isShown else { return }
-
         let pointInView = gestureRecognizer.location(in: self.imageVideoContainer)
         var newZoomScale = self.scrollView.maximumZoomScale
 
@@ -373,9 +368,7 @@ class NCViewerMedia: UIViewController {
     }
 
     @objc func didPanWith(gestureRecognizer: UIPanGestureRecognizer) {
-
         guard metadata.isImage else { return }
-
         let currentLocation = gestureRecognizer.translation(in: self.view)
 
         switch gestureRecognizer.state {
@@ -519,16 +512,13 @@ extension NCViewerMedia {
 }
 
 extension NCViewerMedia: UIScrollViewDelegate {
-
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return imageVideoContainer
     }
 
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
-
         if scrollView.zoomScale > 1 {
             if let image = imageVideoContainer.image {
-
                 let ratioW = imageVideoContainer.frame.width / image.size.width
                 let ratioH = imageVideoContainer.frame.height / image.size.height
                 let ratio = ratioW < ratioH ? ratioW : ratioH
@@ -556,7 +546,7 @@ extension NCViewerMedia: NCViewerMediaDetailViewDelegate {
 
 extension NCViewerMedia: EasyTipViewDelegate {
     func showTip() {
-        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCViewerMediaDetailView) {
+        if !self.database.tipExists(NCGlobal.shared.tipNCViewerMediaDetailView) {
             var preferences = EasyTipView.Preferences()
             preferences.drawing.foregroundColor = .white
             preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
@@ -578,14 +568,14 @@ extension NCViewerMedia: EasyTipViewDelegate {
     }
 
     func easyTipViewDidTap(_ tipView: EasyTipView) {
-        NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCViewerMediaDetailView)
+        self.database.addTip(NCGlobal.shared.tipNCViewerMediaDetailView)
     }
 
     func easyTipViewDidDismiss(_ tipView: EasyTipView) { }
 
     func dismissTip() {
-        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCViewerMediaDetailView) {
-            NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCViewerMediaDetailView)
+        if !self.database.tipExists(NCGlobal.shared.tipNCViewerMediaDetailView) {
+            self.database.addTip(NCGlobal.shared.tipNCViewerMediaDetailView)
         }
         appDelegate.tipView?.dismiss()
         appDelegate.tipView = nil

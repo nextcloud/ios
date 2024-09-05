@@ -25,6 +25,7 @@ import NextcloudKit
 
 class NCShareNetworking: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
+    let database = NCManageDatabase.shared
     weak var delegate: NCShareNetworkingDelegate?
     var view: UIView
     var metadata: tableMetadata
@@ -48,15 +49,15 @@ class NCShareNetworking: NSObject {
 
         NextcloudKit.shared.readShares(parameters: parameter, account: metadata.account) { account, shares, _, error in
             if error == .success, let shares = shares {
-                NCManageDatabase.shared.deleteTableShare(account: account, path: "/" + filenamePath)
+                self.database.deleteTableShare(account: account, path: "/" + filenamePath)
                 let home = self.utilityFileSystem.getHomeServer(session: self.session)
-                NCManageDatabase.shared.addShare(account: self.metadata.account, home: home, shares: shares)
+                self.database.addShare(account: self.metadata.account, home: home, shares: shares)
                 NextcloudKit.shared.getGroupfolders(account: account) { account, results, _, error in
                     if showLoadingIndicator {
                         NCActivityIndicator.shared.stop()
                     }
                     if error == .success, let groupfolders = results {
-                        NCManageDatabase.shared.addGroupfolders(account: account, groupfolders: groupfolders)
+                        self.database.addGroupfolders(account: account, groupfolders: groupfolders)
                     }
                     self.delegate?.readShareCompleted()
                 }
@@ -86,7 +87,7 @@ class NCShareNetworking: NSObject {
             if error == .success, let share = share {
                 option.idShare = share.idShare
                 let home = self.utilityFileSystem.getHomeServer(session: self.session)
-                NCManageDatabase.shared.addShare(account: self.metadata.account, home: home, shares: [share])
+                self.database.addShare(account: self.metadata.account, home: home, shares: [share])
                 if option.hasChanges(comparedTo: share) {
                     self.updateShare(option: option)
                 }
@@ -102,7 +103,7 @@ class NCShareNetworking: NSObject {
         NextcloudKit.shared.deleteShare(idShare: idShare, account: metadata.account) { account, error in
             NCActivityIndicator.shared.stop()
             if error == .success {
-                NCManageDatabase.shared.deleteTableShare(account: account, idShare: idShare)
+                self.database.deleteTableShare(account: account, idShare: idShare)
                 self.delegate?.unShareCompleted()
             } else {
                 NCContentPresenter().showError(error: error)
@@ -116,7 +117,7 @@ class NCShareNetworking: NSObject {
             NCActivityIndicator.shared.stop()
             if error == .success, let share = share {
                 let home = self.utilityFileSystem.getHomeServer(session: self.session)
-                NCManageDatabase.shared.addShare(account: self.metadata.account, home: home, shares: [share])
+                self.database.addShare(account: self.metadata.account, home: home, shares: [share])
                 self.delegate?.readShareCompleted()
             } else {
                 NCContentPresenter().showError(error: error)

@@ -28,6 +28,7 @@ import RealmSwift
 
 class NCService: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
+    let database = NCManageDatabase.shared
 
     // MARK: -
 
@@ -38,7 +39,7 @@ class NCService: NSObject {
             return
         }
 
-        NCManageDatabase.shared.clearAllAvatarLoaded()
+        self.database.clearAllAvatarLoaded()
         NCPushNotification.shared.pushNotification()
 
         Task {
@@ -112,7 +113,7 @@ class NCService: NSObject {
 
         let resultUserProfile = await NCNetworking.shared.getUserProfile(account: account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue))
         if resultUserProfile.error == .success, let userProfile = resultUserProfile.userProfile {
-            NCManageDatabase.shared.setAccountUserProfile(account: resultUserProfile.account, userProfile: userProfile)
+            self.database.setAccountUserProfile(account: resultUserProfile.account, userProfile: userProfile)
             return true
         } else if resultUserProfile.error.errorCode == NCGlobal.shared.errorUnauthorized401 || resultUserProfile.error.errorCode == NCGlobal.shared.errorUnauthorized997 {
             // Ops the server has Unauthorized
@@ -134,8 +135,8 @@ class NCService: NSObject {
                                              account: account,
                                              options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, files, _, error in
             guard error == .success, let files else { return }
-            NCManageDatabase.shared.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
-                NCManageDatabase.shared.updateMetadatasFavorite(account: account, metadatas: metadatas)
+            self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
+                self.database.updateMetadatasFavorite(account: account, metadatas: metadatas)
             }
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Synchronize Favorite")
             self.synchronizeOffline(account: account)
@@ -146,7 +147,7 @@ class NCService: NSObject {
         let session = NCSession.shared.getSession(account: account)
         let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: session.user)
         let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
-        let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
+        let etag = self.database.getTableAvatar(fileName: fileName)?.etag
 
         NextcloudKit.shared.downloadAvatar(user: session.userId,
                                            fileNameLocalPath: fileNameLocalPath,
@@ -156,9 +157,9 @@ class NCService: NSObject {
                                            account: account,
                                            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, _, _, etag, error in
             if let etag = etag, error == .success {
-                NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
+                self.database.addAvatar(fileName: fileName, etag: etag)
             } else if error.errorCode == NCGlobal.shared.errorNotModified {
-                NCManageDatabase.shared.setAvatarLoaded(fileName: fileName)
+                self.database.setAvatarLoaded(fileName: fileName)
             }
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: ["error": error])
         }
@@ -174,8 +175,8 @@ class NCService: NSObject {
 
             data.printJson()
 
-            NCManageDatabase.shared.addCapabilitiesJSon(data, account: account)
-            guard let capability = NCManageDatabase.shared.setCapabilities(account: account, data: data) else { return }
+            self.database.addCapabilitiesJSon(data, account: account)
+            guard let capability = self.database.setCapabilities(account: account, data: data) else { return }
 
             // Theming
             NCBrandColor.shared.settingThemingColor(account: account)
@@ -186,7 +187,7 @@ class NCService: NSObject {
                 let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
                 NextcloudKit.shared.NCTextObtainEditorDetails(account: account, options: options) { account, editors, creators, _, error in
                     if error == .success {
-                        NCManageDatabase.shared.addDirectEditing(account: account, editors: editors, creators: creators)
+                        self.database.addDirectEditing(account: account, editors: editors, creators: creators)
                     }
                 }
             }
@@ -195,21 +196,21 @@ class NCService: NSObject {
             if capability.capabilityExternalSites {
                 NextcloudKit.shared.getExternalSite(account: account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, externalSites, _, error in
                     if error == .success {
-                        NCManageDatabase.shared.deleteExternalSites(account: account)
+                        self.database.deleteExternalSites(account: account)
                         for externalSite in externalSites {
-                            NCManageDatabase.shared.addExternalSites(externalSite, account: account)
+                            self.database.addExternalSites(externalSite, account: account)
                         }
                     }
                 }
             } else {
-                NCManageDatabase.shared.deleteExternalSites(account: account)
+                self.database.deleteExternalSites(account: account)
             }
 
             // User Status
             if capability.capabilityUserStatusEnabled {
                 NextcloudKit.shared.getUserStatus(account: account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, _, _, error in
                     if error == .success {
-                        NCManageDatabase.shared.setAccountUserStatus(userStatusClearAt: clearAt, userStatusIcon: icon, userStatusMessage: message, userStatusMessageId: messageId, userStatusMessageIsPredefined: messageIsPredefined, userStatusStatus: status, userStatusStatusIsUserDefined: statusIsUserDefined, account: account)
+                        self.database.setAccountUserStatus(userStatusClearAt: clearAt, userStatusIcon: icon, userStatusMessage: message, userStatusMessageId: messageId, userStatusMessageIsPredefined: messageIsPredefined, userStatusStatus: status, userStatusStatusIsUserDefined: statusIsUserDefined, account: account)
                     }
                 }
             }
@@ -220,7 +221,7 @@ class NCService: NSObject {
             }
 
             // Added UTI for ONLYOFFICE & Text
-            if let directEditingCreators = NCManageDatabase.shared.getDirectEditingCreators(account: account) {
+            if let directEditingCreators = self.database.getDirectEditingCreators(account: account) {
                 for directEditing in directEditingCreators {
                     NextcloudKit.shared.nkCommonInstance.addInternalTypeIdentifier(typeIdentifier: directEditing.mimetype, classFile: NKCommon.TypeClassFile.document.rawValue, editor: directEditing.editor, iconName: NKCommon.TypeIconFile.document.rawValue, name: "document", account: account)
                 }
@@ -233,7 +234,7 @@ class NCService: NSObject {
     @objc func synchronizeOffline(account: String) {
         // Synchronize Directory
         Task {
-            if let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "serverUrl", ascending: true) {
+            if let directories = self.database.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "serverUrl", ascending: true) {
                 for directory: tableDirectory in directories {
                     await NCNetworking.shared.synchronization(account: account, serverUrl: directory.serverUrl, add: false)
                 }
@@ -241,13 +242,13 @@ class NCService: NSObject {
         }
 
         // Synchronize Files
-        let files = NCManageDatabase.shared.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "fileName", ascending: true)
+        let files = self.database.getTableLocalFiles(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "fileName", ascending: true)
         for file: tableLocalFile in files {
-            guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(file.ocId) else { continue }
+            guard let metadata = self.database.getMetadataFromOcId(file.ocId) else { continue }
             if NCNetworking.shared.isSynchronizable(ocId: metadata.ocId, fileName: metadata.fileName, etag: metadata.etag) {
-                NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                          session: NCNetworking.shared.sessionDownloadBackground,
-                                                                          selector: NCGlobal.shared.selectorSynchronizationOffline)
+                self.database.setMetadatasSessionInWaitDownload(metadatas: [metadata],
+                                                                session: NCNetworking.shared.sessionDownloadBackground,
+                                                                selector: NCGlobal.shared.selectorSynchronizationOffline)
             }
         }
     }
@@ -256,7 +257,7 @@ class NCService: NSObject {
 
     func sendClientDiagnosticsRemoteOperation(account: String) {
         guard NCCapabilities.shared.getCapabilities(account: account).capabilitySecurityGuardDiagnostics,
-              NCManageDatabase.shared.existsDiagnostics(account: account) else {
+              self.database.existsDiagnostics(account: account) else {
             return
         }
 
@@ -311,19 +312,19 @@ class NCService: NSObject {
         var problemBadResponse: Issues.Problem.Error?
         var problemUploadServerError: Issues.Problem.Error?
 
-        if let result = NCManageDatabase.shared.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueSyncConflicts)?.first {
+        if let result = self.database.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueSyncConflicts)?.first {
             syncConflicts = Issues.SyncConflicts(count: result.counter, oldest: result.oldest)
             ids.append(result.id)
         }
-        if let result = NCManageDatabase.shared.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueVirusDetected)?.first {
+        if let result = self.database.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueVirusDetected)?.first {
             virusDetected = Issues.VirusDetected(count: result.counter, oldest: result.oldest)
             ids.append(result.id)
         }
-        if let result = NCManageDatabase.shared.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)?.first {
+        if let result = self.database.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueE2eeErrors)?.first {
             e2eeErrors = Issues.E2EError(count: result.counter, oldest: result.oldest)
             ids.append(result.id)
         }
-        if let results = NCManageDatabase.shared.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueProblems) {
+        if let results = self.database.getDiagnostics(account: account, issue: NCGlobal.shared.diagnosticIssueProblems) {
             for result in results {
                 switch result.error {
                 case NCGlobal.shared.diagnosticProblemsForbidden:
@@ -354,7 +355,7 @@ class NCService: NSObject {
             data.printJson()
             NextcloudKit.shared.sendClientDiagnosticsRemoteOperation(data: data, account: account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, error in
                 if error == .success {
-                    NCManageDatabase.shared.deleteDiagnostics(account: account, ids: ids)
+                    self.database.deleteDiagnostics(account: account, ids: ids)
                 }
             }
         } catch {

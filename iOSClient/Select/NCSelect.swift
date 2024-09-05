@@ -38,6 +38,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     private var selectCommandViewSelect: NCSelectCommandView?
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
+    let database = NCManageDatabase.shared
 
     enum selectType: Int {
         case select
@@ -153,8 +154,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         }
 
         // get auto upload folder
-        autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()
-        autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(session: session)
+        autoUploadFileName = self.database.getAccountAutoUploadFileName()
+        autoUploadDirectory = self.database.getAccountAutoUploadDirectory(session: session)
 
         loadDatasource(withLoadFolder: true)
 
@@ -180,7 +181,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
               let ocId = userInfo["ocId"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
               serverUrl == self.serverUrl,
-              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
+              let metadata = self.database.getMetadataFromOcId(ocId)
         else { return }
 
         pushMetadata(metadata)
@@ -357,7 +358,7 @@ extension NCSelect: UICollectionViewDataSource {
             cell.labelInfo.text = utility.dateDiff(metadata.date as Date) + " · " + utilityFileSystem.transformedSize(metadata.size)
 
             // image local
-            if NCManageDatabase.shared.getTableLocalFile(ocId: metadata.ocId) != nil {
+            if self.database.getTableLocalFile(ocId: metadata.ocId) != nil {
                 cell.imageLocal.image = NCImageCache.shared.getImageOfflineFlag()
             } else if utilityFileSystem.fileProviderStorageExists(metadata) {
                 cell.imageLocal.image = NCImageCache.shared.getImageLocal()
@@ -481,7 +482,7 @@ extension NCSelect {
             }
         }
 
-        let metadatas = NCManageDatabase.shared.getResultsMetadatasPredicate(predicate, layoutForView: NCDBLayoutForView())
+        let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: NCDBLayoutForView())
         self.dataSource = NCDataSource(metadatas: metadatas)
 
         if withLoadFolder {

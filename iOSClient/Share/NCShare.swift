@@ -50,6 +50,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
     let shareCommon = NCShareCommon()
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
+    let database = NCManageDatabase.shared
 
     var canReshare: Bool {
         return ((metadata.sharePermissionsCollaborationServices & NCPermissions().permissionShareShare) != 0)
@@ -89,7 +90,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         NotificationCenter.default.addObserver(self, selector: #selector(reloadData), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataNCShare), object: nil)
 
         if metadata.e2eEncrypted {
-            let direcrory = NCManageDatabase.shared.getTableDirectory(account: metadata.account, serverUrl: metadata.serverUrl)
+            let direcrory = self.database.getTableDirectory(account: metadata.account, serverUrl: metadata.serverUrl)
             let capabilities = NCCapabilities.shared.getCapabilities(account: metadata.account)
             if capabilities.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV12 ||
                 (capabilities.capabilityE2EEApiVersion == NCGlobal.shared.e2eeVersionV20 && direcrory?.e2eEncrypted ?? false) {
@@ -147,9 +148,9 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         sharedWithYouByLabel.addGestureRecognizer(shareLabelAction)
         let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: metadata.ownerId)
 
-        if NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) == nil {
+        if self.database.getImageAvatarLoaded(fileName: fileName) == nil {
             let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
-            let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
+            let etag = self.database.getTableAvatar(fileName: fileName)?.etag
 
             NextcloudKit.shared.downloadAvatar(
                 user: metadata.ownerId,
@@ -159,9 +160,9 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
                 etag: etag,
                 account: metadata.account) { _, imageAvatar, _, etag, error in
                     if error == .success, let etag = etag, let imageAvatar = imageAvatar {
-                        NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
+                        self.database.addAvatar(fileName: fileName, etag: etag)
                         self.sharedWithYouByImage.image = imageAvatar
-                    } else if error.errorCode == NCGlobal.shared.errorNotModified, let imageAvatar = NCManageDatabase.shared.setAvatarLoaded(fileName: fileName) {
+                    } else if error.errorCode == NCGlobal.shared.errorNotModified, let imageAvatar = self.database.setAvatarLoaded(fileName: fileName) {
                         self.sharedWithYouByImage.image = imageAvatar
                     }
                 }
@@ -177,7 +178,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
     // MARK: -
 
     @objc func reloadData() {
-        shares = NCManageDatabase.shared.getTableShares(metadata: metadata)
+        shares = self.database.getTableShares(metadata: metadata)
         tableView.reloadData()
     }
 

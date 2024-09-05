@@ -65,6 +65,7 @@ class NCPlayerToolBar: UIView {
     private var pointSize: CGFloat = 0
     private let utilityFileSystem = NCUtilityFileSystem()
     private let utility = NCUtility()
+    private let database = NCManageDatabase.shared
     private weak var viewerMediaPage: NCViewerMediaPage?
     private var buttonImage = UIImage()
 
@@ -315,7 +316,7 @@ extension NCPlayerToolBar {
         var actions = [NCMenuAction]()
         var subTitleIndex: Int?
 
-        if let data = NCManageDatabase.shared.getVideo(metadata: metadata), let idx = data.currentVideoSubTitleIndex {
+        if let data = self.database.getVideo(metadata: metadata), let idx = data.currentVideoSubTitleIndex {
             subTitleIndex = idx
         } else if let idx = ncplayer?.player.currentVideoSubTitleIndex {
             subTitleIndex = Int(idx)
@@ -336,7 +337,7 @@ extension NCPlayerToolBar {
                         on: (subTitleIndex ?? -9999) == idx,
                         action: { _ in
                             self.ncplayer?.player.currentVideoSubTitleIndex = idx
-                            NCManageDatabase.shared.addVideo(metadata: metadata, currentVideoSubTitleIndex: Int(idx))
+                            self.database.addVideo(metadata: metadata, currentVideoSubTitleIndex: Int(idx))
                         }
                     )
                 )
@@ -381,7 +382,7 @@ extension NCPlayerToolBar {
         var actions = [NCMenuAction]()
         var audioIndex: Int?
 
-        if let data = NCManageDatabase.shared.getVideo(metadata: metadata), let idx = data.currentAudioTrackIndex {
+        if let data = self.database.getVideo(metadata: metadata), let idx = data.currentAudioTrackIndex {
             audioIndex = idx
         } else if let idx = ncplayer?.player.currentAudioTrackIndex {
             audioIndex = Int(idx)
@@ -400,7 +401,7 @@ extension NCPlayerToolBar {
                         on: (audioIndex ?? -9999) == idx,
                         action: { _ in
                             self.ncplayer?.player.currentAudioTrackIndex = idx
-                            NCManageDatabase.shared.addVideo(metadata: metadata, currentAudioTrackIndex: Int(idx))
+                            self.database.addVideo(metadata: metadata, currentAudioTrackIndex: Int(idx))
                         }
                     )
                 )

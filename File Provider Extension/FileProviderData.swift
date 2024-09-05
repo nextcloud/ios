@@ -33,6 +33,7 @@ class fileProviderData: NSObject {
     var domain: NSFileProviderDomain?
     var fileProviderManager: NSFileProviderManager = NSFileProviderManager.default
     let utilityFileSystem = NCUtilityFileSystem()
+    let database = NCManageDatabase.shared
     var listFavoriteIdentifierRank: [String: NSNumber] = [:]
     var fileProviderSignalDeleteContainerItemIdentifier: [NSFileProviderItemIdentifier: NSFileProviderItemIdentifier] = [:]
     var fileProviderSignalUpdateContainerItem: [NSFileProviderItemIdentifier: FileProviderItem] = [:]
@@ -41,9 +42,9 @@ class fileProviderData: NSObject {
     private var account: String = ""
     var session: NCSession.Session {
         if !account.isEmpty,
-           let tableAccount = NCManageDatabase.shared.getTableAccount(account: account) {
+           let tableAccount = self.database.getTableAccount(account: account) {
             return NCSession.Session(account: tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId)
-        } else if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
+        } else if let activeTableAccount = self.database.getActiveTableAccount() {
             self.account = activeTableAccount.account
             return NCSession.Session(account: activeTableAccount.account, urlBase: activeTableAccount.urlBase, user: activeTableAccount.user, userId: activeTableAccount.userId)
         } else {
@@ -85,15 +86,15 @@ class fileProviderData: NSObject {
         let version = NSString(format: NCBrandOptions.shared.textCopyrightNextcloudiOS as NSString, NCUtility().getVersionApp()) as String
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start File Provider session with level \(levelLog) " + version + " (File Provider Extension)")
 
-        var tblAccount = NCManageDatabase.shared.getActiveTableAccount()
+        var tblAccount = self.database.getActiveTableAccount()
         if let domain {
-            for tableAccount in NCManageDatabase.shared.getAllTableAccount() {
+            for tableAccount in self.database.getAllTableAccount() {
                 guard let urlBase = NSURL(string: tableAccount.urlBase) else { continue }
                 guard let host = urlBase.host else { continue }
                 let accountDomain = tableAccount.userId + " (" + host + ")"
                 if accountDomain == domain.identifier.rawValue {
                     let account = "\(tableAccount.user) \(tableAccount.urlBase)"
-                    tblAccount = NCManageDatabase.shared.getTableAccount(account: account)
+                    tblAccount = self.database.getTableAccount(account: account)
                     break
                 }
             }
@@ -120,7 +121,7 @@ class fileProviderData: NSObject {
 
     @discardableResult
     func signalEnumerator(ocId: String, type: TypeSignal) -> FileProviderItem? {
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId),
+        guard let metadata = self.database.getMetadataFromOcId(ocId),
               let parentItemIdentifier = fileProviderUtility().getParentItemIdentifier(metadata: metadata) else {
             return nil
         }

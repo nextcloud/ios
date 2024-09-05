@@ -46,7 +46,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         super.viewDidLoad()
 
         listLayout.itemHeight = 105
-        NCManageDatabase.shared.setLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl, layout: NCGlobal.shared.layoutList)
+        self.database.setLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl, layout: NCGlobal.shared.layoutList)
         self.navigationItem.title = titleCurrentFolder
     }
 
@@ -117,7 +117,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     // MARK: TAP EVENT
 
     override func tapMoreGridItem(with ocId: String, ocIdTransfer: String, image: UIImage?, sender: Any) {
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcIdAndocIdTransfer(ocIdTransfer) else { return }
+        guard let metadata = self.database.getMetadataFromOcIdAndocIdTransfer(ocIdTransfer) else { return }
         NCNetworking.shared.cancelTask(metadata: metadata)
     }
 
@@ -139,7 +139,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     override func longPressListItem(with ocId: String, ocIdTransfer: String, gestureRecognizer: UILongPressGestureRecognizer) {
         if gestureRecognizer.state != .began { return }
 
-        if let metadata = NCManageDatabase.shared.getMetadataFromOcIdAndocIdTransfer(ocIdTransfer) {
+        if let metadata = self.database.getMetadataFromOcIdAndocIdTransfer(ocIdTransfer) {
             metadataTemp = metadata
             let touchPoint = gestureRecognizer.location(in: collectionView)
             becomeFirstResponder()
@@ -157,7 +157,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
         cameraRoll.extractCameraRoll(from: metadata) { metadatas in
             for metadata in metadatas {
-                if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusUploading) {
+                if let metadata = self.database.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusUploading) {
                     NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
                     NCNetworking.shared.upload(metadata: metadata)
                 }

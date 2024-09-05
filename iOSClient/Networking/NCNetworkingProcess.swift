@@ -30,6 +30,7 @@ class NCNetworkingProcess {
     static let shared = NCNetworkingProcess()
 
     private let utilityFileSystem = NCUtilityFileSystem()
+    private let database = NCManageDatabase.shared
     private var notificationToken: NotificationToken?
     private var hasRun: Bool = false
     private let lockQueue = DispatchQueue(label: "com.nextcloud.networkingprocess.lockqueue")
@@ -81,19 +82,19 @@ class NCNetworkingProcess {
                 guard !self.hasRun, NCNetworking.shared.isOnline else { return }
                 self.hasRun = true
 
-                guard let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status != %d", NCGlobal.shared.metadataStatusNormal)) else { return }
+                guard let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %d", NCGlobal.shared.metadataStatusNormal)) else { return }
 
                 if results.isEmpty {
                     /// Remove Photo CameraRoll
                     ///
                     if NCKeychain().removePhotoCameraRoll,
                        UIApplication.shared.applicationState == .active,
-                       let localIdentifiers = NCManageDatabase.shared.getAssetLocalIdentifiersUploaded(),
+                       let localIdentifiers = self.database.getAssetLocalIdentifiersUploaded(),
                        !localIdentifiers.isEmpty {
                         PHPhotoLibrary.shared().performChanges({
                             PHAssetChangeRequest.deleteAssets(PHAsset.fetchAssets(withLocalIdentifiers: localIdentifiers, options: nil) as NSFastEnumeration)
                         }, completionHandler: { _, _ in
-                            NCManageDatabase.shared.clearAssetLocalIdentifiers(localIdentifiers)
+                            self.database.clearAssetLocalIdentifiers(localIdentifiers)
                             self.hasRun = false
                         })
                     } else {
@@ -120,16 +121,16 @@ class NCNetworkingProcess {
         let maxConcurrentOperationDownload = NCBrandOptions.shared.maxConcurrentOperationDownload
         var maxConcurrentOperationUpload = NCBrandOptions.shared.maxConcurrentOperationUpload
         let sessionUploadSelectors = [global.selectorUploadFileNODelete, global.selectorUploadFile, global.selectorUploadAutoUpload, global.selectorUploadAutoUploadAll]
-        let metadatasDownloading = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusDownloading))
-        let metadatasUploading = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusUploading))
-        let metadatasUploadError: [tableMetadata] = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusUploadError), sortedByKeyPath: "sessionDate", ascending: true) ?? []
+        let metadatasDownloading = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusDownloading))
+        let metadatasUploading = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusUploading))
+        let metadatasUploadError: [tableMetadata] = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusUploadError), sortedByKeyPath: "sessionDate", ascending: true) ?? []
         let isWiFi = NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi
         var counterDownloading = metadatasDownloading.count
         var counterUploading = metadatasUploading.count
 
         /// ------------------------ FOLDER
         ///
-        if let metadatasWaitCreateFolder = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitCreateFolder), sortedByKeyPath: "serverUrl", ascending: true) {
+        if let metadatasWaitCreateFolder = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitCreateFolder), sortedByKeyPath: "serverUrl", ascending: true) {
             for metadata in metadatasWaitCreateFolder {
                 let error = await NCNetworking.shared.createFolderOffline(metadata: metadata)
                 if error != .success {
@@ -146,22 +147,22 @@ class NCNetworkingProcess {
         /// ------------------------ DOWNLOAD
         ///
         let limitDownload = maxConcurrentOperationDownload - counterDownloading
-        let metadatasWaitDownload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "session == %@ AND status == %d", NCNetworking.shared.sessionDownloadBackground, global.metadataStatusWaitDownload), numItems: limitDownload, sorted: "sessionDate", ascending: true)
+        let metadatasWaitDownload = self.database.getMetadatas(predicate: NSPredicate(format: "session == %@ AND status == %d", NCNetworking.shared.sessionDownloadBackground, global.metadataStatusWaitDownload), numItems: limitDownload, sorted: "sessionDate", ascending: true)
         for metadata in metadatasWaitDownload where counterDownloading < maxConcurrentOperationDownload {
             counterDownloading += 1
             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
         }
         if counterDownloading == 0 {
-            let metadatasDownloadError: [tableMetadata] = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "session == %@ AND status == %d", NCNetworking.shared.sessionDownloadBackground, global.metadataStatusDownloadError), sortedByKeyPath: "sessionDate", ascending: true) ?? []
+            let metadatasDownloadError: [tableMetadata] = self.database.getMetadatas(predicate: NSPredicate(format: "session == %@ AND status == %d", NCNetworking.shared.sessionDownloadBackground, global.metadataStatusDownloadError), sortedByKeyPath: "sessionDate", ascending: true) ?? []
             for metadata in metadatasDownloadError {
                 // Verify COUNTER ERROR
                 if let transfer = NCTransferProgress.shared.get(ocIdTransfer: metadata.ocIdTransfer),
                    transfer.countError > 3 {
                     continue
                 }
-                NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                           sessionError: "",
-                                                           status: global.metadataStatusWaitDownload)
+                self.database.setMetadataSession(ocId: metadata.ocId,
+                                                 sessionError: "",
+                                                 status: global.metadataStatusWaitDownload)
             }
         }
 
@@ -182,7 +183,7 @@ class NCNetworkingProcess {
 
         for sessionSelector in sessionUploadSelectors where counterUploading < maxConcurrentOperationUpload {
             let limitUpload = maxConcurrentOperationUpload - counterUploading
-            let metadatasWaitUpload = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "sessionSelector == %@ AND status == %d", sessionSelector, global.metadataStatusWaitUpload), numItems: limitUpload, sorted: "sessionDate", ascending: true)
+            let metadatasWaitUpload = self.database.getMetadatas(predicate: NSPredicate(format: "sessionSelector == %@ AND status == %d", sessionSelector, global.metadataStatusWaitUpload), numItems: limitUpload, sorted: "sessionDate", ascending: true)
 
             if !metadatasWaitUpload.isEmpty {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] PROCESS (UPLOAD) find \(metadatasWaitUpload.count) items")
@@ -198,7 +199,7 @@ class NCNetworkingProcess {
                 let metadatas = await NCCameraRoll().extractCameraRoll(from: metadata)
 
                 if metadatas.isEmpty {
-                    NCManageDatabase.shared.deleteMetadataOcId(metadata.ocId)
+                    self.database.deleteMetadataOcId(metadata.ocId)
                 }
 
                 for metadata in metadatas where counterUploading < maxConcurrentOperationUpload {
@@ -207,7 +208,7 @@ class NCNetworkingProcess {
                     /// NO WiFi
                     if !isWiFi && metadata.session == NCNetworking.shared.sessionUploadBackgroundWWan { continue }
                     if applicationState != .active && (isInDirectoryE2EE || metadata.chunk > 0) { continue }
-                    if let metadata = NCManageDatabase.shared.setMetadataStatus(ocId: metadata.ocId, status: global.metadataStatusUploading) {
+                    if let metadata = self.database.setMetadataStatus(ocId: metadata.ocId, status: global.metadataStatusUploading) {
                         /// find controller
                         var controller: NCMainTabBarController?
                         if let sceneIdentifier = metadata.sceneIdentifier, !sceneIdentifier.isEmpty {
@@ -248,17 +249,17 @@ class NCNetworkingProcess {
                 if metadata.sessionError.contains("\(global.errorQuota)") {
                     NextcloudKit.shared.getUserProfile(account: metadata.account) { _, userProfile, _, error in
                         if error == .success, let userProfile, userProfile.quotaFree > 0, userProfile.quotaFree > metadata.size {
-                            NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                                       session: NCNetworking.shared.sessionUploadBackground,
-                                                                       sessionError: "",
-                                                                       status: self.global.metadataStatusWaitUpload)
+                            self.database.setMetadataSession(ocId: metadata.ocId,
+                                                             session: NCNetworking.shared.sessionUploadBackground,
+                                                             sessionError: "",
+                                                             status: self.global.metadataStatusWaitUpload)
                         }
                     }
                 } else {
-                    NCManageDatabase.shared.setMetadataSession(ocId: metadata.ocId,
-                                                               session: NCNetworking.shared.sessionUploadBackground,
-                                                               sessionError: "",
-                                                               status: global.metadataStatusWaitUpload)
+                    self.database.setMetadataSession(ocId: metadata.ocId,
+                                                     session: NCNetworking.shared.sessionUploadBackground,
+                                                     sessionError: "",
+                                                     status: global.metadataStatusWaitUpload)
                 }
             }
         }
@@ -297,16 +298,16 @@ class NCNetworkingProcess {
         var metadatasForUpload: [tableMetadata] = []
         for metadata in metadatas {
             if verifyAlreadyExists {
-                if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ && serverUrl == %@ && fileName == %@ && session != ''",
-                                                                              metadata.account,
-                                                                              metadata.serverUrl,
-                                                                              metadata.fileName)) != nil {
+                if self.database.getMetadata(predicate: NSPredicate(format: "account == %@ && serverUrl == %@ && fileName == %@ && session != ''",
+                                                                    metadata.account,
+                                                                    metadata.serverUrl,
+                                                                    metadata.fileName)) != nil {
                     continue
                 }
             }
             metadatasForUpload.append(metadata)
         }
-        NCManageDatabase.shared.addMetadatas(metadatasForUpload)
+        self.database.addMetadatas(metadatasForUpload)
         completion(metadatasForUpload.count)
     }
 }

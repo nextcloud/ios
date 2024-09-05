@@ -33,6 +33,7 @@ class NCPlayer: NSObject {
     internal var metadata: tableMetadata
     internal var singleTapGestureRecognizer: UITapGestureRecognizer?
     internal var activityIndicator: UIActivityIndicatorView
+    internal let database = NCManageDatabase.shared
     internal var width: Int?
     internal var height: Int?
     internal var length: Int?
@@ -92,7 +93,7 @@ class NCPlayer: NSObject {
         // player?.media?.addOption("--network-caching=500")
         player.media?.addOption(":http-user-agent=\(userAgent)")
 
-        if let result = NCManageDatabase.shared.getVideo(metadata: metadata),
+        if let result = self.database.getVideo(metadata: metadata),
             let resultPosition = result.position {
             position = resultPosition
         }
@@ -173,7 +174,7 @@ class NCPlayer: NSObject {
     func playerPlay() {
         playerToolBar?.playbackSliderEvent = .began
 
-        if let result = NCManageDatabase.shared.getVideo(metadata: metadata), let position = result.position {
+        if let result = self.database.getVideo(metadata: metadata), let position = result.position {
             player.position = position
             playerToolBar?.playbackSliderEvent = .moved
         }
@@ -196,13 +197,13 @@ class NCPlayer: NSObject {
     }
 
     func playerPosition(_ position: Float) {
-        NCManageDatabase.shared.addVideo(metadata: metadata, position: position)
+        self.database.addVideo(metadata: metadata, position: position)
         player.position = position
     }
 
     func savePosition() {
         guard metadata.isVideo, isPlay() else { return }
-        NCManageDatabase.shared.addVideo(metadata: metadata, position: player.position)
+        self.database.addVideo(metadata: metadata, position: player.position)
     }
 
     func jumpForward(_ seconds: Int32) {
@@ -234,7 +235,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
         case .buffering:
             print("Played mode: BUFFERING")
         case .ended:
-            NCManageDatabase.shared.addVideo(metadata: self.metadata, position: 0)
+            self.database.addVideo(metadata: self.metadata, position: 0)
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 if let playRepeat = self.playerToolBar?.playRepeat {
                     self.restartAVPlayer(position: 0, pauseAfterPlay: !playRepeat)
@@ -257,7 +258,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             } else {
                 playerToolBar.playButtonPause()
                 // Set track audio/subtitle
-                let data = NCManageDatabase.shared.getVideo(metadata: metadata)
+                let data = self.database.getVideo(metadata: metadata)
                 if let currentAudioTrackIndex = data?.currentAudioTrackIndex {
                     player.currentAudioTrackIndex = Int32(currentAudioTrackIndex)
                 }
@@ -272,7 +273,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             self.width = Int(size.width)
             self.height = Int(size.height)
             playerToolBar.updateTopToolBar(videoSubTitlesIndexes: player.videoSubTitlesIndexes, audioTrackIndexes: player.audioTrackIndexes)
-            NCManageDatabase.shared.addVideo(metadata: metadata, width: self.width, height: self.height, length: self.length)
+            self.database.addVideo(metadata: metadata, width: self.width, height: self.height, length: self.length)
             print("Played mode: PLAYING")
         case .paused:
             playerToolBar?.playButtonPlay()

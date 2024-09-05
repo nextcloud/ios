@@ -184,9 +184,9 @@ extension NCManageDatabase {
         if serverUrl.hasSuffix("/") {
             serverUrl = String(serverUrl.dropLast())
         }
-        return NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@ AND sessionTaskIdentifier == %d",
-                                                                          serverUrl,
-                                                                          fileName,
-                                                                          sessionTaskIdentifier))
+        return getMetadata(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@ AND sessionTaskIdentifier == %d",
+                                                  serverUrl,
+                                                  fileName,
+                                                  sessionTaskIdentifier))
     }
 }

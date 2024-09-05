@@ -32,8 +32,8 @@ extension NCTrash {
         } completion: { account, items, _, error in
             self.refreshControl.endRefreshing()
             if let items {
-                NCManageDatabase.shared.deleteTrash(filePath: self.getFilePath(), account: account)
-                NCManageDatabase.shared.addTrash(account: account, items: items)
+                self.database.deleteTrash(filePath: self.getFilePath(), account: account)
+                self.database.addTrash(account: account, items: items)
             }
             self.reloadDataSource()
             if error != .success {
@@ -43,7 +43,7 @@ extension NCTrash {
     }
 
     func restoreItem(with fileId: String) {
-        guard let resultTableTrash = NCManageDatabase.shared.getResultTrashItem(fileId: fileId, account: session.account) else { return }
+        guard let resultTableTrash = self.database.getResultTrashItem(fileId: fileId, account: session.account) else { return }
         let fileNameFrom = resultTableTrash.filePath + resultTableTrash.fileName
         let fileNameTo = session.urlBase + "/remote.php/dav/trashbin/" + session.userId + "/restore/" + resultTableTrash.fileName
 
@@ -52,7 +52,7 @@ extension NCTrash {
                 NCContentPresenter().showError(error: error)
                 return
             }
-            NCManageDatabase.shared.deleteTrash(fileId: fileId, account: account)
+            self.database.deleteTrash(fileId: fileId, account: account)
             self.reloadDataSource()
         }
     }
@@ -65,13 +65,13 @@ extension NCTrash {
                 NCContentPresenter().showError(error: error)
                 return
             }
-            NCManageDatabase.shared.deleteTrash(fileId: nil, account: account)
+            self.database.deleteTrash(fileId: nil, account: account)
             self.reloadDataSource()
         }
     }
 
     func deleteItem(with fileId: String) {
-        guard let resultTableTrash = NCManageDatabase.shared.getResultTrashItem(fileId: fileId, account: session.account) else { return }
+        guard let resultTableTrash = self.database.getResultTrashItem(fileId: fileId, account: session.account) else { return }
         let serverUrlFileName = resultTableTrash.filePath + resultTableTrash.fileName
 
         NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: session.account) { account, error in
@@ -79,7 +79,7 @@ extension NCTrash {
                 NCContentPresenter().showError(error: error)
                 return
             }
-            NCManageDatabase.shared.deleteTrash(fileId: fileId, account: account)
+            self.database.deleteTrash(fileId: fileId, account: account)
             self.reloadDataSource()
         }
     }

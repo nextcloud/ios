@@ -27,6 +27,7 @@ import PhotosUI
 
 class NCUtilityFileSystem: NSObject {
     let fileManager = FileManager.default
+    let database = NCManageDatabase.shared
     var directoryGroup: String {
         return fileManager.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)?.path ?? ""
     }
@@ -213,7 +214,7 @@ class NCUtilityFileSystem: NSObject {
 
     func isDirectoryE2EE(session: NCSession.Session, serverUrl: String) -> Bool {
         if serverUrl == getHomeServer(session: session) || serverUrl == ".." { return false }
-        if let directory = NCManageDatabase.shared.getTableDirectory(account: session.account, serverUrl: serverUrl) {
+        if let directory = self.database.getTableDirectory(account: session.account, serverUrl: serverUrl) {
             return directory.e2eEncrypted
         }
         return false
@@ -224,7 +225,7 @@ class NCUtilityFileSystem: NSObject {
 
         if let url = URL(string: serverUrl)?.deletingLastPathComponent(),
            let serverUrl = String(url.absoluteString.dropLast()).removingPercentEncoding {
-            if let directory = NCManageDatabase.shared.getTableDirectory(account: account, serverUrl: serverUrl) {
+            if let directory = self.database.getTableDirectory(account: account, serverUrl: serverUrl) {
                 return !directory.e2eEncrypted
             }
         }
@@ -237,7 +238,7 @@ class NCUtilityFileSystem: NSObject {
 
         while let url = URL(string: serverUrl)?.deletingLastPathComponent(),
               let serverUrlencoding = serverUrl.removingPercentEncoding,
-              let directory = NCManageDatabase.shared.getTableDirectory(account: account, serverUrl: serverUrlencoding) {
+              let directory = self.database.getTableDirectory(account: account, serverUrl: serverUrlencoding) {
 
             if directory.e2eEncrypted {
                 top = directory
@@ -529,7 +530,7 @@ class NCUtilityFileSystem: NSObject {
         var exitLoop = false
 
         while exitLoop == false {
-            if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "fileNameView == %@ AND serverUrl == %@ AND account == %@", resultFileName, serverUrl, account)) != nil {
+            if self.database.getMetadata(predicate: NSPredicate(format: "fileNameView == %@ AND serverUrl == %@ AND account == %@", resultFileName, serverUrl, account)) != nil {
                 var name = NSString(string: resultFileName).deletingPathExtension
                 let ext = NSString(string: resultFileName).pathExtension
                 let characters = Array(name)
@@ -614,12 +615,12 @@ class NCUtilityFileSystem: NSObject {
         let url = URL(fileURLWithPath: directory)
         var offlineDir: [String] = []
 
-        if let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "offline == true"), sorted: "serverUrl", ascending: true) {
+        if let directories = self.database.getTablesDirectory(predicate: NSPredicate(format: "offline == true"), sorted: "serverUrl", ascending: true) {
             for directory: tableDirectory in directories {
                 offlineDir.append(getDirectoryProviderStorageOcId(directory.ocId))
             }
         }
-        let resultsLocalFile = NCManageDatabase.shared.getResultsTableLocalFile(predicate: NSPredicate(format: "offline == false"), sorted: "lastOpeningDate", ascending: true)
+        let resultsLocalFile = self.database.getResultsTableLocalFile(predicate: NSPredicate(format: "offline == false"), sorted: "lastOpeningDate", ascending: true)
 
         let manager = FileManager.default
         if let enumerator = manager.enumerator(at: url, includingPropertiesForKeys: [.isRegularFileKey], options: []) {
@@ -639,7 +640,7 @@ class NCUtilityFileSystem: NSObject {
                             try manager.removeItem(atPath: fileURL.path)
                         } catch { }
                         manager.createFile(atPath: fileURL.path, contents: nil, attributes: nil)
-                        NCManageDatabase.shared.deleteLocalFileOcId(ocId)
+                        self.database.deleteLocalFileOcId(ocId)
                     }
                 }
             }
@@ -665,7 +666,7 @@ class NCUtilityFileSystem: NSObject {
     }
 
     func createGranularityPath(asset: PHAsset? = nil, serverUrl: String? = nil) -> String {
-        let autoUploadSubfolderGranularity = NCManageDatabase.shared.getAccountAutoUploadSubfolderGranularity()
+        let autoUploadSubfolderGranularity = self.database.getAccountAutoUploadSubfolderGranularity()
         let dateFormatter = DateFormatter()
         let date = asset?.creationDate ?? Date()
         var path = ""
