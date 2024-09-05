@@ -46,7 +46,7 @@ struct NCLoginPoll: View {
 				Text(NSLocalizedString("_poll_desc_", comment: ""))
 					.multilineTextAlignment(.center)
 					.foregroundStyle(.white)
-					.padding(35)
+					.padding(20)
 					.padding(.top, 80)
 				
 				Spacer()

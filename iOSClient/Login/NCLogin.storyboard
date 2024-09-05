@@ -27,7 +27,7 @@
                                         <rect key="frame" x="135.66666666666666" y="132.66666666666666" width="158.99999999999997" height="22"/>
                                     </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ySx-9E-GUK" userLabel="lblWelcome">
-                                        <rect key="frame" x="18" y="204.66666666666666" width="394" height="0.0"/>
+                                        <rect key="frame" x="18" y="254.66666666666666" width="394" height="0.0"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
@@ -65,7 +65,7 @@
                                     <constraint firstItem="HQd-pF-3cE" firstAttribute="centerY" secondItem="hwa-hT-QjM" secondAttribute="centerYWithinMargins" multiplier="1.5" id="N5W-JR-rNk"/>
                                     <constraint firstAttribute="trailing" secondItem="5fY-iq-Tv0" secondAttribute="trailing" constant="10" id="cEP-rs-Tcj"/>
                                     <constraint firstItem="5fY-iq-Tv0" firstAttribute="leading" secondItem="hwa-hT-QjM" secondAttribute="leading" constant="10" id="j1g-YM-IiX"/>
-                                    <constraint firstItem="ySx-9E-GUK" firstAttribute="top" secondItem="O7g-q0-SHY" secondAttribute="bottom" constant="50" id="oLc-50-Cf4"/>
+                                    <constraint firstItem="ySx-9E-GUK" firstAttribute="top" secondItem="O7g-q0-SHY" secondAttribute="bottom" constant="100" id="oLc-50-Cf4"/>
                                     <constraint firstItem="ySx-9E-GUK" firstAttribute="leading" secondItem="hwa-hT-QjM" secondAttribute="leadingMargin" constant="10" id="udj-JU-CJE"/>
                                 </constraints>
                             </view>
