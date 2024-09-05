@@ -182,7 +182,7 @@ class NCDataSource: NSObject {
         let validMetadatas = self.metadatas.filter { !$0.isInvalidated }
 
         if let rowIndex = validMetadatas.firstIndex(where: {$0.ocId == ocId}) {
-            return IndexPath(row: rowIndex, section: 1)
+            return IndexPath(row: rowIndex, section: 0)
         }
 
         return nil

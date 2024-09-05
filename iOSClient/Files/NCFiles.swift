@@ -95,6 +95,17 @@ class NCFiles: NCCollectionViewCommon {
         reloadDataSourceNetwork(withQueryDB: true)
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        if !self.dataSource.isEmpty() {
+            self.blinkCell(fileName: self.fileNameBlink)
+            self.openFile(fileName: self.fileNameOpen)
+            self.fileNameBlink = nil
+            self.fileNameOpen = nil
+        }
+    }
+
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
@@ -120,17 +131,6 @@ class NCFiles: NCCollectionViewCommon {
 
         let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: layoutForView)
         self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: layoutForView)
-    }
-
-    override func reloadDataSource(withQueryDB: Bool = true) {
-        super.reloadDataSource(withQueryDB: withQueryDB)
-
-        if !self.dataSource.isEmpty() {
-            self.blinkCell(fileName: self.fileNameBlink)
-            self.openFile(fileName: self.fileNameOpen)
-            self.fileNameBlink = nil
-            self.fileNameOpen = nil
-        }
     }
 
     override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
