@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
-    <device id="retina4_7" orientation="portrait" appearance="light"/>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
+    <device id="retina6_72" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
-        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -12,21 +11,37 @@
         <scene sceneID="EHf-IW-A2E">
             <objects>
                 <viewController id="01J-lp-oVM" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="YKm-8J-F9H"/>
+                        <viewControllerLayoutGuide type="bottom" id="8OE-a7-dy5"/>
+                    </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="430" height="932"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="7UE-Dr-Fma">
-                                <rect key="frame" x="59.5" y="269.5" width="256" height="128"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Launch/Background" translatesAutoresizingMaskIntoConstraints="NO" id="HQ1-PE-oGQ">
+                                <rect key="frame" x="0.0" y="0.0" width="430" height="932"/>
+                            </imageView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Launch/Logo" translatesAutoresizingMaskIntoConstraints="NO" id="7UE-Dr-Fma">
+                                <rect key="frame" x="135.66666666666666" y="455" width="158.99999999999997" height="22"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="159" id="PFy-xS-233">
+                                        <variation key="heightClass=regular-widthClass=regular" constant="318"/>
+                                    </constraint>
+                                    <constraint firstAttribute="height" constant="22" id="oJt-8x-MJM">
+                                        <variation key="heightClass=regular-widthClass=regular" constant="44"/>
+                                    </constraint>
+                                </constraints>
                             </imageView>
                         </subviews>
-                        <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
-                        <color key="backgroundColor" red="0.0" green="0.50980392156862742" blue="0.78823529411764703" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="7UE-Dr-Fma" firstAttribute="width" relation="lessThanOrEqual" secondItem="6Tk-OE-BBY" secondAttribute="width" id="8ik-eB-po8"/>
-                            <constraint firstItem="7UE-Dr-Fma" firstAttribute="height" relation="lessThanOrEqual" secondItem="6Tk-OE-BBY" secondAttribute="height" id="G3L-l7-lxv"/>
-                            <constraint firstItem="7UE-Dr-Fma" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="XdS-tM-D9I"/>
-                            <constraint firstItem="7UE-Dr-Fma" firstAttribute="centerY" secondItem="6Tk-OE-BBY" secondAttribute="centerY" id="ZR5-ct-Gg8"/>
+                            <constraint firstItem="HQ1-PE-oGQ" firstAttribute="height" secondItem="Ze5-6b-2t3" secondAttribute="height" id="0hA-tq-FUq"/>
+                            <constraint firstItem="HQ1-PE-oGQ" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="Ed2-UF-yRc"/>
+                            <constraint firstItem="7UE-Dr-Fma" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="XdS-tM-D9I"/>
+                            <constraint firstItem="7UE-Dr-Fma" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="ZR5-ct-Gg8"/>
+                            <constraint firstItem="HQ1-PE-oGQ" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="qTM-RF-cdR"/>
+                            <constraint firstItem="HQ1-PE-oGQ" firstAttribute="width" secondItem="Ze5-6b-2t3" secondAttribute="width" id="ual-hG-rKG"/>
                         </constraints>
                     </view>
                 </viewController>
@@ -36,6 +51,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="logo" width="256" height="128"/>
+        <image name="Launch/Background" width="320" height="568"/>
+        <image name="Launch/Logo" width="159" height="22"/>
     </resources>
 </document>

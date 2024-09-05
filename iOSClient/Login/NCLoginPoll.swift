@@ -29,41 +29,54 @@ struct NCLoginPoll: View {
     let loginFlowV2Endpoint: String
     let loginFlowV2Login: String
 
+	var deviceIdiom: UIUserInterfaceIdiom
+	var onCancel: (() -> ())?
     var cancelButtonDisabled = false
 
     @ObservedObject private var loginManager = LoginManager()
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        VStack {
-            Text(NSLocalizedString("_poll_desc_", comment: ""))
-                .multilineTextAlignment(.center)
-                .foregroundStyle(.white)
-                .padding()
+		GeometryReader { geometry in
+			let size = geometry.size
 
-            ProgressView()
-                .scaleEffect(1.5)
-                .tint(.white)
-                .padding()
+			VStack {
+				Image(.Launch.logo)
+					.padding(.top, size.height * 0.05)
+				Text(NSLocalizedString("_poll_desc_", comment: ""))
+					.multilineTextAlignment(.center)
+					.foregroundStyle(.white)
+					.padding(35)
+					.padding(.top, 80)
+				
+				Spacer()
+				CircleItemSpinner()
+					.tint(.white)
+				Spacer()
 
-            HStack {
-                Button(NSLocalizedString("_cancel_", comment: "")) {
-                    dismiss()
-                }
-                .disabled(loginManager.isLoading || cancelButtonDisabled)
-                .buttonStyle(.bordered)
-                .tint(.white)
-
-                Button(NSLocalizedString("_retry_", comment: "")) {
-                    loginManager.openLoginInBrowser()
-                }
-                .buttonStyle(.borderedProminent)
-                .foregroundStyle(Color(NCBrandColor.shared.customer))
-                .tint(.white)
-            }
-            .padding()
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+				HStack(spacing: 20) {
+					Button(NSLocalizedString("_cancel_", comment: "")) {
+						onCancel?()
+						dismiss()
+					}
+					.disabled(loginManager.isLoading || cancelButtonDisabled)
+					.buttonStyle(.loginPoll)
+					
+					Button(NSLocalizedString("_retry_", comment: "")) {
+						loginManager.openLoginInBrowser()
+					}
+					.buttonStyle(.loginPoll)
+					
+				}
+				.padding()
+				.padding(.bottom, size.height * 0.15)
+			}
+			.frame(maxWidth: .infinity, maxHeight: .infinity)
+			.background(Group {
+				if deviceIdiom == .pad { LoginPollPadBackground() }
+					 else { LoginPollPhoneBackground() }
+				})
+		}
         .onChange(of: loginManager.pollFinished) { value in
             if value {
                 let window = UIApplication.shared.firstWindow
@@ -83,7 +96,6 @@ struct NCLoginPoll: View {
                 }
             }
         }
-        .background(Color(NCBrandColor.shared.customer))
         .onAppear {
             loginManager.configure(loginFlowV2Token: loginFlowV2Token, loginFlowV2Endpoint: loginFlowV2Endpoint, loginFlowV2Login: loginFlowV2Login)
 
@@ -95,8 +107,78 @@ struct NCLoginPoll: View {
     }
 }
 
+struct LoginPollPhoneBackground: View {
+	var body: some View {
+		Image(.Launch.background)
+			.resizable()
+			.ignoresSafeArea()
+	}
+}
+
+struct LoginPollPadBackground: View {
+	var body: some View {
+		Color.clear
+	}
+}
+
+struct LoginPollButtonStyle: ButtonStyle {
+	private var idiom : UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
+	
+	func makeBody(configuration: Configuration) -> some View {
+		configuration.label
+			.font(.title2)
+			.frame(width: idiom == .phone ? 100 : 240
+				   , height: 32)
+			.padding()
+			.foregroundStyle(configuration.isPressed ? Color(.Launch.loginButtonText) : .white)
+			.background{
+				Capsule(style: .continuous)
+					.stroke( .white, lineWidth: 3)
+					.background(content: {
+						 Capsule().fill(configuration.isPressed ? .white : .clear)
+					})
+			}
+	}
+}
+
+extension ButtonStyle where Self == LoginPollButtonStyle {
+	static var loginPoll: Self {
+		return .init()
+	}
+}
+
+struct CircleItemSpinner: View {
+	@State private var degree = 270
+	let itemsCount: Int = 7
+	let itemSide: CGFloat = 8
+	let spinerSide: CGFloat = 60
+	
+	var body: some View {
+		GeometryReader { bounds in
+			ForEach(0..<itemsCount, id: \.self) { i in
+				Circle()
+					.fill(.tint)
+					.frame(width:itemSide , height: itemSide, alignment: .center)
+					.offset(x: (bounds.size.width / 2) - 12)
+					.rotationEffect(.degrees(.pi * 2 * Double(i * 7)))
+			}
+			.frame(width: bounds.size.width, height: bounds.size.height, alignment: .center)
+			.rotationEffect(.degrees(Double(degree)))
+			.animation(
+				Animation.linear(duration: 1.5)
+					.repeatForever(autoreverses: false),
+				value: degree
+			)
+			.onAppear{
+				degree = 270 + 360
+			}
+		}
+		.frame(width: spinerSide, height: spinerSide)
+	}
+}
+
 #Preview {
-    NCLoginPoll(loginFlowV2Token: "", loginFlowV2Endpoint: "", loginFlowV2Login: "")
+	NCLoginPoll(loginFlowV2Token: "", loginFlowV2Endpoint: "", loginFlowV2Login: "", deviceIdiom: .phone)
 }
 
 private class LoginManager: ObservableObject {
