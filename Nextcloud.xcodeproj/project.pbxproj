@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0F5090CE2C786F04009348D9 /* FileActionsHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F5090CD2C786F04009348D9 /* FileActionsHeader.swift */; };
+		0F8B9A5B2C7887F60041C17D /* FileActionsHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0F8B9A5A2C7887F60041C17D /* FileActionsHeader.xib */; };
 		2C1D5D7623E2DE3300334ABB /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
 		2C1D5D7923E2DE9100334ABB /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
 		2C33C48223E2C475005F963B /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C33C48123E2C475005F963B /* NotificationService.swift */; };
@@ -22,6 +24,7 @@
 		42678ABE2C57C5FB00307DEF /* BurgerMenuViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42678ABD2C57C5FB00307DEF /* BurgerMenuViewModel.swift */; };
 		42D6C0AD2C6B8FA800DF5543 /* NCKeychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76882132C0DD1E7001CF441 /* NCKeychain.swift */; };
 		42F504802C6F553D001AA432 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 42F5047F2C6F553D001AA432 /* Colors.xcassets */; };
+		6215F7F22C86F16C002ACE64 /* NCCollectionViewCommonSelectToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6215F7F12C86F16C002ACE64 /* NCCollectionViewCommonSelectToolbarView.swift */; };
 		625EC26E2C6CA285006411D1 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 625EC26D2C6CA285006411D1 /* FirebaseAnalytics */; };
 		625EC2712C6CAABD006411D1 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 625EC2702C6CAABD006411D1 /* GoogleService-Info.plist */; };
 		8491B1CD273BBA82001C8C5B /* UIViewController+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8491B1CC273BBA82001C8C5B /* UIViewController+Menu.swift */; };
@@ -1095,6 +1098,8 @@
 		08EA97451E6554FC004C83FA /* FirebaseCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseCore.framework; sourceTree = "<group>"; };
 		08EA97461E6554FC004C83FA /* FirebaseInstanceID.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseInstanceID.framework; sourceTree = "<group>"; };
 		08EA97471E6554FC004C83FA /* GoogleToolboxForMac.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleToolboxForMac.framework; sourceTree = "<group>"; };
+		0F5090CD2C786F04009348D9 /* FileActionsHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileActionsHeader.swift; sourceTree = "<group>"; };
+		0F8B9A5A2C7887F60041C17D /* FileActionsHeader.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileActionsHeader.xib; sourceTree = "<group>"; };
 		2C33C47F23E2C475005F963B /* Notification Service Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Notification Service Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C33C48123E2C475005F963B /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		2C33C48A23E2CC26005F963B /* Notification_Service_Extension-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Notification_Service_Extension-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -1108,6 +1113,7 @@
 		4240DB512C5649A900E72FC0 /* BurgerMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BurgerMenuView.swift; sourceTree = "<group>"; };
 		42678ABD2C57C5FB00307DEF /* BurgerMenuViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BurgerMenuViewModel.swift; sourceTree = "<group>"; };
 		42F5047F2C6F553D001AA432 /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
+		6215F7F12C86F16C002ACE64 /* NCCollectionViewCommonSelectToolbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectionViewCommonSelectToolbarView.swift; sourceTree = "<group>"; };
 		625EC2702C6CAABD006411D1 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
 		8491B1CC273BBA82001C8C5B /* UIViewController+Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Menu.swift"; sourceTree = "<group>"; };
 		AF1A9B6327D0CA1E00F17A9E /* UIAlertController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIAlertController+Extension.swift"; sourceTree = "<group>"; };
@@ -1911,6 +1917,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0F5090CC2C786EC8009348D9 /* ActionsHeader */ = {
+			isa = PBXGroup;
+			children = (
+				0F5090CD2C786F04009348D9 /* FileActionsHeader.swift */,
+				0F8B9A5A2C7887F60041C17D /* FileActionsHeader.xib */,
+			);
+			path = ActionsHeader;
+			sourceTree = "<group>";
+		};
 		2C33C48023E2C475005F963B /* Notification Service Extension */ = {
 			isa = PBXGroup;
 			children = (
@@ -2325,6 +2340,7 @@
 		F7603298252F0E550015A421 /* Collection Common */ = {
 			isa = PBXGroup;
 			children = (
+				0F5090CC2C786EC8009348D9 /* ActionsHeader */,
 				F75FE06B2BB01D0D00A0EFEF /* Cell */,
 				F78ACD50219046AC0088454D /* Section Header Footer */,
 				F70D7C3525FFBF81002B9E34 /* NCCollectionViewCommon.swift */,
@@ -2339,6 +2355,7 @@
 				F38F71242B6BBDC300473CDC /* NCCollectionViewCommonSelectTabBar.swift */,
 				F7E7AEA42BA32C6500512E52 /* NCCollectionViewDownloadThumbnail.swift */,
 				F7E7AEA62BA32D0000512E52 /* NCCollectionViewUnifiedSearch.swift */,
+				6215F7F12C86F16C002ACE64 /* NCCollectionViewCommonSelectToolbarView.swift */,
 			);
 			path = "Collection Common";
 			sourceTree = "<group>";
@@ -3752,6 +3769,7 @@
 				F765F73225237E3F00391DBE /* NCRecent.storyboard in Resources */,
 				F78F74342163757000C2ADAD /* NCTrash.storyboard in Resources */,
 				F702F30225EE5D2C008F8E80 /* english.txt in Resources */,
+				0F8B9A5B2C7887F60041C17D /* FileActionsHeader.xib in Resources */,
 				F757CC8C29E82D0500F31428 /* NCGroupfolders.storyboard in Resources */,
 				F79A65C32191D90F00FF6DCC /* NCSelect.storyboard in Resources */,
 				F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */,
@@ -4277,6 +4295,7 @@
 				F70D87D025EE6E58008CBBBD /* NCRenameFile.swift in Sources */,
 				F71CD6CA2930D7B1006C95C1 /* NCApplicationHandle.swift in Sources */,
 				F73EF7D72B0226080087E6E9 /* NCManageDatabase+Tip.swift in Sources */,
+				6215F7F22C86F16C002ACE64 /* NCCollectionViewCommonSelectToolbarView.swift in Sources */,
 				F76882402C0DD30B001CF441 /* ViewOnAppear.swift in Sources */,
 				F790110E21415BF600D7B136 /* NCViewerRichDocument.swift in Sources */,
 				F78ACD4021903CC20088454D /* NCGridCell.swift in Sources */,
@@ -4332,6 +4351,7 @@
 				F78A18B623CDD07D00F681F3 /* NCViewerRichWorkspaceWebView.swift in Sources */,
 				AFA2AC8527849604008E1EA7 /* NCActivityCommentView.swift in Sources */,
 				AFCE353727E4ED7B00FEA6C2 /* NCShareCells.swift in Sources */,
+				0F5090CE2C786F04009348D9 /* FileActionsHeader.swift in Sources */,
 				AF36077127BFA4E8001A243D /* ParallelWorker.swift in Sources */,
 				F75A9EE623796C6F0044CFCE /* NCNetworking.swift in Sources */,
 				F758B460212C56A400515F55 /* NCScan.swift in Sources */,
