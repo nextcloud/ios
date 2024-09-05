@@ -124,10 +124,11 @@ private class LoginManager: ObservableObject {
     }
 
     func poll() {
+        let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
         NextcloudKit.shared.getLoginFlowV2Poll(token: self.loginFlowV2Token, endpoint: self.loginFlowV2Endpoint) { server, loginName, appPassword, _, error in
             if error == .success, let urlBase = server, let user = loginName, let appPassword {
                 self.isLoading = true
-                NCAccount().createAccount(urlBase: urlBase, user: user, password: appPassword) { account, error in
+                NCAccount().createAccount(urlBase: urlBase, user: user, password: appPassword, controller: controller) { account, error in
                     if error == .success {
                         self.account = account
                         self.pollFinished = true

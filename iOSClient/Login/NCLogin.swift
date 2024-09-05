@@ -391,10 +391,11 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     }
 
     private func createAccount(urlBase: String, user: String, password: String) {
+        let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
         if let host = URL(string: urlBase)?.host {
             NCNetworking.shared.writeCertificate(host: host)
         }
-        NCAccount().createAccount(urlBase: urlBase, user: user, password: password) { account, error in
+        NCAccount().createAccount(urlBase: urlBase, user: user, password: password, controller: controller) { account, error in
             if error == .success {
                 let window = UIApplication.shared.firstWindow
                 if let controller = window?.rootViewController as? NCMainTabBarController {

@@ -116,11 +116,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func sceneDidBecomeActive(_ scene: UIScene) {
         let session = SceneManager.shared.getSession(scene: scene)
+        let controller = SceneManager.shared.getController(scene: scene)
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Scene did become active")
 
         hidePrivacyProtectionWindow()
 
-        NCService().startRequestServicesServer(account: session.account)
+        NCService().startRequestServicesServer(account: session.account, controller: controller)
 
         NCAutoUpload.shared.initAutoUpload(controller: nil, account: session.account) { num in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(num) uploads")
@@ -428,7 +429,7 @@ class SceneManager {
         sceneController[rootViewController] = scene
     }
 
-    func getController(scene: UIScene?) -> UIViewController? {
+    func getController(scene: UIScene?) -> NCMainTabBarController? {
         for controller in sceneController.keys {
             if sceneController[controller] == scene {
                 return controller

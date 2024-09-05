@@ -31,6 +31,7 @@ class NCAccount: NSObject {
     func createAccount(urlBase: String,
                        user: String,
                        password: String,
+                       controller: NCMainTabBarController?,
                        completion: @escaping (_ account: String, _ error: NKError) -> Void) {
         var urlBase = urlBase
         if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
@@ -50,7 +51,7 @@ class NCAccount: NSObject {
                 NextcloudKit.shared.updateSession(account: account, userId: userProfile.userId)
                 NCSession.shared.appendSession(account: account, urlBase: urlBase, user: user, userId: userProfile.userId)
                 self.database.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
-                self.changeAccount(account, userProfile: userProfile, controller: nil) {
+                self.changeAccount(account, userProfile: userProfile, controller: controller) {
                     NCKeychain().setClientCertificate(account: account, p12Data: NCNetworking.shared.p12Data, p12Password: NCNetworking.shared.p12Password)
                     completion(account, error)
                 }
@@ -80,7 +81,7 @@ class NCAccount: NSObject {
         /// Start Push Notification
         NCPushNotification.shared.pushNotification()
         /// Start the service
-        NCService().startRequestServicesServer(account: account)
+        NCService().startRequestServicesServer(account: account, controller: controller)
         /// Start the auto upload
         NCAutoUpload.shared.initAutoUpload(controller: nil, account: account) { num in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(num) uploads")

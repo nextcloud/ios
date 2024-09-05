@@ -31,7 +31,7 @@ class NCService: NSObject {
 
     // MARK: -
 
-    public func startRequestServicesServer(account: String) {
+    public func startRequestServicesServer(account: String, controller: NCMainTabBarController?) {
         guard !account.isEmpty,
               UIApplication.shared.applicationState != .background else {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Service not start request service server with the application in background")
@@ -43,7 +43,7 @@ class NCService: NSObject {
 
         Task {
             addInternalTypeIdentifier(account: account)
-            let result = await requestServerStatus(account: account)
+            let result = await requestServerStatus(account: account, controller: controller)
             if result {
                 requestServerCapabilities(account: account)
                 getAvatar(account: account)
@@ -90,7 +90,7 @@ class NCService: NSObject {
 
     // MARK: -
 
-    private func requestServerStatus(account: String) async -> Bool {
+    private func requestServerStatus(account: String, controller: NCMainTabBarController?) async -> Bool {
         let serverUrl = NCSession.shared.getSession(account: account).urlBase
         switch await NCNetworking.shared.getServerStatus(serverUrl: serverUrl, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) {
         case .success(let serverInfo):
@@ -119,7 +119,7 @@ class NCService: NSObject {
             DispatchQueue.main.async {
                 if UIApplication.shared.applicationState == .active && NCNetworking.shared.isOnline {
                     NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] The server has response with Unauthorized go checkRemoteUser \(resultUserProfile.error.errorCode)")
-                    NCNetworkingCheckRemoteUser().checkRemoteUser(account: resultUserProfile.account, error: resultUserProfile.error)
+                    NCNetworkingCheckRemoteUser().checkRemoteUser(account: resultUserProfile.account, controller: controller, error: resultUserProfile.error)
                 }
             }
             return false

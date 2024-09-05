@@ -333,13 +333,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             navigationController.navigationBar.barTintColor = NCBrandColor.shared.customer
             navigationController.navigationBar.isTranslucent = false
 
-            if let rootVC = UIApplication.shared.firstWindow?.rootViewController {
-                if let presentedVC = rootVC.presentedViewController, !(presentedVC is NCLoginNavigationController) {
+            if let controller = UIApplication.shared.firstWindow?.rootViewController {
+                if let presentedVC = controller.presentedViewController, !(presentedVC is NCLoginNavigationController) {
                     presentedVC.dismiss(animated: false) {
-                        rootVC.present(navigationController, animated: true)
+                        controller.present(navigationController, animated: true)
                     }
                 } else {
-                    rootVC.present(navigationController, animated: true)
+                    controller.present(navigationController, animated: true)
                 }
             }
         }
@@ -347,15 +347,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Nextcloud standard login
         if selector == NCGlobal.shared.introSignup {
             if activeLogin?.view.window == nil {
-                activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
                 if selector == NCGlobal.shared.introSignup {
-                    activeLogin?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
                     let web = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginProvider") as? NCLoginProvider
                     web?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
                     showLoginViewController(web)
                 } else {
-                    if let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController,
-                       !controller.account.isEmpty {
+                    activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
+                    if let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController, !controller.account.isEmpty {
                         let session = NCSession.shared.getSession(account: controller.account)
                         activeLogin?.urlBase = session.urlBase
                     }
