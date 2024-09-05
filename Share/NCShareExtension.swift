@@ -140,8 +140,7 @@ class NCShareExtension: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        guard serverUrl.isEmpty,
-              !session.account.isEmpty,
+        guard !session.account.isEmpty,
               !NCPasscode.shared.isPasscodeReset else {
             return showAlert(description: "_no_active_account_") {
                 self.cancel(with: .noAccount)
