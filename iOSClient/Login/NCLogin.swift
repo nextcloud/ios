@@ -225,7 +225,10 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     self.loginButton.isEnabled = true
                     // Login Flow V2
                     if error == .success, let token, let endpoint, let login {
-						self.displayPoll(token: token, endpoint: endpoint, login: login)
+						var loginPoll = NCLoginPoll(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login)
+						let vc = UIHostingController(rootView: loginPoll)
+						vc.modalPresentationStyle = .fullScreen
+						self.present(vc, animated: true)
                     } else if serverInfo.versionMajor < NCGlobal.shared.nextcloudVersion12 { // No login flow available
                         let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_webflow_not_available_", comment: ""), preferredStyle: .alert)
                         alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
@@ -261,26 +264,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         }
     }
 
-	private func displayPoll(token: String, endpoint: String, login: String) {
-		let animationTime: Double = 0.4
-		let deviceIdiom = UIDevice.current.userInterfaceIdiom
-		var loginPoll = NCLoginPoll(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login, deviceIdiom: deviceIdiom)
-		loginPoll.onCancel = {
-			UIView.animate(withDuration: animationTime) {
-				[weak self] in
-				self?.loginContentView.alpha = 1
-			}
-		}
-
-		let vc = UIHostingController(rootView: loginPoll)
-		if deviceIdiom == .pad {
-			vc.view.backgroundColor = .clear
-			loginContentView.alpha = 0
-		}
-		
-		present(vc, animated: true)
-	}
-	
     // MARK: - QRCode
 
     func dismissQRCode(_ value: String?, metadataType: String?) {

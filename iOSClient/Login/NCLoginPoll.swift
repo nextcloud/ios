@@ -29,8 +29,6 @@ struct NCLoginPoll: View {
     let loginFlowV2Endpoint: String
     let loginFlowV2Login: String
 
-	var deviceIdiom: UIUserInterfaceIdiom
-	var onCancel: (() -> ())?
     var cancelButtonDisabled = false
 
     @ObservedObject private var loginManager = LoginManager()
@@ -56,7 +54,6 @@ struct NCLoginPoll: View {
 
 				HStack(spacing: 20) {
 					Button(NSLocalizedString("_cancel_", comment: "")) {
-						onCancel?()
 						dismiss()
 					}
 					.disabled(loginManager.isLoading || cancelButtonDisabled)
@@ -72,10 +69,11 @@ struct NCLoginPoll: View {
 				.padding(.bottom, size.height * 0.15)
 			}
 			.frame(maxWidth: .infinity, maxHeight: .infinity)
-			.background(Group {
-				if deviceIdiom == .pad { LoginPollPadBackground() }
-					 else { LoginPollPhoneBackground() }
-				})
+			.background {
+				Image(.Launch.background)
+					.resizable()
+					.ignoresSafeArea()
+			}
 		}
         .onChange(of: loginManager.pollFinished) { value in
             if value {
@@ -105,20 +103,6 @@ struct NCLoginPoll: View {
         }
         .interactiveDismissDisabled()
     }
-}
-
-struct LoginPollPhoneBackground: View {
-	var body: some View {
-		Image(.Launch.background)
-			.resizable()
-			.ignoresSafeArea()
-	}
-}
-
-struct LoginPollPadBackground: View {
-	var body: some View {
-		Color.clear
-	}
 }
 
 struct LoginPollButtonStyle: ButtonStyle {
@@ -178,7 +162,7 @@ struct CircleItemSpinner: View {
 }
 
 #Preview {
-	NCLoginPoll(loginFlowV2Token: "", loginFlowV2Endpoint: "", loginFlowV2Login: "", deviceIdiom: .phone)
+	NCLoginPoll(loginFlowV2Token: "", loginFlowV2Endpoint: "", loginFlowV2Login: "")
 }
 
 private class LoginManager: ObservableObject {
