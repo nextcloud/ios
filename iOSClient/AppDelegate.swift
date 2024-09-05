@@ -33,6 +33,7 @@ import SwiftUI
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
+    let database = NCManageDatabase.shared
     var tipView: EasyTipView?
     var backgroundSessionCompletionHandler: (() -> Void)?
     var activeLogin: NCLogin?
@@ -202,7 +203,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func handleAppRefreshProcessingTask(taskText: String, completion: @escaping () -> Void = {}) {
         Task {
             var numAutoUpload = 0
-            guard let account = NCManageDatabase.shared.getActiveTableAccount()?.account else {
+            guard let account = self.database.getActiveTableAccount()?.account else {
                 return
             }
 
@@ -224,7 +225,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                numAutoUpload == 0,
                results.counterDownloading == 0,
                results.counterUploading == 0,
-               let directories = NCManageDatabase.shared.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "offlineDate", ascending: true) {
+               let directories = self.database.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", account), sorted: "offlineDate", ascending: true) {
                 for directory: tableDirectory in directories {
                     // test only 3 time for day (every 8 h.)
                     if let offlineDate = directory.offlineDate, offlineDate.addingTimeInterval(28800) > Date() {
@@ -236,11 +237,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 }
             }
 
-            let counter = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND (session == %@ || session == %@) AND status != %d",
-                                                                                             account,
-                                                                                             NCNetworking.shared.sessionDownloadBackground,
-                                                                                             NCNetworking.shared.sessionUploadBackground,
-                                                                                             NCGlobal.shared.metadataStatusNormal))?.count ?? 0
+            let counter = self.database.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND (session == %@ || session == %@) AND status != %d",
+                                                                                   account,
+                                                                                   NCNetworking.shared.sessionDownloadBackground,
+                                                                                   NCNetworking.shared.sessionUploadBackground,
+                                                                                   NCGlobal.shared.metadataStatusNormal))?.count ?? 0
             UIApplication.shared.applicationIconBadgeNumber = counter
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] \(taskText) completion handle")
@@ -291,7 +292,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         var findAccount: String?
 
         if let accountPush = data["account"] as? String {
-            for tableAccount in NCManageDatabase.shared.getAllTableAccount() {
+            for tableAccount in self.database.getAllTableAccount() {
                 if tableAccount.account == accountPush {
                     for controller in SceneManager.shared.getControllers() {
                         if controller.account == accountPush {
@@ -372,7 +373,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     // MARK: -
 
     func trustCertificateError(host: String) {
-        guard let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount(),
+        guard let activeTableAccount = self.database.getActiveTableAccount(),
               let currentHost = URL(string: activeTableAccount.urlBase)?.host,
               let pushNotificationServerProxyHost = URL(string: NCBrandOptions.shared.pushNotificationServerProxy)?.host,
               host != pushNotificationServerProxyHost,

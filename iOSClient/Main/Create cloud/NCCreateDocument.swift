@@ -27,6 +27,7 @@ import NextcloudKit
 
 class NCCreateDocument: NSObject {
     let utility = NCUtility()
+    let database = NCManageDatabase.shared
 
     func createDocument(controller: NCMainTabBarController, fileNamePath: String, fileName: String, editorId: String, creatorId: String? = nil, templateId: String, account: String) {
         let session = NCSession.shared.getSession(account: account)
@@ -49,14 +50,14 @@ class NCCreateDocument: NSObject {
                 }
                 if account == returnedAccount {
                     let contentType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false, account: session.account).mimeType
-                    let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName,
-                                                                          fileNameView: fileName,
-                                                                          ocId: UUID,
-                                                                          serverUrl: serverUrl,
-                                                                          url: url,
-                                                                          contentType: contentType,
-                                                                          session: session,
-                                                                          sceneIdentifier: controller.sceneIdentifier)
+                    let metadata = self.database.createMetadata(fileName: fileName,
+                                                                fileNameView: fileName,
+                                                                ocId: UUID,
+                                                                serverUrl: serverUrl,
+                                                                url: url,
+                                                                contentType: contentType,
+                                                                session: session,
+                                                                sceneIdentifier: controller.sceneIdentifier)
 
                     NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
                 }
@@ -70,14 +71,14 @@ class NCCreateDocument: NSObject {
                 }
                 if account == returnedAccount {
                     let contentType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false, account: session.account).mimeType
-                    let metadata = NCManageDatabase.shared.createMetadata(fileName: fileName,
-                                                                          fileNameView: fileName,
-                                                                          ocId: UUID,
-                                                                          serverUrl: serverUrl,
-                                                                          url: url,
-                                                                          contentType: contentType,
-                                                                          session: session,
-                                                                          sceneIdentifier: controller.sceneIdentifier)
+                    let metadata = self.database.createMetadata(fileName: fileName,
+                                                                fileNameView: fileName,
+                                                                ocId: UUID,
+                                                                serverUrl: serverUrl,
+                                                                url: url,
+                                                                contentType: contentType,
+                                                                session: session,
+                                                                sceneIdentifier: controller.sceneIdentifier)
 
                     NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
                 }

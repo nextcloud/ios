@@ -33,19 +33,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     private let appDelegate = UIApplication.shared.delegate as? AppDelegate
     private var privacyProtectionWindow: UIWindow?
     private var isFirstScene: Bool = true
+    private let database = NCManageDatabase.shared
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene),
               let appDelegate else { return }
         self.window = UIWindow(windowScene: windowScene)
 
-        if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
+        if let activeTableAccount = self.database.getActiveTableAccount() {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Account active \(activeTableAccount.account)")
 
-            let capability = NCManageDatabase.shared.setCapabilities(account: activeTableAccount.account)
+            let capability = self.database.setCapabilities(account: activeTableAccount.account)
             NCBrandColor.shared.settingThemingColor(account: activeTableAccount.account)
 
-            for tableAccount in NCManageDatabase.shared.getAllTableAccount() {
+            for tableAccount in self.database.getAllTableAccount() {
                 NextcloudKit.shared.appendSession(account: tableAccount.account,
                                                   urlBase: tableAccount.urlBase,
                                                   user: tableAccount.user,
@@ -140,7 +141,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         NSFileProviderManager.removeAllDomains { _ in
             /*
             if !NCKeychain().disableFilesApp,
-                NCManageDatabase.shared.getAllTableAccount().count > 1 {
+             self.database.getAllTableAccount().count > 1 {
                 FileProviderDomain().registerDomains()
             }
             */
@@ -169,7 +170,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneDidEnterBackground(_ scene: UIScene) {
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Scene did enter in background")
         let session = SceneManager.shared.getSession(scene: scene)
-        guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
+        guard let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
             return
         }
 
@@ -207,12 +208,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard !session.account.isEmpty else { return }
 
         func getMatchedAccount(userId: String, url: String) -> tableAccount? {
-            if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
+            if let activeTableAccount = self.database.getActiveTableAccount() {
                 let urlBase = URL(string: activeTableAccount.urlBase)
                 if url.contains(urlBase?.host ?? "") && userId == activeTableAccount.userId {
                    return activeTableAccount
                 } else {
-                    for tableAccount in NCManageDatabase.shared.getAllTableAccount() {
+                    for tableAccount in self.database.getAllTableAccount() {
                         let urlBase = URL(string: tableAccount.urlBase)
                         if url.contains(urlBase?.host ?? "") && userId == tableAccount.userId {
                             NCAccount().changeAccount(tableAccount.account, userProfile: nil, controller: controller) { }
@@ -259,7 +260,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
                 case NCGlobal.shared.actionTextDocument:
 
-                    let directEditingCreators = NCManageDatabase.shared.getDirectEditingCreators(account: session.account)
+                    let directEditingCreators = self.database.getDirectEditingCreators(account: session.account)
                     let directEditingCreator = directEditingCreators!.first(where: { $0.editor == NCGlobal.shared.editorText})!
                     let serverUrl = controller.currentServerUrl()
 
@@ -384,7 +385,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 extension SceneDelegate: NCPasscodeDelegate {
     func requestedAccount(controller: UIViewController?) {
-        let tableAccounts = NCManageDatabase.shared.getAllTableAccount()
+        let tableAccounts = self.database.getAllTableAccount()
         if tableAccounts.count > 1, let accountRequestVC = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest {
             accountRequestVC.controller = controller
             accountRequestVC.activeAccount = (controller as? NCMainTabBarController)?.account

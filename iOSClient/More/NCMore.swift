@@ -41,6 +41,8 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     private let applicationHandle = NCApplicationHandle()
     private let utilityFileSystem = NCUtilityFileSystem()
     private let utility = NCUtility()
+    private let database = NCManageDatabase.shared
+
     private struct Section {
         var items: [NKExternalSite]
         var type: SectionType
@@ -91,7 +93,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     // MARK: -
 
     func loadItems() {
-        guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
+        guard let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
             return
         }
         var item = NKExternalSite()
@@ -228,7 +230,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
         // ITEM : External
         if NCBrandOptions.shared.disable_more_external_site == false {
-            if let externalSites = NCManageDatabase.shared.getAllExternalSites(account: session.account) {
+            if let externalSites = self.database.getAllExternalSites(account: session.account) {
                 for externalSite in externalSites {
                     if !externalSite.name.isEmpty, !externalSite.url.isEmpty, let urlEncoded = externalSite.url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
                         item = NKExternalSite()
