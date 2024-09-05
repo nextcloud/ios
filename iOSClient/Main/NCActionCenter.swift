@@ -337,17 +337,17 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         documentController?.presentOptionsMenu(from: rectToPresentFrom, in: viewToPresentOn, animated: true)
     }
 
-    func openActivityViewController(selectedMetadata: [tableMetadata], controller: NCMainTabBarController?) {
-        guard let controller,
-              let mainTabBar = controller.tabBar as? NCMainTabBar else { return }
+    func openActivityViewController(selectedMetadata: [tableMetadata], mainTabBarController: NCMainTabBarController?) {
+        guard let mainTabBarController,
+              let mainTabBar = mainTabBarController.tabBar as? NCMainTabBar else { return }
         let metadatas = selectedMetadata.filter({ !$0.directory })
         var items: [URL] = []
         var downloadMetadata: [(tableMetadata, URL)] = []
         
-        let currentViewController = controller.presentedNavigationController() ?? controller
-        let isMainTabBarPresenting = controller.presentedNavigationController() != nil
-        let viewToPresentFrom = isMainTabBarPresenting ? controller.view : mainTabBar
-        let rectToPresentFrom = isMainTabBarPresenting ? controller.view.bottomCenter : mainTabBar.menuRect
+        let currentViewController = mainTabBarController.presentedNavigationController() ?? mainTabBarController
+        let isMainTabBarPresentingViewController = mainTabBarController.presentedNavigationController() != nil
+        let viewToPresentFrom = isMainTabBarPresentingViewController ? mainTabBarController.view : mainTabBar
+        let rectToPresentFrom = isMainTabBarPresentingViewController ? mainTabBarController.view.bottomCenter : mainTabBar.menuRect
 
         for metadata in metadatas {
             let fileURL = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
@@ -367,7 +367,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
                                                                                                selector: "",
-                                                                                               sceneIdentifier: controller.sceneIdentifier) else { return completion() }
+                                                                                               sceneIdentifier: mainTabBarController.sceneIdentifier) else { return completion() }
                 NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
                 } progressHandler: { progress in
                     processor.hud?.progress = Float(progress.fractionCompleted)
