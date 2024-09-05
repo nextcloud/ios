@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="FileActionsHeader" customModule="Nextcloud" customModuleProvider="target">
+            <connections>
+                <outlet property="btnCloseSelection" destination="uIk-II-rrq" id="uIz-Mq-xsf"/>
+                <outlet property="btnSelect" destination="RYI-12-k5i" id="yFC-ec-nyE"/>
+                <outlet property="btnSelectAll" destination="aiH-0h-GkD" id="M3d-NQ-p8R"/>
+                <outlet property="btnSort" destination="h7d-nu-xII" id="2Wf-BB-iXa"/>
+                <outlet property="btnViewMode" destination="cqG-WX-M71" id="CfF-wG-c8g"/>
+                <outlet property="contentView" destination="iN0-l3-epB" id="BpV-Up-eBG"/>
+                <outlet property="lblSelectionDescription" destination="iLM-7O-AFE" id="WZB-Ol-O9R"/>
+                <outlet property="vHeaderEditingMode" destination="SEO-fb-HgO" id="fAJ-2A-uw2"/>
+                <outlet property="vHeaderNonEditingMode" destination="M8K-l1-441" id="V81-ZR-Z4z"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="48"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="M8K-l1-441" userLabel="NonEditMode">
+                    <rect key="frame" x="0.0" y="0.0" width="393" height="48"/>
+                    <subviews>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="h7d-nu-xII" userLabel="btnSort">
+                            <rect key="frame" x="15" y="0.0" width="30" height="48"/>
+                            <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="16"/>
+                            <color key="tintColor" name="FileActionsHeader/ButtonTint"/>
+                            <inset key="imageEdgeInsets" minX="10" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                            <state key="normal">
+                                <color key="titleColor" name="FileActionsHeader/ButtonTint"/>
+                            </state>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RYI-12-k5i" userLabel="btnSelect">
+                            <rect key="frame" x="303" y="8" width="32" height="32"/>
+                            <color key="backgroundColor" name="FileActionsHeader/SelectionModeHeaderBackground"/>
+                            <constraints>
+                                <constraint firstAttribute="width" secondItem="RYI-12-k5i" secondAttribute="height" id="G23-hh-FMt"/>
+                                <constraint firstAttribute="height" constant="32" id="f66-pf-OBU"/>
+                            </constraints>
+                            <color key="tintColor" name="FileActionsHeader/ButtonTint"/>
+                            <state key="normal" image="FileSelection/files_selection"/>
+                            <connections>
+                                <action selector="onBtnSelectTap:" destination="-1" eventType="touchUpInside" id="G0R-TM-QuX"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cqG-WX-M71" userLabel="btnViewMode">
+                            <rect key="frame" x="345" y="0.0" width="48" height="48"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="48" id="HA6-hr-9aP"/>
+                                <constraint firstAttribute="width" secondItem="cqG-WX-M71" secondAttribute="height" id="bOr-22-3hP"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                            <color key="tintColor" name="FileActionsHeader/ButtonTint"/>
+                            <inset key="imageEdgeInsets" minX="12" minY="12" maxX="12" maxY="12"/>
+                        </button>
+                    </subviews>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstItem="RYI-12-k5i" firstAttribute="centerY" secondItem="M8K-l1-441" secondAttribute="centerY" id="3WJ-9f-KUx"/>
+                        <constraint firstItem="cqG-WX-M71" firstAttribute="leading" secondItem="RYI-12-k5i" secondAttribute="trailing" constant="10" id="BHS-61-WSC"/>
+                        <constraint firstItem="h7d-nu-xII" firstAttribute="leading" secondItem="M8K-l1-441" secondAttribute="leading" constant="15" id="Oss-Sr-l6J"/>
+                        <constraint firstItem="h7d-nu-xII" firstAttribute="height" secondItem="M8K-l1-441" secondAttribute="height" id="hZX-B3-GMF"/>
+                        <constraint firstAttribute="trailing" secondItem="cqG-WX-M71" secondAttribute="trailing" id="nVE-wf-sOh"/>
+                        <constraint firstItem="h7d-nu-xII" firstAttribute="centerY" secondItem="M8K-l1-441" secondAttribute="centerY" id="yd9-FS-ivg"/>
+                        <constraint firstItem="cqG-WX-M71" firstAttribute="centerY" secondItem="M8K-l1-441" secondAttribute="centerY" id="zGL-NS-txw"/>
+                    </constraints>
+                </view>
+                <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="SEO-fb-HgO" userLabel="EditMode">
+                    <rect key="frame" x="0.0" y="0.0" width="393" height="48"/>
+                    <subviews>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="aiH-0h-GkD" userLabel="btnSelectAll">
+                            <rect key="frame" x="15" y="14" width="20" height="20"/>
+                            <constraints>
+                                <constraint firstAttribute="width" secondItem="aiH-0h-GkD" secondAttribute="height" id="k8z-cv-2uB"/>
+                                <constraint firstAttribute="height" constant="20" id="n5q-Ws-WGG"/>
+                            </constraints>
+                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                            <state key="normal" backgroundImage="FileSelection/list_item_deselected"/>
+                            <connections>
+                                <action selector="onBtnSelectAllTap:" destination="-1" eventType="touchUpInside" id="DID-ON-AlT"/>
+                            </connections>
+                        </button>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iLM-7O-AFE" userLabel="lblSelectionDescription">
+                            <rect key="frame" x="50" y="0.0" width="298" height="48"/>
+                            <fontDescription key="fontDescription" type="system" weight="medium" pointSize="16"/>
+                            <color key="textColor" name="FileActionsHeader/ButtonTint"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uIk-II-rrq" userLabel="btnClose">
+                            <rect key="frame" x="358" y="14" width="20" height="20"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="20" id="89T-I4-G43"/>
+                                <constraint firstAttribute="width" secondItem="uIk-II-rrq" secondAttribute="height" id="rdA-w1-4d4"/>
+                            </constraints>
+                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                            <state key="normal" backgroundImage="FileSelection/selection_mode_close"/>
+                            <connections>
+                                <action selector="onBtnCloseSelectionTap:" destination="-1" eventType="touchUpInside" id="DqT-hE-ND8"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                    <color key="backgroundColor" name="FileActionsHeader/SelectionModeHeaderBackground"/>
+                    <constraints>
+                        <constraint firstItem="aiH-0h-GkD" firstAttribute="leading" secondItem="SEO-fb-HgO" secondAttribute="leading" constant="15" id="1rf-K0-yRX"/>
+                        <constraint firstItem="uIk-II-rrq" firstAttribute="leading" secondItem="iLM-7O-AFE" secondAttribute="trailing" constant="10" id="8zi-Zv-ag1"/>
+                        <constraint firstAttribute="trailing" secondItem="uIk-II-rrq" secondAttribute="trailing" constant="15" id="BXW-FI-cae"/>
+                        <constraint firstItem="iLM-7O-AFE" firstAttribute="height" secondItem="SEO-fb-HgO" secondAttribute="height" id="FmR-qM-lra"/>
+                        <constraint firstItem="iLM-7O-AFE" firstAttribute="centerY" secondItem="SEO-fb-HgO" secondAttribute="centerY" id="XQa-da-ZVw"/>
+                        <constraint firstItem="aiH-0h-GkD" firstAttribute="centerY" secondItem="SEO-fb-HgO" secondAttribute="centerY" id="dVC-8n-Yzx"/>
+                        <constraint firstItem="uIk-II-rrq" firstAttribute="centerY" secondItem="SEO-fb-HgO" secondAttribute="centerY" id="qLt-CM-g0v"/>
+                        <constraint firstItem="iLM-7O-AFE" firstAttribute="leading" secondItem="aiH-0h-GkD" secondAttribute="trailing" constant="15" id="t4Q-xO-2a4"/>
+                    </constraints>
+                </view>
+            </subviews>
+            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <constraints>
+                <constraint firstItem="M8K-l1-441" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="3Vn-VR-tkg"/>
+                <constraint firstItem="M8K-l1-441" firstAttribute="width" secondItem="iN0-l3-epB" secondAttribute="width" id="6bc-sl-VLA"/>
+                <constraint firstItem="M8K-l1-441" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="9fn-4I-nsO"/>
+                <constraint firstItem="SEO-fb-HgO" firstAttribute="centerX" secondItem="iN0-l3-epB" secondAttribute="centerX" id="9mh-4l-NCY"/>
+                <constraint firstItem="M8K-l1-441" firstAttribute="height" secondItem="iN0-l3-epB" secondAttribute="height" id="Avh-fV-dW3"/>
+                <constraint firstItem="SEO-fb-HgO" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="BzS-fC-b3p"/>
+                <constraint firstItem="SEO-fb-HgO" firstAttribute="width" secondItem="iN0-l3-epB" secondAttribute="width" id="dvO-yf-VAX"/>
+                <constraint firstItem="SEO-fb-HgO" firstAttribute="height" secondItem="iN0-l3-epB" secondAttribute="height" id="o4a-BQ-Gwv"/>
+            </constraints>
+            <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <point key="canvasLocation" x="66.412213740458014" y="-272.53521126760563"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="FileSelection/files_selection" width="14" height="14"/>
+        <image name="FileSelection/list_item_deselected" width="16" height="17"/>
+        <image name="FileSelection/selection_mode_close" width="16" height="16"/>
+        <namedColor name="FileActionsHeader/ButtonTint">
+            <color red="0.0" green="0.10588235294117647" blue="0.25490196078431371" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="FileActionsHeader/SelectionModeHeaderBackground">
+            <color red="0.95686274509803926" green="0.96862745098039216" blue="0.98039215686274506" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

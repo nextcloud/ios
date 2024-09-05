@@ -626,6 +626,13 @@
 "_good_evening_"                = "Good evening";
 "_good_night_"                  = "Good night";
 
+// MARK: Files Header
+
+"_select_selectionLabel_selectAll"			= "Select all";
+"_select_selectionLabel_oneItemSelected"	= "One item selected";
+"_select_selectionLabel_manyItemsSelected"  = "%@ items selected";
+"_select_selectionLabel_deselectAll"		= "Deselect all";
+
 // MARK: Share
 
 "_share_link_"                  = "Share link";
