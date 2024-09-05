@@ -31,7 +31,6 @@ import Alamofire
 
 class NCUtility: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
-    let database = NCManageDatabase.shared
 
     func isSimulatorOrTestFlight() -> Bool {
         guard let path = Bundle.main.appStoreReceiptURL?.path else {
@@ -69,7 +68,7 @@ class NCUtility: NSObject {
 
     func editorsDirectEditing(account: String, contentType: String) -> [String] {
         var editor: [String] = []
-        guard let results = self.database.getDirectEditingEditors(account: account) else { return editor }
+        guard let results = NCManageDatabase.shared.getDirectEditingEditors(account: account) else { return editor }
 
         for result: tableDirectEditingEditors in results {
             for mimetype in result.mimetypes {
@@ -237,7 +236,7 @@ class NCUtility: NSObject {
         let geocoder = CLGeocoder()
         let llocation = CLLocation(latitude: latitude, longitude: longitude)
 
-        if let location = self.database.getLocationFromLatAndLong(latitude: latitude, longitude: longitude) {
+        if let location = NCManageDatabase.shared.getLocationFromLatAndLong(latitude: latitude, longitude: longitude) {
             completion(location)
         } else {
             geocoder.reverseGeocodeLocation(llocation) { placemarks, error in
@@ -247,7 +246,7 @@ class NCUtility: NSObject {
 
                     let location = locationComponents.joined(separator: ", ")
 
-                    self.database.addGeocoderLocation(location, latitude: latitude, longitude: longitude)
+                    NCManageDatabase.shared.addGeocoderLocation(location, latitude: latitude, longitude: longitude)
                     completion(location)
                 }
             }

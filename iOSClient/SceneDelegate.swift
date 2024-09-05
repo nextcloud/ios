@@ -200,7 +200,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-        guard let controller = SceneManager.shared.getController(scene: scene) as? NCMainTabBarController,
+        guard let controller = SceneManager.shared.getController(scene: scene),
               let url = URLContexts.first?.url else { return }
         let scheme = url.scheme
         let action = url.host
@@ -473,7 +473,7 @@ class SceneManager {
     }
 
     func getSession(scene: UIScene?) -> NCSession.Session {
-        let controller = SceneManager.shared.getController(scene: scene) as? NCMainTabBarController
+        let controller = SceneManager.shared.getController(scene: scene)
         return NCSession.shared.getSession(controller: controller)
     }
 }
