@@ -162,8 +162,6 @@ class NCContextMenu: NSObject {
                     let error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false, sceneIdentifier: sceneIdentifier)
                     if error == .success {
                         ocId.append(metadata.ocId)
-                    } else {
-                        NCContentPresenter().showError(error: error)
                     }
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "onlyLocalCache": false, "error": error])
                 }
@@ -179,8 +177,6 @@ class NCContextMenu: NSObject {
                 let error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true, sceneIdentifier: sceneIdentifier)
                 if error == .success {
                     ocId.append(metadata.ocId)
-                } else {
-                    NCContentPresenter().showError(error: error)
                 }
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "onlyLocalCache": true, "error": error])
             }

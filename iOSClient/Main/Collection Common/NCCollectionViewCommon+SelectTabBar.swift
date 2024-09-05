@@ -73,12 +73,9 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
                         ocId.append(metadata.ocId)
                     }
                 }
-                if error != .success {
-                    NCContentPresenter().showError(error: error)
-                }
                 NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "onlyLocalCache": true, "error": error])
-                self.setEditMode(false)
             }
+            self.setEditMode(false)
         })
 
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { (_: UIAlertAction) in })

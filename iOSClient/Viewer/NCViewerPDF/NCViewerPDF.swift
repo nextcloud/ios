@@ -324,8 +324,13 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     }
 
     @objc func deleteFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary? else { return }
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let error = userInfo["error"] as? NKError else { return }
 
+        if error != .success {
+            NCContentPresenter().showError(error: error)
+        }
+        
         if let ocId = userInfo["ocId"] as? [String],
            let ocId = ocId.first,
            metadata?.ocId == ocId {

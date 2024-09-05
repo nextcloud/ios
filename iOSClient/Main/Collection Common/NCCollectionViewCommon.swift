@@ -377,7 +377,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             NCContentPresenter().showError(error: error)
         }
 
-        reloadDataSource()
+        self.reloadDataSource()
     }
 
     @objc func moveFile(_ notification: NSNotification) {

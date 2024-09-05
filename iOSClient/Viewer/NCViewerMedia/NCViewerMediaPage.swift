@@ -385,10 +385,17 @@ class NCViewerMediaPage: UIViewController {
     }
 
     @objc func deleteFile(_ notification: NSNotification) {
-        // Stop media
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let error = userInfo["error"] as? NKError else { return }
+
+        if error != .success {
+            NCContentPresenter().showError(error: error)
+        }
+
         if let ncplayer = currentViewController.ncplayer, ncplayer.isPlay() {
             ncplayer.playerPause()
         }
+
         self.viewUnload()
     }
 

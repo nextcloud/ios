@@ -218,10 +218,11 @@ class NCMedia: UIViewController {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let error = userInfo["error"] as? NKError else { return }
 
-        self.reloadDataSource()
         if error != .success {
             NCContentPresenter().showError(error: error)
         }
+
+        self.reloadDataSource()
     }
 
     @objc func enterForeground(_ notification: NSNotification) {

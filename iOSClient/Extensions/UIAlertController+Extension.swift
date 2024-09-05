@@ -142,9 +142,6 @@ extension UIAlertController {
                         ocId.append(metadata.ocId)
                     }
                 }
-                if error != .success {
-                    NCContentPresenter().showError(error: error)
-                }
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "onlyLocalCache": true, "error": error])
             }
             completion(false)
