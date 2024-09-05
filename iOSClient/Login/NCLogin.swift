@@ -30,12 +30,14 @@ import SwiftUI
 class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     @IBOutlet weak var imageBrand: UIImageView!
     @IBOutlet weak var imageBrandConstraintY: NSLayoutConstraint!
-    @IBOutlet weak var baseUrl: UITextField!
+    @IBOutlet weak var baseUrlTextField: UITextField!
     @IBOutlet weak var loginAddressDetail: UILabel!
     @IBOutlet weak var loginButton: UIButton!
     @IBOutlet weak var loginImage: UIImageView!
     @IBOutlet weak var qrCode: UIButton!
     @IBOutlet weak var certificate: UIButton!
+    @IBOutlet weak var enforceServersButton: UIButton!
+    @IBOutlet weak var enforceServersDropdownImage: UIImageView!
 
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private var textColor: UIColor = .white
@@ -82,19 +84,19 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         imageBrand.image = UIImage(named: "logo")
 
         // Url
-        baseUrl.textColor = textColor
-        baseUrl.tintColor = textColor
-        baseUrl.layer.cornerRadius = 10
-        baseUrl.layer.borderWidth = 1
-        baseUrl.layer.borderColor = textColor.cgColor
-        baseUrl.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: baseUrl.frame.height))
-        baseUrl.leftViewMode = .always
-        baseUrl.rightView = UIView(frame: CGRect(x: 0, y: 0, width: 35, height: baseUrl.frame.height))
-        baseUrl.rightViewMode = .always
-        baseUrl.attributedPlaceholder = NSAttributedString(string: NSLocalizedString("_login_url_", comment: ""), attributes: [NSAttributedString.Key.foregroundColor: textColor.withAlphaComponent(0.5)])
-        baseUrl.delegate = self
+        baseUrlTextField.textColor = textColor
+        baseUrlTextField.tintColor = textColor
+        baseUrlTextField.layer.cornerRadius = 10
+        baseUrlTextField.layer.borderWidth = 1
+        baseUrlTextField.layer.borderColor = textColor.cgColor
+        baseUrlTextField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: baseUrlTextField.frame.height))
+        baseUrlTextField.leftViewMode = .always
+        baseUrlTextField.rightView = UIView(frame: CGRect(x: 0, y: 0, width: 35, height: baseUrlTextField.frame.height))
+        baseUrlTextField.rightViewMode = .always
+        baseUrlTextField.attributedPlaceholder = NSAttributedString(string: NSLocalizedString("_login_url_", comment: ""), attributes: [NSAttributedString.Key.foregroundColor: textColor.withAlphaComponent(0.5)])
+        baseUrlTextField.delegate = self
 
-        baseUrl.isEnabled = !NCBrandOptions.shared.disable_request_login_url
+        baseUrlTextField.isEnabled = !NCBrandOptions.shared.disable_request_login_url
 
         // Login button
         loginAddressDetail.textColor = textColor
@@ -105,9 +107,9 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
         // brand
         if NCBrandOptions.shared.disable_request_login_url {
-            baseUrl.isEnabled = false
-            baseUrl.isUserInteractionEnabled = false
-            baseUrl.alpha = 0.5
+            baseUrlTextField.isEnabled = false
+            baseUrlTextField.isUserInteractionEnabled = false
+            baseUrlTextField.alpha = 0.5
         }
 
         // qrcode
@@ -165,7 +167,30 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
 
         handleLoginWithAppConfig()
-        baseUrl.text = urlBase
+        baseUrlTextField.text = urlBase
+
+        let enforceServers = NCBrandOptions.shared.enforce_servers
+
+        if !enforceServers.isEmpty {
+            baseUrlTextField.isHidden = true
+            enforceServersDropdownImage.isHidden = false
+            enforceServersButton.isHidden = false
+
+            let actions = enforceServers.map { server in
+                UIAction(title: server.name, handler: { [self] _ in
+                    enforceServersButton.setTitle(server.name, for: .normal)
+                    baseUrlTextField.text = server.url
+                })
+            }
+
+            enforceServersButton.layer.borderColor = textColor.cgColor
+            enforceServersButton.layer.cornerRadius = 10
+            enforceServersButton.layer.borderWidth  = 1
+            enforceServersButton.menu = .init(title: "Servers", children: actions)
+            enforceServersButton.tintAdjustmentMode = .normal
+            enforceServersButton.titleLabel?.tintAdjustmentMode = .normal
+            enforceServersButton.showsMenuAsPrimaryAction = true
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -291,14 +316,14 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     // MARK: - Login
 
     private func login() {
-        guard var url = baseUrl.text?.trimmingCharacters(in: .whitespacesAndNewlines) else { return }
+        guard var url = baseUrlTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines) else { return }
         if url.hasSuffix("/") { url = String(url.dropLast()) }
         if url.isEmpty { return }
         // Check whether baseUrl contain protocol. If not add https:// by default.
         if url.hasPrefix("https") == false && url.hasPrefix("http") == false {
             url = "https://" + url
         }
-        self.baseUrl.text = url
+        self.baseUrlTextField.text = url
         isUrlValid(url: url)
     }
 
