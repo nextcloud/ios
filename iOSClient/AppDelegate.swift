@@ -151,6 +151,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         
         UISwitch.appearance().onTintColor = NCBrandColor.shared.brandElement
+        UISlider.appearance().thumbTintColor = UIColor(Color(.QualitySlider.thumb))
+        UISlider.appearance().maximumTrackTintColor = UIColor(Color(.QualitySlider.maximumTrack))
 
         return true
     }

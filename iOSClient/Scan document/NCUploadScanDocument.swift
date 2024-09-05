@@ -447,10 +447,6 @@ struct UploadScanDocumentView: View {
                                 }
                             })
                             .accentColor(Color(NCBrandColor.shared.brandElement))
-                            .onAppear {
-                                UISlider.appearance().thumbTintColor = UIColor(Color(.QualitySlider.thumb))
-                                UISlider.appearance().maximumTrackTintColor = UIColor(Color(.QualitySlider.maximumTrack))
-                            }
                         }
                         PDFKitRepresentedView(quality: $quality, isTextRecognition: $isTextRecognition, uploadScanDocument: uploadScanDocument)
                             .frame(maxWidth: .infinity, minHeight: geo.size.height / 2)
