@@ -64,6 +64,10 @@ class FileActionsHeader: UIView {
 	}
 	
 	// MARK: - public
+	func enableSorting(enable: Bool) {
+		btnSort?.isHidden = !enable
+	}
+	
 	var onSelectModeChange: ((_ isSelectionMode: Bool) -> Void)?
 	var onSelectAll: (() -> Void)?
 	
