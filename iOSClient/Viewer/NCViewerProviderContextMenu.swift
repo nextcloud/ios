@@ -27,7 +27,6 @@ import SVGKit
 import MobileVLCKit
 
 class NCViewerProviderContextMenu: UIViewController {
-
     private let imageView = UIImageView()
     private var metadata: tableMetadata?
     private var metadataLivePhoto: tableMetadata?

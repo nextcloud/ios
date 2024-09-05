@@ -63,7 +63,7 @@ extension NCMedia {
 
     func setTitleDate(_ offset: CGFloat = 10) {
         titleDate?.text = ""
-        if let metadata = metadatas?.first {
+        if let metadata = dataSource.getResultsMetadatas().first {
             let contentOffsetY = collectionView.contentOffset.y
             let top = insetsTop + view.safeAreaInsets.top + offset
             if insetsTop + view.safeAreaInsets.top + contentOffsetY < 10 {

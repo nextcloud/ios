@@ -482,7 +482,7 @@ extension NCSelect {
         }
 
         let metadatas = NCManageDatabase.shared.getResultsMetadatasPredicate(predicate, layoutForView: NCDBLayoutForView())
-        self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: NCDBLayoutForView())
+        self.dataSource = NCDataSource(metadatas: metadatas)
 
         if withLoadFolder {
             loadFolder()

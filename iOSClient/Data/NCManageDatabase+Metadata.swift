@@ -987,14 +987,15 @@ extension NCManageDatabase {
         return metadatas
     }
 
-    func getResultsMediaMetadatas(predicate: NSPredicate) -> Results<tableMetadata>? {
+    func getResultsMediaMetadatas(predicate: NSPredicate) -> [tableMetadata] {
         do {
             let realm = try Realm()
-            return realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: "date", ascending: false)
+            let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: "date", ascending: false)
+            return Array(results)
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-        return nil
+        return []
     }
 
     func getResultsImageCacheMetadatas(predicate: NSPredicate) -> Results<tableMetadata>? {

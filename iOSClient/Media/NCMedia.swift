@@ -43,7 +43,7 @@ class NCMedia: UIViewController {
     let utility = NCUtility()
     let database = NCManageDatabase.shared
     let imageCache = NCImageCache.shared
-    var metadatas: Results<tableMetadata>?
+    var dataSource = NCDataSource()
     var serverUrl = ""
     let refreshControl = UIRefreshControl()
     var loadingTask: Task<Void, any Error>?
@@ -307,7 +307,7 @@ extension NCMedia: UICollectionViewDataSourcePrefetching {
 
 extension NCMedia: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if let metadatas, !metadatas.isEmpty {
+        if dataSource.isEmpty() {
             isTop = scrollView.contentOffset.y <= -(insetsTop + view.safeAreaInsets.top - 25)
             setColor()
             setNeedsStatusBarAppearanceUpdate()

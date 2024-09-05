@@ -26,7 +26,8 @@ import NextcloudKit
 
 extension NCMedia {
     func reloadDataSource() {
-        self.metadatas = database.getResultsMediaMetadatas(predicate: getPredicate())
+        let metadatas = database.getResultsMediaMetadatas(predicate: getPredicate())
+        self.dataSource = NCDataSource(metadatas: metadatas)
         self.collectionViewReloadData()
     }
 
@@ -40,12 +41,6 @@ extension NCMedia {
     // MARK: - Search media
 
     @objc func searchMediaUI() {
-        var lessDate: Date?
-        var greaterDate: Date?
-        let firstMetadataDate = metadatas?.first?.date as? Date
-        let lastMetadataDate = metadatas?.last?.date as? Date
-        let countMetadatas = self.metadatas?.count ?? 0
-
         guard loadingTask == nil,
               !isEditMode,
               self.viewIfLoaded?.window != nil,
@@ -53,6 +48,12 @@ extension NCMedia {
         else {
             return
         }
+
+        var lessDate: Date?
+        var greaterDate: Date?
+        let firstMetadataDate = dataSource.getResultsMetadatas().first?.date as? Date
+        let lastMetadataDate = dataSource.getResultsMetadatas().last?.date as? Date
+        let countMetadatas = dataSource.getResultsMetadatas().count
 
         // first date
         let firstCellDate = (visibleCells.first as? NCGridMediaCell)?.date
@@ -79,8 +80,8 @@ extension NCMedia {
 
         if lessDate == Date.distantFuture,
            greaterDate == Date.distantPast,
-           (self.metadatas?.count ?? 0) > visibleCells.count {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media oops. something is bad (distantFuture, distantPast): \(self.metadatas?.count ?? 0)")
+           countMetadatas > visibleCells.count {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media oops. something is bad (distantFuture, distantPast): \(countMetadatas)")
             return
         }
 
@@ -94,7 +95,7 @@ extension NCMedia {
                 if results.error == .success {
                     Task { @MainActor in
                         if results.lessDate == Date.distantFuture, results.greaterDate == Date.distantPast, !results.isChanged, results.metadatasCount == 0 {
-                            self.metadatas = nil
+                            self.dataSource.removeAll()
                             self.collectionViewReloadData()
                             print("searchMediaUI: metadatacount 0")
                         } else if results.isChanged {

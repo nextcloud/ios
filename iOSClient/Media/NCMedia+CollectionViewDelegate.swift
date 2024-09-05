@@ -28,7 +28,7 @@ import RealmSwift
 extension NCMedia: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         var mediaCell: NCGridMediaCell?
-        if let metadata = self.metadatas?[indexPath.row] {
+        if let metadata = dataSource.getResultMetadata(indexPath: indexPath) {
             if let visibleCells = self.collectionView?.indexPathsForVisibleItems.compactMap({ self.collectionView?.cellForItem(at: $0) }) {
                 for case let cell as NCGridMediaCell in visibleCells {
                     if cell.ocId == metadata.ocId {
@@ -49,18 +49,15 @@ extension NCMedia: UICollectionViewDelegate {
             } else {
                 // ACTIVE SERVERURL
                 serverUrl = metadata.serverUrl
-                if let metadatas = self.metadatas {
-                    let metadata = tableMetadata(value: metadata)
-                    let metadatas = Array(metadatas.map { tableMetadata(value: $0) })
-                    NCViewer().view(viewController: self, metadata: metadata, metadatas: metadatas, imageIcon: getImage(metadata: metadata))
-                }
+                let metadatas = dataSource.getResultsMetadatas()
+                NCViewer().view(viewController: self, metadata: metadata, metadatas: metadatas, imageIcon: getImage(metadata: metadata))
             }
         }
     }
 
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         guard let cell = collectionView.cellForItem(at: indexPath) as? NCGridMediaCell,
-              let metadata = self.metadatas?[indexPath.row] else { return nil }
+              let metadata = dataSource.getResultMetadata(indexPath: indexPath) else { return nil }
         let identifier = indexPath as NSCopying
         let image = cell.imageItem.image
         self.serverUrl = metadata.serverUrl

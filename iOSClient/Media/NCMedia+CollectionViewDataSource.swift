@@ -42,8 +42,7 @@ extension NCMedia: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        var numberOfItemsInSection = 0
-        if let metadatas { numberOfItemsInSection = metadatas.count }
+        let numberOfItemsInSection = dataSource.getResultsMetadatas().count
         if numberOfItemsInSection == 0 || NCNetworking.shared.isOffline {
             selectOrCancelButton.isHidden = true
             menuButton.isHidden = false
@@ -64,10 +63,9 @@ extension NCMedia: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let metadatas else { return }
+        guard let metadata = dataSource.getResultMetadata(indexPath: indexPath) else { return }
 
-        if !collectionView.indexPathsForVisibleItems.contains(indexPath) && indexPath.row < metadatas.count {
-            let metadata = metadatas[indexPath.row]
+        if !collectionView.indexPathsForVisibleItems.contains(indexPath) {
             for case let operation as NCMediaDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
                 operation.cancel()
             }
@@ -79,7 +77,7 @@ extension NCMedia: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridMediaCell,
-              let metadata = metadatas?[indexPath.row] else {
+              let metadata = dataSource.getResultMetadata(indexPath: indexPath) else {
             return NCGridMediaCell()
         }
 

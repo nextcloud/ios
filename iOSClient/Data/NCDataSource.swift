@@ -37,7 +37,7 @@ class NCDataSource: NSObject {
     override init() { super.init() }
 
     init(metadatas: [tableMetadata],
-         layoutForView: NCDBLayoutForView?,
+         layoutForView: NCDBLayoutForView? = nil,
          providers: [NKSearchProvider]? = nil,
          searchResults: [NKSearchResult]? = nil) {
         super.init()
