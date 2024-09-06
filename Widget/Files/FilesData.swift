@@ -224,7 +224,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                     let result = await NCNetworking.shared.downloadPreview(fileId: file.fileId, width: Int(size1024.width), height: Int(size1024.height), account: activeTableAccount.account, options: options)
 
                     if result.error == .success, let data = result.data {
-                        utility.createImageFromPreview(fileNameView: file.fileName, ocId: file.ocId, etag: file.etag, classFile: file.classFile, data: data)
+                        utility.createImage(ocId: file.ocId, etag: file.etag, classFile: file.classFile, data: data)
                     }
                 }
                 if image == nil {
