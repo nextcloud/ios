@@ -133,8 +133,8 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 self.openDocumentController(metadata: metadata, controller: controller)
             } else {
                 if let viewController = controller.currentViewController() {
-                    let imageIcon = UIImage(contentsOfFile: self.utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
-                    NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon)
+                    let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.storageExt512x512)
+                    NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: image)
                 }
             }
 
