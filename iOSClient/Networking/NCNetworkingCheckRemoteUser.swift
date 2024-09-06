@@ -33,7 +33,7 @@ class NCNetworkingCheckRemoteUser {
         let titleNotification = String(format: NSLocalizedString("_account_unauthorized_", comment: ""), account)
 
         if UIApplication.shared.applicationState == .active && NextcloudKit.shared.isNetworkReachable() {
-            NCNetworking.shared.cancelAllTask()
+
             NCContentPresenter().messageNotification(titleNotification, error: error, delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, priority: .max)
 
             NextcloudKit.shared.getRemoteWipeStatus(serverUrl: tableAccount.urlBase, token: token, account: tableAccount.account) { account, wipe, _, error in
