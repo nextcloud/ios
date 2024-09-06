@@ -60,7 +60,7 @@ struct NCCollectionViewCommonSelectToolbarView: View {
                 .frame(maxWidth: isWideScreen ? eightyPercentOfWidth : .infinity)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            .background(.thinMaterial)
+			.background(Color(.Tabbar.background))
         }
     }
 }
@@ -120,11 +120,11 @@ private struct CustomBackgroundOnPressButtonStyle: ButtonStyle {
     
     func makeBody(configuration: Configuration) -> some View {
         if isDisabled {
-            configuration.label.foregroundColor(Color(NCBrandColor.shared.iconImageColor2))
+			configuration.label.foregroundColor(Color(.SelectToolbar.itemStateInactive))
         } else if configuration.isPressed {
-            configuration.label.foregroundColor(Color(NCBrandColor.shared.iconImageColor))
+            configuration.label.foregroundColor(Color(.SelectToolbar.itemStateSelected))
         } else {
-            configuration.label.foregroundColor(Color(.SelectTabbar.buttonForeground))
+            configuration.label.foregroundColor(Color(.SelectToolbar.itemStateActive))
         }
     }
 }
