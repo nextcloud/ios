@@ -233,8 +233,7 @@ class NCMedia: UIViewController {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String else { return }
 
-        if let metadata = database.getMetadataFromOcId(ocId),
-           (metadata.isVideo || metadata.isImage) {
+        if let metadata = database.getMetadataFromOcId(ocId), metadata.isImageOrVideo {
             self.reloadDataSource()
         }
     }

@@ -169,7 +169,7 @@ class NCGlobal: NSObject {
     // ContentPresenter
     //
     let dismissAfterSecond: TimeInterval        = 4
-    let dismissAfterSecondLong: TimeInterval    = 10
+    let dismissAfterSecondLong: TimeInterval    = 7
 
     // Error
     //
