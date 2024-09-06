@@ -218,15 +218,14 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 guard let url = URL(string: urlString) else { continue }
 
                 // IMAGE
-                let fileNamePreviewLocalPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(file.ocId, etag: file.etag)
-                let fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(file.ocId, etag: file.etag)
-                if FileManager.default.fileExists(atPath: fileNameIconLocalPath) {
-                    image = UIImage(contentsOfFile: fileNameIconLocalPath)
-                }
+                image = utility.getImage(ocId: file.ocId, etag: file.etag, ext: NCGlobal.shared.storageExt512x512)
                 if image == nil, file.hasPreview {
-                    let sizePreview = NCUtility().getSizePreview(width: Int(file.width), height: Int(file.height))
-                    let (_, _, imageIcon, _, _, _) = await NCNetworking.shared.downloadPreview(fileId: file.fileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, fileNameIconLocalPath: fileNameIconLocalPath, widthPreview: Int(sizePreview.width), heightPreview: Int(sizePreview.height), sizeIcon: NCGlobal.shared.sizeIcon, account: activeTableAccount.account, options: options)
-                    image = imageIcon
+                    let size1024 = NCUtility().getSize1024(width: Int(file.width), height: Int(file.height))
+                    let result = await NCNetworking.shared.downloadPreview(fileId: file.fileId, width: Int(size1024.width), height: Int(size1024.height), account: activeTableAccount.account, options: options)
+
+                    if result.error == .success, let data = result.data {
+                        utility.createImageFromPreview(fileNameView: file.fileName, ocId: file.ocId, etag: file.etag, classFile: file.classFile, data: data)
+                    }
                 }
                 if image == nil {
                     image = utility.loadImage(named: file.iconName, useTypeIconFile: true, account: file.account)
