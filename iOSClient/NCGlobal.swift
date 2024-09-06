@@ -83,8 +83,11 @@ class NCGlobal: NSObject {
     //
     let avatarSize: Int                             = 128 * Int(UIScreen.main.scale)
     let avatarSizeRounded: Int                      = 128
-    let sizePreview: Int                            = 1024
-    let sizeIcon: Int                               = 512
+    let size1024x1024: CGSize                       = CGSize(width: 1024, height: 1024)
+    let size512x512: CGSize                         = CGSize(width: 512, height: 512)
+    let size128x128: CGSize                         = CGSize(width: 128, height: 128)
+    let size64x64: CGSize                           = CGSize(width: 64, height: 64)
+    let size32x32: CGSize                           = CGSize(width: 32, height: 32)
 
     // E2EE
     //
@@ -163,8 +166,11 @@ class NCGlobal: NSObject {
 
     // Image extension
     //
-    let storageExtIcon                              = ".small.ico"
-    let storageExtPreview                           = ".preview.ico"
+    let storageExt1024x1024                         = ".1024x1024.ico"
+    let storageExt512x512                           = ".512x512.ico"
+    let storageExt128x128                           = ".128x128.ico"
+    let storageExt64x64                             = ".64x64.ico"
+    let storageExt32x32                             = ".32x32.ico"
 
     // ContentPresenter
     //
