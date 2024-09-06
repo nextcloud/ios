@@ -36,14 +36,10 @@ extension FileProviderExtension {
                 if counterProgress == progress.totalUnitCount { completionHandler(nil) }
                 continue
             }
-            let fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
 
-            NextcloudKit.shared.downloadPreview(fileId: metadata.fileId, widthPreview: Int(size.width), heightPreview: Int(size.height), etag: metadata.etag, account: metadata.account) { _ in
-            } completion: { _, data, error in
+            NextcloudKit.shared.downloadPreview(fileId: metadata.fileId, width: Int(size.width), height: Int(size.height), etag: metadata.etag, account: metadata.account) { _ in
+            } completion: { _, data, _, _, _, error in
                 if error == .success, let data {
-                    do {
-                        try data.write(to: URL(fileURLWithPath: fileNameIconLocalPath), options: .atomic)
-                    } catch { }
                     perThumbnailCompletionHandler(itemIdentifier, data, nil)
                 } else {
                     perThumbnailCompletionHandler(itemIdentifier, nil, NSFileProviderError(.serverUnreachable))
