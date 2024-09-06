@@ -26,7 +26,6 @@ import NextcloudKit
 
 class NCMainTabBar: UITabBar {
 
-    private var fillColor: UIColor!
     private var shapeLayer: CALayer?
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private let centerButtonY: CGFloat = -28
@@ -56,16 +55,6 @@ class NCMainTabBar: UITabBar {
         tintColor = NCBrandColor.shared.brandElement
         if let centerButton = self.viewWithTag(99) {
             centerButton.backgroundColor = centerButtonColor
-        }
-    }
-
-    override var backgroundColor: UIColor? {
-        get {
-            return self.fillColor
-        }
-        set {
-            fillColor = newValue
-            self.setNeedsDisplay()
         }
     }
 
