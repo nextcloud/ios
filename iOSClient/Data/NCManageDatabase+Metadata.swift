@@ -267,7 +267,7 @@ extension tableMetadata {
     }
 
     var hasPreviewBorder: Bool {
-        !isImage && !isAudioOrVideo && hasPreview && NCUtilityFileSystem().fileProviderStoragePreviewIconExists(ocId, etag: etag)
+        !isImage && !isAudioOrVideo && hasPreview && NCUtilityFileSystem().fileProviderStorageImageExists(ocId, etag: etag, ext: NCGlobal.shared.storageExt1024x1024)
     }
 
     var isAvailableEditorView: Bool {
