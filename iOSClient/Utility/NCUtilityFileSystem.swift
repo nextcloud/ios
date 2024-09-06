@@ -94,12 +94,8 @@ class NCUtilityFileSystem: NSObject {
         return path
     }
 
-    func getDirectoryProviderStorageIconOcId(_ ocId: String, etag: String) -> String {
-        return getDirectoryProviderStorageOcId(ocId) + "/" + etag + NCGlobal.shared.storageExtIcon
-    }
-
-    func getDirectoryProviderStoragePreviewOcId(_ ocId: String, etag: String) -> String {
-        return getDirectoryProviderStorageOcId(ocId) + "/" + etag + NCGlobal.shared.storageExtPreview
+    func getDirectoryProviderStorageImageOcId(_ ocId: String, etag: String, ext: String) -> String {
+        return getDirectoryProviderStorageOcId(ocId) + "/" + etag + ext
     }
 
     func fileProviderStorageExists(_ metadata: tableMetadata) -> Bool {
@@ -133,20 +129,28 @@ class NCUtilityFileSystem: NSObject {
         return 0
     }
 
-    func fileProviderStoragePreviewIconExists(_ ocId: String, etag: String) -> Bool {
-        let fileNamePathPreview = getDirectoryProviderStoragePreviewOcId(ocId, etag: etag)
-        let fileNamePathIcon = getDirectoryProviderStorageIconOcId(ocId, etag: etag)
+    func fileProviderStorageImageExists(_ ocId: String, etag: String, ext: String) -> Bool {
+        let fileNamePath = getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: ext)
         do {
-            let fileNamePathPreviewAttribute = try fileManager.attributesOfItem(atPath: fileNamePathPreview)
-            let fileSizePreview: UInt64 = fileNamePathPreviewAttribute[FileAttributeKey.size] as? UInt64 ?? 0
-            let fileNamePathIconAttribute = try fileManager.attributesOfItem(atPath: fileNamePathIcon)
-            let fileSizeIcon: UInt64 = fileNamePathIconAttribute[FileAttributeKey.size] as? UInt64 ?? 0
-            if fileSizePreview > 0 && fileSizeIcon > 0 {
+            let fileNamePathAttribute = try fileManager.attributesOfItem(atPath: fileNamePath)
+            let fileSize: UInt64 = fileNamePathAttribute[FileAttributeKey.size] as? UInt64 ?? 0
+            if fileSize > 0 {
                 return true
             } else {
                 return false
             }
         } catch { }
+        return false
+    }
+
+    func fileProviderStorageImageExists(_ ocId: String, etag: String) -> Bool {
+        if fileProviderStorageImageExists(ocId, etag: etag, ext: NCGlobal.shared.storageExt1024x1024),
+           fileProviderStorageImageExists(ocId, etag: etag, ext: NCGlobal.shared.storageExt512x512),
+           fileProviderStorageImageExists(ocId, etag: etag, ext: NCGlobal.shared.storageExt128x128),
+           fileProviderStorageImageExists(ocId, etag: etag, ext: NCGlobal.shared.storageExt64x64),
+           fileProviderStorageImageExists(ocId, etag: etag, ext: NCGlobal.shared.storageExt32x32) {
+            return true
+        }
         return false
     }
 
