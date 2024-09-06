@@ -1024,6 +1024,7 @@
 "_offlinefolder_error_"     = "An error has occurred while creating the folder set as offline:\n%@.\n\nPlease resolve the issue as soon as possible.\n\nAll uploads are suspended until the problem is resolved.\n";
 "_creating_dir_progress_"   = "Creating directories in progress … keep the application active";
 "_creating_db_photo_progress"   = "Creating photo archive in progress … keep the application active";
+"_account_unauthorized_"    = "Warning, %@, you are not authorized, your account has been deleted, if you have changed your password, re-authenticate.";
 
 // Tip
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails.";

@@ -30,21 +30,18 @@ class NCNetworkingCheckRemoteUser {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate,
               let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
               !token.isEmpty else { return }
+        let titleNotification = String(format: NSLocalizedString("_account_unauthorized_", comment: ""), account)
 
         if UIApplication.shared.applicationState == .active && NextcloudKit.shared.isNetworkReachable() {
             NCNetworking.shared.cancelAllTask()
+            NCContentPresenter().messageNotification(titleNotification, error: error, delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, priority: .max)
 
             NextcloudKit.shared.getRemoteWipeStatus(serverUrl: tableAccount.urlBase, token: token, account: tableAccount.account) { account, wipe, _, error in
+                NCAccount().deleteAccount(account, wipe: wipe)
                 if wipe {
-                    NCAccount().deleteAccount(account) // delete account, don't delete database
-
                     NextcloudKit.shared.setRemoteWipeCompletition(serverUrl: tableAccount.urlBase, token: token, account: tableAccount.account) { _, error in
-                        if error != .success {
-                            NCContentPresenter().messageNotification(tableAccount.user, error: error, delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, priority: .max)
-                        }
+                        NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Set Remote Wipe Completition error code: \(error.errorCode)")
                     }
-                } else {
-                    NCAccount().deleteAccount(account) // delete account, delete database
                 }
 
                 if let accounts = NCManageDatabase.shared.getAccounts(),
