@@ -23,14 +23,14 @@ struct NCCollectionViewCommonSelectToolbarView: View {
                 HStack(alignment: .top) {
                     TabButton(
                         action: {tabBarSelect.delegate?.share()},
-                        image: .SelectTabBar.copy,
+                        image: .SelectTabBar.share,
                         label: "_share_",
                         isDisabled: tabBarSelect.isSelectedEmpty || tabBarSelect.isAllDirectory,
                         isOneRowStyle: isWideScreen
                     )
                     TabButton(
                         action: {tabBarSelect.delegate?.move()},
-                        image: .SelectTabBar.share,
+                        image: .SelectTabBar.copy,
                         label: "_move_or_copy_",
                         isDisabled: tabBarSelect.isSelectedEmpty,
                         isOneRowStyle: isWideScreen
