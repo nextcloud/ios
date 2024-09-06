@@ -224,6 +224,7 @@ struct NCSettingsView: View {
                 })
             }
         }
+        .applyGlobalFormStyle()
         .defaultViewModifier(model)
     }
 }

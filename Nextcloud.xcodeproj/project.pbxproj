@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0F911CAA2C85A5C400B0A6F7 /* Font Awesome 6 Pro-Light-300.otf in Resources */ = {isa = PBXBuildFile; fileRef = 0F911CA62C85A5C400B0A6F7 /* Font Awesome 6 Pro-Light-300.otf */; };
 		0F5090CE2C786F04009348D9 /* FileActionsHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F5090CD2C786F04009348D9 /* FileActionsHeader.swift */; };
 		0F8B9A5B2C7887F60041C17D /* FileActionsHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0F8B9A5A2C7887F60041C17D /* FileActionsHeader.xib */; };
+		0F911CAA2C85A5C400B0A6F7 /* Font Awesome 6 Pro-Light-300.otf in Resources */ = {isa = PBXBuildFile; fileRef = 0F911CA62C85A5C400B0A6F7 /* Font Awesome 6 Pro-Light-300.otf */; };
 		2C1D5D7623E2DE3300334ABB /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
 		2C1D5D7923E2DE9100334ABB /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
 		2C33C48223E2C475005F963B /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C33C48123E2C475005F963B /* NotificationService.swift */; };
@@ -28,6 +28,9 @@
 		6215F7F22C86F16C002ACE64 /* NCCollectionViewCommonSelectToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6215F7F12C86F16C002ACE64 /* NCCollectionViewCommonSelectToolbarView.swift */; };
 		625EC26E2C6CA285006411D1 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 625EC26D2C6CA285006411D1 /* FirebaseAnalytics */; };
 		625EC2712C6CAABD006411D1 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 625EC2702C6CAABD006411D1 /* GoogleService-Info.plist */; };
+		62A63F2E2C8AF5320048653E /* View+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E8A390295DC5E0006CB2D0 /* View+Extension.swift */; };
+		62A63F2F2C8AF7530048653E /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 42F5047F2C6F553D001AA432 /* Colors.xcassets */; };
+		62A63F302C8AF7730048653E /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 42F5047F2C6F553D001AA432 /* Colors.xcassets */; };
 		8491B1CD273BBA82001C8C5B /* UIViewController+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8491B1CC273BBA82001C8C5B /* UIViewController+Menu.swift */; };
 		AF1A9B6427D0CA1E00F17A9E /* UIAlertController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF1A9B6327D0CA1E00F17A9E /* UIAlertController+Extension.swift */; };
 		AF1A9B6527D0CC0500F17A9E /* UIAlertController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF1A9B6327D0CA1E00F17A9E /* UIAlertController+Extension.swift */; };
@@ -1099,9 +1102,9 @@
 		08EA97451E6554FC004C83FA /* FirebaseCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseCore.framework; sourceTree = "<group>"; };
 		08EA97461E6554FC004C83FA /* FirebaseInstanceID.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseInstanceID.framework; sourceTree = "<group>"; };
 		08EA97471E6554FC004C83FA /* GoogleToolboxForMac.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleToolboxForMac.framework; sourceTree = "<group>"; };
-		0F911CA62C85A5C400B0A6F7 /* Font Awesome 6 Pro-Light-300.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Font Awesome 6 Pro-Light-300.otf"; sourceTree = "<group>"; };
 		0F5090CD2C786F04009348D9 /* FileActionsHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileActionsHeader.swift; sourceTree = "<group>"; };
 		0F8B9A5A2C7887F60041C17D /* FileActionsHeader.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileActionsHeader.xib; sourceTree = "<group>"; };
+		0F911CA62C85A5C400B0A6F7 /* Font Awesome 6 Pro-Light-300.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Font Awesome 6 Pro-Light-300.otf"; sourceTree = "<group>"; };
 		2C33C47F23E2C475005F963B /* Notification Service Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Notification Service Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C33C48123E2C475005F963B /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		2C33C48A23E2CC26005F963B /* Notification_Service_Extension-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Notification_Service_Extension-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -1919,14 +1922,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		0F911CA32C85A5AF00B0A6F7 /* Font Awesome 6 Pro */ = {
-			isa = PBXGroup;
-			children = (
-				0F911CA62C85A5C400B0A6F7 /* Font Awesome 6 Pro-Light-300.otf */,
-			);
-			path = "Font Awesome 6 Pro";
-			sourceTree = "<group>";
-		};
 		0F5090CC2C786EC8009348D9 /* ActionsHeader */ = {
 			isa = PBXGroup;
 			children = (
@@ -1934,6 +1929,14 @@
 				0F8B9A5A2C7887F60041C17D /* FileActionsHeader.xib */,
 			);
 			path = ActionsHeader;
+			sourceTree = "<group>";
+		};
+		0F911CA32C85A5AF00B0A6F7 /* Font Awesome 6 Pro */ = {
+			isa = PBXGroup;
+			children = (
+				0F911CA62C85A5C400B0A6F7 /* Font Awesome 6 Pro-Light-300.otf */,
+			);
+			path = "Font Awesome 6 Pro";
 			sourceTree = "<group>";
 		};
 		2C33C48023E2C475005F963B /* Notification Service Extension */ = {
@@ -3678,6 +3681,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				62A63F302C8AF7730048653E /* Colors.xcassets in Resources */,
 				F7E4022F2BA85D1D007E5609 /* PrivacyInfo.xcprivacy in Resources */,
 				F746EC53273906C50052598D /* NCViewCertificateDetails.storyboard in Resources */,
 			);
@@ -3719,6 +3723,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				62A63F2F2C8AF7530048653E /* Colors.xcassets in Resources */,
 				F714803B262EBE3900693E51 /* MainInterface.storyboard in Resources */,
 				F7148054262ED51000693E51 /* NCListCell.xib in Resources */,
 				F7D57C8626317BDA00DE301D /* NCAccountRequest.storyboard in Resources */,
@@ -4034,6 +4039,7 @@
 				F7EDE4E5262D7BBE00414FE6 /* NCSectionFirstHeader.swift in Sources */,
 				F7BF9D852934CA21009EE9A6 /* NCManageDatabase+LayoutForView.swift in Sources */,
 				F79EC78926316AC4004E59D6 /* NCPopupViewController.swift in Sources */,
+				62A63F2E2C8AF5320048653E /* View+Extension.swift in Sources */,
 				F7C30DFB291BCF790017149B /* NCNetworkingE2EECreateFolder.swift in Sources */,
 				F73EF7DA2B0226080087E6E9 /* NCManageDatabase+Tip.swift in Sources */,
 				F7817CFB29801A3500FFBC65 /* Data+Extension.swift in Sources */,
