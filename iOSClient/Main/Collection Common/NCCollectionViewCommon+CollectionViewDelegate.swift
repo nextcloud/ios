@@ -60,7 +60,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         if metadata.directory {
             pushMetadata(metadata)
         } else {
-            let imageIcon = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
+            let imageIcon = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.storageExt512x512)
             if !metadata.isDirectoryE2EE, (metadata.isImage || metadata.isAudioOrVideo) {
                 let metadatas = self.dataSource.getResultsMetadatas()
                 let metadatasMedia = metadatas.filter { $0.classFile == NKCommon.TypeClassFile.image.rawValue || $0.classFile == NKCommon.TypeClassFile.video.rawValue || $0.classFile == NKCommon.TypeClassFile.audio.rawValue }
