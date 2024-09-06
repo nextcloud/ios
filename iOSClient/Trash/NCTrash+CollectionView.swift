@@ -78,11 +78,11 @@ extension NCTrash: UICollectionViewDataSource {
             image = NCUtility().loadImage(named: resultTableTrash.iconName, useTypeIconFile: true, account: resultTableTrash.account)
         }
 
-        if FileManager().fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageIconOcId(resultTableTrash.fileId, etag: resultTableTrash.fileName)) {
-            image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(resultTableTrash.fileId, etag: resultTableTrash.fileName))
+        if let imageIcon = utility.getImage(ocId: resultTableTrash.fileId, etag: resultTableTrash.fileName, ext: NCGlobal.shared.storageExt512x512) {
+            image = imageIcon
             cell.imageItem.contentMode = .scaleAspectFill
         } else {
-            if resultTableTrash.hasPreview && !utilityFileSystem.fileProviderStoragePreviewIconExists(resultTableTrash.fileId, etag: resultTableTrash.fileName) {
+            if resultTableTrash.hasPreview {
                 if NCNetworking.shared.downloadThumbnailTrashQueue.operations.filter({ ($0 as? NCOperationDownloadThumbnailTrash)?.fileId == resultTableTrash.fileId }).isEmpty {
                     NCNetworking.shared.downloadThumbnailTrashQueue.addOperation(NCOperationDownloadThumbnailTrash(resultTableTrash: resultTableTrash, fileId: resultTableTrash.fileId, account: session.account, cell: cell, collectionView: collectionView))
                 }
