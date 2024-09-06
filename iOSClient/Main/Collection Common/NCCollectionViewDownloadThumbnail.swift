@@ -30,39 +30,37 @@ import RealmSwift
 class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
     var metadata: tableMetadata
     var collectionView: UICollectionView?
-    var fileNamePreviewLocalPath: String
-    var fileNameIconLocalPath: String
     let utilityFileSystem = NCUtilityFileSystem()
+    let utility = NCUtility()
 
     init(metadata: tableMetadata, collectionView: UICollectionView?) {
         self.metadata = tableMetadata.init(value: metadata)
         self.collectionView = collectionView
-        self.fileNamePreviewLocalPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
-        self.fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
     }
 
     override func start() {
         guard !isCancelled else { return self.finish() }
         var etagResource: String?
-        let sizePreview = NCUtility().getSizePreview(width: metadata.width, height: metadata.height)
+        let size = NCUtility().getSize1024(width: metadata.width, height: metadata.height)
 
-        if FileManager.default.fileExists(atPath: fileNameIconLocalPath) && FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
+        if utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag) {
             etagResource = metadata.etagResource
         }
 
         NextcloudKit.shared.downloadPreview(fileId: metadata.fileId,
-                                            fileNamePreviewLocalPath: fileNamePreviewLocalPath,
-                                            fileNameIconLocalPath: fileNameIconLocalPath,
-                                            widthPreview: Int(sizePreview.width),
-                                            heightPreview: Int(sizePreview.height),
-                                            sizeIcon: NCGlobal.shared.sizeIcon,
+                                            width: Int(size.width),
+                                            height: Int(size.height),
                                             etag: etagResource,
-                                            account: self.metadata.account) { _, _, imageIcon, _, etag, error in
-            if error == .success, let imageIcon, let collectionView = self.collectionView {
+                                            account: self.metadata.account) { _, data, _, _, etag, error in
+
+            if error == .success, let data, let collectionView = self.collectionView {
+
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
+                NCUtility().createImageFromPreview(fileNameView: self.metadata.fileName, ocId: self.metadata.ocId, etag: self.metadata.etag, classFile: self.metadata.classFile, data: data)
 
                 for case let cell as NCCellProtocol in collectionView.visibleCells {
                     if cell.fileOcId == self.metadata.ocId, let filePreviewImageView = cell.filePreviewImageView {
+                        let image = self.utility.getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: NCGlobal.shared.storageExt512x512)
                         cell.filePreviewImageView?.contentMode = .scaleAspectFill
                         if self.metadata.hasPreviewBorder {
                             cell.filePreviewImageView?.layer.borderWidth = 0.2
@@ -71,7 +69,7 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
                         UIView.transition(with: filePreviewImageView,
                                           duration: 0.75,
                                           options: .transitionCrossDissolve,
-                                          animations: { filePreviewImageView.image = imageIcon },
+                                          animations: { filePreviewImageView.image = image },
                                           completion: nil)
                         break
                     }
