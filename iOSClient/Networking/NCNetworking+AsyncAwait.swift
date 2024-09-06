@@ -77,17 +77,14 @@ extension NCNetworking {
     }
 
     func downloadPreview(fileId: String,
-                         fileNamePreviewLocalPath: String,
-                         fileNameIconLocalPath: String? = nil,
-                         widthPreview: Int = 512,
-                         heightPreview: Int = 512,
-                         sizeIcon: Int = 512,
+                         width: Int = 512,
+                         height: Int = 512,
                          etag: String? = nil,
                          account: String,
-                         options: NKRequestOptions = NKRequestOptions()) async -> (account: String, imagePreview: UIImage?, imageIcon: UIImage?, imageOriginal: UIImage?, etag: String?, error: NKError) {
+                         options: NKRequestOptions = NKRequestOptions()) async -> (account: String, data: Data?, width: Int, height: Int, etag: String?, error: NKError) {
         await withUnsafeContinuation({ continuation in
-            NextcloudKit.shared.downloadPreview(fileId: fileId, fileNamePreviewLocalPath: fileNamePreviewLocalPath, fileNameIconLocalPath: fileNameIconLocalPath, widthPreview: widthPreview, heightPreview: heightPreview, sizeIcon: sizeIcon, etag: etag, account: account, options: options) { account, imagePreview, imageIcon, imageOriginal, etag, error in
-                continuation.resume(returning: (account: account, imagePreview: imagePreview, imageIcon: imageIcon, imageOriginal: imageOriginal, etag: etag, error: error))
+            NextcloudKit.shared.downloadPreview(fileId: fileId, width: width, height: height, etag: etag, account: account, options: options) { account, data, width, height, etag, error in
+                continuation.resume(returning: (account: account, data: data, width: width, height: height, etag: etag, error: error))
             }
         })
     }
