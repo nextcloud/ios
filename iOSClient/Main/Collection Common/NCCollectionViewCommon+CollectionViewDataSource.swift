@@ -71,14 +71,14 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
             if metadata.name == global.appName {
                 if isLayoutPhoto, metadata.isImageOrVideo {
-                    if let image = NCImageCache.shared.getPreviewImageCache(ocId: metadata.ocId, etag: metadata.etag) {
+                    if let image = NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.storageExt512x512) {
                         cell.filePreviewImageView?.image = image
                     } else if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.storageExt512x512) {
                         cell.filePreviewImageView?.image = image
                         NCImageCache.shared.addPreviewImageCache(metadata: metadata, image: image)
                     }
                 } else {
-                    if let image = NCImageCache.shared.getIconImageCache(ocId: metadata.ocId, etag: metadata.etag) {
+                    if let image = NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.storageExt512x512) {
                         cell.filePreviewImageView?.image = image
                     } else {
                         cell.filePreviewImageView?.image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.storageExt512x512)
