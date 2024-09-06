@@ -166,11 +166,11 @@ class NCGlobal: NSObject {
 
     // Image extension
     //
-    let storageExt1024x1024                         = ".1024x1024.ico"
-    let storageExt512x512                           = ".512x512.ico"
-    let storageExt128x128                           = ".128x128.ico"
-    let storageExt64x64                             = ".64x64.ico"
-    let storageExt32x32                             = ".32x32.ico"
+    let storageExt1024x1024                         = ".1024x1024.preview.ico"
+    let storageExt512x512                           = ".512x512.preview.ico"
+    let storageExt128x128                           = ".128x128.preview.ico"
+    let storageExt64x64                             = ".64x64.preview.ico"
+    let storageExt32x32                             = ".32x32.preview.ico"
 
     // ContentPresenter
     //
