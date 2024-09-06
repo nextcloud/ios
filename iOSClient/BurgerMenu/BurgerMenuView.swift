@@ -27,6 +27,16 @@ struct BurgerMenuView: View {
                     }
                 HStack(spacing: 0, content: {
                     VStack(alignment: .leading, spacing: _Constants.spacingBetweenItems) {
+                        Image(.ionosEasyStorageLogo)
+                            .resizable()
+                            .renderingMode(.template)
+                            .foregroundStyle(Color(.BurgerMenu.logoTint))
+                            .scaledToFit()
+                            .padding(EdgeInsets(top: 24,
+                                                leading: 0,
+                                                bottom: 8,
+                                                trailing: 0))
+                            .frame(height: 56)
                         Button(action: {
                             viewModel.hideMenu()
                         }, label: {
@@ -49,7 +59,7 @@ struct BurgerMenuView: View {
                         }
                     }
                     .padding(EdgeInsets(top: 0, leading: 19, bottom: 0, trailing: 28))
-                    .frame(width: width*0.85, alignment: .leading)
+                    .frame(width: min(width*0.85, 400), alignment: .leading)
                     .background(Color(.BurgerMenu.background))
                     .offset(x: viewModel.isVisible ? 0 : -width)
                 })
@@ -141,6 +151,23 @@ private struct BurgerMenuViewButton: View {
     }
 }
 
+private struct CustomBackgroundOnPressButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration
+            .label
+            .background {
+                if configuration.isPressed {
+                    GeometryReader { geometry in
+                        Color(.BurgerMenu.pressedButton)
+                            .clipShape(RoundedRectangle(cornerRadius: geometry.size.height/2))
+                    }
+                } else {
+                    EmptyView()
+                }
+            }
+    }
+}
+
 private struct CustomProgressView: View {
     private let height: CGFloat = 8
     private let cornerRadius: CGFloat = 13
@@ -184,23 +211,6 @@ private extension Image {
             .resizable()
             .aspectRatio(contentMode: .fit)
             .frame(width: 28, height: 28)
-    }
-}
-
-private struct CustomBackgroundOnPressButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        if configuration.isPressed {
-            configuration
-                .label
-                .background {
-                    GeometryReader { geometry in
-                        Color(.BurgerMenu.pressedButton)
-                            .clipShape(RoundedRectangle(cornerRadius: geometry.size.height/2))
-                    }
-                }
-        } else {
-            configuration.label
-        }
     }
 }
 

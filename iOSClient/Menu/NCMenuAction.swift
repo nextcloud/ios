@@ -163,7 +163,7 @@ extension NCMenuAction {
             order: order,
             action: { _ in
                 let controller = viewController.mainTabBarController
-                NCActionCenter.shared.openActivityViewController(selectedMetadata: selectedMetadatas, controller: controller)
+                NCActionCenter.shared.openActivityViewController(selectedMetadata: selectedMetadatas, mainTabBarController: controller)
                 completion?()
             }
         )

@@ -34,8 +34,6 @@ protocol NCAccountSettingsModelDelegate: AnyObject {
 class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     /// AppDelegate
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-    /// Root View Controller
-    var controller: NCMainTabBarController?
     /// All account
     var accounts: [tableAccount] = []
     /// Delegate
@@ -54,8 +52,7 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     @Published var dismissView = false
 
     /// Initialization code to set up the ViewModel with the active account
-    init(controller: NCMainTabBarController?, delegate: NCAccountSettingsModelDelegate?) {
-        self.controller = controller
+    init(delegate: NCAccountSettingsModelDelegate?) {
         self.delegate = delegate
         if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
             NCManageDatabase.shared.previewCreateDB()

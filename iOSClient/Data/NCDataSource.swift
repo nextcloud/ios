@@ -405,7 +405,7 @@ class NCMetadataForSection: NSObject {
 
             // Organized the metadata
             if metadata.favorite && favoriteOnTop {
-                if metadata.directory {
+                if metadata.directory && directoryOnTop {
                     metadatasFavoriteDirectory.append(metadata)
                 } else {
                     metadatasFavoriteFile.append(metadata)
