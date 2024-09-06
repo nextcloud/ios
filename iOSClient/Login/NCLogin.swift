@@ -183,13 +183,16 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 })
             }
 
-            enforceServersButton.layer.borderColor = textColor.cgColor
             enforceServersButton.layer.cornerRadius = 10
-            enforceServersButton.layer.borderWidth  = 1
             enforceServersButton.menu = .init(title: "Servers", children: actions)
-            enforceServersButton.tintAdjustmentMode = .normal
-            enforceServersButton.titleLabel?.tintAdjustmentMode = .normal
             enforceServersButton.showsMenuAsPrimaryAction = true
+
+            enforceServersButton.configuration?.titleTextAttributesTransformer =
+               UIConfigurationTextAttributesTransformer { incoming in
+                 var outgoing = incoming
+                 outgoing.font = UIFont.systemFont(ofSize: 13)
+                 return outgoing
+             }
         }
     }
 
