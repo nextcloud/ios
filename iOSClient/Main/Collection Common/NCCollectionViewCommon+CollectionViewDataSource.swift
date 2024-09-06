@@ -37,7 +37,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let metadata = self.dataSource.getMetadata(indexPath: indexPath),
               let cell = (cell as? NCCellProtocol) else { return }
-        let existsIcon = utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)
+        let existsIcon = utility.existsImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.storageExt512x512)
 
         func downloadAvatar(fileName: String, user: String, dispalyName: String?) {
             if let image = database.getImageAvatarLoaded(fileName: fileName) {
@@ -73,7 +73,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 if isLayoutPhoto, metadata.isImageOrVideo {
                     if let image = NCImageCache.shared.getPreviewImageCache(ocId: metadata.ocId, etag: metadata.etag) {
                         cell.filePreviewImageView?.image = image
-                    } else if let image = UIImage(contentsOfFile: self.utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
+                    } else if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.storageExt512x512) {
                         cell.filePreviewImageView?.image = image
                         NCImageCache.shared.addPreviewImageCache(metadata: metadata, image: image)
                     }
@@ -81,7 +81,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     if let image = NCImageCache.shared.getIconImageCache(ocId: metadata.ocId, etag: metadata.etag) {
                         cell.filePreviewImageView?.image = image
                     } else {
-                        cell.filePreviewImageView?.image = utility.getIcon(metadata: metadata)
+                        cell.filePreviewImageView?.image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.storageExt512x512)
                     }
                 }
                 if cell.filePreviewImageView?.image == nil {
