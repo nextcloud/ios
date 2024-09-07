@@ -104,8 +104,6 @@ class NCOperationDownloadThumbnailTrash: ConcurrentOperation {
         guard !isCancelled else { return self.finish() }
 
         NextcloudKit.shared.downloadTrashPreview(fileId: trash.fileId,
-                                                 width: Int(NCGlobal.shared.size512x512.width),
-                                                 height: Int(NCGlobal.shared.size512x512.height),
                                                  account: account) { _, data, _, _, error in
             if error == .success,
                let data,
