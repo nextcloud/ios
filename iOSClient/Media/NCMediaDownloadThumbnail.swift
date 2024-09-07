@@ -28,49 +28,46 @@ import Queuer
 class NCMediaDownloadThumbnail: ConcurrentOperation {
     var metadata: tableMetadata
     var collectioView: UICollectionView?
-    var fileNamePreviewLocalPath: String
-    var fileNameIconLocalPath: String
     let utilityFileSystem = NCUtilityFileSystem()
     let delegate: NCMedia?
 
     init(metadata: tableMetadata, collectioView: UICollectionView?, delegate: NCMedia?) {
         self.metadata = tableMetadata.init(value: metadata)
         self.collectioView = collectioView
-        self.fileNamePreviewLocalPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
-        self.fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
         self.delegate = delegate
     }
 
     override func start() {
         guard !isCancelled else { return self.finish() }
         var etagResource: String?
-        let sizePreview = NCUtility().getSizePreview(width: metadata.width, height: metadata.height)
+        let size = NCUtility().getSize1024(width: metadata.width, height: metadata.height)
 
-        if FileManager.default.fileExists(atPath: fileNameIconLocalPath) && FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
+        if utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag) {
             etagResource = metadata.etagResource
         }
 
         NextcloudKit.shared.downloadPreview(fileId: metadata.fileId,
-                                            fileNamePreviewLocalPath: fileNamePreviewLocalPath,
-                                            fileNameIconLocalPath: fileNameIconLocalPath,
-                                            widthPreview: Int(sizePreview.width),
-                                            heightPreview: Int(sizePreview.height),
-                                            sizeIcon: NCGlobal.shared.sizeIcon,
+                                            width: Int(size.width),
+                                            height: Int(size.height),
                                             etag: etagResource,
-                                            account: metadata.account) { _, imagePreview, _, _, etag, error in
-            if error == .success, let imagePreview, let collectionView = self.collectioView {
+                                            account: metadata.account,
+                                            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, data, _, _, etag, error in
+            if error == .success, let data, let collectionView = self.collectioView {
 
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
-                NCImageCache.shared.addPreviewImageCache(metadata: self.metadata, image: imagePreview)
+                NCUtility().createImage(ocId: self.metadata.ocId, etag: self.metadata.etag, classFile: self.metadata.classFile, data: data, cacheMetadata: self.metadata)
 
-                for case let cell as NCGridMediaCell in collectionView.visibleCells {
-                    if cell.ocId == self.metadata.ocId {
-                        UIView.transition(with: cell.imageItem,
-                                          duration: 0.75,
-                                          options: .transitionCrossDissolve,
-                                          animations: { cell.imageItem.image = imagePreview },
-                                          completion: nil)
-                        break
+                DispatchQueue.main.async {
+                    for case let cell as NCGridMediaCell in collectionView.visibleCells {
+                        if cell.ocId == self.metadata.ocId,
+                           let image = NCUtility().getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: NCGlobal.shared.storageExt512x512) {
+                            UIView.transition(with: cell.imageItem,
+                                              duration: 0.75,
+                                              options: .transitionCrossDissolve,
+                                              animations: { cell.imageItem.image = image },
+                                              completion: nil)
+                            break
+                        }
                     }
                 }
             }
