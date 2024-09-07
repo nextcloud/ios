@@ -280,28 +280,23 @@ class NCViewerMedia: UIViewController {
             utility.createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
         } else if metadata.isAudio {
             return completion(utility.loadImage(named: "waveform", colors: [NCBrandColor.shared.iconImageColor2]))
-        } else if let image = utility.getImage(metadata: metadata) {
+        } else if let image = utility.getImage(metadata: metadata, exe: NCGlobal.shared.storageExt1024x1024) {
             return completion(image)
         }
 
-        if utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
-            return completion(UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)))
+        if utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.storageExt1024x1024) {
+            return completion(UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageImageOcId(metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.storageExt1024x1024)))
         } else {
-            let fileNamePreviewLocalPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
-            let fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
-            let sizePreview = NCUtility().getSizePreview(width: metadata.width, height: metadata.height)
+            let sizePreview = NCUtility().getSize1024(width: metadata.width, height: metadata.height)
 
             NextcloudKit.shared.downloadPreview(fileId: metadata.fileId,
-                                                fileNamePreviewLocalPath: fileNamePreviewLocalPath,
-                                                fileNameIconLocalPath: fileNameIconLocalPath,
-                                                widthPreview: Int(sizePreview.width),
-                                                heightPreview: Int(sizePreview.height),
-                                                sizeIcon: NCGlobal.shared.sizeIcon,
+                                                width: Int(sizePreview.width),
+                                                height: Int(sizePreview.height),
                                                 account: metadata.account,
-                                                options: NKRequestOptions(queue: .main)) { _, imagePreview, _, _, etag, error in
-                if error == .success, let image = imagePreview {
+                                                options: NKRequestOptions(queue: .main)) { _, data, _, _, etag, error in
+                if error == .success, let data {
                     self.database.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
-                    return completion(image)
+                    return completion(UIImage(data: data))
                 } else {
                     return completion(self.utility.loadImage(named: "photo", colors: [NCBrandColor.shared.iconImageColor2]))
                 }
