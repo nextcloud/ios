@@ -79,10 +79,13 @@ class NCGlobal: NSObject {
     let introLogin: Int                             = 0
     let introSignup: Int                            = 1
 
-    // Avatar & Preview size
+    // Avatar
     //
     let avatarSize: Int                             = 128 * Int(UIScreen.main.scale)
     let avatarSizeRounded: Int                      = 128
+
+    // Preview size
+    //
     let size1024x1024: CGSize                       = CGSize(width: 1024, height: 1024)
     let size512x512: CGSize                         = CGSize(width: 512, height: 512)
     let size256x256: CGSize                         = CGSize(width: 256, height: 256)
@@ -92,6 +95,21 @@ class NCGlobal: NSObject {
     let storageExt512x512                           = ".512x512.preview.ico"
     let storageExt256x256                           = ".256x256.preview.ico"
     let storageExt128x128                           = ".128x128.preview.ico"
+
+    func getSizeExtension(width: CGFloat?) -> String {
+        guard let width else { return storageExt512x512 }
+
+        switch (width * 3) {
+        case 0...192:
+            return storageExt128x128
+        case 193...384:
+             return storageExt256x256
+        case 384...768:
+            return storageExt512x512
+        default:
+            return storageExt1024x1024
+        }
+    }
 
     // E2EE
     //

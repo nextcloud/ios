@@ -61,9 +61,10 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
 
                 DispatchQueue.main.async {
                     for case let cell as NCCellProtocol in collectionView.visibleCells {
+                        let ext = NCGlobal.shared.getSizeExtension(width: cell.filePreviewImageView?.bounds.size.width)
                         if cell.fileOcId == self.metadata.ocId,
                            let filePreviewImageView = cell.filePreviewImageView,
-                           let image = self.utility.getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: NCGlobal.shared.storageExt512x512) {
+                           let image = self.utility.getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: ext) {
                             cell.filePreviewImageView?.contentMode = .scaleAspectFill
                             if self.metadata.hasPreviewBorder {
                                 cell.filePreviewImageView?.layer.borderWidth = 0.2

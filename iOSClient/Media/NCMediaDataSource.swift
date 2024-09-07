@@ -125,9 +125,11 @@ extension NCMedia {
             return(lessDate, greaterDate, 0, false, NKError())
         }
         var limit = limit
+        /*
         let calendar = Calendar.current
         let components = calendar.dateComponents([.day], from: greaterDate, to: lessDate)
         let daysDifference = components.day
+        */
         if collectionView.visibleCells.count * 2 > limit {
             limit = collectionView.visibleCells.count * 2
         }

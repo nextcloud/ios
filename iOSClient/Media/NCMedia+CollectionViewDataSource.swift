@@ -87,7 +87,7 @@ extension NCMedia: UICollectionViewDataSource {
         cell.user = metadata.ownerId
         cell.imageStatus.image = nil
 
-        if let image = getImage(metadata: metadata) {
+        if let image = getImage(metadata: metadata, width: cell.imageItem.bounds.width) {
             cell.imageItem.image = image
         } else if !metadata.hasPreview {
             cell.imageItem.backgroundColor = .clear

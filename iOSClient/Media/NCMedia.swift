@@ -275,21 +275,9 @@ class NCMedia: UIViewController {
 
     // MARK: - Image
 
-    func getImage(metadata: tableMetadata) -> UIImage? {
+    func getImage(metadata: tableMetadata, width: CGFloat) -> UIImage? {
         var returnImage: UIImage?
-        var ext = NCGlobal.shared.storageExt512x512
-        let size = currentWidth * 3
-
-        switch size {
-        case 0...192:
-            ext = NCGlobal.shared.storageExt128x128
-        case 193...384:
-            ext = NCGlobal.shared.storageExt256x256
-        case 384...768:
-            ext = NCGlobal.shared.storageExt512x512
-        default:
-            ext = NCGlobal.shared.storageExt1024x1024
-        }
+        let ext = NCGlobal.shared.getSizeExtension(width: width)
 
         if let image = imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
             returnImage = image
