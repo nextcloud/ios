@@ -170,8 +170,9 @@ class NCImageCache: NSObject {
     ///
     /// PREVIEW CACHE
     ///
-    func addPreviewImageCache(metadata: tableMetadata, image: UIImage) {
-        cacheImage.setValue(imageInfo(image: image, size: image.size, date: metadata.date as Date), forKey: metadata.ocId + metadata.etag)
+    func addPreviewImageCache(metadata: tableMetadata?, data: Data, ext: String) {
+        guard let metadata, let image = UIImage(data: data) else { return }
+        cacheImage.setValue(imageInfo(image: image, size: image.size, date: metadata.date as Date), forKey: metadata.ocId + metadata.etag + ext)
         cacheSize.setValue(image.size, forKey: metadata.ocId + metadata.etag)
     }
 
