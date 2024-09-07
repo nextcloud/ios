@@ -615,7 +615,7 @@ extension NCManageDatabase {
     }
 
     func setMetadataEtagResource(ocId: String, etagResource: String?) {
-        guard let etagResource = etagResource else { return }
+        guard let etagResource else { return }
 
         do {
             let realm = try Realm()

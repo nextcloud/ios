@@ -74,11 +74,4 @@ class NCMediaDownloadThumbnail: ConcurrentOperation {
             self.finish()
         }
     }
-
-    override func finish(success: Bool = true) {
-        super.finish(success: success)
-        if (metadata.width == 0 && metadata.height == 0) || (NCNetworking.shared.downloadThumbnailQueue.operationCount == 0) {
-            self.delegate?.collectionViewReloadData()
-        }
-    }
 }
