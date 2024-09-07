@@ -144,12 +144,12 @@ extension NCUtility {
 
     func createImage(ocId: String, etag: String, classFile: String, data: Data, cacheMetadata: tableMetadata? = nil) {
         guard let image = UIImage(data: data) else { return }
-        let fileNamePath1024 = self.utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: global.storageExt1024)
+        let fileNamePath1024 = self.utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: global.previewExt1024)
 
         do {
             try data.write(to: URL(fileURLWithPath: fileNamePath1024), options: .atomic)
             #if !EXTENSION
-            NCImageCache.shared.addImageCache(metadata: cacheMetadata, data: data, ext: global.storageExt1024)
+            NCImageCache.shared.addImageCache(metadata: cacheMetadata, data: data, ext: global.previewExt1024)
             #endif
         } catch { }
 
@@ -158,9 +158,9 @@ extension NCUtility {
 
     private func createImageStandard(ocId: String, etag: String, classFile: String, image: UIImage, cacheMetadata: tableMetadata?) {
 
-        let exts = [global.storageExt512,
-                    global.storageExt256,
-                    global.storageExt128]
+        let exts = [global.previewExt512,
+                    global.previewExt256,
+                    global.previewExt128]
 
         let sizes = [global.size512,
                      global.size256,
@@ -217,7 +217,7 @@ extension NCUtility {
             let fileNamePathBase = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
 
             if fileNameExtension == "GIF" {
-                if !NCUtility().existsImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.storageExt1024) {
+                if !NCUtility().existsImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024) {
                     createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
                 }
                 image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: fileNamePathBase))
@@ -225,7 +225,7 @@ extension NCUtility {
                 if let svgImage = SVGKImage(contentsOfFile: fileNamePathBase) {
                     svgImage.size = NCGlobal.shared.size1024
                     if let image = svgImage.uiImage {
-                        if !NCUtility().existsImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.storageExt1024), let data = image.jpegData(compressionQuality: 1.0) {
+                        if !NCUtility().existsImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024), let data = image.jpegData(compressionQuality: 1.0) {
                             createImage(ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile, data: data, cacheMetadata: metadata)
                         }
                         return image
@@ -237,7 +237,7 @@ extension NCUtility {
                 }
             } else {
                 createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
-                image = getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.storageExt512)
+                image = getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512)
             }
         }
         return image

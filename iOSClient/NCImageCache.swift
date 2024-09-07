@@ -167,10 +167,10 @@ class NCImageCache: NSObject {
     }
 
     func removeImageCache(ocId: String, etag: String) {
-        let exts = [global.storageExt1024,
-                    global.storageExt512,
-                    global.storageExt256,
-                    global.storageExt128]
+        let exts = [global.previewExt1024,
+                    global.previewExt512,
+                    global.previewExt256,
+                    global.previewExt128]
 
         for i in 0..<exts.count {
             cacheImage.removeValue(forKey: ocId + etag + exts[i])
@@ -185,7 +185,7 @@ class NCImageCache: NSObject {
         if let size = cacheSize.value(forKey: ocId + etag) {
             return size
         } else {
-            if let image = UIImage(contentsOfFile: NCUtilityFileSystem().getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: NCGlobal.shared.storageExt1024)) {
+            if let image = UIImage(contentsOfFile: NCUtilityFileSystem().getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: NCGlobal.shared.previewExt1024)) {
                 return image.size
             }
         }

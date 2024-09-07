@@ -275,7 +275,7 @@ extension NCSelect: UICollectionViewDataSource {
 
         // Thumbnail
         if !metadata.directory {
-            if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.storageExt512) {
+            if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512) {
                 (cell as? NCCellProtocol)?.filePreviewImageView?.image = image
             } else {
                 if metadata.iconName.isEmpty {

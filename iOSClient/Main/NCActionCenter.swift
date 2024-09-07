@@ -133,7 +133,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 self.openDocumentController(metadata: metadata, controller: controller)
             } else {
                 if let viewController = controller.currentViewController() {
-                    let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.storageExt1024)
+                    let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024)
                     NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], image: image)
                 }
             }

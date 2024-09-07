@@ -92,23 +92,23 @@ class NCGlobal: NSObject {
     let size256: CGSize                             = CGSize(width: 256, height: 256)
     let size128: CGSize                             = CGSize(width: 128, height: 128)
     // Image extension
-    let storageExt1024                              = ".1024.preview"
-    let storageExt512                               = ".512.preview"
-    let storageExt256                               = ".256.preview"
-    let storageExt128                               = ".128.preview"
+    let previewExt1024                              = ".1024.preview"
+    let previewExt512                               = ".512.preview"
+    let previewExt256                               = ".256.preview"
+    let previewExt128                               = ".128.preview"
 
     func getSizeExtension(width: CGFloat?) -> String {
-        guard let width else { return storageExt512 }
+        guard let width else { return previewExt512 }
 
         switch (width * 3) {
         case 0...192:
-            return storageExt128
+            return previewExt128
         case 193...384:
-             return storageExt256
+             return previewExt256
         case 384...768:
-            return storageExt512
+            return previewExt512
         default:
-            return storageExt1024
+            return previewExt1024
         }
     }
 

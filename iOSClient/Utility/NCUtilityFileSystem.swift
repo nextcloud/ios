@@ -144,10 +144,10 @@ class NCUtilityFileSystem: NSObject {
     }
 
     func fileProviderStorageImageExists(_ ocId: String, etag: String) -> Bool {
-        if fileProviderStorageImageExists(ocId, etag: etag, ext: NCGlobal.shared.storageExt1024),
-           fileProviderStorageImageExists(ocId, etag: etag, ext: NCGlobal.shared.storageExt512),
-           fileProviderStorageImageExists(ocId, etag: etag, ext: NCGlobal.shared.storageExt256),
-           fileProviderStorageImageExists(ocId, etag: etag, ext: NCGlobal.shared.storageExt128) {
+        if fileProviderStorageImageExists(ocId, etag: etag, ext: NCGlobal.shared.previewExt1024),
+           fileProviderStorageImageExists(ocId, etag: etag, ext: NCGlobal.shared.previewExt512),
+           fileProviderStorageImageExists(ocId, etag: etag, ext: NCGlobal.shared.previewExt256),
+           fileProviderStorageImageExists(ocId, etag: etag, ext: NCGlobal.shared.previewExt128) {
             return true
         }
         return false

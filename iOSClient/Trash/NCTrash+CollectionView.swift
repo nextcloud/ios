@@ -78,7 +78,7 @@ extension NCTrash: UICollectionViewDataSource {
             image = NCUtility().loadImage(named: resultTableTrash.iconName, useTypeIconFile: true, account: resultTableTrash.account)
         }
 
-        if let imageIcon = utility.getImage(ocId: resultTableTrash.fileId, etag: resultTableTrash.fileName, ext: NCGlobal.shared.storageExt512) {
+        if let imageIcon = utility.getImage(ocId: resultTableTrash.fileId, etag: resultTableTrash.fileName, ext: NCGlobal.shared.previewExt512) {
             image = imageIcon
             cell.imageItem.contentMode = .scaleAspectFill
         } else {

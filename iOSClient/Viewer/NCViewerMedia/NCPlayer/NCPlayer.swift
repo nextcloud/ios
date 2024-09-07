@@ -132,7 +132,7 @@ class NCPlayer: NSObject {
 
             if metadata.isVideo {
                 if position == 0 {
-                    imageVideoContainer?.image = NCUtility().getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.storageExt1024)
+                    imageVideoContainer?.image = NCUtility().getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024)
                 } else {
                     imageVideoContainer?.image = nil
                 }
