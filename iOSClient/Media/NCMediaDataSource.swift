@@ -125,16 +125,12 @@ extension NCMedia {
             return(lessDate, greaterDate, 0, false, NKError())
         }
         var limit = limit
-        /*
-        let calendar = Calendar.current
-        let components = calendar.dateComponents([.day], from: greaterDate, to: lessDate)
-        let daysDifference = components.day
-        */
+
         if collectionView.visibleCells.count * 2 > limit {
             limit = collectionView.visibleCells.count * 2
         }
 
-        NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate)")
+        NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate) with limit \(limit)")
 
         let options = NKRequestOptions(timeout: timeout, taskDescription: self.taskDescriptionRetrievesProperties, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
         let results = await NCNetworking.shared.searchMedia(path: tableAccount.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: NCKeychain().showHiddenFiles, account: session.account, options: options)
