@@ -98,7 +98,7 @@ class NCImageCache: NSObject {
         }
 
         if let enumerator = manager.enumerator(at: URL(fileURLWithPath: NCUtilityFileSystem().directoryProviderStorage), includingPropertiesForKeys: [.isRegularFileKey], options: [.skipsHiddenFiles]) {
-            for case let fileURL as URL in enumerator where fileURL.lastPathComponent.hasSuffix(".preview.ico") {
+            for case let fileURL as URL in enumerator where fileURL.lastPathComponent.hasSuffix(".preview") {
                 let fileName = fileURL.lastPathComponent
                 let ocId = fileURL.deletingLastPathComponent().lastPathComponent
                 guard let resourceValues = try? fileURL.resourceValues(forKeys: resourceKeys),
