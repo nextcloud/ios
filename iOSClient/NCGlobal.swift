@@ -87,11 +87,16 @@ class NCGlobal: NSObject {
     let size512x512: CGSize                         = CGSize(width: 512, height: 512)
     let size256x256: CGSize                         = CGSize(width: 256, height: 256)
     let size128x128: CGSize                         = CGSize(width: 128, height: 128)
+    let size64x64: CGSize                           = CGSize(width: 64, height: 64)
+    let size32x32: CGSize                           = CGSize(width: 32, height: 32)
+
     // Image extension
     let storageExt1024x1024                         = ".1024x1024.preview.ico"
     let storageExt512x512                           = ".512x512.preview.ico"
     let storageExt256x256                           = ".256x256.preview.ico"
     let storageExt128x128                           = ".128x128.preview.ico"
+    let storageExt64x64                             = ".64x64.preview.ico"
+    let storageExt32x32                             = ".32x32.preview.ico"
 
     // E2EE
     //

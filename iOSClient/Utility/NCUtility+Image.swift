@@ -127,10 +127,6 @@ extension NCUtility {
 
         var imageBase: UIImage?
         let fileNamePathBase = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)
-        let fileNamePath1024 = utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: global.storageExt1024x1024)
-        let fileNamePath512 = utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: global.storageExt512x512)
-        let fileNamePath256 = utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: global.storageExt256x256)
-        let fileNamePath128 = utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: global.storageExt128x128)
 
         if imageBase == nil {
             if classFile == NKCommon.TypeClassFile.image.rawValue {
@@ -142,52 +138,9 @@ extension NCUtility {
             }
         }
 
-        guard let imageBase else {return }
+        guard let imageBase else { return }
 
-        // 1024
-        if !utilityFileSystem.fileProviderStorageImageExists(ocId, etag: etag, ext: global.storageExt1024x1024),
-           let image = imageBase.resizeImage(size: global.size1024x1024),
-           let data = image.jpegData(compressionQuality: 0.7) {
-            do {
-                try data.write(to: URL(fileURLWithPath: fileNamePath1024))
-                #if !EXTENSION
-                NCImageCache.shared.addPreviewImageCache(metadata: cacheMetadata, data: data, ext: global.storageExt1024x1024)
-                #endif
-            } catch { }
-        }
-        // 512
-        if !utilityFileSystem.fileProviderStorageImageExists(ocId, etag: etag, ext: global.storageExt512x512),
-           let image = imageBase.resizeImage(size: global.size512x512),
-           let data = image.jpegData(compressionQuality: 0.7) {
-            do {
-                try data.write(to: URL(fileURLWithPath: fileNamePath512))
-                #if !EXTENSION
-                NCImageCache.shared.addPreviewImageCache(metadata: cacheMetadata, data: data, ext: global.storageExt512x512)
-                #endif
-            } catch { }
-        }
-        // 256
-        if !utilityFileSystem.fileProviderStorageImageExists(ocId, etag: etag, ext: global.storageExt256x256),
-           let image = imageBase.resizeImage(size: global.size256x256),
-           let data = image.jpegData(compressionQuality: 0.7) {
-            do {
-                try data.write(to: URL(fileURLWithPath: fileNamePath256))
-                #if !EXTENSION
-                NCImageCache.shared.addPreviewImageCache(metadata: cacheMetadata, data: data, ext: global.storageExt256x256)
-                #endif
-            } catch { }
-        }
-        // 128
-        if !utilityFileSystem.fileProviderStorageImageExists(ocId, etag: etag, ext: global.storageExt128x128),
-           let image = imageBase.resizeImage(size: global.size128x128),
-           let data = image.jpegData(compressionQuality: 0.7) {
-            do {
-                try data.write(to: URL(fileURLWithPath: fileNamePath128))
-                #if !EXTENSION
-                NCImageCache.shared.addPreviewImageCache(metadata: cacheMetadata, data: data, ext: global.storageExt128x128)
-                #endif
-            } catch { }
-        }
+        createImageStandard(ocId: ocId, etag: etag, classFile: classFile, imageBase: imageBase, cacheMetadata: cacheMetadata)
     }
 
     func createImage(ocId: String, etag: String, classFile: String, data: Data, cacheMetadata: tableMetadata? = nil) {
@@ -195,12 +148,7 @@ extension NCUtility {
 
         let extBase = ".\(Int(imageBase.size.width))x\(Int(imageBase.size.height)).ico"
         let fileNamePathBase = self.utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: extBase)
-        let fileNamePath1024 = utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: global.storageExt1024x1024)
-        let fileNamePath512 = utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: global.storageExt512x512)
-        let fileNamePath256 = utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: global.storageExt256x256)
-        let fileNamePath128 = utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: global.storageExt128x128)
 
-        // Base
         do {
             try data.write(to: URL(fileURLWithPath: fileNamePathBase), options: .atomic)
             #if !EXTENSION
@@ -208,49 +156,40 @@ extension NCUtility {
             #endif
         } catch { }
 
-        // 1024
-        if !utilityFileSystem.fileProviderStorageImageExists(ocId, etag: etag, ext: global.storageExt1024x1024),
-           let image = imageBase.resizeImage(size: global.size1024x1024),
-           let data = image.jpegData(compressionQuality: 0.7) {
-            do {
-                try data.write(to: URL(fileURLWithPath: fileNamePath1024))
-                #if !EXTENSION
-                NCImageCache.shared.addPreviewImageCache(metadata: cacheMetadata, data: data, ext: global.storageExt1024x1024)
-                #endif
-            } catch { }
-        }
-        // 512
-        if !utilityFileSystem.fileProviderStorageImageExists(ocId, etag: etag, ext: global.storageExt512x512),
-           let image = imageBase.resizeImage(size: global.size512x512),
-           let data = image.jpegData(compressionQuality: 0.7) {
-            do {
-                try data.write(to: URL(fileURLWithPath: fileNamePath512))
-                #if !EXTENSION
-                NCImageCache.shared.addPreviewImageCache(metadata: cacheMetadata, data: data, ext: global.storageExt512x512)
-                #endif
-            } catch { }
-        }
-        // 256
-        if !utilityFileSystem.fileProviderStorageImageExists(ocId, etag: etag, ext: global.storageExt256x256),
-           let image = imageBase.resizeImage(size: global.size256x256),
-           let data = image.jpegData(compressionQuality: 0.7) {
-            do {
-                try data.write(to: URL(fileURLWithPath: fileNamePath256))
-                #if !EXTENSION
-                NCImageCache.shared.addPreviewImageCache(metadata: cacheMetadata, data: data, ext: global.storageExt256x256)
-                #endif
-            } catch { }
-        }
-        // 128
-        if !utilityFileSystem.fileProviderStorageImageExists(ocId, etag: etag, ext: global.storageExt128x128),
-           let image = imageBase.resizeImage(size: global.size128x128),
-           let data = image.jpegData(compressionQuality: 0.7) {
-            do {
-                try data.write(to: URL(fileURLWithPath: fileNamePath128))
-                #if !EXTENSION
-                NCImageCache.shared.addPreviewImageCache(metadata: cacheMetadata, data: data, ext: global.storageExt128x128)
-                #endif
-            } catch { }
+        createImageStandard(ocId: ocId, etag: etag, classFile: classFile, imageBase: imageBase, cacheMetadata: cacheMetadata)
+    }
+
+    private func createImageStandard(ocId: String, etag: String, classFile: String, imageBase: UIImage, cacheMetadata: tableMetadata?) {
+
+        let exts = [global.storageExt1024x1024,
+                    global.storageExt512x512,
+                    global.storageExt256x256,
+                    global.storageExt128x128,
+                    global.storageExt64x64,
+                    global.storageExt32x32]
+
+        let sizes = [global.size1024x1024,
+                     global.size512x512,
+                     global.size256x256,
+                     global.size128x128,
+                     global.size64x64,
+                     global.size32x32]
+
+        for i in 0..<exts.count {
+            let ext = exts[i]
+            let size = sizes[i]
+
+            if !utilityFileSystem.fileProviderStorageImageExists(ocId, etag: etag, ext: ext),
+               let image = imageBase.resizeImage(size: size),
+               let data = image.jpegData(compressionQuality: 0.7) {
+                do {
+                    let fileNamePath = utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: ext)
+                    try data.write(to: URL(fileURLWithPath: fileNamePath))
+                    #if !EXTENSION
+                    NCImageCache.shared.addPreviewImageCache(metadata: cacheMetadata, data: data, ext: ext)
+                    #endif
+                } catch { }
+            }
         }
     }
 

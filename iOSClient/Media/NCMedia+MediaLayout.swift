@@ -85,6 +85,7 @@ extension NCMedia: NCMediaLayoutDelegate {
                 return size
             }
         }
+        self.currentWidth = size.width
         return size
     }
 }

@@ -60,11 +60,12 @@ class NCMedia: UIViewController {
     var timeIntervalSearchNewMedia: TimeInterval = 2.0
     var timerSearchNewMedia: Timer?
     let insetsTop: CGFloat = 75
-    let maxImageGrid: CGFloat = 7
+    let maxImageGrid: CGFloat = 15
     let livePhotoImage = NCUtility().loadImage(named: "livephoto", colors: [.white])
     let playImage = NCUtility().loadImage(named: "play.fill", colors: [.white])
     var photoImage = UIImage()
     var videoImage = UIImage()
+    var currentWidth: Double = 0
 
     let showAllPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload')"
     let showBothPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
@@ -274,13 +275,23 @@ class NCMedia: UIViewController {
 
     func getImage(metadata: tableMetadata) -> UIImage? {
         var returnImage: UIImage?
+        var ext = NCGlobal.shared.storageExt512x512
 
-        if let image = imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.storageExt512x512) {
+        switch currentWidth {
+        case 0...32:
+            ext = NCGlobal.shared.storageExt32x32
+        case 33...64:
+            ext = NCGlobal.shared.storageExt64x64
+        case 65...128:
+            ext = NCGlobal.shared.storageExt128x128
+        case 129...256:
+            ext = NCGlobal.shared.storageExt256x256
+        default:
+            break
+        }
+
+        if let image = imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
             returnImage = image
-        } else if utility.existsImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.storageExt1024x1024) {
-            utility.createImageFrom(fileNameView: metadata.fileName, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile, cacheMetadata: metadata)
-            returnImage = imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.storageExt512x512)
-
         } else if metadata.hasPreview,
                   metadata.status == NCGlobal.shared.metadataStatusNormal,
                   NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
