@@ -35,7 +35,7 @@ class NCImageCache: NSObject {
     private let utility = NCUtility()
     private let global = NCGlobal.shared
 
-    private let limitCacheImagePreview: Int = 1000
+    private let limitCacheImagePreview: Int = 2000
     private var brandElementColor: UIColor?
     private var totalSize: Int64 = 0
 
