@@ -284,8 +284,8 @@ class NCViewerMedia: UIViewController {
             return completion(image)
         }
 
-        if utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.storageExt1024x1024) {
-            return completion(UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageImageOcId(metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.storageExt1024x1024)))
+        if utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.storageExt1024) {
+            return completion(UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageImageOcId(metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.storageExt1024)))
         } else {
             NextcloudKit.shared.downloadPreview(fileId: metadata.fileId,
                                                 width: NCGlobal.shared.sizeMax,

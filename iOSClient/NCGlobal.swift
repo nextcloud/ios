@@ -87,28 +87,28 @@ class NCGlobal: NSObject {
     // Preview size
     //
     let sizeMax: Int                                = 1024
-    let size1024x1024: CGSize                       = CGSize(width: 1024, height: 1024)
-    let size512x512: CGSize                         = CGSize(width: 512, height: 512)
-    let size256x256: CGSize                         = CGSize(width: 256, height: 256)
-    let size128x128: CGSize                         = CGSize(width: 128, height: 128)
+    let size1024: CGSize                            = CGSize(width: 1024, height: 1024)
+    let size512: CGSize                             = CGSize(width: 512, height: 512)
+    let size256: CGSize                             = CGSize(width: 256, height: 256)
+    let size128: CGSize                             = CGSize(width: 128, height: 128)
     // Image extension
-    let storageExt1024x1024                         = ".1024x1024.preview.ico"
-    let storageExt512x512                           = ".512x512.preview.ico"
-    let storageExt256x256                           = ".256x256.preview.ico"
-    let storageExt128x128                           = ".128x128.preview.ico"
+    let storageExt1024                              = ".preview.1024.ico"
+    let storageExt512                               = ".preview.512.ico"
+    let storageExt256                               = ".preview.256.ico"
+    let storageExt128                               = ".preview.128.ico"
 
     func getSizeExtension(width: CGFloat?) -> String {
-        guard let width else { return storageExt512x512 }
+        guard let width else { return storageExt512 }
 
         switch (width * 3) {
         case 0...192:
-            return storageExt128x128
+            return storageExt128
         case 193...384:
-             return storageExt256x256
+             return storageExt256
         case 384...768:
-            return storageExt512x512
+            return storageExt512
         default:
-            return storageExt1024x1024
+            return storageExt1024
         }
     }
 

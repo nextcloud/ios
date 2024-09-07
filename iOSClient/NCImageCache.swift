@@ -151,21 +151,6 @@ class NCImageCache: NSObject {
     }
 
     ///
-    ///
-    ///
-    func extract(fileName: String) -> (String?, String?) {
-        let dotOccurrences = fileName.split(separator: ".")
-
-        if dotOccurrences.count >= 4 {
-            let etag = dotOccurrences.prefix(dotOccurrences.count - 3).joined(separator: ".")
-            let ext = "." + dotOccurrences.suffix(3).joined(separator: ".")
-            return (etag, ext)
-        } else {
-            return (nil, nil)
-        }
-    }
-
-    ///
     /// CACHE
     ///
     func addImageCache(metadata: tableMetadata?, data: Data, ext: String) {
@@ -182,10 +167,10 @@ class NCImageCache: NSObject {
     }
 
     func removeImageCache(ocId: String, etag: String) {
-        let exts = [global.storageExt1024x1024,
-                    global.storageExt512x512,
-                    global.storageExt256x256,
-                    global.storageExt128x128]
+        let exts = [global.storageExt1024,
+                    global.storageExt512,
+                    global.storageExt256,
+                    global.storageExt128]
 
         for i in 0..<exts.count {
             cacheImage.removeValue(forKey: ocId + etag + exts[i])
@@ -200,7 +185,7 @@ class NCImageCache: NSObject {
         if let size = cacheSize.value(forKey: ocId + etag) {
             return size
         } else {
-            if let image = UIImage(contentsOfFile: NCUtilityFileSystem().getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: NCGlobal.shared.storageExt1024x1024)) {
+            if let image = UIImage(contentsOfFile: NCUtilityFileSystem().getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: NCGlobal.shared.storageExt1024)) {
                 return image.size
             }
         }

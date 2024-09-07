@@ -37,7 +37,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let metadata = self.dataSource.getMetadata(indexPath: indexPath),
               let cell = (cell as? NCCellProtocol) else { return }
-        let existsIcon = utility.existsImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.storageExt512x512)
+        let existsPreview = utility.existsImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.storageExt1024)
 
         func downloadAvatar(fileName: String, user: String, dispalyName: String?) {
             if let image = database.getImageAvatarLoaded(fileName: fileName) {
@@ -50,13 +50,13 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         /// CONTENT MODE
         cell.filePreviewImageView?.layer.borderWidth = 0
         if isLayoutPhoto {
-            if metadata.isImageOrVideo, existsIcon {
+            if metadata.isImageOrVideo, existsPreview {
                 cell.filePreviewImageView?.contentMode = .scaleAspectFill
             } else {
                 cell.filePreviewImageView?.contentMode = .scaleAspectFit
             }
         } else {
-            if existsIcon {
+            if existsPreview {
                 cell.filePreviewImageView?.contentMode = .scaleAspectFill
             } else {
                 cell.filePreviewImageView?.contentMode = .scaleAspectFit
@@ -71,16 +71,16 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
             if metadata.name == global.appName {
                 if isLayoutPhoto, metadata.isImageOrVideo {
-                    if let image = NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.storageExt512x512) {
+                    if let image = NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.storageExt512) {
                         cell.filePreviewImageView?.image = image
-                    } else if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.storageExt512x512) {
+                    } else if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.storageExt512) {
                         cell.filePreviewImageView?.image = image
                     }
                 } else {
-                    if let image = NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.storageExt512x512) {
+                    if let image = NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.storageExt512) {
                         cell.filePreviewImageView?.image = image
                     } else {
-                        cell.filePreviewImageView?.image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.storageExt512x512)
+                        cell.filePreviewImageView?.image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.storageExt512)
                     }
                 }
                 if cell.filePreviewImageView?.image == nil {
@@ -89,7 +89,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     } else {
                         cell.filePreviewImageView?.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
                     }
-                    if metadata.hasPreview && metadata.status == global.metadataStatusNormal && !existsIcon {
+                    if metadata.hasPreview && metadata.status == global.metadataStatusNormal && !existsPreview {
                         for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { return }
                         NCNetworking.shared.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, collectionView: collectionView))
                     }

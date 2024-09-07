@@ -44,7 +44,7 @@ extension NCTrash {
         var actions: [NCMenuAction] = []
 
         var iconHeader: UIImage!
-        if let icon = utility.getImage(ocId: resultTableTrash.fileId, etag: resultTableTrash.fileName, ext: NCGlobal.shared.storageExt512x512) {
+        if let icon = utility.getImage(ocId: resultTableTrash.fileId, etag: resultTableTrash.fileName, ext: NCGlobal.shared.storageExt512) {
             iconHeader = icon
         } else {
             if resultTableTrash.directory {
