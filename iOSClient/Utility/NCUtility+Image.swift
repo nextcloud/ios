@@ -122,7 +122,7 @@ extension NCUtility {
         return UIImage(cgImage: thumbnailImageRef)
     }
 
-    func createImageFrom(fileNameView: String, ocId: String, etag: String, classFile: String) {
+    func createImageFrom(fileNameView: String, ocId: String, etag: String, classFile: String, cacheMetadata: tableMetadata? = nil) {
         if classFile != NKCommon.TypeClassFile.image.rawValue, classFile != NKCommon.TypeClassFile.video.rawValue { return }
 
         var imageBase: UIImage?
@@ -147,26 +147,46 @@ extension NCUtility {
         // 1024
         if !utilityFileSystem.fileProviderStorageImageExists(ocId, etag: etag, ext: global.storageExt1024x1024),
            let image = imageBase.resizeImage(size: global.size1024x1024),
-           let imageJpeg = image.jpegData(compressionQuality: 0.7) {
-            try? imageJpeg.write(to: URL(fileURLWithPath: fileNamePath1024))
+           let data = image.jpegData(compressionQuality: 0.7) {
+            do {
+                try data.write(to: URL(fileURLWithPath: fileNamePath1024))
+                #if !EXTENSION
+                NCImageCache.shared.addPreviewImageCache(metadata: cacheMetadata, data: data, ext: global.storageExt1024x1024)
+                #endif
+            } catch { }
         }
         // 512
         if !utilityFileSystem.fileProviderStorageImageExists(ocId, etag: etag, ext: global.storageExt512x512),
            let image = imageBase.resizeImage(size: global.size512x512),
-           let imageJpeg = image.jpegData(compressionQuality: 0.7) {
-            try? imageJpeg.write(to: URL(fileURLWithPath: fileNamePath512))
+           let data = image.jpegData(compressionQuality: 0.7) {
+            do {
+                try data.write(to: URL(fileURLWithPath: fileNamePath512))
+                #if !EXTENSION
+                NCImageCache.shared.addPreviewImageCache(metadata: cacheMetadata, data: data, ext: global.storageExt512x512)
+                #endif
+            } catch { }
         }
         // 256
         if !utilityFileSystem.fileProviderStorageImageExists(ocId, etag: etag, ext: global.storageExt256x256),
            let image = imageBase.resizeImage(size: global.size256x256),
-           let imageJpeg = image.jpegData(compressionQuality: 0.7) {
-            try? imageJpeg.write(to: URL(fileURLWithPath: fileNamePath256))
+           let data = image.jpegData(compressionQuality: 0.7) {
+            do {
+                try data.write(to: URL(fileURLWithPath: fileNamePath256))
+                #if !EXTENSION
+                NCImageCache.shared.addPreviewImageCache(metadata: cacheMetadata, data: data, ext: global.storageExt256x256)
+                #endif
+            } catch { }
         }
         // 128
         if !utilityFileSystem.fileProviderStorageImageExists(ocId, etag: etag, ext: global.storageExt128x128),
            let image = imageBase.resizeImage(size: global.size128x128),
-           let imageJpeg = image.jpegData(compressionQuality: 0.7) {
-            try? imageJpeg.write(to: URL(fileURLWithPath: fileNamePath128))
+           let data = image.jpegData(compressionQuality: 0.7) {
+            do {
+                try data.write(to: URL(fileURLWithPath: fileNamePath128))
+                #if !EXTENSION
+                NCImageCache.shared.addPreviewImageCache(metadata: cacheMetadata, data: data, ext: global.storageExt128x128)
+                #endif
+            } catch { }
         }
     }
 

@@ -273,19 +273,21 @@ class NCMedia: UIViewController {
     // MARK: - Image
 
     func getImage(metadata: tableMetadata) -> UIImage? {
-        let fileNamePathPreview = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
+        var returnImage: UIImage?
 
-        if let image = imageCache.getPreviewImageCache(ocId: metadata.ocId, etag: metadata.etag) {
-            return image
-        } else if FileManager().fileExists(atPath: fileNamePathPreview), let image = UIImage(contentsOfFile: fileNamePathPreview) {
-            imageCache.addPreviewImageCache(metadata: metadata, image: image)
-            return image
-        } else if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal,
-                  (!utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)),
+        if let image = imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.storageExt512x512) {
+            returnImage = image
+        } else if utility.existsImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.storageExt1024x1024) {
+            utility.createImageFrom(fileNameView: metadata.fileName, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile, cacheMetadata: metadata)
+            returnImage = imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.storageExt512x512)
+
+        } else if metadata.hasPreview,
+                  metadata.status == NCGlobal.shared.metadataStatusNormal,
                   NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
             NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnail(metadata: metadata, collectioView: self.collectionView, delegate: self))
         }
-        return nil
+
+        return returnImage
     }
 
     func buildMediaPhotoVideo(columnCount: Int) {
