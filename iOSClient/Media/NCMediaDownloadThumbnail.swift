@@ -27,14 +27,20 @@ import Queuer
 
 class NCMediaDownloadThumbnail: ConcurrentOperation {
     var metadata: tableMetadata
-    var collectioView: UICollectionView?
+    var collectionView: UICollectionView?
     let utilityFileSystem = NCUtilityFileSystem()
     let delegate: NCMedia?
+    var ext = ""
 
-    init(metadata: tableMetadata, collectioView: UICollectionView?, delegate: NCMedia?) {
+    init(metadata: tableMetadata, collectionView: UICollectionView?, delegate: NCMedia?) {
         self.metadata = tableMetadata.init(value: metadata)
-        self.collectioView = collectioView
+        self.collectionView = collectionView
         self.delegate = delegate
+
+        if let collectionView, let columnPhoto = delegate?.columnPhoto {
+            let width = collectionView.frame.size.width / CGFloat(columnPhoto)
+            ext = NCGlobal.shared.getSizeExtension(width: width)
+        }
     }
 
     override func start() {
@@ -51,16 +57,15 @@ class NCMediaDownloadThumbnail: ConcurrentOperation {
                                             etag: etagResource,
                                             account: metadata.account,
                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, data, _, _, etag, error in
-            if error == .success, let data, let collectionView = self.collectioView {
+            if error == .success, let data, let collectionView = self.collectionView {
 
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
                 NCUtility().createImage(ocId: self.metadata.ocId, etag: self.metadata.etag, classFile: self.metadata.classFile, data: data, cacheMetadata: self.metadata)
 
                 DispatchQueue.main.async {
                     for case let cell as NCGridMediaCell in collectionView.visibleCells {
-                        let ext = NCGlobal.shared.getSizeExtension(width: cell.imageItem?.bounds.size.width)
                         if cell.ocId == self.metadata.ocId,
-                           let image = NCUtility().getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: ext) {
+                           let image = NCUtility().getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: self.ext) {
                             UIView.transition(with: cell.imageItem,
                                               duration: 0.75,
                                               options: .transitionCrossDissolve,

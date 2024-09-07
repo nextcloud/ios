@@ -35,7 +35,7 @@ class NCImageCache: NSObject {
     private let utility = NCUtility()
     private let global = NCGlobal.shared
 
-    private let limitCacheImagePreview: Int = 2000
+    private let limitCacheImagePreview: Int = 15000
     private var brandElementColor: UIColor?
     private var totalSize: Int64 = 0
 
@@ -98,7 +98,8 @@ class NCImageCache: NSObject {
         }
 
         if let enumerator = manager.enumerator(at: URL(fileURLWithPath: NCUtilityFileSystem().directoryProviderStorage), includingPropertiesForKeys: [.isRegularFileKey], options: [.skipsHiddenFiles]) {
-            for case let fileURL as URL in enumerator where fileURL.lastPathComponent.hasSuffix(".preview") {
+            for case let fileURL as URL in enumerator where (fileURL.lastPathComponent.hasSuffix(NCGlobal.shared.previewExt256) || fileURL.lastPathComponent.hasSuffix(NCGlobal.shared.previewExt128)) {
+
                 let fileName = fileURL.lastPathComponent
                 let ocId = fileURL.deletingLastPathComponent().lastPathComponent
                 guard let resourceValues = try? fileURL.resourceValues(forKeys: resourceKeys),
@@ -106,6 +107,7 @@ class NCImageCache: NSObject {
                       fileSize > 0 else { continue }
                 let width = metadatasInfo[ocId]?.width ?? 0
                 let height = metadatasInfo[ocId]?.height ?? 0
+
                 if let date = metadatasInfo[ocId]?.date {
                         files.append(FileInfo(path: fileURL, ocIdEtagExt: ocId + fileName, date: date as Date, fileSize: fileSize, width: width, height: height))
                 } else {

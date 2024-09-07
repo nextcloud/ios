@@ -60,12 +60,12 @@ class NCMedia: UIViewController {
     var timeIntervalSearchNewMedia: TimeInterval = 2.0
     var timerSearchNewMedia: Timer?
     let insetsTop: CGFloat = 75
-    let maxImageGrid: CGFloat = 10
+    let maxImageGrid: CGFloat = 14
+    var columnPhoto: Int = 0
     let livePhotoImage = NCUtility().loadImage(named: "livephoto", colors: [.white])
     let playImage = NCUtility().loadImage(named: "play.fill", colors: [.white])
     var photoImage = UIImage()
     var videoImage = UIImage()
-    var currentWidth: Double = 0
 
     let showAllPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload')"
     let showBothPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
@@ -275,8 +275,12 @@ class NCMedia: UIViewController {
 
     // MARK: - Image
 
-    func getImage(metadata: tableMetadata, width: CGFloat) -> UIImage? {
+    func getImage(metadata: tableMetadata, width: CGFloat? = nil) -> UIImage? {
         var returnImage: UIImage?
+        var width = width
+        if width == nil {
+            width = self.collectionView.frame.size.width / CGFloat(self.columnPhoto)
+        }
         let ext = NCGlobal.shared.getSizeExtension(width: width)
 
         if let image = imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
@@ -286,7 +290,7 @@ class NCMedia: UIViewController {
         } else if metadata.hasPreview,
                   metadata.status == NCGlobal.shared.metadataStatusNormal,
                   NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
-            NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnail(metadata: metadata, collectioView: self.collectionView, delegate: self))
+            NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnail(metadata: metadata, collectionView: self.collectionView, delegate: self))
         }
 
         return returnImage

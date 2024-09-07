@@ -57,7 +57,7 @@ extension NCMedia: UICollectionViewDataSource {
             menuButton.isHidden = false
             activityIndicatorTrailing.constant = 150
         }
-
+        self.columnPhoto = getColumnCount()
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { self.setTitleDate() }
         return numberOfItemsInSection
     }
@@ -87,7 +87,7 @@ extension NCMedia: UICollectionViewDataSource {
         cell.user = metadata.ownerId
         cell.imageStatus.image = nil
 
-        if let image = getImage(metadata: metadata, width: cell.imageItem.bounds.width) {
+        if let image = getImage(metadata: metadata) {
             cell.imageItem.image = image
         } else if !metadata.hasPreview {
             cell.imageItem.backgroundColor = .clear
