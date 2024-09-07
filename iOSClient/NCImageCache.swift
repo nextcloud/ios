@@ -35,7 +35,8 @@ class NCImageCache: NSObject {
     private let utility = NCUtility()
     private let global = NCGlobal.shared
 
-    private let limitCacheImagePreview: Int = 15000
+    private let allowExtensions = [NCGlobal.shared.previewExt256, NCGlobal.shared.previewExt128]
+    private let limitCacheImagePreview: Int = 10000
     private var brandElementColor: UIColor?
     private var totalSize: Int64 = 0
 
@@ -98,7 +99,8 @@ class NCImageCache: NSObject {
         }
 
         if let enumerator = manager.enumerator(at: URL(fileURLWithPath: NCUtilityFileSystem().directoryProviderStorage), includingPropertiesForKeys: [.isRegularFileKey], options: [.skipsHiddenFiles]) {
-            for case let fileURL as URL in enumerator where (fileURL.lastPathComponent.hasSuffix(NCGlobal.shared.previewExt256) || fileURL.lastPathComponent.hasSuffix(NCGlobal.shared.previewExt128)) {
+
+            for case let fileURL as URL in enumerator where allowExtensions.contains(where: { fileURL.lastPathComponent.hasSuffix($0) }) {
 
                 let fileName = fileURL.lastPathComponent
                 let ocId = fileURL.deletingLastPathComponent().lastPathComponent
@@ -156,7 +158,10 @@ class NCImageCache: NSObject {
     /// CACHE
     ///
     func addImageCache(metadata: tableMetadata?, data: Data, ext: String) {
-        guard let metadata, let image = UIImage(data: data) else { return }
+        guard allowExtensions.contains(ext),
+              let metadata,
+              let image = UIImage(data: data) else { return }
+
         cacheImage.setValue(imageInfo(image: image, size: image.size, date: metadata.date as Date), forKey: metadata.ocId + metadata.etag + ext)
         cacheSize.setValue(image.size, forKey: metadata.ocId + metadata.etag)
     }

@@ -148,9 +148,6 @@ extension NCUtility {
 
         do {
             try data.write(to: URL(fileURLWithPath: fileNamePath1024), options: .atomic)
-            #if !EXTENSION
-            NCImageCache.shared.addImageCache(metadata: cacheMetadata, data: data, ext: global.previewExt1024)
-            #endif
         } catch { }
 
         createImageStandard(ocId: ocId, etag: etag, classFile: classFile, image: image, cacheMetadata: cacheMetadata)
