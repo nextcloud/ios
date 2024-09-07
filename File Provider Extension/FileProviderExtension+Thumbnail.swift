@@ -37,7 +37,11 @@ extension FileProviderExtension {
                 continue
             }
 
-            NextcloudKit.shared.downloadPreview(fileId: metadata.fileId, width: Int(size.width), height: Int(size.height), etag: metadata.etag, account: metadata.account) { _ in
+            NextcloudKit.shared.downloadPreview(fileId: metadata.fileId,
+                                                width: Int(size.width),
+                                                height: Int(size.height),
+                                                etag: metadata.etag,
+                                                account: metadata.account) { _ in
             } completion: { _, data, _, _, _, error in
                 if error == .success, let data {
                     perThumbnailCompletionHandler(itemIdentifier, data, nil)

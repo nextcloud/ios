@@ -40,15 +40,14 @@ class NCMediaDownloadThumbnail: ConcurrentOperation {
     override func start() {
         guard !isCancelled else { return self.finish() }
         var etagResource: String?
-        let size = NCUtility().getSize1024(width: metadata.width, height: metadata.height)
 
         if utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag) {
             etagResource = metadata.etagResource
         }
 
         NextcloudKit.shared.downloadPreview(fileId: metadata.fileId,
-                                            width: Int(size.width),
-                                            height: Int(size.height),
+                                            width: NCGlobal.shared.sizeMax,
+                                            height: NCGlobal.shared.sizeMax,
                                             etag: etagResource,
                                             account: metadata.account,
                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, data, _, _, etag, error in

@@ -77,8 +77,8 @@ extension NCNetworking {
     }
 
     func downloadPreview(fileId: String,
-                         width: Int = 512,
-                         height: Int = 512,
+                         width: Int,
+                         height: Int,
                          etag: String? = nil,
                          account: String,
                          options: NKRequestOptions = NKRequestOptions()) async -> (account: String, data: Data?, width: Int, height: Int, etag: String?, error: NKError) {
