@@ -166,10 +166,14 @@ extension NCUtility {
                      global.size256,
                      global.size128]
 
+        let compressionQuality = [0.5,
+                                  0.7,
+                                  0.8]
+
         for i in 0..<exts.count {
             if !utilityFileSystem.fileProviderStorageImageExists(ocId, etag: etag, ext: exts[i]),
                let image = image.resizeImage(size: sizes[i]),
-               let data = image.jpegData(compressionQuality: 0.7) {
+               let data = image.jpegData(compressionQuality: compressionQuality[i]) {
                 do {
                     let fileNamePath = utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: exts[i])
                     try data.write(to: URL(fileURLWithPath: fileNamePath))
