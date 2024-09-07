@@ -83,11 +83,9 @@ extension NCMedia: UICollectionViewDataSource {
 
         cell.date = metadata.date as Date
         cell.ocId = metadata.ocId
-        cell.indexPath = indexPath
         cell.account = metadata.account
         cell.user = metadata.ownerId
         cell.imageStatus.image = nil
-        cell.imageItem.contentMode = .scaleAspectFill
 
         if let image = getImage(metadata: metadata) {
             cell.imageItem.image = image

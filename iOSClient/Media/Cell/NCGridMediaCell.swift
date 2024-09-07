@@ -32,7 +32,6 @@ class NCGridMediaCell: UICollectionViewCell {
 
     var ocId: String = ""
     var user: String = ""
-    var indexPath = IndexPath()
     var account: String = ""
     var date: Date?
 
