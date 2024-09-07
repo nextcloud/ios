@@ -192,9 +192,9 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "transferCell", for: indexPath) as? NCTransferCell,
-              let metadata = self.dataSource.getResultMetadata(indexPath: indexPath) else {
-            return NCTransferCell()
+        let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "transferCell", for: indexPath) as? NCTransferCell)!
+        guard let metadata = self.dataSource.getResultMetadata(indexPath: indexPath) else {
+            return cell
         }
         let transfer = NCTransferProgress.shared.get(ocId: metadata.ocId, ocIdTransfer: metadata.ocIdTransfer, session: metadata.session)
 

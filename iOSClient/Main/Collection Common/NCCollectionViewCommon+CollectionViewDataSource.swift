@@ -153,22 +153,22 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         // LAYOUT PHOTO
         if isLayoutPhoto {
             if metadata.isImageOrVideo {
-                guard let photoCell = collectionView.dequeueReusableCell(withReuseIdentifier: "photoCell", for: indexPath) as? NCPhotoCell else { return NCPhotoCell() }
+                let photoCell = (collectionView.dequeueReusableCell(withReuseIdentifier: "photoCell", for: indexPath) as? NCPhotoCell)!
                 photoCell.photoCellDelegate = self
                 cell = photoCell
             } else {
-                guard let gridCell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridCell else { return NCGridCell() }
+                let gridCell = (collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridCell)!
                 gridCell.gridCellDelegate = self
                 cell = gridCell
             }
         } else if isLayoutGrid {
             // LAYOUT GRID
-            guard let gridCell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridCell else { return NCGridCell() }
+            let gridCell = (collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridCell)!
             gridCell.gridCellDelegate = self
             cell = gridCell
         } else {
             // LAYOUT LIST
-            guard let listCell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell else { return NCListCell() }
+            let listCell = (collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell)!
             listCell.listCellDelegate = self
             cell = listCell
         }

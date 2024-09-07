@@ -56,20 +56,21 @@ extension NCTrash: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let resultTableTrash = datasource?[indexPath.item] else { return NCTrashGridCell() }
         var image: UIImage?
         var cell: NCTrashCellProtocol & UICollectionViewCell
 
         if layoutForView?.layout == NCGlobal.shared.layoutList {
-            guard let listCell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCTrashListCell else { return NCTrashListCell() }
+            let listCell = (collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCTrashListCell)!
             listCell.delegate = self
             cell = listCell
         } else {
-            guard let gridCell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCTrashGridCell else { return NCTrashGridCell() }
+            let gridCell = (collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCTrashGridCell)!
             gridCell.setButtonMore(image: NCImageCache.shared.getImageButtonMore())
             gridCell.delegate = self
             cell = gridCell
         }
+        guard let resultTableTrash = datasource?[indexPath.item] else { return cell }
+
         cell.imageItem.contentMode = .scaleAspectFit
 
         if resultTableTrash.iconName.isEmpty {

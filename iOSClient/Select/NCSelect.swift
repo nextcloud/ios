@@ -305,8 +305,9 @@ extension NCSelect: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell,
-              let metadata = self.dataSource.getMetadata(indexPath: indexPath) else { return UICollectionViewCell() }
+        let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell)!
+        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else { return cell }
+
         var isShare = false
         var isMounted = false
         let permissions = NCPermissions()
