@@ -249,7 +249,6 @@ class NCViewerMedia: UIViewController {
     // MARK: - Image
 
     func loadImage() {
-
         guard let metadata = self.database.getMetadataFromOcId(metadata.ocId) else { return }
         self.metadata = metadata
 
