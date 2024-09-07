@@ -58,7 +58,9 @@ extension NCMedia: UICollectionViewDataSource {
             activityIndicatorTrailing.constant = 150
         }
         self.columnPhoto = getColumnCount()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { self.setTitleDate() }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            self.setTitleDate()
+        }
         return numberOfItemsInSection
     }
 
