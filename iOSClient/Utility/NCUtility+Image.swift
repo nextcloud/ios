@@ -158,19 +158,19 @@ extension NCUtility {
 
     private func createImageStandard(ocId: String, etag: String, classFile: String, image: UIImage, cacheMetadata: tableMetadata?) {
 
-        let exts = [global.previewExt512, global.previewExt256, global.previewExt128]
-        let sizes = [global.size512, global.size256, global.size128]
+        let ext = [global.previewExt512, global.previewExt256, global.previewExt128]
+        let size = [global.size512, global.size256, global.size128]
         let compressionQuality = [0.5, 0.7, 0.8]
 
-        for i in 0..<exts.count {
-            if !utilityFileSystem.fileProviderStorageImageExists(ocId, etag: etag, ext: exts[i]),
-               let image = image.resizeImage(size: sizes[i]),
+        for i in 0..<ext.count {
+            if !utilityFileSystem.fileProviderStorageImageExists(ocId, etag: etag, ext: ext[i]),
+               let image = image.resizeImage(size: size[i]),
                let data = image.jpegData(compressionQuality: compressionQuality[i]) {
                 do {
-                    let fileNamePath = utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: exts[i])
+                    let fileNamePath = utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: ext[i])
                     try data.write(to: URL(fileURLWithPath: fileNamePath))
                     #if !EXTENSION
-                    NCImageCache.shared.addImageCache(metadata: cacheMetadata, data: data, ext: exts[i])
+                    NCImageCache.shared.addImageCache(metadata: cacheMetadata, data: data, ext: ext[i])
                     #endif
                 } catch { }
             }
