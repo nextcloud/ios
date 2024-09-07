@@ -164,16 +164,12 @@ extension NCUtility {
         let exts = [global.storageExt1024x1024,
                     global.storageExt512x512,
                     global.storageExt256x256,
-                    global.storageExt128x128,
-                    global.storageExt64x64,
-                    global.storageExt32x32]
+                    global.storageExt128x128]
 
         let sizes = [global.size1024x1024,
                      global.size512x512,
                      global.size256x256,
-                     global.size128x128,
-                     global.size64x64,
-                     global.size32x32]
+                     global.size128x128]
 
         for i in 0..<exts.count {
             let ext = exts[i]

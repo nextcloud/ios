@@ -277,11 +277,7 @@ class NCMedia: UIViewController {
         var returnImage: UIImage?
         var ext = NCGlobal.shared.storageExt512x512
 
-        switch currentWidth {
-        case 0...32:
-            ext = NCGlobal.shared.storageExt32x32
-        case 33...64:
-            ext = NCGlobal.shared.storageExt64x64
+        switch currentWidth * 3 {
         case 65...128:
             ext = NCGlobal.shared.storageExt128x128
         case 129...256:
