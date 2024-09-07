@@ -292,6 +292,8 @@ class NCMedia: UIViewController {
 
         if let image = imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
             returnImage = image
+        } else if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
+            returnImage = image
         } else if metadata.hasPreview,
                   metadata.status == NCGlobal.shared.metadataStatusNormal,
                   NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {

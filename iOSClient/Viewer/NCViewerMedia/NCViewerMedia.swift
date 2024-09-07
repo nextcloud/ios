@@ -280,7 +280,7 @@ class NCViewerMedia: UIViewController {
             utility.createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
         } else if metadata.isAudio {
             return completion(utility.loadImage(named: "waveform", colors: [NCBrandColor.shared.iconImageColor2]))
-        } else if let image = utility.getImage(metadata: metadata, exe: NCGlobal.shared.storageExt1024x1024) {
+        } else if let image = utility.getImage(metadata: metadata) {
             return completion(image)
         }
 

@@ -194,7 +194,7 @@ extension NCUtility {
     }
 
     func getImageMetadata(_ metadata: tableMetadata, ext: String) -> UIImage? {
-        if let image = getImage(metadata: metadata, exe: "") { return image }
+        if let image = getImage(metadata: metadata) { return image }
 
         if metadata.isVideo, !metadata.hasPreview {
             createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
@@ -221,7 +221,7 @@ extension NCUtility {
         return FileManager().fileExists(atPath: self.utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: ext))
     }
 
-    func getImage(metadata: tableMetadata, exe: String) -> UIImage? {
+    func getImage(metadata: tableMetadata) -> UIImage? {
         let fileNameExtension = (metadata.fileNameView as NSString).pathExtension.uppercased()
         var image: UIImage?
 
