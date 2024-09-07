@@ -124,56 +124,51 @@ extension NCUtility {
 
     func createImageFrom(fileNameView: String, ocId: String, etag: String, classFile: String, cacheMetadata: tableMetadata? = nil) {
         if classFile != NKCommon.TypeClassFile.image.rawValue, classFile != NKCommon.TypeClassFile.video.rawValue { return }
+        var image: UIImage?
+        let fileNamePath1024 = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)
 
-        var imageBase: UIImage?
-        let fileNamePathBase = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)
-
-        if imageBase == nil {
+        if image == nil {
             if classFile == NKCommon.TypeClassFile.image.rawValue {
-                imageBase = UIImage(contentsOfFile: fileNamePathBase)
+                image = UIImage(contentsOfFile: fileNamePath1024)
             } else if classFile == NKCommon.TypeClassFile.video.rawValue {
                 let videoPath = NSTemporaryDirectory() + "tempvideo.mp4"
-                utilityFileSystem.linkItem(atPath: fileNamePathBase, toPath: videoPath)
-                imageBase = imageFromVideo(url: URL(fileURLWithPath: videoPath), at: 0)
+                utilityFileSystem.linkItem(atPath: fileNamePath1024, toPath: videoPath)
+                image = imageFromVideo(url: URL(fileURLWithPath: videoPath), at: 0)
             }
         }
 
-        guard let imageBase else { return }
+        guard let image else { return }
 
-        createImageStandard(ocId: ocId, etag: etag, classFile: classFile, imageBase: imageBase, cacheMetadata: cacheMetadata)
+        createImageStandard(ocId: ocId, etag: etag, classFile: classFile, image: image, cacheMetadata: cacheMetadata)
     }
 
     func createImage(ocId: String, etag: String, classFile: String, data: Data, cacheMetadata: tableMetadata? = nil) {
-        guard let imageBase = UIImage(data: data) else { return }
-
-        let extBase = ".\(Int(imageBase.size.width))x\(Int(imageBase.size.height)).ico"
-        let fileNamePathBase = self.utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: extBase)
+        guard let image = UIImage(data: data) else { return }
+        let fileNamePath1024 = self.utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: global.storageExt1024x1024)
 
         do {
-            try data.write(to: URL(fileURLWithPath: fileNamePathBase), options: .atomic)
+            try data.write(to: URL(fileURLWithPath: fileNamePath1024), options: .atomic)
             #if !EXTENSION
-            NCImageCache.shared.addImageCache(metadata: cacheMetadata, data: data, ext: extBase)
+            NCImageCache.shared.addImageCache(metadata: cacheMetadata, data: data, ext: global.storageExt1024x1024)
             #endif
         } catch { }
 
-        createImageStandard(ocId: ocId, etag: etag, classFile: classFile, imageBase: imageBase, cacheMetadata: cacheMetadata)
+        createImageStandard(ocId: ocId, etag: etag, classFile: classFile, image: image, cacheMetadata: cacheMetadata)
     }
 
-    private func createImageStandard(ocId: String, etag: String, classFile: String, imageBase: UIImage, cacheMetadata: tableMetadata?) {
+    private func createImageStandard(ocId: String, etag: String, classFile: String, image: UIImage, cacheMetadata: tableMetadata?) {
 
-        let exts = [global.storageExt1024x1024,
-                    global.storageExt512x512,
+        let exts = [global.storageExt512x512,
                     global.storageExt256x256,
                     global.storageExt128x128]
 
-        let sizes = [global.size1024x1024,
-                     global.size512x512,
+        let sizes = [global.size512x512,
                      global.size256x256,
                      global.size128x128]
 
         for i in 0..<exts.count {
             if !utilityFileSystem.fileProviderStorageImageExists(ocId, etag: etag, ext: exts[i]),
-               let image = imageBase.resizeImage(size: sizes[i]),
+               let image = image.resizeImage(size: sizes[i]),
                let data = image.jpegData(compressionQuality: 0.7) {
                 do {
                     let fileNamePath = utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: exts[i])
