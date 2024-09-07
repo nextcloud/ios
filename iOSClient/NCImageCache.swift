@@ -28,14 +28,12 @@ import NextcloudKit
 import RealmSwift
 
 class NCImageCache: NSObject {
-    public static let shared: NCImageCache = {
-        let instance = NCImageCache()
-        return instance
-    }()
+    static let shared = NCImageCache()
 
     // MARK: -
 
     private let utility = NCUtility()
+    private let global = NCGlobal.shared
 
     private let limitCacheImagePreview: Int = 1000
     private var brandElementColor: UIColor?
@@ -168,9 +166,9 @@ class NCImageCache: NSObject {
     }
 
     ///
-    /// PREVIEW CACHE
+    /// CACHE
     ///
-    func addPreviewImageCache(metadata: tableMetadata?, data: Data, ext: String) {
+    func addImageCache(metadata: tableMetadata?, data: Data, ext: String) {
         guard let metadata, let image = UIImage(data: data) else { return }
         cacheImage.setValue(imageInfo(image: image, size: image.size, date: metadata.date as Date), forKey: metadata.ocId + metadata.etag + ext)
         cacheSize.setValue(image.size, forKey: metadata.ocId + metadata.etag)
@@ -181,6 +179,18 @@ class NCImageCache: NSObject {
             return cache.image
         }
         return nil
+    }
+
+    func removeImageCache(ocId: String, etag: String) {
+        let exts = [global.storageExt1024x1024,
+                    global.storageExt512x512,
+                    global.storageExt256x256,
+                    global.storageExt128x128]
+
+        for i in 0..<exts.count {
+            cacheImage.removeValue(forKey: ocId + etag + exts[i])
+        }
+        cacheSize.removeValue(forKey: ocId + etag)
     }
 
     ///

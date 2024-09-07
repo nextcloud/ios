@@ -152,7 +152,7 @@ extension NCUtility {
         do {
             try data.write(to: URL(fileURLWithPath: fileNamePathBase), options: .atomic)
             #if !EXTENSION
-            NCImageCache.shared.addPreviewImageCache(metadata: cacheMetadata, data: data, ext: extBase)
+            NCImageCache.shared.addImageCache(metadata: cacheMetadata, data: data, ext: extBase)
             #endif
         } catch { }
 
@@ -172,17 +172,14 @@ extension NCUtility {
                      global.size128x128]
 
         for i in 0..<exts.count {
-            let ext = exts[i]
-            let size = sizes[i]
-
-            if !utilityFileSystem.fileProviderStorageImageExists(ocId, etag: etag, ext: ext),
-               let image = imageBase.resizeImage(size: size),
+            if !utilityFileSystem.fileProviderStorageImageExists(ocId, etag: etag, ext: exts[i]),
+               let image = imageBase.resizeImage(size: sizes[i]),
                let data = image.jpegData(compressionQuality: 0.7) {
                 do {
-                    let fileNamePath = utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: ext)
+                    let fileNamePath = utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: exts[i])
                     try data.write(to: URL(fileURLWithPath: fileNamePath))
                     #if !EXTENSION
-                    NCImageCache.shared.addPreviewImageCache(metadata: cacheMetadata, data: data, ext: ext)
+                    NCImageCache.shared.addImageCache(metadata: cacheMetadata, data: data, ext: exts[i])
                     #endif
                 } catch { }
             }
