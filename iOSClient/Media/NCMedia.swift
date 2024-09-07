@@ -60,7 +60,7 @@ class NCMedia: UIViewController {
     var timeIntervalSearchNewMedia: TimeInterval = 2.0
     var timerSearchNewMedia: Timer?
     let insetsTop: CGFloat = 75
-    let maxImageGrid: CGFloat = 15
+    let maxImageGrid: CGFloat = 10
     let livePhotoImage = NCUtility().loadImage(named: "livephoto", colors: [.white])
     let playImage = NCUtility().loadImage(named: "play.fill", colors: [.white])
     var photoImage = UIImage()
@@ -249,6 +249,7 @@ class NCMedia: UIViewController {
         }
 
         setEditMode(false)
+
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             self.reloadDataSource()
             self.searchMediaUI()
@@ -265,6 +266,7 @@ class NCMedia: UIViewController {
         }
 
         setEditMode(false)
+
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             self.reloadDataSource()
             self.searchMediaUI()
