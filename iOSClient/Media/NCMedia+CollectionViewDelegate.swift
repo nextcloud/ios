@@ -28,7 +28,8 @@ import RealmSwift
 extension NCMedia: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         var mediaCell: NCGridMediaCell?
-        if let metadata = dataSource.getMetadata(indexPath: indexPath) {
+        if let metadataDatasource = dataSource.getMetadata(indexPath: indexPath),
+           let metadata = database.getMetadataFromOcId(metadataDatasource.ocId) {
             if let visibleCells = self.collectionView?.indexPathsForVisibleItems.compactMap({ self.collectionView?.cellForItem(at: $0) }) {
                 for case let cell as NCGridMediaCell in visibleCells {
                     if cell.ocId == metadata.ocId {
@@ -49,8 +50,8 @@ extension NCMedia: UICollectionViewDelegate {
             } else {
                 // ACTIVE SERVERURL
                 serverUrl = metadata.serverUrl
-                let metadatas = dataSource.getMetadatas()
-                //NCViewer().view(viewController: self, metadata: metadata, metadatas: metadatas, image: getImage(metadata: metadata, width: 1024))
+                let metadatas = database.getResultsMediaMetadatas(predicate: getPredicate())
+                NCViewer().view(viewController: self, metadata: metadata, metadatas: metadatas, image: getImage(metadata: metadataDatasource, width: 1024))
             }
         }
     }

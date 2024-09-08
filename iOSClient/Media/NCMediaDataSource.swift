@@ -151,7 +151,7 @@ extension NCMedia {
         }
     }
 
-    private func getPredicate(showAll: Bool = false) -> NSPredicate {
+    internal func getPredicate(showAll: Bool = false) -> NSPredicate {
         guard let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else { return NSPredicate() }
         let startServerUrl = NCUtilityFileSystem().getHomeServer(session: session) + tableAccount.mediaPath
 
