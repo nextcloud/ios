@@ -206,7 +206,7 @@ class NCMedia: UIViewController {
 
     func startTimer() {
         // don't start if media chage is in progress
-        if imageCache.createMediaCacheInProgress {
+        if imageCache.createCacheInProgress {
             return
         }
         timerSearchNewMedia?.invalidate()

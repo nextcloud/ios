@@ -45,7 +45,7 @@ class NCImageCache: NSObject {
         return ThumbnailImageCache()
     }()
 
-    var createMediaCacheInProgress: Bool = false
+    var createCacheInProgress: Bool = false
 
     override init() {
         super.init()
@@ -61,13 +61,13 @@ class NCImageCache: NSObject {
     }
 
     ///
-    /// MEDIA CACHE
+    /// IMAGE CACHE
     ///
-    func createMediaCache() {
-        if createMediaCacheInProgress {
+    func createCache() {
+        if createCacheInProgress {
             return
         }
-        createMediaCacheInProgress = true
+        createCacheInProgress = true
         memoryWorning = false
         cacheImage.removeAllValues()
 
@@ -102,7 +102,7 @@ class NCImageCache: NSObject {
         NextcloudKit.shared.nkCommonInstance.writeLog("Memory worning: \(memoryWorning)")
         NextcloudKit.shared.nkCommonInstance.writeLog("--------- ThumbnailLRUCache image process ---------")
 
-        createMediaCacheInProgress = false
+        createCacheInProgress = false
     }
 
     ///

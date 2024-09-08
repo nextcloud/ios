@@ -148,7 +148,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
             ufs.createDirectoryStandard()
 
             NCAutoUpload.shared.alignPhotoLibrary(controller: self.controller, account: self.session.account)
-            NCImageCache.shared.createMediaCache()
+            NCImageCache.shared.createCache()
 
             NCActivityIndicator.shared.stop()
             self.calculateSize()

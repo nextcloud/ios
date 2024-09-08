@@ -107,7 +107,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         /// Cache Media
         DispatchQueue.global().async {
-            NCImageCache.shared.createMediaCache()
+            NCImageCache.shared.createCache()
         }
 
         /// Activation singleton
