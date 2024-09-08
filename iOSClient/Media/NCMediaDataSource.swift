@@ -223,20 +223,24 @@ public class NCMediaDataSource: NSObject {
     init(metadatas: [tableMetadata]) {
         super.init()
         for metadata in metadatas {
-            self.metadatas.append(Metadata(account: metadata.account,
-                                           date: metadata.date as Date,
-                                           etag: metadata.etag,
-                                           fileId: metadata.fileId,
-                                           etagResource: metadata.etagResource,
-                                           imageSize: CGSize(width: metadata.width, height: metadata.height),
-                                           isImage: metadata.classFile == NKCommon.TypeClassFile.image.rawValue,
-                                           isNotFlaggedAsLivePhotoByServer: !metadata.isFlaggedAsLivePhotoByServer,
-                                           isLivePhoto: !metadata.livePhotoFile.isEmpty,
-                                           isVideo: metadata.classFile == NKCommon.TypeClassFile.video.rawValue,
-                                           ocId: metadata.ocId,
-                                           serverUrl: metadata.serverUrl,
-                                           user: metadata.urlBase))
+            appendMetadata(metadata)
         }
+    }
+
+    internal func appendMetadata(_ metadata: tableMetadata) {
+        self.metadatas.append(Metadata(account: metadata.account,
+                                       date: metadata.date as Date,
+                                       etag: metadata.etag,
+                                       fileId: metadata.fileId,
+                                       etagResource: metadata.etagResource,
+                                       imageSize: CGSize(width: metadata.width, height: metadata.height),
+                                       isImage: metadata.classFile == NKCommon.TypeClassFile.image.rawValue,
+                                       isNotFlaggedAsLivePhotoByServer: !metadata.isFlaggedAsLivePhotoByServer,
+                                       isLivePhoto: !metadata.livePhotoFile.isEmpty,
+                                       isVideo: metadata.classFile == NKCommon.TypeClassFile.video.rawValue,
+                                       ocId: metadata.ocId,
+                                       serverUrl: metadata.serverUrl,
+                                       user: metadata.urlBase))
     }
 
     // MARK: -
@@ -264,5 +268,10 @@ public class NCMediaDataSource: NSObject {
         self.metadatas.removeAll { item in
             ocId.contains(item.ocId)
         }
+    }
+
+    func addMetadata(_ metadata: tableMetadata) {
+        removeMetadata([metadata.ocId])
+        appendMetadata(metadata)
     }
 }

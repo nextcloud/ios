@@ -58,7 +58,7 @@ extension NCMedia: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         guard let cell = collectionView.cellForItem(at: indexPath) as? NCGridMediaCell,
               let ocId = dataSource.getMetadata(indexPath: indexPath)?.ocId,
-              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
+              let metadata = database.getMetadataFromOcId(ocId)
         else { return nil }
         let identifier = indexPath as NSCopying
         let image = cell.imageItem.image

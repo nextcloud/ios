@@ -101,7 +101,7 @@ extension NCMedia: UICollectionViewDataSource {
 
         // Convert OLD Live Photo
         if NCCapabilities.shared.getCapabilities(account: metadata.account).isLivePhotoServerAvailable, metadata.isLivePhoto, metadata.isNotFlaggedAsLivePhotoByServer,
-           let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) {
+           let metadata = database.getMetadataFromOcId(metadata.ocId) {
             // NCNetworking.shared.convertLivePhoto(metadata: metadata)
         }
 

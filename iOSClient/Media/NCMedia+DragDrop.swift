@@ -32,7 +32,7 @@ extension NCMedia: UICollectionViewDragDelegate {
         if isEditMode {
             return NCDragDrop().performDrag(selectOcId: selectOcId)
         } else if let ocId = dataSource.getMetadata(indexPath: indexPath)?.ocId,
-                  let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                  let metadata = database.getMetadataFromOcId(ocId) {
             return NCDragDrop().performDrag(metadata: metadata)
         }
         return []
