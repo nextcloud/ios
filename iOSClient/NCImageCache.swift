@@ -39,12 +39,7 @@ class NCImageCache: NSObject {
     private var brandElementColor: UIColor?
     private var totalSize: Int64 = 0
     private var memoryWorning: Bool = false
-
-    struct imageInfo {
-        var image: UIImage?
-    }
-
-    private typealias ThumbnailImageCache = LRUCache<String, imageInfo>
+    private typealias ThumbnailImageCache = LRUCache<String, UIImage>
 
     private lazy var cacheImage: ThumbnailImageCache = {
         return ThumbnailImageCache()
@@ -92,7 +87,7 @@ class NCImageCache: NSObject {
 
                 autoreleasepool {
                     if let image = UIImage(contentsOfFile: fileURL.path) {
-                        cacheImage.setValue(imageInfo(image: image), forKey: ocId + fileName)
+                        cacheImage.setValue(image, forKey: ocId + fileName)
                         totalSize = totalSize + Int64(fileSize)
                     }
                 }
@@ -117,14 +112,11 @@ class NCImageCache: NSObject {
         guard allowExtensions.contains(ext),
               let image = UIImage(data: data) else { return }
 
-        cacheImage.setValue(imageInfo(image: image), forKey: ocId + etag + ext)
+        cacheImage.setValue(image, forKey: ocId + etag + ext)
     }
 
     func getImageCache(ocId: String, etag: String, ext: String) -> UIImage? {
-        if let cache = cacheImage.value(forKey: ocId + etag + ext) {
-            return cache.image
-        }
-        return nil
+        return cacheImage.value(forKey: ocId + etag + ext)
     }
 
     func removeImageCache(ocId: String, etag: String) {
