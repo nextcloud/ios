@@ -86,8 +86,6 @@ extension NCMedia: UICollectionViewDataSource {
         cell.date = metadata.date as Date
         cell.ocId = metadata.ocId
         cell.account = metadata.account
-        //cell.user = metadata.ownerId
-        cell.imageStatus.image = nil
 
         if let image = getImage(metadata: metadata) {
             cell.imageItem.image = image
@@ -104,7 +102,7 @@ extension NCMedia: UICollectionViewDataSource {
         // Convert OLD Live Photo
         if NCCapabilities.shared.getCapabilities(account: metadata.account).isLivePhotoServerAvailable, metadata.isLivePhoto, metadata.isNotFlaggedAsLivePhotoByServer,
            let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) {
-            NCNetworking.shared.convertLivePhoto(metadata: metadata)
+            // NCNetworking.shared.convertLivePhoto(metadata: metadata)
         }
 
         if metadata.isVideo {
