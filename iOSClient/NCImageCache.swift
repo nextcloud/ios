@@ -59,9 +59,6 @@ class NCImageCache: NSObject {
     private lazy var cacheImage: ThumbnailImageCache = {
         return ThumbnailImageCache(countLimit: limitCacheImagePreview)
     }()
-    private lazy var cacheSize: ThumbnailSizeCache = {
-        return ThumbnailSizeCache()
-    }()
 
     var createMediaCacheInProgress: Bool = false
 
@@ -125,7 +122,6 @@ class NCImageCache: NSObject {
         }
 
         cacheImage.removeAllValues()
-        cacheSize.removeAllValues()
 
         var counter: Int = 0
         for file in files {
@@ -136,9 +132,6 @@ class NCImageCache: NSObject {
                         totalSize = totalSize + Int64(file.fileSize)
                         counter += 1
                     }
-                    if file.width == 0, file.height == 0 {
-                        cacheSize.setValue(image.size, forKey: file.ocIdEtagExt)
-                    }
                 }
             }
         }
@@ -146,7 +139,6 @@ class NCImageCache: NSObject {
         let diffDate = Date().timeIntervalSinceReferenceDate - startDate.timeIntervalSinceReferenceDate
         NextcloudKit.shared.nkCommonInstance.writeLog("--------- ThumbnailLRUCache image process ---------")
         NextcloudKit.shared.nkCommonInstance.writeLog("Counter cache image: \(cacheImage.count)")
-        NextcloudKit.shared.nkCommonInstance.writeLog("Counter cache size: \(cacheSize.count)")
         NextcloudKit.shared.nkCommonInstance.writeLog("Total size images process: " + NCUtilityFileSystem().transformedSize(totalSize))
         NextcloudKit.shared.nkCommonInstance.writeLog("Time process: \(diffDate)")
         NextcloudKit.shared.nkCommonInstance.writeLog("--------- ThumbnailLRUCache image process ---------")
@@ -163,7 +155,6 @@ class NCImageCache: NSObject {
               let image = UIImage(data: data) else { return }
 
         cacheImage.setValue(imageInfo(image: image, size: image.size, date: metadata.date as Date), forKey: metadata.ocId + metadata.etag + ext)
-        cacheSize.setValue(image.size, forKey: metadata.ocId + metadata.etag)
     }
 
     func getImageCache(ocId: String, etag: String, ext: String) -> UIImage? {
@@ -182,21 +173,6 @@ class NCImageCache: NSObject {
         for i in 0..<exts.count {
             cacheImage.removeValue(forKey: ocId + etag + exts[i])
         }
-        cacheSize.removeValue(forKey: ocId + etag)
-    }
-
-    ///
-    /// SIZE CACHE
-    ///
-    func getPreviewSizeCache(ocId: String, etag: String) -> CGSize? {
-        if let size = cacheSize.value(forKey: ocId + etag) {
-            return size
-        } else {
-            if let image = UIImage(contentsOfFile: NCUtilityFileSystem().getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: NCGlobal.shared.previewExt1024)) {
-                return image.size
-            }
-        }
-        return nil
     }
 
     // MARK: -

@@ -167,6 +167,8 @@ extension NCMedia {
     }
 }
 
+// MARK: -
+
 public class NCMediaDataSource: NSObject {
     public class Metadata: NSObject {
         let account: String

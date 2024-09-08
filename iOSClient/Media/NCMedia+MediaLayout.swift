@@ -77,16 +77,10 @@ extension NCMedia: NCMediaLayoutDelegate {
         if typeLayout == NCGlobal.shared.mediaLayoutSquare {
             return CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
         } else {
-            if let size = indexPathSize[indexPath] {
-               return size
-            }
             guard let metadata = dataSource.getMetadata(indexPath: indexPath) else { return .zero }
 
             if metadata.imageSize != CGSize.zero {
-                indexPathSize[indexPath] = metadata.imageSize
                 return metadata.imageSize
-            } else if let size = imageCache.getPreviewSizeCache(ocId: metadata.ocId, etag: metadata.etag) {
-                return size
             } else {
                 return CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
             }
