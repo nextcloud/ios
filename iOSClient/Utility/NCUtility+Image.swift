@@ -157,7 +157,7 @@ extension NCUtility {
 
         let ext = [global.previewExt512, global.previewExt256, global.previewExt128]
         let size = [global.size512, global.size256, global.size128]
-        let compressionQuality = [0.5, 0.7, 0.8]
+        let compressionQuality = [0.6, 0.7, 0.8]
 
         for i in 0..<ext.count {
             if !utilityFileSystem.fileProviderStorageImageExists(ocId, etag: etag, ext: ext[i]),
