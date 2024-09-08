@@ -60,7 +60,7 @@ class NCMedia: UIViewController {
     var timeIntervalSearchNewMedia: TimeInterval = 2.0
     var timerSearchNewMedia: Timer?
     let insetsTop: CGFloat = 75
-    let maxImageGrid: CGFloat = 14
+    let maxImageGrid: CGFloat = 7
     var columnPhoto: Int = 0
     let livePhotoImage = NCUtility().loadImage(named: "livephoto", colors: [.white])
     let playImage = NCUtility().loadImage(named: "play.fill", colors: [.white])
@@ -325,7 +325,7 @@ extension NCMedia: UICollectionViewDataSourcePrefetching {
 
 extension NCMedia: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if dataSource.isEmpty() {
+        if !dataSource.isEmpty() {
             isTop = scrollView.contentOffset.y <= -(insetsTop + view.safeAreaInsets.top - 25)
             setColor()
             setNeedsStatusBarAppearanceUpdate()
