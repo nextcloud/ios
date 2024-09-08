@@ -122,7 +122,7 @@ extension NCUtility {
         return UIImage(cgImage: thumbnailImageRef)
     }
 
-    func createImageFrom(fileNameView: String, ocId: String, etag: String, classFile: String, cacheMetadata: tableMetadata? = nil) {
+    func createImageFrom(fileNameView: String, ocId: String, etag: String, classFile: String) {
         if classFile != NKCommon.TypeClassFile.image.rawValue, classFile != NKCommon.TypeClassFile.video.rawValue { return }
         var image: UIImage?
         let fileNamePath1024 = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)
@@ -139,10 +139,10 @@ extension NCUtility {
 
         guard let image else { return }
 
-        createImageStandard(ocId: ocId, etag: etag, classFile: classFile, image: image, cacheMetadata: cacheMetadata)
+        createImageStandard(ocId: ocId, etag: etag, classFile: classFile, image: image)
     }
 
-    func createImage(ocId: String, etag: String, classFile: String, data: Data, cacheMetadata: tableMetadata? = nil) {
+    func createImage(ocId: String, etag: String, classFile: String, data: Data) {
         guard let image = UIImage(data: data) else { return }
         let fileNamePath1024 = self.utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: global.previewExt1024)
 
@@ -150,11 +150,10 @@ extension NCUtility {
             try data.write(to: URL(fileURLWithPath: fileNamePath1024), options: .atomic)
         } catch { }
 
-        createImageStandard(ocId: ocId, etag: etag, classFile: classFile, image: image, cacheMetadata: cacheMetadata)
+        createImageStandard(ocId: ocId, etag: etag, classFile: classFile, image: image)
     }
 
-    private func createImageStandard(ocId: String, etag: String, classFile: String, image: UIImage, cacheMetadata: tableMetadata?) {
-
+    private func createImageStandard(ocId: String, etag: String, classFile: String, image: UIImage) {
         let ext = [global.previewExt512, global.previewExt256, global.previewExt128]
         let size = [global.size512, global.size256, global.size128]
         let compressionQuality = [0.6, 0.7, 0.8]
@@ -167,7 +166,7 @@ extension NCUtility {
                     let fileNamePath = utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: ext[i])
                     try data.write(to: URL(fileURLWithPath: fileNamePath))
                     #if !EXTENSION
-                    NCImageCache.shared.addImageCache(metadata: cacheMetadata, data: data, ext: ext[i])
+                    NCImageCache.shared.addImageCache(ocId: ocId, etag: etag, data: data, ext: ext[i])
                     #endif
                 } catch { }
             }
@@ -219,7 +218,7 @@ extension NCUtility {
                     svgImage.size = NCGlobal.shared.size1024
                     if let image = svgImage.uiImage {
                         if !NCUtility().existsImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024), let data = image.jpegData(compressionQuality: 1.0) {
-                            createImage(ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile, data: data, cacheMetadata: metadata)
+                            createImage(ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile, data: data)
                         }
                         return image
                     } else {

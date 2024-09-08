@@ -36,33 +36,34 @@ class NCImageCache: NSObject {
     private let global = NCGlobal.shared
 
     private let allowExtensions = [NCGlobal.shared.previewExt256, NCGlobal.shared.previewExt128]
-    private let limitCacheImagePreview: Int = 5000
     private var brandElementColor: UIColor?
     private var totalSize: Int64 = 0
-
-    struct metadataInfo {
-        var etag: String
-        var date: NSDate
-        var width: Int
-        var height: Int
-    }
+    private var memoryWorning: Bool = false
 
     struct imageInfo {
         var image: UIImage?
-        var size: CGSize?
-        var date: Date
     }
 
     private typealias ThumbnailImageCache = LRUCache<String, imageInfo>
-    private typealias ThumbnailSizeCache = LRUCache<String, CGSize?>
 
     private lazy var cacheImage: ThumbnailImageCache = {
-        return ThumbnailImageCache(countLimit: limitCacheImagePreview)
+        return ThumbnailImageCache()
     }()
 
     var createMediaCacheInProgress: Bool = false
 
-    override private init() {}
+    override init() {
+        super.init()
+        NotificationCenter.default.addObserver(self, selector: #selector(handleMemoryWarning), name: UIApplication.didReceiveMemoryWarningNotification, object: nil)
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: UIApplication.didReceiveMemoryWarningNotification, object: nil)
+    }
+
+    @objc func handleMemoryWarning() {
+        memoryWorning = true
+    }
 
     ///
     /// MEDIA CACHE
@@ -72,65 +73,27 @@ class NCImageCache: NSObject {
             return
         }
         createMediaCacheInProgress = true
+        memoryWorning = false
+        cacheImage.removeAllValues()
 
-        let predicate = NSPredicate(format: "hasPreview == true AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')")
-        let metadatas = NCManageDatabase.shared.getResultsImageCacheMetadatas(predicate: predicate)
-        var metadatasInfo: [String: metadataInfo] = [:]
         let manager = FileManager.default
         let resourceKeys = Set<URLResourceKey>([.nameKey, .pathKey, .fileSizeKey, .creationDateKey])
-        struct FileInfo {
-            var path: URL
-            var ocIdEtagExt: String
-            var date: Date
-            var fileSize: Int
-            var width: Int
-            var height: Int
-        }
-        var files: [FileInfo] = []
         let startDate = Date()
-
-        if let metadatas = metadatas {
-            metadatas.forEach { metadata in
-                metadatasInfo[metadata.ocId] = metadataInfo(etag: metadata.etag, date: metadata.date, width: metadata.width, height: metadata.height)
-            }
-        }
 
         if let enumerator = manager.enumerator(at: URL(fileURLWithPath: NCUtilityFileSystem().directoryProviderStorage), includingPropertiesForKeys: [.isRegularFileKey], options: [.skipsHiddenFiles]) {
 
-            for case let fileURL as URL in enumerator where allowExtensions.contains(where: { fileURL.lastPathComponent.hasSuffix($0) }) {
+            for case let fileURL as URL in enumerator where allowExtensions.contains(where: { fileURL.lastPathComponent.hasSuffix($0) && totalSize < 50_000_000 && !memoryWorning }) {
 
                 let fileName = fileURL.lastPathComponent
                 let ocId = fileURL.deletingLastPathComponent().lastPathComponent
                 guard let resourceValues = try? fileURL.resourceValues(forKeys: resourceKeys),
                       let fileSize = resourceValues.fileSize,
                       fileSize > 0 else { continue }
-                let width = metadatasInfo[ocId]?.width ?? 0
-                let height = metadatasInfo[ocId]?.height ?? 0
 
-                if let date = metadatasInfo[ocId]?.date {
-                        files.append(FileInfo(path: fileURL, ocIdEtagExt: ocId + fileName, date: date as Date, fileSize: fileSize, width: width, height: height))
-                } else {
-                    files.append(FileInfo(path: fileURL, ocIdEtagExt: ocId + fileName, date: Date.distantPast, fileSize: fileSize, width: width, height: height))
-                }
-            }
-        }
-
-        files.sort(by: { $0.date > $1.date })
-        if let firstDate = files.first?.date, let lastDate = files.last?.date {
-            print("First date: \(firstDate)")
-            print("Last date: \(lastDate)")
-        }
-
-        cacheImage.removeAllValues()
-
-        var counter: Int = 0
-        for file in files {
-            autoreleasepool {
-                if let image = UIImage(contentsOfFile: file.path.path) {
-                    if counter < limitCacheImagePreview {
-                        cacheImage.setValue(imageInfo(image: image, size: image.size, date: file.date), forKey: file.ocIdEtagExt)
-                        totalSize = totalSize + Int64(file.fileSize)
-                        counter += 1
+                autoreleasepool {
+                    if let image = UIImage(contentsOfFile: fileURL.path) {
+                        cacheImage.setValue(imageInfo(image: image), forKey: ocId + fileName)
+                        totalSize = totalSize + Int64(fileSize)
                     }
                 }
             }
@@ -141,6 +104,7 @@ class NCImageCache: NSObject {
         NextcloudKit.shared.nkCommonInstance.writeLog("Counter cache image: \(cacheImage.count)")
         NextcloudKit.shared.nkCommonInstance.writeLog("Total size images process: " + NCUtilityFileSystem().transformedSize(totalSize))
         NextcloudKit.shared.nkCommonInstance.writeLog("Time process: \(diffDate)")
+        NextcloudKit.shared.nkCommonInstance.writeLog("Memory worning: \(memoryWorning)")
         NextcloudKit.shared.nkCommonInstance.writeLog("--------- ThumbnailLRUCache image process ---------")
 
         createMediaCacheInProgress = false
@@ -149,12 +113,11 @@ class NCImageCache: NSObject {
     ///
     /// CACHE
     ///
-    func addImageCache(metadata: tableMetadata?, data: Data, ext: String) {
+    func addImageCache(ocId: String, etag: String, data: Data, ext: String) {
         guard allowExtensions.contains(ext),
-              let metadata,
               let image = UIImage(data: data) else { return }
 
-        cacheImage.setValue(imageInfo(image: image, size: image.size, date: metadata.date as Date), forKey: metadata.ocId + metadata.etag + ext)
+        cacheImage.setValue(imageInfo(image: image), forKey: ocId + etag + ext)
     }
 
     func getImageCache(ocId: String, etag: String, ext: String) -> UIImage? {

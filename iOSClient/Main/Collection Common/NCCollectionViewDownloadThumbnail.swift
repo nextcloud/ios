@@ -54,7 +54,7 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
             if error == .success, let data, let collectionView = self.collectionView {
 
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
-                NCUtility().createImage(ocId: self.metadata.ocId, etag: self.metadata.etag, classFile: self.metadata.classFile, data: data, cacheMetadata: self.metadata)
+                NCUtility().createImage(ocId: self.metadata.ocId, etag: self.metadata.etag, classFile: self.metadata.classFile, data: data)
 
                 DispatchQueue.main.async {
                     for case let cell as NCCellProtocol in collectionView.visibleCells {

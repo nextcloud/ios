@@ -59,7 +59,7 @@ class NCMediaDownloadThumbnail: ConcurrentOperation {
 
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
                 if let metadata = NCManageDatabase.shared.getMetadataFromOcId(self.metadata.ocId) {
-                    NCUtility().createImage(ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile, data: data, cacheMetadata: metadata)
+                    NCUtility().createImage(ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile, data: data)
                 }
 
                 DispatchQueue.main.async {
