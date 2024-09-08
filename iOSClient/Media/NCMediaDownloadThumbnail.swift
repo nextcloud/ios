@@ -52,8 +52,6 @@ class NCMediaDownloadThumbnail: ConcurrentOperation {
         }
 
         NextcloudKit.shared.downloadPreview(fileId: metadata.fileId,
-                                            width: NCGlobal.shared.sizeMax,
-                                            height: NCGlobal.shared.sizeMax,
                                             etag: etagResource,
                                             account: metadata.account,
                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, data, _, _, etag, error in

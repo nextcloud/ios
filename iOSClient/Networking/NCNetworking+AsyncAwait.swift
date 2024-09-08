@@ -77,13 +77,11 @@ extension NCNetworking {
     }
 
     func downloadPreview(fileId: String,
-                         width: Int,
-                         height: Int,
                          etag: String? = nil,
                          account: String,
                          options: NKRequestOptions = NKRequestOptions()) async -> (account: String, data: Data?, width: Int, height: Int, etag: String?, error: NKError) {
         await withUnsafeContinuation({ continuation in
-            NextcloudKit.shared.downloadPreview(fileId: fileId, width: width, height: height, etag: etag, account: account, options: options) { account, data, width, height, etag, error in
+            NextcloudKit.shared.downloadPreview(fileId: fileId, etag: etag, account: account, options: options) { account, data, width, height, etag, error in
                 continuation.resume(returning: (account: account, data: data, width: width, height: height, etag: etag, error: error))
             }
         })

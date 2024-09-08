@@ -86,7 +86,6 @@ class NCGlobal: NSObject {
 
     // Preview size
     //
-    let sizeMax: Int                                = 1024
     let size1024: CGSize                            = CGSize(width: 1024, height: 1024)
     let size512: CGSize                             = CGSize(width: 512, height: 512)
     let size256: CGSize                             = CGSize(width: 256, height: 256)

@@ -222,8 +222,6 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 if image == nil, file.hasPreview {
                     let size1024 = NCUtility().getSize1024(width: Int(file.width), height: Int(file.height))
                     let result = await NCNetworking.shared.downloadPreview(fileId: file.fileId,
-                                                                           width: NCGlobal.shared.sizeMax,
-                                                                           height: NCGlobal.shared.sizeMax,
                                                                            account: activeTableAccount.account,
                                                                            options: options)
                     if result.error == .success, let data = result.data {
