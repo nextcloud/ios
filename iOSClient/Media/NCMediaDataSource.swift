@@ -259,4 +259,10 @@ public class NCMediaDataSource: NSObject {
         }
         return nil
     }
+
+    func removeMetadata(_ ocId: [String]) {
+        self.metadatas.removeAll { item in
+            ocId.contains(item.ocId)
+        }
+    }
 }

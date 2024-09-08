@@ -217,13 +217,15 @@ class NCMedia: UIViewController {
 
     @objc func deleteFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? [String],
               let error = userInfo["error"] as? NKError else { return }
+
+        dataSource.removeMetadata(ocId)
+        self.collectionViewReloadData()
 
         if error != .success {
             NCContentPresenter().showError(error: error)
         }
-
-        self.reloadDataSource()
     }
 
     @objc func enterForeground(_ notification: NSNotification) {
