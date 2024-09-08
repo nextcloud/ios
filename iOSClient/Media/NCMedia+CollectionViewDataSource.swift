@@ -42,7 +42,7 @@ extension NCMedia: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let numberOfItemsInSection = dataSource.getResultsMetadatas().count
+        let numberOfItemsInSection = dataSource.getMetadatas().count
         if numberOfItemsInSection == 0 || NCNetworking.shared.isOffline {
             selectOrCancelButton.isHidden = true
             menuButton.isHidden = false
@@ -65,7 +65,7 @@ extension NCMedia: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let metadata = dataSource.getResultMetadata(indexPath: indexPath) else { return }
+        guard let metadata = dataSource.getMetadata(indexPath: indexPath) else { return }
 
         if !collectionView.indexPathsForVisibleItems.contains(indexPath) {
             for case let operation as NCMediaDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
@@ -79,19 +79,19 @@ extension NCMedia: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridMediaCell)!
-        guard let metadata = dataSource.getResultMetadata(indexPath: indexPath) else {
+        guard let metadata = dataSource.getMetadata(indexPath: indexPath) else {
             return cell
         }
 
         cell.date = metadata.date as Date
         cell.ocId = metadata.ocId
         cell.account = metadata.account
-        cell.user = metadata.ownerId
+        //cell.user = metadata.ownerId
         cell.imageStatus.image = nil
 
         if let image = getImage(metadata: metadata) {
             cell.imageItem.image = image
-        } else if !metadata.hasPreview {
+        } else {
             cell.imageItem.backgroundColor = .clear
             cell.imageItem.contentMode = .center
             if metadata.isImage {
@@ -102,11 +102,12 @@ extension NCMedia: UICollectionViewDataSource {
         }
 
         // Convert OLD Live Photo
-        if NCCapabilities.shared.getCapabilities(account: metadata.account).isLivePhotoServerAvailable, metadata.isLivePhoto, metadata.isNotFlaggedAsLivePhotoByServer {
+        if NCCapabilities.shared.getCapabilities(account: metadata.account).isLivePhotoServerAvailable, metadata.isLivePhoto, metadata.isNotFlaggedAsLivePhotoByServer,
+           let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) {
             NCNetworking.shared.convertLivePhoto(metadata: metadata)
         }
 
-        if metadata.isAudioOrVideo {
+        if metadata.isVideo {
            cell.imageStatus.image = playImage
         } else if metadata.isLivePhoto {
             cell.imageStatus.image = livePhotoImage

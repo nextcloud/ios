@@ -31,7 +31,8 @@ extension NCMedia: UICollectionViewDragDelegate {
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
         if isEditMode {
             return NCDragDrop().performDrag(selectOcId: selectOcId)
-        } else if let metadata = dataSource.getMetadata(indexPath: indexPath) {
+        } else if let ocId = dataSource.getMetadata(indexPath: indexPath)?.ocId,
+                  let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
             return NCDragDrop().performDrag(metadata: metadata)
         }
         return []

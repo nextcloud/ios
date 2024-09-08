@@ -46,7 +46,7 @@ extension NCMedia: NCMediaLayoutDelegate {
 
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, heightForHeaderInSection section: Int) -> Float {
         var height: Double = 0
-        if dataSource.getResultsMetadatas().count == 0 {
+        if dataSource.getMetadatas().count == 0 {
             height = utility.getHeightHeaderEmptyData(view: view, portraitOffset: 0, landscapeOffset: -20)
         }
         return Float(height)
@@ -80,7 +80,7 @@ extension NCMedia: NCMediaLayoutDelegate {
             if let size = indexPathSize[indexPath] {
                return size
             }
-            guard let metadata = dataSource.getResultMetadata(indexPath: indexPath) else { return .zero }
+            guard let metadata = dataSource.getMetadata(indexPath: indexPath) else { return .zero }
 
             if metadata.imageSize != CGSize.zero {
                 indexPathSize[indexPath] = metadata.imageSize

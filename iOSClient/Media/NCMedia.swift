@@ -43,7 +43,7 @@ class NCMedia: UIViewController {
     let utility = NCUtility()
     let database = NCManageDatabase.shared
     let imageCache = NCImageCache.shared
-    var dataSource = NCDataSource()
+    var dataSource = NCMediaDataSource()
     var serverUrl = ""
     let refreshControl = UIRefreshControl()
     var loadingTask: Task<Void, any Error>?
@@ -276,7 +276,7 @@ class NCMedia: UIViewController {
 
     // MARK: - Image
 
-    func getImage(metadata: tableMetadata, width: CGFloat? = nil) -> UIImage? {
+    func getImage(metadata: NCMediaDataSource.Metadata, width: CGFloat? = nil) -> UIImage? {
         var returnImage: UIImage?
         var width = width
         if width == nil {
@@ -288,9 +288,7 @@ class NCMedia: UIViewController {
             returnImage = image
         } else if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
             returnImage = image
-        } else if metadata.hasPreview,
-                  metadata.status == NCGlobal.shared.metadataStatusNormal,
-                  NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
+        } else if NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
             NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnail(metadata: metadata, collectionView: self.collectionView, delegate: self))
         }
 

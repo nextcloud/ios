@@ -26,14 +26,14 @@ import NextcloudKit
 import Queuer
 
 class NCMediaDownloadThumbnail: ConcurrentOperation {
-    var metadata: tableMetadata
+    var metadata: NCMediaDataSource.Metadata
     var collectionView: UICollectionView?
     let utilityFileSystem = NCUtilityFileSystem()
     let delegate: NCMedia?
     var ext = ""
 
-    init(metadata: tableMetadata, collectionView: UICollectionView?, delegate: NCMedia?) {
-        self.metadata = tableMetadata.init(value: metadata)
+    init(metadata: NCMediaDataSource.Metadata, collectionView: UICollectionView?, delegate: NCMedia?) {
+        self.metadata = metadata
         self.collectionView = collectionView
         self.delegate = delegate
 
@@ -60,7 +60,9 @@ class NCMediaDownloadThumbnail: ConcurrentOperation {
             if error == .success, let data, let collectionView = self.collectionView {
 
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
-                NCUtility().createImage(ocId: self.metadata.ocId, etag: self.metadata.etag, classFile: self.metadata.classFile, data: data, cacheMetadata: self.metadata)
+                if let metadata = NCManageDatabase.shared.getMetadataFromOcId(self.metadata.ocId) {
+                    NCUtility().createImage(ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile, data: data, cacheMetadata: metadata)
+                }
 
                 DispatchQueue.main.async {
                     for case let cell as NCGridMediaCell in collectionView.visibleCells {
