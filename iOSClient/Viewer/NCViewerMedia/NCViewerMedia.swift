@@ -285,7 +285,7 @@ class NCViewerMedia: UIViewController {
                     self.image = image
                     self.imageVideoContainer.image = self.image
                 } else {
-                    self.image = self.utility.loadImage(named: "photo", colors: [NCBrandColor.shared.iconImageColor2])
+                    self.image = self.utility.loadImage(named: "photo.badge.arrow.down", colors: [NCBrandColor.shared.iconImageColor2])
                     self.imageVideoContainer.image = self.image
                 }
                 return
@@ -335,10 +335,7 @@ class NCViewerMedia: UIViewController {
         } requestHandler: { _ in
             self.allowOpeningDetails = false
         } completion: { _, _ in
-            DispatchQueue.main.async {
-                self.allowOpeningDetails = true
-                self.loadImage()
-            }
+            self.allowOpeningDetails = true
         }
     }
 
