@@ -990,6 +990,7 @@ extension NCManageDatabase {
     func getResultsMediaMetadatas(predicate: NSPredicate) -> [tableMetadata] {
         do {
             let realm = try Realm()
+            realm.refresh()
             let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: "date", ascending: false)
             return Array(results)
         } catch let error as NSError {
