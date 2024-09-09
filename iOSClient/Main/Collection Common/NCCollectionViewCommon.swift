@@ -726,22 +726,20 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
             let menuZoom = UIMenu(title: "", options: .displayInline, children: [
                 UIAction(title: NSLocalizedString("_zoom_out_", comment: ""), image: utility.loadImage(named: "minus.magnifyingglass"), attributes: self.attributesZoomOut) { _ in
-                    UIView.animate(withDuration: 0.0, animations: {
-                        layoutForView.columnPhoto = columnPhoto + 1
-                        self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
-
+                    layoutForView.columnPhoto = columnPhoto + 1
+                    self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
+                    self.setNavigationRightItems()
+                    UIView.transition(with: self.collectionView, duration: 0.4, options: .transitionCrossDissolve, animations: {
                         self.collectionView.reloadData()
-                        self.setNavigationRightItems()
-                    })
+                    }, completion: nil)
                 },
                 UIAction(title: NSLocalizedString("_zoom_in_", comment: ""), image: utility.loadImage(named: "plus.magnifyingglass"), attributes: self.attributesZoomIn) { _ in
-                    UIView.animate(withDuration: 0.0, animations: {
-                        layoutForView.columnPhoto = columnPhoto - 1
-                        self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
-
+                    layoutForView.columnPhoto = columnPhoto - 1
+                    self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
+                    self.setNavigationRightItems()
+                    UIView.transition(with: self.collectionView, duration: 0.4, options: .transitionCrossDissolve, animations: {
                         self.collectionView.reloadData()
-                        self.setNavigationRightItems()
-                    })
+                    }, completion: nil)
                 }
             ])
 
