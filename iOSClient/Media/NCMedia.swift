@@ -60,7 +60,7 @@ class NCMedia: UIViewController {
     var timeIntervalSearchNewMedia: TimeInterval = 2.0
     var timerSearchNewMedia: Timer?
     let insetsTop: CGFloat = 75
-    let maxImageGrid: CGFloat = 7
+    let maxImageGrid: CGFloat = 8
     var columnPhoto: Int = 0
     let livePhotoImage = NCUtility().loadImage(named: "livephoto", colors: [.white])
     let playImage = NCUtility().loadImage(named: "play.fill", colors: [.white])
@@ -234,9 +234,11 @@ class NCMedia: UIViewController {
 
     @objc func uploadedFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
+              let error = userInfo["error"] as? NKError,
               let ocId = userInfo["ocId"] as? String else { return }
 
-        if let metadata = database.getMetadataFromOcId(ocId), metadata.isImageOrVideo {
+        if error == .success, let metadata = database.getMetadataFromOcId(ocId),
+           metadata.isImageOrVideo {
             self.dataSource.addMetadata(metadata)
             self.collectionViewReloadData()
         }

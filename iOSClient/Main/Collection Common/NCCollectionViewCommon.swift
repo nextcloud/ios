@@ -107,9 +107,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     var sizeImage: CGSize {
-        let columnCount: Int = self.layoutForView?.columnPhoto ?? 3
-        let size = CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
-        return size
+        if isLayoutPhoto {
+            let column = CGFloat(layoutForView?.columnPhoto ?? 3)
+            return CGSize(width: collectionView.frame.width / column, height: collectionView.frame.width / column)
+        } else if isLayoutGrid {
+            let column = CGFloat(layoutForView?.columnGrid ?? 3)
+            return CGSize(width: collectionView.frame.width / column, height: collectionView.frame.width / column)
+        } else {
+            return CGSize(width: 40, height: 40)
+        }
     }
 
     var controller: NCMainTabBarController? {
@@ -726,22 +732,20 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
             let menuZoom = UIMenu(title: "", options: .displayInline, children: [
                 UIAction(title: NSLocalizedString("_zoom_out_", comment: ""), image: utility.loadImage(named: "minus.magnifyingglass"), attributes: self.attributesZoomOut) { _ in
-                    UIView.animate(withDuration: 0.0, animations: {
-                        layoutForView.columnPhoto = columnPhoto + 1
-                        self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
-
+                    layoutForView.columnPhoto = columnPhoto + 1
+                    self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
+                    self.setNavigationRightItems()
+                    UIView.transition(with: self.collectionView, duration: 0.4, options: .transitionCrossDissolve, animations: {
                         self.collectionView.reloadData()
-                        self.setNavigationRightItems()
-                    })
+                    }, completion: nil)
                 },
                 UIAction(title: NSLocalizedString("_zoom_in_", comment: ""), image: utility.loadImage(named: "plus.magnifyingglass"), attributes: self.attributesZoomIn) { _ in
-                    UIView.animate(withDuration: 0.0, animations: {
-                        layoutForView.columnPhoto = columnPhoto - 1
-                        self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
-
+                    layoutForView.columnPhoto = columnPhoto - 1
+                    self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
+                    self.setNavigationRightItems()
+                    UIView.transition(with: self.collectionView, duration: 0.4, options: .transitionCrossDissolve, animations: {
                         self.collectionView.reloadData()
-                        self.setNavigationRightItems()
-                    })
+                    }, completion: nil)
                 }
             ])
 

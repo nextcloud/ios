@@ -69,20 +69,15 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.filePreviewImageView?.layer.borderWidth = 0.2
                 cell.filePreviewImageView?.layer.borderColor = UIColor.lightGray.cgColor
             }
+
             if metadata.name == global.appName {
-                if isLayoutPhoto, metadata.isImageOrVideo {
-                    if let image = NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512) {
-                        cell.filePreviewImageView?.image = image
-                    } else if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512) {
-                        cell.filePreviewImageView?.image = image
-                    }
-                } else {
-                    if let image = NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512) {
-                        cell.filePreviewImageView?.image = image
-                    } else {
-                        cell.filePreviewImageView?.image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512)
-                    }
+                let ext = global.getSizeExtension(width: self.sizeImage.width)
+                if let image = NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
+                    cell.filePreviewImageView?.image = image
+                } else if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
+                    cell.filePreviewImageView?.image = image
                 }
+
                 if cell.filePreviewImageView?.image == nil {
                     if metadata.iconName.isEmpty {
                         cell.filePreviewImageView?.image = NCImageCache.shared.getImageFile()
@@ -91,7 +86,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     }
                     if metadata.hasPreview && metadata.status == global.metadataStatusNormal && !existsPreview {
                         for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { return }
-                        NCNetworking.shared.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, collectionView: collectionView))
+                        NCNetworking.shared.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, collectionView: collectionView, ext: NCGlobal.shared.getSizeExtension(width: self.sizeImage.width)))
                     }
                 }
             } else {

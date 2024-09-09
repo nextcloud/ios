@@ -79,10 +79,6 @@ class NCMainTabBarController: UITabBarController {
             if !collectionViewCommon.serverUrl.isEmpty {
                 serverUrl = collectionViewCommon.serverUrl
             }
-        } else if let media = viewController as? NCMedia {
-            serverUrl = media.serverUrl
-        } else if let viewerMediaPage = viewController as? NCViewerMediaPage {
-            serverUrl = viewerMediaPage.metadatas[viewerMediaPage.currentIndex].serverUrl
         }
         return serverUrl
     }
