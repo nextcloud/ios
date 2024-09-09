@@ -41,7 +41,7 @@
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RYI-12-k5i" userLabel="btnSelect">
                             <rect key="frame" x="303" y="8" width="32" height="32"/>
-                            <color key="backgroundColor" name="FileActionsHeader/SelectionModeHeaderBackground"/>
+                            <color key="backgroundColor" name="FileActionsHeader/SelectionModeButtonBackground"/>
                             <constraints>
                                 <constraint firstAttribute="width" secondItem="RYI-12-k5i" secondAttribute="height" id="G23-hh-FMt"/>
                                 <constraint firstAttribute="height" constant="32" id="f66-pf-OBU"/>
@@ -143,8 +143,11 @@
         <namedColor name="FileActionsHeader/ButtonTint">
             <color red="0.0" green="0.10588235294117647" blue="0.25490196078431371" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
+        <namedColor name="FileActionsHeader/SelectionModeButtonBackground">
+            <color red="0.85882352941176465" green="0.88627450980392153" blue="0.90980392156862744" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
         <namedColor name="FileActionsHeader/SelectionModeHeaderBackground">
-            <color red="0.95686274509803926" green="0.96862745098039216" blue="0.98039215686274506" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.85882352941176465" green="0.88627450980392153" blue="0.90980392156862744" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
