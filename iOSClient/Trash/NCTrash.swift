@@ -40,7 +40,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
     let utility = NCUtility()
     var isEditMode = false
     var selectOcId: [String] = []
-    var tabBarSelect: NCTrashSelectTabBar!
+    var selectionToolbar: NCTrashSelectToolBar!
     var datasource: [tableTrash] = []
     var layoutForView: NCDBLayoutForView?
     var listLayout: NCListLayout!
@@ -53,8 +53,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        tabBarSelect = NCTrashSelectTabBar(tabBarController: tabBarController, delegate: self)
+        selectionToolbar = NCTrashSelectToolBar(containerView: view, placeholderFrame: selectToolBarFrame, delegate: self)
 
         view.backgroundColor = .systemBackground
         self.navigationController?.navigationBar.prefersLargeTitles = true
@@ -79,6 +78,11 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataSource), object: nil)
     }
 
+	private var selectToolBarFrame: CGRect {
+		let toolbarHeight = AppScreenConstants.toolbarHeight
+		return CGRect(x: 0, y: view.bounds.size.height - toolbarHeight, width: view.bounds.size.width, height: toolbarHeight)
+	}
+	
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setNavigationBarAppearance()
@@ -117,10 +121,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-
-        if let frame = tabBarController?.tabBar.frame {
-            tabBarSelect.hostingController?.view.frame = frame
-        }
+		selectionToolbar.hostingController?.view.frame = selectToolBarFrame
     }
 
     // MARK: - Layout
@@ -145,14 +146,14 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         }
 
         if isEditMode {
-            tabBarSelect.update(selectOcId: selectOcId)
-            tabBarSelect.show()
+            selectionToolbar.update(selectOcId: selectOcId)
+            selectionToolbar.show()
             let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) {
                 self.setEditMode(false)
             }
             navigationItem.rightBarButtonItems = [select]
-        } else if navigationItem.rightBarButtonItems == nil || (!isEditMode && !tabBarSelect.isHidden()) {
-            tabBarSelect.hide()
+        } else if navigationItem.rightBarButtonItems == nil || (!isEditMode && !selectionToolbar.isHidden()) {
+            selectionToolbar.hide()
             let menu = UIBarButtonItem(image: utility.loadImage(named: "ellipsis.circle", colors: [NCBrandColor.shared.iconImageColor]), menu: UIMenu(children: createMenuActions()))
             navigationItem.rightBarButtonItems = [menu]
         } else {
