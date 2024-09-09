@@ -26,6 +26,7 @@ import NextcloudKit
 
 class NCMainTabBar: UITabBar {
 
+    private var fillColor: UIColor!
     private var shapeLayer: CALayer?
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private let centerButtonY: CGFloat = -28
@@ -58,6 +59,16 @@ class NCMainTabBar: UITabBar {
         }
     }
 
+	override var backgroundColor: UIColor? {
+		get {
+			return self.fillColor
+		}
+		set {
+			fillColor = newValue
+			self.setNeedsDisplay()
+		}
+	}
+	
     override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
         let button = self.viewWithTag(99)
         if self.bounds.contains(point) || (button != nil && button!.frame.contains(point)) {
