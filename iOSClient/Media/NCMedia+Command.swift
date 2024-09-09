@@ -165,21 +165,23 @@ extension NCMedia {
         ])
 
         let zoomOut = UIAction(title: NSLocalizedString("_zoom_out_", comment: ""), image: utility.loadImage(named: "minus.magnifyingglass"), attributes: self.attributesZoomOut) { _ in
-            UIView.animate(withDuration: 0.0, animations: {
-                let column = columnPhoto + 1
-                self.database.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: column)
-                self.createMenu()
-                self.collectionViewReloadData()
-            })
+            let column = columnPhoto + 1
+            self.database.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: column)
+            self.createMenu()
+            UIView.transition(with: self.collectionView, duration: 0.3, options: .transitionCrossDissolve, animations: {
+                self.collectionView.reloadData()
+                self.setTitleDate()
+            }, completion: nil)
         }
 
         let zoomIn = UIAction(title: NSLocalizedString("_zoom_in_", comment: ""), image: utility.loadImage(named: "plus.magnifyingglass"), attributes: self.attributesZoomIn) { _ in
-            UIView.animate(withDuration: 0.0, animations: {
-                let column = columnPhoto - 1
-                self.database.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: column)
-                self.createMenu()
-                self.collectionViewReloadData()
-            })
+            let column = columnPhoto - 1
+            self.database.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: column)
+            self.createMenu()
+            UIView.transition(with: self.collectionView, duration: 0.3, options: .transitionCrossDissolve, animations: {
+                self.collectionView.reloadData()
+                self.setTitleDate()
+            }, completion: nil)
         }
 
         let playFile = UIAction(title: NSLocalizedString("_play_from_files_", comment: ""), image: utility.loadImage(named: "play.circle")) { _ in
