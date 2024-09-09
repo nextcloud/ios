@@ -113,7 +113,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         }
 
         // qrcode
-        qrCode.setImage(UIImage(systemName: "qrcode.viewfinder")?.image(color: textColor, size: 100), for: .normal)
+//        qrCode.setImage(UIImage(systemName: "qrcode.viewfinder")?.image(color: textColor, size: 100), for: .normal)
 
         // certificate
         certificate.setImage(UIImage(named: "certificate")?.image(color: textColor, size: 100), for: .normal)
