@@ -173,66 +173,12 @@ extension NCUtility {
         }
     }
 
-    func getImageMetadata(_ metadata: tableMetadata, ext: String) -> UIImage? {
-        if let image = getImage(metadata: metadata) { return image }
-
-        if metadata.isVideo, !metadata.hasPreview {
-            createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
-        }
-
-        if let image = getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
-            return image
-        }
-
-        if metadata.isVideo {
-            return loadImage(named: "video", colors: [NCBrandColor.shared.iconImageColor2])
-        } else if metadata.isAudio {
-            return loadImage(named: "waveform", colors: [NCBrandColor.shared.iconImageColor2])
-        } else {
-            return loadImage(named: "photo", colors: [NCBrandColor.shared.iconImageColor2])
-        }
-    }
-
     func getImage(ocId: String, etag: String, ext: String) -> UIImage? {
         return UIImage(contentsOfFile: self.utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: ext))
     }
 
     func existsImage(ocId: String, etag: String, ext: String) -> Bool {
         return FileManager().fileExists(atPath: self.utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: ext))
-    }
-
-    func getImage(metadata: tableMetadata) -> UIImage? {
-        let fileNameExtension = (metadata.fileNameView as NSString).pathExtension.uppercased()
-        var image: UIImage?
-
-        if utilityFileSystem.fileProviderStorageExists(metadata), metadata.isImage {
-            let fileNamePathBase = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
-
-            if fileNameExtension == "GIF" {
-                if !NCUtility().existsImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024) {
-                    createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
-                }
-                image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: fileNamePathBase))
-            } else if fileNameExtension == "SVG" {
-                if let svgImage = SVGKImage(contentsOfFile: fileNamePathBase) {
-                    svgImage.size = NCGlobal.shared.size1024
-                    if let image = svgImage.uiImage {
-                        if !NCUtility().existsImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024), let data = image.jpegData(compressionQuality: 1.0) {
-                            createImage(ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile, data: data)
-                        }
-                        return image
-                    } else {
-                        return nil
-                    }
-                } else {
-                    return nil
-                }
-            } else {
-                createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
-                image = getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512)
-            }
-        }
-        return image
     }
 
     func imageFromVideo(url: URL, at time: TimeInterval, completion: @escaping (UIImage?) -> Void) {
