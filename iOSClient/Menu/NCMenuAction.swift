@@ -84,7 +84,7 @@ extension NCMenuAction {
     static func selectAllAction(action: @escaping () -> Void) -> NCMenuAction {
         NCMenuAction(
             title: NSLocalizedString("_select_all_", comment: ""),
-            icon: NCUtility().loadImage(named: "checkmark.circle.fill", colors: [NCBrandColor.shared.iconImageColor]),
+			icon: NCUtility().loadImage(named: "checkmark.circle.fill", colors: [.menuIconTint]),
             action: { _ in action() }
         )
     }
@@ -93,7 +93,7 @@ extension NCMenuAction {
     static func cancelAction(action: @escaping () -> Void) -> NCMenuAction {
         NCMenuAction(
             title: NSLocalizedString("_cancel_", comment: ""),
-            icon: NCUtility().loadImage(named: "xmark", colors: [NCBrandColor.shared.iconImageColor]),
+            icon: NCUtility().loadImage(named: "xmark", colors: [.menuIconTint]),
             action: { _ in action() }
         )
     }
@@ -103,13 +103,10 @@ extension NCMenuAction {
         var titleDelete = NSLocalizedString("_delete_", comment: "")
         var message = NSLocalizedString("_want_delete_", comment: "")
         var icon = "trash_icon"
-        var destructive = false
-        var color = NCBrandColor.shared.iconImageColor
         let permissions = NCPermissions()
 
         if selectedMetadatas.count > 1 {
             titleDelete = NSLocalizedString("_delete_selected_files_", comment: "")
-            destructive = true
         } else if let metadata = selectedMetadatas.first {
             if NCManageDatabase.shared.isMetadataShareOrMounted(metadata: metadata, metadataFolder: metadataFolder) {
                 titleDelete = NSLocalizedString("_leave_share_", comment: "")
@@ -117,10 +114,8 @@ extension NCMenuAction {
                 icon = "person.2.slash"
             } else if metadata.directory {
                 titleDelete = NSLocalizedString("_delete_folder_", comment: "")
-                destructive = true
             } else {
                 titleDelete = NSLocalizedString("_delete_file_", comment: "")
-                destructive = true
             }
 
             if let metadataFolder = metadataFolder {
@@ -139,12 +134,10 @@ extension NCMenuAction {
             guard ix < 3 else { fileList += "\n - ..."; break }
             fileList += "\n - " + metadata.fileNameView
         }
-        if destructive { color = .red }
 
         return NCMenuAction(
             title: titleDelete,
-            destructive: destructive,
-            icon: NCUtility().loadImage(named: icon, colors: [color]),
+            icon: NCUtility().loadImage(named: icon, colors: [.menuIconTint]),
             order: order,
             action: { _ in
                 let alertController = UIAlertController.deleteFileOrFolder(titleString: titleDelete + "?", message: message + fileList, canDeleteServer: canDeleteServer, selectedMetadatas: selectedMetadatas) { _ in
@@ -159,7 +152,7 @@ extension NCMenuAction {
     static func share(selectedMetadatas: [tableMetadata], viewController: UIViewController, order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
         NCMenuAction(
             title: NSLocalizedString("_share_", comment: ""),
-            icon: NCUtility().loadImage(named: "square.and.arrow.up", colors: [NCBrandColor.shared.iconImageColor]),
+            icon: NCUtility().loadImage(named: "square.and.arrow.up", colors: [.menuIconTint]),
             order: order,
             action: { _ in
                 let controller = viewController.mainTabBarController
@@ -175,7 +168,7 @@ extension NCMenuAction {
             title: isAnyOffline ? NSLocalizedString("_remove_available_offline_", comment: "") : NSLocalizedString("_set_available_offline_", comment: ""),
             icon: NCUtility().loadImage(
                 named: isAnyOffline ? "synced" : "offline",
-                colors: !isAnyOffline ? [NCBrandColor.shared.iconImageColor] : nil
+                colors: !isAnyOffline ? [.menuIconTint] : nil
             ),
             order: order,
             action: { _ in
@@ -201,7 +194,7 @@ extension NCMenuAction {
     static func moveOrCopyAction(selectedMetadatas: [tableMetadata], viewController: UIViewController, indexPath: [IndexPath], order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
         NCMenuAction(
             title: NSLocalizedString("_move_or_copy_", comment: ""),
-            icon: NCUtility().loadImage(named: "moveOrCopy", colors: [NCBrandColor.shared.iconImageColor]),
+            icon: NCUtility().loadImage(named: "moveOrCopy", colors: [.menuIconTint]),
             order: order,
             action: { _ in
                 let controller = viewController.mainTabBarController
@@ -222,7 +215,7 @@ extension NCMenuAction {
         let imageName = !shouldLock ? "lock_open" : "lock"
         return NCMenuAction(
             title: NSLocalizedString(titleKey, comment: ""),
-            icon: NCUtility().loadImage(named: imageName, colors: [NCBrandColor.shared.iconImageColor]),
+            icon: NCUtility().loadImage(named: imageName, colors: [.menuIconTint]),
             order: order,
             action: { _ in
                 for metadata in metadatas where metadata.lock != shouldLock {
@@ -232,4 +225,10 @@ extension NCMenuAction {
             }
         )
     }
+}
+
+extension UIColor {
+	static var menuIconTint: UIColor {
+		NCBrandColor.shared.menuIconColor
+	}
 }

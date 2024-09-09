@@ -40,7 +40,7 @@ extension AppDelegate {
 
         actions.append(
             NCMenuAction(
-                title: NSLocalizedString("_upload_photos_videos_", comment: ""), icon: utility.loadImage(named: "upload_photos_or_videos", colors: [NCBrandColor.shared.iconImageColor]), action: { _ in
+                title: NSLocalizedString("_upload_photos_videos_", comment: ""), icon: utility.loadImage(named: "upload_photos_or_videos", colors: [.menuIconTint]), action: { _ in
                     NCAskAuthorization().askAuthorizationPhotoLibrary(viewController: controller) { hasPermission in
                         if hasPermission {NCPhotosPickerViewController(controller: controller, maxSelectedAssets: 0, singleSelectedMode: false)
                         }
@@ -51,7 +51,7 @@ extension AppDelegate {
 
         actions.append(
             NCMenuAction(
-                title: NSLocalizedString("_upload_file_", comment: ""), icon: utility.loadImage(named: "uploadFile", colors: [NCBrandColor.shared.iconImageColor]), action: { _ in
+                title: NSLocalizedString("_upload_file_", comment: ""), icon: utility.loadImage(named: "uploadFile", colors: [.menuIconTint]), action: { _ in
                     controller.documentPickerViewController = NCDocumentPickerViewController(controller: controller, isViewerMedia: false, allowsMultipleSelection: true)
                 }
             )
@@ -59,7 +59,7 @@ extension AppDelegate {
 
         actions.append(
             NCMenuAction(
-                title: NSLocalizedString("_scans_document_", comment: ""), icon: utility.loadImage(named: "scan", colors: [NCBrandColor.shared.iconImageColor]), action: { _ in
+                title: NSLocalizedString("_scans_document_", comment: ""), icon: utility.loadImage(named: "scan", colors: [.menuIconTint]), action: { _ in
                     NCDocumentCamera.shared.openScannerDocument(viewController: controller)
                 }
             )
@@ -70,7 +70,7 @@ extension AppDelegate {
         }
 
         let titleCreateFolder = isDirectoryE2EE ? NSLocalizedString("_create_folder_e2ee_", comment: "") : NSLocalizedString("_create_folder_", comment: "")
-        let imageCreateFolder = isDirectoryE2EE ? NCImageCache.images.folderEncrypted : NCImageCache.images.folder
+		let imageCreateFolder = (isDirectoryE2EE ? NCImageCache.images.folderEncrypted : NCImageCache.images.folder).image(color: .menuIconTint)
         actions.append(
             NCMenuAction(title: titleCreateFolder,
                          icon: imageCreateFolder, action: { _ in
@@ -100,7 +100,7 @@ extension AppDelegate {
             let directEditingCreator = directEditingCreators!.first(where: { $0.editor == NCGlobal.shared.editorOnlyoffice && $0.identifier == NCGlobal.shared.onlyofficeDocx})!
             actions.append(
                 NCMenuAction(
-                    title: NSLocalizedString("_create_new_document_", comment: ""), icon: utility.loadImage(named: "doc.text", colors: [NCBrandColor.shared.documentIconColor]), action: { _ in
+                    title: NSLocalizedString("_create_new_document_", comment: ""), icon: utility.loadImage(named: "doc.text", colors: [.menuIconTint]), action: { _ in
                         let createDocument = NCCreateDocument()
 
                         Task {
@@ -119,7 +119,7 @@ extension AppDelegate {
             let directEditingCreator = directEditingCreators!.first(where: { $0.editor == NCGlobal.shared.editorOnlyoffice && $0.identifier == NCGlobal.shared.onlyofficeXlsx})!
             actions.append(
                 NCMenuAction(
-                    title: NSLocalizedString("_create_new_spreadsheet_", comment: ""), icon: utility.loadImage(named: "tablecells", colors: [NCBrandColor.shared.spreadsheetIconColor]), action: { _ in
+                    title: NSLocalizedString("_create_new_spreadsheet_", comment: ""), icon: utility.loadImage(named: "tablecells", colors: [.menuIconTint]), action: { _ in
                         let createDocument = NCCreateDocument()
 
                         Task {
@@ -138,7 +138,7 @@ extension AppDelegate {
             let directEditingCreator = directEditingCreators!.first(where: { $0.editor == NCGlobal.shared.editorOnlyoffice && $0.identifier == NCGlobal.shared.onlyofficePptx})!
             actions.append(
                 NCMenuAction(
-                    title: NSLocalizedString("_create_new_presentation_", comment: ""), icon: utility.loadImage(named: "play.rectangle", colors: [NCBrandColor.shared.presentationIconColor]), action: { _ in
+                    title: NSLocalizedString("_create_new_presentation_", comment: ""), icon: utility.loadImage(named: "play.rectangle", colors: [.menuIconTint]), action: { _ in
                         let createDocument = NCCreateDocument()
 
                         Task {
@@ -157,7 +157,7 @@ extension AppDelegate {
             if NextcloudKit.shared.isNetworkReachable() && !isDirectoryE2EE {
                 actions.append(
                     NCMenuAction(
-                        title: NSLocalizedString("_create_new_document_", comment: ""), icon: utility.loadImage(named: "doc.richtext", colors: [NCBrandColor.shared.documentIconColor]), action: { _ in
+                        title: NSLocalizedString("_create_new_document_", comment: ""), icon: utility.loadImage(named: "doc.richtext", colors: [.menuIconTint]), action: { _ in
                             let createDocument = NCCreateDocument()
 
                             Task {
@@ -173,7 +173,7 @@ extension AppDelegate {
 
                 actions.append(
                     NCMenuAction(
-                        title: NSLocalizedString("_create_new_spreadsheet_", comment: ""), icon: utility.loadImage(named: "tablecells", colors: [NCBrandColor.shared.spreadsheetIconColor]), action: { _ in
+                        title: NSLocalizedString("_create_new_spreadsheet_", comment: ""), icon: utility.loadImage(named: "tablecells", colors: [.menuIconTint]), action: { _ in
                             let createDocument = NCCreateDocument()
 
                             Task {
@@ -189,7 +189,7 @@ extension AppDelegate {
 
                 actions.append(
                     NCMenuAction(
-                        title: NSLocalizedString("_create_new_presentation_", comment: ""), icon: utility.loadImage(named: "play.rectangle", colors: [NCBrandColor.shared.presentationIconColor]), action: { _ in
+                        title: NSLocalizedString("_create_new_presentation_", comment: ""), icon: utility.loadImage(named: "play.rectangle", colors: [.menuIconTint]), action: { _ in
                             let createDocument = NCCreateDocument()
 
                             Task {
