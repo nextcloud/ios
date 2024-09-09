@@ -4,6 +4,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
+        <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -61,12 +62,17 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6tp-bh-Z9k" userLabel="QRCode">
-                                <rect key="frame" x="182" y="567.5" width="50" height="50"/>
+                            <button contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6tp-bh-Z9k" userLabel="QRCode">
+                                <rect key="frame" x="179.5" y="567.5" width="55" height="50"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="50" id="3hb-Ez-hOz"/>
+                                    <constraint firstAttribute="width" constant="55" id="3hb-Ez-hOz"/>
                                     <constraint firstAttribute="height" constant="50" id="OLT-tb-4Qb"/>
                                 </constraints>
+                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <state key="normal">
+                                    <imageReference key="image" image="qrcode.viewfinder" catalog="system" symbolScale="default"/>
+                                    <preferredSymbolConfiguration key="preferredSymbolConfiguration" configurationType="pointSize" pointSize="50" scale="large"/>
+                                </state>
                                 <connections>
                                     <action selector="actionQRCode:" destination="yj9-jo-WIn" eventType="touchUpInside" id="qwL-rG-ead"/>
                                 </connections>
@@ -169,6 +175,7 @@
     </scenes>
     <resources>
         <image name="arrowtriangle.down.circle" catalog="system" width="128" height="123"/>
+        <image name="qrcode.viewfinder" catalog="system" width="128" height="115"/>
         <systemColor name="tintColor">
             <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>

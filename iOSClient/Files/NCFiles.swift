@@ -172,7 +172,7 @@ class NCFiles: NCCollectionViewCommon {
         }
     }
 
-    private func networkReadFolder(completion: @escaping(_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ metadatasDifferentCount: Int, _ metadatasModified: Int, _ error: NKError) -> Void) {
+    private func networkReadFolder(completion: @escaping (_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ metadatasDifferentCount: Int, _ metadatasModified: Int, _ error: NKError) -> Void) {
         var tableDirectory: tableDirectory?
 
         NCNetworking.shared.readFile(serverUrlFileName: serverUrl, account: appDelegate.account) { task in
