@@ -625,6 +625,8 @@
 "_good_afternoon_"              = "Good afternoon";
 "_good_evening_"                = "Good evening";
 "_good_night_"                  = "Good night";
+"_servers_"                     = "Servers";
+"_select_server_"               = "Please select a server...";
 
 // MARK: Share
 

@@ -169,6 +169,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         handleLoginWithAppConfig()
         baseUrlTextField.text = urlBase
 
+        enforceServersButton.setTitle(NSLocalizedString("_select_server_", comment: ""), for: .normal)
+
         let enforceServers = NCBrandOptions.shared.enforce_servers
 
         if !enforceServers.isEmpty {
@@ -184,7 +186,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             }
 
             enforceServersButton.layer.cornerRadius = 10
-            enforceServersButton.menu = .init(title: "Servers", children: actions)
+            enforceServersButton.menu = .init(title: NSLocalizedString("_servers_", comment: ""), children: actions)
             enforceServersButton.showsMenuAsPrimaryAction = true
 
             enforceServersButton.configuration?.titleTextAttributesTransformer =
