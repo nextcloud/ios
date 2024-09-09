@@ -153,7 +153,6 @@ class NCViewerMediaPage: UIViewController {
     }
 
     deinit {
-
         timerAutoHide?.invalidate()
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterEnableSwipeGesture), object: nil)
@@ -190,7 +189,6 @@ class NCViewerMediaPage: UIViewController {
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
-
         if viewerMediaScreenMode == .normal {
             return .default
         } else {
