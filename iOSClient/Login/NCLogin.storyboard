@@ -93,7 +93,7 @@
                                 <inset key="titleEdgeInsets" minX="10" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                 <state key="normal" title="Please select a server... "/>
-                                <buttonConfiguration key="configuration" style="tinted" title="Please select a server... ">
+                                <buttonConfiguration key="configuration" style="tinted" title="Server">
                                     <fontDescription key="titleFontDescription" type="system" pointSize="13"/>
                                 </buttonConfiguration>
                             </button>

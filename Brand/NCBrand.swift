@@ -71,10 +71,8 @@ let userAgent: String = {
     var disable_mobileconfig: Bool = false
     var disable_show_more_nextcloud_apps_in_settings: Bool = false
     var doNotAskPasscodeAtStartup: Bool = false
-    var enforce_servers: [(name: String, url: String)] = [
-        (name: "Name 1", url: "https://cloud.nextcloud.com"),
-        (name: "Name 2", url: "https://cloud.nextcloud.com"),
-    ]
+
+    var enforce_servers: [(name: String, url: String)] = []
 
     // Internal option behaviour
     var cleanUpDay: Int = 0                                                        // Set default "Delete, in the cache, all files older than" possible days value are: 0, 1, 7, 30, 90, 180, 365
