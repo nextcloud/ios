@@ -102,6 +102,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         collectionView.backgroundColor = .systemBackground
 
         buttonCancel.title = NSLocalizedString("_cancel_", comment: "")
+		buttonCancel.tintColor = UIColor(named: "SelectToolbar/CancelTint")
         bottomContraint?.constant = window?.rootViewController?.view.safeAreaInsets.bottom ?? 0
 
         // Type of command view
@@ -563,10 +564,10 @@ extension NCSelect {
 class NCSelectCommandView: UIView {
 
     @IBOutlet weak var separatorView: UIView!
-    @IBOutlet weak var createFolderButton: UIButton?
-    @IBOutlet weak var selectButton: UIButton?
-    @IBOutlet weak var copyButton: UIButton?
-    @IBOutlet weak var moveButton: UIButton?
+    @IBOutlet weak var createFolderButton: CopyMoveDialogButton?
+    @IBOutlet weak var selectButton: CopyMoveDialogButton?
+    @IBOutlet weak var copyButton: CopyMoveDialogButton?
+    @IBOutlet weak var moveButton: CopyMoveDialogButton?
     @IBOutlet weak var overwriteSwitch: UISwitch?
     @IBOutlet weak var overwriteLabel: UILabel?
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
@@ -582,35 +583,20 @@ class NCSelectCommandView: UIView {
         overwriteSwitch?.onTintColor = NCBrandColor.shared.brandElement
         overwriteLabel?.text = NSLocalizedString("_overwrite_", comment: "")
 
-        selectButton?.layer.cornerRadius = 15
-        selectButton?.layer.masksToBounds = true
-        selectButton?.setTitle(NSLocalizedString("_select_", comment: ""), for: .normal)
-        selectButton?.backgroundColor = NCBrandColor.shared.brandElement
-        selectButton?.setTitleColor(UIColor(white: 1, alpha: 0.3), for: .highlighted)
-        selectButton?.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
-
-        createFolderButton?.layer.cornerRadius = 15
-        createFolderButton?.layer.masksToBounds = true
-        createFolderButton?.setTitle(NSLocalizedString("_create_folder_", comment: ""), for: .normal)
-        createFolderButton?.backgroundColor = NCBrandColor.shared.brandElement
-        createFolderButton?.setTitleColor(UIColor(white: 1, alpha: 0.3), for: .highlighted)
-        createFolderButton?.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
-
-        copyButton?.layer.cornerRadius = 15
-        copyButton?.layer.masksToBounds = true
-        copyButton?.setTitle(NSLocalizedString("_copy_", comment: ""), for: .normal)
-        copyButton?.backgroundColor = NCBrandColor.shared.brandElement
-        copyButton?.setTitleColor(UIColor(white: 1, alpha: 0.3), for: .highlighted)
-        copyButton?.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
-
-        moveButton?.layer.cornerRadius = 15
-        moveButton?.layer.masksToBounds = true
-        moveButton?.setTitle(NSLocalizedString("_move_", comment: ""), for: .normal)
-        moveButton?.backgroundColor = NCBrandColor.shared.brandElement
-        moveButton?.setTitleColor(UIColor(white: 1, alpha: 0.3), for: .highlighted)
-        moveButton?.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
+		setupButton(button: selectButton, titleKey: "_select_")
+		setupButton(button: createFolderButton, titleKey: "_create_folder_")
+		setupButton(button: copyButton, titleKey: "_copy_")
+		setupButton(button: moveButton, titleKey: "_move_")
     }
 
+	private func setupButton(button: UIButton?, titleKey: String) {
+		button?.layer.cornerRadius = 15
+		button?.layer.masksToBounds = true
+		button?.setTitle(NSLocalizedString(titleKey, comment: ""), for: .normal)
+		button?.setTitleColor(.white, for: .highlighted)
+		button?.setTitleColor(.white, for: .normal)
+	}
+	
     @IBAction func createFolderButtonPressed(_ sender: UIButton) {
         selectView?.createFolderButtonPressed(sender)
     }

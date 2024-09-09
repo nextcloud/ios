@@ -26,11 +26,14 @@ import NextcloudKit
 
 class NCMainTabBar: UITabBar {
 
-    private var fillColor: UIColor!
     private var shapeLayer: CALayer?
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private let centerButtonY: CGFloat = -28
 
+	private var centerButtonColor: UIColor? {
+		UIColor(named: "Tabbar/FabButton")
+	}
+	
     public var menuRect: CGRect {
         let tabBarItemWidth = Int(self.frame.size.width) / (self.items?.count ?? 0)
         let rect = CGRect(x: 0, y: -5, width: tabBarItemWidth, height: Int(self.frame.size.height))
@@ -51,17 +54,7 @@ class NCMainTabBar: UITabBar {
     @objc func changeTheming() {
         tintColor = NCBrandColor.shared.brandElement
         if let centerButton = self.viewWithTag(99) {
-            centerButton.backgroundColor = NCBrandColor.shared.brandElement
-        }
-    }
-
-    override var backgroundColor: UIColor? {
-        get {
-            return self.fillColor
-        }
-        set {
-            fillColor = newValue
-            self.setNeedsDisplay()
+            centerButton.backgroundColor = centerButtonColor
         }
     }
 
@@ -170,7 +163,7 @@ class NCMainTabBar: UITabBar {
 
         centerButton.setTitle("", for: .normal)
         centerButton.setImage(imagePlus, for: .normal)
-        centerButton.backgroundColor = NCBrandColor.shared.brandElement
+        centerButton.backgroundColor = centerButtonColor
         centerButton.tintColor = UIColor.white
         centerButton.tag = 99
         centerButton.accessibilityLabel = NSLocalizedString("_accessibility_add_upload_", comment: "")

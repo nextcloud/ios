@@ -143,6 +143,10 @@ class NCBrandColor: NSObject {
     var themingColorElement: String = ""
     var themingColorText: String = ""
 
+	var menuIconColor: UIColor {
+		iconImageColor
+	}
+
     let iconImageColor: UIColor = .label
     let iconImageColor2: UIColor = .secondaryLabel
     let iconImageMultiColors: [UIColor] = [.secondaryLabel, .label]

@@ -26,6 +26,10 @@ import UIKit
 
 class NCBrandColorIONOS: NCBrandColor {
     
+	override var menuIconColor: UIColor {
+		UIColor(named: "FileMenu/Icon") ?? iconImageColor
+	}
+	
     override init() {
         super.init()
     }
