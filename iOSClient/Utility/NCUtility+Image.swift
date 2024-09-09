@@ -338,23 +338,6 @@ extension NCUtility {
         }
     }
 
-    func getSize1024(width: Int, height: Int) -> CGSize {
-        var width1024: Double = 1024
-        var heigh1024: Double = 1024
-
-        if width > 0, height > 0 {
-            var ratio: Double = 0
-            if width >= height {
-                ratio = Double(width) / Double(height)
-                heigh1024 = width1024 / ratio
-            } else {
-                ratio = Double(height) / Double(width)
-                width1024 = heigh1024 / ratio
-            }
-        }
-        return CGSize(width: width1024, height: heigh1024)
-    }
-
     func getUserStatus(userIcon: String?, userStatus: String?, userMessage: String?) -> (statusImage: UIImage?, statusMessage: String, descriptionMessage: String) {
         var statusImage: UIImage?
         var statusMessage: String = ""
