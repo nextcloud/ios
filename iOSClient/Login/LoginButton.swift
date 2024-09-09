@@ -13,7 +13,7 @@ class LoginButton: UIButton {
 	override open var isHighlighted: Bool {
 		didSet {
 			super.isHighlighted = isHighlighted
-			backgroundColor = isHighlighted ? UIColor(named: "Launch/LoginButtonBackgroundHighlighted") : .white
+			backgroundColor = isHighlighted ? UIColor(named: "Launch/LoginButtonBackgroundHighlighted") : UIColor(named: "Launch/LoginButtonBackgroundNormal")
 		}
 	}
 
