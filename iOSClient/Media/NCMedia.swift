@@ -236,7 +236,8 @@ class NCMedia: UIViewController {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String else { return }
 
-        if let metadata = database.getMetadataFromOcId(ocId), metadata.isImageOrVideo {
+        if let metadata = database.getMetadataFromOcId(ocId),
+           metadata.isImageOrVideo {
             self.dataSource.addMetadata(metadata)
             self.collectionViewReloadData()
         }
