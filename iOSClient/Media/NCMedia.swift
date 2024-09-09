@@ -60,7 +60,7 @@ class NCMedia: UIViewController {
     var timeIntervalSearchNewMedia: TimeInterval = 2.0
     var timerSearchNewMedia: Timer?
     let insetsTop: CGFloat = 75
-    let maxImageGrid: CGFloat = 7
+    let maxImageGrid: CGFloat = 8
     var columnPhoto: Int = 0
     let livePhotoImage = NCUtility().loadImage(named: "livephoto", colors: [.white])
     let playImage = NCUtility().loadImage(named: "play.fill", colors: [.white])
