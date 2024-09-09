@@ -32,7 +32,7 @@
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HQd-pF-3cE">
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HQd-pF-3cE" customClass="LoginButton" customModule="Nextcloud" customModuleProvider="target">
                                         <rect key="frame" x="43" y="693.66666666666663" width="344" height="48"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
@@ -53,16 +53,22 @@
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
+                                    <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="048-Uj-QCi">
+                                        <rect key="frame" x="196.66666666666666" y="447.66666666666669" width="37" height="37"/>
+                                        <color key="color" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </activityIndicatorView>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstItem="HQd-pF-3cE" firstAttribute="centerX" secondItem="hwa-hT-QjM" secondAttribute="centerX" id="4sQ-aN-HDA"/>
                                     <constraint firstItem="5fY-iq-Tv0" firstAttribute="top" secondItem="HQd-pF-3cE" secondAttribute="bottom" constant="40" id="6Z8-DQ-07h"/>
+                                    <constraint firstItem="048-Uj-QCi" firstAttribute="centerX" secondItem="hwa-hT-QjM" secondAttribute="centerX" id="7TG-TY-4Ou"/>
                                     <constraint firstAttribute="trailingMargin" secondItem="ySx-9E-GUK" secondAttribute="trailing" constant="10" id="F9S-a8-SDX"/>
                                     <constraint firstItem="O7g-q0-SHY" firstAttribute="centerX" secondItem="hwa-hT-QjM" secondAttribute="centerXWithinMargins" id="G3n-3t-0Z4"/>
                                     <constraint firstItem="HQd-pF-3cE" firstAttribute="width" secondItem="hwa-hT-QjM" secondAttribute="width" multiplier="0.8" priority="750" id="ICF-Pm-rYI"/>
                                     <constraint firstItem="O7g-q0-SHY" firstAttribute="centerY" secondItem="hwa-hT-QjM" secondAttribute="centerYWithinMargins" multiplier="0.3" id="KvX-vV-wBl"/>
                                     <constraint firstItem="HQd-pF-3cE" firstAttribute="centerY" secondItem="hwa-hT-QjM" secondAttribute="centerYWithinMargins" multiplier="1.5" id="N5W-JR-rNk"/>
+                                    <constraint firstItem="048-Uj-QCi" firstAttribute="centerY" secondItem="hwa-hT-QjM" secondAttribute="centerY" id="OM7-bz-e1C"/>
                                     <constraint firstAttribute="trailing" secondItem="5fY-iq-Tv0" secondAttribute="trailing" constant="10" id="cEP-rs-Tcj"/>
                                     <constraint firstItem="5fY-iq-Tv0" firstAttribute="leading" secondItem="hwa-hT-QjM" secondAttribute="leading" constant="10" id="j1g-YM-IiX"/>
                                     <constraint firstItem="ySx-9E-GUK" firstAttribute="top" secondItem="O7g-q0-SHY" secondAttribute="bottom" constant="100" id="oLc-50-Cf4"/>
@@ -87,6 +93,7 @@
                         <outlet property="lblWelcome" destination="ySx-9E-GUK" id="K4B-id-MwV"/>
                         <outlet property="loginButton" destination="HQd-pF-3cE" id="XOc-dS-QZ8"/>
                         <outlet property="loginContentView" destination="hwa-hT-QjM" id="PdD-gp-Lmt"/>
+                        <outlet property="spinner" destination="048-Uj-QCi" id="nLi-TF-b3q"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dCU-1X-uQw" userLabel="First Responder" sceneMemberID="firstResponder"/>

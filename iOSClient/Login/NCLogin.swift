@@ -33,6 +33,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 	@IBOutlet weak var lblWelcome: UILabel!
 	@IBOutlet weak var lblDescription: UILabel!
 	@IBOutlet weak var loginContentView: UIView!
+	@IBOutlet weak var spinner: UIActivityIndicatorView!
 	
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private var textColor: UIColor = .white
@@ -177,6 +178,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     }
 
     @IBAction func actionButtonLogin(_ sender: Any) {
+		spinner.startAnimating()
         NCNetworking.shared.p12Data = nil
         NCNetworking.shared.p12Password = nil
         login()
@@ -215,28 +217,30 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     func isUrlValid(url: String, user: String? = nil) {
         loginButton.isEnabled = false
-        NextcloudKit.shared.getServerStatus(serverUrl: url) { serverInfoResult in
+		NextcloudKit.shared.getServerStatus(serverUrl: url) { [weak self] serverInfoResult in
             switch serverInfoResult {
             case .success(let serverInfo):
                 if let host = URL(string: url)?.host {
                     NCNetworking.shared.writeCertificate(host: host)
                 }
                 NextcloudKit.shared.getLoginFlowV2(serverUrl: url) { token, endpoint, login, _, error in
-                    self.loginButton.isEnabled = true
+					self?.spinner.stopAnimating()
+                    self?.loginButton.isEnabled = true
                     // Login Flow V2
                     if error == .success, let token, let endpoint, let login {
-						var loginPoll = NCLoginPoll(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login)
+						let loginPoll = NCLoginPoll(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login)
 						let vc = UIHostingController(rootView: loginPoll)
 						vc.modalPresentationStyle = .fullScreen
-						self.present(vc, animated: true)
+						self?.present(vc, animated: true)
                     } else if serverInfo.versionMajor < NCGlobal.shared.nextcloudVersion12 { // No login flow available
                         let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_webflow_not_available_", comment: ""), preferredStyle: .alert)
                         alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-                        self.present(alertController, animated: true, completion: { })
+                        self?.present(alertController, animated: true, completion: { })
                     }
                 }
             case .failure(let error):
-                self.loginButton.isEnabled = true
+				self?.spinner.stopAnimating()
+                self?.loginButton.isEnabled = true
                 if error.errorCode == NSURLErrorServerCertificateUntrusted {
                     let alertController = UIAlertController(title: NSLocalizedString("_ssl_certificate_untrusted_", comment: ""), message: NSLocalizedString("_connect_server_anyway_", comment: ""), preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { _ in
@@ -251,14 +255,14 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                             if let host = URL(string: url)?.host {
                                 viewController.host = host
                             }
-                            self.present(navigationController, animated: true)
+                            self?.present(navigationController, animated: true)
                         }
                     }))
-                    self.present(alertController, animated: true)
+                    self?.present(alertController, animated: true)
                 } else {
                     let alertController = UIAlertController(title: NSLocalizedString("_connection_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-                    self.present(alertController, animated: true, completion: { })
+                    self?.present(alertController, animated: true, completion: { })
                 }
             }
         }
