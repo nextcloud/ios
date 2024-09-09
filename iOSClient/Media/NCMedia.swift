@@ -234,9 +234,10 @@ class NCMedia: UIViewController {
 
     @objc func uploadedFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
+              let error = userInfo["error"] as? NKError,
               let ocId = userInfo["ocId"] as? String else { return }
 
-        if let metadata = database.getMetadataFromOcId(ocId),
+        if error == .success, let metadata = database.getMetadataFromOcId(ocId),
            metadata.isImageOrVideo {
             self.dataSource.addMetadata(metadata)
             self.collectionViewReloadData()
