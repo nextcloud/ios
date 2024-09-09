@@ -267,7 +267,7 @@ extension tableMetadata {
     }
 
     var hasPreviewBorder: Bool {
-        !isImage && !isAudioOrVideo && hasPreview && NCUtilityFileSystem().fileProviderStoragePreviewIconExists(ocId, etag: etag)
+        !isImage && !isAudioOrVideo && hasPreview && NCUtilityFileSystem().fileProviderStorageImageExists(ocId, etag: etag, ext: NCGlobal.shared.previewExt1024)
     }
 
     var isAvailableEditorView: Bool {
@@ -615,7 +615,7 @@ extension NCManageDatabase {
     }
 
     func setMetadataEtagResource(ocId: String, etagResource: String?) {
-        guard let etagResource = etagResource else { return }
+        guard let etagResource else { return }
 
         do {
             let realm = try Realm()

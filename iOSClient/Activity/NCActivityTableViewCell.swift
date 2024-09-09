@@ -134,9 +134,7 @@ extension NCActivityTableViewCell: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell: NCActivityCollectionViewCell = collectionView.dequeueReusableCell(withReuseIdentifier: "collectionCell", for: indexPath) as? NCActivityCollectionViewCell else {
-            return UICollectionViewCell()
-        }
+        let cell: NCActivityCollectionViewCell = (collectionView.dequeueReusableCell(withReuseIdentifier: "collectionCell", for: indexPath) as? NCActivityCollectionViewCell)!
 
         cell.imageView.image = nil
         cell.indexPath = indexPath
@@ -221,20 +219,19 @@ class NCOperationDownloadThumbnailActivity: ConcurrentOperation {
         guard !isCancelled else { return self.finish() }
 
         NextcloudKit.shared.downloadPreview(fileId: fileId,
-                                            fileNamePreviewLocalPath: fileNamePreviewLocalPath,
-                                            account: account) { _, imagePreview, _, _, _, error in
-            if error == .success, let imagePreview, let collectionView = self.collectionView {
+                                            account: account) { _, data, _, _, _, error in
+            if error == .success, let data, let collectionView = self.collectionView {
                 for case let cell as NCActivityCollectionViewCell in collectionView.visibleCells {
                     if self.fileId == cell.fileId {
                         UIView.transition(with: cell.imageView,
                                           duration: 0.75,
                                           options: .transitionCrossDissolve,
-                                          animations: { cell.imageView.image = imagePreview },
+                                          animations: { cell.imageView.image = UIImage(data: data) },
                                           completion: nil)
                     }
                 }
             }
             self.finish()
         }
-    }
+            }
 }

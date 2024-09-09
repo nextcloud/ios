@@ -79,12 +79,37 @@ class NCGlobal: NSObject {
     let introLogin: Int                             = 0
     let introSignup: Int                            = 1
 
-    // Avatar & Preview size
+    // Avatar
     //
     let avatarSize: Int                             = 128 * Int(UIScreen.main.scale)
     let avatarSizeRounded: Int                      = 128
-    let sizePreview: Int                            = 1024
-    let sizeIcon: Int                               = 512
+
+    // Preview size
+    //
+    let size1024: CGSize                            = CGSize(width: 1024, height: 1024)
+    let size512: CGSize                             = CGSize(width: 512, height: 512)
+    let size256: CGSize                             = CGSize(width: 256, height: 256)
+    let size128: CGSize                             = CGSize(width: 128, height: 128)
+    // Image extension
+    let previewExt1024                              = ".1024.preview"
+    let previewExt512                               = ".512.preview"
+    let previewExt256                               = ".256.preview"
+    let previewExt128                               = ".128.preview"
+
+    func getSizeExtension(width: CGFloat?) -> String {
+        guard let width else { return previewExt512 }
+
+        switch (width * 3) {
+        case 0...192:
+            return previewExt128
+        case 193...384:
+             return previewExt256
+        case 384...768:
+            return previewExt512
+        default:
+            return previewExt1024
+        }
+    }
 
     // E2EE
     //
@@ -160,11 +185,6 @@ class NCGlobal: NSObject {
     // Rich Workspace
     //
     let fileNameRichWorkspace                       = "Readme.md"
-
-    // Image extension
-    //
-    let storageExtIcon                              = ".small.ico"
-    let storageExtPreview                           = ".preview.ico"
 
     // ContentPresenter
     //

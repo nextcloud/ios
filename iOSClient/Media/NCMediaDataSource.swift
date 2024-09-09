@@ -27,12 +27,12 @@ import NextcloudKit
 extension NCMedia {
     func reloadDataSource() {
         let metadatas = database.getResultsMediaMetadatas(predicate: getPredicate())
-        self.dataSource = NCDataSource(metadatas: metadatas)
+        self.dataSource = NCMediaDataSource(metadatas: metadatas)
         self.collectionViewReloadData()
     }
 
     func collectionViewReloadData() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
             self.collectionView.reloadData()
             self.setTitleDate()
         }
@@ -51,9 +51,9 @@ extension NCMedia {
 
         var lessDate: Date?
         var greaterDate: Date?
-        let firstMetadataDate = dataSource.getResultsMetadatas().first?.date as? Date
-        let lastMetadataDate = dataSource.getResultsMetadatas().last?.date as? Date
-        let countMetadatas = dataSource.getResultsMetadatas().count
+        let firstMetadataDate = dataSource.getMetadatas().first?.date
+        let lastMetadataDate = dataSource.getMetadatas().last?.date
+        let countMetadatas = dataSource.getMetadatas().count
 
         // first date
         let firstCellDate = (visibleCells.first as? NCGridMediaCell)?.date
@@ -124,9 +124,17 @@ extension NCMedia {
         guard let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
             return(lessDate, greaterDate, 0, false, NKError())
         }
-        NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate)")
+        var limit = limit
+
+        if collectionView.visibleCells.count * 2 > limit {
+            limit = collectionView.visibleCells.count * 2
+        }
+
+        NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate) with limit \(limit)")
+
         let options = NKRequestOptions(timeout: timeout, taskDescription: self.taskDescriptionRetrievesProperties, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
         let results = await NCNetworking.shared.searchMedia(path: tableAccount.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: NCKeychain().showHiddenFiles, account: session.account, options: options)
+
         if tableAccount.account != session.account {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "User changed")
             return(lessDate, greaterDate, 0, false, error)
@@ -143,7 +151,7 @@ extension NCMedia {
         }
     }
 
-    private func getPredicate(showAll: Bool = false) -> NSPredicate {
+    internal func getPredicate(showAll: Bool = false) -> NSPredicate {
         guard let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else { return NSPredicate() }
         let startServerUrl = NCUtilityFileSystem().getHomeServer(session: session) + tableAccount.mediaPath
 
@@ -156,5 +164,114 @@ extension NCMedia {
         } else {
             return NSPredicate(format: showBothPredicateMediaString, session.account, startServerUrl)
         }
+    }
+}
+
+// MARK: -
+
+public class NCMediaDataSource: NSObject {
+    public class Metadata: NSObject {
+        let account: String
+        let date: Date
+        let etag: String
+        let etagResource: String
+        let fileId: String
+        let imageSize: CGSize
+        let isImage: Bool
+        let isNotFlaggedAsLivePhotoByServer: Bool
+        let isLivePhoto: Bool
+        let isVideo: Bool
+        let ocId: String
+        let serverUrl: String
+        let user: String
+
+        init(account: String,
+             date: Date,
+             etag: String,
+             fileId: String,
+             etagResource: String,
+             imageSize: CGSize,
+             isImage: Bool,
+             isNotFlaggedAsLivePhotoByServer: Bool,
+             isLivePhoto: Bool,
+             isVideo: Bool,
+             ocId: String,
+             serverUrl: String,
+             user: String) {
+            self.account = account
+            self.date = date
+            self.etag = etag
+            self.fileId = fileId
+            self.etagResource = etagResource
+            self.imageSize = imageSize
+            self.isImage = isImage
+            self.isNotFlaggedAsLivePhotoByServer = isNotFlaggedAsLivePhotoByServer
+            self.isLivePhoto = isLivePhoto
+            self.isVideo = isVideo
+            self.ocId = ocId
+            self.serverUrl = serverUrl
+            self.user = user
+        }
+    }
+
+    private let utilityFileSystem = NCUtilityFileSystem()
+    private let global = NCGlobal.shared
+    private var metadatas: [Metadata] = []
+
+    override init() { super.init() }
+
+    init(metadatas: [tableMetadata]) {
+        super.init()
+        for metadata in metadatas {
+            appendMetadata(metadata)
+        }
+    }
+
+    internal func appendMetadata(_ metadata: tableMetadata) {
+        self.metadatas.append(Metadata(account: metadata.account,
+                                       date: metadata.date as Date,
+                                       etag: metadata.etag,
+                                       fileId: metadata.fileId,
+                                       etagResource: metadata.etagResource,
+                                       imageSize: CGSize(width: metadata.width, height: metadata.height),
+                                       isImage: metadata.classFile == NKCommon.TypeClassFile.image.rawValue,
+                                       isNotFlaggedAsLivePhotoByServer: !metadata.isFlaggedAsLivePhotoByServer,
+                                       isLivePhoto: !metadata.livePhotoFile.isEmpty,
+                                       isVideo: metadata.classFile == NKCommon.TypeClassFile.video.rawValue,
+                                       ocId: metadata.ocId,
+                                       serverUrl: metadata.serverUrl,
+                                       user: metadata.urlBase))
+    }
+
+    // MARK: -
+
+    func removeAll() {
+        self.metadatas.removeAll()
+    }
+
+    func isEmpty() -> Bool {
+        return self.metadatas.isEmpty
+    }
+
+    func getMetadatas() -> [Metadata] {
+        return self.metadatas
+    }
+
+    func getMetadata(indexPath: IndexPath) -> Metadata? {
+        if indexPath.row < self.metadatas.count {
+            return self.metadatas[indexPath.row]
+        }
+        return nil
+    }
+
+    func removeMetadata(_ ocId: [String]) {
+        self.metadatas.removeAll { item in
+            ocId.contains(item.ocId)
+        }
+    }
+
+    func addMetadata(_ metadata: tableMetadata) {
+        removeMetadata([metadata.ocId])
+        appendMetadata(metadata)
     }
 }

@@ -83,8 +83,9 @@ extension NCShareExtension: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath), let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell else {
-            return UICollectionViewCell()
+        let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCListCell)!
+        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else {
+            return cell
         }
 
         cell.fileOcId = metadata.ocId

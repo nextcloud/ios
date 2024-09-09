@@ -59,7 +59,7 @@ class NCCreateDocument: NSObject {
                                                                 session: session,
                                                                 sceneIdentifier: controller.sceneIdentifier)
 
-                    NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+                    NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata])
                 }
             }
 
@@ -80,7 +80,7 @@ class NCCreateDocument: NSObject {
                                                                 session: session,
                                                                 sceneIdentifier: controller.sceneIdentifier)
 
-                    NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+                    NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata])
                 }
             }
         }

@@ -33,7 +33,7 @@ class NCViewer: NSObject {
     private var metadata = tableMetadata()
     private var metadatas: [tableMetadata] = []
 
-    func view(viewController: UIViewController, metadata: tableMetadata, metadatas: [tableMetadata], imageIcon: UIImage?) {
+    func view(viewController: UIViewController, metadata: tableMetadata, metadatas: [tableMetadata], image: UIImage? = nil) {
         self.metadata = metadata
         self.metadatas = metadatas
         let session = NCSession.shared.getSession(account: metadata.account)
@@ -89,7 +89,7 @@ class NCViewer: NSObject {
                    let viewController: NCViewerPDF = UIStoryboard(name: "NCViewerPDF", bundle: nil).instantiateInitialViewController() as? NCViewerPDF {
                     viewController.metadata = metadata
                     viewController.titleView = metadata.fileNameView
-                    viewController.imageIcon = imageIcon
+                    viewController.imageIcon = image
                     navigationController.pushViewController(viewController, animated: true)
                 }
                 return
@@ -105,7 +105,7 @@ class NCViewer: NSObject {
                                let viewController: NCViewerRichDocument = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as? NCViewerRichDocument {
                                 viewController.metadata = metadata
                                 viewController.link = url!
-                                viewController.imageIcon = imageIcon
+                                viewController.imageIcon = image
                                 navigationController.pushViewController(viewController, animated: true)
                             }
                         } else if error != .success {
@@ -117,7 +117,7 @@ class NCViewer: NSObject {
                        let viewController: NCViewerRichDocument = UIStoryboard(name: "NCViewerRichdocument", bundle: nil).instantiateInitialViewController() as? NCViewerRichDocument {
                         viewController.metadata = metadata
                         viewController.link = metadata.url
-                        viewController.imageIcon = imageIcon
+                        viewController.imageIcon = image
                         navigationController.pushViewController(viewController, animated: true)
                     }
                 }
@@ -146,7 +146,7 @@ class NCViewer: NSObject {
                                 viewController.metadata = metadata
                                 viewController.editor = editor
                                 viewController.link = url!
-                                viewController.imageIcon = imageIcon
+                                viewController.imageIcon = image
                                 navigationController.pushViewController(viewController, animated: true)
                             }
                         } else if error != .success {
@@ -159,7 +159,7 @@ class NCViewer: NSObject {
                         viewController.metadata = metadata
                         viewController.editor = editor
                         viewController.link = metadata.url
-                        viewController.imageIcon = imageIcon
+                        viewController.imageIcon = image
                         navigationController.pushViewController(viewController, animated: true)
                     }
                 }

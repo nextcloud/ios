@@ -60,13 +60,13 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         if metadata.directory {
             pushMetadata(metadata)
         } else {
-            let imageIcon = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
+            let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024)
             if !metadata.isDirectoryE2EE, (metadata.isImage || metadata.isAudioOrVideo) {
                 let metadatas = self.dataSource.getResultsMetadatas()
                 let metadatasMedia = metadatas.filter { $0.classFile == NKCommon.TypeClassFile.image.rawValue || $0.classFile == NKCommon.TypeClassFile.video.rawValue || $0.classFile == NKCommon.TypeClassFile.audio.rawValue }
-                return NCViewer().view(viewController: self, metadata: metadata, metadatas: metadatasMedia, imageIcon: imageIcon)
+                return NCViewer().view(viewController: self, metadata: metadata, metadatas: metadatasMedia, image: image)
             } else if metadata.isAvailableEditorView || utilityFileSystem.fileProviderStorageExists(metadata) || metadata.name == NCGlobal.shared.talkName {
-                NCViewer().view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: imageIcon)
+                NCViewer().view(viewController: self, metadata: metadata, metadatas: [metadata], image: image)
             } else if NextcloudKit.shared.isNetworkReachable(),
                       let metadata = database.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                session: NCNetworking.shared.sessionDownload,

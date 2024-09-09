@@ -31,6 +31,7 @@ import Alamofire
 
 class NCUtility: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
+    let global = NCGlobal.shared
 
     func isSimulatorOrTestFlight() -> Bool {
         guard let path = Bundle.main.appStoreReceiptURL?.path else {
@@ -284,7 +285,7 @@ class NCUtility: NSObject {
 
     func removeForbiddenCharacters(_ fileName: String) -> String {
         var fileName = fileName
-        for character in NCGlobal.shared.forbiddenCharacters {
+        for character in global.forbiddenCharacters {
             fileName = fileName.replacingOccurrences(of: character, with: "")
         }
         return fileName

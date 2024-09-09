@@ -31,8 +31,6 @@ class NCGridMediaCell: UICollectionViewCell {
     @IBOutlet weak var imageStatus: UIImageView!
 
     var ocId: String = ""
-    var user: String = ""
-    var indexPath = IndexPath()
     var account: String = ""
     var date: Date?
 
@@ -47,13 +45,10 @@ class NCGridMediaCell: UICollectionViewCell {
     }
 
     func initCell() {
-        imageItem.backgroundColor = .secondarySystemBackground
         imageStatus.image = nil
         imageItem.image = nil
         imageVisualEffect.alpha = 0.4
         imageSelect.image = NCImageCache.shared.getImageCheckedYes()
-        imageVisualEffect.isHidden = true
-        imageSelect.isHidden = true
     }
 
     func selected(_ status: Bool) {

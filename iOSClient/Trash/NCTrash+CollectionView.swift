@@ -56,20 +56,21 @@ extension NCTrash: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let resultTableTrash = datasource?[indexPath.item] else { return NCTrashGridCell() }
         var image: UIImage?
         var cell: NCTrashCellProtocol & UICollectionViewCell
 
         if layoutForView?.layout == NCGlobal.shared.layoutList {
-            guard let listCell = collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCTrashListCell else { return NCTrashListCell() }
+            let listCell = (collectionView.dequeueReusableCell(withReuseIdentifier: "listCell", for: indexPath) as? NCTrashListCell)!
             listCell.delegate = self
             cell = listCell
         } else {
-            guard let gridCell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCTrashGridCell else { return NCTrashGridCell() }
+            let gridCell = (collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCTrashGridCell)!
             gridCell.setButtonMore(image: NCImageCache.shared.getImageButtonMore())
             gridCell.delegate = self
             cell = gridCell
         }
+        guard let resultTableTrash = datasource?[indexPath.item] else { return cell }
+
         cell.imageItem.contentMode = .scaleAspectFit
 
         if resultTableTrash.iconName.isEmpty {
@@ -78,11 +79,11 @@ extension NCTrash: UICollectionViewDataSource {
             image = NCUtility().loadImage(named: resultTableTrash.iconName, useTypeIconFile: true, account: resultTableTrash.account)
         }
 
-        if FileManager().fileExists(atPath: utilityFileSystem.getDirectoryProviderStorageIconOcId(resultTableTrash.fileId, etag: resultTableTrash.fileName)) {
-            image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(resultTableTrash.fileId, etag: resultTableTrash.fileName))
+        if let imageIcon = utility.getImage(ocId: resultTableTrash.fileId, etag: resultTableTrash.fileName, ext: NCGlobal.shared.previewExt512) {
+            image = imageIcon
             cell.imageItem.contentMode = .scaleAspectFill
         } else {
-            if resultTableTrash.hasPreview && !utilityFileSystem.fileProviderStoragePreviewIconExists(resultTableTrash.fileId, etag: resultTableTrash.fileName) {
+            if resultTableTrash.hasPreview {
                 if NCNetworking.shared.downloadThumbnailTrashQueue.operations.filter({ ($0 as? NCOperationDownloadThumbnailTrash)?.fileId == resultTableTrash.fileId }).isEmpty {
                     NCNetworking.shared.downloadThumbnailTrashQueue.addOperation(NCOperationDownloadThumbnailTrash(resultTableTrash: resultTableTrash, fileId: resultTableTrash.fileId, account: session.account, cell: cell, collectionView: collectionView))
                 }

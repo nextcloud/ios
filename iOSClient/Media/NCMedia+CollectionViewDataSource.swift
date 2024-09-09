@@ -30,7 +30,7 @@ extension NCMedia: UICollectionViewDataSource {
         if kind == mediaSectionHeader {
             guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeaderEmptyData", for: indexPath) as? NCSectionFirstHeaderEmptyData else { return NCSectionFirstHeaderEmptyData() }
             header.emptyImage.image = utility.loadImage(named: "photo", colors: [NCBrandColor.shared.getElement(account: session.account)])
-            if loadingTask != nil || imageCache.createMediaCacheInProgress {
+            if loadingTask != nil || imageCache.createCacheInProgress {
                 header.emptyTitle.text = NSLocalizedString("_search_in_progress_", comment: "")
             } else {
                 header.emptyTitle.text = NSLocalizedString("_tutorial_photo_view_", comment: "")
@@ -42,7 +42,7 @@ extension NCMedia: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let numberOfItemsInSection = dataSource.getResultsMetadatas().count
+        let numberOfItemsInSection = dataSource.getMetadatas().count
         if numberOfItemsInSection == 0 || NCNetworking.shared.isOffline {
             selectOrCancelButton.isHidden = true
             menuButton.isHidden = false
@@ -57,13 +57,15 @@ extension NCMedia: UICollectionViewDataSource {
             menuButton.isHidden = false
             activityIndicatorTrailing.constant = 150
         }
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { self.setTitleDate() }
+        self.columnPhoto = getColumnCount()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            self.setTitleDate()
+        }
         return numberOfItemsInSection
     }
 
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let metadata = dataSource.getResultMetadata(indexPath: indexPath) else { return }
+        guard let metadata = dataSource.getMetadata(indexPath: indexPath) else { return }
 
         if !collectionView.indexPathsForVisibleItems.contains(indexPath) {
             for case let operation as NCMediaDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
@@ -76,37 +78,28 @@ extension NCMedia: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridMediaCell,
-              let metadata = dataSource.getResultMetadata(indexPath: indexPath) else {
-            return NCGridMediaCell()
+        let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridMediaCell)!
+        guard let metadata = dataSource.getMetadata(indexPath: indexPath) else {
+            return cell
         }
 
         cell.date = metadata.date as Date
         cell.ocId = metadata.ocId
-        cell.indexPath = indexPath
         cell.account = metadata.account
-        cell.user = metadata.ownerId
-        cell.imageStatus.image = nil
-        cell.imageItem.contentMode = .scaleAspectFill
 
         if let image = getImage(metadata: metadata) {
             cell.imageItem.image = image
-        } else if !metadata.hasPreview {
-            cell.imageItem.backgroundColor = .clear
-            cell.imageItem.contentMode = .center
-            if metadata.isImage {
-                cell.imageItem.image = photoImage
-            } else {
-                cell.imageItem.image = videoImage
-            }
+        } else {
+            cell.imageItem.image = nil
         }
 
         // Convert OLD Live Photo
-        if NCCapabilities.shared.getCapabilities(account: metadata.account).isLivePhotoServerAvailable, metadata.isLivePhoto, metadata.isNotFlaggedAsLivePhotoByServer {
-            NCNetworking.shared.convertLivePhoto(metadata: metadata)
+        if NCCapabilities.shared.getCapabilities(account: metadata.account).isLivePhotoServerAvailable, metadata.isLivePhoto, metadata.isNotFlaggedAsLivePhotoByServer,
+           let metadata = database.getMetadataFromOcId(metadata.ocId) {
+            // NCNetworking.shared.convertLivePhoto(metadata: metadata)
         }
 
-        if metadata.isAudioOrVideo {
+        if metadata.isVideo {
            cell.imageStatus.image = playImage
         } else if metadata.isLivePhoto {
             cell.imageStatus.image = livePhotoImage

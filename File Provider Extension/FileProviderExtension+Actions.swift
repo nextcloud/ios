@@ -157,8 +157,6 @@ extension FileProviderExtension {
                 } else {
                     let itemIdentifier = self.providerUtility.getItemIdentifier(metadata: metadata)
                     self.providerUtility.moveFile(self.utilityFileSystem.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: fileNameFrom), toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: itemName))
-                    self.providerUtility.moveFile(self.utilityFileSystem.getDirectoryProviderStoragePreviewOcId(itemIdentifier.rawValue, etag: metadata.etag), toPath: self.utilityFileSystem.getDirectoryProviderStoragePreviewOcId(itemIdentifier.rawValue, etag: metadata.etag))
-                    self.providerUtility.moveFile(self.utilityFileSystem.getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, etag: metadata.etag), toPath: self.utilityFileSystem.getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, etag: metadata.etag))
                     self.database.setLocalFile(ocId: ocId, fileName: itemName)
                 }
 

@@ -43,7 +43,7 @@ class NCMedia: UIViewController {
     let utility = NCUtility()
     let database = NCManageDatabase.shared
     let imageCache = NCImageCache.shared
-    var dataSource = NCDataSource()
+    var dataSource = NCMediaDataSource()
     var serverUrl = ""
     let refreshControl = UIRefreshControl()
     var loadingTask: Task<Void, any Error>?
@@ -61,14 +61,15 @@ class NCMedia: UIViewController {
     var timerSearchNewMedia: Timer?
     let insetsTop: CGFloat = 75
     let maxImageGrid: CGFloat = 7
+    var columnPhoto: Int = 0
     let livePhotoImage = NCUtility().loadImage(named: "livephoto", colors: [.white])
     let playImage = NCUtility().loadImage(named: "play.fill", colors: [.white])
     var photoImage = UIImage()
     var videoImage = UIImage()
 
-    let showAllPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload')"
-    let showBothPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
-    let showOnlyPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND classFile == %@ AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
+    let showAllPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND hasPreview == true AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload')"
+    let showBothPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND hasPreview == true AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
+    let showOnlyPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND hasPreview == true AND classFile == %@ AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
 
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: tabBarController)
@@ -205,7 +206,7 @@ class NCMedia: UIViewController {
 
     func startTimer() {
         // don't start if media chage is in progress
-        if imageCache.createMediaCacheInProgress {
+        if imageCache.createCacheInProgress {
             return
         }
         timerSearchNewMedia?.invalidate()
@@ -216,13 +217,15 @@ class NCMedia: UIViewController {
 
     @objc func deleteFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? [String],
               let error = userInfo["error"] as? NKError else { return }
+
+        dataSource.removeMetadata(ocId)
+        self.collectionViewReloadData()
 
         if error != .success {
             NCContentPresenter().showError(error: error)
         }
-
-        self.reloadDataSource()
     }
 
     @objc func enterForeground(_ notification: NSNotification) {
@@ -234,7 +237,8 @@ class NCMedia: UIViewController {
               let ocId = userInfo["ocId"] as? String else { return }
 
         if let metadata = database.getMetadataFromOcId(ocId), metadata.isImageOrVideo {
-            self.reloadDataSource()
+            self.dataSource.addMetadata(metadata)
+            self.collectionViewReloadData()
         }
     }
 
@@ -248,6 +252,7 @@ class NCMedia: UIViewController {
         }
 
         setEditMode(false)
+
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             self.reloadDataSource()
             self.searchMediaUI()
@@ -264,6 +269,7 @@ class NCMedia: UIViewController {
         }
 
         setEditMode(false)
+
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             self.reloadDataSource()
             self.searchMediaUI()
@@ -272,20 +278,23 @@ class NCMedia: UIViewController {
 
     // MARK: - Image
 
-    func getImage(metadata: tableMetadata) -> UIImage? {
-        let fileNamePathPreview = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
-
-        if let image = imageCache.getPreviewImageCache(ocId: metadata.ocId, etag: metadata.etag) {
-            return image
-        } else if FileManager().fileExists(atPath: fileNamePathPreview), let image = UIImage(contentsOfFile: fileNamePathPreview) {
-            imageCache.addPreviewImageCache(metadata: metadata, image: image)
-            return image
-        } else if metadata.hasPreview && metadata.status == NCGlobal.shared.metadataStatusNormal,
-                  (!utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag)),
-                  NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
-            NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnail(metadata: metadata, collectioView: self.collectionView, delegate: self))
+    func getImage(metadata: NCMediaDataSource.Metadata, width: CGFloat? = nil) -> UIImage? {
+        var returnImage: UIImage?
+        var width = width
+        if width == nil {
+            width = self.collectionView.frame.size.width / CGFloat(self.columnPhoto)
         }
-        return nil
+        let ext = NCGlobal.shared.getSizeExtension(width: width)
+
+        if let image = imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
+            returnImage = image
+        } else if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
+            returnImage = image
+        } else if NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
+            NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnail(metadata: metadata, collectionView: self.collectionView, delegate: self))
+        }
+
+        return returnImage
     }
 
     func buildMediaPhotoVideo(columnCount: Int) {
@@ -317,7 +326,7 @@ extension NCMedia: UICollectionViewDataSourcePrefetching {
 
 extension NCMedia: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if dataSource.isEmpty() {
+        if !dataSource.isEmpty() {
             isTop = scrollView.contentOffset.y <= -(insetsTop + view.safeAreaInsets.top - 25)
             setColor()
             setNeedsStatusBarAppearanceUpdate()

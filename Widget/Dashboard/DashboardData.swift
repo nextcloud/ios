@@ -227,7 +227,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
                                     } else {
                                         let (_, data, error) = await NCNetworking.shared.downloadPreview(url: url, account: activeTableAccount.account)
                                         if error == .success,
-                                           let image = convertDataToImage(data: data, size: CGSize(width: 256, height: 256), fileNameToWrite: fileName) {
+                                           let image = convertDataToImage(data: data, size: NCGlobal.shared.size256, fileNameToWrite: fileName) {
                                             icon = image
                                         }
                                     }

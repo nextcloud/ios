@@ -63,7 +63,7 @@ extension NCMedia {
 
     func setTitleDate(_ offset: CGFloat = 10) {
         titleDate?.text = ""
-        if let metadata = dataSource.getResultsMetadatas().first {
+        if let metadata = dataSource.getMetadatas().first {
             let contentOffsetY = collectionView.contentOffset.y
             let top = insetsTop + view.safeAreaInsets.top + offset
             if insetsTop + view.safeAreaInsets.top + contentOffsetY < 10 {
@@ -205,7 +205,7 @@ extension NCMedia {
                                                             session: self.session,
                                                             sceneIdentifier: self.controller?.sceneIdentifier)
                 self.database.addMetadata(metadata)
-                NCViewer().view(viewController: self, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+                NCViewer().view(viewController: self, metadata: metadata, metadatas: [metadata])
             }))
             self.present(alert, animated: true)
         }

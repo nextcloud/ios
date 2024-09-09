@@ -123,86 +123,62 @@ extension NCUtility {
     }
 
     func createImageFrom(fileNameView: String, ocId: String, etag: String, classFile: String) {
-        var originalImage, scaleImagePreview, scaleImageIcon: UIImage?
-        let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)
-        let fileNamePathPreview = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(ocId, etag: etag)
-        let fileNamePathIcon = utilityFileSystem.getDirectoryProviderStorageIconOcId(ocId, etag: etag)
-
-        if utilityFileSystem.fileProviderStorageSize(ocId, fileNameView: fileNameView) > 0 && FileManager().fileExists(atPath: fileNamePathPreview) && FileManager().fileExists(atPath: fileNamePathIcon) { return }
-        if classFile != NKCommon.TypeClassFile.image.rawValue && classFile != NKCommon.TypeClassFile.video.rawValue { return }
-
-        if classFile == NKCommon.TypeClassFile.image.rawValue {
-            originalImage = UIImage(contentsOfFile: fileNamePath)
-            scaleImagePreview = originalImage?.resizeImage(size: CGSize(width: NCGlobal.shared.sizePreview, height: NCGlobal.shared.sizePreview))
-            scaleImageIcon = originalImage?.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon))
-            try? scaleImagePreview?.jpegData(compressionQuality: 0.7)?.write(to: URL(fileURLWithPath: fileNamePathPreview))
-            try? scaleImageIcon?.jpegData(compressionQuality: 0.7)?.write(to: URL(fileURLWithPath: fileNamePathIcon))
-        } else if classFile == NKCommon.TypeClassFile.video.rawValue {
-            let videoPath = NSTemporaryDirectory() + "tempvideo.mp4"
-            utilityFileSystem.linkItem(atPath: fileNamePath, toPath: videoPath)
-            originalImage = imageFromVideo(url: URL(fileURLWithPath: videoPath), at: 0)
-            try? originalImage?.jpegData(compressionQuality: 0.7)?.write(to: URL(fileURLWithPath: fileNamePathPreview))
-            try? originalImage?.jpegData(compressionQuality: 0.7)?.write(to: URL(fileURLWithPath: fileNamePathIcon))
-        }
-    }
-
-    func getImageMetadata(_ metadata: tableMetadata, for size: CGFloat) -> UIImage? {
-        if let image = getImage(metadata: metadata) { return image }
-
-        if metadata.isVideo && !metadata.hasPreview {
-            createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
-        }
-
-        if utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
-            return UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag))
-        }
-
-        if metadata.isVideo {
-            return loadImage(named: "video", colors: [NCBrandColor.shared.iconImageColor2])
-        } else if metadata.isAudio {
-            return loadImage(named: "waveform", colors: [NCBrandColor.shared.iconImageColor2])
-        } else {
-            return loadImage(named: "photo", colors: [NCBrandColor.shared.iconImageColor2])
-        }
-    }
-
-    func getImage(metadata: tableMetadata) -> UIImage? {
-        let ext = (metadata.fileNameView as NSString).pathExtension.uppercased()
+        if classFile != NKCommon.TypeClassFile.image.rawValue, classFile != NKCommon.TypeClassFile.video.rawValue { return }
         var image: UIImage?
+        let fileNamePath1024 = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)
 
-        if utilityFileSystem.fileProviderStorageExists(metadata) && metadata.isImage {
-            let previewPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
-            let iconPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
-            let imagePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
-
-            if ext == "GIF" {
-                if !FileManager().fileExists(atPath: previewPath) {
-                    createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
-                }
-                image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: imagePath))
-            } else if ext == "SVG" {
-                if let svgImage = SVGKImage(contentsOfFile: imagePath) {
-                    svgImage.size = CGSize(width: NCGlobal.shared.sizePreview, height: NCGlobal.shared.sizePreview)
-                    if let image = svgImage.uiImage {
-                        if !FileManager().fileExists(atPath: previewPath) {
-                            do {
-                                try image.pngData()?.write(to: URL(fileURLWithPath: previewPath), options: .atomic)
-                                try image.pngData()?.write(to: URL(fileURLWithPath: iconPath), options: .atomic)
-                            } catch { }
-                        }
-                        return image
-                    } else {
-                        return nil
-                    }
-                } else {
-                    return nil
-                }
-            } else {
-                createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
-                image = UIImage(contentsOfFile: imagePath)
+        if image == nil {
+            if classFile == NKCommon.TypeClassFile.image.rawValue {
+                image = UIImage(contentsOfFile: fileNamePath1024)
+            } else if classFile == NKCommon.TypeClassFile.video.rawValue {
+                let videoPath = NSTemporaryDirectory() + "tempvideo.mp4"
+                utilityFileSystem.linkItem(atPath: fileNamePath1024, toPath: videoPath)
+                image = imageFromVideo(url: URL(fileURLWithPath: videoPath), at: 0)
             }
         }
-        return image
+
+        guard let image else { return }
+
+        createImageStandard(ocId: ocId, etag: etag, classFile: classFile, image: image)
+    }
+
+    func createImage(ocId: String, etag: String, classFile: String, data: Data) {
+        guard let image = UIImage(data: data) else { return }
+        let fileNamePath1024 = self.utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: global.previewExt1024)
+
+        do {
+            try data.write(to: URL(fileURLWithPath: fileNamePath1024), options: .atomic)
+        } catch { }
+
+        createImageStandard(ocId: ocId, etag: etag, classFile: classFile, image: image)
+    }
+
+    private func createImageStandard(ocId: String, etag: String, classFile: String, image: UIImage) {
+        let ext = [global.previewExt512, global.previewExt256, global.previewExt128]
+        let size = [global.size512, global.size256, global.size128]
+        let compressionQuality = [0.6, 0.7, 0.8]
+
+        for i in 0..<ext.count {
+            if !utilityFileSystem.fileProviderStorageImageExists(ocId, etag: etag, ext: ext[i]),
+               let image = image.resizeImage(size: size[i]),
+               let data = image.jpegData(compressionQuality: compressionQuality[i]) {
+                do {
+                    let fileNamePath = utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: ext[i])
+                    try data.write(to: URL(fileURLWithPath: fileNamePath))
+                    #if !EXTENSION
+                    NCImageCache.shared.addImageCache(ocId: ocId, etag: etag, data: data, ext: ext[i])
+                    #endif
+                } catch { }
+            }
+        }
+    }
+
+    func getImage(ocId: String, etag: String, ext: String) -> UIImage? {
+        return UIImage(contentsOfFile: self.utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: ext))
+    }
+
+    func existsImage(ocId: String, etag: String, ext: String) -> Bool {
+        return FileManager().fileExists(atPath: self.utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: ext))
     }
 
     func imageFromVideo(url: URL, at time: TimeInterval, completion: @escaping (UIImage?) -> Void) {
@@ -226,22 +202,6 @@ extension NCUtility {
                 completion(UIImage(cgImage: thumbnailImageRef))
             }
         }
-    }
-
-    func getIcon(metadata: tableMetadata) -> UIImage? {
-        let iconPath = self.utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
-        guard let icon = UIImage(contentsOfFile: iconPath) else { return nil }
-
-        if Int(icon.size.width) > NCGlobal.shared.sizeIcon, Int(icon.size.height) > NCGlobal.shared.sizeIcon,
-           let iconResize = icon.resizeImage(size: CGSize(width: NCGlobal.shared.sizeIcon, height: NCGlobal.shared.sizeIcon)) {
-            do {
-                if let data = iconResize.jpegData(compressionQuality: 0.5) {
-                    try data.write(to: URL(fileURLWithPath: iconPath), options: .atomic)
-                }
-            } catch { }
-            return iconResize
-        }
-        return icon
     }
 
     func pdfThumbnail(url: URL, width: CGFloat = 240) -> UIImage? {
@@ -376,23 +336,6 @@ extension NCUtility {
         } else {
             return completion(imageNamePath, id)
         }
-    }
-
-    func getSizePreview(width: Int, height: Int) -> CGSize {
-        var widthPreview: Double = Double(NCGlobal.shared.sizePreview)
-        var heightPreview: Double = Double(NCGlobal.shared.sizePreview)
-
-        if width > 0, height > 0 {
-            var ratio: Double = 0
-            if width >= height {
-                ratio = Double(width) / Double(height)
-                heightPreview = widthPreview / ratio
-            } else {
-                ratio = Double(height) / Double(width)
-                widthPreview = heightPreview / ratio
-            }
-        }
-        return CGSize(width: widthPreview, height: heightPreview)
     }
 
     func getUserStatus(userIcon: String?, userStatus: String?, userMessage: String?) -> (statusImage: UIImage?, statusMessage: String, descriptionMessage: String) {

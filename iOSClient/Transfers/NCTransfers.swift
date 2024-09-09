@@ -192,9 +192,9 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "transferCell", for: indexPath) as? NCTransferCell,
-              let metadata = self.dataSource.getResultMetadata(indexPath: indexPath) else {
-            return NCTransferCell()
+        let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "transferCell", for: indexPath) as? NCTransferCell)!
+        guard let metadata = self.dataSource.getResultMetadata(indexPath: indexPath) else {
+            return cell
         }
         let transfer = NCTransferProgress.shared.get(ocId: metadata.ocId, ocIdTransfer: metadata.ocIdTransfer, session: metadata.session)
 
@@ -213,9 +213,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         cell.setButtonMore(image: NCImageCache.shared.getImageButtonStop())
 
         /// Image item
-        if let image = utility.getIcon(metadata: metadata) {
-            cell.imageItem.image = image
-        } else if !metadata.iconName.isEmpty {
+        if !metadata.iconName.isEmpty {
             cell.imageItem.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
         } else {
             cell.imageItem.image = NCImageCache.shared.getImageFile()

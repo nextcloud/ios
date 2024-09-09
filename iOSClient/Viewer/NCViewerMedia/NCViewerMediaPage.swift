@@ -153,7 +153,6 @@ class NCViewerMediaPage: UIViewController {
     }
 
     deinit {
-
         timerAutoHide?.invalidate()
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterEnableSwipeGesture), object: nil)
@@ -190,7 +189,6 @@ class NCViewerMediaPage: UIViewController {
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
-
         if viewerMediaScreenMode == .normal {
             return .default
         } else {
@@ -226,8 +224,7 @@ class NCViewerMediaPage: UIViewController {
     }
 
     @objc private func openMenuMore() {
-
-        let imageIcon = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(currentViewController.metadata.ocId, etag: currentViewController.metadata.etag))
+        let imageIcon = NCUtility().getImage(ocId: currentViewController.metadata.ocId, etag: currentViewController.metadata.etag, ext: NCGlobal.shared.previewExt512)
 
         NCViewer().toggleMenu(controller: self.tabBarController as? NCMainTabBarController, metadata: currentViewController.metadata, webView: false, imageIcon: imageIcon)
     }

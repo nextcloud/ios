@@ -28,7 +28,8 @@ import RealmSwift
 extension NCMedia: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         var mediaCell: NCGridMediaCell?
-        if let metadata = dataSource.getResultMetadata(indexPath: indexPath) {
+        if let metadataDatasource = dataSource.getMetadata(indexPath: indexPath),
+           let metadata = database.getMetadataFromOcId(metadataDatasource.ocId) {
             if let visibleCells = self.collectionView?.indexPathsForVisibleItems.compactMap({ self.collectionView?.cellForItem(at: $0) }) {
                 for case let cell as NCGridMediaCell in visibleCells {
                     if cell.ocId == metadata.ocId {
@@ -49,15 +50,17 @@ extension NCMedia: UICollectionViewDelegate {
             } else {
                 // ACTIVE SERVERURL
                 serverUrl = metadata.serverUrl
-                let metadatas = dataSource.getResultsMetadatas()
-                NCViewer().view(viewController: self, metadata: metadata, metadatas: metadatas, imageIcon: getImage(metadata: metadata))
+                let metadatas = database.getResultsMediaMetadatas(predicate: getPredicate())
+                NCViewer().view(viewController: self, metadata: metadata, metadatas: metadatas, image: getImage(metadata: metadataDatasource, width: 1024))
             }
         }
     }
 
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         guard let cell = collectionView.cellForItem(at: indexPath) as? NCGridMediaCell,
-              let metadata = dataSource.getResultMetadata(indexPath: indexPath) else { return nil }
+              let ocId = dataSource.getMetadata(indexPath: indexPath)?.ocId,
+              let metadata = database.getMetadataFromOcId(ocId)
+        else { return nil }
         let identifier = indexPath as NSCopying
         let image = cell.imageItem.image
         self.serverUrl = metadata.serverUrl
