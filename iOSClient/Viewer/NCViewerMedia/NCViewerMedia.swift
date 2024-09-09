@@ -251,70 +251,93 @@ class NCViewerMedia: UIViewController {
     func loadImage() {
         guard let metadata = self.database.getMetadataFromOcId(metadata.ocId) else { return }
         self.metadata = metadata
+        let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+        let fileNameExtension = (metadata.fileNameView as NSString).pathExtension.uppercased()
 
         if metadata.isLivePhoto,
            let metadata = self.database.getMetadataLivePhoto(metadata: metadata),
            !utilityFileSystem.fileProviderStorageExists(metadata),
-           let metadata = self.database.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                          session: NCNetworking.shared.sessionDownload,
-                                                                          selector: "") {
+           let metadata = self.database.setMetadatasSessionInWaitDownload(metadatas: [metadata], session: NCNetworking.shared.sessionDownload, selector: "") {
             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
         }
 
-        if metadata.isImage, (metadata.fileExtension.lowercased() == "gif" || metadata.fileExtension.lowercased() == "svg"), !utilityFileSystem.fileProviderStorageExists(metadata) {
+        if metadata.isImage, (fileNameExtension == "GIF" || fileNameExtension == "SVG"), !utilityFileSystem.fileProviderStorageExists(metadata) {
             downloadImage()
         }
 
-        // Get image
-        getImageMetadata(metadata) { image in
-            if self.metadata.ocId == metadata.ocId {
-                self.image = image
-                self.imageVideoContainer.image = image
-            }
-        }
-    }
-
-    func getImageMetadata(_ metadata: tableMetadata, completion: @escaping (UIImage?) -> Void) {
         if metadata.isVideo && !metadata.hasPreview {
             utility.createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
+            let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024)
+            self.image = image
+            self.imageVideoContainer.image = self.image
+            return
         } else if metadata.isAudio {
-            return completion(utility.loadImage(named: "waveform", colors: [NCBrandColor.shared.iconImageColor2]))
-        } else if let image = utility.getImage(metadata: metadata) {
-            return completion(image)
+            let image = utility.loadImage(named: "waveform", colors: [NCBrandColor.shared.iconImageColor2])
+            self.image = image
+            self.imageVideoContainer.image = self.image
+            return
+        } else if metadata.isImage {
+            if fileNameExtension == "GIF" {
+                if !NCUtility().existsImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024) {
+                    utility.createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
+                }
+                if let image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: fileNamePath)) {
+                    self.image = image
+                    self.imageVideoContainer.image = self.image
+                } else {
+                    self.image = self.utility.loadImage(named: "photo", colors: [NCBrandColor.shared.iconImageColor2])
+                    self.imageVideoContainer.image = self.image
+                }
+                return
+            } else if fileNameExtension == "SVG" {
+                if let svgImage = SVGKImage(contentsOfFile: fileNamePath) {
+                    svgImage.size = NCGlobal.shared.size1024
+                    if let image = svgImage.uiImage {
+                        if !NCUtility().existsImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024), let data = image.jpegData(compressionQuality: 1.0) {
+                            utility.createImage(ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile, data: data)
+                        }
+                        self.image = image
+                        self.imageVideoContainer.image = self.image
+                        return
+                    }
+                }
+                self.image = self.utility.loadImage(named: "photo", colors: [NCBrandColor.shared.iconImageColor2])
+                self.imageVideoContainer.image = self.image
+                return
+            } else if let image = UIImage(contentsOfFile: fileNamePath) {
+                self.image = image
+                self.imageVideoContainer.image = self.image
+                return
+            }
         }
 
-        if utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024) {
-            return completion(UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageImageOcId(metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024)))
+        if let image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageImageOcId(metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024)) {
+            self.image = image
+            self.imageVideoContainer.image = self.image
         } else {
-            NextcloudKit.shared.downloadPreview(fileId: metadata.fileId,
-                                                account: metadata.account,
-                                                options: NKRequestOptions(queue: .main)) { _, data, _, _, etag, error in
+            NextcloudKit.shared.downloadPreview(fileId: metadata.fileId, account: metadata.account, options: NKRequestOptions(queue: .main)) { _, data, _, _, etag, error in
                 if error == .success, let data {
                     self.database.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
-                    return completion(UIImage(data: data))
+                    let image = UIImage(data: data)
+                    self.image = image
+                    self.imageVideoContainer.image = self.image
                 } else {
-                    return completion(self.utility.loadImage(named: "photo", colors: [NCBrandColor.shared.iconImageColor2]))
+                    self.image = self.utility.loadImage(named: "photo", colors: [NCBrandColor.shared.iconImageColor2])
+                    self.imageVideoContainer.image = self.image
                 }
             }
         }
     }
 
-    func downloadImage(withSelector selector: String = "") {
-        guard let metadata = self.database.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                       session: NCNetworking.shared.sessionDownload,
-                                                                                       selector: selector) else { return }
+    private func downloadImage(withSelector selector: String = "") {
+        guard let metadata = self.database.setMetadatasSessionInWaitDownload(metadatas: [metadata], session: NCNetworking.shared.sessionDownload, selector: selector) else { return }
         NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true) {
         } requestHandler: { _ in
             self.allowOpeningDetails = false
         } completion: { _, _ in
             DispatchQueue.main.async {
-                self.getImageMetadata(self.metadata) { image in
-                    if self.metadata.ocId == metadata.ocId {
-                        self.image = image
-                        self.imageVideoContainer.image = image
-                        self.allowOpeningDetails = true
-                    }
-                }
+                self.allowOpeningDetails = true
+                self.loadImage()
             }
         }
     }
