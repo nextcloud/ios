@@ -34,6 +34,10 @@ class FileActionsHeader: UIView {
 	@IBOutlet weak private var btnCloseSelection: UIButton?
 	@IBOutlet weak private var lblSelectionDescription: UILabel?
 
+	private var grayButtonTintColor: UIColor? {
+		UIColor(named: "FileActionsHeader/GrayButtonTint")
+	}
+	
 	@IBAction func onBtnSelectAllTap(_ sender: Any) {
 		onSelectAll?()
 	}
@@ -108,8 +112,17 @@ class FileActionsHeader: UIView {
 		}
 
 		lblSelectionDescription?.text = textDescription
-		btnSelectAll?.setBackgroundImage(UIImage(named: imageName), for: .normal)
 		
+		var selectAllImage = UIImage(named: imageName)
+		var closeImage = UIImage(named: "FileSelection/selection_mode_close")
+
+		if let color = grayButtonTintColor {
+			closeImage = closeImage?.image(color: color)
+			selectAllImage = selectAllImage?.image(color: color)
+		}
+		btnSelectAll?.setBackgroundImage(selectAllImage, for: .normal)
+		btnCloseSelection?.setBackgroundImage(closeImage, for: .normal)
+
 		func selectionDescription(for count: Int) -> String {
 			if count == 1 {
 				return NSLocalizedString("_select_selectionLabel_oneItemSelected", comment: "")

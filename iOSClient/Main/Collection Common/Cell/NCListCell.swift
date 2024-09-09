@@ -220,6 +220,10 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         separator.isHidden = status
     }
 
+	var checkImagesColor: UIColor {
+		UIColor(named: "FileActionsHeader/GrayButtonTint") ?? .lightGray
+	}
+	
     func selected(_ status: Bool, isEditMode: Bool) {
         if isEditMode {
             imageItemLeftConstraint.constant = 45
@@ -245,11 +249,11 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             blurEffectView?.backgroundColor = .lightGray
             blurEffectView?.frame = self.bounds
             blurEffectView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            imageSelect.image = NCImageCache.images.checkedYes
+			imageSelect.image = NCImageCache.images.checkedYes?.image(color: checkImagesColor)
             backgroundView = blurEffectView
             separator.isHidden = true
         } else {
-            imageSelect.image = NCImageCache.images.checkedNo
+			imageSelect.image = NCImageCache.images.checkedNo?.image(color: checkImagesColor)
             backgroundView = nil
             separator.isHidden = false
         }

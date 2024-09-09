@@ -36,7 +36,7 @@
                             <color key="tintColor" name="FileActionsHeader/ButtonTint"/>
                             <inset key="imageEdgeInsets" minX="10" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                             <state key="normal">
-                                <color key="titleColor" name="FileActionsHeader/ButtonTint"/>
+                                <color key="titleColor" name="FileActionsHeader/SortButtonText"/>
                             </state>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RYI-12-k5i" userLabel="btnSelect">
@@ -102,7 +102,6 @@
                                 <constraint firstAttribute="width" secondItem="uIk-II-rrq" secondAttribute="height" id="rdA-w1-4d4"/>
                             </constraints>
                             <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                            <state key="normal" backgroundImage="FileSelection/selection_mode_close"/>
                             <connections>
                                 <action selector="onBtnCloseSelectionTap:" destination="-1" eventType="touchUpInside" id="DqT-hE-ND8"/>
                             </connections>
@@ -139,7 +138,6 @@
     <resources>
         <image name="FileSelection/files_selection" width="14" height="14"/>
         <image name="FileSelection/list_item_deselected" width="16" height="17"/>
-        <image name="FileSelection/selection_mode_close" width="16" height="16"/>
         <namedColor name="FileActionsHeader/ButtonTint">
             <color red="0.0" green="0.10588235294117647" blue="0.25490196078431371" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
@@ -147,7 +145,10 @@
             <color red="0.85882352941176465" green="0.88627450980392153" blue="0.90980392156862744" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="FileActionsHeader/SelectionModeHeaderBackground">
-            <color red="0.85882352941176465" green="0.88627450980392153" blue="0.90980392156862744" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.95686274509803926" green="0.96862745098039216" blue="0.98039215686274506" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="FileActionsHeader/SortButtonText">
+            <color red="0.0" green="0.10588235294117647" blue="0.25490196078431371" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
