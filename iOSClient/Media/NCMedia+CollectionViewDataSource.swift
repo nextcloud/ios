@@ -90,13 +90,7 @@ extension NCMedia: UICollectionViewDataSource {
         if let image = getImage(metadata: metadata) {
             cell.imageItem.image = image
         } else {
-            cell.imageItem.backgroundColor = .clear
-            cell.imageItem.contentMode = .center
-            if metadata.isImage {
-                cell.imageItem.image = photoImage
-            } else {
-                cell.imageItem.image = videoImage
-            }
+            cell.imageItem.image = nil
         }
 
         // Convert OLD Live Photo
