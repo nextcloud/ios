@@ -107,9 +107,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     var sizeImage: CGSize {
-        let columnCount: Int = self.layoutForView?.columnPhoto ?? 3
-        let size = CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
-        return size
+        if isLayoutPhoto {
+            let column = CGFloat(layoutForView?.columnPhoto ?? 3)
+            return CGSize(width: collectionView.frame.width / column, height: collectionView.frame.width / column)
+        } else if isLayoutGrid {
+            let column = CGFloat(layoutForView?.columnGrid ?? 3)
+            return CGSize(width: collectionView.frame.width / column, height: collectionView.frame.width / column)
+        } else {
+            return CGSize(width: 40, height: 40)
+        }
     }
 
     var controller: NCMainTabBarController? {

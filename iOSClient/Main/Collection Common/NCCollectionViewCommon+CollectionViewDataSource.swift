@@ -91,7 +91,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     }
                     if metadata.hasPreview && metadata.status == global.metadataStatusNormal && !existsPreview {
                         for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { return }
-                        NCNetworking.shared.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, collectionView: collectionView))
+                        NCNetworking.shared.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, collectionView: collectionView, ext: NCGlobal.shared.getSizeExtension(width: self.sizeImage.width)))
                     }
                 }
             } else {

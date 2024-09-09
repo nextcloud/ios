@@ -30,12 +30,14 @@ import RealmSwift
 class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
     var metadata: tableMetadata
     var collectionView: UICollectionView?
+    var ext = ""
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
 
-    init(metadata: tableMetadata, collectionView: UICollectionView?) {
+    init(metadata: tableMetadata, collectionView: UICollectionView?, ext: String) {
         self.metadata = tableMetadata.init(value: metadata)
         self.collectionView = collectionView
+        self.ext = ext
     }
 
     override func start() {
@@ -58,10 +60,9 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
 
                 DispatchQueue.main.async {
                     for case let cell as NCCellProtocol in collectionView.visibleCells {
-                        let ext = NCGlobal.shared.getSizeExtension(width: cell.filePreviewImageView?.bounds.size.width)
                         if cell.fileOcId == self.metadata.ocId,
                            let filePreviewImageView = cell.filePreviewImageView,
-                           let image = self.utility.getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: ext) {
+                           let image = self.utility.getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: self.ext) {
                             cell.filePreviewImageView?.contentMode = .scaleAspectFill
                             if self.metadata.hasPreviewBorder {
                                 cell.filePreviewImageView?.layer.borderWidth = 0.2
