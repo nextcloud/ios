@@ -26,7 +26,7 @@ import NextcloudKit
 
 extension NCMedia {
     func reloadDataSource() {
-        DispatchQueue.global(qos: .userInteractive).async {
+        DispatchQueue.global().async {
             let metadatas = self.database.getResultsMediaMetadatas(predicate: self.getPredicate())
             self.dataSource = NCMediaDataSource(metadatas: metadatas)
             self.collectionViewReloadData()
@@ -217,7 +217,7 @@ public class NCMediaDataSource: NSObject {
 
     internal func appendMetadata(_ metadata: tableMetadata) {
         self.metadatas.append(Metadata(account: metadata.account,
-                                       date: metadata.date as Date,
+                                       date: metadata.datePhotosOriginal as Date,
                                        etag: metadata.etag,
                                        fileId: metadata.fileId,
                                        etagResource: metadata.etagResource,
