@@ -26,13 +26,15 @@ import NextcloudKit
 
 extension NCMedia {
     func reloadDataSource() {
-        let metadatas = database.getResultsMediaMetadatas(predicate: getPredicate())
-        self.dataSource = NCMediaDataSource(metadatas: metadatas)
-        self.collectionViewReloadData()
+        DispatchQueue.global(qos: .userInteractive).async {
+            let metadatas = self.database.getResultsMediaMetadatas(predicate: self.getPredicate())
+            self.dataSource = NCMediaDataSource(metadatas: metadatas)
+            self.collectionViewReloadData()
+        }
     }
 
     func collectionViewReloadData() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+        DispatchQueue.main.async {
             self.collectionView.reloadData()
             self.setTitleDate()
         }
