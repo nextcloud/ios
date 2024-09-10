@@ -70,6 +70,7 @@ class NCImageCache: NSObject {
         createCacheInProgress = true
         memoryWorning = false
         cacheImage.removeAllValues()
+        totalSize = 0
 
         let manager = FileManager.default
         let resourceKeys = Set<URLResourceKey>([.nameKey, .pathKey, .fileSizeKey, .creationDateKey])

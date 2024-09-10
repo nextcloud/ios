@@ -36,6 +36,7 @@ class tableMetadata: Object {
            self.fileName == object.fileName,
            self.fileNameView == object.fileNameView,
            self.date == object.date,
+           self.datePhotosOriginal == object.datePhotosOriginal,
            self.permissions == object.permissions,
            self.hasPreview == object.hasPreview,
            self.note == object.note,
@@ -67,6 +68,7 @@ class tableMetadata: Object {
     @objc dynamic var creationDate = NSDate()
     @objc dynamic var dataFingerprint = ""
     @objc dynamic var date = NSDate()
+    @objc dynamic var datePhotosOriginal = NSDate()
     @objc dynamic var directory: Bool = false
     @objc dynamic var downloadURL = ""
     @objc dynamic var e2eEncrypted: Bool = false
@@ -342,6 +344,11 @@ extension NCManageDatabase {
         }
         metadata.dataFingerprint = file.dataFingerprint
         metadata.date = file.date as NSDate
+        if let datePhotosOriginal = file.datePhotosOriginal {
+            metadata.datePhotosOriginal = datePhotosOriginal as NSDate
+        } else {
+            metadata.datePhotosOriginal = metadata.date
+        }
         metadata.directory = file.directory
         metadata.downloadURL = file.downloadURL
         metadata.e2eEncrypted = file.e2eEncrypted
@@ -991,7 +998,7 @@ extension NCManageDatabase {
         do {
             let realm = try Realm()
             realm.refresh()
-            let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: "date", ascending: false)
+            let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: "datePhotosOriginal", ascending: false)
             return Array(results)
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
