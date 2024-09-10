@@ -62,7 +62,7 @@ extension NCMedia: UICollectionViewDelegate {
               let metadata = database.getMetadataFromOcId(ocId)
         else { return nil }
         let identifier = indexPath as NSCopying
-        let image = cell.imageItem.image
+        let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024)
         self.serverUrl = metadata.serverUrl
 
         return UIContextMenuConfiguration(identifier: identifier, previewProvider: {

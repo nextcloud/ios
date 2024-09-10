@@ -85,15 +85,17 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else { return nil }
         if isEditMode || metadata.classFile == NKCommon.TypeClassFile.url.rawValue { return nil }
         let identifier = indexPath as NSCopying
-        var image: UIImage?
-        let cell = collectionView.cellForItem(at: indexPath)
+        var image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt1024)
 
-        if cell is NCListCell {
-            image = (cell as? NCListCell)?.imageItem.image
-        } else if cell is NCGridCell {
-            image = (cell as? NCGridCell)?.imageItem.image
-        } else if cell is NCPhotoCell {
-            image = (cell as? NCPhotoCell)?.imageItem.image
+        if image == nil {
+            let cell = collectionView.cellForItem(at: indexPath)
+            if cell is NCListCell {
+                image = (cell as? NCListCell)?.imageItem.image
+            } else if cell is NCGridCell {
+                image = (cell as? NCGridCell)?.imageItem.image
+            } else if cell is NCPhotoCell {
+                image = (cell as? NCPhotoCell)?.imageItem.image
+            }
         }
 
         return UIContextMenuConfiguration(identifier: identifier, previewProvider: {
