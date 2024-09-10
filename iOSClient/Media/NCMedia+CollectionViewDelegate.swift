@@ -51,7 +51,7 @@ extension NCMedia: UICollectionViewDelegate {
                 // ACTIVE SERVERURL
                 serverUrl = metadata.serverUrl
                 let metadatas = database.getResultsMediaMetadatas(predicate: getPredicate())
-                NCViewer().view(viewController: self, metadata: metadata, metadatas: metadatas, image: getImage(metadata: metadataDatasource, width: 1024))
+                NCViewer().view(viewController: self, metadata: metadata, metadatas: metadatas, indexMetadatas: indexPath.row, image: getImage(metadata: metadataDatasource, width: 1024))
             }
         }
     }

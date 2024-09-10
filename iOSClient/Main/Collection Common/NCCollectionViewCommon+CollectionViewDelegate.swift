@@ -64,7 +64,8 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             if !metadata.isDirectoryE2EE, (metadata.isImage || metadata.isAudioOrVideo) {
                 let metadatas = self.dataSource.getResultsMetadatas()
                 let metadatasMedia = metadatas.filter { $0.classFile == NKCommon.TypeClassFile.image.rawValue || $0.classFile == NKCommon.TypeClassFile.video.rawValue || $0.classFile == NKCommon.TypeClassFile.audio.rawValue }
-                return NCViewer().view(viewController: self, metadata: metadata, metadatas: metadatasMedia, image: image)
+                let indexMetadatas = metadatasMedia.firstIndex(where: { $0.ocId == metadata.ocId }) ?? 0
+                return NCViewer().view(viewController: self, metadata: metadata, metadatas: metadatasMedia, indexMetadatas: indexMetadatas, image: image)
             } else if metadata.isAvailableEditorView || utilityFileSystem.fileProviderStorageExists(metadata) || metadata.name == NCGlobal.shared.talkName {
                 NCViewer().view(viewController: self, metadata: metadata, metadatas: [metadata], image: image)
             } else if NextcloudKit.shared.isNetworkReachable(),

@@ -197,11 +197,12 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         let hud = NCHud(viewController.tabBarController?.view)
 
         if let metadata = database.getResultMetadataFromFileId(fileId) {
+            let metadata = tableMetadata(value: metadata)
             do {
                 let attr = try FileManager.default.attributesOfItem(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
                 let fileSize = attr[FileAttributeKey.size] as? UInt64 ?? 0
                 if fileSize > 0 {
-                    NCViewer().view(viewController: viewController, metadata: tableMetadata(value: metadata), metadatas: [metadata])
+                    NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata])
                     return
                 }
             } catch {
