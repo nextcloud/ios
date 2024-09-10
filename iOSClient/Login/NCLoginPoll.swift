@@ -39,7 +39,7 @@ struct NCLoginPoll: View {
 			let size = geometry.size
 
 			VStack {
-				Image(.Launch.logo)
+				Image(.logo)
 					.padding(.top, size.height * 0.05)
 				Text(NSLocalizedString("_poll_desc_", comment: ""))
 					.multilineTextAlignment(.center)
@@ -70,7 +70,7 @@ struct NCLoginPoll: View {
 			}
 			.frame(maxWidth: .infinity, maxHeight: .infinity)
 			.background {
-				Image(.Launch.background)
+				Image(.gradientBackground)
 					.resizable()
 					.ignoresSafeArea()
 			}

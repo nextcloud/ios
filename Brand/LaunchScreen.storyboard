@@ -19,10 +19,10 @@
                         <rect key="frame" x="0.0" y="0.0" width="430" height="932"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Launch/Background" translatesAutoresizingMaskIntoConstraints="NO" id="HQ1-PE-oGQ">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="gradientBackground" translatesAutoresizingMaskIntoConstraints="NO" id="HQ1-PE-oGQ">
                                 <rect key="frame" x="0.0" y="0.0" width="430" height="932"/>
                             </imageView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Launch/Logo" translatesAutoresizingMaskIntoConstraints="NO" id="7UE-Dr-Fma">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="7UE-Dr-Fma">
                                 <rect key="frame" x="135.66666666666666" y="455" width="158.99999999999997" height="22"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="159" id="PFy-xS-233">
@@ -51,7 +51,7 @@
         </scene>
     </scenes>
     <resources>
-        <image name="Launch/Background" width="320" height="568"/>
-        <image name="Launch/Logo" width="159" height="22"/>
+        <image name="gradientBackground" width="320" height="568"/>
+        <image name="logo" width="159" height="22"/>
     </resources>
 </document>

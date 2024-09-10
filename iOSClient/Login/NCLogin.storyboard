@@ -17,13 +17,13 @@
                         <rect key="frame" x="0.0" y="0.0" width="430" height="932"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Launch/Background" translatesAutoresizingMaskIntoConstraints="NO" id="9ke-OB-mlJ" userLabel="background">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="gradientBackground" translatesAutoresizingMaskIntoConstraints="NO" id="9ke-OB-mlJ" userLabel="background">
                                 <rect key="frame" x="0.0" y="0.0" width="430" height="932"/>
                             </imageView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hwa-hT-QjM" userLabel="loginContentView">
                                 <rect key="frame" x="0.0" y="0.0" width="430" height="932"/>
                                 <subviews>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Launch/Logo" translatesAutoresizingMaskIntoConstraints="NO" id="O7g-q0-SHY" userLabel="logo">
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="O7g-q0-SHY" userLabel="logo">
                                         <rect key="frame" x="135.66666666666666" y="132.66666666666666" width="158.99999999999997" height="22"/>
                                     </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ySx-9E-GUK" userLabel="lblWelcome">
@@ -117,8 +117,8 @@
         </scene>
     </scenes>
     <resources>
-        <image name="Launch/Background" width="320" height="568"/>
-        <image name="Launch/Logo" width="159" height="22"/>
+        <image name="gradientBackground" width="320" height="568"/>
+        <image name="logo" width="159" height="22"/>
         <namedColor name="Launch/LoginButtonText">
             <color red="0.043137254901960784" green="0.16470588235294117" blue="0.38823529411764707" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

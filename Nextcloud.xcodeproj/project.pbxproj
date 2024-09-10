@@ -87,13 +87,6 @@
 		D51C00452C2C1C1D00A04554 /* NCBrand-IONOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C00402C2C1B4D00A04554 /* NCBrand-IONOS.swift */; };
 		D51C00462C2C1C1D00A04554 /* NCBrand-IONOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C00402C2C1B4D00A04554 /* NCBrand-IONOS.swift */; };
 		D51C00472C2C1C1E00A04554 /* NCBrand-IONOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C00402C2C1B4D00A04554 /* NCBrand-IONOS.swift */; };
-		D52A22F72C7365C40010C82C /* LaunchScreen-IONOS.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D52A22F62C7365C40010C82C /* LaunchScreen-IONOS.storyboard */; };
-		D52A22F82C7365C40010C82C /* LaunchScreen-IONOS.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D52A22F62C7365C40010C82C /* LaunchScreen-IONOS.storyboard */; };
-		D52A22F92C7365C40010C82C /* LaunchScreen-IONOS.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D52A22F62C7365C40010C82C /* LaunchScreen-IONOS.storyboard */; };
-		D52A22FA2C7365C40010C82C /* LaunchScreen-IONOS.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D52A22F62C7365C40010C82C /* LaunchScreen-IONOS.storyboard */; };
-		D52A22FB2C7365C40010C82C /* LaunchScreen-IONOS.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D52A22F62C7365C40010C82C /* LaunchScreen-IONOS.storyboard */; };
-		D52A22FC2C7365C40010C82C /* LaunchScreen-IONOS.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D52A22F62C7365C40010C82C /* LaunchScreen-IONOS.storyboard */; };
-		D52A22FD2C7365C40010C82C /* LaunchScreen-IONOS.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D52A22F62C7365C40010C82C /* LaunchScreen-IONOS.storyboard */; };
 		D575039F27146F93008DC9DC /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
 		D5B6AA7827200C7200D49C24 /* NCActivityTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */; };
 		F310B1EF2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = F310B1EE2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift */; };
@@ -1164,7 +1157,6 @@
 		C04E2F202A17BB4D001BAD85 /* NextcloudIntegrationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NextcloudIntegrationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C04E2F222A17BB4D001BAD85 /* FilesIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesIntegrationTests.swift; sourceTree = "<group>"; };
 		D51C00402C2C1B4D00A04554 /* NCBrand-IONOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCBrand-IONOS.swift"; sourceTree = "<group>"; };
-		D52A22F62C7365C40010C82C /* LaunchScreen-IONOS.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "LaunchScreen-IONOS.storyboard"; sourceTree = "<group>"; };
 		D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActivityTableViewCell.swift; sourceTree = "<group>"; };
 		F30A96042A27299D00D7BCFE /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/iPhoneOS.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		F310B1EE2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCViewerMedia+VisionKit.swift"; sourceTree = "<group>"; };
@@ -2829,7 +2821,6 @@
 		F7C1CDD91E6DFC6F005D92BE /* Brand */ = {
 			isa = PBXGroup;
 			children = (
-				D52A22F62C7365C40010C82C /* LaunchScreen-IONOS.storyboard */,
 				F761856529E98543006EB3B0 /* Intro */,
 				F700222B1EC479840080073F /* Custom.xcassets */,
 				F7362A1E220C853A005101B5 /* LaunchScreen.storyboard */,
@@ -3682,7 +3673,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D52A22FD2C7365C40010C82C /* LaunchScreen-IONOS.storyboard in Resources */,
 				F7E4022F2BA85D1D007E5609 /* PrivacyInfo.xcprivacy in Resources */,
 				F746EC53273906C50052598D /* NCViewCertificateDetails.storyboard in Resources */,
 			);
@@ -3716,7 +3706,6 @@
 				F7490E8D29882F5B009DCE94 /* Custom.xcassets in Resources */,
 				F7490E8E2988334A009DCE94 /* Localizable.strings in Resources */,
 				F7E4022E2BA85D1D007E5609 /* PrivacyInfo.xcprivacy in Resources */,
-				D52A22FC2C7365C40010C82C /* LaunchScreen-IONOS.storyboard in Resources */,
 				F70716E92987F81500E72C1D /* MainInterface.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3729,7 +3718,6 @@
 				F7148054262ED51000693E51 /* NCListCell.xib in Resources */,
 				F7D57C8626317BDA00DE301D /* NCAccountRequest.storyboard in Resources */,
 				F7E4022C2BA85D1D007E5609 /* PrivacyInfo.xcprivacy in Resources */,
-				D52A22FA2C7365C40010C82C /* LaunchScreen-IONOS.storyboard in Resources */,
 				AF22B209277B4E4C00DAB0CC /* NCCreateFormUploadConflictCell.xib in Resources */,
 				F7CBC1242BAC8B0000EC1D55 /* NCSectionFirstHeaderEmptyData.xib in Resources */,
 				F7B398432A6A91D5007538D6 /* NCSectionFirstHeader.xib in Resources */,
@@ -3750,7 +3738,6 @@
 				F7C7B25128B8B0C400E7115D /* Images.xcassets in Resources */,
 				F7C7B25028B8AD4500E7115D /* Localizable.strings in Resources */,
 				F7E4022A2BA85D1D007E5609 /* PrivacyInfo.xcprivacy in Resources */,
-				D52A22F82C7365C40010C82C /* LaunchScreen-IONOS.storyboard in Resources */,
 				F7346E2328B0FEBA006CE2D2 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3759,7 +3746,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D52A22FB2C7365C40010C82C /* LaunchScreen-IONOS.storyboard in Resources */,
 				F7E4022D2BA85D1D007E5609 /* PrivacyInfo.xcprivacy in Resources */,
 				F746EC52273906C40052598D /* NCViewCertificateDetails.storyboard in Resources */,
 			);
@@ -3822,7 +3808,6 @@
 				F7A60F87292D215000FCE1F2 /* NCShareAccounts.storyboard in Resources */,
 				F761856A29E98543006EB3B0 /* NCIntro.storyboard in Resources */,
 				F719D9E0288D37A300762E33 /* NCColorPicker.storyboard in Resources */,
-				D52A22F72C7365C40010C82C /* LaunchScreen-IONOS.storyboard in Resources */,
 				F7F4F10A27ECDBDB008676F9 /* Inconsolata-ExtraBold.ttf in Resources */,
 				F704B5E72430C06700632F5F /* NCCreateFormUploadConflictCell.xib in Resources */,
 				F7E402292BA85D1D007E5609 /* PrivacyInfo.xcprivacy in Resources */,
@@ -3860,7 +3845,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F7E4022B2BA85D1D007E5609 /* PrivacyInfo.xcprivacy in Resources */,
-				D52A22F92C7365C40010C82C /* LaunchScreen-IONOS.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
