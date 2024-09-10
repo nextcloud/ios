@@ -41,7 +41,7 @@ class NCManageDatabase: NSObject {
 
     override init() {
         func migrationSchema(_ migration: Migration, _ oldSchemaVersion: UInt64) {
-            if oldSchemaVersion < 358 {
+            if oldSchemaVersion < 359 {
                 migration.deleteData(forType: tableMetadata.className())
                 migration.enumerateObjects(ofType: tableDirectory.className()) { _, newObject in
                     newObject?["etag"] = ""
@@ -266,4 +266,9 @@ class NCManageDatabase: NSObject {
         userProfile2.email = "cloudtest@nextcloud.com"
         setAccountUserProfile(account: account2, userProfile: userProfile2)
     }
+}
+
+class NCKeyValue: Object {
+    @Persisted var key: String = ""
+    @Persisted var value: String? = nil
 }

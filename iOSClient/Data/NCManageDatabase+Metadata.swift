@@ -75,6 +75,7 @@ class tableMetadata: Object {
     @objc dynamic var edited: Bool = false
     @objc dynamic var etag = ""
     @objc dynamic var etagResource = ""
+    let exifPhotos = List<NCKeyValue>()
     @objc dynamic var favorite: Bool = false
     @objc dynamic var fileId = ""
     @objc dynamic var fileName = ""
@@ -102,6 +103,7 @@ class tableMetadata: Object {
     @objc public var lockTimeOut: Date?
     @objc dynamic var path = ""
     @objc dynamic var permissions = ""
+    @objc dynamic var placePhotos: String?
     @objc dynamic var quotaUsedBytes: Int64 = 0
     @objc dynamic var quotaAvailableBytes: Int64 = 0
     @objc dynamic var resourceType = ""
@@ -353,6 +355,14 @@ extension NCManageDatabase {
         metadata.downloadURL = file.downloadURL
         metadata.e2eEncrypted = file.e2eEncrypted
         metadata.etag = file.etag
+        for dict in file.exifPhotos {
+            for (key, value) in dict {
+                let keyValue = NCKeyValue()
+                keyValue.key = key
+                keyValue.value = value
+                metadata.exifPhotos.append(keyValue)
+            }
+        }
         metadata.favorite = file.favorite
         metadata.fileId = file.fileId
         metadata.fileName = file.fileName
@@ -376,6 +386,7 @@ extension NCManageDatabase {
         metadata.lockTimeOut = file.lockTimeOut
         metadata.path = file.path
         metadata.permissions = file.permissions
+        metadata.placePhotos = file.placePhotos
         metadata.quotaUsedBytes = file.quotaUsedBytes
         metadata.quotaAvailableBytes = file.quotaAvailableBytes
         metadata.richWorkspace = file.richWorkspace
