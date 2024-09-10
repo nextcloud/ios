@@ -33,7 +33,7 @@ class NCViewer: NSObject {
     private var metadata = tableMetadata()
     private var metadatas: [tableMetadata] = []
 
-    func view(viewController: UIViewController, metadata: tableMetadata, metadatas: [tableMetadata], image: UIImage? = nil) {
+    func view(viewController: UIViewController, metadata: tableMetadata, metadatas: [tableMetadata], indexMetadatas: Int = 0, image: UIImage? = nil) {
         self.metadata = metadata
         self.metadatas = metadatas
         let session = NCSession.shared.getSession(account: metadata.account)
@@ -64,14 +64,7 @@ class NCViewer: NSObject {
         if metadata.isImage || metadata.isAudioOrVideo {
             if let navigationController = viewController.navigationController,
                let viewerMediaPageContainer: NCViewerMediaPage = UIStoryboard(name: "NCViewerMediaPage", bundle: nil).instantiateInitialViewController() as? NCViewerMediaPage {
-                var index = 0
-                for medatasImage in metadatas {
-                    if medatasImage.ocId == metadata.ocId {
-                        viewerMediaPageContainer.currentIndex = index
-                        break
-                    }
-                    index += 1
-                }
+                viewerMediaPageContainer.currentIndex = indexMetadatas
                 viewerMediaPageContainer.metadatas = metadatas
                 viewerMediaPageContainer.delegateViewController = viewController
                 navigationController.pushViewController(viewerMediaPageContainer, animated: true)

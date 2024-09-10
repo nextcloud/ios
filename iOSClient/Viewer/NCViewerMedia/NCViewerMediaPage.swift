@@ -54,7 +54,7 @@ class NCViewerMediaPage: UIViewController {
     var metadatas: [tableMetadata] = []
     var delegateViewController: UIViewController?
     var modifiedOcId: [String] = []
-    var currentIndex = 0
+    var currentIndex: Int = 0
     var nextIndex: Int?
     var panGestureRecognizer: UIPanGestureRecognizer!
     var singleTapGestureRecognizer: UITapGestureRecognizer!
