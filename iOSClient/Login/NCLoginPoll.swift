@@ -57,13 +57,12 @@ struct NCLoginPoll: View {
 						dismiss()
 					}
 					.disabled(loginManager.isLoading || cancelButtonDisabled)
-					.buttonStyle(.loginPoll)
+					.buttonStyle(.loginPollCancel)
 					
 					Button(NSLocalizedString("_retry_", comment: "")) {
 						loginManager.openLoginInBrowser()
 					}
-					.buttonStyle(.loginPoll)
-					
+					.buttonStyle(.loginPollRetry)
 				}
 				.padding()
 				.padding(.bottom, size.height * 0.15)
@@ -105,8 +104,24 @@ struct NCLoginPoll: View {
     }
 }
 
-struct LoginPollButtonStyle: ButtonStyle {
+struct LoginPollButtonCancelStyle: ButtonStyle {
 	private var idiom : UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
+	@Environment(\.isEnabled) private var isEnabled: Bool
+	
+	private func foregroundColor(for configuration: Configuration) -> Color {
+		if isEnabled {
+			return configuration.isPressed ? Color(.Launch.loginPollCancelTextSelected) : Color(.Launch.loginPollCancelNormal)
+		}
+		return Color(.Launch.loginPollCancelDisabled)
+	}
+	
+	private func borderColor(for configuration: Configuration) -> Color {
+		isEnabled ? Color(.Launch.loginPollCancelNormal) : Color(.Launch.loginPollCancelDisabled)
+	}
+	
+	private func backgroundColor(for configuration: Configuration) -> Color {
+		configuration.isPressed ? Color(.Launch.loginPollCancelNormal) : .clear
+	}
 	
 	func makeBody(configuration: Configuration) -> some View {
 		configuration.label
@@ -114,19 +129,57 @@ struct LoginPollButtonStyle: ButtonStyle {
 			.frame(width: idiom == .phone ? 100 : 240
 				   , height: 32)
 			.padding()
-			.foregroundStyle(configuration.isPressed ? Color(.Launch.loginButtonText) : .white)
+			.foregroundStyle(foregroundColor(for: configuration))
 			.background{
 				Capsule(style: .continuous)
-					.stroke( .white, lineWidth: 3)
+					.stroke( borderColor(for: configuration), lineWidth: 3)
 					.background(content: {
-						 Capsule().fill(configuration.isPressed ? .white : .clear)
+						Capsule().fill(backgroundColor(for: configuration))
 					})
 			}
 	}
 }
 
-extension ButtonStyle where Self == LoginPollButtonStyle {
-	static var loginPoll: Self {
+struct LoginPollButtonRetryStyle: ButtonStyle {
+	private var idiom : UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
+	@Environment(\.isEnabled) private var isEnabled: Bool
+	
+	private func foregroundColor(for configuration: Configuration) -> Color {
+		isEnabled ? Color(.Launch.loginPollCancelNormal): Color(.Launch.loginPollCancelDisabled)
+	}
+	
+	private func backgroundColor(for configuration: Configuration) -> Color {
+		if isEnabled {
+			return configuration.isPressed ? Color(.Launch.loginPollRetrySelected) : Color(.Launch.loginPollRetryNormal)
+		}
+		return Color(.Launch.loginPollRetryDisabled)
+	}
+	
+	func makeBody(configuration: Configuration) -> some View {
+		configuration.label
+			.font(.title2)
+			.frame(width: idiom == .phone ? 100 : 240
+				   , height: 32)
+			.padding()
+			.foregroundStyle(foregroundColor(for: configuration))
+			.background{
+				Capsule(style: .continuous)
+					.stroke(backgroundColor(for: configuration), lineWidth: 3)
+					.background(content: {
+						Capsule().fill(backgroundColor(for: configuration))
+					})
+			}
+	}
+}
+
+extension ButtonStyle where Self == LoginPollButtonCancelStyle {
+	static var loginPollCancel: Self {
+		return .init()
+	}
+}
+
+extension ButtonStyle where Self == LoginPollButtonRetryStyle {
+	static var loginPollRetry: Self {
 		return .init()
 	}
 }
