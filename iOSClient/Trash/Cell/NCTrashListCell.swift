@@ -112,10 +112,8 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
         }
         if status {
 			imageSelect.image = NCImageCache.images.checkedYes?.image(color: checkImagesColor)
-            separator.isHidden = true
         } else {
             imageSelect.image = NCImageCache.images.checkedNo?.image(color: checkImagesColor)
-            separator.isHidden = false
         }
 
     }
