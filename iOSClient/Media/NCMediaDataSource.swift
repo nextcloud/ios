@@ -90,14 +90,6 @@ extension NCMedia {
                 }
             }
 
-            if lessDate == Date.distantFuture,
-               greaterDate == Date.distantPast,
-               countMetadatas > collectionView.visibleCells.count {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media oops. something is bad (distantFuture, distantPast): \(countMetadatas)")
-                self.hasRun = false
-                return
-            }
-
             if collectionView.visibleCells.count + 100 > limit {
                 limit = collectionView.visibleCells.count + 100
             }
@@ -120,20 +112,18 @@ extension NCMedia {
                     predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.getPredicate(showAll: true)])
 
                     self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
-                        let resultsUpdate = self.database.updateMetadatas(metadatas, predicate: predicate)
-                        let isChanged: Bool = (resultsUpdate.metadatasDifferentCount != 0 || resultsUpdate.metadatasModified != 0)
 
-                        NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] End searchMedia UpdateMetadatas with differentCount \(resultsUpdate.metadatasDifferentCount), modified \(resultsUpdate.metadatasModified)")
+                        self.database.addMetadatas(metadatas)
 
-                        if lessDate == Date.distantFuture, greaterDate == Date.distantPast, !isChanged, metadatas.count == 0 {
+                        /*
+                        let results = NCManageDatabase.shared.getResultMetadatas(predicate: predicate, sortedByKeyPath: "date")
+                        */
+
+                        if lessDate == Date.distantFuture, greaterDate == Date.distantPast, metadatas.count == 0 {
                             self.dataSource.removeAll()
                             self.collectionViewReloadData()
-                            print("searchMediaUI: metadatacount 0")
-                        } else if isChanged {
-                            self.reloadDataSource()
-                            print("searchMediaUI: changed")
                         } else {
-                            print("searchMediaUI: nothing")
+                            self.reloadDataSource()
                         }
                     }
                 } else {
