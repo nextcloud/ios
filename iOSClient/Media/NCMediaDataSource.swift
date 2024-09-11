@@ -105,8 +105,8 @@ extension NCMedia {
                                             options: options) { account, files, _, error in
                 if error == .success,
                    let files,
-                   let greaterDate = files.first?.date,
-                   let lessDate = files.last?.date,
+                   let greaterDate = files.min(by: { $0.date < $1.date })?.date,
+                   let lessDate = files.max(by: { $0.date < $1.date })?.date,
                    self.session.account == account {
 
                     self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
