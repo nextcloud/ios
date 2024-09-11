@@ -269,7 +269,7 @@ class NCImageCache: NSObject {
         let canShareImage = UIImage(resource: .Share.canShare).withTintColor(NCBrandColor.shared.brandElement)
         images.shared = canShareImage
         images.canShare = canShareImage
-        images.shareByLink = UIImage(resource: .Share.shared).withTintColor(NCBrandColor.shared.brandElement)
+        images.shareByLink = UIImage(resource: .Share.shared)
 
         images.favorite = NCImagesRepository.favorite
         images.livePhoto = NCImagesRepository.livePhoto

@@ -111,17 +111,10 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
             backgroundView = nil
         }
         if status {
-            var blurEffectView: UIView?
-            blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .systemMaterial))
-            blurEffectView?.backgroundColor = .lightGray
-            blurEffectView?.frame = self.bounds
-            blurEffectView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 			imageSelect.image = NCImageCache.images.checkedYes?.image(color: checkImagesColor)
-            backgroundView = blurEffectView
             separator.isHidden = true
         } else {
             imageSelect.image = NCImageCache.images.checkedNo?.image(color: checkImagesColor)
-            backgroundView = nil
             separator.isHidden = false
         }
 
