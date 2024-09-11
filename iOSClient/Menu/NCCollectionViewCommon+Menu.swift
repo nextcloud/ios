@@ -72,10 +72,14 @@ extension NCCollectionViewCommon {
         // DETAILS
         //
         if !NCGlobal.shared.disableSharesView {
+			let iconName = "info"
+			let color = UIColor.menuIconTint
+			let icon = UIImage(named: iconName)?.image(color: color) ?? utility.loadImage(named: iconName, colors: [color])
+			
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_details_", comment: ""),
-                    icon: utility.loadImage(named: "info", colors: [.menuIconTint]),
+					icon: icon,
                     order: 10,
                     action: { _ in
                         NCActionCenter.shared.openShare(viewController: self, metadata: metadata, page: .activity)
@@ -192,10 +196,15 @@ extension NCCollectionViewCommon {
         // FIXME: PROPPATCH doesn't work
         // https://github.com/nextcloud/files_lock/issues/68
         if !metadata.lock {
+			let fillName = "star.fill"
+			let hollowName = "star.hollow"
+			let color = UIColor.menuIconTint
+			
+			let favIcon = UIImage(named: metadata.favorite ? fillName : hollowName)?.image(color: color) ?? utility.loadImage(named: metadata.favorite ? fillName : hollowName, colors: [color])
             actions.append(
                 NCMenuAction(
                     title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
-                    icon: utility.loadImage(named: metadata.favorite ? "star.fill" : "star", colors: [.menuIconTint]),
+					icon: favIcon,
                     order: 50,
                     action: { _ in
                         NCNetworking.shared.favoriteMetadata(metadata) { error in
