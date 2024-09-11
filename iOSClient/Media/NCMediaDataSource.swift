@@ -50,6 +50,7 @@ extension NCMedia {
         self.lockQueue.sync {
             guard !self.hasRun,
                   !isEditMode,
+                  NCNetworking.shared.downloadThumbnailQueue.operationCount == 0,
                   let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account))
             else { return }
             self.hasRun = true
