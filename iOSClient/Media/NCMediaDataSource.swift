@@ -37,13 +37,6 @@ extension NCMedia {
         }
     }
 
-    func collectionViewReloadData() {
-        DispatchQueue.main.async {
-            self.collectionView.reloadData()
-            self.setTitleDate()
-        }
-    }
-
     // MARK: - Search media
 
     @objc func searchMediaUI(_ distant: Bool = false) {
@@ -63,7 +56,10 @@ extension NCMedia {
             let countMetadatas = self.dataSource.getMetadatas().count
             let options = NKRequestOptions(timeout: 120, taskDescription: self.taskDescriptionRetrievesProperties, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
-            if countMetadatas == 0 { self.collectionViewReloadData() }
+            if countMetadatas == 0 {
+                collectionView.reloadData()
+                setTitleDate()
+            }
 
             if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }), !distant {
 
@@ -125,7 +121,10 @@ extension NCMedia {
 
                         if lessDate == Date.distantFuture, greaterDate == Date.distantPast, metadatas.count == 0 {
                             self.dataSource.removeAll()
-                            self.collectionViewReloadData()
+                            DispatchQueue.main.async {
+                                self.collectionView.reloadData()
+                                self.setTitleDate()
+                            }
                         } else {
                             self.reloadDataSource()
                         }

@@ -1004,8 +1004,26 @@ class NCOperationFileExists: ConcurrentOperation {
 
         let options = NKRequestOptions(timeout: 10, createProperties: [], queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
+        /*
+        let requestId =
+        """
+        <?xml version=\"1.0\" encoding=\"UTF-8\"?>
+        <d:propertyupdate xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">
+            <d:set>
+                <d:prop>
+                    <d:getetag />
+                    <fileid xmlns=\"http://owncloud.org/ns\"/>
+                    <id xmlns=\"http://owncloud.org/ns\"/>
+                </d:prop>
+            </d:set>
+        </d:propertyupdate>
+        """
+        let requestBody = requestId.data(using: .utf8)
+        */
+
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName,
                                              depth: "0",
+                                             requestBody: nil,
                                              account: account,
                                              options: options) { _, _, _, error in
             if error == .success {

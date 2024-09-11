@@ -253,6 +253,8 @@ class NCMedia: UIViewController {
         if !fileExists {
             dataSource.removeMetadata([ocId])
             database.deleteMetadataOcId(ocId)
+            collectionView.reloadData()
+            setTitleDate()
         }
     }
 
