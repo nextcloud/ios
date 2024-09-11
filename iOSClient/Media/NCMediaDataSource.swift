@@ -87,16 +87,6 @@ extension NCMedia {
                         greaterDate = Date.distantPast
                     }
                 }
-
-                /*
-                if lessDate == Date.distantFuture,
-                   greaterDate == Date.distantPast,
-                   countMetadatas > visibleCells.count {
-                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media oops. something is bad (distantFuture, distantPast): \(countMetadatas)")
-                    self.hasRun = false
-                    return
-                }
-                */
             }
 
             if countMetadatas == 0 { self.collectionViewReloadData() }
@@ -115,8 +105,8 @@ extension NCMedia {
                                             limit: limit,
                                             showHiddenFiles: NCKeychain().showHiddenFiles,
                                             account: self.session.account,
-                                            options: options) { _, files, _, error in
-                if error == .success, let files {
+                                            options: options) { account, files, _, error in
+                if error == .success, let files, self.session.account == account {
 
                     var predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
                     predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.getPredicate(showAll: true)])
