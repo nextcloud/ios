@@ -219,10 +219,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     func hideSeparator(_ status: Bool) {
         separator.isHidden = status
     }
-
-	var checkImagesColor: UIColor {
-		UIColor(named: "FileActionsHeader/GrayButtonTint") ?? .lightGray
-	}
 	
     func selected(_ status: Bool, isEditMode: Bool) {
         if isEditMode {
@@ -244,10 +240,10 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             setA11yActions()
         }
         if status {
-			imageSelect.image = NCImageCache.images.checkedYes?.image(color: checkImagesColor)
+            imageSelect.image = NCImageCache.images.checkedYes?.image(color: NCBrandColor.shared.brandElement)
             separator.isHidden = true
         } else {
-			imageSelect.image = NCImageCache.images.checkedNo?.image(color: checkImagesColor)
+			imageSelect.image = NCImageCache.images.checkedNo?.image(color: NCBrandColor.shared.brandElement)
             separator.isHidden = false
         }
 
