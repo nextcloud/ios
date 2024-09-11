@@ -1111,7 +1111,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     // MARK: - Header size
 
-    func isHeaderMenuTransferViewEnabled() -> Results<tableMetadata>? {
+    func isHeaderMenuTransferViewEnabled() -> [tableMetadata]? {
         if headerMenuTransferView,
            NCNetworking.shared.isOnline,
            let results = database.getResultsMetadatas(predicate: NSPredicate(format: "status IN %@", [global.metadataStatusWaitUpload, global.metadataStatusUploading])),

@@ -186,12 +186,12 @@ extension NCNetworking {
 
         if let metadata {
             self.database.deleteMetadataOcId(metadata.ocId)
-        } else if let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND session == %@",
+        } else if let metadatas = self.database.getResultsMetadatas(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND session == %@",
                                                                                          self.global.metadataStatusWaitUpload,
                                                                                          self.global.metadataStatusUploading,
                                                                                          self.global.metadataStatusUploadError,
                                                                                                    sessionUpload)) {
-            self.database.deleteMetadata(results: results)
+            self.database.deleteMetadatas(metadatas)
         }
     }
 
@@ -227,7 +227,7 @@ extension NCNetworking {
 
                 if let metadata {
                     self.database.deleteMetadataOcId(metadata.ocId)
-                } else if let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND (session == %@ || session == %@ || session == %@)",
+                } else if let metadatas = self.database.getResultsMetadatas(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND (session == %@ || session == %@ || session == %@)",
                                                                                                  self.global.metadataStatusWaitUpload,
                                                                                                  self.global.metadataStatusUploading,
                                                                                                  self.global.metadataStatusUploadError,
@@ -235,7 +235,7 @@ extension NCNetworking {
                                                                                                            sessionUploadBackgroundWWan,
                                                                                                            sessionUploadBackgroundExt
                                                                                                           )) {
-                    self.database.deleteMetadata(results: results)
+                    self.database.deleteMetadatas(metadatas)
                 }
             }
         }

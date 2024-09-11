@@ -27,20 +27,14 @@ import NextcloudKit
 extension NCMedia {
     func reloadDataSource() {
         DispatchQueue.global().async {
-            let metadatas = self.database.getResultsMediaMetadatas(predicate: self.getPredicate())
-            self.dataSource = NCMediaDataSource(metadatas: metadatas)
+            if let metadatas = self.database.getResultsMetadatas(predicate: self.getPredicate(filterLivePhotoFile: true), sortedByKeyPath: "date") {
+                self.dataSource = NCMediaDataSource(metadatas: metadatas)
+            }
             DispatchQueue.main.async {
                 self.collectionView.reloadData()
                 self.refreshControl.endRefreshing()
                 self.setTitleDate()
             }
-        }
-    }
-
-    func collectionViewReloadData() {
-        DispatchQueue.main.async {
-            self.collectionView.reloadData()
-            self.setTitleDate()
         }
     }
 
@@ -58,17 +52,20 @@ extension NCMedia {
             var limit = 300
             var lessDate = Date.distantFuture
             var greaterDate = Date.distantPast
-            let firstMetadataDate = self.dataSource.getMetadatas().first?.date
-            let lastMetadataDate = self.dataSource.getMetadatas().last?.date
             let countMetadatas = self.dataSource.getMetadatas().count
             let options = NKRequestOptions(timeout: 120, taskDescription: self.taskDescriptionRetrievesProperties, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+            var firstCellDate: Date?
+            var lastCellDate: Date?
 
-            if countMetadatas == 0 { self.collectionViewReloadData() }
+            if countMetadatas == 0 {
+                collectionView.reloadData()
+                setTitleDate()
+            }
 
             if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }), !distant {
 
-                let firstCellDate = (visibleCells.first as? NCGridMediaCell)?.date
-                if firstCellDate == firstMetadataDate {
+                firstCellDate = (visibleCells.first as? NCGridMediaCell)?.date
+                if firstCellDate == self.dataSource.getMetadatas().first?.date {
                     lessDate = Date.distantFuture
                 } else {
                     if let date = firstCellDate {
@@ -78,8 +75,8 @@ extension NCMedia {
                     }
                 }
 
-                let lastCellDate = (visibleCells.last as? NCGridMediaCell)?.date
-                if lastCellDate == lastMetadataDate {
+                lastCellDate = (visibleCells.last as? NCGridMediaCell)?.date
+                if lastCellDate == self.dataSource.getMetadatas().last?.date {
                     greaterDate = Date.distantPast
                 } else {
                     if let date = lastCellDate {
@@ -106,30 +103,46 @@ extension NCMedia {
                                             showHiddenFiles: NCKeychain().showHiddenFiles,
                                             account: self.session.account,
                                             options: options) { account, files, _, error in
-                if error == .success, let files, self.session.account == account {
-
-                    var predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-                    predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.getPredicate(showAll: true)])
+                if error == .success,
+                   let files,
+                   // let greaterDate = files.min(by: { $0.date < $1.date })?.date,
+                   // let lessDate = files.max(by: { $0.date < $1.date })?.date,
+                   self.session.account == account {
 
                     self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
-                        let resultsUpdate = self.database.updateMetadatas(metadatas, predicate: predicate)
-                        let isChanged: Bool = (resultsUpdate.metadatasDifferentCount != 0 || resultsUpdate.metadatasModified != 0)
+                        self.database.addMetadatas(metadatas)
 
-                        NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] End searchMedia UpdateMetadatas with differentCount \(resultsUpdate.metadatasDifferentCount), modified \(resultsUpdate.metadatasModified)")
+                        if let firstCellDate, let lastCellDate {
+                            let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [ NSPredicate(format: "date >= %@ AND date =< %@", lastCellDate as NSDate, firstCellDate as NSDate), self.getPredicate(filterLivePhotoFile: false)])
 
-                        if lessDate == Date.distantFuture, greaterDate == Date.distantPast, !isChanged, metadatas.count == 0 {
+                            if let resultsMetadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: predicate) {
+                                print(resultsMetadatas.count)
+                                for metadata in resultsMetadatas {
+                                    if NCNetworking.shared.fileExistsQueue.operations.filter({ ($0 as? NCOperationFileExists)?.ocId == metadata.ocId }).isEmpty {
+                                        NCNetworking.shared.fileExistsQueue.addOperation(NCOperationFileExists(metadata: metadata))
+                                    }
+                                }
+                            }
+                        }
+
+                        if lessDate == Date.distantFuture, greaterDate == Date.distantPast, metadatas.count == 0 {
                             self.dataSource.removeAll()
-                            self.collectionViewReloadData()
-                            print("searchMediaUI: metadatacount 0")
-                        } else if isChanged {
-                            self.reloadDataSource()
-                            print("searchMediaUI: changed")
+                            DispatchQueue.main.async {
+                                self.collectionView.reloadData()
+                                self.setTitleDate()
+                            }
                         } else {
-                            print("searchMediaUI: nothing")
+                            self.reloadDataSource()
                         }
                     }
+                } else if error == .success {
+                    self.reloadDataSource()
                 } else {
-                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(error.errorCode) " + error.errorDescription)
+                    DispatchQueue.main.async {
+                        NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(error.errorCode) " + error.errorDescription)
+                        self.collectionView.reloadData()
+                        self.setTitleDate()
+                    }
                 }
                 DispatchQueue.main.async {
                     self.activityIndicator.stopAnimating()
@@ -139,13 +152,19 @@ extension NCMedia {
         }
     }
 
-    func getPredicate(showAll: Bool = false) -> NSPredicate {
+    func getPredicate(filterLivePhotoFile: Bool) -> NSPredicate {
         guard let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else { return NSPredicate() }
         let startServerUrl = NCUtilityFileSystem().getHomeServer(session: session) + tableAccount.mediaPath
 
-        if showAll {
-            return NSPredicate(format: showAllPredicateMediaString, session.account, startServerUrl)
-        } else if showOnlyImages {
+        var showBothPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND hasPreview == true AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload')"
+        var showOnlyPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND hasPreview == true AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')"
+
+        if filterLivePhotoFile {
+            showBothPredicateMediaString = showBothPredicateMediaString + " AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
+            showOnlyPredicateMediaString = showOnlyPredicateMediaString + " AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
+        }
+
+        if showOnlyImages {
             return NSPredicate(format: showOnlyPredicateMediaString, session.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue)
         } else if showOnlyVideos {
             return NSPredicate(format: showOnlyPredicateMediaString, session.account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)

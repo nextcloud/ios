@@ -69,10 +69,6 @@ class NCMedia: UIViewController {
     var photoImage = UIImage()
     var videoImage = UIImage()
 
-    let showAllPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND hasPreview == true AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload')"
-    let showBothPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND hasPreview == true AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
-    let showOnlyPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND hasPreview == true AND classFile == %@ AND NOT (session CONTAINS[c] 'upload') AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
-
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: tabBarController)
     }
@@ -141,6 +137,16 @@ class NCMedia: UIViewController {
             self.dataSource.removeAll()
             self.searchMediaUI(true)
         }
+
+        NotificationCenter.default.addObserver(self, selector: #selector(fileExists(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFileExists), object: nil)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(uploadedLivePhoto(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedLivePhoto), object: nil)
+
+        reloadDataSource()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -155,24 +161,20 @@ class NCMedia: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(copyFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCopyFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(enterForeground(_:)), name: UIApplication.willEnterForegroundNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
-        searchMediaUI()
+        searchNewMedia()
         createMenu()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCopyFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: UIApplication.willEnterForegroundNotification, object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
         // Cancel Queue & Retrieves Properties
         NCNetworking.shared.downloadThumbnailQueue.cancelAll()
@@ -241,6 +243,19 @@ class NCMedia: UIViewController {
         searchNewMedia()
     }
 
+    @objc func fileExists(_ notification: NSNotification) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String,
+              let fileExists = userInfo["fileExists"] as? Bool else { return }
+
+        if !fileExists {
+            dataSource.removeMetadata([ocId])
+            database.deleteMetadataOcId(ocId)
+            collectionView.reloadData()
+            setTitleDate()
+        }
+    }
+
     @objc func uploadedFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let error = userInfo["error"] as? NKError,
@@ -250,6 +265,22 @@ class NCMedia: UIViewController {
            metadata.isImageOrVideo {
             dataSource.addMetadata(metadata)
             collectionView.reloadData()
+        }
+    }
+
+    @objc func uploadedLivePhoto(_ notification: NSNotification) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let error = userInfo["error"] as? NKError,
+              let ocId = userInfo["ocId"] as? String else { return }
+
+        if error == .success, let metadata = database.getMetadataFromOcId(ocId) {
+            if metadata.isImage {
+                dataSource.addMetadata(metadata)
+                collectionView.reloadData()
+            } else if let metadataImage = self.database.getResultMetadata(predicate: NSPredicate(format: "account == %@ AND fileId == %@", metadata.account, metadata.livePhotoFile)) {
+                dataSource.addMetadata(metadataImage)
+                collectionView.reloadData()
+            }
         }
     }
 

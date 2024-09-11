@@ -148,7 +148,8 @@ extension NCMedia {
                 self.layoutType = NCGlobal.shared.mediaLayoutRatio
             }
             self.createMenu()
-            self.collectionViewReloadData()
+            self.collectionView.reloadData()
+            self.setTitleDate()
         }
 
         let viewOptionsMedia = UIMenu(title: "", options: .displayInline, children: [

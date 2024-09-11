@@ -119,7 +119,7 @@ extension NCManageDatabase {
         return metadataUpdated
     }
 
-    func clearMetadataSession(metadatas: Results<tableMetadata>) {
+    func clearMetadataSession(metadatas: [tableMetadata]) {
         do {
             let realm = try Realm()
             try realm.write {

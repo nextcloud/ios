@@ -987,3 +987,51 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
         }
     }
 }
+
+class NCOperationFileExists: ConcurrentOperation {
+    var serverUrlFileName: String
+    var account: String
+    var ocId: String
+
+    init(metadata: tableMetadata) {
+        serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+        account = metadata.account
+        ocId = metadata.ocId
+    }
+
+    override func start() {
+        guard !isCancelled else { return self.finish() }
+
+        let options = NKRequestOptions(timeout: 10, createProperties: [], queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+
+        /*
+        let requestId =
+        """
+        <?xml version=\"1.0\" encoding=\"UTF-8\"?>
+        <d:propertyupdate xmlns:d=\"DAV:\" xmlns:oc=\"http://owncloud.org/ns\" xmlns:nc=\"http://nextcloud.org/ns\">
+            <d:set>
+                <d:prop>
+                    <d:getetag />
+                    <fileid xmlns=\"http://owncloud.org/ns\"/>
+                    <id xmlns=\"http://owncloud.org/ns\"/>
+                </d:prop>
+            </d:set>
+        </d:propertyupdate>
+        """
+        let requestBody = requestId.data(using: .utf8)
+        */
+
+        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName,
+                                             depth: "0",
+                                             requestBody: nil,
+                                             account: account,
+                                             options: options) { _, _, _, error in
+            if error == .success {
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterFileExists, userInfo: ["ocId": self.ocId, "fileExists": true])
+            } else if error.errorCode == NCGlobal.shared.errorResourceNotFound {
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterFileExists, userInfo: ["ocId": self.ocId, "fileExists": false])
+            }
+            self.finish()
+        }
+    }
+}
