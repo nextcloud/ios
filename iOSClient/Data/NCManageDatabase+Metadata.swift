@@ -1075,7 +1075,7 @@ extension NCManageDatabase {
             let realm = try Realm()
             realm.refresh()
             if let sortedByKeyPath {
-                let results =  realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sortedByKeyPath, ascending: ascending)
+                let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sortedByKeyPath, ascending: ascending)
                 return Array(results)
             } else {
                 let results = realm.objects(tableMetadata.self).filter(predicate)

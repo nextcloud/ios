@@ -115,7 +115,7 @@ extension NCMedia {
 
                         let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [ NSPredicate(format: "date >= %@ AND date =< %@", greaterDate as NSDate, lessDate as NSDate), self.getPredicate()])
 
-                        if let resultsMetadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: predicate, sortedByKeyPath: "date") {
+                        if let resultsMetadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: predicate) {
                             for metadata in resultsMetadatas {
                                 if NCNetworking.shared.fileExistsQueue.operations.filter({ ($0 as? NCOperationFileExists)?.ocId == metadata.ocId }).isEmpty {
                                     NCNetworking.shared.fileExistsQueue.addOperation(NCOperationFileExists(metadata: metadata))
