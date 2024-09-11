@@ -218,7 +218,7 @@ public class NCMediaDataSource: NSObject {
 
     internal func appendMetadata(_ metadata: tableMetadata) {
         self.metadatas.append(Metadata(account: metadata.account,
-                                       date: metadata.datePhotosOriginal as Date,
+                                       date: metadata.date as Date,
                                        etag: metadata.etag,
                                        fileId: metadata.fileId,
                                        etagResource: metadata.etagResource,
