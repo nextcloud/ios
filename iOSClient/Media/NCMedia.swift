@@ -35,6 +35,9 @@ class NCMedia: UIViewController {
     @IBOutlet weak var menuButton: UIButton!
     @IBOutlet weak var gradientView: UIView!
 
+    let lockQueue = DispatchQueue(label: "com.nextcloud.mediasearch.lockqueue")
+    var hasRun: Bool = false
+
     let layout = NCMediaLayout()
     var layoutType = NCGlobal.shared.mediaLayoutRatio
     var documentPickerViewController: NCDocumentPickerViewController?
@@ -46,7 +49,6 @@ class NCMedia: UIViewController {
     var dataSource = NCMediaDataSource()
     var serverUrl = ""
     let refreshControl = UIRefreshControl()
-    var loadingTask: Task<Void, any Error>?
     let taskDescriptionRetrievesProperties = "retrievesProperties"
     var isTop: Bool = true
     var isEditMode = false
