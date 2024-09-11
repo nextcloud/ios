@@ -36,7 +36,7 @@ class NCMedia: UIViewController {
     @IBOutlet weak var gradientView: UIView!
 
     let lockQueue = DispatchQueue(label: "com.nextcloud.mediasearch.lockqueue")
-    var hasRun: Bool = false
+    var hasRunSearchMedia: Bool = false
 
     let layout = NCMediaLayout()
     var layoutType = NCGlobal.shared.mediaLayoutRatio
@@ -150,7 +150,7 @@ class NCMedia: UIViewController {
 
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedLivePhoto(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedLivePhoto), object: nil)
 
-        reloadDataSource()
+        NotificationCenter.default.addObserver(self, selector: #selector(endTask), name: UIApplication.didEnterBackgroundNotification, object: nil)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -180,17 +180,7 @@ class NCMedia: UIViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: UIApplication.willEnterForegroundNotification, object: nil)
 
-        // Cancel Queue & Retrieves Properties
-        NCNetworking.shared.downloadThumbnailQueue.cancelAll()
-        if let nkSession = NextcloudKit.shared.nkCommonInstance.getSession(account: session.account) {
-            nkSession.sessionData.session.getTasksWithCompletionHandler { dataTasks, _, _ in
-                dataTasks.forEach {
-                    if $0.taskDescription == self.taskDescriptionRetrievesProperties {
-                        $0.cancel()
-                    }
-                }
-            }
-        }
+        endTask()
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -229,6 +219,21 @@ class NCMedia: UIViewController {
     }
 
     // MARK: - NotificationCenter
+
+    @objc func endTask() {
+        NCNetworking.shared.fileExistsQueue.cancelAll()
+        NCNetworking.shared.downloadThumbnailQueue.cancelAll()
+
+        if let nkSession = NextcloudKit.shared.nkCommonInstance.getSession(account: session.account) {
+            nkSession.sessionData.session.getTasksWithCompletionHandler { dataTasks, _, _ in
+                dataTasks.forEach {
+                    if $0.taskDescription == self.taskDescriptionRetrievesProperties {
+                        $0.cancel()
+                    }
+                }
+            }
+        }
+    }
 
     @objc func deleteFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
