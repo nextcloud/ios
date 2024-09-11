@@ -77,6 +77,10 @@ class NCMedia: UIViewController {
         self.tabBarController as? NCMainTabBarController
     }
 
+    var isViewActived: Bool {
+        return self.isViewLoaded && self.view.window != nil
+    }
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {

@@ -42,7 +42,8 @@ extension NCMedia {
 
     @objc func searchMediaUI(_ distant: Bool = false) {
         self.lockQueue.sync {
-            guard !self.hasRun,
+            guard self.isViewActived,
+                  !self.hasRun,
                   !isEditMode,
                   NCNetworking.shared.downloadThumbnailQueue.operationCount == 0,
                   let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account))
@@ -105,14 +106,12 @@ extension NCMedia {
                                             options: options) { account, files, _, error in
                 if error == .success,
                    let files,
-                   // let greaterDate = files.min(by: { $0.date < $1.date })?.date,
-                   // let lessDate = files.max(by: { $0.date < $1.date })?.date,
                    self.session.account == account {
 
                     self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
                         self.database.addMetadatas(metadatas)
 
-                        if let firstCellDate, let lastCellDate {
+                        if let firstCellDate, let lastCellDate, self.isViewActived {
                             let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [ NSPredicate(format: "date >= %@ AND date =< %@", lastCellDate as NSDate, firstCellDate as NSDate), self.getPredicate(filterLivePhotoFile: false)])
 
                             if let resultsMetadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: predicate) {
@@ -131,7 +130,7 @@ extension NCMedia {
                                 self.collectionView.reloadData()
                                 self.setTitleDate()
                             }
-                        } else {
+                        } else if self.isViewActived {
                             self.reloadDataSource()
                         }
                     }
