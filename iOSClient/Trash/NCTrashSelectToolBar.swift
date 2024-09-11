@@ -28,34 +28,30 @@ protocol NCTrashSelectTabBarDelegate: AnyObject {
     func delete()
 }
 
-class NCTrashSelectTabBar: ObservableObject {
-    var tabBarController: UITabBarController?
+class NCTrashSelectToolBar: ObservableObject {
     var hostingController: UIViewController?
     open weak var delegate: NCTrashSelectTabBarDelegate?
 
     @Published var isSelectedEmpty = true
 
-    init(tabBarController: UITabBarController? = nil, delegate: NCTrashSelectTabBarDelegate? = nil) {
+	init(containerView: UIView, placeholderFrame: CGRect, delegate: NCTrashSelectTabBarDelegate? = nil) {
         let rootView = NCTrashSelectTabBarView(tabBarSelect: self)
         hostingController = UIHostingController(rootView: rootView)
 
-        self.tabBarController = tabBarController
         self.delegate = delegate
 
-        guard let tabBarController, let hostingController else { return }
+        guard let hostingController else { return }
 
-        tabBarController.view.addSubview(hostingController.view)
+		containerView.addSubview(hostingController.view)
 
-        hostingController.view.frame = tabBarController.tabBar.frame
+        hostingController.view.frame = placeholderFrame
         hostingController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         hostingController.view.backgroundColor = .clear
         hostingController.view.isHidden = true
     }
 
     func show() {
-        guard let tabBarController, let hostingController else { return }
-
-        tabBarController.tabBar.isHidden = true
+        guard let hostingController else { return }
 
         if hostingController.view.isHidden {
             hostingController.view.isHidden = false
@@ -69,10 +65,7 @@ class NCTrashSelectTabBar: ObservableObject {
     }
 
     func hide() {
-        guard let tabBarController, let hostingController else { return }
-
-        hostingController.view.isHidden = true
-        tabBarController.tabBar.isHidden = false
+        hostingController?.view.isHidden = true
     }
 
     func update(selectOcId: [String]) {
@@ -86,7 +79,7 @@ class NCTrashSelectTabBar: ObservableObject {
 }
 
 struct NCTrashSelectTabBarView: View {
-    @ObservedObject var tabBarSelect: NCTrashSelectTabBar
+    @ObservedObject var tabBarSelect: NCTrashSelectToolBar
     @Environment(\.verticalSizeClass) var sizeClass
 
     var body: some View {
@@ -131,8 +124,4 @@ struct NCTrashSelectTabBarView: View {
         .background(.thinMaterial)
         .overlay(Rectangle().frame(width: nil, height: 0.5, alignment: .top).foregroundColor(Color(UIColor.separator)), alignment: .top)
     }
-}
-
-#Preview {
-    NCTrashSelectTabBarView(tabBarSelect: NCTrashSelectTabBar())
 }

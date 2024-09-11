@@ -79,7 +79,7 @@ class NCCollectionViewCommonSelectToolbar: ObservableObject {
 
     private func updateToolbarFrame(for hostingController: UIViewController) {
         let screenSize = UIScreen.main.bounds.size
-        let height = screenSize.width > 460 ? 60.0 : 80.0
+		let height = AppScreenConstants.toolbarHeight
         let frame = CGRect(x: 0, y: screenSize.height - height, width: screenSize.width, height: height)
         
         hostingController.view.frame = frame

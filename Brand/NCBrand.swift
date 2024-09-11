@@ -146,6 +146,10 @@ class NCBrandColor: NSObject {
 	var menuIconColor: UIColor {
 		iconImageColor
 	}
+	
+	var menuFolderIconColor: UIColor {
+		iconImageColor
+	}
 
     let iconImageColor: UIColor = .label
     let iconImageColor2: UIColor = .secondaryLabel

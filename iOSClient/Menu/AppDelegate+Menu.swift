@@ -70,7 +70,7 @@ extension AppDelegate {
         }
 
         let titleCreateFolder = isDirectoryE2EE ? NSLocalizedString("_create_folder_e2ee_", comment: "") : NSLocalizedString("_create_folder_", comment: "")
-		let imageCreateFolder = (isDirectoryE2EE ? NCImageCache.images.folderEncrypted : NCImageCache.images.folder).image(color: .menuIconTint)
+		let imageCreateFolder = (isDirectoryE2EE ? NCImageCache.images.folderEncrypted : NCImageCache.images.folder).image(color: .menuFolderIconTint)
         actions.append(
             NCMenuAction(title: titleCreateFolder,
                          icon: imageCreateFolder, action: { _ in

@@ -628,10 +628,10 @@
 
 // MARK: Files Header
 
-"_select_selectionLabel_selectAll"			= "Select all";
-"_select_selectionLabel_oneItemSelected"	= "One item selected";
+"_select_selectionLabel_selectAll"			= "select all";
+"_select_selectionLabel_oneItemSelected"	= "one item selected";
 "_select_selectionLabel_manyItemsSelected"  = "%@ items selected";
-"_select_selectionLabel_deselectAll"		= "Deselect all";
+"_select_selectionLabel_deselectAll"		= "deselect all";
 
 // MARK: Share
 

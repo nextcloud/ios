@@ -34,7 +34,6 @@ class NCFiles: NCCollectionViewCommon {
 
         titleCurrentFolder = NCBrandOptions.shared.brand
         layoutKey = NCGlobal.shared.layoutViewFiles
-        enableSearchBar = true
         headerRichWorkspaceDisable = false
         headerMenuTransferView = true
         emptyImage = NCImageCache.images.folder
@@ -45,6 +44,8 @@ class NCFiles: NCCollectionViewCommon {
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
+        enableSearchBar = !isOpenedFromSearchResults()
+        
         super.viewDidLoad()
 
         if isRoot {
@@ -294,5 +295,11 @@ class NCFiles: NCCollectionViewCommon {
             titleCurrentFolder = getNavigationTitle()
             navigationItem.title = titleCurrentFolder
         }
+    }
+    
+    private func isOpenedFromSearchResults() -> Bool {
+        return self.navigationController?.viewControllers.contains(where: { viewController in
+            return (viewController as? NCCollectionViewCommon)?.isSearchingMode ?? false
+        }) ?? false
     }
 }
