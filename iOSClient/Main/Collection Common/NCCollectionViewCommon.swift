@@ -30,7 +30,12 @@ import JGProgressHUD
 
 class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCPhotoCellDelegate, NCSectionFirstHeaderDelegate, NCSectionFooterDelegate, NCSectionFirstHeaderEmptyDataDelegate, NCAccountSettingsModelDelegate, UIAdaptivePresentationControllerDelegate, UIContextMenuInteractionDelegate {
 
-	@IBOutlet weak var collectionView: UICollectionView!
+    static let screensToShowLogoInNavigationBar = [NCGlobal.shared.layoutViewFiles,
+                                                   NCGlobal.shared.layoutViewMedia,
+                                                   NCGlobal.shared.layoutViewShares,
+                                                   NCGlobal.shared.layoutViewFavorite]
+    
+    @IBOutlet weak var collectionView: UICollectionView!
 	@IBOutlet weak var headerTop: NSLayoutConstraint?
 	@IBOutlet weak var collectionViewTop: NSLayoutConstraint?
 	@IBOutlet weak var fileActionsHeader: FileActionsHeader?
@@ -189,7 +194,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         navigationController?.setNavigationBarHidden(false, animated: true)
         navigationItem.title = titleCurrentFolder
         
-        if (layoutKey == NCGlobal.shared.layoutViewFiles) && (self.navigationController?.viewControllers.count == 1) {
+        if Self.screensToShowLogoInNavigationBar.contains(layoutKey) && (self.navigationController?.viewControllers.count == 1) {
             let logo = UIImage(resource: .ionosEasyStorageLogo).withTintColor(UIColor(resource: .NavigationBar.logoTint))
             navigationItem.titleView = UIImageView(image: logo)
         }
