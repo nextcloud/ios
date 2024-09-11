@@ -270,5 +270,5 @@ class NCManageDatabase: NSObject {
 
 class NCKeyValue: Object {
     @Persisted var key: String = ""
-    @Persisted var value: String? = nil
+    @Persisted var value: String?
 }

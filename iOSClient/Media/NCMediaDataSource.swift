@@ -56,9 +56,9 @@ extension NCMedia {
 
             var lessDate = Date.distantFuture
             var greaterDate = Date.distantPast
-            let firstMetadataDate = dataSource.getMetadatas().first?.date
-            let lastMetadataDate = dataSource.getMetadatas().last?.date
-            let countMetadatas = dataSource.getMetadatas().count
+            let firstMetadataDate = self.dataSource.getMetadatas().first?.date
+            let lastMetadataDate = self.dataSource.getMetadatas().last?.date
+            let countMetadatas = self.dataSource.getMetadatas().count
             let options = NKRequestOptions(timeout: 120, taskDescription: self.taskDescriptionRetrievesProperties, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
             if countMetadatas == 0 { self.collectionViewReloadData() }
