@@ -50,8 +50,9 @@ extension NCMedia: UICollectionViewDelegate {
             } else {
                 // ACTIVE SERVERURL
                 serverUrl = metadata.serverUrl
-                let metadatas = database.getResultsMediaMetadatas(predicate: getPredicate())
-                NCViewer().view(viewController: self, metadata: metadata, metadatas: metadatas, indexMetadatas: indexPath.row, image: getImage(metadata: metadataDatasource, width: 1024))
+                if let metadatas = database.getResultsMetadatas(predicate: getPredicate(), sortedByKeyPath: "date") {
+                    NCViewer().view(viewController: self, metadata: metadata, metadatas: metadatas, indexMetadatas: indexPath.row, image: getImage(metadata: metadataDatasource, width: 1024))
+                }
             }
         }
     }

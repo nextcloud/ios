@@ -27,8 +27,9 @@ import NextcloudKit
 extension NCMedia {
     func reloadDataSource() {
         DispatchQueue.global().async {
-            let metadatas = self.database.getResultsMediaMetadatas(predicate: self.getPredicate())
-            self.dataSource = NCMediaDataSource(metadatas: metadatas)
+            if let metadatas = self.database.getResultsMetadatas(predicate: self.getPredicate(), sortedByKeyPath: "date") {
+                self.dataSource = NCMediaDataSource(metadatas: metadatas)
+            }
             DispatchQueue.main.async {
                 self.collectionView.reloadData()
                 self.refreshControl.endRefreshing()
@@ -102,16 +103,19 @@ extension NCMedia {
                                             showHiddenFiles: NCKeychain().showHiddenFiles,
                                             account: self.session.account,
                                             options: options) { account, files, _, error in
-                if error == .success, let files, self.session.account == account {
-
-                    var predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-                    predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.getPredicate(showAll: true)])
+                if error == .success,
+                   let files,
+                   let greaterDate = files.first?.date,
+                   let lessDate = files.last?.date,
+                   self.session.account == account {
 
                     self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
 
                         self.database.addMetadatas(metadatas)
 
-                        if let resultsMetadatas = NCManageDatabase.shared.getResultMetadatas(predicate: predicate, sortedByKeyPath: "date") {
+                        let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [ NSPredicate(format: "date >= %@ AND date =< %@", greaterDate as NSDate, lessDate as NSDate), self.getPredicate()])
+
+                        if let resultsMetadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: predicate, sortedByKeyPath: "date") {
                             for metadata in resultsMetadatas {
                                 if NCNetworking.shared.fileExistsQueue.operations.filter({ ($0 as? NCOperationFileExists)?.ocId == metadata.ocId }).isEmpty {
                                     NCNetworking.shared.fileExistsQueue.addOperation(NCOperationFileExists(metadata: metadata))
@@ -129,8 +133,14 @@ extension NCMedia {
                             self.reloadDataSource()
                         }
                     }
+                } else if error == .success {
+                    self.reloadDataSource()
                 } else {
-                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(error.errorCode) " + error.errorDescription)
+                    DispatchQueue.main.async {
+                        NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(error.errorCode) " + error.errorDescription)
+                        self.collectionView.reloadData()
+                        self.setTitleDate()
+                    }
                 }
                 DispatchQueue.main.async {
                     self.activityIndicator.stopAnimating()
@@ -140,13 +150,11 @@ extension NCMedia {
         }
     }
 
-    func getPredicate(showAll: Bool = false) -> NSPredicate {
+    func getPredicate() -> NSPredicate {
         guard let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else { return NSPredicate() }
         let startServerUrl = NCUtilityFileSystem().getHomeServer(session: session) + tableAccount.mediaPath
 
-        if showAll {
-            return NSPredicate(format: showAllPredicateMediaString, session.account, startServerUrl)
-        } else if showOnlyImages {
+        if showOnlyImages {
             return NSPredicate(format: showOnlyPredicateMediaString, session.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue)
         } else if showOnlyVideos {
             return NSPredicate(format: showOnlyPredicateMediaString, session.account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)
