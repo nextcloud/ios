@@ -55,6 +55,7 @@ extension NCMedia {
             else { return }
             self.hasRun = true
 
+            var limit = 300
             var lessDate = Date.distantFuture
             var greaterDate = Date.distantPast
             let firstMetadataDate = self.dataSource.getMetadatas().first?.date
@@ -89,7 +90,11 @@ extension NCMedia {
                 }
             }
 
-            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate)")
+            if collectionView.visibleCells.count + 100 > limit {
+                limit = collectionView.visibleCells.count + 100
+            }
+
+            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate), limit \(limit)")
 
             activityIndicator.startAnimating()
 
@@ -97,7 +102,7 @@ extension NCMedia {
                                             lessDate: lessDate,
                                             greaterDate: greaterDate,
                                             elementDate: "d:getlastmodified/",
-                                            limit: 300,
+                                            limit: limit,
                                             showHiddenFiles: NCKeychain().showHiddenFiles,
                                             account: self.session.account,
                                             options: options) { account, files, _, error in
