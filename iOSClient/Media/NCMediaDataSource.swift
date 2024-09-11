@@ -65,7 +65,6 @@ extension NCMedia {
 
             if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }), !distant {
 
-                // first date
                 let firstCellDate = (visibleCells.first as? NCGridMediaCell)?.date
                 if firstCellDate == firstMetadataDate {
                     lessDate = Date.distantFuture
@@ -77,7 +76,6 @@ extension NCMedia {
                     }
                 }
 
-                // last date
                 let lastCellDate = (visibleCells.last as? NCGridMediaCell)?.date
                 if lastCellDate == lastMetadataDate {
                     greaterDate = Date.distantPast
