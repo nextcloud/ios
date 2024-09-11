@@ -109,7 +109,7 @@ extension NCMedia {
                    self.session.account == account {
 
                     self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
-                        self.database.addMetadatas(metadatas)
+                        let isNewInsert = self.database.addMetadatasWithReturnIsNewInsert(metadatas)
 
                         if let firstCellDate, let lastCellDate, self.isViewActived {
                             let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [ NSPredicate(format: "date >= %@ AND date =< %@", lastCellDate as NSDate, firstCellDate as NSDate), self.getPredicate(filterLivePhotoFile: false)])
@@ -123,14 +123,16 @@ extension NCMedia {
                             }
                         }
 
-                        if lessDate == Date.distantFuture, greaterDate == Date.distantPast, metadatas.count == 0 {
-                            self.dataSource.removeAll()
+                        if self.isViewActived, isNewInsert {
+                            self.reloadDataSource()
+                        } else {
+                            if lessDate == Date.distantFuture, greaterDate == Date.distantPast, metadatas.count == 0 {
+                                self.dataSource.removeAll()
+                            }
                             DispatchQueue.main.async {
                                 self.collectionView.reloadData()
                                 self.setTitleDate()
                             }
-                        } else if self.isViewActived {
-                            self.reloadDataSource()
                         }
                     }
                 } else if error == .success {
