@@ -52,10 +52,10 @@ extension NCMedia {
             var limit = 300
             var lessDate = Date.distantFuture
             var greaterDate = Date.distantPast
-            let firstMetadataDate = self.dataSource.getMetadatas().first?.date
-            let lastMetadataDate = self.dataSource.getMetadatas().last?.date
             let countMetadatas = self.dataSource.getMetadatas().count
             let options = NKRequestOptions(timeout: 120, taskDescription: self.taskDescriptionRetrievesProperties, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+            var firstCellDate: Date?
+            var lastCellDate: Date?
 
             if countMetadatas == 0 {
                 collectionView.reloadData()
@@ -64,8 +64,8 @@ extension NCMedia {
 
             if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }), !distant {
 
-                let firstCellDate = (visibleCells.first as? NCGridMediaCell)?.date
-                if firstCellDate == firstMetadataDate {
+                firstCellDate = (visibleCells.first as? NCGridMediaCell)?.date
+                if firstCellDate == self.dataSource.getMetadatas().first?.date {
                     lessDate = Date.distantFuture
                 } else {
                     if let date = firstCellDate {
@@ -75,8 +75,8 @@ extension NCMedia {
                     }
                 }
 
-                let lastCellDate = (visibleCells.last as? NCGridMediaCell)?.date
-                if lastCellDate == lastMetadataDate {
+                lastCellDate = (visibleCells.last as? NCGridMediaCell)?.date
+                if lastCellDate == self.dataSource.getMetadatas().last?.date {
                     greaterDate = Date.distantPast
                 } else {
                     if let date = lastCellDate {
@@ -105,20 +105,22 @@ extension NCMedia {
                                             options: options) { account, files, _, error in
                 if error == .success,
                    let files,
-                   let greaterDate = files.min(by: { $0.date < $1.date })?.date,
-                   let lessDate = files.max(by: { $0.date < $1.date })?.date,
+                   // let greaterDate = files.min(by: { $0.date < $1.date })?.date,
+                   // let lessDate = files.max(by: { $0.date < $1.date })?.date,
                    self.session.account == account {
 
                     self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
-
                         self.database.addMetadatas(metadatas)
 
-                        let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [ NSPredicate(format: "date >= %@ AND date =< %@", greaterDate as NSDate, lessDate as NSDate), self.getPredicate(filterLivePhotoFile: false)])
+                        if let firstCellDate, let lastCellDate {
+                            let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [ NSPredicate(format: "date >= %@ AND date =< %@", lastCellDate as NSDate, firstCellDate as NSDate), self.getPredicate(filterLivePhotoFile: false)])
 
-                        if let resultsMetadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: predicate) {
-                            for metadata in resultsMetadatas {
-                                if NCNetworking.shared.fileExistsQueue.operations.filter({ ($0 as? NCOperationFileExists)?.ocId == metadata.ocId }).isEmpty {
-                                    NCNetworking.shared.fileExistsQueue.addOperation(NCOperationFileExists(metadata: metadata))
+                            if let resultsMetadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: predicate) {
+                                print(resultsMetadatas.count)
+                                for metadata in resultsMetadatas {
+                                    if NCNetworking.shared.fileExistsQueue.operations.filter({ ($0 as? NCOperationFileExists)?.ocId == metadata.ocId }).isEmpty {
+                                        NCNetworking.shared.fileExistsQueue.addOperation(NCOperationFileExists(metadata: metadata))
+                                    }
                                 }
                             }
                         }
