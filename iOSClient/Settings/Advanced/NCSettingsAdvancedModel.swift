@@ -152,6 +152,8 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
 
             NCActivityIndicator.shared.stop()
             self.calculateSize()
+
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterClearCache)
         }
     }
 

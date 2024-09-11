@@ -46,10 +46,9 @@ extension NCMedia {
 
     // MARK: - Search media
 
-    @objc func searchMediaUI() {
+    @objc func searchMediaUI(_ distant: Bool = false) {
         guard loadingTask == nil,
               !isEditMode,
-              self.viewIfLoaded?.window != nil,
               let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }),
               let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account))
         else {
@@ -62,34 +61,39 @@ extension NCMedia {
         let lastMetadataDate = dataSource.getMetadatas().last?.date
         let countMetadatas = dataSource.getMetadatas().count
 
-        // first date
-        let firstCellDate = (visibleCells.first as? NCGridMediaCell)?.date
-        if firstCellDate == firstMetadataDate {
+        if distant {
             lessDate = Date.distantFuture
-        } else {
-            if let date = firstCellDate {
-                lessDate = Calendar.current.date(byAdding: .second, value: 1, to: date)!
-            } else {
-                lessDate = Date.distantFuture
-            }
-        }
-        // last date
-        let lastCellDate = (visibleCells.last as? NCGridMediaCell)?.date
-        if lastCellDate == lastMetadataDate {
             greaterDate = Date.distantPast
         } else {
-            if let date = lastCellDate {
-                greaterDate = Calendar.current.date(byAdding: .second, value: -1, to: date)!
+            // first date
+            let firstCellDate = (visibleCells.first as? NCGridMediaCell)?.date
+            if firstCellDate == firstMetadataDate {
+                lessDate = Date.distantFuture
             } else {
-                greaterDate = Date.distantPast
+                if let date = firstCellDate {
+                    lessDate = Calendar.current.date(byAdding: .second, value: 1, to: date)!
+                } else {
+                    lessDate = Date.distantFuture
+                }
             }
-        }
+            // last date
+            let lastCellDate = (visibleCells.last as? NCGridMediaCell)?.date
+            if lastCellDate == lastMetadataDate {
+                greaterDate = Date.distantPast
+            } else {
+                if let date = lastCellDate {
+                    greaterDate = Calendar.current.date(byAdding: .second, value: -1, to: date)!
+                } else {
+                    greaterDate = Date.distantPast
+                }
+            }
 
-        if lessDate == Date.distantFuture,
-           greaterDate == Date.distantPast,
-           countMetadatas > visibleCells.count {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media oops. something is bad (distantFuture, distantPast): \(countMetadatas)")
-            return
+            if lessDate == Date.distantFuture,
+               greaterDate == Date.distantPast,
+               countMetadatas > visibleCells.count {
+                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media oops. something is bad (distantFuture, distantPast): \(countMetadatas)")
+                return
+            }
         }
 
         if let lessDate, let greaterDate {
