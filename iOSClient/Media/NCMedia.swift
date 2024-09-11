@@ -141,6 +141,8 @@ class NCMedia: UIViewController {
             self.dataSource.removeAll()
             self.searchMediaUI(true)
         }
+
+        reloadDataSource()
     }
 
     override func viewWillAppear(_ animated: Bool) {
