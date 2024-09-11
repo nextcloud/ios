@@ -10,6 +10,7 @@
 		0F5090CE2C786F04009348D9 /* FileActionsHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F5090CD2C786F04009348D9 /* FileActionsHeader.swift */; };
 		0F8B9A5B2C7887F60041C17D /* FileActionsHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0F8B9A5A2C7887F60041C17D /* FileActionsHeader.xib */; };
 		0F911CAA2C85A5C400B0A6F7 /* Font Awesome 6 Pro-Light-300.otf in Resources */ = {isa = PBXBuildFile; fileRef = 0F911CA62C85A5C400B0A6F7 /* Font Awesome 6 Pro-Light-300.otf */; };
+		0F9F524F2C8F46D7004717E0 /* AppScreenConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F9F524E2C8F46D7004717E0 /* AppScreenConstants.swift */; };
 		0FC7CA752C8B1F48009DEC69 /* CopyMoveDialogButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FC7CA742C8B1F48009DEC69 /* CopyMoveDialogButton.swift */; };
 		2C1D5D7623E2DE3300334ABB /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
 		2C1D5D7923E2DE9100334ABB /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
@@ -94,7 +95,7 @@
 		D5B6AA7827200C7200D49C24 /* NCActivityTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */; };
 		F310B1EF2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = F310B1EE2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift */; };
 		F314F1142A30E2DE00BC7FAB /* View+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E8A390295DC5E0006CB2D0 /* View+Extension.swift */; };
-		F321DA8A2B71205A00DDA0E6 /* NCTrashSelectTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F321DA892B71205A00DDA0E6 /* NCTrashSelectTabBar.swift */; };
+		F321DA8A2B71205A00DDA0E6 /* NCTrashSelectToolBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F321DA892B71205A00DDA0E6 /* NCTrashSelectToolBar.swift */; };
 		F3391B082B4C52C5001C0C4B /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B072B4C52C5001C0C4B /* FirebaseDatabase */; };
 		F3391B0A2B4C52CB001C0C4B /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B092B4C52CB001C0C4B /* JGProgressHUD */; };
 		F3391B0C2B4C52D5001C0C4B /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B0B2B4C52D5001C0C4B /* SVGKit */; };
@@ -1106,6 +1107,7 @@
 		0F5090CD2C786F04009348D9 /* FileActionsHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileActionsHeader.swift; sourceTree = "<group>"; };
 		0F8B9A5A2C7887F60041C17D /* FileActionsHeader.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileActionsHeader.xib; sourceTree = "<group>"; };
 		0F911CA62C85A5C400B0A6F7 /* Font Awesome 6 Pro-Light-300.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Font Awesome 6 Pro-Light-300.otf"; sourceTree = "<group>"; };
+		0F9F524E2C8F46D7004717E0 /* AppScreenConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppScreenConstants.swift; sourceTree = "<group>"; };
 		0FC7CA742C8B1F48009DEC69 /* CopyMoveDialogButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyMoveDialogButton.swift; sourceTree = "<group>"; };
 		2C33C47F23E2C475005F963B /* Notification Service Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Notification Service Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C33C48123E2C475005F963B /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
@@ -1165,7 +1167,7 @@
 		F310B1EE2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCViewerMedia+VisionKit.swift"; sourceTree = "<group>"; };
 		F3131ED82B038DB20018DB28 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/iOSSupport/System/Library/Frameworks/SwiftUI.framework; sourceTree = DEVELOPER_DIR; };
 		F3131EDA2B038DB90018DB28 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/iOSSupport/System/Library/Frameworks/WidgetKit.framework; sourceTree = DEVELOPER_DIR; };
-		F321DA892B71205A00DDA0E6 /* NCTrashSelectTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTrashSelectTabBar.swift; sourceTree = "<group>"; };
+		F321DA892B71205A00DDA0E6 /* NCTrashSelectToolBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTrashSelectToolBar.swift; sourceTree = "<group>"; };
 		F33EE6F12BF4C9B200CA1A51 /* PKCS12.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PKCS12.swift; sourceTree = "<group>"; };
 		F343A4B22A1E01FF00DDA874 /* PHAsset+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PHAsset+Extension.swift"; sourceTree = "<group>"; };
 		F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+Extension.swift"; sourceTree = "<group>"; };
@@ -2599,7 +2601,7 @@
 				AF3FDCC12796ECC300710F60 /* NCTrash+CollectionView.swift */,
 				F7E402322BA89551007E5609 /* NCTrash+Networking.swift */,
 				F7E402302BA891EB007E5609 /* NCTrash+SelectTabBarDelegate.swift */,
-				F321DA892B71205A00DDA0E6 /* NCTrashSelectTabBar.swift */,
+				F321DA892B71205A00DDA0E6 /* NCTrashSelectToolBar.swift */,
 			);
 			path = Trash;
 			sourceTree = "<group>";
@@ -3020,6 +3022,7 @@
 				F794E13E2BBC0F70003693D7 /* SceneDelegate.swift */,
 				F76B649B2ADFFAED00014640 /* NCImageCache.swift */,
 				F702F2CE25EE5B5C008F8E80 /* NCGlobal.swift */,
+				0F9F524E2C8F46D7004717E0 /* AppScreenConstants.swift */,
 				F7E402282BA85D1D007E5609 /* PrivacyInfo.xcprivacy */,
 				F73CB5771ED46807005F2A5A /* NCBridgeSwift.h */,
 				F70F96AF2874394B006C8379 /* Nextcloud-Bridging-Header.h */,
@@ -4327,7 +4330,7 @@
 				F75B0ABD244C4DBB00E58DCA /* NCActionCenter.swift in Sources */,
 				4240DB4E2C5646B400E72FC0 /* BurgerMenuAttachController.swift in Sources */,
 				AF935067276B84E700BD078F /* NCMenu+FloatingPanel.swift in Sources */,
-				F321DA8A2B71205A00DDA0E6 /* NCTrashSelectTabBar.swift in Sources */,
+				F321DA8A2B71205A00DDA0E6 /* NCTrashSelectToolBar.swift in Sources */,
 				F76882282C0DD1E7001CF441 /* NCEndToEndInitialize.swift in Sources */,
 				F702F2CD25EE5B4F008F8E80 /* AppDelegate.swift in Sources */,
 				F769454022E9F077000A798A /* NCSharePaging.swift in Sources */,
@@ -4364,6 +4367,7 @@
 				F768822E2C0DD1E7001CF441 /* NCSettingsBundleHelper.swift in Sources */,
 				F7A60F86292D215000FCE1F2 /* NCShareAccounts.swift in Sources */,
 				F72408332B8A27C900F128E2 /* NCMedia+Command.swift in Sources */,
+				0F9F524F2C8F46D7004717E0 /* AppScreenConstants.swift in Sources */,
 				F755CB402B8CB13C00CE27E9 /* NCMediaLayout.swift in Sources */,
 				F73EF7B72B0224AB0087E6E9 /* NCManageDatabase+ExternalSites.swift in Sources */,
 				D51C00412C2C1B4D00A04554 /* NCBrand-IONOS.swift in Sources */,

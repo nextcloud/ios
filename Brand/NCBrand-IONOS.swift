@@ -30,6 +30,10 @@ class NCBrandColorIONOS: NCBrandColor {
 		UIColor(named: "FileMenu/Icon") ?? iconImageColor
 	}
 	
+	override var menuFolderIconColor: UIColor {
+		UIColor(named: "FileMenu/FolderIcon") ?? iconImageColor
+	}
+	
     override init() {
         super.init()
     }

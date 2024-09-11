@@ -231,4 +231,8 @@ extension UIColor {
 	static var menuIconTint: UIColor {
 		NCBrandColor.shared.menuIconColor
 	}
+	
+	static var menuFolderIconTint: UIColor {
+		NCBrandColor.shared.menuFolderIconColor
+	}
 }
