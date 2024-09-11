@@ -43,12 +43,12 @@ extension NCMedia {
     @objc func searchMediaUI(_ distant: Bool = false) {
         self.lockQueue.sync {
             guard self.isViewActived,
-                  !self.hasRun,
+                  !self.hasRunSearchMedia,
                   !isEditMode,
                   NCNetworking.shared.downloadThumbnailQueue.operationCount == 0,
                   let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account))
             else { return }
-            self.hasRun = true
+            self.hasRunSearchMedia = true
 
             var limit = 300
             var lessDate = Date.distantFuture
@@ -115,7 +115,6 @@ extension NCMedia {
                             let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [ NSPredicate(format: "date >= %@ AND date =< %@", lastCellDate as NSDate, firstCellDate as NSDate), self.getPredicate(filterLivePhotoFile: false)])
 
                             if let resultsMetadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: predicate) {
-                                print(resultsMetadatas.count)
                                 for metadata in resultsMetadatas {
                                     if NCNetworking.shared.fileExistsQueue.operations.filter({ ($0 as? NCOperationFileExists)?.ocId == metadata.ocId }).isEmpty {
                                         NCNetworking.shared.fileExistsQueue.addOperation(NCOperationFileExists(metadata: metadata))
@@ -146,7 +145,7 @@ extension NCMedia {
                 DispatchQueue.main.async {
                     self.activityIndicator.stopAnimating()
                 }
-                self.hasRun = false
+                self.hasRunSearchMedia = false
             }
         }
     }
