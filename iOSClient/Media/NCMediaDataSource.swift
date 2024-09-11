@@ -59,8 +59,9 @@ extension NCMedia {
             let firstMetadataDate = dataSource.getMetadatas().first?.date
             let lastMetadataDate = dataSource.getMetadatas().last?.date
             let countMetadatas = dataSource.getMetadatas().count
-            var limit = 300
             let options = NKRequestOptions(timeout: 120, taskDescription: self.taskDescriptionRetrievesProperties, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+
+            if countMetadatas == 0 { self.collectionViewReloadData() }
 
             if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }), !distant {
 
@@ -89,12 +90,7 @@ extension NCMedia {
                 }
             }
 
-            if countMetadatas == 0 { self.collectionViewReloadData() }
-            if self.collectionView.visibleCells.count * 2 > limit {
-                limit = self.collectionView.visibleCells.count * 2
-            }
-
-            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate) with limit \(limit)")
+            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate)")
 
             activityIndicator.startAnimating()
 
@@ -102,7 +98,7 @@ extension NCMedia {
                                             lessDate: lessDate,
                                             greaterDate: greaterDate,
                                             elementDate: "d:getlastmodified/",
-                                            limit: limit,
+                                            limit: 300,
                                             showHiddenFiles: NCKeychain().showHiddenFiles,
                                             account: self.session.account,
                                             options: options) { account, files, _, error in
