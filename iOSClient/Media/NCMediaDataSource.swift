@@ -90,6 +90,14 @@ extension NCMedia {
                 }
             }
 
+            if lessDate == Date.distantFuture,
+               greaterDate == Date.distantPast,
+               countMetadatas > collectionView.visibleCells.count {
+                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media oops. something is bad (distantFuture, distantPast): \(countMetadatas)")
+                self.hasRun = false
+                return
+            }
+
             if collectionView.visibleCells.count + 100 > limit {
                 limit = collectionView.visibleCells.count + 100
             }
