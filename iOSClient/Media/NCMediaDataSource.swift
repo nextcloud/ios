@@ -115,9 +115,13 @@ extension NCMedia {
 
                         self.database.addMetadatas(metadatas)
 
-                        /*
-                        let results = NCManageDatabase.shared.getResultMetadatas(predicate: predicate, sortedByKeyPath: "date")
-                        */
+                        if let resultsMetadatas = NCManageDatabase.shared.getResultMetadatas(predicate: predicate, sortedByKeyPath: "date") {
+                            for metadata in resultsMetadatas {
+                                if NCNetworking.shared.fileExistsQueue.operations.filter({ ($0 as? NCOperationFileExists)?.ocId == metadata.ocId }).isEmpty {
+                                    NCNetworking.shared.fileExistsQueue.addOperation(NCOperationFileExists(metadata: metadata))
+                                }
+                            }
+                        }
 
                         if lessDate == Date.distantFuture, greaterDate == Date.distantPast, metadatas.count == 0 {
                             self.dataSource.removeAll()

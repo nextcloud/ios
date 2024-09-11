@@ -142,6 +142,8 @@ class NCMedia: UIViewController {
             self.searchMediaUI(true)
         }
 
+        NotificationCenter.default.addObserver(self, selector: #selector(fileExists(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFileExists), object: nil)
+
         reloadDataSource()
     }
 
@@ -241,6 +243,17 @@ class NCMedia: UIViewController {
 
     @objc func enterForeground(_ notification: NSNotification) {
         searchNewMedia()
+    }
+
+    @objc func fileExists(_ notification: NSNotification) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let ocId = userInfo["ocId"] as? String,
+              let fileExists = userInfo["fileExists"] as? Bool else { return }
+
+        if !fileExists {
+            dataSource.removeMetadata([ocId])
+            database.deleteMetadataOcId(ocId)
+        }
     }
 
     @objc func uploadedFile(_ notification: NSNotification) {

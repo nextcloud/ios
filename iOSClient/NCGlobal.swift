@@ -319,8 +319,7 @@ class NCGlobal: NSObject {
     let notificationCenterCopyFile                              = "copyFile"                        // userInfo: [ocId], error, dragdrop
     let notificationCenterRenameFile                            = "renameFile"                      // userInfo: ocId, account
     let notificationCenterFavoriteFile                          = "favoriteFile"                    // userInfo: ocId, serverUrl
-
-    let notificationCenterOperationReadFile                     = "operationReadFile"               // userInfo: ocId
+    let notificationCenterFileExists                            = "fileExists"                      // userInfo: ocId, fileExists
 
     let notificationCenterMenuSearchTextPDF                     = "menuSearchTextPDF"
     let notificationCenterMenuGotToPageInPDF                    = "menuGotToPageInPDF"
