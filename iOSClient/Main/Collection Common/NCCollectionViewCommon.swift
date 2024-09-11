@@ -188,6 +188,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         navigationController?.navigationBar.prefersLargeTitles = false
         navigationController?.setNavigationBarHidden(false, animated: true)
         navigationItem.title = titleCurrentFolder
+        
+        if (layoutKey == NCGlobal.shared.layoutViewFiles) && (self.navigationController?.viewControllers.count == 1) {
+            let logo = UIImage(resource: .ionosEasyStorageLogo).withTintColor(UIColor(resource: .NavigationBar.logoTint))
+            navigationItem.titleView = UIImageView(image: logo)
+        }
 
         isEditMode = false
         setNavigationLeftItems()
