@@ -35,6 +35,9 @@ class NCMedia: UIViewController {
     @IBOutlet weak var menuButton: UIButton!
     @IBOutlet weak var gradientView: UIView!
 
+    let lockQueue = DispatchQueue(label: "com.nextcloud.mediasearch.lockqueue")
+    var hasRun: Bool = false
+
     let layout = NCMediaLayout()
     var layoutType = NCGlobal.shared.mediaLayoutRatio
     var documentPickerViewController: NCDocumentPickerViewController?
@@ -46,7 +49,6 @@ class NCMedia: UIViewController {
     var dataSource = NCMediaDataSource()
     var serverUrl = ""
     let refreshControl = UIRefreshControl()
-    var loadingTask: Task<Void, any Error>?
     let taskDescriptionRetrievesProperties = "retrievesProperties"
     var isTop: Bool = true
     var isEditMode = false
@@ -127,12 +129,17 @@ class NCMedia: UIViewController {
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
             self.reloadDataSource()
-            self.refreshControl.endRefreshing()
         }
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
             self.layoutType = self.database.getLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")?.layout ?? NCGlobal.shared.mediaLayoutRatio
             self.reloadDataSource()
+            self.searchMediaUI(true)
+        }
+
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterClearCache), object: nil, queue: nil) { _ in
+            self.dataSource.removeAll()
+            self.searchMediaUI(true)
         }
     }
 
@@ -140,7 +147,9 @@ class NCMedia: UIViewController {
         super.viewWillAppear(animated)
 
         navigationController?.setMediaAppreance()
-        reloadDataSource()
+        if dataSource.isEmpty() {
+            reloadDataSource()
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -152,7 +161,7 @@ class NCMedia: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(enterForeground(_:)), name: UIApplication.willEnterForegroundNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
-        startTimer()
+        searchMediaUI()
         createMenu()
     }
 
@@ -204,13 +213,13 @@ class NCMedia: UIViewController {
         gradient.frame = gradientView.bounds
     }
 
-    func startTimer() {
+    func searchNewMedia() {
         // don't start if media chage is in progress
         if imageCache.createCacheInProgress {
             return
         }
         timerSearchNewMedia?.invalidate()
-        timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchMediaUI), userInfo: nil, repeats: false)
+        timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchMediaUI(_:)), userInfo: nil, repeats: false)
     }
 
     // MARK: - NotificationCenter
@@ -221,7 +230,7 @@ class NCMedia: UIViewController {
               let error = userInfo["error"] as? NKError else { return }
 
         dataSource.removeMetadata(ocId)
-        self.collectionViewReloadData()
+        collectionView.reloadData()
 
         if error != .success {
             NCContentPresenter().showError(error: error)
@@ -229,7 +238,7 @@ class NCMedia: UIViewController {
     }
 
     @objc func enterForeground(_ notification: NSNotification) {
-        startTimer()
+        searchNewMedia()
     }
 
     @objc func uploadedFile(_ notification: NSNotification) {
@@ -239,8 +248,8 @@ class NCMedia: UIViewController {
 
         if error == .success, let metadata = database.getMetadataFromOcId(ocId),
            metadata.isImageOrVideo {
-            self.dataSource.addMetadata(metadata)
-            self.collectionViewReloadData()
+            dataSource.addMetadata(metadata)
+            collectionView.reloadData()
         }
     }
 
@@ -347,13 +356,13 @@ extension NCMedia: UIScrollViewDelegate {
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if !decelerate {
             if !decelerate {
-                startTimer()
+                searchNewMedia()
             }
         }
     }
 
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        startTimer()
+        searchNewMedia()
     }
 
     func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
@@ -371,6 +380,6 @@ extension NCMedia: NCSelectDelegate {
         let mediaPath = serverUrl.replacingOccurrences(of: home, with: "")
         database.setAccountMediaPath(mediaPath, account: session.account)
         reloadDataSource()
-        startTimer()
+        searchNewMedia()
     }
 }

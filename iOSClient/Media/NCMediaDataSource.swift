@@ -26,10 +26,14 @@ import NextcloudKit
 
 extension NCMedia {
     func reloadDataSource() {
-        DispatchQueue.global(qos: .userInteractive).async {
+        DispatchQueue.global().async {
             let metadatas = self.database.getResultsMediaMetadatas(predicate: self.getPredicate())
             self.dataSource = NCMediaDataSource(metadatas: metadatas)
-            self.collectionViewReloadData()
+            DispatchQueue.main.async {
+                self.collectionView.reloadData()
+                self.refreshControl.endRefreshing()
+                self.setTitleDate()
+            }
         }
     }
 
@@ -42,79 +46,77 @@ extension NCMedia {
 
     // MARK: - Search media
 
-    @objc func searchMediaUI() {
-        guard loadingTask == nil,
-              !isEditMode,
-              self.viewIfLoaded?.window != nil,
-              let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }),
-              let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account))
-        else {
-            return
-        }
+    @objc func searchMediaUI(_ distant: Bool = false) {
+        self.lockQueue.sync {
+            guard !self.hasRun,
+                  !isEditMode,
+                  let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account))
+            else { return }
+            self.hasRun = true
 
-        var lessDate: Date?
-        var greaterDate: Date?
-        let firstMetadataDate = dataSource.getMetadatas().first?.date
-        let lastMetadataDate = dataSource.getMetadatas().last?.date
-        let countMetadatas = dataSource.getMetadatas().count
+            var lessDate = Date.distantFuture
+            var greaterDate = Date.distantPast
+            let firstMetadataDate = dataSource.getMetadatas().first?.date
+            let lastMetadataDate = dataSource.getMetadatas().last?.date
+            let countMetadatas = dataSource.getMetadatas().count
+            var limit = 300
+            let options = NKRequestOptions(timeout: 120, taskDescription: self.taskDescriptionRetrievesProperties, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
-        // first date
-        let firstCellDate = (visibleCells.first as? NCGridMediaCell)?.date
-        if firstCellDate == firstMetadataDate {
-            lessDate = Date.distantFuture
-        } else {
-            if let date = firstCellDate {
-                lessDate = Calendar.current.date(byAdding: .second, value: 1, to: date)!
-            } else {
-                lessDate = Date.distantFuture
+            if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }), !distant {
+
+                // first date
+                let firstCellDate = (visibleCells.first as? NCGridMediaCell)?.date
+                if firstCellDate == firstMetadataDate {
+                    lessDate = Date.distantFuture
+                } else {
+                    if let date = firstCellDate {
+                        lessDate = Calendar.current.date(byAdding: .second, value: 1, to: date)!
+                    } else {
+                        lessDate = Date.distantFuture
+                    }
+                }
+
+                // last date
+                let lastCellDate = (visibleCells.last as? NCGridMediaCell)?.date
+                if lastCellDate == lastMetadataDate {
+                    greaterDate = Date.distantPast
+                } else {
+                    if let date = lastCellDate {
+                        greaterDate = Calendar.current.date(byAdding: .second, value: -1, to: date)!
+                    } else {
+                        greaterDate = Date.distantPast
+                    }
+                }
             }
-        }
-        // last date
-        let lastCellDate = (visibleCells.last as? NCGridMediaCell)?.date
-        if lastCellDate == lastMetadataDate {
-            greaterDate = Date.distantPast
-        } else {
-            if let date = lastCellDate {
-                greaterDate = Calendar.current.date(byAdding: .second, value: -1, to: date)!
-            } else {
-                greaterDate = Date.distantPast
+
+            if countMetadatas == 0 { self.collectionViewReloadData() }
+            if self.collectionView.visibleCells.count * 2 > limit {
+                limit = self.collectionView.visibleCells.count * 2
             }
-        }
 
-        if lessDate == Date.distantFuture,
-           greaterDate == Date.distantPast,
-           countMetadatas > visibleCells.count {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media oops. something is bad (distantFuture, distantPast): \(countMetadatas)")
-            return
-        }
+            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate) with limit \(limit)")
 
-        if let lessDate, let greaterDate {
             activityIndicator.startAnimating()
-            loadingTask = Task.detached {
-                if countMetadatas == 0 {
-                    await self.collectionViewReloadData()
-                }
 
-                var limit = 300
-                if await self.collectionView.visibleCells.count * 2 > limit {
-                    limit = await self.collectionView.visibleCells.count * 2
-                }
+            NextcloudKit.shared.searchMedia(path: tableAccount.mediaPath,
+                                            lessDate: lessDate,
+                                            greaterDate: greaterDate,
+                                            elementDate: "d:getlastmodified/",
+                                            limit: limit,
+                                            showHiddenFiles: NCKeychain().showHiddenFiles,
+                                            account: self.session.account,
+                                            options: options) { account, files, _, error in
+                if error == .success, let files, self.session.account == account {
 
-                NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate) with limit \(limit)")
-
-                let options = NKRequestOptions(timeout: 120, taskDescription: self.taskDescriptionRetrievesProperties, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-                let results = await NCNetworking.shared.searchMedia(path: tableAccount.mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: NCKeychain().showHiddenFiles, account: self.session.account, options: options)
-
-                if results.error == .success, let files = results.files {
                     var predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-                    predicate = await NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.getPredicate(showAll: true)])
+                    predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, self.getPredicate(showAll: true)])
 
-                    let metadatas = await self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false).metadatas
-                    let resultsUpdate = self.database.updateMetadatas(metadatas, predicate: predicate)
-                    let isChanged: Bool = (resultsUpdate.metadatasDifferentCount != 0 || resultsUpdate.metadatasModified != 0)
-                    NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] End searchMedia UpdateMetadatas with differentCount \(resultsUpdate.metadatasDifferentCount), modified \(resultsUpdate.metadatasModified)")
+                    self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
+                        let resultsUpdate = self.database.updateMetadatas(metadatas, predicate: predicate)
+                        let isChanged: Bool = (resultsUpdate.metadatasDifferentCount != 0 || resultsUpdate.metadatasModified != 0)
 
-                    Task { @MainActor in
+                        NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] End searchMedia UpdateMetadatas with differentCount \(resultsUpdate.metadatasDifferentCount), modified \(resultsUpdate.metadatasModified)")
+
                         if lessDate == Date.distantFuture, greaterDate == Date.distantPast, !isChanged, metadatas.count == 0 {
                             self.dataSource.removeAll()
                             self.collectionViewReloadData()
@@ -126,15 +128,13 @@ extension NCMedia {
                             print("searchMediaUI: nothing")
                         }
                     }
-
                 } else {
-                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(results.error.errorCode) " + results.error.errorDescription)
+                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(error.errorCode) " + error.errorDescription)
                 }
-
-                Task { @MainActor in
-                    self.loadingTask = nil
+                DispatchQueue.main.async {
                     self.activityIndicator.stopAnimating()
                 }
+                self.hasRun = false
             }
         }
     }
@@ -210,6 +210,7 @@ public class NCMediaDataSource: NSObject {
 
     init(metadatas: [tableMetadata]) {
         super.init()
+        self.metadatas.removeAll()
         for metadata in metadatas {
             appendMetadata(metadata)
         }
