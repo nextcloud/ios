@@ -29,7 +29,11 @@ extension NCMedia {
         DispatchQueue.global().async {
             let metadatas = self.database.getResultsMediaMetadatas(predicate: self.getPredicate())
             self.dataSource = NCMediaDataSource(metadatas: metadatas)
-            self.collectionViewReloadData()
+            DispatchQueue.main.async {
+                self.collectionView.reloadData()
+                self.refreshControl.endRefreshing()
+                self.setTitleDate()
+            }
         }
     }
 

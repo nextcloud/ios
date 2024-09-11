@@ -127,7 +127,6 @@ class NCMedia: UIViewController {
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
             self.reloadDataSource()
-            self.refreshControl.endRefreshing()
         }
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
