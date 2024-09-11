@@ -46,16 +46,6 @@ class NCMainTabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         delegate = self
-
-        /// Preload Media 
-        for viewController in self.viewControllers ?? [] {
-            if let navigationController = viewController as? UINavigationController {
-                let viewController = navigationController.topViewController
-                if viewController is NCMedia {
-                    _ = viewController?.view
-                }
-            }
-        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
