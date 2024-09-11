@@ -140,7 +140,9 @@ class NCMedia: UIViewController {
         super.viewWillAppear(animated)
 
         navigationController?.setMediaAppreance()
-        reloadDataSource()
+        if dataSource.isEmpty() {
+            reloadDataSource()
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {

@@ -210,6 +210,7 @@ public class NCMediaDataSource: NSObject {
 
     init(metadatas: [tableMetadata]) {
         super.init()
+        self.metadatas.removeAll()
         for metadata in metadatas {
             appendMetadata(metadata)
         }
