@@ -273,10 +273,14 @@ class NCMedia: UIViewController {
               let error = userInfo["error"] as? NKError,
               let ocId = userInfo["ocId"] as? String else { return }
 
-        if error == .success, let metadata = database.getMetadataFromOcId(ocId),
-           metadata.isImageOrVideo {
-            dataSource.addMetadata(metadata)
-            collectionView.reloadData()
+        if error == .success, let metadata = database.getMetadataFromOcId(ocId) {
+            if metadata.isImage {
+                dataSource.addMetadata(metadata)
+                collectionView.reloadData()
+            } else if let metadataImage = self.database.getResultMetadata(predicate: NSPredicate(format: "account == %@ AND fileId == %@", metadata.account, metadata.livePhotoFile)) {
+                dataSource.addMetadata(metadataImage)
+                collectionView.reloadData()
+            }
         }
     }
 
