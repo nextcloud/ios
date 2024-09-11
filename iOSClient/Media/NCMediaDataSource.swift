@@ -27,7 +27,7 @@ import NextcloudKit
 extension NCMedia {
     func reloadDataSource() {
         DispatchQueue.global().async {
-            if let metadatas = self.database.getResultsMetadatas(predicate: self.getPredicate(), sortedByKeyPath: "date") {
+            if let metadatas = self.database.getResultsMetadatas(predicate: self.getPredicate(filterLivePhotoFile: true), sortedByKeyPath: "date") {
                 self.dataSource = NCMediaDataSource(metadatas: metadatas)
             }
             DispatchQueue.main.async {
@@ -113,7 +113,7 @@ extension NCMedia {
 
                         self.database.addMetadatas(metadatas)
 
-                        let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [ NSPredicate(format: "date >= %@ AND date =< %@", greaterDate as NSDate, lessDate as NSDate), self.getPredicate()])
+                        let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [ NSPredicate(format: "date >= %@ AND date =< %@", greaterDate as NSDate, lessDate as NSDate), self.getPredicate(filterLivePhotoFile: false)])
 
                         if let resultsMetadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: predicate) {
                             for metadata in resultsMetadatas {
@@ -150,9 +150,17 @@ extension NCMedia {
         }
     }
 
-    func getPredicate() -> NSPredicate {
+    func getPredicate(filterLivePhotoFile: Bool) -> NSPredicate {
         guard let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else { return NSPredicate() }
         let startServerUrl = NCUtilityFileSystem().getHomeServer(session: session) + tableAccount.mediaPath
+
+        var showBothPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND hasPreview == true AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload')"
+        var showOnlyPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND hasPreview == true AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')"
+
+        if filterLivePhotoFile {
+            showBothPredicateMediaString = showBothPredicateMediaString + " AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
+            showOnlyPredicateMediaString = showOnlyPredicateMediaString + " AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
+        }
 
         if showOnlyImages {
             return NSPredicate(format: showOnlyPredicateMediaString, session.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue)
