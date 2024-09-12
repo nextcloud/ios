@@ -172,7 +172,7 @@ extension NCMedia {
             let column = columnPhoto + 1
             self.database.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: column)
             self.createMenu()
-            UIView.transition(with: self.collectionView, duration: 0.4, options: .transitionCrossDissolve, animations: {
+            UIView.transition(with: self.collectionView, duration: 0.5, options: .transitionCrossDissolve, animations: {
                 self.collectionView.reloadData()
                 self.setTitleDate()
             }, completion: nil)
@@ -182,7 +182,7 @@ extension NCMedia {
             let column = columnPhoto - 1
             self.database.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: column)
             self.createMenu()
-            UIView.transition(with: self.collectionView, duration: 0.4, options: .transitionCrossDissolve, animations: {
+            UIView.transition(with: self.collectionView, duration: 0.5, options: .transitionCrossDissolve, animations: {
                 self.collectionView.reloadData()
                 self.setTitleDate()
             }, completion: nil)
