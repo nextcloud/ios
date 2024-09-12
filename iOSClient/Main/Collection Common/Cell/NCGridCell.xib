@@ -22,7 +22,7 @@
                         <rect key="frame" x="0.0" y="20" width="416" height="419"/>
                     </imageView>
                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="star.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="AYs-f2-vve" userLabel="imageFavorite">
-                        <rect key="frame" x="391" y="24.5" width="20" height="20"/>
+                        <rect key="frame" x="391" y="25" width="20" height="20"/>
                         <color key="tintColor" systemColor="separatorColor"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="20" id="ZjS-Hv-JNm"/>
