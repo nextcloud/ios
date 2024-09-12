@@ -241,10 +241,8 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         }
         if status {
             imageSelect.image = NCImageCache.images.checkedYes?.image(color: NCBrandColor.shared.brandElement)
-            separator.isHidden = true
         } else {
 			imageSelect.image = NCImageCache.images.checkedNo?.image(color: NCBrandColor.shared.brandElement)
-            separator.isHidden = false
         }
 
     }

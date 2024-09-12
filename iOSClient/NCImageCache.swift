@@ -271,8 +271,8 @@ class NCImageCache: NSObject {
         images.canShare = canShareImage
         images.shareByLink = UIImage(resource: .Share.shared)
 
-        images.favorite = utility.loadImage(named: "star.fill", colors: [NCBrandColor.shared.brandElement])
-        images.livePhoto = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor])
+        images.favorite = NCImagesRepository.favorite
+        images.livePhoto = NCImagesRepository.livePhoto
         images.offlineFlag = utility.loadImage(named: "arrow.down.circle.fill", colors: [NCBrandColor.shared.brandElement])
         images.local = UIImage(resource: .local).withTintColor(NCBrandColor.shared.brandElement)
 

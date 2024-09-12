@@ -90,6 +90,9 @@
 		D51C00472C2C1C1E00A04554 /* NCBrand-IONOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C00402C2C1B4D00A04554 /* NCBrand-IONOS.swift */; };
 		D575039F27146F93008DC9DC /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
 		D5B6AA7827200C7200D49C24 /* NCActivityTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */; };
+		D5C5133B2C91970B00AE35CA /* NCImagesRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C5133A2C91970B00AE35CA /* NCImagesRepository.swift */; };
+		D5C5133C2C919B8400AE35CA /* NCImagesRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C5133A2C91970B00AE35CA /* NCImagesRepository.swift */; };
+		D5C5133E2C919B8500AE35CA /* NCImagesRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C5133A2C91970B00AE35CA /* NCImagesRepository.swift */; };
 		F310B1EF2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = F310B1EE2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift */; };
 		F314F1142A30E2DE00BC7FAB /* View+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E8A390295DC5E0006CB2D0 /* View+Extension.swift */; };
 		F321DA8A2B71205A00DDA0E6 /* NCTrashSelectToolBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F321DA892B71205A00DDA0E6 /* NCTrashSelectToolBar.swift */; };
@@ -1160,6 +1163,7 @@
 		C04E2F222A17BB4D001BAD85 /* FilesIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesIntegrationTests.swift; sourceTree = "<group>"; };
 		D51C00402C2C1B4D00A04554 /* NCBrand-IONOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCBrand-IONOS.swift"; sourceTree = "<group>"; };
 		D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActivityTableViewCell.swift; sourceTree = "<group>"; };
+		D5C5133A2C91970B00AE35CA /* NCImagesRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCImagesRepository.swift; sourceTree = "<group>"; };
 		F30A96042A27299D00D7BCFE /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/iPhoneOS.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		F310B1EE2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCViewerMedia+VisionKit.swift"; sourceTree = "<group>"; };
 		F3131ED82B038DB20018DB28 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/iOSSupport/System/Library/Frameworks/SwiftUI.framework; sourceTree = DEVELOPER_DIR; };
@@ -3010,6 +3014,7 @@
 				F702F2CC25EE5B4F008F8E80 /* AppDelegate.swift */,
 				F794E13E2BBC0F70003693D7 /* SceneDelegate.swift */,
 				F76B649B2ADFFAED00014640 /* NCImageCache.swift */,
+				D5C5133A2C91970B00AE35CA /* NCImagesRepository.swift */,
 				F702F2CE25EE5B5C008F8E80 /* NCGlobal.swift */,
 				0F9F524E2C8F46D7004717E0 /* AppScreenConstants.swift */,
 				F7E402282BA85D1D007E5609 /* PrivacyInfo.xcprivacy */,
@@ -4051,6 +4056,7 @@
 				F73EF7EA2B0226B90087E6E9 /* NCManageDatabase+UserStatus.swift in Sources */,
 				F359D86A2A7D03420023F405 /* NCUtility+Exif.swift in Sources */,
 				F7B769AB2B7A0B2000C1AAEB /* NCManageDatabase+Metadata+Session.swift in Sources */,
+				D5C5133E2C919B8500AE35CA /* NCImagesRepository.swift in Sources */,
 				F7E98C1727E0D0FC001F9F19 /* NCManageDatabase+Video.swift in Sources */,
 				F79B646126CA661600838ACA /* UIControl+Extension.swift in Sources */,
 				F77C973A2953143A00FDDD09 /* NCCameraRoll.swift in Sources */,
@@ -4141,6 +4147,7 @@
 				D51C00422C2C1C1B00A04554 /* NCBrand-IONOS.swift in Sources */,
 				F7346E1628B0EF5C006CE2D2 /* Widget.swift in Sources */,
 				F78302F828B4C3E100B84583 /* NCManageDatabase+Activity.swift in Sources */,
+				D5C5133C2C919B8400AE35CA /* NCImagesRepository.swift in Sources */,
 				F713FBE62C31646400F10760 /* NCNetworking+AsyncAwait.swift in Sources */,
 				F711A4E92AF9327600095DD8 /* UIImage+animatedGIF.m in Sources */,
 				F73EF7D02B0225BA0087E6E9 /* NCManageDatabase+Tag.swift in Sources */,
@@ -4430,6 +4437,7 @@
 				F7E98C1627E0D0FC001F9F19 /* NCManageDatabase+Video.swift in Sources */,
 				0FC7CA752C8B1F48009DEC69 /* CopyMoveDialogButton.swift in Sources */,
 				F7F4F11227ECDC52008676F9 /* UIFont+Extension.swift in Sources */,
+				D5C5133B2C91970B00AE35CA /* NCImagesRepository.swift in Sources */,
 				F76882222C0DD1E7001CF441 /* NCCapabilitiesView.swift in Sources */,
 				AF93471A27E2361E002537EE /* NCShareHeader.swift in Sources */,
 				F7F878AE1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */,

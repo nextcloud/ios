@@ -201,7 +201,7 @@ enum NCShareDetails: CaseIterable, NCShareCellConfig {
             return NCShareToggleCell(isOn: share.hideDownload, customIcons: (.checkmarkIcon, nil))
         case .expirationDate:
             return NCShareDateCell(share: share)
-        case .password: return NCShareToggleCell(isOn: !share.password.isEmpty, customIcons: (.lock, .lockOpen))
+        case .password: return NCShareToggleCell(isOn: !share.password.isEmpty, customIcons: (.itemLock, .itemLockOpen))
         case .note:
             let cell = UITableViewCell(style: .value1, reuseIdentifier: "shareNote")
             cell.detailTextLabel?.text = share.note
