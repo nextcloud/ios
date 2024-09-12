@@ -35,7 +35,7 @@ class NCImagesRepository: NSObject {
         case edit = "pencil"
         case add = "plus"
         case selectAll = "checkmark.circle.fill"
-        case cancel = "xmark"
+        case close = "xmark"
         case uploadPhotosVideos = "upload_photos_or_videos"
         case uploadFile = "uploadFile"
         case scan = "scan"
@@ -158,15 +158,15 @@ class NCImagesRepository: NSObject {
         menuIcon(ImageName.selectAll)
     }
     
-    static var menuIconCancel: UIImage {
-        menuIcon(ImageName.cancel)
+    static var menuIconClose: UIImage {
+        menuIcon(ImageName.close)
     }
     
     static var menuIconUploadPhotosVideos: UIImage {
         menuIcon(ImageName.uploadPhotosVideos)
     }
     
-    static var menuIconUploadUploadFile: UIImage {
+    static var menuIconUploadFile: UIImage {
         menuIcon(ImageName.uploadFile)
     }
     
@@ -174,19 +174,19 @@ class NCImagesRepository: NSObject {
         menuIcon(ImageName.scan)
     }
     
-    static var menuIconCreateNewDocument: UIImage {
+    static var menuIconCreateDocument: UIImage {
         menuIcon(ImageName.document)
     }
     
-    static var menuIconCreateNewSpreadsheet: UIImage {
+    static var menuIconCreateSpreadsheet: UIImage {
         menuIcon(ImageName.spreadsheet)
     }
     
-    static var menuIconCreateNewPresentation: UIImage {
+    static var menuIconCreatePresentation: UIImage {
         menuIcon(ImageName.presentation)
     }
     
-    static var menuIconCreateNewRichDocument: UIImage {
+    static var menuIconCreateRichDocument: UIImage {
         menuIcon(ImageName.richDocument)
     }
     
