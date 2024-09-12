@@ -367,6 +367,7 @@ class NCMedia: UIViewController {
                     self.collectionView.collectionViewLayout.invalidateLayout()
                     self.collectionView.reloadData()
                 } completion: { _ in
+                    self.setTitleDate()
                     if let layoutForView = self.database.getLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "") {
                         layoutForView.columnPhoto = self.numberOfColumns
                         self.database.setLayoutForView(layoutForView: layoutForView)
@@ -380,14 +381,12 @@ class NCMedia: UIViewController {
         case .began:
             lastScale = gestureRecognizer.scale
         case .changed:
-            guard !transitionColumns else {
-                return
-            }
+            guard !transitionColumns else { return }
             let scale = gestureRecognizer.scale
             let scaleChange = scale / lastScale
 
             currentScale *= scaleChange
-            currentScale = max(0.5, min(currentScale, 2.0)) // Limita la scala tra 0.5 e 2.0
+            currentScale = max(0.5, min(currentScale, 2.0))
 
             updateNumberOfColumns()
 
