@@ -360,11 +360,12 @@ class NCMedia: UIViewController {
                 self.currentScale = 1.0
                 self.setTitleDate()
 
-                DispatchQueue.main.async {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
                     self.collectionView.collectionViewLayout.invalidateLayout()
                     self.collectionView.reloadData()
 
                     self.setTitleDate()
+
                     if let layoutForView = self.database.getLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "") {
                         layoutForView.columnPhoto = self.numberOfColumns
                         self.database.setLayoutForView(layoutForView: layoutForView)
