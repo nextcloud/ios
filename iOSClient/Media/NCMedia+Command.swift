@@ -113,7 +113,6 @@ extension NCMedia {
         let layoutTitle = (layout == NCGlobal.shared.mediaLayoutRatio) ? NSLocalizedString("_media_square_", comment: "") : NSLocalizedString("_media_ratio_", comment: "")
         let layoutImage = (layout == NCGlobal.shared.mediaLayoutRatio) ? utility.loadImage(named: "square.grid.3x3") : utility.loadImage(named: "rectangle.grid.3x2")
 
-
         let viewFilterMenu = UIMenu(title: "", options: .displayInline, children: [
             UIAction(title: NSLocalizedString("_media_viewimage_show_", comment: ""), image: utility.loadImage(named: "photo")) { _ in
                 self.showOnlyImages = true
@@ -131,21 +130,23 @@ extension NCMedia {
                 self.reloadDataSource()
             }
         ])
-        let viewLayoutMenu = UIAction(title: layoutTitle, image: layoutImage) { _ in
-            if layout == NCGlobal.shared.mediaLayoutRatio {
-                self.database.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", layout: NCGlobal.shared.mediaLayoutSquare)
-                self.layoutType = NCGlobal.shared.mediaLayoutSquare
-            } else {
-                self.database.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", layout: NCGlobal.shared.mediaLayoutRatio)
-                self.layoutType = NCGlobal.shared.mediaLayoutRatio
-            }
-            self.createMenu()
-            self.collectionView.reloadData()
-            self.setTitleDate()
-        }
 
-        let viewOptionsMedia = UIMenu(title: "", options: .displayInline, children: [
-            UIMenu(title: NSLocalizedString("_media_view_options_", comment: ""), children: [viewFilterMenu, viewLayoutMenu]),
+        let viewLayoutMenu = UIMenu(title: "", options: .displayInline, children: [
+            UIAction(title: layoutTitle, image: layoutImage) { _ in
+                if layout == NCGlobal.shared.mediaLayoutRatio {
+                    self.database.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", layout: NCGlobal.shared.mediaLayoutSquare)
+                    self.layoutType = NCGlobal.shared.mediaLayoutSquare
+                } else {
+                    self.database.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", layout: NCGlobal.shared.mediaLayoutRatio)
+                    self.layoutType = NCGlobal.shared.mediaLayoutRatio
+                }
+                self.createMenu()
+                self.collectionView.reloadData()
+                self.setTitleDate()
+            }
+        ])
+
+        let viewFolderMedia = UIMenu(title: "", options: .displayInline, children: [
             UIAction(title: NSLocalizedString("_select_media_folder_", comment: ""), image: utility.loadImage(named: "folder"), handler: { _ in
                 guard let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as? UINavigationController,
                       let viewController = navigationController.topViewController as? NCSelect else { return }
@@ -185,7 +186,7 @@ extension NCMedia {
             self.present(alert, animated: true)
         }
 
-        menuButton.menu = UIMenu(title: "", children: [viewOptionsMedia, playFile, playURL])
+        menuButton.menu = UIMenu(title: "", children: [viewFilterMenu, viewLayoutMenu, viewFolderMedia, playFile, playURL])
     }
 }
 
