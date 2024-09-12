@@ -73,8 +73,8 @@ let userAgent: String = {
     var doNotAskPasscodeAtStartup: Bool = false
 
     var enforce_servers: [(name: String, url: String)] = [
-        (name: "Name 1", url: "https://cloud.nextcloud.com"),
-        (name: "Name 2", url: "https://cloud.nextcloud.com"),
+       // (name: "Name 1", url: "https://cloud.nextcloud.com"),
+       // (name: "Name 2", url: "https://cloud.nextcloud.com"),
     ]
 
     // Internal option behaviour
