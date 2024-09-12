@@ -70,9 +70,11 @@ class NCMedia: UIViewController {
     var photoImage = UIImage()
     var videoImage = UIImage()
 
-    var currentInset: CGFloat = 0.0
     var lastScale: CGFloat = 1.0
-    var sensitivity: CGFloat = 100.0
+    var currentScale: CGFloat = 1.0
+    let sensitivity: CGFloat = 0.5 // Fattore di sensibilità per la trasformazione
+
+
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: tabBarController)
     }
@@ -343,56 +345,37 @@ class NCMedia: UIViewController {
     }
 
     @objc func handlePinch(_ gestureRecognizer: UIPinchGestureRecognizer) {
-        let limit = collectionView.frame.size.width / CGFloat(columnPhoto + 1)
+            switch gestureRecognizer.state {
+            case .began:
+                lastScale = gestureRecognizer.scale
+                print("Pinch began, initial scale: \(lastScale)")
 
-        switch gestureRecognizer.state {
-        case .began:
-            // Salva la scala iniziale
-            lastScale = gestureRecognizer.scale
+            case .changed:
+                let scale = gestureRecognizer.scale
+                let scaleChange = scale / lastScale
 
-        case .changed:
-            let scale = gestureRecognizer.scale
-            let scaleChange = scale / lastScale
+                // Calcola la nuova scala
+                currentScale *= scaleChange
+                currentScale = max(0.5, min(currentScale, 2.0)) // Limita la scala tra 0.5 e 2.0
 
-            // Calcola e aggiorna l'inset
-            if scaleChange > 1 {
-                // Ingrandimento (Pinch Inverso: riduce l'inset)
-                currentInset -= (scaleChange - 1) * sensitivity
-            } else if scaleChange < 1 {
-                // Rimpicciolimento (Pinch Inverso: aumenta l'inset)
-                currentInset += (1 - scaleChange) * sensitivity
+                // Applica la trasformazione affine alla collection view
+                collectionView.transform = CGAffineTransform(scaleX: currentScale, y: currentScale)
+
+                print("Pinch changed, scale: \(scale), scale change: \(scaleChange), current scale: \(currentScale)")
+
+                // Aggiorna la scala di riferimento per il prossimo gesto
+                lastScale = scale
+
+            case .ended:
+                // Reimposta la scala a 1.0 quando il gesto termina
+                currentScale = 1.0
+                collectionView.transform = .identity
+                print("Pinch ended, reset scale to 1.0")
+
+            default:
+                break
             }
-
-            // Limita il valore dell'inset per evitare valori troppo piccoli o troppo grandi
-            currentInset = max(-limit, currentInset) // Permetti valori negativi fino a -100
-            currentInset = min(currentInset, limit)  // Adatta i limiti come necessario
-
-            print("Pinch changed, scale: \(scale), scale change: \(scaleChange), current inset: \(currentInset)")
-
-            // Invalida il layout per applicare i nuovi inset
-            collectionView.performBatchUpdates({
-                collectionView.collectionViewLayout.invalidateLayout()
-            }, completion: nil)
-
-            // Aggiorna la scala di riferimento per il prossimo gesto
-            lastScale = scale
-
-        case .ended:
-            // Reimposta l'inset a zero quando il gesto termina
-            currentInset = 0
-
-            // Invalida nuovamente il layout per applicare l'inset a zero
-            collectionView.performBatchUpdates({
-                collectionView.collectionViewLayout.invalidateLayout()
-            }, completion: nil)
-
-            // Riinizializza la scala per il prossimo gesto
-            lastScale = 1.0
-
-        default:
-            break
         }
-    }
 
     // MARK: - Image
 
