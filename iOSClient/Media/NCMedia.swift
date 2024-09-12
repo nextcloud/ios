@@ -350,10 +350,9 @@ class NCMedia: UIViewController {
         func updateNumberOfColumns() {
             let originalColumns = numberOfColumns
 
-            if currentScale > 1.5 && numberOfColumns < maxColumns {
+            if currentScale > 1 && numberOfColumns < maxColumns {
                 numberOfColumns += 1
-            }
-            else if currentScale < 1 && numberOfColumns > 1 {
+            } else if currentScale < 1 && numberOfColumns > 1 {
                 numberOfColumns -= 1
             }
 
@@ -364,7 +363,7 @@ class NCMedia: UIViewController {
                 self.currentScale = 1.0
                 self.setTitleDate()
 
-                UIView.transition(with: self.collectionView, duration: 0.5, options: .transitionCrossDissolve) {
+                UIView.transition(with: self.collectionView, duration: 0.4, options: .transitionCrossDissolve) {
                     self.collectionView.collectionViewLayout.invalidateLayout()
                     self.collectionView.reloadData()
                 } completion: { _ in
@@ -380,7 +379,6 @@ class NCMedia: UIViewController {
         switch gestureRecognizer.state {
         case .began:
             lastScale = gestureRecognizer.scale
-            print("Pinch began, initial scale: \(lastScale)")
         case .changed:
             guard !transitionColumns else {
                 return
@@ -395,13 +393,10 @@ class NCMedia: UIViewController {
 
             collectionView.transform = CGAffineTransform(scaleX: currentScale, y: currentScale)
 
-            print("Pinch changed, scale: \(scale), scale change: \(scaleChange), current scale: \(currentScale)")
-
             lastScale = scale
         case .ended:
             currentScale = 1.0
             collectionView.transform = .identity
-            print("Pinch ended, reset scale to 1.0")
         default:
             break
         }
