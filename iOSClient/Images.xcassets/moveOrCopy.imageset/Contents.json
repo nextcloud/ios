@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "move_or_copy_icon.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

@@ -107,10 +107,10 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                     }
                     let navigationController = UINavigationController(rootViewController: viewerQuickLook)
                     navigationController.modalPresentationStyle = .fullScreen
-                    controller.present(navigationController, animated: true)
+                    controller.currentViewController()?.present(navigationController, animated: true)
                 } else {
                     self.utilityFileSystem.copyFile(atPath: fileNamePath, toPath: fileNameTemp)
-                    controller.present(viewerQuickLook, animated: true)
+                    controller.currentViewController()?.present(viewerQuickLook, animated: true)
                 }
 
             case NCGlobal.shared.selectorLoadFileView:
@@ -180,7 +180,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
     func viewerFile(account: String, fileId: String, viewController: UIViewController) {
 
-        guard let hudView = viewController.tabBarController?.view else { return }
+        guard let hudView = viewController.view else { return }
         var downloadRequest: DownloadRequest?
 
         if let metadata = NCManageDatabase.shared.getMetadataFromFileId(fileId) {
@@ -315,21 +315,39 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     // MARK: - Open in ...
 
     func openDocumentController(metadata: tableMetadata, controller: NCMainTabBarController?) {
-
-        guard let mainTabBarController = controller,
-              let mainTabBar = mainTabBarController.tabBar as? NCMainTabBar else { return }
+        guard let mainTabBarController = controller else { return }
+        
+        if let presentedNavigationController = mainTabBarController.presentedNavigationController() {
+            openDocumentController(metadata: metadata, viewController: presentedNavigationController)
+        } else if let mainTabBar = mainTabBarController.tabBar as? NCMainTabBar {
+            openDocumentController(metadata: metadata, viewToPresentOn: mainTabBar, rectToPresentFrom: mainTabBar.menuRect)
+        }
+    }
+    
+    func openDocumentController(metadata: tableMetadata, viewController: UIViewController?) {
+        guard let viewController, let viewToPresentOn = viewController.view else { return }
+        let rectToPresentFrom = viewToPresentOn.bottomCenter
+        openDocumentController(metadata: metadata, viewToPresentOn: viewToPresentOn, rectToPresentFrom: rectToPresentFrom)
+    }
+    
+    private func openDocumentController(metadata: tableMetadata, viewToPresentOn: UIView, rectToPresentFrom: CGRect) {
         let fileURL = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-
+        
         documentController = UIDocumentInteractionController(url: fileURL)
-        documentController?.presentOptionsMenu(from: mainTabBar.menuRect, in: mainTabBar, animated: true)
+        documentController?.presentOptionsMenu(from: rectToPresentFrom, in: viewToPresentOn, animated: true)
     }
 
-    func openActivityViewController(selectedMetadata: [tableMetadata], controller: NCMainTabBarController?) {
-        guard let controller,
-              let mainTabBar = controller.tabBar as? NCMainTabBar else { return }
+    func openActivityViewController(selectedMetadata: [tableMetadata], mainTabBarController: NCMainTabBarController?) {
+        guard let mainTabBarController,
+              let mainTabBar = mainTabBarController.tabBar as? NCMainTabBar else { return }
         let metadatas = selectedMetadata.filter({ !$0.directory })
         var items: [URL] = []
         var downloadMetadata: [(tableMetadata, URL)] = []
+        
+        let currentViewController = mainTabBarController.presentedNavigationController() ?? mainTabBarController
+        let isMainTabBarPresentingViewController = mainTabBarController.presentedNavigationController() != nil
+        let viewToPresentFrom = isMainTabBarPresentingViewController ? mainTabBarController.view : mainTabBar
+        let rectToPresentFrom = isMainTabBarPresentingViewController ? mainTabBarController.view.bottomCenter : mainTabBar.menuRect
 
         for metadata in metadatas {
             let fileURL = URL(fileURLWithPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
@@ -340,13 +358,16 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             }
         }
 
-        let processor = ParallelWorker(n: 5, titleKey: "_downloading_", totalTasks: downloadMetadata.count, hudView: controller.view)
+        let processor = ParallelWorker(n: 5, 
+                                       titleKey: "_downloading_",
+                                       totalTasks: downloadMetadata.count,
+                                       hudView: currentViewController.view)
         for (metadata, url) in downloadMetadata {
             processor.execute { completion in
                 guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
                                                                                                selector: "",
-                                                                                               sceneIdentifier: controller.sceneIdentifier) else { return completion() }
+                                                                                               sceneIdentifier: mainTabBarController.sceneIdentifier) else { return completion() }
                 NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
                 } progressHandler: { progress in
                     processor.hud?.progress = Float(progress.fractionCompleted)
@@ -361,9 +382,9 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             guard !items.isEmpty else { return }
             let activityViewController = UIActivityViewController(activityItems: items, applicationActivities: nil)
             activityViewController.popoverPresentationController?.permittedArrowDirections = .any
-            activityViewController.popoverPresentationController?.sourceView = mainTabBar
-            activityViewController.popoverPresentationController?.sourceRect = mainTabBar.menuRect
-            controller.present(activityViewController, animated: true)
+            activityViewController.popoverPresentationController?.sourceView = viewToPresentFrom
+            activityViewController.popoverPresentationController?.sourceRect = rectToPresentFrom
+            currentViewController.present(activityViewController, animated: true)
         }
     }
 
@@ -380,7 +401,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             navigationController.modalPresentationStyle = UIModalPresentationStyle.pageSheet
             let viewController = navigationController.presentedViewController as? NCScan
             viewController?.serverUrl = controller?.currentServerUrl()
-            controller?.present(navigationController, animated: true, completion: nil)
+            controller?.currentViewController()?.present(navigationController, animated: true, completion: nil)
         }
     }
 
@@ -487,6 +508,9 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             navigationController.popToRootViewController(animated: false)
+            if controller.presentedViewController != nil {
+                controller.dismiss(animated: false)
+            }
             controller.selectedIndex = 0
             if serverUrlPush == serverUrl,
                let viewController = navigationController.topViewController as? NCFiles {
@@ -513,9 +537,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                         viewController.serverUrl = serverUrlPush
                         viewController.titleCurrentFolder = String(dir)
                         viewController.navigationItem.backButtonTitle = viewController.titleCurrentFolder
-
                         controller.navigationCollectionViewCommon.append(NavigationCollectionViewCommon(serverUrl: serverUrlPush, navigationController: navigationController, viewController: viewController))
-
                         if serverUrlPush == serverUrl {
                             viewController.fileNameBlink = fileNameBlink
                             viewController.fileNameOpen = fileNameOpen
@@ -618,7 +640,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         navigationController?.modalPresentationStyle = .formSheet
 
         if let navigationController = navigationController {
-            controller?.present(navigationController, animated: true, completion: nil)
+            controller?.currentViewController()?.present(navigationController, animated: true, completion: nil)
         }
     }
 }

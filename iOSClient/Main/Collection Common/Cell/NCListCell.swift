@@ -53,6 +53,10 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 
     weak var listCellDelegate: NCListCellDelegate?
     var namedButtonMore = ""
+    
+    var separatorBackground: UIColor? {
+       UIColor(named: "ListCell/Separator")
+    }
 
     var fileAvatarImageView: UIImageView? {
         return imageShared
@@ -132,8 +136,8 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         longPressedGesture.delaysTouchesBegan = true
         self.addGestureRecognizer(longPressedGesture)
 
-        separator.backgroundColor = .separator
-        separatorHeightConstraint.constant = 0.5
+        separator.backgroundColor = separatorBackground
+        separatorHeightConstraint.constant = 1
 
         labelTitle.text = ""
         labelInfo.text = ""
@@ -219,7 +223,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     func hideSeparator(_ status: Bool) {
         separator.isHidden = status
     }
-
+	
     func selected(_ status: Bool, isEditMode: Bool) {
         if isEditMode {
             imageItemLeftConstraint.constant = 45
@@ -240,18 +244,9 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             setA11yActions()
         }
         if status {
-            var blurEffectView: UIView?
-            blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .systemMaterial))
-            blurEffectView?.backgroundColor = .lightGray
-            blurEffectView?.frame = self.bounds
-            blurEffectView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            imageSelect.image = NCImageCache.images.checkedYes
-            backgroundView = blurEffectView
-            separator.isHidden = true
+            imageSelect.image = NCImageCache.images.checkedYes?.image(color: NCBrandColor.shared.brandElement)
         } else {
-            imageSelect.image = NCImageCache.images.checkedNo
-            backgroundView = nil
-            separator.isHidden = false
+			imageSelect.image = NCImageCache.images.checkedNo?.image(color: NCBrandColor.shared.brandElement)
         }
 
     }

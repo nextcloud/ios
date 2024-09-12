@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "add_to_favorites_icon.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

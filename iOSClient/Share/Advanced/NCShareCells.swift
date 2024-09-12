@@ -36,7 +36,7 @@ protocol NCToggleCellConfig: NCShareCellConfig {
 
 extension NCToggleCellConfig {
     func getCell(for share: NCTableShareable) -> UITableViewCell {
-        return NCShareToggleCell(isOn: isOn(for: share))
+        return NCShareToggleCell(isOn: isOn(for: share), customIcons: (.checkmarkIcon, nil))
     }
 
     func didSelect(for share: NCTableShareable) {
@@ -198,10 +198,10 @@ enum NCShareDetails: CaseIterable, NCShareCellConfig {
     func getCell(for share: NCTableShareable) -> UITableViewCell {
         switch self {
         case .hideDownload:
-            return NCShareToggleCell(isOn: share.hideDownload)
+            return NCShareToggleCell(isOn: share.hideDownload, customIcons: (.checkmarkIcon, nil))
         case .expirationDate:
             return NCShareDateCell(share: share)
-        case .password: return NCShareToggleCell(isOn: !share.password.isEmpty, customIcons: ("lock", "lock_open"))
+        case .password: return NCShareToggleCell(isOn: !share.password.isEmpty, customIcons: (.itemLock, .itemLockOpen))
         case .note:
             let cell = UITableViewCell(style: .value1, reuseIdentifier: "shareNote")
             cell.detailTextLabel?.text = share.note
@@ -269,18 +269,23 @@ struct NCShareConfig {
 }
 
 class NCShareToggleCell: UITableViewCell {
-    typealias CustomToggleIcon = (onIconName: String?, offIconName: String?)
+    typealias CustomToggleIcon = (onIconName: ImageResource?, offIconName: ImageResource?)
     init(isOn: Bool, customIcons: CustomToggleIcon? = nil) {
         super.init(style: .default, reuseIdentifier: "toggleCell")
         self.accessibilityValue = isOn ? NSLocalizedString("_on_", comment: "") : NSLocalizedString("_off_", comment: "")
 
         guard let customIcons = customIcons,
               let iconName = isOn ? customIcons.onIconName : customIcons.offIconName else {
+            
             self.accessoryType = isOn ? .checkmark : .none
+            self.tintColor = NCBrandColor.shared.brandElement
             return
         }
-        let image = NCUtility().loadImage(named: iconName, colors: [NCBrandColor.shared.brandElement], size: self.frame.height - 26)
-        self.accessoryView = UIImageView(image: image)
+        let checkmark = UIImage(resource: iconName).withTintColor(NCBrandColor.shared.brandElement)
+        let imageView = UIImageView(image: checkmark)
+        imageView.frame = CGRect(x: 0, y: 0, width: 19, height: 19)
+        imageView.contentMode = .scaleAspectFit
+        self.accessoryView = imageView
     }
 
     required init?(coder: NSCoder) {

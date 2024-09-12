@@ -123,7 +123,7 @@ let userAgent: String = {
 
 class NCBrandColor: NSObject {
     static let shared: NCBrandColor = {
-        let instance = NCBrandColor()
+        let instance = NCBrandColorIONOS()
         return instance
     }()
 
@@ -142,6 +142,14 @@ class NCBrandColor: NSObject {
     var themingColor: String = ""
     var themingColorElement: String = ""
     var themingColorText: String = ""
+
+	var menuIconColor: UIColor {
+		iconImageColor
+	}
+	
+	var menuFolderIconColor: UIColor {
+		iconImageColor
+	}
 
     let iconImageColor: UIColor = .label
     let iconImageColor2: UIColor = .secondaryLabel

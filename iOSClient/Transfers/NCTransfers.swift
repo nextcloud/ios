@@ -147,7 +147,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     @objc func startTask(_ notification: Any) {
 
         guard let metadata = metadataTemp,
-              let hudView = self.tabBarController?.view,
+              let hudView = self.view,
               appDelegate.account == metadata.account else { return }
 
         let cameraRoll = NCCameraRoll()

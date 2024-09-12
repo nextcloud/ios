@@ -88,7 +88,7 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
     @IBAction func touchUpInsideRestore(_ sender: Any) {
         delegate?.tapRestoreListItem(with: objectId, image: imageItem.image, sender: sender)
     }
-
+	
     func selected(_ status: Bool, isEditMode: Bool) {
         if isEditMode {
             imageItemLeftConstraint.constant = 45
@@ -107,18 +107,9 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
             backgroundView = nil
         }
         if status {
-            var blurEffectView: UIView?
-            blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .systemMaterial))
-            blurEffectView?.backgroundColor = .lightGray
-            blurEffectView?.frame = self.bounds
-            blurEffectView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            imageSelect.image = NCImageCache.images.checkedYes
-            backgroundView = blurEffectView
-            separator.isHidden = true
+			imageSelect.image = NCImageCache.images.checkedYes?.image(color: NCBrandColor.shared.brandElement)
         } else {
-            imageSelect.image = NCImageCache.images.checkedNo
-            backgroundView = nil
-            separator.isHidden = false
+            imageSelect.image = NCImageCache.images.checkedNo?.image(color: NCBrandColor.shared.brandElement)
         }
 
     }

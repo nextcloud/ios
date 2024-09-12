@@ -30,23 +30,30 @@ struct NavigationCollectionViewCommon {
 }
 
 class NCMainTabBarController: UITabBarController {
-    var sceneIdentifier: String = UUID().uuidString
     var documentPickerViewController: NCDocumentPickerViewController?
     let navigationCollectionViewCommon = ThreadSafeArray<NavigationCollectionViewCommon>()
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private var previousIndex: Int?
-
+    private(set) var burgerMenuController: BurgerMenuAttachController?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         delegate = self
+        burgerMenuController = BurgerMenuAttachController(with: self)
     }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        previousIndex = selectedIndex
+    
+    func showBurgerMenu() {
+        burgerMenuController?.showMenu()
+    }
+    
+    func presentedNavigationController() -> UINavigationController? {
+        return presentedViewController as? UINavigationController
     }
 
     func currentViewController() -> UIViewController? {
+        if let navVC = presentedNavigationController() {
+            return navVC.topViewController
+        }
         return (selectedViewController as? UINavigationController)?.topViewController
     }
 

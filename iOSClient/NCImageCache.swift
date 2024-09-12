@@ -244,8 +244,8 @@ class NCImageCache: NSObject {
         static var folderAutomaticUpload = UIImage()
         static var folder = UIImage()
 
-        static var checkedYes = UIImage()
-        static var checkedNo = UIImage()
+		static var checkedYes: UIImage? = UIImage()
+		static var checkedNo: UIImage? = UIImage()
 
         static var buttonMore = UIImage()
         static var buttonStop = UIImage()
@@ -266,17 +266,18 @@ class NCImageCache: NSObject {
 
         images.file = utility.loadImage(named: "doc", colors: [NCBrandColor.shared.iconImageColor2])
 
-        images.shared = utility.loadImage(named: "person.fill.badge.plus", colors: NCBrandColor.shared.iconImageMultiColors)
-        images.canShare = utility.loadImage(named: "person.fill.badge.plus", colors: NCBrandColor.shared.iconImageMultiColors)
-        images.shareByLink = utility.loadImage(named: "link", colors: [NCBrandColor.shared.iconImageColor])
+        let canShareImage = UIImage(resource: .Share.canShare).withTintColor(NCBrandColor.shared.brandElement)
+        images.shared = canShareImage
+        images.canShare = canShareImage
+        images.shareByLink = UIImage(resource: .Share.shared)
 
-        images.favorite = utility.loadImage(named: "star.fill", colors: [NCBrandColor.shared.yellowFavorite])
-        images.livePhoto = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor])
-        images.offlineFlag = utility.loadImage(named: "arrow.down.circle.fill", colors: [.systemGreen])
-        images.local = utility.loadImage(named: "checkmark.circle.fill", colors: [.systemGreen])
+        images.favorite = NCImagesRepository.favorite
+        images.livePhoto = NCImagesRepository.livePhoto
+        images.offlineFlag = utility.loadImage(named: "arrow.down.circle.fill", colors: [NCBrandColor.shared.brandElement])
+        images.local = UIImage(resource: .local).withTintColor(NCBrandColor.shared.brandElement)
 
-        images.checkedYes = utility.loadImage(named: "checkmark.circle.fill", colors: [NCBrandColor.shared.brandElement])
-        images.checkedNo = utility.loadImage(named: "circle", colors: [NCBrandColor.shared.brandElement])
+        images.checkedYes = UIImage(named: "FileSelection/list_item_selected")
+        images.checkedNo =  UIImage(named: "FileSelection/list_item_deselected")
 
         images.buttonMore = utility.loadImage(named: "ellipsis", colors: [NCBrandColor.shared.iconImageColor])
         images.buttonStop = utility.loadImage(named: "stop.circle", colors: [NCBrandColor.shared.iconImageColor])

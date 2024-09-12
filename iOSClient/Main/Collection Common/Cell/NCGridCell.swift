@@ -33,7 +33,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var labelInfo: UILabel!
     @IBOutlet weak var labelSubinfo: UILabel!
     @IBOutlet weak var buttonMore: UIButton!
-    @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
 
     var objectId = ""
     var indexPath = IndexPath()
@@ -98,10 +97,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
 
-        imageVisualEffect.layer.cornerRadius = 6
-        imageVisualEffect.clipsToBounds = true
-        imageVisualEffect.alpha = 0.5
-
         imageSelect.isHidden = true
         imageSelect.image = NCImageCache.images.checkedYes
 
@@ -159,10 +154,8 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         }
         if status {
             imageSelect.isHidden = false
-            imageVisualEffect.isHidden = false
         } else {
             imageSelect.isHidden = true
-            imageVisualEffect.isHidden = true
         }
     }
 

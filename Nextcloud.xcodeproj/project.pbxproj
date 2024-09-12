@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0F5090CE2C786F04009348D9 /* FileActionsHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F5090CD2C786F04009348D9 /* FileActionsHeader.swift */; };
+		0F8B9A5B2C7887F60041C17D /* FileActionsHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0F8B9A5A2C7887F60041C17D /* FileActionsHeader.xib */; };
+		0F9F524F2C8F46D7004717E0 /* AppScreenConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F9F524E2C8F46D7004717E0 /* AppScreenConstants.swift */; };
+		0FC7CA752C8B1F48009DEC69 /* CopyMoveDialogButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FC7CA742C8B1F48009DEC69 /* CopyMoveDialogButton.swift */; };
 		2C1D5D7623E2DE3300334ABB /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
 		2C1D5D7923E2DE9100334ABB /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
 		2C33C48223E2C475005F963B /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C33C48123E2C475005F963B /* NotificationService.swift */; };
@@ -16,6 +20,13 @@
 		371B5A2E23D0B04500FAFAE9 /* NCMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 371B5A2D23D0B04500FAFAE9 /* NCMenu.swift */; };
 		3781B9B023DB2B7E006B4B1D /* AppDelegate+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3781B9AF23DB2B7E006B4B1D /* AppDelegate+Menu.swift */; };
 		3CEA5F122BFBBCAF0097E536 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
+		4240DB4E2C5646B400E72FC0 /* BurgerMenuAttachController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4240DB4D2C5646B400E72FC0 /* BurgerMenuAttachController.swift */; };
+		4240DB502C5648E300E72FC0 /* BurgerMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4240DB4F2C5648E300E72FC0 /* BurgerMenuViewController.swift */; };
+		4240DB522C5649A900E72FC0 /* BurgerMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4240DB512C5649A900E72FC0 /* BurgerMenuView.swift */; };
+		42678ABE2C57C5FB00307DEF /* BurgerMenuViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42678ABD2C57C5FB00307DEF /* BurgerMenuViewModel.swift */; };
+		42D6C0AD2C6B8FA800DF5543 /* NCKeychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76882132C0DD1E7001CF441 /* NCKeychain.swift */; };
+		42F504802C6F553D001AA432 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 42F5047F2C6F553D001AA432 /* Colors.xcassets */; };
+		6215F7F22C86F16C002ACE64 /* NCCollectionViewCommonSelectToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6215F7F12C86F16C002ACE64 /* NCCollectionViewCommonSelectToolbarView.swift */; };
 		625EC26E2C6CA285006411D1 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 625EC26D2C6CA285006411D1 /* FirebaseAnalytics */; };
 		625EC2712C6CAABD006411D1 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 625EC2702C6CAABD006411D1 /* GoogleService-Info.plist */; };
 		8491B1CD273BBA82001C8C5B /* UIViewController+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8491B1CC273BBA82001C8C5B /* UIViewController+Menu.swift */; };
@@ -78,9 +89,12 @@
 		D51C00472C2C1C1E00A04554 /* NCBrand-IONOS.swift in Sources */ = {isa = PBXBuildFile; fileRef = D51C00402C2C1B4D00A04554 /* NCBrand-IONOS.swift */; };
 		D575039F27146F93008DC9DC /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
 		D5B6AA7827200C7200D49C24 /* NCActivityTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */; };
+		D5C5133B2C91970B00AE35CA /* NCImagesRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C5133A2C91970B00AE35CA /* NCImagesRepository.swift */; };
+		D5C5133C2C919B8400AE35CA /* NCImagesRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C5133A2C91970B00AE35CA /* NCImagesRepository.swift */; };
+		D5C5133E2C919B8500AE35CA /* NCImagesRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C5133A2C91970B00AE35CA /* NCImagesRepository.swift */; };
 		F310B1EF2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = F310B1EE2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift */; };
 		F314F1142A30E2DE00BC7FAB /* View+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E8A390295DC5E0006CB2D0 /* View+Extension.swift */; };
-		F321DA8A2B71205A00DDA0E6 /* NCTrashSelectTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F321DA892B71205A00DDA0E6 /* NCTrashSelectTabBar.swift */; };
+		F321DA8A2B71205A00DDA0E6 /* NCTrashSelectToolBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F321DA892B71205A00DDA0E6 /* NCTrashSelectToolBar.swift */; };
 		F3391B082B4C52C5001C0C4B /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B072B4C52C5001C0C4B /* FirebaseDatabase */; };
 		F3391B0A2B4C52CB001C0C4B /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B092B4C52CB001C0C4B /* JGProgressHUD */; };
 		F3391B0C2B4C52D5001C0C4B /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B0B2B4C52D5001C0C4B /* SVGKit */; };
@@ -545,7 +559,6 @@
 		F76882292C0DD1E7001CF441 /* NCManageE2EEModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76882102C0DD1E7001CF441 /* NCManageE2EEModel.swift */; };
 		F768822A2C0DD1E7001CF441 /* NCSettingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76882112C0DD1E7001CF441 /* NCSettingsModel.swift */; };
 		F768822B2C0DD1E7001CF441 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F76882122C0DD1E7001CF441 /* Settings.bundle */; };
-		F768822C2C0DD1E7001CF441 /* NCKeychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76882132C0DD1E7001CF441 /* NCKeychain.swift */; };
 		F768822D2C0DD1E7001CF441 /* Acknowledgements.rtf in Resources */ = {isa = PBXBuildFile; fileRef = F76882142C0DD1E7001CF441 /* Acknowledgements.rtf */; };
 		F768822E2C0DD1E7001CF441 /* NCSettingsBundleHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76882152C0DD1E7001CF441 /* NCSettingsBundleHelper.swift */; };
 		F768822F2C0DD1E7001CF441 /* NCAutoUploadModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76882172C0DD1E7001CF441 /* NCAutoUploadModel.swift */; };
@@ -1090,6 +1103,10 @@
 		08EA97451E6554FC004C83FA /* FirebaseCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseCore.framework; sourceTree = "<group>"; };
 		08EA97461E6554FC004C83FA /* FirebaseInstanceID.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseInstanceID.framework; sourceTree = "<group>"; };
 		08EA97471E6554FC004C83FA /* GoogleToolboxForMac.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleToolboxForMac.framework; sourceTree = "<group>"; };
+		0F5090CD2C786F04009348D9 /* FileActionsHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileActionsHeader.swift; sourceTree = "<group>"; };
+		0F8B9A5A2C7887F60041C17D /* FileActionsHeader.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileActionsHeader.xib; sourceTree = "<group>"; };
+		0F9F524E2C8F46D7004717E0 /* AppScreenConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppScreenConstants.swift; sourceTree = "<group>"; };
+		0FC7CA742C8B1F48009DEC69 /* CopyMoveDialogButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyMoveDialogButton.swift; sourceTree = "<group>"; };
 		2C33C47F23E2C475005F963B /* Notification Service Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Notification Service Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C33C48123E2C475005F963B /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		2C33C48A23E2CC26005F963B /* Notification_Service_Extension-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Notification_Service_Extension-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -1098,6 +1115,12 @@
 		371B5A2D23D0B04500FAFAE9 /* NCMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMenu.swift; sourceTree = "<group>"; };
 		371B5A3223D0BD5500FAFAE9 /* FloatingPanel.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FloatingPanel.framework; path = Carthage/Build/iOS/FloatingPanel.framework; sourceTree = "<group>"; };
 		3781B9AF23DB2B7E006B4B1D /* AppDelegate+Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDelegate+Menu.swift"; sourceTree = "<group>"; };
+		4240DB4D2C5646B400E72FC0 /* BurgerMenuAttachController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BurgerMenuAttachController.swift; sourceTree = "<group>"; };
+		4240DB4F2C5648E300E72FC0 /* BurgerMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BurgerMenuViewController.swift; sourceTree = "<group>"; };
+		4240DB512C5649A900E72FC0 /* BurgerMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BurgerMenuView.swift; sourceTree = "<group>"; };
+		42678ABD2C57C5FB00307DEF /* BurgerMenuViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BurgerMenuViewModel.swift; sourceTree = "<group>"; };
+		42F5047F2C6F553D001AA432 /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
+		6215F7F12C86F16C002ACE64 /* NCCollectionViewCommonSelectToolbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectionViewCommonSelectToolbarView.swift; sourceTree = "<group>"; };
 		625EC2702C6CAABD006411D1 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
 		8491B1CC273BBA82001C8C5B /* UIViewController+Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Menu.swift"; sourceTree = "<group>"; };
 		AF1A9B6327D0CA1E00F17A9E /* UIAlertController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIAlertController+Extension.swift"; sourceTree = "<group>"; };
@@ -1138,11 +1161,12 @@
 		C04E2F222A17BB4D001BAD85 /* FilesIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesIntegrationTests.swift; sourceTree = "<group>"; };
 		D51C00402C2C1B4D00A04554 /* NCBrand-IONOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCBrand-IONOS.swift"; sourceTree = "<group>"; };
 		D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActivityTableViewCell.swift; sourceTree = "<group>"; };
+		D5C5133A2C91970B00AE35CA /* NCImagesRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCImagesRepository.swift; sourceTree = "<group>"; };
 		F30A96042A27299D00D7BCFE /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/iPhoneOS.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		F310B1EE2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCViewerMedia+VisionKit.swift"; sourceTree = "<group>"; };
 		F3131ED82B038DB20018DB28 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/iOSSupport/System/Library/Frameworks/SwiftUI.framework; sourceTree = DEVELOPER_DIR; };
 		F3131EDA2B038DB90018DB28 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/iOSSupport/System/Library/Frameworks/WidgetKit.framework; sourceTree = DEVELOPER_DIR; };
-		F321DA892B71205A00DDA0E6 /* NCTrashSelectTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTrashSelectTabBar.swift; sourceTree = "<group>"; };
+		F321DA892B71205A00DDA0E6 /* NCTrashSelectToolBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTrashSelectToolBar.swift; sourceTree = "<group>"; };
 		F33EE6F12BF4C9B200CA1A51 /* PKCS12.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PKCS12.swift; sourceTree = "<group>"; };
 		F343A4B22A1E01FF00DDA874 /* PHAsset+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PHAsset+Extension.swift"; sourceTree = "<group>"; };
 		F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+Extension.swift"; sourceTree = "<group>"; };
@@ -1901,6 +1925,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0F5090CC2C786EC8009348D9 /* ActionsHeader */ = {
+			isa = PBXGroup;
+			children = (
+				0F5090CD2C786F04009348D9 /* FileActionsHeader.swift */,
+				0F8B9A5A2C7887F60041C17D /* FileActionsHeader.xib */,
+			);
+			path = ActionsHeader;
+			sourceTree = "<group>";
+		};
 		2C33C48023E2C475005F963B /* Notification Service Extension */ = {
 			isa = PBXGroup;
 			children = (
@@ -1928,6 +1961,17 @@
 				F7A560412AE1593700BE8FD6 /* NCOperationSaveLivePhoto.swift */,
 			);
 			path = Menu;
+			sourceTree = "<group>";
+		};
+		4240DB4C2C56446D00E72FC0 /* BurgerMenu */ = {
+			isa = PBXGroup;
+			children = (
+				4240DB4D2C5646B400E72FC0 /* BurgerMenuAttachController.swift */,
+				4240DB4F2C5648E300E72FC0 /* BurgerMenuViewController.swift */,
+				42678ABD2C57C5FB00307DEF /* BurgerMenuViewModel.swift */,
+				4240DB512C5649A900E72FC0 /* BurgerMenuView.swift */,
+			);
+			path = BurgerMenu;
 			sourceTree = "<group>";
 		};
 		AF8ED1FA2757821000B8DBC4 /* NextcloudUnitTests */ = {
@@ -2304,6 +2348,7 @@
 		F7603298252F0E550015A421 /* Collection Common */ = {
 			isa = PBXGroup;
 			children = (
+				0F5090CC2C786EC8009348D9 /* ActionsHeader */,
 				F75FE06B2BB01D0D00A0EFEF /* Cell */,
 				F78ACD50219046AC0088454D /* Section Header Footer */,
 				F70D7C3525FFBF81002B9E34 /* NCCollectionViewCommon.swift */,
@@ -2318,6 +2363,7 @@
 				F38F71242B6BBDC300473CDC /* NCCollectionViewCommonSelectTabBar.swift */,
 				F7E7AEA42BA32C6500512E52 /* NCCollectionViewDownloadThumbnail.swift */,
 				F7E7AEA62BA32D0000512E52 /* NCCollectionViewUnifiedSearch.swift */,
+				6215F7F12C86F16C002ACE64 /* NCCollectionViewCommonSelectToolbarView.swift */,
 			);
 			path = "Collection Common";
 			sourceTree = "<group>";
@@ -2546,7 +2592,7 @@
 				AF3FDCC12796ECC300710F60 /* NCTrash+CollectionView.swift */,
 				F7E402322BA89551007E5609 /* NCTrash+Networking.swift */,
 				F7E402302BA891EB007E5609 /* NCTrash+SelectTabBarDelegate.swift */,
-				F321DA892B71205A00DDA0E6 /* NCTrashSelectTabBar.swift */,
+				F321DA892B71205A00DDA0E6 /* NCTrashSelectToolBar.swift */,
 			);
 			path = Trash;
 			sourceTree = "<group>";
@@ -2594,6 +2640,7 @@
 				F7EDE51A262DD0C400414FE6 /* NCSelectCommandViewCopyMove.xib */,
 				F7EDE513262DC2CD00414FE6 /* NCSelectCommandViewSelect+CreateFolder.xib */,
 				F7EDE508262DA9D600414FE6 /* NCSelectCommandViewSelect.xib */,
+				0FC7CA742C8B1F48009DEC69 /* CopyMoveDialogButton.swift */,
 			);
 			path = Select;
 			sourceTree = "<group>";
@@ -2964,11 +3011,15 @@
 				F702F2CC25EE5B4F008F8E80 /* AppDelegate.swift */,
 				F794E13E2BBC0F70003693D7 /* SceneDelegate.swift */,
 				F76B649B2ADFFAED00014640 /* NCImageCache.swift */,
+				D5C5133A2C91970B00AE35CA /* NCImagesRepository.swift */,
 				F702F2CE25EE5B5C008F8E80 /* NCGlobal.swift */,
+				0F9F524E2C8F46D7004717E0 /* AppScreenConstants.swift */,
 				F7E402282BA85D1D007E5609 /* PrivacyInfo.xcprivacy */,
 				F73CB5771ED46807005F2A5A /* NCBridgeSwift.h */,
 				F70F96AF2874394B006C8379 /* Nextcloud-Bridging-Header.h */,
 				F7F67BB81A24D27800EE80DA /* Images.xcassets */,
+				42F5047F2C6F553D001AA432 /* Colors.xcassets */,
+				4240DB4C2C56446D00E72FC0 /* BurgerMenu */,
 				F769CA1B2966EF4F00039397 /* GUI */,
 				F70211F31BAC56E9003FC03E /* Main */,
 				F7CA213725F1372B00826ABB /* Account Request */,
@@ -3730,6 +3781,7 @@
 				F765F73225237E3F00391DBE /* NCRecent.storyboard in Resources */,
 				F78F74342163757000C2ADAD /* NCTrash.storyboard in Resources */,
 				F702F30225EE5D2C008F8E80 /* english.txt in Resources */,
+				0F8B9A5B2C7887F60041C17D /* FileActionsHeader.xib in Resources */,
 				F757CC8C29E82D0500F31428 /* NCGroupfolders.storyboard in Resources */,
 				F79A65C32191D90F00FF6DCC /* NCSelect.storyboard in Resources */,
 				F7226EDC1EE4089300EBECB1 /* Main.storyboard in Resources */,
@@ -3782,6 +3834,7 @@
 				F774264A22EB4D0000B23912 /* NCSearchUserDropDownCell.xib in Resources */,
 				F7CB689A2541676B0050EC94 /* NCMore.storyboard in Resources */,
 				F77B0F7D1D118A16002130FE /* Images.xcassets in Resources */,
+				42F504802C6F553D001AA432 /* Colors.xcassets in Resources */,
 				F768822B2C0DD1E7001CF441 /* Settings.bundle in Resources */,
 				F73CB3B222E072A000AD728E /* NCShareHeaderView.xib in Resources */,
 				F7AE00FA230E81EB007ACF8A /* NCBrowserWeb.storyboard in Resources */,
@@ -4020,6 +4073,7 @@
 				F73EF7EA2B0226B90087E6E9 /* NCManageDatabase+UserStatus.swift in Sources */,
 				F359D86A2A7D03420023F405 /* NCUtility+Exif.swift in Sources */,
 				F7B769AB2B7A0B2000C1AAEB /* NCManageDatabase+Metadata+Session.swift in Sources */,
+				D5C5133E2C919B8500AE35CA /* NCImagesRepository.swift in Sources */,
 				F7E98C1727E0D0FC001F9F19 /* NCManageDatabase+Video.swift in Sources */,
 				F79B646126CA661600838ACA /* UIControl+Extension.swift in Sources */,
 				F77C973A2953143A00FDDD09 /* NCCameraRoll.swift in Sources */,
@@ -4110,6 +4164,7 @@
 				D51C00422C2C1C1B00A04554 /* NCBrand-IONOS.swift in Sources */,
 				F7346E1628B0EF5C006CE2D2 /* Widget.swift in Sources */,
 				F78302F828B4C3E100B84583 /* NCManageDatabase+Activity.swift in Sources */,
+				D5C5133C2C919B8400AE35CA /* NCImagesRepository.swift in Sources */,
 				F713FBE62C31646400F10760 /* NCNetworking+AsyncAwait.swift in Sources */,
 				F711A4E92AF9327600095DD8 /* UIImage+animatedGIF.m in Sources */,
 				F73EF7D02B0225BA0087E6E9 /* NCManageDatabase+Tag.swift in Sources */,
@@ -4271,9 +4326,9 @@
 				F733598125C1C188002ABA72 /* NCAskAuthorization.swift in Sources */,
 				370D26AF248A3D7A00121797 /* NCCellProtocol.swift in Sources */,
 				F70D87D025EE6E58008CBBBD /* NCRenameFile.swift in Sources */,
-				F768822C2C0DD1E7001CF441 /* NCKeychain.swift in Sources */,
 				F71CD6CA2930D7B1006C95C1 /* NCApplicationHandle.swift in Sources */,
 				F73EF7D72B0226080087E6E9 /* NCManageDatabase+Tip.swift in Sources */,
+				6215F7F22C86F16C002ACE64 /* NCCollectionViewCommonSelectToolbarView.swift in Sources */,
 				F76882402C0DD30B001CF441 /* ViewOnAppear.swift in Sources */,
 				F790110E21415BF600D7B136 /* NCViewerRichDocument.swift in Sources */,
 				F78ACD4021903CC20088454D /* NCGridCell.swift in Sources */,
@@ -4282,8 +4337,9 @@
 				F761856B29E98543006EB3B0 /* NCIntroViewController.swift in Sources */,
 				F7743A142C33F13A0034F670 /* NCCollectionViewCommon+CollectionViewDataSource.swift in Sources */,
 				F75B0ABD244C4DBB00E58DCA /* NCActionCenter.swift in Sources */,
+				4240DB4E2C5646B400E72FC0 /* BurgerMenuAttachController.swift in Sources */,
 				AF935067276B84E700BD078F /* NCMenu+FloatingPanel.swift in Sources */,
-				F321DA8A2B71205A00DDA0E6 /* NCTrashSelectTabBar.swift in Sources */,
+				F321DA8A2B71205A00DDA0E6 /* NCTrashSelectToolBar.swift in Sources */,
 				F76882282C0DD1E7001CF441 /* NCEndToEndInitialize.swift in Sources */,
 				F702F2CD25EE5B4F008F8E80 /* AppDelegate.swift in Sources */,
 				F769454022E9F077000A798A /* NCSharePaging.swift in Sources */,
@@ -4320,6 +4376,7 @@
 				F768822E2C0DD1E7001CF441 /* NCSettingsBundleHelper.swift in Sources */,
 				F7A60F86292D215000FCE1F2 /* NCShareAccounts.swift in Sources */,
 				F72408332B8A27C900F128E2 /* NCMedia+Command.swift in Sources */,
+				0F9F524F2C8F46D7004717E0 /* AppScreenConstants.swift in Sources */,
 				F755CB402B8CB13C00CE27E9 /* NCMediaLayout.swift in Sources */,
 				F73EF7B72B0224AB0087E6E9 /* NCManageDatabase+ExternalSites.swift in Sources */,
 				D51C00412C2C1B4D00A04554 /* NCBrand-IONOS.swift in Sources */,
@@ -4328,9 +4385,11 @@
 				F78A18B623CDD07D00F681F3 /* NCViewerRichWorkspaceWebView.swift in Sources */,
 				AFA2AC8527849604008E1EA7 /* NCActivityCommentView.swift in Sources */,
 				AFCE353727E4ED7B00FEA6C2 /* NCShareCells.swift in Sources */,
+				0F5090CE2C786F04009348D9 /* FileActionsHeader.swift in Sources */,
 				AF36077127BFA4E8001A243D /* ParallelWorker.swift in Sources */,
 				F75A9EE623796C6F0044CFCE /* NCNetworking.swift in Sources */,
 				F758B460212C56A400515F55 /* NCScan.swift in Sources */,
+				42D6C0AD2C6B8FA800DF5543 /* NCKeychain.swift in Sources */,
 				F76882262C0DD1E7001CF441 /* NCSettingsView.swift in Sources */,
 				F78ACD52219046DC0088454D /* NCSectionFirstHeader.swift in Sources */,
 				F72944F52A8424F800246839 /* NCEndToEndMetadataV1.swift in Sources */,
@@ -4367,6 +4426,7 @@
 				F7682FE023C36B0500983A04 /* NCMainTabBar.swift in Sources */,
 				F7A0D1352591FBC5008F8A13 /* String+Extension.swift in Sources */,
 				F7CEE6012BA9A5C9003EFD89 /* NCTrashGridCell.swift in Sources */,
+				42678ABE2C57C5FB00307DEF /* BurgerMenuViewModel.swift in Sources */,
 				F7F9D1BB25397CE000D9BFF5 /* NCViewer.swift in Sources */,
 				F7E7AEA52BA32C6500512E52 /* NCCollectionViewDownloadThumbnail.swift in Sources */,
 				AF730AF827834B1400B7520E /* NCShare+NCCellDelegate.swift in Sources */,
@@ -4384,13 +4444,16 @@
 				F73EF7BF2B02250B0087E6E9 /* NCManageDatabase+GPS.swift in Sources */,
 				F71F6D072B6A6A5E00F1EB15 /* ThreadSafeArray.swift in Sources */,
 				F761856C29E98543006EB3B0 /* NCIntroCollectionViewCell.swift in Sources */,
+				4240DB522C5649A900E72FC0 /* BurgerMenuView.swift in Sources */,
 				F75DD765290ABB25002EB562 /* Intent.intentdefinition in Sources */,
 				F74B6D952A7E239A00F03C5F /* NCManageDatabase+Chunk.swift in Sources */,
 				F310B1EF2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift in Sources */,
 				F702F2F725EE5CED008F8E80 /* NCLogin.swift in Sources */,
 				F7EB9B132BBC12F300EDF036 /* UIApplication+Extension.swift in Sources */,
 				F7E98C1627E0D0FC001F9F19 /* NCManageDatabase+Video.swift in Sources */,
+				0FC7CA752C8B1F48009DEC69 /* CopyMoveDialogButton.swift in Sources */,
 				F7F4F11227ECDC52008676F9 /* UIFont+Extension.swift in Sources */,
+				D5C5133B2C91970B00AE35CA /* NCImagesRepository.swift in Sources */,
 				F76882222C0DD1E7001CF441 /* NCCapabilitiesView.swift in Sources */,
 				AF93471A27E2361E002537EE /* NCShareHeader.swift in Sources */,
 				F7F878AE1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */,
@@ -4479,6 +4542,7 @@
 				F7BC288026663F85004D46C5 /* NCViewCertificateDetails.swift in Sources */,
 				F78B87E92B62550800C65ADC /* NCMediaDownloadThumbnaill.swift in Sources */,
 				F73EF7AF2B0224350087E6E9 /* NCManageDatabase+DirectEditing.swift in Sources */,
+				4240DB502C5648E300E72FC0 /* BurgerMenuViewController.swift in Sources */,
 				D5B6AA7827200C7200D49C24 /* NCActivityTableViewCell.swift in Sources */,
 				F745B253222D88AE00346520 /* NCLoginQRCode.swift in Sources */,
 				F769454822E9F20D000A798A /* NCShareNetworking.swift in Sources */,

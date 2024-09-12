@@ -185,5 +185,5 @@ struct NCManageE2EEView: View {
 }
 
 #Preview {
-    NCManageE2EEView(model: NCManageE2EE(controller: nil))
+    NCManageE2EEView(model: NCManageE2EE(viewController: nil))
 }

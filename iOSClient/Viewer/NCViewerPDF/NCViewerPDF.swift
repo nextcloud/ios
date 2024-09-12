@@ -112,7 +112,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         ])
 
         // MODAL
-        if self.navigationController?.presentingViewController != nil {
+        if (self.navigationController?.presentingViewController != nil) && ((self.navigationController?.viewControllers.count ?? 0) <= 1) {
             self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .plain, target: self, action: #selector(viewDismiss))
         }
 

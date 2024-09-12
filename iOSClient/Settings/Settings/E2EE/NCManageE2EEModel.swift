@@ -32,14 +32,14 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     var passcodeType = ""
 
-    @Published var controller: UITabBarController?
+    @Published var viewController: UIViewController?
     @Published var isEndToEndEnabled: Bool = false
     @Published var statusOfService: String = NSLocalizedString("_status_in_progress_", comment: "")
     @Published var navigateBack: Bool = false
 
-    init(controller: UITabBarController?) {
+    init(viewController: UIViewController?) {
         super.init()
-        self.controller = controller
+        self.viewController = viewController
         endToEndInitialize.delegate = self
         onViewAppear()
     }
@@ -93,13 +93,13 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
         }
 
         self.passcodeType = passcodeType
-        controller?.present(passcodeViewController, animated: true)
+        viewController?.present(passcodeViewController, animated: true)
     }
 
     @objc func correctPasscode() {
         switch self.passcodeType {
         case "startE2E":
-            endToEndInitialize.initEndToEndEncryption(viewController: controller, metadata: nil)
+            endToEndInitialize.initEndToEndEncryption(viewController: viewController, metadata: nil)
         case "readPassphrase":
             if let e2ePassphrase = NCKeychain().getEndToEndPassphrase(account: appDelegate.account) {
                 print("[INFO]Passphrase: " + e2ePassphrase)
@@ -109,7 +109,7 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
                 alertController.addAction(UIAlertAction(title: NSLocalizedString("_copy_passphrase_", comment: ""), style: .default, handler: { _ in
                     UIPasteboard.general.string = e2ePassphrase
                 }))
-                controller?.present(alertController, animated: true)
+                viewController?.present(alertController, animated: true)
             }
         case "removeLocallyEncryption":
             let alertController = UIAlertController(title: NSLocalizedString("_e2e_settings_remove_", comment: ""), message: NSLocalizedString("_e2e_settings_remove_message_", comment: ""), preferredStyle: .alert)
@@ -118,7 +118,7 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
                 self.isEndToEndEnabled = NCKeychain().isEndToEndEnabled(account: self.appDelegate.account)
             }))
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .default, handler: { _ in }))
-            controller?.present(alertController, animated: true)
+            viewController?.present(alertController, animated: true)
         default:
             break
         }
