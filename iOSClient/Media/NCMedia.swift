@@ -348,14 +348,11 @@ class NCMedia: UIViewController {
 
     @objc func handlePinch(_ gestureRecognizer: UIPinchGestureRecognizer) {
         func updateNumberOfColumns() {
-
             let originalColumns = numberOfColumns
 
-            // Aumenta le colonne se la scala è > 1.5
             if currentScale > 1.5 && numberOfColumns < maxColumns {
                 numberOfColumns += 1
             }
-            // Diminuisci le colonne se la scala è < 1.0
             else if currentScale < 1 && numberOfColumns > 1 {
                 numberOfColumns -= 1
             }
@@ -384,7 +381,6 @@ class NCMedia: UIViewController {
         case .began:
             lastScale = gestureRecognizer.scale
             print("Pinch began, initial scale: \(lastScale)")
-
         case .changed:
             guard !transitionColumns else {
                 return
@@ -392,27 +388,20 @@ class NCMedia: UIViewController {
             let scale = gestureRecognizer.scale
             let scaleChange = scale / lastScale
 
-            // Calcola la nuova scala
             currentScale *= scaleChange
             currentScale = max(0.5, min(currentScale, 2.0)) // Limita la scala tra 0.5 e 2.0
 
-            // Aggiorna il numero di colonne basato sulla scala corrente
             updateNumberOfColumns()
 
-            // Applica la trasformazione affine alla collection view
             collectionView.transform = CGAffineTransform(scaleX: currentScale, y: currentScale)
 
             print("Pinch changed, scale: \(scale), scale change: \(scaleChange), current scale: \(currentScale)")
 
-            // Aggiorna la scala di riferimento per il prossimo gesto
             lastScale = scale
-
         case .ended:
-            // Reimposta la scala a 1.0 quando il gesto termina
             currentScale = 1.0
             collectionView.transform = .identity
             print("Pinch ended, reset scale to 1.0")
-
         default:
             break
         }
