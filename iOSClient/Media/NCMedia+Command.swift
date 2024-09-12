@@ -113,10 +113,10 @@ extension NCMedia {
         let layoutTitle = (layout == NCGlobal.shared.mediaLayoutRatio) ? NSLocalizedString("_media_square_", comment: "") : NSLocalizedString("_media_ratio_", comment: "")
         let layoutImage = (layout == NCGlobal.shared.mediaLayoutRatio) ? utility.loadImage(named: "square.grid.3x3") : utility.loadImage(named: "rectangle.grid.3x2")
 
-        if CGFloat(columnPhoto) >= maxImageGrid - 1 {
+        if CGFloat(numberOfColumns) >= maxImageGrid - 1 {
             self.attributesZoomIn = []
             self.attributesZoomOut = .disabled
-        } else if columnPhoto <= 1 {
+        } else if numberOfColumns <= 1 {
             self.attributesZoomIn = .disabled
             self.attributesZoomOut = []
         } else {
@@ -168,7 +168,7 @@ extension NCMedia {
         ])
 
         let zoomOut = UIAction(title: NSLocalizedString("_zoom_out_", comment: ""), image: utility.loadImage(named: "minus.magnifyingglass"), attributes: self.attributesZoomOut) { _ in
-            let column = self.columnPhoto + 1
+            let column = self.numberOfColumns + 1
             self.database.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: column)
             self.createMenu()
             UIView.transition(with: self.collectionView, duration: 0.5, options: .transitionCrossDissolve, animations: {
@@ -178,7 +178,7 @@ extension NCMedia {
         }
 
         let zoomIn = UIAction(title: NSLocalizedString("_zoom_in_", comment: ""), image: utility.loadImage(named: "plus.magnifyingglass"), attributes: self.attributesZoomIn) { _ in
-            let column = self.columnPhoto - 1
+            let column = self.numberOfColumns - 1
             self.database.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: column)
             self.createMenu()
             UIView.transition(with: self.collectionView, duration: 0.5, options: .transitionCrossDissolve, animations: {

@@ -33,15 +33,15 @@ import RealmSwift
 
 extension NCMedia: NCMediaLayoutDelegate {
     func getColumnCount() -> Int {
-        if self.columnPhoto == 0,
+        if self.numberOfColumns == 0,
            let layoutForView = database.getLayoutForView(account: session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "") {
             if layoutForView.columnPhoto > 0 {
-                self.columnPhoto = layoutForView.columnPhoto
+                self.numberOfColumns = layoutForView.columnPhoto
             } else {
-                self.columnPhoto = 3
+                self.numberOfColumns = 3
             }
         }
-        return self.columnPhoto
+        return self.numberOfColumns
     }
 
     func getLayout() -> String? {

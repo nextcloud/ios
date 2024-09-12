@@ -64,7 +64,7 @@ class NCMedia: UIViewController {
     var timerSearchNewMedia: Timer?
     let insetsTop: CGFloat = 75
     let maxImageGrid: CGFloat = 8
-    var columnPhoto: Int = 0
+    var numberOfColumns: Int = 0
     let livePhotoImage = NCUtility().loadImage(named: "livephoto", colors: [.white])
     let playImage = NCUtility().loadImage(named: "play.fill", colors: [.white])
     var photoImage = UIImage()
@@ -75,8 +75,6 @@ class NCMedia: UIViewController {
     let sensitivity: CGFloat = 0.5 // Fattore di sensibilità per la trasformazione
     let increaseThreshold: CGFloat = 0.3 // Soglia per incrementare le colonne
     let decreaseThreshold: CGFloat = 0.2 // Soglia più bassa per rallentare il decremento
-
-
 
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: tabBarController)
@@ -349,18 +347,18 @@ class NCMedia: UIViewController {
 
     @objc func handlePinch(_ gestureRecognizer: UIPinchGestureRecognizer) {
         func updateNumberOfColumns() {
-            let originalColumns = self.columnPhoto
+            let originalColumns = numberOfColumns
 
             // Aumenta le colonne se la scala è > 1.5
-            if currentScale > 1.5 && self.columnPhoto < 7 {
-                self.columnPhoto += 1
+            if currentScale > 1.5 && numberOfColumns < 7 {
+                numberOfColumns += 1
             }
             // Diminuisci le colonne se la scala è < 1.0
-            else if currentScale < 1.0 && self.columnPhoto > 1 {
-                self.columnPhoto -= 1
+            else if currentScale < 1 && numberOfColumns > 1 {
+                numberOfColumns -= 1
             }
 
-            if originalColumns != self.columnPhoto {
+            if originalColumns != numberOfColumns {
                 // Reset della scala al default
                 collectionView.collectionViewLayout.invalidateLayout()
                 collectionView.transform = .identity
@@ -409,7 +407,7 @@ class NCMedia: UIViewController {
         var returnImage: UIImage?
         var width = width
         if width == nil {
-            width = self.collectionView.frame.size.width / CGFloat(self.columnPhoto)
+            width = self.collectionView.frame.size.width / CGFloat(self.numberOfColumns)
         }
         let ext = NCGlobal.shared.getSizeExtension(width: width)
 
