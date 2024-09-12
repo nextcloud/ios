@@ -70,7 +70,7 @@ class NCMedia: UIViewController {
 
     var lastScale: CGFloat = 1.0
     var currentScale: CGFloat = 1.0
-    let maxColumns: Int = 8
+    let maxColumns: Int = 10
     var numberOfColumns: Int = 0
     var transitionColumns = false
 
