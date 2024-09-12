@@ -88,10 +88,6 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
     @IBAction func touchUpInsideRestore(_ sender: Any) {
         delegate?.tapRestoreListItem(with: objectId, image: imageItem.image, sender: sender)
     }
-
-	var checkImagesColor: UIColor {
-		UIColor(named: "FileActionsHeader/GrayButtonTint") ?? .lightGray
-	}
 	
     func selected(_ status: Bool, isEditMode: Bool) {
         if isEditMode {
@@ -111,11 +107,9 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
             backgroundView = nil
         }
         if status {
-			imageSelect.image = NCImageCache.images.checkedYes?.image(color: checkImagesColor)
-            separator.isHidden = true
+			imageSelect.image = NCImageCache.images.checkedYes?.image(color: NCBrandColor.shared.brandElement)
         } else {
-            imageSelect.image = NCImageCache.images.checkedNo?.image(color: checkImagesColor)
-            separator.isHidden = false
+            imageSelect.image = NCImageCache.images.checkedNo?.image(color: NCBrandColor.shared.brandElement)
         }
 
     }

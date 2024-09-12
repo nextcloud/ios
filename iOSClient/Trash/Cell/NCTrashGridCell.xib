@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="dark"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -21,15 +21,6 @@
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="5Ci-V1-hf5" userLabel="imageItem">
                         <rect key="frame" x="0.0" y="20" width="416" height="419"/>
                     </imageView>
-                    <visualEffectView hidden="YES" contentMode="scaleAspectFill" translatesAutoresizingMaskIntoConstraints="NO" id="ic2-NZ-bo6" userLabel="VisualEffect">
-                        <rect key="frame" x="0.0" y="20" width="416" height="419"/>
-                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="FSs-In-pkZ">
-                            <rect key="frame" x="0.0" y="0.0" width="416" height="419"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        </view>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <blurEffect style="extraLight"/>
-                    </visualEffectView>
                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="star.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="cgB-lu-t0g">
                         <rect key="frame" x="388" y="21" width="26" height="26"/>
                         <color key="tintColor" systemColor="tertiarySystemFillColor"/>
@@ -88,10 +79,8 @@
             </view>
             <viewLayoutGuide key="safeArea" id="VXh-sQ-LeX"/>
             <constraints>
-                <constraint firstItem="ic2-NZ-bo6" firstAttribute="leading" secondItem="5Ci-V1-hf5" secondAttribute="leading" id="0Js-Fd-ekE"/>
                 <constraint firstItem="cgB-lu-t0g" firstAttribute="top" secondItem="5Ci-V1-hf5" secondAttribute="top" constant="1.5" id="0mO-lw-JH1"/>
                 <constraint firstItem="DHy-Up-3Bh" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" constant="5" id="1T3-8p-uIW"/>
-                <constraint firstItem="ic2-NZ-bo6" firstAttribute="trailing" secondItem="5Ci-V1-hf5" secondAttribute="trailing" id="7x2-2m-53X"/>
                 <constraint firstItem="2po-8g-XeS" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" constant="25" id="9JI-KS-d7J"/>
                 <constraint firstItem="DHy-Up-3Bh" firstAttribute="top" secondItem="VXh-sQ-LeX" secondAttribute="top" constant="5" id="ESV-qE-tbO"/>
                 <constraint firstAttribute="trailing" secondItem="VRH-IZ-lXO" secondAttribute="trailing" constant="5" id="HAS-uF-AuS"/>
@@ -108,8 +97,6 @@
                 <constraint firstItem="EJs-Ro-nbe" firstAttribute="top" secondItem="VRH-IZ-lXO" secondAttribute="bottom" constant="9" id="o5n-Oi-Uh7"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="trailing" secondItem="cgB-lu-t0g" secondAttribute="trailing" constant="2" id="q5r-Pz-Tnq"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="leading" secondItem="VXh-sQ-LeX" secondAttribute="leading" id="qT3-WD-iTV"/>
-                <constraint firstItem="ic2-NZ-bo6" firstAttribute="top" secondItem="5Ci-V1-hf5" secondAttribute="top" id="r2R-Qj-7iM"/>
-                <constraint firstItem="ic2-NZ-bo6" firstAttribute="bottom" secondItem="5Ci-V1-hf5" secondAttribute="bottom" id="wle-L3-xRa"/>
                 <constraint firstItem="12P-pO-DHO" firstAttribute="centerX" secondItem="vf1-Kf-9uL" secondAttribute="centerX" id="xhm-Np-2Ua"/>
             </constraints>
             <size key="customSize" width="416" height="524"/>
@@ -118,15 +105,14 @@
                     <exclude reference="cgB-lu-t0g"/>
                 </mask>
                 <mask key="constraints">
-                    <exclude reference="0mO-lw-JH1"/>
                     <exclude reference="q5r-Pz-Tnq"/>
+                    <exclude reference="0mO-lw-JH1"/>
                 </mask>
             </variation>
             <connections>
                 <outlet property="buttonMore" destination="EJs-Ro-nbe" id="BdI-ay-LuX"/>
                 <outlet property="imageItem" destination="5Ci-V1-hf5" id="xky-Nw-NUb"/>
                 <outlet property="imageSelect" destination="DHy-Up-3Bh" id="mo9-rP-P4I"/>
-                <outlet property="imageVisualEffect" destination="ic2-NZ-bo6" id="UeL-nV-SPY"/>
                 <outlet property="labelInfo" destination="2po-8g-XeS" id="FJ4-wI-9cW"/>
                 <outlet property="labelSubinfo" destination="12P-pO-DHO" id="K6d-7r-FGh"/>
                 <outlet property="labelTitle" destination="eU3-lY-fKr" id="0P7-yM-Asb"/>
