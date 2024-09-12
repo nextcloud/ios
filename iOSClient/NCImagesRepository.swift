@@ -12,7 +12,7 @@ import UIKit
 class NCImagesRepository: NSObject {
     
     private enum ImageName: String {
-        case favorite = "star.fill"
+        case favorite = "star.filled"
         case addToFavorite = "star.hollow"
         case livePhoto = "livephoto"
         case details = "details"
@@ -103,7 +103,7 @@ class NCImagesRepository: NSObject {
     }
     
     static var menuIconAvailableOffline: UIImage {
-        menuIcon(ImageName.availableOffline)
+        utility.loadImage(named: ImageName.availableOffline.rawValue)
     }
     
     static var menuIconDownloadFullResolutionImage: UIImage {
