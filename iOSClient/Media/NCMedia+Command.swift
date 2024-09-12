@@ -107,7 +107,10 @@ extension NCMedia {
     func createMenu() {
         let layoutForView = database.getLayoutForView(account: session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")
         let columnPhoto = layoutForView?.columnPhoto ?? 3
-        let layout = layoutForView?.layout ?? NCGlobal.shared.mediaLayoutRatio
+        var layout = layoutForView?.layout ?? NCGlobal.shared.mediaLayoutRatio
+        /// Overwrite default value
+        if layout == NCGlobal.shared.layoutList { layout = NCGlobal.shared.mediaLayoutRatio }
+        ///
         let layoutTitle = (layout == NCGlobal.shared.mediaLayoutRatio) ? NSLocalizedString("_media_square_", comment: "") : NSLocalizedString("_media_ratio_", comment: "")
         let layoutImage = (layout == NCGlobal.shared.mediaLayoutRatio) ? utility.loadImage(named: "square.grid.3x3") : utility.loadImage(named: "rectangle.grid.3x2")
 
