@@ -63,8 +63,6 @@ class NCMedia: UIViewController {
     var timeIntervalSearchNewMedia: TimeInterval = 2.0
     var timerSearchNewMedia: Timer?
     let insetsTop: CGFloat = 75
-    let maxImageGrid: CGFloat = 8
-    var numberOfColumns: Int = 0
     let livePhotoImage = NCUtility().loadImage(named: "livephoto", colors: [.white])
     let playImage = NCUtility().loadImage(named: "play.fill", colors: [.white])
     var photoImage = UIImage()
@@ -75,6 +73,8 @@ class NCMedia: UIViewController {
     let sensitivity: CGFloat = 0.5 // Fattore di sensibilità per la trasformazione
     let increaseThreshold: CGFloat = 0.3 // Soglia per incrementare le colonne
     let decreaseThreshold: CGFloat = 0.2 // Soglia più bassa per rallentare il decremento
+    let maxColumns: CGFloat = 8
+    var numberOfColumns: Int = 0
 
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: tabBarController)
@@ -429,7 +429,7 @@ class NCMedia: UIViewController {
         case 0...1: pointSize = 60
         case 2...3: pointSize = 30
         case 4...5: pointSize = 25
-        case 6...Int(maxImageGrid): pointSize = 20
+        case 6...Int(maxColumns): pointSize = 20
         default: pointSize = 20
         }
         if let image = UIImage(systemName: "photo.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize))?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal) {

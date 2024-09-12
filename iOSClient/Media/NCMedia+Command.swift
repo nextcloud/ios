@@ -113,7 +113,7 @@ extension NCMedia {
         let layoutTitle = (layout == NCGlobal.shared.mediaLayoutRatio) ? NSLocalizedString("_media_square_", comment: "") : NSLocalizedString("_media_ratio_", comment: "")
         let layoutImage = (layout == NCGlobal.shared.mediaLayoutRatio) ? utility.loadImage(named: "square.grid.3x3") : utility.loadImage(named: "rectangle.grid.3x2")
 
-        if CGFloat(numberOfColumns) >= maxImageGrid - 1 {
+        if CGFloat(numberOfColumns) >= maxColumns {
             self.attributesZoomIn = []
             self.attributesZoomOut = .disabled
         } else if numberOfColumns <= 1 {
