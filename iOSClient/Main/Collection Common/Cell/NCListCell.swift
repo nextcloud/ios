@@ -53,6 +53,10 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 
     weak var listCellDelegate: NCListCellDelegate?
     var namedButtonMore = ""
+    
+    var separatorBackground: UIColor? {
+       UIColor(named: "ListCell/Separator")
+    }
 
     var fileAvatarImageView: UIImageView? {
         return imageShared
@@ -132,8 +136,8 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         longPressedGesture.delaysTouchesBegan = true
         self.addGestureRecognizer(longPressedGesture)
 
-        separator.backgroundColor = .separator
-        separatorHeightConstraint.constant = 0.5
+        separator.backgroundColor = separatorBackground
+        separatorHeightConstraint.constant = 1
 
         labelTitle.text = ""
         labelInfo.text = ""
