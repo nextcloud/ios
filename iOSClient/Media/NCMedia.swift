@@ -350,9 +350,9 @@ class NCMedia: UIViewController {
         func updateNumberOfColumns() {
             let originalColumns = numberOfColumns
 
-            if currentScale > 1 && numberOfColumns < maxColumns {
+            if currentScale < 1 && numberOfColumns < maxColumns {
                 numberOfColumns += 1
-            } else if currentScale < 1 && numberOfColumns > 1 {
+            } else if currentScale > 1 && numberOfColumns > 1 {
                 numberOfColumns -= 1
             }
 
