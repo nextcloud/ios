@@ -37,8 +37,15 @@ extension NCMedia: UICollectionViewDataSource {
             }
             header.emptyDescription.text = ""
             return header
+        } else {
+            guard let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as? NCSectionFooter else { return NCSectionFooter() }
+            let images = dataSource.getMetadatas().filter({ $0.isImage }).count
+            let video = dataSource.getMetadatas().count - images
+
+            footer.setTitleLabel(NSLocalizedString("_images_", comment: "") + " \(images)" + " • " + NSLocalizedString("_video_", comment: "") + " \(video)")
+            footer.separatorIsHidden(true)
+            return footer
         }
-        return UICollectionReusableView()
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {

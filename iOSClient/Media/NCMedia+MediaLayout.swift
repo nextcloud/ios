@@ -53,7 +53,11 @@ extension NCMedia: NCMediaLayoutDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, heightForFooterInSection section: Int) -> Float {
-        return .zero
+        if dataSource.getMetadatas().count == 0 {
+            return .zero
+        } else {
+            return 100.0
+        }
     }
 
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, insetForSection section: Int) -> UIEdgeInsets {
