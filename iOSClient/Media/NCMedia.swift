@@ -361,6 +361,7 @@ class NCMedia: UIViewController {
                 self.setTitleDate()
 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+
                     self.collectionView.collectionViewLayout.invalidateLayout()
                     self.collectionView.reloadData()
 
@@ -370,22 +371,9 @@ class NCMedia: UIViewController {
                         layoutForView.columnPhoto = self.numberOfColumns
                         self.database.setLayoutForView(layoutForView: layoutForView)
                     }
-                    self.transitionColumns = false
-                }
 
-                /*
-                UIView.transition(with: self.collectionView, duration: 0.01, options: .transitionCrossDissolve) {
-                    self.collectionView.collectionViewLayout.invalidateLayout()
-                    self.collectionView.reloadData()
-                } completion: { _ in
-                    self.setTitleDate()
-                    if let layoutForView = self.database.getLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "") {
-                        layoutForView.columnPhoto = self.numberOfColumns
-                        self.database.setLayoutForView(layoutForView: layoutForView)
-                    }
                     self.transitionColumns = false
                 }
-                */
             }
         }
 
