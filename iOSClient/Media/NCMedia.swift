@@ -360,7 +360,7 @@ class NCMedia: UIViewController {
                 self.currentScale = 1.0
                 self.setTitleDate()
 
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.07) {
 
                     self.collectionView.collectionViewLayout.invalidateLayout()
                     self.collectionView.reloadData()
