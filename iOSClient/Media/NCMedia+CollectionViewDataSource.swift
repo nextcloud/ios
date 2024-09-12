@@ -50,6 +50,8 @@ extension NCMedia: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let numberOfItemsInSection = dataSource.getMetadatas().count
+        self.columnPhoto = getColumnCount()
+
         if numberOfItemsInSection == 0 || NCNetworking.shared.isOffline {
             selectOrCancelButton.isHidden = true
             menuButton.isHidden = false
@@ -64,7 +66,6 @@ extension NCMedia: UICollectionViewDataSource {
             menuButton.isHidden = false
             activityIndicatorTrailing.constant = 150
         }
-        self.columnPhoto = getColumnCount()
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
             self.setTitleDate()
         }

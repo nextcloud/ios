@@ -106,7 +106,6 @@ extension NCMedia {
 
     func createMenu() {
         let layoutForView = database.getLayoutForView(account: session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")
-        let columnPhoto = layoutForView?.columnPhoto ?? 3
         var layout = layoutForView?.layout ?? NCGlobal.shared.mediaLayoutRatio
         /// Overwrite default value
         if layout == NCGlobal.shared.layoutList { layout = NCGlobal.shared.mediaLayoutRatio }
@@ -169,7 +168,7 @@ extension NCMedia {
         ])
 
         let zoomOut = UIAction(title: NSLocalizedString("_zoom_out_", comment: ""), image: utility.loadImage(named: "minus.magnifyingglass"), attributes: self.attributesZoomOut) { _ in
-            let column = columnPhoto + 1
+            let column = self.columnPhoto + 1
             self.database.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: column)
             self.createMenu()
             UIView.transition(with: self.collectionView, duration: 0.5, options: .transitionCrossDissolve, animations: {
@@ -179,7 +178,7 @@ extension NCMedia {
         }
 
         let zoomIn = UIAction(title: NSLocalizedString("_zoom_in_", comment: ""), image: utility.loadImage(named: "plus.magnifyingglass"), attributes: self.attributesZoomIn) { _ in
-            let column = columnPhoto - 1
+            let column = self.columnPhoto - 1
             self.database.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: column)
             self.createMenu()
             UIView.transition(with: self.collectionView, duration: 0.5, options: .transitionCrossDissolve, animations: {
