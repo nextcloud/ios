@@ -70,7 +70,7 @@ class NCMedia: UIViewController {
 
     var lastScale: CGFloat = 1.0
     var currentScale: CGFloat = 1.0
-    let maxColumns: Int = 10
+    let maxColumns: Int = 8
     var numberOfColumns: Int = 0
     var transitionColumns = false
 
@@ -360,7 +360,20 @@ class NCMedia: UIViewController {
                 self.currentScale = 1.0
                 self.setTitleDate()
 
-                UIView.transition(with: self.collectionView, duration: 0.1, options: .transitionCrossDissolve) {
+                DispatchQueue.main.async {
+                    self.collectionView.collectionViewLayout.invalidateLayout()
+                    self.collectionView.reloadData()
+
+                    self.setTitleDate()
+                    if let layoutForView = self.database.getLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "") {
+                        layoutForView.columnPhoto = self.numberOfColumns
+                        self.database.setLayoutForView(layoutForView: layoutForView)
+                    }
+                    self.transitionColumns = false
+                }
+
+                /*
+                UIView.transition(with: self.collectionView, duration: 0.01, options: .transitionCrossDissolve) {
                     self.collectionView.collectionViewLayout.invalidateLayout()
                     self.collectionView.reloadData()
                 } completion: { _ in
@@ -371,11 +384,13 @@ class NCMedia: UIViewController {
                     }
                     self.transitionColumns = false
                 }
+                */
             }
         }
 
         switch gestureRecognizer.state {
         case .began:
+            self.clear()
             lastScale = gestureRecognizer.scale
         case .changed:
             guard !transitionColumns else { return }
