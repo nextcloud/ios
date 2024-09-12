@@ -61,7 +61,8 @@ extension NCMedia: NCMediaLayoutDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, insetForSection section: Int) -> UIEdgeInsets {
-        return .zero
+        print(currentInset)
+        return UIEdgeInsets(top: currentInset, left: currentInset, bottom: currentInset, right: currentInset)
     }
 
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, insetForHeaderInSection section: Int) -> UIEdgeInsets {

@@ -70,6 +70,9 @@ class NCMedia: UIViewController {
     var photoImage = UIImage()
     var videoImage = UIImage()
 
+    var currentInset: CGFloat = 0.0
+    var lastScale: CGFloat = 1.0
+    var sensitivity: CGFloat = 100.0
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: tabBarController)
     }
@@ -132,6 +135,9 @@ class NCMedia: UIViewController {
         refreshControl.action(for: .valueChanged) { _ in
             self.reloadDataSource()
         }
+
+        let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinch(_:)))
+        collectionView.addGestureRecognizer(pinchGesture)
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
             self.layoutType = self.database.getLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")?.layout ?? NCGlobal.shared.mediaLayoutRatio
@@ -333,6 +339,58 @@ class NCMedia: UIViewController {
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             self.reloadDataSource()
             self.searchMediaUI()
+        }
+    }
+
+    @objc func handlePinch(_ gestureRecognizer: UIPinchGestureRecognizer) {
+        let limit = collectionView.frame.size.width / CGFloat(columnPhoto + 1)
+
+        switch gestureRecognizer.state {
+        case .began:
+            // Salva la scala iniziale
+            lastScale = gestureRecognizer.scale
+
+        case .changed:
+            let scale = gestureRecognizer.scale
+            let scaleChange = scale / lastScale
+
+            // Calcola e aggiorna l'inset
+            if scaleChange > 1 {
+                // Ingrandimento (Pinch Inverso: riduce l'inset)
+                currentInset -= (scaleChange - 1) * sensitivity
+            } else if scaleChange < 1 {
+                // Rimpicciolimento (Pinch Inverso: aumenta l'inset)
+                currentInset += (1 - scaleChange) * sensitivity
+            }
+
+            // Limita il valore dell'inset per evitare valori troppo piccoli o troppo grandi
+            currentInset = max(-limit, currentInset) // Permetti valori negativi fino a -100
+            currentInset = min(currentInset, limit)  // Adatta i limiti come necessario
+
+            print("Pinch changed, scale: \(scale), scale change: \(scaleChange), current inset: \(currentInset)")
+
+            // Invalida il layout per applicare i nuovi inset
+            collectionView.performBatchUpdates({
+                collectionView.collectionViewLayout.invalidateLayout()
+            }, completion: nil)
+
+            // Aggiorna la scala di riferimento per il prossimo gesto
+            lastScale = scale
+
+        case .ended:
+            // Reimposta l'inset a zero quando il gesto termina
+            currentInset = 0
+
+            // Invalida nuovamente il layout per applicare l'inset a zero
+            collectionView.performBatchUpdates({
+                collectionView.collectionViewLayout.invalidateLayout()
+            }, completion: nil)
+
+            // Riinizializza la scala per il prossimo gesto
+            lastScale = 1.0
+
+        default:
+            break
         }
     }
 
