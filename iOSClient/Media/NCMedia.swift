@@ -70,10 +70,7 @@ class NCMedia: UIViewController {
 
     var lastScale: CGFloat = 1.0
     var currentScale: CGFloat = 1.0
-    let sensitivity: CGFloat = 0.5 // Fattore di sensibilità per la trasformazione
-    let increaseThreshold: CGFloat = 0.3 // Soglia per incrementare le colonne
-    let decreaseThreshold: CGFloat = 0.2 // Soglia più bassa per rallentare il decremento
-    let maxColumns: Int = 8
+    let maxColumns: Int = 10
     var numberOfColumns: Int = 0
     var transitionColumns = false
 
@@ -363,7 +360,7 @@ class NCMedia: UIViewController {
                 self.currentScale = 1.0
                 self.setTitleDate()
 
-                UIView.transition(with: self.collectionView, duration: 0.2, options: .transitionCrossDissolve) {
+                UIView.transition(with: self.collectionView, duration: 0.1, options: .transitionCrossDissolve) {
                     self.collectionView.collectionViewLayout.invalidateLayout()
                     self.collectionView.reloadData()
                 } completion: { _ in
