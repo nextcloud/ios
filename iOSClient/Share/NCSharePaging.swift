@@ -322,10 +322,9 @@ class NCShareHeaderView: UIView {
         NCNetworking.shared.favoriteMetadata(metadata) { error in
             if error == .success {
                 guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else { return }
-                self.favorite.setImage(NCUtility().loadImage(
-                    named: "star.fill",
-                    colors: metadata.favorite ? [NCBrandColor.shared.yellowFavorite] : [NCBrandColor.shared.iconImageColor2],
-                    size: 20), for: .normal)
+                if metadata.favorite {
+                    self.favorite.setImage(NCImagesRepository.shareHeaderFavorite, for: .normal)
+                }
             } else {
                 NCContentPresenter().showError(error: error)
             }
