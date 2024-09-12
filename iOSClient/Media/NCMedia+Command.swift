@@ -113,16 +113,6 @@ extension NCMedia {
         let layoutTitle = (layout == NCGlobal.shared.mediaLayoutRatio) ? NSLocalizedString("_media_square_", comment: "") : NSLocalizedString("_media_ratio_", comment: "")
         let layoutImage = (layout == NCGlobal.shared.mediaLayoutRatio) ? utility.loadImage(named: "square.grid.3x3") : utility.loadImage(named: "rectangle.grid.3x2")
 
-        if CGFloat(numberOfColumns) >= maxColumns {
-            self.attributesZoomIn = []
-            self.attributesZoomOut = .disabled
-        } else if numberOfColumns <= 1 {
-            self.attributesZoomIn = .disabled
-            self.attributesZoomOut = []
-        } else {
-            self.attributesZoomIn = []
-            self.attributesZoomOut = []
-        }
 
         let viewFilterMenu = UIMenu(title: "", options: .displayInline, children: [
             UIAction(title: NSLocalizedString("_media_viewimage_show_", comment: ""), image: utility.loadImage(named: "photo")) { _ in
@@ -167,26 +157,6 @@ extension NCMedia {
             })
         ])
 
-        let zoomOut = UIAction(title: NSLocalizedString("_zoom_out_", comment: ""), image: utility.loadImage(named: "minus.magnifyingglass"), attributes: self.attributesZoomOut) { _ in
-            let column = self.numberOfColumns + 1
-            self.database.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: column)
-            self.createMenu()
-            UIView.transition(with: self.collectionView, duration: 0.5, options: .transitionCrossDissolve, animations: {
-                self.collectionView.reloadData()
-                self.setTitleDate()
-            }, completion: nil)
-        }
-
-        let zoomIn = UIAction(title: NSLocalizedString("_zoom_in_", comment: ""), image: utility.loadImage(named: "plus.magnifyingglass"), attributes: self.attributesZoomIn) { _ in
-            let column = self.numberOfColumns - 1
-            self.database.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: column)
-            self.createMenu()
-            UIView.transition(with: self.collectionView, duration: 0.5, options: .transitionCrossDissolve, animations: {
-                self.collectionView.reloadData()
-                self.setTitleDate()
-            }, completion: nil)
-        }
-
         let playFile = UIAction(title: NSLocalizedString("_play_from_files_", comment: ""), image: utility.loadImage(named: "play.circle")) { _ in
             guard let controller = self.controller else { return }
             self.documentPickerViewController = NCDocumentPickerViewController(controller: controller, isViewerMedia: true, allowsMultipleSelection: false, viewController: self)
@@ -215,7 +185,7 @@ extension NCMedia {
             self.present(alert, animated: true)
         }
 
-        menuButton.menu = UIMenu(title: "", children: [zoomOut, zoomIn, viewOptionsMedia, playFile, playURL])
+        menuButton.menu = UIMenu(title: "", children: [viewOptionsMedia, playFile, playURL])
     }
 }
 

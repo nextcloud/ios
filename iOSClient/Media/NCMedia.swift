@@ -73,8 +73,9 @@ class NCMedia: UIViewController {
     let sensitivity: CGFloat = 0.5 // Fattore di sensibilità per la trasformazione
     let increaseThreshold: CGFloat = 0.3 // Soglia per incrementare le colonne
     let decreaseThreshold: CGFloat = 0.2 // Soglia più bassa per rallentare il decremento
-    let maxColumns: CGFloat = 8
+    let maxColumns: Int = 8
     var numberOfColumns: Int = 0
+    var transitionColumns = false
 
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: tabBarController)
@@ -347,10 +348,11 @@ class NCMedia: UIViewController {
 
     @objc func handlePinch(_ gestureRecognizer: UIPinchGestureRecognizer) {
         func updateNumberOfColumns() {
+
             let originalColumns = numberOfColumns
 
             // Aumenta le colonne se la scala è > 1.5
-            if currentScale > 1.5 && numberOfColumns < 7 {
+            if currentScale > 1.5 && numberOfColumns < maxColumns {
                 numberOfColumns += 1
             }
             // Diminuisci le colonne se la scala è < 1.0
@@ -359,10 +361,22 @@ class NCMedia: UIViewController {
             }
 
             if originalColumns != numberOfColumns {
-                // Reset della scala al default
-                collectionView.collectionViewLayout.invalidateLayout()
-                collectionView.transform = .identity
-                currentScale = 1.0
+
+                transitionColumns = true
+                self.collectionView.transform = .identity
+                self.currentScale = 1.0
+                self.setTitleDate()
+
+                UIView.transition(with: self.collectionView, duration: 0.5, options: .transitionCrossDissolve) {
+                    self.collectionView.collectionViewLayout.invalidateLayout()
+                    self.collectionView.reloadData()
+                } completion: { _ in
+                    if let layoutForView = self.database.getLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "") {
+                        layoutForView.columnPhoto = self.numberOfColumns
+                        self.database.setLayoutForView(layoutForView: layoutForView)
+                    }
+                    self.transitionColumns = false
+                }
             }
         }
 
@@ -372,6 +386,9 @@ class NCMedia: UIViewController {
             print("Pinch began, initial scale: \(lastScale)")
 
         case .changed:
+            guard !transitionColumns else {
+                return
+            }
             let scale = gestureRecognizer.scale
             let scaleChange = scale / lastScale
 
