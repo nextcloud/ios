@@ -37,12 +37,21 @@ extension NCMedia: UICollectionViewDataSource {
             }
             header.emptyDescription.text = ""
             return header
+        } else {
+            guard let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as? NCSectionFooter else { return NCSectionFooter() }
+            let images = dataSource.getMetadatas().filter({ $0.isImage }).count
+            let video = dataSource.getMetadatas().count - images
+
+            footer.setTitleLabel(NSLocalizedString("_images_", comment: "") + " \(images)" + " • " + NSLocalizedString("_video_", comment: "") + " \(video)")
+            footer.separatorIsHidden(true)
+            return footer
         }
-        return UICollectionReusableView()
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let numberOfItemsInSection = dataSource.getMetadatas().count
+        self.numberOfColumns = getColumnCount()
+
         if numberOfItemsInSection == 0 || NCNetworking.shared.isOffline {
             selectOrCancelButton.isHidden = true
             menuButton.isHidden = false
@@ -57,7 +66,6 @@ extension NCMedia: UICollectionViewDataSource {
             menuButton.isHidden = false
             activityIndicatorTrailing.constant = 150
         }
-        self.columnPhoto = getColumnCount()
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
             self.setTitleDate()
         }

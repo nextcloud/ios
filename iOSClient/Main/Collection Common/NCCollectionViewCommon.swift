@@ -735,7 +735,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     layoutForView.columnPhoto = columnPhoto + 1
                     self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
                     self.setNavigationRightItems()
-                    UIView.transition(with: self.collectionView, duration: 0.4, options: .transitionCrossDissolve, animations: {
+                    UIView.transition(with: self.collectionView, duration: 0.5, options: .transitionCrossDissolve, animations: {
                         self.collectionView.reloadData()
                     }, completion: nil)
                 },
@@ -743,7 +743,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     layoutForView.columnPhoto = columnPhoto - 1
                     self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
                     self.setNavigationRightItems()
-                    UIView.transition(with: self.collectionView, duration: 0.4, options: .transitionCrossDissolve, animations: {
+                    UIView.transition(with: self.collectionView, duration: 0.5, options: .transitionCrossDissolve, animations: {
                         self.collectionView.reloadData()
                     }, completion: nil)
                 }

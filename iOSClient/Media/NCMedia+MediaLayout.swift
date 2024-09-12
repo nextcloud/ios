@@ -33,11 +33,15 @@ import RealmSwift
 
 extension NCMedia: NCMediaLayoutDelegate {
     func getColumnCount() -> Int {
-        let layoutForView = database.getLayoutForView(account: session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")
-        if let column = layoutForView?.columnPhoto, column > 0 {
-            return column
+        if self.numberOfColumns == 0,
+           let layoutForView = database.getLayoutForView(account: session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "") {
+            if layoutForView.columnPhoto > 0 {
+                self.numberOfColumns = layoutForView.columnPhoto
+            } else {
+                self.numberOfColumns = 3
+            }
         }
-        return 3
+        return self.numberOfColumns
     }
 
     func getLayout() -> String? {
@@ -53,7 +57,11 @@ extension NCMedia: NCMediaLayoutDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, heightForFooterInSection section: Int) -> Float {
-        return .zero
+        if dataSource.getMetadatas().count == 0 {
+            return .zero
+        } else {
+            return 70.0
+        }
     }
 
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, insetForSection section: Int) -> UIEdgeInsets {
@@ -73,7 +81,6 @@ extension NCMedia: NCMediaLayoutDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: IndexPath, columnCount: Int, typeLayout: String) -> CGSize {
-
         if typeLayout == NCGlobal.shared.mediaLayoutSquare {
             return CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
         } else {

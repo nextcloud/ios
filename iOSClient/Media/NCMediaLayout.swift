@@ -143,7 +143,7 @@ public class NCMediaLayout: UICollectionViewLayout {
             let minimumInteritemSpacing: Float = delegate.collectionView(collectionView, layout: self, minimumInteritemSpacingForSection: section)
             let sectionInset: UIEdgeInsets = delegate.collectionView(collectionView, layout: self, insetForSection: section)
             let width = Float(collectionView.frame.size.width - sectionInset.left - sectionInset.right)
-            let itemWidth = floorf((width - Float(columnCount - 1) * Float(minimumColumnSpacing)) / Float(columnCount))
+            let itemWidth = ((width - Float(columnCount - 1) * Float(minimumColumnSpacing)) / Float(columnCount))
 
             /*
             * 2. Section header

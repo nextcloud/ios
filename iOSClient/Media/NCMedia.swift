@@ -63,12 +63,16 @@ class NCMedia: UIViewController {
     var timeIntervalSearchNewMedia: TimeInterval = 2.0
     var timerSearchNewMedia: Timer?
     let insetsTop: CGFloat = 75
-    let maxImageGrid: CGFloat = 8
-    var columnPhoto: Int = 0
     let livePhotoImage = NCUtility().loadImage(named: "livephoto", colors: [.white])
     let playImage = NCUtility().loadImage(named: "play.fill", colors: [.white])
     var photoImage = UIImage()
     var videoImage = UIImage()
+
+    var lastScale: CGFloat = 1.0
+    var currentScale: CGFloat = 1.0
+    let maxColumns: Int = 10
+    var numberOfColumns: Int = 0
+    var transitionColumns = false
 
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: tabBarController)
@@ -90,6 +94,7 @@ class NCMedia: UIViewController {
         view.backgroundColor = .systemBackground
 
         collectionView.register(UINib(nibName: "NCSectionFirstHeaderEmptyData", bundle: nil), forSupplementaryViewOfKind: mediaSectionHeader, withReuseIdentifier: "sectionFirstHeaderEmptyData")
+        collectionView.register(UINib(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: mediaSectionFooter, withReuseIdentifier: "sectionFooter")
         collectionView.register(UINib(nibName: "NCGridMediaCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
         collectionView.alwaysBounceVertical = true
         collectionView.contentInset = UIEdgeInsets(top: insetsTop, left: 0, bottom: 50, right: 0)
@@ -131,6 +136,9 @@ class NCMedia: UIViewController {
         refreshControl.action(for: .valueChanged) { _ in
             self.reloadDataSource()
         }
+
+        let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinch(_:)))
+        collectionView.addGestureRecognizer(pinchGesture)
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
             self.layoutType = self.database.getLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")?.layout ?? NCGlobal.shared.mediaLayoutRatio
@@ -335,13 +343,74 @@ class NCMedia: UIViewController {
         }
     }
 
+    @objc func handlePinch(_ gestureRecognizer: UIPinchGestureRecognizer) {
+        func updateNumberOfColumns() {
+            let originalColumns = numberOfColumns
+
+            if currentScale < 1 && numberOfColumns < maxColumns {
+                numberOfColumns += 1
+            } else if currentScale > 1 && numberOfColumns > 1 {
+                numberOfColumns -= 1
+            }
+
+            if originalColumns != numberOfColumns {
+
+                transitionColumns = true
+                self.collectionView.transform = .identity
+                self.currentScale = 1.0
+                self.setTitleDate()
+
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.07) {
+
+                    self.collectionView.collectionViewLayout.invalidateLayout()
+                    self.collectionView.reloadData()
+
+                    self.setTitleDate()
+
+                    if let layoutForView = self.database.getLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "") {
+                        layoutForView.columnPhoto = self.numberOfColumns
+                        self.database.setLayoutForView(layoutForView: layoutForView)
+                    }
+
+                    self.transitionColumns = false
+                }
+            }
+        }
+
+        switch gestureRecognizer.state {
+        case .began:
+            self.clear()
+            lastScale = gestureRecognizer.scale
+        case .changed:
+            guard !transitionColumns else { return }
+            let scale = gestureRecognizer.scale
+            let scaleChange = scale / lastScale
+
+            currentScale *= scaleChange
+            currentScale = max(0.5, min(currentScale, 2.0))
+
+            updateNumberOfColumns()
+
+            if numberOfColumns > 1 && numberOfColumns < maxColumns {
+                collectionView.transform = CGAffineTransform(scaleX: currentScale, y: currentScale)
+            }
+
+            lastScale = scale
+        case .ended:
+            currentScale = 1.0
+            collectionView.transform = .identity
+        default:
+            break
+        }
+    }
+
     // MARK: - Image
 
     func getImage(metadata: NCMediaDataSource.Metadata, width: CGFloat? = nil) -> UIImage? {
         var returnImage: UIImage?
         var width = width
         if width == nil {
-            width = self.collectionView.frame.size.width / CGFloat(self.columnPhoto)
+            width = self.collectionView.frame.size.width / CGFloat(self.numberOfColumns)
         }
         let ext = NCGlobal.shared.getSizeExtension(width: width)
 
@@ -363,7 +432,7 @@ class NCMedia: UIViewController {
         case 0...1: pointSize = 60
         case 2...3: pointSize = 30
         case 4...5: pointSize = 25
-        case 6...Int(maxImageGrid): pointSize = 20
+        case 6...Int(maxColumns): pointSize = 20
         default: pointSize = 20
         }
         if let image = UIImage(systemName: "photo.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize))?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal) {

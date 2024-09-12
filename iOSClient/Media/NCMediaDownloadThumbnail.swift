@@ -37,8 +37,8 @@ class NCMediaDownloadThumbnail: ConcurrentOperation {
         self.collectionView = collectionView
         self.delegate = delegate
 
-        if let collectionView, let columnPhoto = delegate?.columnPhoto {
-            let width = collectionView.frame.size.width / CGFloat(columnPhoto)
+        if let collectionView, let numberOfColumns = delegate?.numberOfColumns {
+            let width = collectionView.frame.size.width / CGFloat(numberOfColumns)
             ext = NCGlobal.shared.getSizeExtension(width: width)
         }
     }
