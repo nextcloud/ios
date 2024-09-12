@@ -115,7 +115,7 @@ extension NCMedia {
                             let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [ NSPredicate(format: "date >= %@ AND date =< %@", lastCellDate as NSDate, firstCellDate as NSDate), self.getPredicate(filterLivePhotoFile: false)])
 
                             if let resultsMetadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: predicate) {
-                                for metadata in resultsMetadatas {
+                                for metadata in resultsMetadatas where !self.filesExists.contains(metadata.ocId) {
                                     if NCNetworking.shared.fileExistsQueue.operations.filter({ ($0 as? NCOperationFileExists)?.ocId == metadata.ocId }).isEmpty {
                                         NCNetworking.shared.fileExistsQueue.addOperation(NCOperationFileExists(metadata: metadata))
                                     }
@@ -127,11 +127,11 @@ extension NCMedia {
                             self.reloadDataSource()
                         } else {
                             if lessDate == Date.distantFuture, greaterDate == Date.distantPast, metadatas.count == 0 {
-                                self.dataSource.removeAll()
-                            }
-                            DispatchQueue.main.async {
-                                self.collectionView.reloadData()
-                                self.setTitleDate()
+                                DispatchQueue.main.async {
+                                    self.dataSource.removeAll()
+                                    self.collectionView.reloadData()
+                                    self.setTitleDate()
+                                }
                             }
                         }
                     }

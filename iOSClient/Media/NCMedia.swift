@@ -53,6 +53,7 @@ class NCMedia: UIViewController {
     var isTop: Bool = true
     var isEditMode = false
     var selectOcId: [String] = []
+    var filesExists: [String] = []
     var attributesZoomIn: UIMenuElement.Attributes = []
     var attributesZoomOut: UIMenuElement.Attributes = []
     let gradient: CAGradientLayer = CAGradientLayer()
@@ -150,7 +151,7 @@ class NCMedia: UIViewController {
 
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedLivePhoto(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedLivePhoto), object: nil)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(endTask), name: UIApplication.didEnterBackgroundNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(clear), name: UIApplication.didEnterBackgroundNotification, object: nil)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -166,7 +167,9 @@ class NCMedia: UIViewController {
         super.viewDidAppear(animated)
 
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
+
         NotificationCenter.default.addObserver(self, selector: #selector(copyFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCopyFile), object: nil)
+
         NotificationCenter.default.addObserver(self, selector: #selector(enterForeground(_:)), name: UIApplication.willEnterForegroundNotification, object: nil)
 
         searchNewMedia()
@@ -177,10 +180,12 @@ class NCMedia: UIViewController {
         super.viewDidDisappear(animated)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCopyFile), object: nil)
+
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
+
         NotificationCenter.default.removeObserver(self, name: UIApplication.willEnterForegroundNotification, object: nil)
 
-        endTask()
+        clear()
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -220,7 +225,8 @@ class NCMedia: UIViewController {
 
     // MARK: - NotificationCenter
 
-    @objc func endTask() {
+    @objc func clear() {
+        filesExists.removeAll()
         NCNetworking.shared.fileExistsQueue.cancelAll()
         NCNetworking.shared.downloadThumbnailQueue.cancelAll()
 
@@ -256,6 +262,8 @@ class NCMedia: UIViewController {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               let fileExists = userInfo["fileExists"] as? Bool else { return }
+
+        filesExists.append(ocId)
 
         if !fileExists {
             dataSource.removeMetadata([ocId])
