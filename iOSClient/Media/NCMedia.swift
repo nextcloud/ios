@@ -363,7 +363,7 @@ class NCMedia: UIViewController {
                 self.currentScale = 1.0
                 self.setTitleDate()
 
-                UIView.transition(with: self.collectionView, duration: 0.4, options: .transitionCrossDissolve) {
+                UIView.transition(with: self.collectionView, duration: 0.2, options: .transitionCrossDissolve) {
                     self.collectionView.collectionViewLayout.invalidateLayout()
                     self.collectionView.reloadData()
                 } completion: { _ in
@@ -390,7 +390,9 @@ class NCMedia: UIViewController {
 
             updateNumberOfColumns()
 
-            collectionView.transform = CGAffineTransform(scaleX: currentScale, y: currentScale)
+            if numberOfColumns > 1 && numberOfColumns < maxColumns {
+                collectionView.transform = CGAffineTransform(scaleX: currentScale, y: currentScale)
+            }
 
             lastScale = scale
         case .ended:
