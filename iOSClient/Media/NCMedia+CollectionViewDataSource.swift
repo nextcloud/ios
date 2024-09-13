@@ -88,12 +88,14 @@ extension NCMedia: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let metadata = dataSource.getMetadata(indexPath: indexPath),
         let cell = (cell as? NCGridMediaCell) else { return }
+        let width = self.collectionView.frame.size.width / CGFloat(self.numberOfColumns)
+
         cell.imageItem.image = nil
 
         DispatchQueue.global(qos: .userInteractive).async {
-            let image = self.getImage(metadata: metadata)
-            if let image {
-                DispatchQueue.main.async {
+            let image = self.getImage(metadata: metadata, width: width)
+            DispatchQueue.main.async {
+                if let image {
                     cell.imageItem.image = image
                 }
             }
