@@ -25,7 +25,6 @@ import Foundation
 import UIKit
 
 extension NCMedia {
-
     @objc func handlePinchGesture(_ gestureRecognizer: UIPinchGestureRecognizer) {
         func updateNumberOfColumns() {
             let originalColumns = numberOfColumns
@@ -51,9 +50,10 @@ extension NCMedia {
                         layoutForView.columnPhoto = self.numberOfColumns
                         self.database.setLayoutForView(layoutForView: layoutForView)
                     }
-
-                    self.transitionColumns = false
                 }
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                self.transitionColumns = false
             }
         }
 
