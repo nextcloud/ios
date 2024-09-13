@@ -85,6 +85,23 @@ extension NCMedia: UICollectionViewDataSource {
         }
     }
 
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        guard let metadata = dataSource.getMetadata(indexPath: indexPath) else { return }
+        let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridMediaCell)
+
+        if let image = getImage(metadata: metadata) {
+            cell?.imageItem.image = image
+        } else {
+            cell?.imageItem.image = nil
+        }
+
+        // Convert old Live Photo type
+        if NCCapabilities.shared.getCapabilities(account: metadata.account).isLivePhotoServerAvailable, metadata.isLivePhoto, metadata.isNotFlaggedAsLivePhotoByServer,
+           let metadata = database.getMetadataFromOcId(metadata.ocId) {
+            NCNetworking.shared.convertLivePhoto(metadata: metadata)
+        }
+    }
+
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridMediaCell)!
         guard let metadata = dataSource.getMetadata(indexPath: indexPath) else {
@@ -94,18 +111,6 @@ extension NCMedia: UICollectionViewDataSource {
         cell.date = metadata.date as Date
         cell.ocId = metadata.ocId
         cell.account = metadata.account
-
-        if let image = getImage(metadata: metadata) {
-            cell.imageItem.image = image
-        } else {
-            cell.imageItem.image = nil
-        }
-
-        // Convert OLD Live Photo
-        if NCCapabilities.shared.getCapabilities(account: metadata.account).isLivePhotoServerAvailable, metadata.isLivePhoto, metadata.isNotFlaggedAsLivePhotoByServer,
-           let metadata = database.getMetadataFromOcId(metadata.ocId) {
-            NCNetworking.shared.convertLivePhoto(metadata: metadata)
-        }
 
         if metadata.isVideo {
            cell.imageStatus.image = playImage
