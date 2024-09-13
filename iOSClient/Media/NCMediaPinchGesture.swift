@@ -59,10 +59,12 @@ extension NCMedia {
 
         switch gestureRecognizer.state {
         case .began:
-            self.clear()
+            networkRemoveAll()
             lastScale = gestureRecognizer.scale
         case .changed:
-            guard !transitionColumns else { return }
+            guard !transitionColumns else {
+                return
+            }
             let scale = gestureRecognizer.scale
             let scaleChange = scale / lastScale
 
