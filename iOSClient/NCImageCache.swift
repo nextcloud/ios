@@ -116,6 +116,12 @@ class NCImageCache: NSObject {
         cacheImage.setValue(image, forKey: ocId + etag + ext)
     }
 
+    func addImageCache(ocId: String, etag: String, image: UIImage, ext: String) {
+        guard allowExtensions.contains(ext) else { return }
+
+        cacheImage.setValue(image, forKey: ocId + etag + ext)
+    }
+
     func getImageCache(ocId: String, etag: String, ext: String) -> UIImage? {
         return cacheImage.value(forKey: ocId + etag + ext)
     }

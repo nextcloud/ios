@@ -26,6 +26,16 @@ import UIKit
 
 extension NCMedia: UICollectionViewDataSourcePrefetching {
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
-            // print("[INFO] n. " + String(indexPaths.count))
+        let metadatas = dataSource.getMetadatas(indexPaths: indexPaths)
+        let width = self.collectionView.frame.size.width / CGFloat(self.numberOfColumns)
+        let ext = NCGlobal.shared.getSizeExtension(width: width)
+
+        metadatas.forEach { metadata in
+            if self.imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) == nil,
+               let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
+                /// salva immagine nella cache
+                self.imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext)
+            }
+        }
     }
 }
