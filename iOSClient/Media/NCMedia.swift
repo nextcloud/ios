@@ -359,7 +359,7 @@ class NCMedia: UIViewController {
         } else if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
             returnImage = image
         } else if NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
-            NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnail(metadata: metadata, collectionView: self.collectionView, delegate: self))
+            NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnail(metadata: metadata, collectionView: self.collectionView, media: self))
         }
 
         return returnImage
