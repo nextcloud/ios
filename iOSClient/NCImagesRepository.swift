@@ -24,7 +24,6 @@ class NCImagesRepository: NSObject {
         case moveOrCopy = "moveOrCopy"
         case addToOffline = "offline"
         case availableOffline = "synced"
-        case downloadFullResolutionImage = "media"
         case goToPage = "goToPage"
         case modifyWithQuickLook = "modifyWithQuickLook"
         case search = "menu.search"
@@ -35,7 +34,7 @@ class NCImagesRepository: NSObject {
         case add = "menu.add"
         case selectAll = "checkmark.circle.fill"
         case close = "xmark"
-        case uploadPhotosVideos = "upload_photos_or_videos"
+        case photoOrVideo = "photoOrVideo"
         case uploadFile = "uploadFile"
         case scan = "scan"
         case document = "document"
@@ -106,7 +105,7 @@ class NCImagesRepository: NSObject {
     }
     
     static var menuIconDownloadFullResolutionImage: UIImage {
-        menuIcon(ImageName.downloadFullResolutionImage)
+        menuIcon(ImageName.photoOrVideo)
     }
     
     static var menuIconGoToPage: UIImage {
@@ -162,7 +161,7 @@ class NCImagesRepository: NSObject {
     }
     
     static var menuIconUploadPhotosVideos: UIImage {
-        menuIcon(ImageName.uploadPhotosVideos)
+        menuIcon(ImageName.photoOrVideo)
     }
     
     static var menuIconUploadFile: UIImage {
