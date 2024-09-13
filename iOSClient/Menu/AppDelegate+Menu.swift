@@ -70,7 +70,7 @@ extension AppDelegate {
         }
 
         let titleCreateFolder = isDirectoryE2EE ? NSLocalizedString("_create_folder_e2ee_", comment: "") : NSLocalizedString("_create_folder_", comment: "")
-		let imageCreateFolder = (isDirectoryE2EE ? NCImageCache.images.folderEncrypted : NCImageCache.images.folder).image(color: .menuFolderIconTint)
+        let imageCreateFolder = NCImagesRepository.menuIconCreateFolder
         actions.append(
             NCMenuAction(title: titleCreateFolder,
                          icon: imageCreateFolder, action: { _ in
@@ -84,7 +84,7 @@ extension AppDelegate {
         if !isDirectoryE2EE && NCKeychain().isEndToEndEnabled(account: appDelegate.account) {
             actions.append(
                 NCMenuAction(title: NSLocalizedString("_create_folder_e2ee_", comment: ""),
-                             icon: NCImageCache.images.folderEncrypted,
+                             icon: NCImagesRepository.menuIconCreateFolder,
                              action: { _ in
                                  let alertController = UIAlertController.createFolder(serverUrl: serverUrl, userBaseUrl: appDelegate, markE2ee: true, sceneIdentifier: controller.sceneIdentifier)
                                  controller.present(alertController, animated: true, completion: nil)
@@ -157,7 +157,7 @@ extension AppDelegate {
             if NextcloudKit.shared.isNetworkReachable() && !isDirectoryE2EE {
                 actions.append(
                     NCMenuAction(
-                        title: NSLocalizedString("_create_new_document_", comment: ""), icon: NCImagesRepository.menuIconCreateRichDocument, action: { _ in
+                        title: NSLocalizedString("_create_new_document_", comment: ""), icon: NCImagesRepository.menuIconCreateDocument, action: { _ in
                             let createDocument = NCCreateDocument()
 
                             Task {
