@@ -23,7 +23,10 @@ class FileActionsHeader: UIView {
 	@IBOutlet weak private var btnSelect: UIButton?
 	@IBOutlet weak private var btnViewMode: UIButton?
 	
-	@IBAction func onBtnSelectTap(_ sender: Any) {
+    @IBOutlet weak var btnSelectAndBtnViewModeSpacing: NSLayoutConstraint!
+    @IBOutlet weak var btnSelectAndSuperViewSpacing: NSLayoutConstraint!
+    
+    @IBAction func onBtnSelectTap(_ sender: Any) {
 		setIsEditingMode(isEditingMode: true)
 		onSelectModeChange?(true)
 	}
@@ -88,6 +91,12 @@ class FileActionsHeader: UIView {
 		btnViewMode?.showsMenuAsPrimaryAction = true
 		btnViewMode?.setImage(image?.templateRendered(), for: .normal)
 	}
+    
+    func showViewModeButton(_ show: Bool) {
+        btnViewMode?.isHidden = !show
+        btnSelectAndBtnViewModeSpacing.isActive = show
+        btnSelectAndSuperViewSpacing.isActive = !show
+    }
 	
 	func setIsEditingMode(isEditingMode: Bool) {
 		vHeaderEditingMode?.isHidden = !isEditingMode

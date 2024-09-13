@@ -211,6 +211,7 @@ class NCMedia: UIViewController {
     }
     
     private func updateHeadersView() {
+        fileActionsHeader?.showViewModeButton(false)
         fileActionsHeader?.setIsEditingMode(isEditingMode: isEditMode)
         updateHeadersMenu()
         fileActionsHeader?.onSelectModeChange = { [weak self] isSelectionMode in
