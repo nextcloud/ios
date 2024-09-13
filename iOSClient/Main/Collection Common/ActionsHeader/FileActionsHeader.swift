@@ -116,10 +116,10 @@ class FileActionsHeader: UIView {
 		var selectAllImage = UIImage(named: imageName)
 		var closeImage = UIImage(named: "FileSelection/selection_mode_close")
 
-		if let color = grayButtonTintColor {
-			closeImage = closeImage?.image(color: color)
-			selectAllImage = selectAllImage?.image(color: color)
-		}
+        let color = NCBrandColor.shared.brandElement
+        closeImage = closeImage?.image(color: color)
+        selectAllImage = selectAllImage?.image(color: color)
+
 		btnSelectAll?.setBackgroundImage(selectAllImage, for: .normal)
 		btnCloseSelection?.setBackgroundImage(closeImage, for: .normal)
 
