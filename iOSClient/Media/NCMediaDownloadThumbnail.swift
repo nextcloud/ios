@@ -62,10 +62,11 @@ class NCMediaDownloadThumbnail: ConcurrentOperation {
                     NCUtility().createImage(ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile, data: data)
                 }
 
+                let image = NCUtility().getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: self.ext)
+
                 DispatchQueue.main.async {
                     for case let cell as NCGridMediaCell in collectionView.visibleCells {
-                        if cell.ocId == self.metadata.ocId,
-                           let image = NCUtility().getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: self.ext) {
+                        if cell.ocId == self.metadata.ocId {
                             UIView.transition(with: cell.imageItem,
                                               duration: 0.75,
                                               options: .transitionCrossDissolve,
