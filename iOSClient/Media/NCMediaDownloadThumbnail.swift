@@ -29,17 +29,16 @@ class NCMediaDownloadThumbnail: ConcurrentOperation {
     var metadata: NCMediaDataSource.Metadata
     var collectionView: UICollectionView?
     let utilityFileSystem = NCUtilityFileSystem()
-    let delegate: NCMedia?
-    var ext = ""
+    let media: NCMedia?
+    var width: CGFloat?
 
-    init(metadata: NCMediaDataSource.Metadata, collectionView: UICollectionView?, delegate: NCMedia?) {
+    init(metadata: NCMediaDataSource.Metadata, collectionView: UICollectionView?, media: NCMedia?) {
         self.metadata = metadata
         self.collectionView = collectionView
-        self.delegate = delegate
+        self.media = media
 
-        if let collectionView, let numberOfColumns = delegate?.numberOfColumns {
-            let width = collectionView.frame.size.width / CGFloat(numberOfColumns)
-            ext = NCGlobal.shared.getSizeExtension(width: width)
+        if let collectionView, let numberOfColumns = self.media?.numberOfColumns {
+            width = collectionView.frame.size.width / CGFloat(numberOfColumns)
         }
     }
 
@@ -61,11 +60,11 @@ class NCMediaDownloadThumbnail: ConcurrentOperation {
                 if let metadata = NCManageDatabase.shared.getMetadataFromOcId(self.metadata.ocId) {
                     NCUtility().createImage(ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile, data: data)
                 }
+                let image = self.media?.getImage(metadata: self.metadata, width: self.width)
 
                 DispatchQueue.main.async {
                     for case let cell as NCGridMediaCell in collectionView.visibleCells {
-                        if cell.ocId == self.metadata.ocId,
-                           let image = NCUtility().getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: self.ext) {
+                        if cell.ocId == self.metadata.ocId {
                             UIView.transition(with: cell.imageItem,
                                               duration: 0.75,
                                               options: .transitionCrossDissolve,

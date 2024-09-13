@@ -851,6 +851,7 @@
 		F7D56B1A2972405500FA46C4 /* Mantis in Frameworks */ = {isa = PBXBuildFile; productRef = F7D56B192972405500FA46C4 /* Mantis */; };
 		F7D57C8626317BDA00DE301D /* NCAccountRequest.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F7CA212C25F1333200826ABB /* NCAccountRequest.storyboard */; };
 		F7D57C8B26317BDE00DE301D /* NCAccountRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7CA212B25F1333200826ABB /* NCAccountRequest.swift */; };
+		F7D60CAF2C941ACB008FBFDD /* NCMediaPinchGesture.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D60CAE2C941ACB008FBFDD /* NCMediaPinchGesture.swift */; };
 		F7D68FCC28CB9051009139F3 /* NCManageDatabase+DashboardWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D68FCB28CB9051009139F3 /* NCManageDatabase+DashboardWidget.swift */; };
 		F7D68FCD28CB9051009139F3 /* NCManageDatabase+DashboardWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D68FCB28CB9051009139F3 /* NCManageDatabase+DashboardWidget.swift */; };
 		F7D68FCE28CB9051009139F3 /* NCManageDatabase+DashboardWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7D68FCB28CB9051009139F3 /* NCManageDatabase+DashboardWidget.swift */; };
@@ -1696,6 +1697,7 @@
 		F7D532541F5D4155006568B1 /* sk-SK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "sk-SK"; path = "sk-SK.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F7D5328F1F5D443B006568B1 /* en-GB */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "en-GB"; path = "en-GB.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F7D532A41F5D4461006568B1 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		F7D60CAE2C941ACB008FBFDD /* NCMediaPinchGesture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMediaPinchGesture.swift; sourceTree = "<group>"; };
 		F7D68FCB28CB9051009139F3 /* NCManageDatabase+DashboardWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+DashboardWidget.swift"; sourceTree = "<group>"; };
 		F7D890742BD25C570050B8A6 /* NCCollectionViewCommon+DragDrop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCCollectionViewCommon+DragDrop.swift"; sourceTree = "<group>"; };
 		F7D96FCB246ED7E100536D73 /* NCNetworkingCheckRemoteUser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCNetworkingCheckRemoteUser.swift; sourceTree = "<group>"; };
@@ -2899,6 +2901,7 @@
 				F7802B312BD5584F00D74270 /* NCMedia+DragDrop.swift */,
 				F7BD0A032C4689E9003A4A6D /* NCMedia+MediaLayout.swift */,
 				F78B87E62B62527100C65ADC /* NCMediaDataSource.swift */,
+				F7D60CAE2C941ACB008FBFDD /* NCMediaPinchGesture.swift */,
 				F78B87E82B62550800C65ADC /* NCMediaDownloadThumbnail.swift */,
 				F755CB3F2B8CB13C00CE27E9 /* NCMediaLayout.swift */,
 				F741C2232B6B9FD600E849BB /* NCMediaSelectTabBar.swift */,
@@ -4350,6 +4353,7 @@
 				F799DF852C4B7E56003410B5 /* NCSectionHeader.swift in Sources */,
 				F78A10BF29322E8A008499B8 /* NCManageDatabase+Directory.swift in Sources */,
 				F7743A122C33F0A20034F670 /* NCCollectionViewCommon+CollectionViewDelegate.swift in Sources */,
+				F7D60CAF2C941ACB008FBFDD /* NCMediaPinchGesture.swift in Sources */,
 				F704B5E92430C0B800632F5F /* NCCreateFormUploadConflictCell.swift in Sources */,
 				F7327E3D2B73B92800A462C7 /* NCNetworking+Synchronization.swift in Sources */,
 				F72D404923D2082500A97FD0 /* NCViewerNextcloudText.swift in Sources */,
@@ -5462,7 +5466,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 11;
+				CURRENT_PROJECT_VERSION = 12;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -5528,7 +5532,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 11;
+				CURRENT_PROJECT_VERSION = 12;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;

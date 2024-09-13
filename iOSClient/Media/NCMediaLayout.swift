@@ -93,6 +93,8 @@ public class NCMediaLayout: UICollectionViewLayout {
         contentSize?.height = CGFloat(columnHeights[0])
         return contentSize!
     }
+    public var frameWidth: Float = 0
+    public var itemWidth: Float = 0
 
     // MARK: - Private Properties
     private weak var delegate: NCMediaLayoutDelegate? {
@@ -142,8 +144,8 @@ public class NCMediaLayout: UICollectionViewLayout {
             */
             let minimumInteritemSpacing: Float = delegate.collectionView(collectionView, layout: self, minimumInteritemSpacingForSection: section)
             let sectionInset: UIEdgeInsets = delegate.collectionView(collectionView, layout: self, insetForSection: section)
-            let width = Float(collectionView.frame.size.width - sectionInset.left - sectionInset.right)
-            let itemWidth = ((width - Float(columnCount - 1) * Float(minimumColumnSpacing)) / Float(columnCount))
+            frameWidth = Float(collectionView.frame.size.width - sectionInset.left - sectionInset.right)
+            itemWidth = ((frameWidth - Float(columnCount - 1) * Float(minimumColumnSpacing)) / Float(columnCount))
 
             /*
             * 2. Section header

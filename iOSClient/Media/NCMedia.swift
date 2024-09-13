@@ -21,6 +21,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+import Foundation
 import UIKit
 import NextcloudKit
 import RealmSwift
@@ -137,7 +138,7 @@ class NCMedia: UIViewController {
             self.reloadDataSource()
         }
 
-        let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinch(_:)))
+        let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture(_:)))
         collectionView.addGestureRecognizer(pinchGesture)
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
@@ -159,7 +160,7 @@ class NCMedia: UIViewController {
 
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedLivePhoto(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedLivePhoto), object: nil)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(clear), name: UIApplication.didEnterBackgroundNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(networkRemoveAll), name: UIApplication.didEnterBackgroundNotification, object: nil)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -193,7 +194,7 @@ class NCMedia: UIViewController {
 
         NotificationCenter.default.removeObserver(self, name: UIApplication.willEnterForegroundNotification, object: nil)
 
-        clear()
+        networkRemoveAll()
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -233,7 +234,7 @@ class NCMedia: UIViewController {
 
     // MARK: - NotificationCenter
 
-    @objc func clear() {
+    @objc func networkRemoveAll() {
         filesExists.removeAll()
         NCNetworking.shared.fileExistsQueue.cancelAll()
         NCNetworking.shared.downloadThumbnailQueue.cancelAll()
@@ -343,67 +344,6 @@ class NCMedia: UIViewController {
         }
     }
 
-    @objc func handlePinch(_ gestureRecognizer: UIPinchGestureRecognizer) {
-        func updateNumberOfColumns() {
-            let originalColumns = numberOfColumns
-
-            if currentScale < 1 && numberOfColumns < maxColumns {
-                numberOfColumns += 1
-            } else if currentScale > 1 && numberOfColumns > 1 {
-                numberOfColumns -= 1
-            }
-
-            if originalColumns != numberOfColumns {
-
-                transitionColumns = true
-                self.collectionView.transform = .identity
-                self.currentScale = 1.0
-                self.setTitleDate()
-
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.07) {
-
-                    self.collectionView.collectionViewLayout.invalidateLayout()
-                    self.collectionView.reloadData()
-
-                    self.setTitleDate()
-
-                    if let layoutForView = self.database.getLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "") {
-                        layoutForView.columnPhoto = self.numberOfColumns
-                        self.database.setLayoutForView(layoutForView: layoutForView)
-                    }
-
-                    self.transitionColumns = false
-                }
-            }
-        }
-
-        switch gestureRecognizer.state {
-        case .began:
-            self.clear()
-            lastScale = gestureRecognizer.scale
-        case .changed:
-            guard !transitionColumns else { return }
-            let scale = gestureRecognizer.scale
-            let scaleChange = scale / lastScale
-
-            currentScale *= scaleChange
-            currentScale = max(0.5, min(currentScale, 2.0))
-
-            updateNumberOfColumns()
-
-            if numberOfColumns > 1 && numberOfColumns < maxColumns {
-                collectionView.transform = CGAffineTransform(scaleX: currentScale, y: currentScale)
-            }
-
-            lastScale = scale
-        case .ended:
-            currentScale = 1.0
-            collectionView.transform = .identity
-        default:
-            break
-        }
-    }
-
     // MARK: - Image
 
     func getImage(metadata: NCMediaDataSource.Metadata, width: CGFloat? = nil) -> UIImage? {
@@ -419,7 +359,7 @@ class NCMedia: UIViewController {
         } else if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
             returnImage = image
         } else if NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
-            NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnail(metadata: metadata, collectionView: self.collectionView, delegate: self))
+            NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnail(metadata: metadata, collectionView: self.collectionView, media: self))
         }
 
         return returnImage
