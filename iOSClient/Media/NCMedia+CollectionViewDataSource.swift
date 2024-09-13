@@ -90,14 +90,9 @@ extension NCMedia: UICollectionViewDataSource {
         let cell = (cell as? NCGridMediaCell) else { return }
         let width = self.collectionView.frame.size.width / CGFloat(self.numberOfColumns)
 
-        cell.imageItem.image = nil
-
-        DispatchQueue.global(qos: .userInteractive).async {
-            let image = self.getImage(metadata: metadata, width: width)
+        getImage(metadata: metadata, width: width) { image in
             DispatchQueue.main.async {
-                if let image {
-                    cell.imageItem.image = image
-                }
+                cell.imageItem.image = image
             }
 
             /// Convert old Live Photo type

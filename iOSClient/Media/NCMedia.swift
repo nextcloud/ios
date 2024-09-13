@@ -365,6 +365,23 @@ class NCMedia: UIViewController {
         return returnImage
     }
 
+    func getImage(metadata: NCMediaDataSource.Metadata, width: CGFloat, completion: @escaping (_ image: UIImage?) -> Void) {
+        DispatchQueue.global(qos: .userInteractive).async {
+            var returnImage: UIImage?
+            let ext = NCGlobal.shared.getSizeExtension(width: width)
+
+            if let image = self.imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
+                returnImage = image
+            } else if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
+                returnImage = image
+            } else if NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
+                NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnail(metadata: metadata, collectionView: self.collectionView, media: self))
+            }
+
+            completion(returnImage)
+        }
+    }
+
     func buildMediaPhotoVideo(columnCount: Int) {
         var pointSize: CGFloat = 0
 
