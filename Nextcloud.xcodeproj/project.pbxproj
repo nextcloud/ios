@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0F08D6B92C94270600136502 /* ButtonStyleGuide.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F08D6B82C94270600136502 /* ButtonStyleGuide.swift */; };
+		0F08D6BB2C94275600136502 /* CircleItemSpinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F08D6BA2C94275600136502 /* CircleItemSpinner.swift */; };
 		0F4D07602C8EEB6C0069819D /* LoginButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F4D075F2C8EEB6C0069819D /* LoginButton.swift */; };
 		0F5090CE2C786F04009348D9 /* FileActionsHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F5090CD2C786F04009348D9 /* FileActionsHeader.swift */; };
 		0F8B9A5B2C7887F60041C17D /* FileActionsHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0F8B9A5A2C7887F60041C17D /* FileActionsHeader.xib */; };
@@ -1104,6 +1106,8 @@
 		08EA97451E6554FC004C83FA /* FirebaseCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseCore.framework; sourceTree = "<group>"; };
 		08EA97461E6554FC004C83FA /* FirebaseInstanceID.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseInstanceID.framework; sourceTree = "<group>"; };
 		08EA97471E6554FC004C83FA /* GoogleToolboxForMac.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleToolboxForMac.framework; sourceTree = "<group>"; };
+		0F08D6B82C94270600136502 /* ButtonStyleGuide.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonStyleGuide.swift; sourceTree = "<group>"; };
+		0F08D6BA2C94275600136502 /* CircleItemSpinner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleItemSpinner.swift; sourceTree = "<group>"; };
 		0F4D075F2C8EEB6C0069819D /* LoginButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginButton.swift; sourceTree = "<group>"; };
 		0F5090CD2C786F04009348D9 /* FileActionsHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileActionsHeader.swift; sourceTree = "<group>"; };
 		0F8B9A5A2C7887F60041C17D /* FileActionsHeader.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileActionsHeader.xib; sourceTree = "<group>"; };
@@ -1927,6 +1931,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0F08D6B52C9426B800136502 /* Style */ = {
+			isa = PBXGroup;
+			children = (
+				0F08D6B82C94270600136502 /* ButtonStyleGuide.swift */,
+				0F08D6BA2C94275600136502 /* CircleItemSpinner.swift */,
+			);
+			path = Style;
+			sourceTree = "<group>";
+		};
 		0F5090CC2C786EC8009348D9 /* ActionsHeader */ = {
 			isa = PBXGroup;
 			children = (
@@ -3022,6 +3035,7 @@
 				F70F96AF2874394B006C8379 /* Nextcloud-Bridging-Header.h */,
 				F7F67BB81A24D27800EE80DA /* Images.xcassets */,
 				42F5047F2C6F553D001AA432 /* Colors.xcassets */,
+				0F08D6B52C9426B800136502 /* Style */,
 				4240DB4C2C56446D00E72FC0 /* BurgerMenu */,
 				F769CA1B2966EF4F00039397 /* GUI */,
 				F70211F31BAC56E9003FC03E /* Main */,
@@ -4406,6 +4420,7 @@
 				F799DF852C4B7E56003410B5 /* NCSectionHeader.swift in Sources */,
 				F78A10BF29322E8A008499B8 /* NCManageDatabase+Directory.swift in Sources */,
 				F7743A122C33F0A20034F670 /* NCCollectionViewCommon+CollectionViewDelegate.swift in Sources */,
+				0F08D6B92C94270600136502 /* ButtonStyleGuide.swift in Sources */,
 				F704B5E92430C0B800632F5F /* NCCreateFormUploadConflictCell.swift in Sources */,
 				F7327E3D2B73B92800A462C7 /* NCNetworking+Synchronization.swift in Sources */,
 				F72D404923D2082500A97FD0 /* NCViewerNextcloudText.swift in Sources */,
@@ -4431,6 +4446,7 @@
 				F7A0D1352591FBC5008F8A13 /* String+Extension.swift in Sources */,
 				F7CEE6012BA9A5C9003EFD89 /* NCTrashGridCell.swift in Sources */,
 				42678ABE2C57C5FB00307DEF /* BurgerMenuViewModel.swift in Sources */,
+				0F08D6BB2C94275600136502 /* CircleItemSpinner.swift in Sources */,
 				F7F9D1BB25397CE000D9BFF5 /* NCViewer.swift in Sources */,
 				F7E7AEA52BA32C6500512E52 /* NCCollectionViewDownloadThumbnail.swift in Sources */,
 				AF730AF827834B1400B7520E /* NCShare+NCCellDelegate.swift in Sources */,

@@ -12,17 +12,17 @@ class LoginButton: UIButton {
 	
 	override func awakeFromNib() {
 		super.awakeFromNib()
-		setTitleColor(UIColor(named: "Launch/LoginButtonTextNormal"), for: .normal)
-		setTitleColor(UIColor(named: "Launch/LoginButtonTextNormal"), for: .selected)
-		setTitleColor(UIColor(named: "Launch/LoginButtonTextDisabled"), for: .disabled)
+		setTitleColor(UIColor(resource: .Button.Primary.Text.normal), for: .normal)
+		setTitleColor(UIColor(resource: .Button.Primary.Text.normal), for: .selected)
+		setTitleColor(UIColor(resource: .Button.Primary.Text.disabled), for: .disabled)
 	}
 	
 	override public var isEnabled: Bool {
 		didSet {
 			if self.isEnabled {
-				self.backgroundColor = UIColor(named: "Launch/LoginButtonBackgroundNormal")
+				self.backgroundColor = UIColor(resource: .Button.Primary.Background.normal)
 			} else {
-				self.backgroundColor = UIColor(named: "Launch/LoginButtonBackgroundDisabled")
+				self.backgroundColor = UIColor(resource: .Button.Primary.Background.disabled)
 			}
 		}
 	}
@@ -30,7 +30,13 @@ class LoginButton: UIButton {
 	override open var isHighlighted: Bool {
 		didSet {
 			super.isHighlighted = isHighlighted
-			backgroundColor = isHighlighted ? UIColor(named: "Launch/LoginButtonBackgroundSelected") : UIColor(named: "Launch/LoginButtonBackgroundNormal")
+			
+			if !isEnabled {
+				backgroundColor = UIColor(resource: .Button.Primary.Background.disabled)
+				return
+			}
+			
+			backgroundColor = isHighlighted ? UIColor(resource: .Button.Primary.Background.selected) : UIColor(resource: .Button.Primary.Background.normal)
 		}
 	}
 	

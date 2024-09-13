@@ -57,12 +57,12 @@ struct NCLoginPoll: View {
 						dismiss()
 					}
 					.disabled(loginManager.isLoading || cancelButtonDisabled)
-					.buttonStyle(.loginPollCancel)
+					.buttonStyle(.secondary)
 					
 					Button(NSLocalizedString("_retry_", comment: "")) {
 						loginManager.openLoginInBrowser()
 					}
-					.buttonStyle(.loginPollRetry)
+					.buttonStyle(.primary)
 				}
 				.padding()
 				.padding(.bottom, size.height * 0.15)
@@ -104,115 +104,6 @@ struct NCLoginPoll: View {
     }
 }
 
-struct LoginPollButtonCancelStyle: ButtonStyle {
-	private var idiom : UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
-	@Environment(\.isEnabled) private var isEnabled: Bool
-	
-	private func foregroundColor(for configuration: Configuration) -> Color {
-		if isEnabled {
-			return configuration.isPressed ? Color(.Launch.loginPollCancelTextSelected) : Color(.Launch.loginPollCancelNormal)
-		}
-		return Color(.Launch.loginPollCancelDisabled)
-	}
-	
-	private func borderColor(for configuration: Configuration) -> Color {
-		isEnabled ? Color(.Launch.loginPollCancelNormal) : Color(.Launch.loginPollCancelDisabled)
-	}
-	
-	private func backgroundColor(for configuration: Configuration) -> Color {
-		configuration.isPressed ? Color(.Launch.loginPollCancelNormal) : .clear
-	}
-	
-	func makeBody(configuration: Configuration) -> some View {
-		configuration.label
-			.font(.title2)
-			.frame(width: idiom == .phone ? 100 : 240
-				   , height: 32)
-			.padding()
-			.foregroundStyle(foregroundColor(for: configuration))
-			.background{
-				Capsule(style: .continuous)
-					.stroke( borderColor(for: configuration), lineWidth: 3)
-					.background(content: {
-						Capsule().fill(backgroundColor(for: configuration))
-					})
-			}
-	}
-}
-
-struct LoginPollButtonRetryStyle: ButtonStyle {
-	private var idiom : UIUserInterfaceIdiom { UIDevice.current.userInterfaceIdiom }
-	@Environment(\.isEnabled) private var isEnabled: Bool
-	
-	private func foregroundColor(for configuration: Configuration) -> Color {
-		isEnabled ? Color(.Launch.loginPollCancelNormal): Color(.Launch.loginPollCancelDisabled)
-	}
-	
-	private func backgroundColor(for configuration: Configuration) -> Color {
-		if isEnabled {
-			return configuration.isPressed ? Color(.Launch.loginPollRetrySelected) : Color(.Launch.loginPollRetryNormal)
-		}
-		return Color(.Launch.loginPollRetryDisabled)
-	}
-	
-	func makeBody(configuration: Configuration) -> some View {
-		configuration.label
-			.font(.title2)
-			.frame(width: idiom == .phone ? 100 : 240
-				   , height: 32)
-			.padding()
-			.foregroundStyle(foregroundColor(for: configuration))
-			.background{
-				Capsule(style: .continuous)
-					.stroke(backgroundColor(for: configuration), lineWidth: 3)
-					.background(content: {
-						Capsule().fill(backgroundColor(for: configuration))
-					})
-			}
-	}
-}
-
-extension ButtonStyle where Self == LoginPollButtonCancelStyle {
-	static var loginPollCancel: Self {
-		return .init()
-	}
-}
-
-extension ButtonStyle where Self == LoginPollButtonRetryStyle {
-	static var loginPollRetry: Self {
-		return .init()
-	}
-}
-
-struct CircleItemSpinner: View {
-	@State private var degree = 270
-	let itemsCount: Int = 7
-	let itemSide: CGFloat = 8
-	let spinerSide: CGFloat = 60
-	
-	var body: some View {
-		GeometryReader { bounds in
-			ForEach(0..<itemsCount, id: \.self) { i in
-				Circle()
-					.fill(.tint)
-					.frame(width:itemSide , height: itemSide, alignment: .center)
-					.offset(x: (bounds.size.width / 2) - 12)
-					.rotationEffect(.degrees(.pi * 2 * Double(i * 7)))
-			}
-			.frame(width: bounds.size.width, height: bounds.size.height, alignment: .center)
-			.rotationEffect(.degrees(Double(degree)))
-			.animation(
-				Animation.linear(duration: 1.5)
-					.repeatForever(autoreverses: false),
-				value: degree
-			)
-			.onAppear{
-				degree = 270 + 360
-			}
-		}
-		.frame(width: spinerSide, height: spinerSide)
-	}
-}
 
 #Preview {
 	NCLoginPoll(loginFlowV2Token: "", loginFlowV2Endpoint: "", loginFlowV2Login: "")
