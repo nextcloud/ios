@@ -39,7 +39,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 	@IBOutlet weak var collectionViewTop: NSLayoutConstraint?
 	@IBOutlet weak var fileActionsHeader: FileActionsHeader?
     
-    var accountButtonFactory: CreateAccountButtonFactory!
+    var accountButtonFactory: AccountButtonFactory!
 
     var autoUploadFileName = ""
     var autoUploadDirectory = ""
@@ -186,7 +186,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         
-        accountButtonFactory = CreateAccountButtonFactory(onAccountDetailsOpen: { [weak self] in self?.setEditMode(false) },
+        accountButtonFactory = AccountButtonFactory(onAccountDetailsOpen: { [weak self] in self?.setEditMode(false) },
                                                           presentVC: { [weak self] vc in self?.present(vc, animated: true) },
                                                           onMenuOpened: { [weak self] in self?.dismissTip() })
     }

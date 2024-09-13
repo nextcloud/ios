@@ -1,5 +1,5 @@
 //
-//  CreateAccountButtonFactory.swift
+//  AccountButtonFactory.swift
 //  Nextcloud
 //
 //  Created by Sergey Kaliberda on 12.09.2024.
@@ -12,7 +12,7 @@ import RealmSwift
 import NextcloudKit
 import EasyTipView
 
-class CreateAccountButtonFactory {
+class AccountButtonFactory {
     let utility = NCUtility()
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     
@@ -92,7 +92,7 @@ class CreateAccountButtonFactory {
     }
 }
 
-extension CreateAccountButtonFactory: NCAccountSettingsModelDelegate {
+extension AccountButtonFactory: NCAccountSettingsModelDelegate {
     func accountSettingsDidDismiss(tableAccount: tableAccount?) {
         if NCManageDatabase.shared.getAllAccount().isEmpty {
             appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)

@@ -59,7 +59,7 @@ class NCMedia: UIViewController {
     var playImage = UIImage()
     var photoImage = UIImage()
     var videoImage = UIImage()
-    var accountButtonFactory: CreateAccountButtonFactory!
+    var accountButtonFactory: AccountButtonFactory!
 
     // MARK: - View Life Cycle
 
@@ -119,7 +119,7 @@ class NCMedia: UIViewController {
             self.collectionViewReloadData()
         }
         
-        accountButtonFactory = CreateAccountButtonFactory(onAccountDetailsOpen: { [weak self] in self?.setEditMode(false) },
+        accountButtonFactory = AccountButtonFactory(onAccountDetailsOpen: { [weak self] in self?.setEditMode(false) },
                                                           presentVC: { [weak self] vc in self?.present(vc, animated: true) })
     }
 
