@@ -99,12 +99,12 @@ extension NCMedia: UICollectionViewDataSource {
                     cell.imageItem.image = image
                 }
             }
-        }
 
-        // Convert old Live Photo type
-        if NCCapabilities.shared.getCapabilities(account: metadata.account).isLivePhotoServerAvailable, metadata.isLivePhoto, metadata.isNotFlaggedAsLivePhotoByServer,
-           let metadata = database.getMetadataFromOcId(metadata.ocId) {
-            NCNetworking.shared.convertLivePhoto(metadata: metadata)
+            /// Convert old Live Photo type
+            if NCCapabilities.shared.getCapabilities(account: metadata.account).isLivePhotoServerAvailable, metadata.isLivePhoto, metadata.isNotFlaggedAsLivePhotoByServer,
+               let metadata = self.database.getMetadataFromOcId(metadata.ocId) {
+                NCNetworking.shared.convertLivePhoto(metadata: metadata)
+            }
         }
     }
 
