@@ -401,12 +401,6 @@ class NCMedia: UIViewController {
     }
 }
 
-extension NCMedia: UICollectionViewDataSourcePrefetching {
-    func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
-        // print("[INFO] n. " + String(indexPaths.count))
-    }
-}
-
 // MARK: -
 
 extension NCMedia: UIScrollViewDelegate {
