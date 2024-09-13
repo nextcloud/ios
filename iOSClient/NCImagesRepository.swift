@@ -17,32 +17,31 @@ class NCImagesRepository: NSObject {
         case livePhoto = "livephoto"
         case details = "details"
         case share = "menu.share"
-        case unshare = "person.2.slash"
+        case unshare = "unshare"
         case trash = "trash_icon"
         case rename = "rename"
-        case viewInFolder = "questionmark.folder"
+        case viewInFolder = "viewInFolder"
         case moveOrCopy = "moveOrCopy"
         case addToOffline = "offline"
         case availableOffline = "synced"
         case downloadFullResolutionImage = "media"
-        case goToPage = "book.pages"
-        case modifyWithQuickLook = "pencil.tip.crop.circle"
-        case search = "magnifyingglass"
-        case saveAsScan = "doc.viewfinder"
+        case goToPage = "goToPage"
+        case modifyWithQuickLook = "modifyWithQuickLook"
+        case search = "menu.search"
         case lock = "item.lock"
         case lockOpen = "item.lock.open"
-        case readOnly = "eye"
-        case edit = "pencil"
-        case add = "plus"
+        case readOnly = "readOnly"
+        case edit = "allowEdit"
+        case add = "menu.add"
         case selectAll = "checkmark.circle.fill"
         case close = "xmark"
         case uploadPhotosVideos = "upload_photos_or_videos"
         case uploadFile = "uploadFile"
         case scan = "scan"
-        case document = "doc.text"
-        case richDocument = "doc.richtext"
-        case spreadsheet = "tablecells"
-        case presentation = "play.rectangle"
+        case document = "document"
+        case spreadsheet = "spreadsheet"
+        case presentation = "presentation"
+        case createFolder = "createFolder"
     }
     
     private static let utility = NCUtility()
@@ -127,7 +126,7 @@ class NCImagesRepository: NSObject {
     }
     
     static var menuIconSaveAsScan: UIImage {
-        menuIcon(ImageName.saveAsScan)
+        menuIcon(ImageName.scan)
     }
 
     static var menuIconLock: UIImage {
@@ -174,6 +173,10 @@ class NCImagesRepository: NSObject {
         menuIcon(ImageName.scan)
     }
     
+    static var menuIconCreateFolder: UIImage {
+        menuIcon(ImageName.createFolder)
+    }
+    
     static var menuIconCreateDocument: UIImage {
         menuIcon(ImageName.document)
     }
@@ -184,10 +187,6 @@ class NCImagesRepository: NSObject {
     
     static var menuIconCreatePresentation: UIImage {
         menuIcon(ImageName.presentation)
-    }
-    
-    static var menuIconCreateRichDocument: UIImage {
-        menuIcon(ImageName.richDocument)
     }
     
     private static func menuIcon(_ imageName: ImageName) -> UIImage {
