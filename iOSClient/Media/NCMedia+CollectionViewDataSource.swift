@@ -86,13 +86,13 @@ extension NCMedia: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let metadata = dataSource.getMetadata(indexPath: indexPath) else { return }
-        let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridMediaCell)
+        guard let metadata = dataSource.getMetadata(indexPath: indexPath),
+        let cell = (cell as? NCGridMediaCell) else { return }
 
         if let image = getImage(metadata: metadata) {
-            cell?.imageItem.image = image
+            cell.imageItem.image = image
         } else {
-            cell?.imageItem.image = nil
+            cell.imageItem.image = nil
         }
 
         // Convert old Live Photo type
