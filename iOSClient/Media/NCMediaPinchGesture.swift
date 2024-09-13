@@ -41,7 +41,7 @@ extension NCMedia {
                 self.collectionView.transform = .identity
                 self.currentScale = 1.0
 
-                UIView.transition(with: self.collectionView, duration: 0.2, options: .transitionCrossDissolve) {
+                UIView.transition(with: self.collectionView, duration: 0.25, options: .transitionCrossDissolve) {
                     self.collectionView.reloadData()
                 } completion: { _ in
                     self.setTitleDate()
@@ -52,7 +52,7 @@ extension NCMedia {
                     }
                 }
             }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
                 self.transitionColumns = false
             }
         }
