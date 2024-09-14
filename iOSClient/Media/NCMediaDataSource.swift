@@ -273,6 +273,16 @@ public class NCMediaDataSource: NSObject {
         return nil
     }
 
+    func getMetadatas(indexPaths: [IndexPath]) -> [Metadata] {
+        var metadatas: [Metadata] = []
+        for indexPath in indexPaths {
+            if indexPath.row < self.metadatas.count {
+                metadatas.append(self.metadatas[indexPath.row])
+            }
+        }
+        return metadatas
+    }
+
     func removeMetadata(_ ocId: [String]) {
         self.metadatas.removeAll { item in
             ocId.contains(item.ocId)

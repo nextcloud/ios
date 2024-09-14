@@ -30,7 +30,7 @@ extension NCMedia: UICollectionViewDataSource {
         if kind == mediaSectionHeader {
             guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeaderEmptyData", for: indexPath) as? NCSectionFirstHeaderEmptyData else { return NCSectionFirstHeaderEmptyData() }
             header.emptyImage.image = utility.loadImage(named: "photo", colors: [NCBrandColor.shared.getElement(account: session.account)])
-            if self.hasRunSearchMedia || imageCache.createCacheInProgress {
+            if self.hasRunSearchMedia {
                 header.emptyTitle.text = NSLocalizedString("_search_in_progress_", comment: "")
             } else {
                 header.emptyTitle.text = NSLocalizedString("_tutorial_photo_view_", comment: "")
@@ -75,6 +75,8 @@ extension NCMedia: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let metadata = dataSource.getMetadata(indexPath: indexPath) else { return }
 
+        hiddenCellMetadats.append(metadata)
+
         if !collectionView.indexPathsForVisibleItems.contains(indexPath) {
             for case let operation as NCMediaDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
                 operation.cancel()
@@ -82,6 +84,20 @@ extension NCMedia: UICollectionViewDataSource {
             for case let operation as NCOperationConvertLivePhoto in NCNetworking.shared.convertLivePhotoQueue.operations where operation.ocId == metadata.ocId {
                 operation.cancel()
             }
+        }
+    }
+
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        guard let metadata = dataSource.getMetadata(indexPath: indexPath),
+              let cell = (cell as? NCGridMediaCell) else { return }
+        let width = self.collectionView.frame.size.width / CGFloat(self.numberOfColumns)
+
+        cell.imageItem.image = getImage(metadata: metadata, width: width)
+
+        /// Convert old Live Photo type
+        if NCCapabilities.shared.getCapabilities(account: metadata.account).isLivePhotoServerAvailable, metadata.isLivePhoto, metadata.isNotFlaggedAsLivePhotoByServer,
+           let metadata = self.database.getMetadataFromOcId(metadata.ocId) {
+            NCNetworking.shared.convertLivePhoto(metadata: metadata)
         }
     }
 
@@ -94,18 +110,6 @@ extension NCMedia: UICollectionViewDataSource {
         cell.date = metadata.date as Date
         cell.ocId = metadata.ocId
         cell.account = metadata.account
-
-        if let image = getImage(metadata: metadata) {
-            cell.imageItem.image = image
-        } else {
-            cell.imageItem.image = nil
-        }
-
-        // Convert OLD Live Photo
-        if NCCapabilities.shared.getCapabilities(account: metadata.account).isLivePhotoServerAvailable, metadata.isLivePhoto, metadata.isNotFlaggedAsLivePhotoByServer,
-           let metadata = database.getMetadataFromOcId(metadata.ocId) {
-            NCNetworking.shared.convertLivePhoto(metadata: metadata)
-        }
 
         if metadata.isVideo {
            cell.imageStatus.image = playImage

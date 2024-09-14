@@ -58,7 +58,7 @@ class NCMediaDownloadThumbnail: ConcurrentOperation {
 
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
                 if let metadata = NCManageDatabase.shared.getMetadataFromOcId(self.metadata.ocId) {
-                    NCUtility().createImage(ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile, data: data)
+                    NCUtility().createImage(metadata: metadata, data: data)
                 }
                 let image = self.media?.getImage(metadata: self.metadata, width: self.width)
 

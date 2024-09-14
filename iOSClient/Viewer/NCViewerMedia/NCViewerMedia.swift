@@ -266,7 +266,7 @@ class NCViewerMedia: UIViewController {
         }
 
         if metadata.isVideo && !metadata.hasPreview {
-            utility.createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
+            utility.createImageFrom(metadata: metadata)
             let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024)
             self.image = image
             self.imageVideoContainer.image = self.image
@@ -279,7 +279,7 @@ class NCViewerMedia: UIViewController {
         } else if metadata.isImage {
             if fileNameExtension == "GIF" {
                 if !NCUtility().existsImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024) {
-                    utility.createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
+                    utility.createImageFrom(metadata: metadata)
                 }
                 if let image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: fileNamePath)) {
                     self.image = image
@@ -294,7 +294,7 @@ class NCViewerMedia: UIViewController {
                     svgImage.size = NCGlobal.shared.size1024
                     if let image = svgImage.uiImage {
                         if !NCUtility().existsImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024), let data = image.jpegData(compressionQuality: 1.0) {
-                            utility.createImage(ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile, data: data)
+                            utility.createImage(metadata: metadata, data: data)
                         }
                         self.image = image
                         self.imageVideoContainer.image = self.image

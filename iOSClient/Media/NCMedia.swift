@@ -75,6 +75,8 @@ class NCMedia: UIViewController {
     var numberOfColumns: Int = 0
     var transitionColumns = false
 
+    var hiddenCellMetadats: [NCMediaDataSource.Metadata] = []
+
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: tabBarController)
     }
@@ -224,10 +226,6 @@ class NCMedia: UIViewController {
     }
 
     func searchNewMedia() {
-        // don't start if media chage is in progress
-        if imageCache.createCacheInProgress {
-            return
-        }
         timerSearchNewMedia?.invalidate()
         timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchMediaUI(_:)), userInfo: nil, repeats: false)
     }
@@ -357,6 +355,7 @@ class NCMedia: UIViewController {
         if let image = imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
             returnImage = image
         } else if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
+            imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext)
             returnImage = image
         } else if NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
             NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnail(metadata: metadata, collectionView: self.collectionView, media: self))
@@ -381,12 +380,6 @@ class NCMedia: UIViewController {
         if let image = UIImage(systemName: "video.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: pointSize))?.withTintColor(.systemGray4, renderingMode: .alwaysOriginal) {
             videoImage = image
         }
-    }
-}
-
-extension NCMedia: UICollectionViewDataSourcePrefetching {
-    func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
-        // print("[INFO] n. " + String(indexPaths.count))
     }
 }
 

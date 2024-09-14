@@ -122,15 +122,15 @@ extension NCUtility {
         return UIImage(cgImage: thumbnailImageRef)
     }
 
-    func createImageFrom(fileNameView: String, ocId: String, etag: String, classFile: String) {
-        if classFile != NKCommon.TypeClassFile.image.rawValue, classFile != NKCommon.TypeClassFile.video.rawValue { return }
+    func createImageFrom(metadata: tableMetadata) {
+        if metadata.classFile != NKCommon.TypeClassFile.image.rawValue, metadata.classFile != NKCommon.TypeClassFile.video.rawValue { return }
         var image: UIImage?
-        let fileNamePath1024 = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileNameView)
+        let fileNamePath1024 = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
 
         if image == nil {
-            if classFile == NKCommon.TypeClassFile.image.rawValue {
+            if metadata.classFile == NKCommon.TypeClassFile.image.rawValue {
                 image = UIImage(contentsOfFile: fileNamePath1024)
-            } else if classFile == NKCommon.TypeClassFile.video.rawValue {
+            } else if metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
                 let videoPath = NSTemporaryDirectory() + "tempvideo.mp4"
                 utilityFileSystem.linkItem(atPath: fileNamePath1024, toPath: videoPath)
                 image = imageFromVideo(url: URL(fileURLWithPath: videoPath), at: 0)
@@ -139,7 +139,11 @@ extension NCUtility {
 
         guard let image else { return }
 
-        createImageStandard(ocId: ocId, etag: etag, classFile: classFile, image: image)
+        createImageStandard(ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile, image: image)
+    }
+
+    func createImage(metadata: tableMetadata, data: Data) {
+        createImage(ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile, data: data)
     }
 
     func createImage(ocId: String, etag: String, classFile: String, data: Data) {

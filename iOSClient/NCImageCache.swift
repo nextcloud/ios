@@ -32,86 +32,42 @@ class NCImageCache: NSObject {
 
     // MARK: -
 
+    let countLimit = 1000
+
     private let utility = NCUtility()
     private let global = NCGlobal.shared
 
     private let allowExtensions = [NCGlobal.shared.previewExt256, NCGlobal.shared.previewExt128]
     private var brandElementColor: UIColor?
     private var totalSize: Int64 = 0
-    private var memoryWorning: Bool = false
     private typealias ThumbnailImageCache = LRUCache<String, UIImage>
 
     private lazy var cacheImage: ThumbnailImageCache = {
-        return ThumbnailImageCache()
+        return ThumbnailImageCache(countLimit: countLimit)
     }()
-
-    var createCacheInProgress: Bool = false
 
     override init() {
         super.init()
-        NotificationCenter.default.addObserver(self, selector: #selector(handleMemoryWarning), name: UIApplication.didReceiveMemoryWarningNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleMemoryWarning), name: LRUCacheMemoryWarningNotification, object: nil)
     }
 
     deinit {
-        NotificationCenter.default.removeObserver(self, name: UIApplication.didReceiveMemoryWarningNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: LRUCacheMemoryWarningNotification, object: nil)
     }
 
     @objc func handleMemoryWarning() {
-        memoryWorning = true
-    }
-
-    ///
-    /// IMAGE CACHE
-    ///
-    func createCache() {
-        if createCacheInProgress {
-            return
-        }
-        createCacheInProgress = true
-        memoryWorning = false
         cacheImage.removeAllValues()
-        totalSize = 0
-
-        let manager = FileManager.default
-        let resourceKeys = Set<URLResourceKey>([.nameKey, .pathKey, .fileSizeKey, .creationDateKey])
-        let startDate = Date()
-
-        if let enumerator = manager.enumerator(at: URL(fileURLWithPath: NCUtilityFileSystem().directoryProviderStorage), includingPropertiesForKeys: [.isRegularFileKey], options: [.skipsHiddenFiles]) {
-
-            for case let fileURL as URL in enumerator where allowExtensions.contains(where: { fileURL.lastPathComponent.hasSuffix($0) && totalSize < 50_000_000 && !memoryWorning }) {
-
-                let fileName = fileURL.lastPathComponent
-                let ocId = fileURL.deletingLastPathComponent().lastPathComponent
-                guard let resourceValues = try? fileURL.resourceValues(forKeys: resourceKeys),
-                      let fileSize = resourceValues.fileSize,
-                      fileSize > 0 else { continue }
-
-                autoreleasepool {
-                    if let image = UIImage(contentsOfFile: fileURL.path) {
-                        cacheImage.setValue(image, forKey: ocId + fileName)
-                        totalSize = totalSize + Int64(fileSize)
-                    }
-                }
-            }
-        }
-
-        let diffDate = Date().timeIntervalSinceReferenceDate - startDate.timeIntervalSinceReferenceDate
-        NextcloudKit.shared.nkCommonInstance.writeLog("--------- ThumbnailLRUCache image process ---------")
-        NextcloudKit.shared.nkCommonInstance.writeLog("Counter cache image: \(cacheImage.count)")
-        NextcloudKit.shared.nkCommonInstance.writeLog("Total size images process: " + NCUtilityFileSystem().transformedSize(totalSize))
-        NextcloudKit.shared.nkCommonInstance.writeLog("Time process: \(diffDate)")
-        NextcloudKit.shared.nkCommonInstance.writeLog("Memory worning: \(memoryWorning)")
-        NextcloudKit.shared.nkCommonInstance.writeLog("--------- ThumbnailLRUCache image process ---------")
-
-        createCacheInProgress = false
     }
 
-    ///
-    /// CACHE
-    ///
     func addImageCache(ocId: String, etag: String, data: Data, ext: String) {
         guard allowExtensions.contains(ext),
               let image = UIImage(data: data) else { return }
+
+        cacheImage.setValue(image, forKey: ocId + etag + ext)
+    }
+
+    func addImageCache(ocId: String, etag: String, image: UIImage, ext: String) {
+        guard allowExtensions.contains(ext) else { return }
 
         cacheImage.setValue(image, forKey: ocId + etag + ext)
     }
@@ -129,6 +85,14 @@ class NCImageCache: NSObject {
         for i in 0..<exts.count {
             cacheImage.removeValue(forKey: ocId + etag + exts[i])
         }
+    }
+
+    func isCountLimit() -> Bool {
+        return cacheImage.count == countLimit
+    }
+
+    func count() -> Int {
+        return cacheImage.count
     }
 
     // MARK: -
