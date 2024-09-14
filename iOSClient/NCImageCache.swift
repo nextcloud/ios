@@ -119,11 +119,15 @@ class NCImageCache: NSObject {
         guard allowExtensions.contains(ext),
               let image = UIImage(data: data) else { return }
 
+        if cacheImage.count >= countLimit { removeImageCache(date: date) }
+
         cacheImage.setValue(imageInfo(image: image, date: date), forKey: ocId + etag + ext)
     }
 
     func addImageCache(ocId: String, etag: String, date: NSDate, image: UIImage, ext: String) {
         guard allowExtensions.contains(ext) else { return }
+
+        if cacheImage.count >= countLimit { removeImageCache(date: date) }
 
         cacheImage.setValue(imageInfo(image: image, date: date), forKey: ocId + etag + ext)
     }
@@ -140,6 +144,17 @@ class NCImageCache: NSObject {
 
         for i in 0..<exts.count {
             cacheImage.removeValue(forKey: ocId + etag + exts[i])
+        }
+    }
+
+    func removeImageCache(date: NSDate) {
+        for key in cacheImage.allKeys {
+            if let value = self.cacheImage.value(forKey: key) {
+                if value.date != date {
+                    cacheImage.removeValue(forKey: key)
+                    break
+                }
+            }
         }
     }
 
