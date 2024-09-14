@@ -30,8 +30,6 @@ import RealmSwift
 class NCImageCache: NSObject {
     static let shared = NCImageCache()
 
-    // MARK: -
-
     let countLimit = 1000
 
     private let utility = NCUtility()
@@ -39,11 +37,8 @@ class NCImageCache: NSObject {
 
     private let allowExtensions = [NCGlobal.shared.previewExt256, NCGlobal.shared.previewExt128]
     private var brandElementColor: UIColor?
-    private var totalSize: Int64 = 0
-    private typealias ThumbnailImageCache = LRUCache<String, UIImage>
-
-    private lazy var cacheImage: ThumbnailImageCache = {
-        return ThumbnailImageCache(countLimit: countLimit)
+    private lazy var cacheImage: LRUCache<String, UIImage> = {
+        return LRUCache<String, UIImage>(countLimit: countLimit)
     }()
 
     override init() {
