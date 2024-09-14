@@ -124,7 +124,7 @@ class NCImageCache: NSObject {
         cacheImage.setValue(imageInfo(image: image, date: date), forKey: ocId + etag + ext)
     }
 
-    func addImageCache(ocId: String, etag: String, date: NSDate, image: UIImage, ext: String, down: Bool) {
+    func addImageCache(ocId: String, etag: String, date: NSDate, image: UIImage, ext: String) {
         guard allowExtensions.contains(ext) else { return }
 
         if cacheImage.count >= countLimit { removeImageCache(date: date) }

@@ -38,7 +38,7 @@ extension NCMedia: UICollectionViewDataSourcePrefetching {
         metadatas.forEach { metadata in
             if self.imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) == nil,
                let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
-                self.imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, date: metadata.date as NSDate, image: image, ext: ext, down: down)
+                self.imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, date: metadata.date as NSDate, image: image, ext: ext)
             }
         }
     }
