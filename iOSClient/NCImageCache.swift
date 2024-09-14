@@ -36,15 +36,18 @@ class NCImageCache: NSObject {
     private let global = NCGlobal.shared
 
     private let countLimit = 1000
-    private let totalCostLimit = 5000
-
     private let allowExtensions = [NCGlobal.shared.previewExt256, NCGlobal.shared.previewExt128]
     private var brandElementColor: UIColor?
     private var totalSize: Int64 = 0
-    private typealias ThumbnailImageCache = LRUCache<String, UIImage>
+    private typealias ThumbnailImageCache = LRUCache<String, imageInfo>
+
+    struct imageInfo {
+        var image: UIImage?
+        var date: NSDate
+    }
 
     private lazy var cacheImage: ThumbnailImageCache = {
-        return ThumbnailImageCache(totalCostLimit: totalCostLimit, countLimit: countLimit)
+        return ThumbnailImageCache(countLimit: countLimit)
     }()
 
     var createCacheInProgress: Bool = false
@@ -80,21 +83,20 @@ class NCImageCache: NSObject {
 
         if let enumerator = manager.enumerator(at: URL(fileURLWithPath: NCUtilityFileSystem().directoryProviderStorage), includingPropertiesForKeys: [.isRegularFileKey], options: [.skipsHiddenFiles]) {
 
-            for case let fileURL as URL in enumerator where allowExtensions.contains(where: { fileURL.lastPathComponent.hasSuffix($0) }) {
+            for case let fileURL as URL in enumerator where allowExtensions.contains(where: { fileURL.lastPathComponent.hasSuffix($0) && counter < self.countLimit }) {
 
                 let fileName = fileURL.lastPathComponent
                 let ocId = fileURL.deletingLastPathComponent().lastPathComponent
                 guard let resourceValues = try? fileURL.resourceValues(forKeys: resourceKeys),
                       let fileSize = resourceValues.fileSize,
-                      fileSize > 0 else { continue }
+                      fileSize > 0,
+                      let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { continue }
 
                 autoreleasepool {
                     if let image = UIImage(contentsOfFile: fileURL.path) {
-                        let cost = fileSize / 1000
-                        cacheImage.setValue(image, forKey: ocId + fileName, cost: cost)
+                        cacheImage.setValue(imageInfo(image: image, date: metadata.date), forKey: ocId + fileName)
                         totalSize = totalSize + Int64(fileSize)
                         counter += 1
-                        print(fileSize, cost)
                     }
                 }
             }
@@ -103,7 +105,6 @@ class NCImageCache: NSObject {
         let diffDate = Date().timeIntervalSinceReferenceDate - startDate.timeIntervalSinceReferenceDate
         NextcloudKit.shared.nkCommonInstance.writeLog("--------- Image cache process ---------")
         NextcloudKit.shared.nkCommonInstance.writeLog("Count: \(cacheImage.count)")
-        NextcloudKit.shared.nkCommonInstance.writeLog("Total cost: \(cacheImage.totalCost)")
         NextcloudKit.shared.nkCommonInstance.writeLog("Total size: " + NCUtilityFileSystem().transformedSize(totalSize))
         NextcloudKit.shared.nkCommonInstance.writeLog("Time process: \(diffDate)")
         NextcloudKit.shared.nkCommonInstance.writeLog("---------------------------------------")
@@ -114,25 +115,21 @@ class NCImageCache: NSObject {
     ///
     /// CACHE
     ///
-    func addImageCache(ocId: String, etag: String, data: Data, ext: String) {
+    func addImageCache(ocId: String, etag: String, date: NSDate, data: Data, ext: String) {
         guard allowExtensions.contains(ext),
-              let image = UIImage(data: data),
-              cacheImage.count < countLimit else { return }
+              let image = UIImage(data: data) else { return }
 
-        let cost = data.count / 1000
-        cacheImage.setValue(image, forKey: ocId + etag + ext, cost: cost)
+        cacheImage.setValue(imageInfo(image: image, date: date), forKey: ocId + etag + ext)
     }
 
-    func addImageCache(ocId: String, etag: String, image: UIImage, ext: String) {
-        guard allowExtensions.contains(ext),
-              let data = image.jpegData(compressionQuality: 1.0) else { return }
+    func addImageCache(ocId: String, etag: String, date: NSDate, image: UIImage, ext: String) {
+        guard allowExtensions.contains(ext) else { return }
 
-        let cost = data.count / 1000
-        cacheImage.setValue(image, forKey: ocId + etag + ext)
+        cacheImage.setValue(imageInfo(image: image, date: date), forKey: ocId + etag + ext)
     }
 
     func getImageCache(ocId: String, etag: String, ext: String) -> UIImage? {
-        return cacheImage.value(forKey: ocId + etag + ext)
+        return cacheImage.value(forKey: ocId + etag + ext)?.image
     }
 
     func removeImageCache(ocId: String, etag: String) {
