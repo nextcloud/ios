@@ -35,14 +35,16 @@ class NCImageCache: NSObject {
     private let utility = NCUtility()
     private let global = NCGlobal.shared
 
-    private let limit: Int = 500
+    private let countLimit = 1000
+    private let totalCostLimit = 5000
+
     private let allowExtensions = [NCGlobal.shared.previewExt256, NCGlobal.shared.previewExt128]
     private var brandElementColor: UIColor?
     private var totalSize: Int64 = 0
     private typealias ThumbnailImageCache = LRUCache<String, UIImage>
 
     private lazy var cacheImage: ThumbnailImageCache = {
-        return ThumbnailImageCache(countLimit: limit)
+        return ThumbnailImageCache(totalCostLimit: totalCostLimit, countLimit: countLimit)
     }()
 
     var createCacheInProgress: Bool = false
@@ -78,7 +80,7 @@ class NCImageCache: NSObject {
 
         if let enumerator = manager.enumerator(at: URL(fileURLWithPath: NCUtilityFileSystem().directoryProviderStorage), includingPropertiesForKeys: [.isRegularFileKey], options: [.skipsHiddenFiles]) {
 
-            for case let fileURL as URL in enumerator where allowExtensions.contains(where: { fileURL.lastPathComponent.hasSuffix($0) && counter < self.limit }) {
+            for case let fileURL as URL in enumerator where allowExtensions.contains(where: { fileURL.lastPathComponent.hasSuffix($0) }) {
 
                 let fileName = fileURL.lastPathComponent
                 let ocId = fileURL.deletingLastPathComponent().lastPathComponent
@@ -88,20 +90,23 @@ class NCImageCache: NSObject {
 
                 autoreleasepool {
                     if let image = UIImage(contentsOfFile: fileURL.path) {
-                        cacheImage.setValue(image, forKey: ocId + fileName)
+                        let cost = fileSize / 1000
+                        cacheImage.setValue(image, forKey: ocId + fileName, cost: cost)
                         totalSize = totalSize + Int64(fileSize)
                         counter += 1
+                        print(fileSize, cost)
                     }
                 }
             }
         }
 
         let diffDate = Date().timeIntervalSinceReferenceDate - startDate.timeIntervalSinceReferenceDate
-        NextcloudKit.shared.nkCommonInstance.writeLog("--------- ThumbnailLRUCache image process ---------")
-        NextcloudKit.shared.nkCommonInstance.writeLog("Counter cache image: \(cacheImage.count)")
-        NextcloudKit.shared.nkCommonInstance.writeLog("Total size images process: " + NCUtilityFileSystem().transformedSize(totalSize))
+        NextcloudKit.shared.nkCommonInstance.writeLog("--------- Image cache process ---------")
+        NextcloudKit.shared.nkCommonInstance.writeLog("Count: \(cacheImage.count)")
+        NextcloudKit.shared.nkCommonInstance.writeLog("Total cost: \(cacheImage.totalCost)")
+        NextcloudKit.shared.nkCommonInstance.writeLog("Total size: " + NCUtilityFileSystem().transformedSize(totalSize))
         NextcloudKit.shared.nkCommonInstance.writeLog("Time process: \(diffDate)")
-        NextcloudKit.shared.nkCommonInstance.writeLog("--------- ThumbnailLRUCache image process ---------")
+        NextcloudKit.shared.nkCommonInstance.writeLog("---------------------------------------")
 
         createCacheInProgress = false
     }
@@ -112,14 +117,17 @@ class NCImageCache: NSObject {
     func addImageCache(ocId: String, etag: String, data: Data, ext: String) {
         guard allowExtensions.contains(ext),
               let image = UIImage(data: data),
-              cacheImage.count < limit else { return }
+              cacheImage.count < countLimit else { return }
 
-        cacheImage.setValue(image, forKey: ocId + etag + ext)
+        let cost = data.count / 1000
+        cacheImage.setValue(image, forKey: ocId + etag + ext, cost: cost)
     }
 
     func addImageCache(ocId: String, etag: String, image: UIImage, ext: String) {
-        guard allowExtensions.contains(ext) else { return }
+        guard allowExtensions.contains(ext),
+              let data = image.jpegData(compressionQuality: 1.0) else { return }
 
+        let cost = data.count / 1000
         cacheImage.setValue(image, forKey: ocId + etag + ext)
     }
 

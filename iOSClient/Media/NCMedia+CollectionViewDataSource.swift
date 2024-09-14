@@ -89,7 +89,7 @@ extension NCMedia: UICollectionViewDataSource {
         guard let metadata = dataSource.getMetadata(indexPath: indexPath),
         let cell = (cell as? NCGridMediaCell) else { return }
         let width = self.collectionView.frame.size.width / CGFloat(self.numberOfColumns)
-        
+
         cell.imageItem.image = getImage(metadata: metadata, width: width)
 
         /// Convert old Live Photo type
