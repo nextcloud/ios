@@ -46,8 +46,6 @@ class NCImageCache: NSObject {
         return ThumbnailImageCache(countLimit: countLimit)
     }()
 
-    var createCacheInProgress: Bool = false
-
     override init() {
         super.init()
         NotificationCenter.default.addObserver(self, selector: #selector(handleMemoryWarning), name: LRUCacheMemoryWarningNotification, object: nil)
@@ -61,55 +59,6 @@ class NCImageCache: NSObject {
         cacheImage.removeAllValues()
     }
 
-    ///
-    /// IMAGE CACHE
-    ///
-    func createCache() {
-        if createCacheInProgress {
-            return
-        }
-        createCacheInProgress = true
-        cacheImage.removeAllValues()
-
-        let manager = FileManager.default
-        let resourceKeys = Set<URLResourceKey>([.nameKey, .pathKey, .fileSizeKey, .creationDateKey])
-        let startDate = Date()
-        var counter: Int = 0
-        var totalSize: Int64 = 0
-
-        if let enumerator = manager.enumerator(at: URL(fileURLWithPath: NCUtilityFileSystem().directoryProviderStorage), includingPropertiesForKeys: [.isRegularFileKey], options: [.skipsHiddenFiles]) {
-
-            for case let fileURL as URL in enumerator where allowExtensions.contains(where: { fileURL.lastPathComponent.hasSuffix($0) && counter < self.countLimit }) {
-
-                let fileName = fileURL.lastPathComponent
-                let ocId = fileURL.deletingLastPathComponent().lastPathComponent
-                guard let resourceValues = try? fileURL.resourceValues(forKeys: resourceKeys),
-                      let fileSize = resourceValues.fileSize,
-                      fileSize > 0 else { continue }
-
-                autoreleasepool {
-                    if let image = UIImage(contentsOfFile: fileURL.path) {
-                        cacheImage.setValue(image, forKey: ocId + fileName)
-                        totalSize = totalSize + Int64(fileSize)
-                        counter += 1
-                    }
-                }
-            }
-        }
-
-        let diffDate = Date().timeIntervalSinceReferenceDate - startDate.timeIntervalSinceReferenceDate
-        NextcloudKit.shared.nkCommonInstance.writeLog("--------- Image cache process ---------")
-        NextcloudKit.shared.nkCommonInstance.writeLog("Count: \(cacheImage.count)")
-        NextcloudKit.shared.nkCommonInstance.writeLog("Total size: " + NCUtilityFileSystem().transformedSize(totalSize))
-        NextcloudKit.shared.nkCommonInstance.writeLog("Time process: \(diffDate)")
-        NextcloudKit.shared.nkCommonInstance.writeLog("---------------------------------------")
-
-        createCacheInProgress = false
-    }
-
-    ///
-    /// CACHE
-    ///
     func addImageCache(ocId: String, etag: String, data: Data, ext: String) {
         guard allowExtensions.contains(ext),
               let image = UIImage(data: data) else { return }

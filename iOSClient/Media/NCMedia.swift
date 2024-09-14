@@ -226,10 +226,6 @@ class NCMedia: UIViewController {
     }
 
     func searchNewMedia() {
-        // don't start if media chage is in progress
-        if imageCache.createCacheInProgress {
-            return
-        }
         timerSearchNewMedia?.invalidate()
         timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchMediaUI(_:)), userInfo: nil, repeats: false)
     }
