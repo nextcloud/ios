@@ -75,6 +75,8 @@ class NCMedia: UIViewController {
     var numberOfColumns: Int = 0
     var transitionColumns = false
 
+    var hiddenCellMetadats: [NCMediaDataSource.Metadata] = []
+
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: tabBarController)
     }
@@ -357,6 +359,7 @@ class NCMedia: UIViewController {
         if let image = imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
             returnImage = image
         } else if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
+            imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext)
             returnImage = image
         } else if NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
             NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnail(metadata: metadata, collectionView: self.collectionView, media: self))

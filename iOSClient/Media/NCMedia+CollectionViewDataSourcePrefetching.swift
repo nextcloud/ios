@@ -29,22 +29,11 @@ extension NCMedia: UICollectionViewDataSourcePrefetching {
         let metadatas = dataSource.getMetadatas(indexPaths: indexPaths)
         let width = self.collectionView.frame.size.width / CGFloat(self.numberOfColumns)
         let ext = NCGlobal.shared.getSizeExtension(width: width)
-        let cells = collectionView.visibleCells
 
-        /*
-        var down: Bool = true
-        if let firstRow = indexPaths.first?.row, let lastRow = indexPaths.last?.row {
-            down = firstRow < lastRow
+        for metadata in self.hiddenCellMetadats {
+            self.imageCache.removeImageCache(ocId: metadata.ocId, etag: metadata.etag)
         }
-        */
-
-        if  self.imageCache.isCountLimit() {
-            for indexPath in collectionView.indexPathsForVisibleItems {
-                if let metadata = dataSource.getMetadata(indexPath: indexPath) {
-                    self.imageCache.removeImageCache(ocId: metadata.ocId, etag: metadata.etag)
-                }
-            }
-        }
+        hiddenCellMetadats.removeAll()
 
         metadatas.forEach { metadata in
             if self.imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) == nil,
