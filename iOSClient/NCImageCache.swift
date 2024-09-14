@@ -32,7 +32,7 @@ class NCImageCache: NSObject {
 
     // MARK: -
 
-    let countLimit = 500
+    let countLimit = 1000
 
     private let utility = NCUtility()
     private let global = NCGlobal.shared
