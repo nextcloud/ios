@@ -91,9 +91,7 @@ extension NCMedia: UICollectionViewDataSource {
         let width = self.collectionView.frame.size.width / CGFloat(self.numberOfColumns)
 
         getImage(metadata: metadata, width: width) { image in
-            DispatchQueue.main.async {
-                cell.imageItem.image = image
-            }
+            cell.imageItem.image = image
 
             /// Convert old Live Photo type
             if NCCapabilities.shared.getCapabilities(account: metadata.account).isLivePhotoServerAvailable, metadata.isLivePhoto, metadata.isNotFlaggedAsLivePhotoByServer,

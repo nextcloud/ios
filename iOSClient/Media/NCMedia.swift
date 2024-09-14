@@ -366,7 +366,7 @@ class NCMedia: UIViewController {
     }
 
     func getImage(metadata: NCMediaDataSource.Metadata, width: CGFloat, completion: @escaping (_ image: UIImage?) -> Void) {
-        DispatchQueue.global(qos: .userInteractive).async {
+        // DispatchQueue.global(qos: .userInteractive).async {
             var returnImage: UIImage?
             let ext = NCGlobal.shared.getSizeExtension(width: width)
 
@@ -379,7 +379,7 @@ class NCMedia: UIViewController {
             }
 
             completion(returnImage)
-        }
+        // }
     }
 
     func buildMediaPhotoVideo(columnCount: Int) {
