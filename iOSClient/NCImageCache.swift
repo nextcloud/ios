@@ -32,10 +32,11 @@ class NCImageCache: NSObject {
 
     // MARK: -
 
+    let countLimit = 500
+
     private let utility = NCUtility()
     private let global = NCGlobal.shared
 
-    private let countLimit = 500
     private let allowExtensions = [NCGlobal.shared.previewExt256, NCGlobal.shared.previewExt128]
     private var brandElementColor: UIColor?
     private var totalSize: Int64 = 0

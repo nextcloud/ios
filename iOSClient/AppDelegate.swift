@@ -105,11 +105,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             self.handleProcessingTask(task)
         }
 
-        /// Cache Media
-        DispatchQueue.global().async {
-            NCImageCache.shared.createCache()
-        }
-
         /// Activation singleton
         _ = NCActionCenter.shared
         _ = NCNetworkingProcess.shared
