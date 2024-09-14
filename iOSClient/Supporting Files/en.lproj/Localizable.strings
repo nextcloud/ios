@@ -161,7 +161,7 @@
 "_maximum_"                 = "Maximum";
 "_error_occurred_"          = "An error occurred, please try again";
 "_retry_"                   = "Retry";
-"_Images_"                  = "Images";
+"_images_"                  = "Images";
 
 /* MARK: Files lock */
 
