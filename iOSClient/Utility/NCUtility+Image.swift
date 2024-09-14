@@ -142,6 +142,10 @@ extension NCUtility {
         createImageStandard(ocId: metadata.ocId, etag: metadata.etag, date: metadata.date, classFile: metadata.classFile, image: image)
     }
 
+    func createImage(metadata: tableMetadata, data: Data) {
+        createImage(ocId: metadata.ocId, etag: metadata.etag, date: metadata.date, classFile: metadata.classFile, data: data)
+    }
+
     func createImage(ocId: String, etag: String, date: NSDate, classFile: String, data: Data) {
         guard let image = UIImage(data: data) else { return }
         let fileNamePath1024 = self.utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: global.previewExt1024)

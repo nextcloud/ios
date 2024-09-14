@@ -294,7 +294,7 @@ class NCViewerMedia: UIViewController {
                     svgImage.size = NCGlobal.shared.size1024
                     if let image = svgImage.uiImage {
                         if !NCUtility().existsImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024), let data = image.jpegData(compressionQuality: 1.0) {
-                            utility.createImage(ocId: metadata.ocId, etag: metadata.etag, date: metadata.date, classFile: metadata.classFile, data: data)
+                            utility.createImage(metadata: metadata, data: data)
                         }
                         self.image = image
                         self.imageVideoContainer.image = self.image
