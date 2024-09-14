@@ -139,14 +139,14 @@ extension NCUtility {
 
         guard let image else { return }
 
-        createImageStandard(ocId: metadata.ocId, etag: metadata.etag, date: metadata.date, classFile: metadata.classFile, image: image)
+        createImageStandard(ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile, image: image)
     }
 
     func createImage(metadata: tableMetadata, data: Data) {
-        createImage(ocId: metadata.ocId, etag: metadata.etag, date: metadata.date, classFile: metadata.classFile, data: data)
+        createImage(ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile, data: data)
     }
 
-    func createImage(ocId: String, etag: String, date: NSDate, classFile: String, data: Data) {
+    func createImage(ocId: String, etag: String, classFile: String, data: Data) {
         guard let image = UIImage(data: data) else { return }
         let fileNamePath1024 = self.utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: global.previewExt1024)
 
@@ -154,10 +154,10 @@ extension NCUtility {
             try data.write(to: URL(fileURLWithPath: fileNamePath1024), options: .atomic)
         } catch { }
 
-        createImageStandard(ocId: ocId, etag: etag, date: date, classFile: classFile, image: image)
+        createImageStandard(ocId: ocId, etag: etag, classFile: classFile, image: image)
     }
 
-    private func createImageStandard(ocId: String, etag: String, date: NSDate, classFile: String, image: UIImage) {
+    private func createImageStandard(ocId: String, etag: String, classFile: String, image: UIImage) {
         let ext = [global.previewExt512, global.previewExt256, global.previewExt128]
         let size = [global.size512, global.size256, global.size128]
         let compressionQuality = [0.6, 0.7, 0.8]
@@ -170,7 +170,7 @@ extension NCUtility {
                     let fileNamePath = utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: ext[i])
                     try data.write(to: URL(fileURLWithPath: fileNamePath))
                     #if !EXTENSION
-                    NCImageCache.shared.addImageCache(ocId: ocId, etag: etag, date: date, data: data, ext: ext[i])
+                    NCImageCache.shared.addImageCache(ocId: ocId, etag: etag, data: data, ext: ext[i])
                     #endif
                 } catch { }
             }

@@ -224,7 +224,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                                                                            account: activeTableAccount.account,
                                                                            options: options)
                     if result.error == .success, let data = result.data {
-                        utility.createImage(ocId: file.ocId, etag: file.etag, date: file.date as NSDate, classFile: file.classFile, data: data)
+                        utility.createImage(ocId: file.ocId, etag: file.etag, classFile: file.classFile, data: data)
                     }
                 }
                 if image == nil {

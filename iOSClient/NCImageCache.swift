@@ -39,12 +39,7 @@ class NCImageCache: NSObject {
     private let allowExtensions = [NCGlobal.shared.previewExt256, NCGlobal.shared.previewExt128]
     private var brandElementColor: UIColor?
     private var totalSize: Int64 = 0
-    private typealias ThumbnailImageCache = LRUCache<String, imageInfo>
-
-    struct imageInfo {
-        var image: UIImage?
-        var date: NSDate
-    }
+    private typealias ThumbnailImageCache = LRUCache<String, UIImage>
 
     private lazy var cacheImage: ThumbnailImageCache = {
         return ThumbnailImageCache(countLimit: countLimit)
@@ -89,12 +84,11 @@ class NCImageCache: NSObject {
                 let ocId = fileURL.deletingLastPathComponent().lastPathComponent
                 guard let resourceValues = try? fileURL.resourceValues(forKeys: resourceKeys),
                       let fileSize = resourceValues.fileSize,
-                      fileSize > 0,
-                      let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { continue }
+                      fileSize > 0 else { continue }
 
                 autoreleasepool {
                     if let image = UIImage(contentsOfFile: fileURL.path) {
-                        cacheImage.setValue(imageInfo(image: image, date: metadata.date), forKey: ocId + fileName)
+                        cacheImage.setValue(image, forKey: ocId + fileName)
                         totalSize = totalSize + Int64(fileSize)
                         counter += 1
                     }
@@ -115,25 +109,21 @@ class NCImageCache: NSObject {
     ///
     /// CACHE
     ///
-    func addImageCache(ocId: String, etag: String, date: NSDate, data: Data, ext: String) {
+    func addImageCache(ocId: String, etag: String, data: Data, ext: String) {
         guard allowExtensions.contains(ext),
               let image = UIImage(data: data) else { return }
 
-        if cacheImage.count >= countLimit { removeImageCache(date: date) }
-
-        cacheImage.setValue(imageInfo(image: image, date: date), forKey: ocId + etag + ext)
+        cacheImage.setValue(image, forKey: ocId + etag + ext)
     }
 
-    func addImageCache(ocId: String, etag: String, date: NSDate, image: UIImage, ext: String) {
+    func addImageCache(ocId: String, etag: String, image: UIImage, ext: String) {
         guard allowExtensions.contains(ext) else { return }
 
-        if cacheImage.count >= countLimit { removeImageCache(date: date) }
-
-        cacheImage.setValue(imageInfo(image: image, date: date), forKey: ocId + etag + ext)
+        cacheImage.setValue(image, forKey: ocId + etag + ext)
     }
 
     func getImageCache(ocId: String, etag: String, ext: String) -> UIImage? {
-        return cacheImage.value(forKey: ocId + etag + ext)?.image
+        return cacheImage.value(forKey: ocId + etag + ext)
     }
 
     func removeImageCache(ocId: String, etag: String) {
@@ -147,15 +137,8 @@ class NCImageCache: NSObject {
         }
     }
 
-    func removeImageCache(date: NSDate) {
-        for key in cacheImage.allKeys {
-            if let value = self.cacheImage.value(forKey: key) {
-                if value.date != date {
-                    cacheImage.removeValue(forKey: key)
-                    break
-                }
-            }
-        }
+    func isCountLimit() -> Bool {
+        return cacheImage.count < countLimit
     }
 
     // MARK: -
