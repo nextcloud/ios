@@ -89,15 +89,13 @@ extension NCMedia: UICollectionViewDataSource {
         guard let metadata = dataSource.getMetadata(indexPath: indexPath),
         let cell = (cell as? NCGridMediaCell) else { return }
         let width = self.collectionView.frame.size.width / CGFloat(self.numberOfColumns)
+        
+        cell.imageItem.image = getImage(metadata: metadata, width: width)
 
-        getImage(metadata: metadata, width: width) { image in
-            cell.imageItem.image = image
-
-            /// Convert old Live Photo type
-            if NCCapabilities.shared.getCapabilities(account: metadata.account).isLivePhotoServerAvailable, metadata.isLivePhoto, metadata.isNotFlaggedAsLivePhotoByServer,
-               let metadata = self.database.getMetadataFromOcId(metadata.ocId) {
-                NCNetworking.shared.convertLivePhoto(metadata: metadata)
-            }
+        /// Convert old Live Photo type
+        if NCCapabilities.shared.getCapabilities(account: metadata.account).isLivePhotoServerAvailable, metadata.isLivePhoto, metadata.isNotFlaggedAsLivePhotoByServer,
+           let metadata = self.database.getMetadataFromOcId(metadata.ocId) {
+            NCNetworking.shared.convertLivePhoto(metadata: metadata)
         }
     }
 
