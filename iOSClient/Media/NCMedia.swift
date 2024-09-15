@@ -233,6 +233,8 @@ class NCMedia: UIViewController {
     // MARK: - NotificationCenter
 
     @objc func networkRemoveAll() {
+        timerSearchNewMedia?.invalidate()
+        timerSearchNewMedia = nil
         filesExists.removeAll()
         NCNetworking.shared.fileExistsQueue.cancelAll()
         NCNetworking.shared.downloadThumbnailQueue.cancelAll()
