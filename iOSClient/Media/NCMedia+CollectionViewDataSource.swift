@@ -89,7 +89,16 @@ extension NCMedia: UICollectionViewDataSource {
               let cell = (cell as? NCGridMediaCell) else { return }
         let width = self.collectionView.frame.size.width / CGFloat(self.numberOfColumns)
 
-        cell.imageItem.image = getImage(metadata: metadata, width: width)
+        if self.transitionColumns {
+            cell.imageItem.image = getImage(metadata: metadata, width: width)
+        } else {
+            DispatchQueue.global(qos: .background).async {
+                let image = self.getImage(metadata: metadata, width: width)
+                DispatchQueue.main.async {
+                    cell.imageItem.image = image
+                }
+            }
+        }
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

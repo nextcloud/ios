@@ -36,7 +36,7 @@ class NCImageCache: NSObject {
     private let allowExtensions = [NCGlobal.shared.previewExt256, NCGlobal.shared.previewExt128]
     private var brandElementColor: UIColor?
 
-    let countLimit = 1000
+    let countLimit = 1000000
     lazy var cacheImage: LRUCache<String, UIImage> = {
         return LRUCache<String, UIImage>(countLimit: countLimit)
     }()
