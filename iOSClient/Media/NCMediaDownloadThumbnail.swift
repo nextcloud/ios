@@ -56,6 +56,7 @@ class NCMediaDownloadThumbnail: ConcurrentOperation {
                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, data, _, _, etag, error in
             if error == .success, let data, let collectionView = self.collectionView {
 
+                self.media?.filesExists.append(self.metadata.ocId)
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
                 if let metadata = NCManageDatabase.shared.getMetadataFromOcId(self.metadata.ocId) {
                     NCUtility().createImage(metadata: metadata, data: data)
