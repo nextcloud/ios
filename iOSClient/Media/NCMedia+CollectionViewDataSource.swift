@@ -81,9 +81,6 @@ extension NCMedia: UICollectionViewDataSource {
             for case let operation as NCMediaDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
                 operation.cancel()
             }
-            for case let operation as NCOperationConvertLivePhoto in NCNetworking.shared.convertLivePhotoQueue.operations where operation.ocId == metadata.ocId {
-                operation.cancel()
-            }
         }
     }
 
@@ -93,12 +90,6 @@ extension NCMedia: UICollectionViewDataSource {
         let width = self.collectionView.frame.size.width / CGFloat(self.numberOfColumns)
 
         cell.imageItem.image = getImage(metadata: metadata, width: width)
-
-        /// Convert old Live Photo type
-        if NCCapabilities.shared.getCapabilities(account: metadata.account).isLivePhotoServerAvailable, metadata.isLivePhoto, metadata.isNotFlaggedAsLivePhotoByServer,
-           let metadata = self.database.getMetadataFromOcId(metadata.ocId) {
-            NCNetworking.shared.convertLivePhoto(metadata: metadata)
-        }
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

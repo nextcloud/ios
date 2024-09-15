@@ -219,6 +219,15 @@ class NCManageDatabase: NSObject {
         return nil
     }
 
+    func realmRefresh() {
+        do {
+            let realm = try Realm()
+            realm.refresh()
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not refresh database: \(error)")
+        }
+    }
+
     // MARK: -
     // MARK: Func T
 

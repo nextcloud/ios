@@ -92,7 +92,6 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
     let saveLivePhotoQueue = Queuer(name: "saveLivePhotoQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     let downloadQueue = Queuer(name: "downloadQueue", maxConcurrentOperationCount: NCBrandOptions.shared.maxConcurrentOperationDownload, qualityOfService: .default)
     let downloadAvatarQueue = Queuer(name: "downloadAvatarQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
-    let convertLivePhotoQueue = Queuer(name: "convertLivePhotoQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     let fileExistsQueue = Queuer(name: "fileExistsQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
 
     // MARK: - init
@@ -174,7 +173,6 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
         downloadAvatarQueue.cancelAll()
         unifiedSearchQueue.cancelAll()
         saveLivePhotoQueue.cancelAll()
-        convertLivePhotoQueue.cancelAll()
         fileExistsQueue.cancelAll()
     }
 

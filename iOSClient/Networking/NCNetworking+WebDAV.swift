@@ -57,14 +57,7 @@ extension NCNetworking {
                                            richWorkspace: metadataFolder.richWorkspace,
                                            serverUrl: serverUrl,
                                            account: metadataFolder.account)
-#if !EXTENSION
-                // Convert Live Photo
-                for metadata in metadatas {
-                    if NCCapabilities.shared.getCapabilities(account: account).isLivePhotoServerAvailable, metadata.isLivePhoto {
-                        self.convertLivePhoto(metadata: metadata)
-                    }
-                }
-#endif
+
                 let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, self.global.metadataStatusNormal)
 
                 if forceReplaceMetadatas {
