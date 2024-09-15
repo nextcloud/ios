@@ -217,7 +217,7 @@ extension NCMedia {
         menuButton.menu = UIMenu(title: "", children: [zoomOut, zoomIn, viewOptionsMedia, playFile, playURL])
     }
 
-    func createMenuNOZOOM() {
+    func createMenuNEW() {
         let layoutForView = database.getLayoutForView(account: session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")
         var layout = layoutForView?.layout ?? NCGlobal.shared.mediaLayoutRatio
         /// Overwrite default value
