@@ -28,15 +28,13 @@ import SwiftEntryKit
 import SwiftUI
 
 class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
-    @IBOutlet weak var imageBrand: UIImageView!
-    @IBOutlet weak var imageBrandConstraintY: NSLayoutConstraint!
-    @IBOutlet weak var baseUrl: UITextField!
-    @IBOutlet weak var loginAddressDetail: UILabel!
+	
     @IBOutlet weak var loginButton: UIButton!
-    @IBOutlet weak var loginImage: UIImageView!
-    @IBOutlet weak var qrCode: UIButton!
-    @IBOutlet weak var certificate: UIButton!
-
+	@IBOutlet weak var lblWelcome: UILabel!
+	@IBOutlet weak var lblDescription: UILabel!
+	@IBOutlet weak var loginContentView: UIView!
+	@IBOutlet weak var spinner: UIActivityIndicatorView!
+	
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private var textColor: UIColor = .white
     private var textColorOpponent: UIColor = .black
@@ -65,70 +63,18 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Text color
-        if NCBrandColor.shared.customer.isTooLight() {
-            textColor = .black
-            textColorOpponent = .white
-        } else if NCBrandColor.shared.customer.isTooDark() {
-            textColor = .white
-            textColorOpponent = .black
-        } else {
-            textColor = .white
-            textColorOpponent = .black
-        }
-
-        // Image Brand
-        imageBrand.image = UIImage(named: "logo")
-
-        // Url
-        baseUrl.textColor = textColor
-        baseUrl.tintColor = textColor
-        baseUrl.layer.cornerRadius = 10
-        baseUrl.layer.borderWidth = 1
-        baseUrl.layer.borderColor = textColor.cgColor
-        baseUrl.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: baseUrl.frame.height))
-        baseUrl.leftViewMode = .always
-        baseUrl.rightView = UIView(frame: CGRect(x: 0, y: 0, width: 35, height: baseUrl.frame.height))
-        baseUrl.rightViewMode = .always
-        baseUrl.attributedPlaceholder = NSAttributedString(string: NSLocalizedString("_login_url_", comment: ""), attributes: [NSAttributedString.Key.foregroundColor: textColor.withAlphaComponent(0.5)])
-        baseUrl.delegate = self
-
-        baseUrl.isEnabled = !NCBrandOptions.shared.disable_request_login_url
-
-        // Login button
-        loginAddressDetail.textColor = textColor
-        loginAddressDetail.text = String.localizedStringWithFormat(NSLocalizedString("_login_address_detail_", comment: ""), NCBrandOptions.shared.brand)
-
-        // Login Image
-        loginImage.image = UIImage(named: "arrow.right")?.image(color: textColor, size: 100)
-
-        // brand
-        if NCBrandOptions.shared.disable_request_login_url {
-            baseUrl.isEnabled = false
-            baseUrl.isUserInteractionEnabled = false
-            baseUrl.alpha = 0.5
-        }
-
-        // qrcode
-        qrCode.setImage(UIImage(systemName: "qrcode.viewfinder")?.image(color: textColor, size: 100), for: .normal)
-
-        // certificate
-        certificate.setImage(UIImage(named: "certificate")?.image(color: textColor, size: 100), for: .normal)
-        certificate.isHidden = true
-        certificate.isEnabled = false
-
-        // navigation
-        let navBarAppearance = UINavigationBarAppearance()
-        navBarAppearance.configureWithTransparentBackground()
-        navBarAppearance.shadowColor = .clear
-        navBarAppearance.shadowImage = UIImage()
-        navBarAppearance.titleTextAttributes = [.foregroundColor: textColor]
-        navBarAppearance.largeTitleTextAttributes = [.foregroundColor: textColor]
-        self.navigationController?.navigationBar.standardAppearance = navBarAppearance
-        self.navigationController?.view.backgroundColor = NCBrandColor.shared.customer
-        self.navigationController?.navigationBar.tintColor = textColor
-
+		
+		// Login Button
+		loginButton.layer.cornerRadius = loginButton.frame.height / 2
+		loginButton.setTitle(NSLocalizedString("_login_", comment: ""), for: .normal)
+		
+		// Labels
+		lblWelcome.text = NSLocalizedString("_login_welcome_", comment: "")
+		lblDescription.text = NSLocalizedString("_login_description_", comment: "")
+		
+		// Navigation Controller
+		navigationController?.isNavigationBarHidden = true
+		
         if !NCManageDatabase.shared.getAllAccount().isEmpty {
             let navigationItemCancel = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(self.actionCancel))
             navigationItemCancel.tintColor = textColor
@@ -157,15 +103,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 }
             }
         }
-
-        self.navigationController?.navigationBar.setValue(true, forKey: "hidesShadow")
-        view.backgroundColor = NCBrandColor.shared.customer
-
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-
         handleLoginWithAppConfig()
-        baseUrl.text = urlBase
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -233,27 +171,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         self.activeTextField = textField
     }
 
-    // MARK: - Keyboard notification
-
-    @objc internal func keyboardWillShow(_ notification: Notification?) {
-        activeTextfieldDiff = 0
-        if let info = notification?.userInfo, let centerObject = self.activeTextField.superview?.convert(self.activeTextField.center, to: nil) {
-
-            let frameEndUserInfoKey = UIResponder.keyboardFrameEndUserInfoKey
-            if let keyboardFrame = info[frameEndUserInfoKey] as? CGRect {
-                let diff = keyboardFrame.origin.y - centerObject.y - self.activeTextField.frame.height
-                if diff < 0 {
-                    activeTextfieldDiff = diff
-                    imageBrandConstraintY.constant += diff
-                }
-            }
-        }
-    }
-
-    @objc func keyboardWillHide(_ notification: Notification) {
-        imageBrandConstraintY.constant -= activeTextfieldDiff
-    }
-
     // MARK: - Action
 
     @objc func actionCancel() {
@@ -261,19 +178,10 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     }
 
     @IBAction func actionButtonLogin(_ sender: Any) {
+		spinner.startAnimating()
         NCNetworking.shared.p12Data = nil
         NCNetworking.shared.p12Password = nil
         login()
-    }
-
-    @IBAction func actionQRCode(_ sender: Any) {
-
-        let qrCode = NCLoginQRCode(delegate: self)
-        qrCode.scan()
-    }
-
-    @IBAction func actionCertificate(_ sender: Any) {
-
     }
 
     // MARK: - Share accounts View Controller
@@ -297,39 +205,42 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     // MARK: - Login
 
     private func login() {
-        guard var url = baseUrl.text?.trimmingCharacters(in: .whitespacesAndNewlines) else { return }
+        var url = urlBase
         if url.hasSuffix("/") { url = String(url.dropLast()) }
         if url.isEmpty { return }
         // Check whether baseUrl contain protocol. If not add https:// by default.
         if url.hasPrefix("https") == false && url.hasPrefix("http") == false {
             url = "https://" + url
         }
-        self.baseUrl.text = url
         isUrlValid(url: url)
     }
 
     func isUrlValid(url: String, user: String? = nil) {
         loginButton.isEnabled = false
-        NextcloudKit.shared.getServerStatus(serverUrl: url) { serverInfoResult in
+		NextcloudKit.shared.getServerStatus(serverUrl: url) { [weak self] serverInfoResult in
             switch serverInfoResult {
             case .success(let serverInfo):
                 if let host = URL(string: url)?.host {
                     NCNetworking.shared.writeCertificate(host: host)
                 }
                 NextcloudKit.shared.getLoginFlowV2(serverUrl: url) { token, endpoint, login, _, error in
-                    self.loginButton.isEnabled = true
+					self?.spinner.stopAnimating()
+                    self?.loginButton.isEnabled = true
                     // Login Flow V2
                     if error == .success, let token, let endpoint, let login {
-                        let vc = UIHostingController(rootView: NCLoginPoll(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login))
-                        self.present(vc, animated: true)
+						let loginPoll = NCLoginPoll(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login)
+						let vc = UIHostingController(rootView: loginPoll)
+						vc.modalPresentationStyle = .fullScreen
+						self?.present(vc, animated: true)
                     } else if serverInfo.versionMajor < NCGlobal.shared.nextcloudVersion12 { // No login flow available
                         let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_webflow_not_available_", comment: ""), preferredStyle: .alert)
                         alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-                        self.present(alertController, animated: true, completion: { })
+                        self?.present(alertController, animated: true, completion: { })
                     }
                 }
             case .failure(let error):
-                self.loginButton.isEnabled = true
+				self?.spinner.stopAnimating()
+                self?.loginButton.isEnabled = true
                 if error.errorCode == NSURLErrorServerCertificateUntrusted {
                     let alertController = UIAlertController(title: NSLocalizedString("_ssl_certificate_untrusted_", comment: ""), message: NSLocalizedString("_connect_server_anyway_", comment: ""), preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { _ in
@@ -344,14 +255,14 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                             if let host = URL(string: url)?.host {
                                 viewController.host = host
                             }
-                            self.present(navigationController, animated: true)
+                            self?.present(navigationController, animated: true)
                         }
                     }))
-                    self.present(alertController, animated: true)
+                    self?.present(alertController, animated: true)
                 } else {
                     let alertController = UIAlertController(title: NSLocalizedString("_connection_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-                    self.present(alertController, animated: true, completion: { })
+                    self?.present(alertController, animated: true, completion: { })
                 }
             }
         }

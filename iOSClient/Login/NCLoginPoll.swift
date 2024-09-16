@@ -35,35 +35,45 @@ struct NCLoginPoll: View {
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        VStack {
-            Text(NSLocalizedString("_poll_desc_", comment: ""))
-                .multilineTextAlignment(.center)
-                .foregroundStyle(.white)
-                .padding()
+		GeometryReader { geometry in
+			let size = geometry.size
 
-            ProgressView()
-                .scaleEffect(1.5)
-                .tint(.white)
-                .padding()
+			VStack {
+				Image(.logo)
+					.padding(.top, size.height * 0.05)
+				Text(NSLocalizedString("_poll_desc_", comment: ""))
+					.multilineTextAlignment(.center)
+					.foregroundStyle(.white)
+					.padding(20)
+					.padding(.top, 80)
+				
+				Spacer()
+				CircleItemSpinner()
+					.tint(.white)
+				Spacer()
 
-            HStack {
-                Button(NSLocalizedString("_cancel_", comment: "")) {
-                    dismiss()
-                }
-                .disabled(loginManager.isLoading || cancelButtonDisabled)
-                .buttonStyle(.bordered)
-                .tint(.white)
-
-                Button(NSLocalizedString("_retry_", comment: "")) {
-                    loginManager.openLoginInBrowser()
-                }
-                .buttonStyle(.borderedProminent)
-                .foregroundStyle(Color(NCBrandColor.shared.customer))
-                .tint(.white)
-            }
-            .padding()
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
+				HStack(spacing: 20) {
+					Button(NSLocalizedString("_cancel_", comment: "")) {
+						dismiss()
+					}
+					.disabled(loginManager.isLoading || cancelButtonDisabled)
+					.buttonStyle(.secondary)
+					
+					Button(NSLocalizedString("_retry_", comment: "")) {
+						loginManager.openLoginInBrowser()
+					}
+					.buttonStyle(.primary)
+				}
+				.padding()
+				.padding(.bottom, size.height * 0.15)
+			}
+			.frame(maxWidth: .infinity, maxHeight: .infinity)
+			.background {
+				Image(.gradientBackground)
+					.resizable()
+					.ignoresSafeArea()
+			}
+		}
         .onChange(of: loginManager.pollFinished) { value in
             if value {
                 let window = UIApplication.shared.firstWindow
@@ -83,7 +93,6 @@ struct NCLoginPoll: View {
                 }
             }
         }
-        .background(Color(NCBrandColor.shared.customer))
         .onAppear {
             loginManager.configure(loginFlowV2Token: loginFlowV2Token, loginFlowV2Endpoint: loginFlowV2Endpoint, loginFlowV2Login: loginFlowV2Login)
 
@@ -95,8 +104,9 @@ struct NCLoginPoll: View {
     }
 }
 
+
 #Preview {
-    NCLoginPoll(loginFlowV2Token: "", loginFlowV2Endpoint: "", loginFlowV2Login: "")
+	NCLoginPoll(loginFlowV2Token: "", loginFlowV2Endpoint: "", loginFlowV2Login: "")
 }
 
 private class LoginManager: ObservableObject {

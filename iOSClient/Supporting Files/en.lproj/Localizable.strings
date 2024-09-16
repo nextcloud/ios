@@ -1098,3 +1098,7 @@
 
 // MARK: Login poll
 "_poll_desc_"                    = "Please complete the log in process in your browser";
+
+//MARK: Login
+"_login_welcome_"				 	= "Welcome to the cloud storage";
+"_login_description_" 				= "You need to login over browser";
