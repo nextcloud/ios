@@ -35,7 +35,7 @@ extension NCTrash: UICollectionViewDelegate {
                 selectOcId.append(tableTrash.fileId)
             }
             collectionView.reloadItems(at: [indexPath])
-            tabBarSelect.update(selectOcId: selectOcId)
+            selectionToolbar.update(selectOcId: selectOcId)
             return
         }
 

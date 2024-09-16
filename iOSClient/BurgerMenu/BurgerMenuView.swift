@@ -27,6 +27,16 @@ struct BurgerMenuView: View {
                     }
                 HStack(spacing: 0, content: {
                     VStack(alignment: .leading, spacing: _Constants.spacingBetweenItems) {
+                        Image(.ionosEasyStorageLogo)
+                            .resizable()
+                            .renderingMode(.template)
+                            .foregroundStyle(Color(.BurgerMenu.logoTint))
+                            .scaledToFit()
+                            .padding(EdgeInsets(top: 24,
+                                                leading: 0,
+                                                bottom: 8,
+                                                trailing: 0))
+                            .frame(height: 56)
                         Button(action: {
                             viewModel.hideMenu()
                         }, label: {
@@ -49,7 +59,7 @@ struct BurgerMenuView: View {
                         }
                     }
                     .padding(EdgeInsets(top: 0, leading: 19, bottom: 0, trailing: 28))
-                    .frame(width: width*0.85, alignment: .leading)
+                    .frame(width: min(width*0.85, 400), alignment: .leading)
                     .background(Color(.BurgerMenu.background))
                     .offset(x: viewModel.isVisible ? 0 : -width)
                 })

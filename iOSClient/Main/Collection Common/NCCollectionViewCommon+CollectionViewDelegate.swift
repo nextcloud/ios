@@ -29,6 +29,15 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath), !metadata.isInvalidated else { return }
 
+		var selectionState: FileActionsHeaderSelectionState {
+			let selectedItemsCount = selectOcId.count
+			if selectedItemsCount == dataSource.getMetadataSourceForAllSections().count {
+				return .all
+			}
+			
+			return selectedItemsCount == 0 ? .none : .some(selectedItemsCount)
+		}
+		
         if isEditMode {
             if let index = selectOcId.firstIndex(of: metadata.ocId) {
                 selectOcId.remove(at: index)
@@ -36,7 +45,8 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 selectOcId.append(metadata.ocId)
             }
             collectionView.reloadItems(at: [indexPath])
-            tabBarSelect.update(selectOcId: selectOcId, metadatas: getSelectedMetadatas(), userId: appDelegate.userId)
+            commonSelectToolbar.update(selectOcId: selectOcId, metadatas: getSelectedMetadatas(), userId: appDelegate.userId)
+			fileActionsHeader?.setSelectionState(selectionState: selectionState)
             return
         }
 
@@ -110,4 +120,8 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             }
         }
     }
+	
+	func scrollViewDidScroll(_ scrollView: UIScrollView) {
+		headerTop?.constant = max(0, -scrollView.contentOffset.y)
+	}
 }
