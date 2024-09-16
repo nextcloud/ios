@@ -83,6 +83,14 @@ class NCImageCache: NSObject {
         }
     }
 
+    func removeAll() {
+        cacheImage.removeAllValues()
+    }
+
+    func count() -> Int {
+        return cacheImage.count
+    }
+
     // MARK: -
 
     func getImageFile() -> UIImage {

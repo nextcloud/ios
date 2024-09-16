@@ -28,6 +28,7 @@ extension NCMedia {
     @objc func handlePinchGesture(_ gestureRecognizer: UIPinchGestureRecognizer) {
         func updateNumberOfColumns() {
             let originalColumns = numberOfColumns
+            transitionColumns = true
 
             if currentScale < 1 && numberOfColumns < maxColumns {
                 numberOfColumns += 1
@@ -37,7 +38,6 @@ extension NCMedia {
 
             if originalColumns != numberOfColumns {
 
-                transitionColumns = true
                 self.collectionView.transform = .identity
                 self.currentScale = 1.0
 
