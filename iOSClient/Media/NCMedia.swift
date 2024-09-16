@@ -61,6 +61,15 @@ class NCMedia: UIViewController {
     var videoImage = UIImage()
     var accountButtonFactory: AccountButtonFactory!
 
+    var selectionState: FileActionsHeaderSelectionState {
+        let selectedItemsCount = selectOcId.count
+        if selectedItemsCount == metadatas?.count {
+            return .all
+        }
+        
+        return selectedItemsCount == 0 ? .none : .some(selectedItemsCount)
+    }
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -222,14 +231,13 @@ class NCMedia: UIViewController {
         
         fileActionsHeader?.onSelectAll = { [weak self] in
             guard let self = self else { return }
-            self.selectAll()
-            let selectionState: FileActionsHeaderSelectionState = self.selectOcId.count == 0 ? .none : .all
+            self.selectAllOrDeselectAll()
             tabBarSelect.selectCount = selectOcId.count
             self.fileActionsHeader?.setSelectionState(selectionState: selectionState)
         }
     }
     
-    func selectAll() {
+    func selectAllOrDeselectAll() {
         guard let metadatas = self.metadatas else {return}
         if !selectOcId.isEmpty, metadatas.count == selectOcId.count {
             selectOcId = []
@@ -240,7 +248,7 @@ class NCMedia: UIViewController {
     }
     
     func updateHeadersMenu() {
-        fileActionsHeader?.setSortingMenu(sortingMenuElements: createMenuElements(), title: "Media options", image: nil)
+        fileActionsHeader?.setSortingMenu(sortingMenuElements: createMenuElements(), title: NSLocalizedString("_media_options_", comment: ""), image: nil)
     }
     
     func setNavigationLeftItems() {

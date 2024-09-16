@@ -110,24 +110,6 @@ extension NCMedia {
             })
         ])
         
-        let zoomOut = UIAction(title: NSLocalizedString("_zoom_out_", comment: ""), image: utility.loadImage(named: "minus.magnifyingglass"), attributes: self.attributesZoomOut) { _ in
-            UIView.animate(withDuration: 0.0, animations: {
-                let column = columnPhoto + 1
-                NCManageDatabase.shared.setLayoutForView(account: self.appDelegate.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: column)
-                self.updateHeadersMenu()
-                self.collectionViewReloadData()
-            })
-        }
-        
-        let zoomIn = UIAction(title: NSLocalizedString("_zoom_in_", comment: ""), image: utility.loadImage(named: "plus.magnifyingglass"), attributes: self.attributesZoomIn) { _ in
-            UIView.animate(withDuration: 0.0, animations: {
-                let column = columnPhoto - 1
-                NCManageDatabase.shared.setLayoutForView(account: self.appDelegate.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: column)
-                self.updateHeadersMenu()
-                self.collectionViewReloadData()
-            })
-        }
-        
         let playFile = UIAction(title: NSLocalizedString("_play_from_files_", comment: ""), image: utility.loadImage(named: "play.circle")) { _ in
             guard let controller = self.tabBarController as? NCMainTabBarController else { return }
             self.documentPickerViewController = NCDocumentPickerViewController(controller: controller, isViewerMedia: true, allowsMultipleSelection: false, viewController: self)
@@ -149,7 +131,7 @@ extension NCMedia {
             self.present(alert, animated: true)
         }
         
-        return [zoomOut, zoomIn, viewOptionsMedia, playFile, playURL]
+        return [viewOptionsMedia, playFile, playURL]
     }
 }
 

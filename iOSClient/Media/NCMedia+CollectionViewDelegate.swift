@@ -26,14 +26,6 @@ import NextcloudKit
 import RealmSwift
 
 extension NCMedia: UICollectionViewDelegate {
-    var selectionState: FileActionsHeaderSelectionState {
-        let selectedItemsCount = selectOcId.count
-        if selectedItemsCount == metadatas?.count {
-            return .all
-        }
-        
-        return selectedItemsCount == 0 ? .none : .some(selectedItemsCount)
-    }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         var mediaCell: NCGridMediaCell?
