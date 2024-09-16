@@ -36,7 +36,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let metadata = self.dataSource.getMetadata(indexPath: indexPath),
-              let cell = (cell as? NCCellProtocol) else { return }
+              let cell = (cell as? NCCellProtocol),
+              let filePreviewImageView = cell.filePreviewImageView else { return }
         let existsPreview = utility.existsImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024)
         let ext = NCGlobal.shared.getSizeExtension(width: self.sizeImage.width)
 
@@ -50,33 +51,32 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         /// CONTENT MODE
-        cell.filePreviewImageView?.layer.borderWidth = 0
+        filePreviewImageView.layer.borderWidth = 0
         if isLayoutPhoto {
             if metadata.isImageOrVideo, existsPreview {
-                cell.filePreviewImageView?.contentMode = .scaleAspectFill
+                filePreviewImageView.contentMode = .scaleAspectFill
             } else {
-                cell.filePreviewImageView?.contentMode = .scaleAspectFit
+                filePreviewImageView.contentMode = .scaleAspectFit
             }
         } else {
             if existsPreview {
-                cell.filePreviewImageView?.contentMode = .scaleAspectFill
+                filePreviewImageView.contentMode = .scaleAspectFill
             } else {
-                cell.filePreviewImageView?.contentMode = .scaleAspectFit
+                filePreviewImageView.contentMode = .scaleAspectFit
             }
         }
         cell.fileAvatarImageView?.contentMode = .center
 
         /// THUMBNAIL
         if !metadata.directory {
-            cell.filePreviewImageView?.image = nil
+            filePreviewImageView.image = nil
 
             if metadata.hasPreviewBorder {
-                cell.filePreviewImageView?.layer.borderWidth = 0.2
-                cell.filePreviewImageView?.layer.borderColor = UIColor.lightGray.cgColor
+                filePreviewImageView.layer.borderWidth = 0.2
+                filePreviewImageView.layer.borderColor = UIColor.lightGray.cgColor
             }
 
             if metadata.name == global.appName {
-                let ext = global.getSizeExtension(width: self.sizeImage.width)
                 var image = self.imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext)
 
                 if image == nil {
@@ -96,29 +96,29 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     }
                 }
 
-                cell.filePreviewImageView?.image = image
+                filePreviewImageView.image = image
 
             } else {
                 /// APP NAME - UNIFIED SEARCH
                 switch metadata.iconName {
                 case let str where str.contains("contacts"):
-                    cell.filePreviewImageView?.image = utility.loadImage(named: "person.crop.rectangle.stack", colors: [NCBrandColor.shared.iconImageColor])
+                    filePreviewImageView.image = utility.loadImage(named: "person.crop.rectangle.stack", colors: [NCBrandColor.shared.iconImageColor])
                 case let str where str.contains("conversation"):
-                    cell.filePreviewImageView?.image = UIImage(named: "talk-template")!.image(color: NCBrandColor.shared.getElement(account: metadata.account))
+                    filePreviewImageView.image = UIImage(named: "talk-template")!.image(color: NCBrandColor.shared.getElement(account: metadata.account))
                 case let str where str.contains("calendar"):
-                    cell.filePreviewImageView?.image = utility.loadImage(named: "calendar", colors: [NCBrandColor.shared.iconImageColor])
+                    filePreviewImageView.image = utility.loadImage(named: "calendar", colors: [NCBrandColor.shared.iconImageColor])
                 case let str where str.contains("deck"):
-                    cell.filePreviewImageView?.image = utility.loadImage(named: "square.stack.fill", colors: [NCBrandColor.shared.iconImageColor])
+                    filePreviewImageView.image = utility.loadImage(named: "square.stack.fill", colors: [NCBrandColor.shared.iconImageColor])
                 case let str where str.contains("mail"):
-                    cell.filePreviewImageView?.image = utility.loadImage(named: "mail", colors: [NCBrandColor.shared.iconImageColor])
+                    filePreviewImageView.image = utility.loadImage(named: "mail", colors: [NCBrandColor.shared.iconImageColor])
                 case let str where str.contains("talk"):
-                    cell.filePreviewImageView?.image = UIImage(named: "talk-template")!.image(color: NCBrandColor.shared.getElement(account: metadata.account))
+                    filePreviewImageView.image = UIImage(named: "talk-template")!.image(color: NCBrandColor.shared.getElement(account: metadata.account))
                 case let str where str.contains("confirm"):
-                    cell.filePreviewImageView?.image = utility.loadImage(named: "arrow.right", colors: [NCBrandColor.shared.iconImageColor])
+                    filePreviewImageView.image = utility.loadImage(named: "arrow.right", colors: [NCBrandColor.shared.iconImageColor])
                 case let str where str.contains("pages"):
-                    cell.filePreviewImageView?.image = utility.loadImage(named: "doc.richtext", colors: [NCBrandColor.shared.iconImageColor])
+                    filePreviewImageView.image = utility.loadImage(named: "doc.richtext", colors: [NCBrandColor.shared.iconImageColor])
                 default:
-                    cell.filePreviewImageView?.image = utility.loadImage(named: "doc", colors: [NCBrandColor.shared.iconImageColor])
+                    filePreviewImageView.image = utility.loadImage(named: "doc", colors: [NCBrandColor.shared.iconImageColor])
                 }
                 if !metadata.iconUrl.isEmpty {
                     if let ownerId = getAvatarFromIconUrl(metadata: metadata) {
