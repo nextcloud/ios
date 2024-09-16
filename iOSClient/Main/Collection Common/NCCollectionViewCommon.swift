@@ -48,6 +48,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var selectOcId: [String] = []
     var metadataFolder: tableMetadata?
     var dataSource = NCCollectionViewDataSource()
+    let imageCache = NCImageCache.shared
     var richWorkspaceText: String?
     var sectionFirstHeader: NCSectionFirstHeader?
     var sectionFirstHeaderEmptyData: NCSectionFirstHeaderEmptyData?

@@ -202,7 +202,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         cell.fileOcId = metadata.ocId
         cell.fileOcIdTransfer = metadata.ocIdTransfer
         cell.fileUser = metadata.ownerId
-        cell.imageItem.image = NCImageCache.shared.getImageFile()
+        cell.imageItem.image = imageCache.getImageFile()
         cell.imageItem.backgroundColor = nil
         cell.labelTitle.text = metadata.fileNameView
         cell.labelTitle.textColor = NCBrandColor.shared.textColor
@@ -210,13 +210,13 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         var pathText = metadata.serverUrl.replacingOccurrences(of: serverUrlHome, with: "")
         if pathText.isEmpty { pathText = "/" }
         cell.labelPath.text = pathText
-        cell.setButtonMore(image: NCImageCache.shared.getImageButtonStop())
+        cell.setButtonMore(image: imageCache.getImageButtonStop())
 
         /// Image item
         if !metadata.iconName.isEmpty {
             cell.imageItem.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
         } else {
-            cell.imageItem.image = NCImageCache.shared.getImageFile()
+            cell.imageItem.image = imageCache.getImageFile()
         }
 
         /// Status and Info
