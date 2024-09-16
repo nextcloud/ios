@@ -38,6 +38,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         guard let metadata = self.dataSource.getMetadata(indexPath: indexPath),
               let cell = (cell as? NCCellProtocol) else { return }
         let existsPreview = utility.existsImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024)
+        let ext = NCGlobal.shared.getSizeExtension(width: self.sizeImage.width)
 
         func downloadAvatar(fileName: String, user: String, dispalyName: String?) {
             if let image = database.getImageAvatarLoaded(fileName: fileName) {
@@ -90,7 +91,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                         }
                         if metadata.hasPreview && metadata.status == self.global.metadataStatusNormal && !existsPreview {
                             for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { return }
-                            NCNetworking.shared.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, collectionView: collectionView, ext: NCGlobal.shared.getSizeExtension(width: self.sizeImage.width)))
+                            NCNetworking.shared.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, collectionView: collectionView, ext: ext))
                         }
                     }
 
