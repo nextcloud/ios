@@ -165,7 +165,7 @@ class NCCollectionViewDataSource: NSObject {
 
     // MARK: -
 
-    func getResultsMetadatas() -> [tableMetadata] {
+    func getResultMetadatas() -> [tableMetadata] {
         let validMetadatas = metadatas.filter { !$0.isInvalidated }
 
         return validMetadatas
@@ -229,8 +229,6 @@ class NCCollectionViewDataSource: NSObject {
         return (directories.count, files.count, size)
     }
 
-    // MARK: -
-
     func getMetadata(indexPath: IndexPath) -> tableMetadata? {
         let validMetadatas = metadatas.filter { !$0.isInvalidated }
 
@@ -255,6 +253,18 @@ class NCCollectionViewDataSource: NSObject {
         }
 
         return nil
+    }
+
+    func getResultMetadatas(indexPaths: [IndexPath]) -> [tableMetadata] {
+        var metadatas: [tableMetadata] = []
+        let validMetadatas = metadatas.filter { !$0.isInvalidated }
+
+        for indexPath in indexPaths {
+            if indexPath.row < validMetadatas.count {
+                metadatas.append(validMetadatas[indexPath.row])
+            }
+        }
+        return metadatas
     }
 
     // MARK: -

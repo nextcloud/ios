@@ -73,7 +73,7 @@ extension NCMedia {
             else { return }
             self.hasRunSearchMedia = true
 
-            let limit = collectionView.visibleCells.count * 2
+            var limit = collectionView.visibleCells.count * 2
             var lessDate = Date.distantFuture
             var greaterDate = Date.distantPast
             let countMetadatas = self.dataSource.getMetadatas().count
@@ -83,6 +83,10 @@ extension NCMedia {
 
             if countMetadatas == 0 {
                 self.collectionViewReloadData()
+            }
+
+            if limit == 0 {
+                limit = 300
             }
 
             if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }), !distant {

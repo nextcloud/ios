@@ -27,10 +27,10 @@ import NextcloudKit
 
 extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
     func selectAll() {
-        if !selectOcId.isEmpty, self.dataSource.getResultsMetadatas().count == selectOcId.count {
+        if !selectOcId.isEmpty, self.dataSource.getResultMetadatas().count == selectOcId.count {
             selectOcId = []
         } else {
-            selectOcId = self.dataSource.getResultsMetadatas().compactMap({ $0.ocId })
+            selectOcId = self.dataSource.getResultMetadatas().compactMap({ $0.ocId })
         }
         tabBarSelect.update(selectOcId: selectOcId, metadatas: getSelectedMetadatas(), userId: session.userId)
         collectionView.reloadData()
