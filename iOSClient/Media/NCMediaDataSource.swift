@@ -92,8 +92,8 @@ extension NCMedia {
                 }
             }
 
-            if collectionView.visibleCells.count + 100 > limit {
-                limit = collectionView.visibleCells.count + 100
+            if collectionView.visibleCells.count > limit {
+                limit = collectionView.visibleCells.count * 2
             }
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate), limit \(limit)")
