@@ -72,7 +72,7 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
 
         ]
 
-        imageRestore.image = NCUtility().loadImage(named: "arrow.circlepath", colors: [NCBrandColor.shared.iconImageColor])
+        imageRestore.image = UIImage(resource: .restoreFromDeleted).withTintColor(NCBrandColor.shared.iconImageColor)
         imageMore.image = NCUtility().loadImage(named: "trash", colors: [.red])
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true

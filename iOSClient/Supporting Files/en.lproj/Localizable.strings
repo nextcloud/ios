@@ -614,6 +614,7 @@
 "_media_viewvideo_show_"        = "Show only video";
 "_media_show_all_"              = "Show both";
 "_media_view_options_"          = "View options";
+"_media_options_"               = "Media options";
 "_media_by_created_date_"       = "Sort by created date";
 "_media_by_upload_date_"        = "Sort by upload date";
 "_media_by_modified_date_"      = "Sort by modified date";

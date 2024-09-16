@@ -28,12 +28,18 @@ import NextcloudKit
 import EasyTipView
 import JGProgressHUD
 
-class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCPhotoCellDelegate, NCSectionFirstHeaderDelegate, NCSectionFooterDelegate, NCSectionFirstHeaderEmptyDataDelegate, NCAccountSettingsModelDelegate, UIAdaptivePresentationControllerDelegate, UIContextMenuInteractionDelegate {
+class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCPhotoCellDelegate, NCSectionFirstHeaderDelegate, NCSectionFooterDelegate, NCSectionFirstHeaderEmptyDataDelegate, UIAdaptivePresentationControllerDelegate, UIContextMenuInteractionDelegate {
 
-	@IBOutlet weak var collectionView: UICollectionView!
+    static let screensToShowLogoInNavigationBar = [NCGlobal.shared.layoutViewFiles,
+                                                   NCGlobal.shared.layoutViewShares,
+                                                   NCGlobal.shared.layoutViewFavorite]
+    
+    @IBOutlet weak var collectionView: UICollectionView!
 	@IBOutlet weak var headerTop: NSLayoutConstraint?
 	@IBOutlet weak var collectionViewTop: NSLayoutConstraint?
 	@IBOutlet weak var fileActionsHeader: FileActionsHeader?
+    
+    var accountButtonFactory: AccountButtonFactory!
 
     var autoUploadFileName = ""
     var autoUploadDirectory = ""
@@ -179,6 +185,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.navigationController?.navigationItem.leftBarButtonItems?.first?.customView?.addInteraction(dropInteraction)
 
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
+        
+        accountButtonFactory = AccountButtonFactory(onAccountDetailsOpen: { [weak self] in self?.setEditMode(false) },
+                                                          presentVC: { [weak self] vc in self?.present(vc, animated: true) },
+                                                          onMenuOpened: { [weak self] in self?.dismissTip() })
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -188,6 +198,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         navigationController?.navigationBar.prefersLargeTitles = false
         navigationController?.setNavigationBarHidden(false, animated: true)
         navigationItem.title = titleCurrentFolder
+        
+        if Self.screensToShowLogoInNavigationBar.contains(layoutKey) && (self.navigationController?.viewControllers.count == 1) {
+            let logo = UIImage(resource: .ionosEasyStorageLogo).withTintColor(UIColor(resource: .NavigationBar.logoTint))
+            navigationItem.titleView = UIImageView(image: logo)
+        }
 
         isEditMode = false
         setNavigationLeftItems()
@@ -625,7 +640,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             return
         }
         
-        if layoutKey == NCGlobal.shared.layoutViewFiles {
+        if Self.screensToShowLogoInNavigationBar.contains(layoutKey) {
             navigationItem.leftItemsSupplementBackButton = true
             if navigationController?.viewControllers.count == 1 {
                 let burgerMenuItem = UIBarButtonItem(image: UIImage(resource: .BurgerMenu.bars),
@@ -693,22 +708,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
     
     private func createAccountButton() -> UIBarButtonItem {
-        let activeAccount = NCManageDatabase.shared.getActiveAccount()
-        let image = utility.loadUserImage(for: appDelegate.user, displayName: activeAccount?.displayName, userBaseUrl: appDelegate)
-        let accountButton = AccountSwitcherButton(type: .custom)
-        let accounts = NCManageDatabase.shared.getAllAccountOrderAlias()
-        
-        accountButton.setImage(image, for: .normal)
-        accountButton.setImage(image, for: .highlighted)
-        accountButton.semanticContentAttribute = .forceLeftToRight
-        accountButton.sizeToFit()
-        accountButton.action(for: .touchUpInside, { _ in
-           let accountSettingsModel = NCAccountSettingsModel(delegate: self)
-           let accountSettingsView = NCAccountSettingsView(model: accountSettingsModel)
-           let accountSettingsController = UIHostingController(rootView: accountSettingsView)
-           self.present(accountSettingsController, animated: true, completion: nil)
-        })
-        return UIBarButtonItem(customView: accountButton)
+        accountButtonFactory.createAccountButton()
     }
 
     func getNavigationTitle() -> String {
@@ -718,8 +718,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
         return userAlias
     }
-
-    func accountSettingsDidDismiss(tableAccount: tableAccount?) { }
 
     // MARK: - SEARCH
 
@@ -1339,15 +1337,4 @@ extension NCCollectionViewCommon {
 
 		return [list, grid, UIMenu(title: NSLocalizedString("_media_view_options_", comment: ""), children: [menuPhoto])]
 	}
-}
-
-// MARK: -
-
-private class AccountSwitcherButton: UIButton {
-    var onMenuOpened: (() -> Void)?
-
-    override func contextMenuInteraction(_ interaction: UIContextMenuInteraction, willDisplayMenuFor configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionAnimating?) {
-        super.contextMenuInteraction(interaction, willDisplayMenuFor: configuration, animator: animator)
-        onMenuOpened?()
-    }
 }
