@@ -92,7 +92,8 @@ extension NCMedia: UICollectionViewDataSource {
         if self.transitionColumns {
             cell.imageItem.image = getImage(metadata: metadata, width: width)
         } else {
-            DispatchQueue.global(qos: .background).async {
+            cell.imageItem.image = nil
+            DispatchQueue.global(qos: .userInteractive).async {
                 let image = self.getImage(metadata: metadata, width: width)
                 DispatchQueue.main.async {
                     cell.imageItem.image = image

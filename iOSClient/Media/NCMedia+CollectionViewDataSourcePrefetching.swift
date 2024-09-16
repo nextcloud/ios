@@ -29,7 +29,7 @@ extension NCMedia: UICollectionViewDataSourcePrefetching {
         let metadatas = dataSource.getMetadatas(indexPaths: indexPaths)
         let width = self.collectionView.frame.size.width / CGFloat(self.numberOfColumns)
         let ext = NCGlobal.shared.getSizeExtension(width: width)
-        let canRemove = hiddenCellMetadats.count >= imageCache.countLimit / 4
+        let canRemove = hiddenCellMetadats.count >= imageCache.countLimit / 10
 
         DispatchQueue.global(qos: .userInteractive).async {
             if self.imageCache.cacheImage.count == self.imageCache.countLimit, canRemove {
