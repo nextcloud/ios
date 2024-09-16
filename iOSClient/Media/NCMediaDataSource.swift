@@ -73,7 +73,7 @@ extension NCMedia {
             else { return }
             self.hasRunSearchMedia = true
 
-            var limit = 300
+            let limit = collectionView.visibleCells.count * 2
             var lessDate = Date.distantFuture
             var greaterDate = Date.distantPast
             let countMetadatas = self.dataSource.getMetadatas().count
@@ -108,10 +108,6 @@ extension NCMedia {
                         greaterDate = Date.distantPast
                     }
                 }
-            }
-
-            if collectionView.visibleCells.count > limit {
-                limit = collectionView.visibleCells.count * 2
             }
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate), limit \(limit)")
