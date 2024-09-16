@@ -72,7 +72,7 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
 
         ]
 
-        imageRestore.image = NCUtility().loadImage(named: "arrow.circlepath", colors: [NCBrandColor.shared.iconImageColor])
+        imageRestore.image = UIImage(resource: .restoreFromDeleted).withTintColor(NCBrandColor.shared.iconImageColor)
         imageMore.image = NCUtility().loadImage(named: "trash", colors: [.red])
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
@@ -107,9 +107,9 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
             backgroundView = nil
         }
         if status {
-			imageSelect.image = NCImageCache.images.checkedYes?.image(color: NCBrandColor.shared.brandElement)
+            imageSelect.image = NCImageCache.images.checkedYes?.withTintColor(NCBrandColor.shared.brandElement)
         } else {
-            imageSelect.image = NCImageCache.images.checkedNo?.image(color: NCBrandColor.shared.brandElement)
+            imageSelect.image = NCImageCache.images.checkedNo?.withTintColor(UIColor(resource: .FileSelection.listItemDeselected))
         }
 
     }

@@ -33,7 +33,6 @@ extension NCMedia {
     func collectionViewReloadData() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             self.collectionView.reloadData()
-            self.setTitleDate()
         }
     }
 
@@ -85,7 +84,6 @@ extension NCMedia {
         }
 
         if let lessDate, let greaterDate {
-            activityIndicator.startAnimating()
             loadingTask = Task.detached {
                 if countMetadatas == 0 {
                     await self.collectionViewReloadData()
@@ -109,7 +107,6 @@ extension NCMedia {
                 }
                 Task { @MainActor in
                     self.loadingTask = nil
-                    self.activityIndicator.stopAnimating()
                 }
             }
         }

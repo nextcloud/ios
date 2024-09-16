@@ -23,7 +23,10 @@ class FileActionsHeader: UIView {
 	@IBOutlet weak private var btnSelect: UIButton?
 	@IBOutlet weak private var btnViewMode: UIButton?
 	
-	@IBAction func onBtnSelectTap(_ sender: Any) {
+    @IBOutlet weak var btnSelectAndBtnViewModeSpacing: NSLayoutConstraint!
+    @IBOutlet weak var btnSelectAndSuperViewSpacing: NSLayoutConstraint!
+    
+    @IBAction func onBtnSelectTap(_ sender: Any) {
 		setIsEditingMode(isEditingMode: true)
 		onSelectModeChange?(true)
 	}
@@ -34,8 +37,8 @@ class FileActionsHeader: UIView {
 	@IBOutlet weak private var btnCloseSelection: UIButton?
 	@IBOutlet weak private var lblSelectionDescription: UILabel?
 
-	private var grayButtonTintColor: UIColor? {
-		UIColor(named: "FileActionsHeader/GrayButtonTint")
+	private var grayButtonTintColor: UIColor {
+        UIColor(resource: .FileActionsHeader.grayButtonTint)
 	}
 	
 	@IBAction func onBtnSelectAllTap(_ sender: Any) {
@@ -88,6 +91,12 @@ class FileActionsHeader: UIView {
 		btnViewMode?.showsMenuAsPrimaryAction = true
 		btnViewMode?.setImage(image?.templateRendered(), for: .normal)
 	}
+    
+    func showViewModeButton(_ show: Bool) {
+        btnViewMode?.isHidden = !show
+        btnSelectAndBtnViewModeSpacing.isActive = show
+        btnSelectAndSuperViewSpacing.isActive = !show
+    }
 	
 	func setIsEditingMode(isEditingMode: Bool) {
 		vHeaderEditingMode?.isHidden = !isEditingMode
@@ -96,29 +105,32 @@ class FileActionsHeader: UIView {
 	
 	func setSelectionState(selectionState: FileActionsHeaderSelectionState) {
 		var textDescription = ""
-		var imageName = ""
+        var imageResource: ImageResource = .FileSelection.listItemDeselected
+        var selectAllImageColor: UIColor = .clear
 		
 		// MARK: Files Header
 		switch selectionState {
 		case .none:
 			textDescription = NSLocalizedString("_select_selectionLabel_selectAll", comment: "")
-			imageName = "FileSelection/list_item_deselected"
+            imageResource = .FileSelection.listItemDeselected
+            selectAllImageColor = grayButtonTintColor
 		case .some(let count):
 			textDescription = selectionDescription(for: count)
-			imageName = "FileSelection/list_item_some_selected"
+            imageResource = .FileSelection.listItemSomeSelected
+            selectAllImageColor = NCBrandColor.shared.brandElement
 		case .all:
 			textDescription = NSLocalizedString("_select_selectionLabel_deselectAll", comment: "")
-			imageName = "FileSelection/list_item_selected"
+            imageResource = .FileSelection.listItemSelected
+            selectAllImageColor = NCBrandColor.shared.brandElement
 		}
 
 		lblSelectionDescription?.text = textDescription
 		
-		var selectAllImage = UIImage(named: imageName)
-		var closeImage = UIImage(named: "FileSelection/selection_mode_close")
+		var selectAllImage = UIImage(resource: imageResource)
+        var closeImage = UIImage(resource: .FileSelection.selectionModeClose)
 
-        let color = NCBrandColor.shared.brandElement
-        closeImage = closeImage?.image(color: color)
-        selectAllImage = selectAllImage?.image(color: color)
+        closeImage = closeImage.withTintColor(grayButtonTintColor)
+        selectAllImage = selectAllImage.withTintColor(selectAllImageColor)
 
 		btnSelectAll?.setBackgroundImage(selectAllImage, for: .normal)
 		btnCloseSelection?.setBackgroundImage(closeImage, for: .normal)
