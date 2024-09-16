@@ -47,7 +47,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var isEditMode = false
     var selectOcId: [String] = []
     var metadataFolder: tableMetadata?
-    var dataSource = NCDataSource()
+    var dataSource = NCCollectionViewDataSource()
     var richWorkspaceText: String?
     var sectionFirstHeader: NCSectionFirstHeader?
     var sectionFirstHeaderEmptyData: NCSectionFirstHeaderEmptyData?
@@ -185,7 +185,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         longPressedGesture.delaysTouchesBegan = true
         collectionView.addGestureRecognizer(longPressedGesture)
 
-        // Drag & Drop
+        collectionView.prefetchDataSource = self
         collectionView.dragInteractionEnabled = true
         collectionView.dragDelegate = self
         collectionView.dropDelegate = self
@@ -1040,7 +1040,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             } providers: { _, searchProviders in
                 self.providers = searchProviders
                 self.searchResults = []
-                self.dataSource = NCDataSource(metadatas: [], layoutForView: self.layoutForView, providers: self.providers, searchResults: self.searchResults)
+                self.dataSource = NCCollectionViewDataSource(metadatas: [], layoutForView: self.layoutForView, providers: self.providers, searchResults: self.searchResults)
             } update: { _, _, searchResult, metadatas in
                 guard let metadatas, !metadatas.isEmpty, self.isSearchingMode, let searchResult else { return }
                 NCNetworking.shared.unifiedSearchQueue.addOperation(NCCollectionViewUnifiedSearch(collectionViewCommon: self, metadatas: metadatas, searchResult: searchResult))
@@ -1058,7 +1058,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     self.collectionView.reloadData()
                 }
                 guard let metadatas, error == .success, self.isSearchingMode else { return }
-                self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: self.layoutForView, providers: self.providers, searchResults: self.searchResults)
+                self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: self.layoutForView, providers: self.providers, searchResults: self.searchResults)
             }
         }
     }

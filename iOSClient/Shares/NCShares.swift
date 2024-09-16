@@ -56,7 +56,7 @@ class NCShares: NCCollectionViewCommon {
         var metadatas: [tableMetadata] = []
 
         func reload() {
-            self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: layoutForView)
+            self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView)
             self.refreshControl.endRefreshing()
             self.collectionView.reloadData()
         }

@@ -55,7 +55,7 @@ class NCShareExtension: UIViewController {
     let keyLayout = NCGlobal.shared.layoutViewShareExtension
     var metadataFolder: tableMetadata?
     var dataSourceTask: URLSessionTask?
-    var dataSource = NCDataSource()
+    var dataSource = NCCollectionViewDataSource()
     let heightRowTableView: CGFloat = 50
     let heightCommandView: CGFloat = 170
     var autoUploadFileName = ""

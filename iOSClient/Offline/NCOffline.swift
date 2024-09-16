@@ -72,7 +72,7 @@ class NCOffline: NCCollectionViewCommon {
             metadatas = self.database.getResultsMetadatasPredicate(self.defaultPredicate, layoutForView: layoutForView)
         }
 
-        self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: layoutForView)
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView)
     }
 
     override func reloadDataSourceNetwork(withQueryDB: Bool = false) {

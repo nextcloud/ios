@@ -1,5 +1,5 @@
 //
-//  NCDataSource.swift
+//  NCCollectionViewDataSource.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 06/09/2020.
@@ -24,7 +24,7 @@
 import UIKit
 import NextcloudKit
 
-class NCDataSource: NSObject {
+class NCCollectionViewDataSource: NSObject {
     private let utilityFileSystem = NCUtilityFileSystem()
     private let global = NCGlobal.shared
     private var sectionsValue: [String] = []

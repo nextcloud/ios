@@ -31,7 +31,7 @@ extension NCShareExtension {
         let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", session.account, serverUrl)
         let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: NCDBLayoutForView())
 
-        self.dataSource = NCDataSource(metadatas: metadatas)
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas)
 
         if withLoadFolder {
             loadFolder()

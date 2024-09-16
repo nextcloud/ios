@@ -57,16 +57,15 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
 
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
                 NCUtility().createImage(metadata: self.metadata, data: data)
+                let image = self.utility.getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: self.ext)
 
                 DispatchQueue.main.async {
                     for case let cell as NCCellProtocol in collectionView.visibleCells {
-                        if cell.fileOcId == self.metadata.ocId,
-                           let filePreviewImageView = cell.filePreviewImageView,
-                           let image = self.utility.getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: self.ext) {
-                            cell.filePreviewImageView?.contentMode = .scaleAspectFill
+                        if cell.fileOcId == self.metadata.ocId, let filePreviewImageView = cell.filePreviewImageView {
+                            filePreviewImageView.contentMode = .scaleAspectFill
                             if self.metadata.hasPreviewBorder {
-                                cell.filePreviewImageView?.layer.borderWidth = 0.2
-                                cell.filePreviewImageView?.layer.borderColor = UIColor.systemGray3.cgColor
+                                filePreviewImageView.layer.borderWidth = 0.2
+                                filePreviewImageView.layer.borderColor = UIColor.systemGray3.cgColor
                             }
                             UIView.transition(with: filePreviewImageView,
                                               duration: 0.75,

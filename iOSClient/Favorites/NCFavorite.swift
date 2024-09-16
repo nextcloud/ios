@@ -61,7 +61,7 @@ class NCFavorite: NCCollectionViewCommon {
         }
 
         let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: layoutForView)
-        self.dataSource = NCDataSource(metadatas: metadatas, layoutForView: layoutForView)
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView)
     }
 
     override func reloadDataSourceNetwork(withQueryDB: Bool = false) {

@@ -66,7 +66,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     private var serverUrlPush = ""
     private var metadataFolder = tableMetadata()
     private var overwrite = true
-    private var dataSource = NCDataSource()
+    private var dataSource = NCCollectionViewDataSource()
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
     private var backgroundImageView = UIImageView()
@@ -485,7 +485,7 @@ extension NCSelect {
         }
 
         let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: NCDBLayoutForView())
-        self.dataSource = NCDataSource(metadatas: metadatas)
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas)
 
         if withLoadFolder {
             loadFolder()

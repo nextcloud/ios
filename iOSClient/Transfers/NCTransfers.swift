@@ -285,7 +285,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         self.dataSource.removeAll()
 
         if let metadatas = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal), sortedByKeyPath: "sessionDate", ascending: true) {
-            self.dataSource = NCDataSource(metadatas: Array(metadatas), layoutForView: layoutForView)
+            self.dataSource = NCCollectionViewDataSource(metadatas: Array(metadatas), layoutForView: layoutForView)
         }
 
         if self.dataSource.isEmpty() {
