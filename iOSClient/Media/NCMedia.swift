@@ -256,7 +256,7 @@ class NCMedia: UIViewController {
               let error = userInfo["error"] as? NKError else { return }
 
         dataSource.removeMetadata(ocId)
-        collectionView.reloadData()
+        collectionViewReloadData()
 
         if error != .success {
             NCContentPresenter().showError(error: error)
@@ -277,8 +277,7 @@ class NCMedia: UIViewController {
         if !fileExists {
             dataSource.removeMetadata([ocId])
             database.deleteMetadataOcId(ocId)
-            collectionView.reloadData()
-            setTitleDate()
+            collectionViewReloadData()
         }
     }
 
@@ -290,7 +289,7 @@ class NCMedia: UIViewController {
         if error == .success, let metadata = database.getMetadataFromOcId(ocId),
            metadata.isImageOrVideo {
             dataSource.addMetadata(metadata)
-            collectionView.reloadData()
+            collectionViewReloadData()
         }
     }
 
@@ -302,10 +301,10 @@ class NCMedia: UIViewController {
         if error == .success, let metadata = database.getMetadataFromOcId(ocId) {
             if metadata.isImage {
                 dataSource.addMetadata(metadata)
-                collectionView.reloadData()
+                collectionViewReloadData()
             } else if let metadataImage = self.database.getResultMetadata(predicate: NSPredicate(format: "account == %@ AND fileId == %@", metadata.account, metadata.livePhotoFile)) {
                 dataSource.addMetadata(metadataImage)
-                collectionView.reloadData()
+                collectionViewReloadData()
             }
         }
     }

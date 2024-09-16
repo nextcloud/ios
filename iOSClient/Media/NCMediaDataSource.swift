@@ -30,11 +30,15 @@ extension NCMedia {
             if let metadatas = self.database.getResultsMetadatas(predicate: self.getPredicate(filterLivePhotoFile: true), sortedByKeyPath: "date") {
                 self.dataSource = NCMediaDataSource(metadatas: metadatas)
             }
-            DispatchQueue.main.async {
-                self.collectionView.reloadData()
-                self.refreshControl.endRefreshing()
-                self.setTitleDate()
-            }
+            self.collectionViewReloadData()
+        }
+    }
+
+    func collectionViewReloadData() {
+        DispatchQueue.main.async {
+            self.refreshControl.endRefreshing()
+            self.collectionView.reloadData()
+            self.setTitleDate()
         }
     }
 
@@ -60,8 +64,7 @@ extension NCMedia {
             var lastCellDate: Date?
 
             if countMetadatas == 0 {
-                collectionView.reloadData()
-                setTitleDate()
+                self.collectionViewReloadData()
             }
 
             if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }), !distant {
@@ -130,8 +133,7 @@ extension NCMedia {
                             if lessDate == Date.distantFuture, greaterDate == Date.distantPast, metadatas.count == 0 {
                                 DispatchQueue.main.async {
                                     self.dataSource.removeAll()
-                                    self.collectionView.reloadData()
-                                    self.setTitleDate()
+                                    self.collectionViewReloadData()
                                 }
                             }
                         }
@@ -141,8 +143,7 @@ extension NCMedia {
                 } else {
                     DispatchQueue.main.async {
                         NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(error.errorCode) " + error.errorDescription)
-                        self.collectionView.reloadData()
-                        self.setTitleDate()
+                        self.collectionViewReloadData()
                     }
                 }
                 DispatchQueue.main.async {

@@ -150,8 +150,7 @@ extension NCMedia {
                 self.layoutType = NCGlobal.shared.mediaLayoutRatio
             }
             self.createMenu()
-            self.collectionView.reloadData()
-            self.setTitleDate()
+            self.collectionViewReloadData()
         }
 
         let viewOptionsMedia = UIMenu(title: "", options: .displayInline, children: [
@@ -171,8 +170,7 @@ extension NCMedia {
                 self.numberOfColumns += 1
                 NCManageDatabase.shared.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: self.numberOfColumns)
                 self.createMenu()
-                self.collectionView.reloadData()
-                self.setTitleDate()
+                self.collectionViewReloadData()
             })
         }
 
@@ -181,8 +179,7 @@ extension NCMedia {
                 self.numberOfColumns -= 1
                 NCManageDatabase.shared.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: self.numberOfColumns)
                 self.createMenu()
-                self.collectionView.reloadData()
-                self.setTitleDate()
+                self.collectionViewReloadData()
             })
         }
 
@@ -254,8 +251,7 @@ extension NCMedia {
                     self.layoutType = NCGlobal.shared.mediaLayoutRatio
                 }
                 self.createMenu()
-                self.collectionView.reloadData()
-                self.setTitleDate()
+                self.collectionViewReloadData()
             }
         ])
 
