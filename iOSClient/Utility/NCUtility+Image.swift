@@ -380,4 +380,9 @@ extension NCUtility {
 
         return(statusImage, statusMessage, descriptionMessage)
     }
+
+    func memorySizeOfImage(_ image: UIImage) -> Int {
+        guard let imageData = image.pngData() else { return 0 }
+        return imageData.count
+    }
 }

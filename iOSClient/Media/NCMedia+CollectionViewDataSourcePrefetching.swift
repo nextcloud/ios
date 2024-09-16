@@ -29,20 +29,22 @@ extension NCMedia: UICollectionViewDataSourcePrefetching {
         let metadatas = dataSource.getMetadatas(indexPaths: indexPaths)
         let width = self.collectionView.frame.size.width / CGFloat(self.numberOfColumns)
         let ext = NCGlobal.shared.getSizeExtension(width: width)
+        let canRemove = hiddenCellMetadats.count >= imageCache.countLimit / 4
 
-        let index = min(hiddenCellMetadats.count, imageCache.countLimit / 2)
-        if imageCache.cacheImage.count == imageCache.countLimit {
-            for i in 0 ..< index {
-                let metadata = hiddenCellMetadats[i]
-                self.imageCache.removeImageCache(ocId: metadata.ocId, etag: metadata.etag)
+        DispatchQueue.global(qos: .userInteractive).async {
+            if self.imageCache.cacheImage.count == self.imageCache.countLimit, canRemove {
+                for i in 0 ..< self.hiddenCellMetadats.count - 1 {
+                    let metadata = self.hiddenCellMetadats[i]
+                    self.imageCache.removeImageCache(ocId: metadata.ocId, etag: metadata.etag)
+                }
+                self.hiddenCellMetadats.removeAll()
             }
-            hiddenCellMetadats = Array(hiddenCellMetadats.dropFirst(index))
-        }
 
-        metadatas.forEach { metadata in
-            if self.imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) == nil,
-               let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
-                self.imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext)
+            metadatas.forEach { metadata in
+                if self.imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) == nil,
+                   let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
+                    self.imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext)
+                }
             }
         }
     }
