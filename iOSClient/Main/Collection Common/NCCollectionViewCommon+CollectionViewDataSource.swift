@@ -43,8 +43,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
     }
 
-
-
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         var cell: NCCellProtocol & UICollectionViewCell
         let permissions = NCPermissions()
@@ -123,6 +121,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         cell.titleInfoTrailingDefault()
 
         /// CONTENT MODE
+        /// 
         filePreviewImageView.layer.borderWidth = 0
         if isLayoutPhoto {
             if metadata.isImageOrVideo, existsPreview {
