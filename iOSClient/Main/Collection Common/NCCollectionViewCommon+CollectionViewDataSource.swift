@@ -77,10 +77,10 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
             if metadata.name == global.appName {
                 let ext = global.getSizeExtension(width: self.sizeImage.width)
+                var image = self.imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext)
 
-                DispatchQueue.global(qos: .userInteractive).async {
-                    var image = self.imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext)
-                    if image == nil { image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) }
+                if image == nil {
+                    image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext)
                     if let image {
                         self.imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext)
                     } else {
@@ -94,11 +94,10 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                             NCNetworking.shared.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, collectionView: collectionView, ext: ext))
                         }
                     }
-
-                    DispatchQueue.main.async {
-                        cell.filePreviewImageView?.image = image
-                    }
                 }
+
+                cell.filePreviewImageView?.image = image
+
             } else {
                 /// APP NAME - UNIFIED SEARCH
                 switch metadata.iconName {
