@@ -26,17 +26,14 @@ import UIKit
 import NextcloudKit
 
 extension NCMedia {
-    @IBAction func selectOrCancelButtonPressed(_ sender: UIButton) {
-        isEditMode = !isEditMode
-        setSelectcancelButton()
-    }
-
     func setEditMode(_ editMode: Bool) {
         isEditMode = editMode
-        setSelectcancelButton()
+        updateHeadersView()
+        updateTabBarOnEditModeChange()
+        setNavigationLeftItems()
     }
 
-    func setSelectcancelButton() {
+    func updateTabBarOnEditModeChange() {
         selectOcId.removeAll()
         tabBarSelect.selectCount = selectOcId.count
         if let visibleCells = self.collectionView?.indexPathsForVisibleItems.compactMap({ self.collectionView?.cellForItem(at: $0) }) {
@@ -156,8 +153,7 @@ extension NCMedia: NCMediaSelectTabBarDelegate {
                     }
                     NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocIds, "onlyLocalCache": false, "error": error])
                 }
-                self.isEditMode = false
-                self.setSelectcancelButton()
+                self.setEditMode(false)
             })
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { (_: UIAlertAction) in })
             present(alertController, animated: true, completion: { })

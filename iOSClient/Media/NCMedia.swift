@@ -219,7 +219,7 @@ class NCMedia: UIViewController {
         timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchMediaUI), userInfo: nil, repeats: false)
     }
     
-    private func updateHeadersView() {
+    func updateHeadersView() {
         fileActionsHeader?.showViewModeButton(false)
         fileActionsHeader?.setIsEditingMode(isEditingMode: isEditMode)
         updateHeadersMenu()
@@ -252,6 +252,10 @@ class NCMedia: UIViewController {
     }
     
     func setNavigationLeftItems() {
+        if isEditMode {
+            navigationItem.setLeftBarButtonItems(nil, animated: true)
+            return
+        }
         let burgerMenuItem = UIBarButtonItem(image: UIImage(resource: .BurgerMenu.bars),
                                              style: .plain,
                                              action: { [weak self] in
