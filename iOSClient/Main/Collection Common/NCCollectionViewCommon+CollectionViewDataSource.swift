@@ -47,6 +47,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 NCNetworking.shared.downloadAvatar(user: user, dispalyName: dispalyName, fileName: fileName, account: metadata.account, cell: cell, view: collectionView)
             }
         }
+
         /// CONTENT MODE
         cell.filePreviewImageView?.layer.borderWidth = 0
         if isLayoutPhoto {
@@ -63,8 +64,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
         }
         cell.fileAvatarImageView?.contentMode = .center
+
         /// THUMBNAIL
         if !metadata.directory {
+            cell.filePreviewImageView?.image = nil
+
             if metadata.hasPreviewBorder {
                 cell.filePreviewImageView?.layer.borderWidth = 0.2
                 cell.filePreviewImageView?.layer.borderColor = UIColor.lightGray.cgColor
@@ -72,21 +76,26 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
             if metadata.name == global.appName {
                 let ext = global.getSizeExtension(width: self.sizeImage.width)
-                if let image = imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
-                    cell.filePreviewImageView?.image = image
-                } else if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
-                    cell.filePreviewImageView?.image = image
-                }
 
-                if cell.filePreviewImageView?.image == nil {
-                    if metadata.iconName.isEmpty {
-                        cell.filePreviewImageView?.image = imageCache.getImageFile()
+                DispatchQueue.global(qos: .userInteractive).async {
+                    var image = self.imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext)
+                    if image == nil { image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) }
+                    if let image {
+                        self.imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext)
                     } else {
-                        cell.filePreviewImageView?.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
+                        if metadata.iconName.isEmpty {
+                            image = self.imageCache.getImageFile()
+                        } else {
+                            image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
+                        }
+                        if metadata.hasPreview && metadata.status == self.global.metadataStatusNormal && !existsPreview {
+                            for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { return }
+                            NCNetworking.shared.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, collectionView: collectionView, ext: NCGlobal.shared.getSizeExtension(width: self.sizeImage.width)))
+                        }
                     }
-                    if metadata.hasPreview && metadata.status == global.metadataStatusNormal && !existsPreview {
-                        for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId { return }
-                        NCNetworking.shared.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, collectionView: collectionView, ext: NCGlobal.shared.getSizeExtension(width: self.sizeImage.width)))
+
+                    DispatchQueue.main.async {
+                        cell.filePreviewImageView?.image = image
                     }
                 }
             } else {
@@ -185,8 +194,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         cell.fileFavoriteImage?.image = nil
         cell.fileSharedImage?.image = nil
         cell.fileMoreImage?.image = nil
-        cell.filePreviewImageView?.image = nil
-        cell.filePreviewImageView?.backgroundColor = nil
         cell.fileAccount = metadata.account
         cell.fileOcId = metadata.ocId
         cell.fileOcIdTransfer = metadata.ocIdTransfer
