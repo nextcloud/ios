@@ -102,9 +102,9 @@ class NCGlobal: NSObject {
         guard let width else { return previewExt512 }
 
         switch (width * 3) {
-        case 0...120:
+        case 0...119:
             return previewExt64
-        case 121...192:
+        case 120...192:
             return previewExt128
         case 193...384:
              return previewExt256
