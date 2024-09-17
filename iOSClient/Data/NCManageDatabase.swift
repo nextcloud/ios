@@ -63,7 +63,8 @@ class NCManageDatabase: NSObject {
         let bundlePathExtension: String = bundleUrl.pathExtension
         let bundleFileName: String = (bundleUrl.path as NSString).lastPathComponent
         let isAppex: Bool = bundlePathExtension == "appex"
-        var objectTypesAppex = [tableMetadata.self,
+        var objectTypesAppex = [NCKeyValue.self,
+                                tableMetadata.self,
                                 tableLocalFile.self,
                                 tableDirectory.self,
                                 tableTag.self,
