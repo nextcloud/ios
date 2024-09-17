@@ -353,7 +353,7 @@ extension NCNetworking {
             self.database.deleteLocalFileOcId(metadata.ocId)
             utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
             #if !EXTENSION
-            NCImageCache.shared.removeImageCache(ocId: metadata.ocId, etag: metadata.etag)
+            NCImageCache.shared.removeImageCache(ocIdPlusEtag: metadata.ocId + metadata.etag)
             #endif
         }
 
@@ -440,7 +440,7 @@ extension NCNetworking {
                 try FileManager.default.removeItem(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
             } catch { }
             #if !EXTENSION
-            NCImageCache.shared.removeImageCache(ocId: metadata.ocId, etag: metadata.etag)
+            NCImageCache.shared.removeImageCache(ocIdPlusEtag: metadata.ocId + metadata.etag)
             #endif
 
             self.database.deleteVideo(metadata: metadata)

@@ -80,7 +80,7 @@ class NCMedia: UIViewController {
         }
     }
 
-    var hiddenCellMetadats: [NCMediaDataSource.Metadata] = []
+    var hiddenCellMetadats: [String] = []
 
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: tabBarController)
