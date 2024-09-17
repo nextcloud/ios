@@ -31,8 +31,7 @@ extension NCMedia: UICollectionViewDataSourcePrefetching {
         let ext = NCGlobal.shared.getSizeExtension(width: width)
 
         DispatchQueue.global(qos: .userInteractive).async {
-            for i in 0 ..< self.hiddenCellMetadats.count - 1 {
-                let ocIdPlusEtag = self.hiddenCellMetadats[i]
+            for ocIdPlusEtag in self.hiddenCellMetadats {
                 self.imageCache.removeImageCache(ocIdPlusEtag: ocIdPlusEtag)
             }
             self.hiddenCellMetadats.removeAll()
