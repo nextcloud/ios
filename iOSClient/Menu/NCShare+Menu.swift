@@ -45,7 +45,7 @@ extension NCShare {
         actions.append(
             NCMenuAction(
                 title: NSLocalizedString("_details_", comment: ""),
-                icon: NCImagesRepository.menuIconEdit,
+                icon: NCImagesRepository.menuIconDetails,
                 action: { _ in
                     guard
                         let advancePermission = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "NCShareAdvancePermission") as? NCShareAdvancePermission,
