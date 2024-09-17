@@ -255,13 +255,13 @@ class NCCollectionViewDataSource: NSObject {
         return nil
     }
 
-    func getResultMetadatas(indexPaths: [IndexPath]) -> [tableMetadata] {
+    func getMetadatas(indexPaths: [IndexPath]) -> [tableMetadata] {
         var metadatas: [tableMetadata] = []
-        let validMetadatas = metadatas.filter { !$0.isInvalidated }
+        let validMetadatas = self.metadatas.filter { !$0.isInvalidated }
 
         for indexPath in indexPaths {
             if indexPath.row < validMetadatas.count {
-                metadatas.append(validMetadatas[indexPath.row])
+                metadatas.append(tableMetadata(value: validMetadatas[indexPath.row]))
             }
         }
         return metadatas
