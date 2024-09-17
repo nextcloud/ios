@@ -43,24 +43,23 @@ class NCMediaDownloadThumbnail: ConcurrentOperation {
     }
 
     override func start() {
-        guard !isCancelled else { return self.finish() }
+        guard !isCancelled, let tableMetadata = NCManageDatabase.shared.getMetadataFromOcId(self.metadata.ocId), let media = self.media else { return self.finish() }
         var etagResource: String?
 
         if utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag) {
-            etagResource = metadata.etagResource
+            etagResource = tableMetadata.etagResource
         }
 
         NextcloudKit.shared.downloadPreview(fileId: metadata.fileId,
                                             etag: etagResource,
-                                            account: metadata.account,
+                                            account: media.session.account,
                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, data, _, _, etag, error in
             if error == .success, let data, let collectionView = self.collectionView {
 
                 self.media?.filesExists.append(self.metadata.ocId)
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
-                if let metadata = NCManageDatabase.shared.getMetadataFromOcId(self.metadata.ocId) {
-                    NCUtility().createImage(metadata: metadata, data: data)
-                }
+                NCUtility().createImage(metadata: tableMetadata, data: data)
+
                 let image = self.media?.getImage(metadata: self.metadata, width: self.width)
 
                 DispatchQueue.main.async {

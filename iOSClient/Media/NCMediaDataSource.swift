@@ -194,46 +194,34 @@ extension NCMedia {
 
 public class NCMediaDataSource: NSObject {
     public class Metadata: NSObject {
-        let account: String
         let date: Date
         let etag: String
-        let etagResource: String
         let fileId: String
         let imageSize: CGSize
         let isImage: Bool
-        let isNotFlaggedAsLivePhotoByServer: Bool
         let isLivePhoto: Bool
         let isVideo: Bool
         let ocId: String
         let serverUrl: String
-        let user: String
 
-        init(account: String,
-             date: Date,
+        init(date: Date,
              etag: String,
              fileId: String,
-             etagResource: String,
              imageSize: CGSize,
              isImage: Bool,
-             isNotFlaggedAsLivePhotoByServer: Bool,
              isLivePhoto: Bool,
              isVideo: Bool,
              ocId: String,
-             serverUrl: String,
-             user: String) {
-            self.account = account
+             serverUrl: String) {
             self.date = date
             self.etag = etag
             self.fileId = fileId
-            self.etagResource = etagResource
             self.imageSize = imageSize
             self.isImage = isImage
-            self.isNotFlaggedAsLivePhotoByServer = isNotFlaggedAsLivePhotoByServer
             self.isLivePhoto = isLivePhoto
             self.isVideo = isVideo
             self.ocId = ocId
             self.serverUrl = serverUrl
-            self.user = user
         }
     }
 
@@ -252,19 +240,15 @@ public class NCMediaDataSource: NSObject {
     }
 
     internal func appendMetadata(_ metadata: tableMetadata) {
-        self.metadatas.append(Metadata(account: metadata.account,
-                                       date: metadata.date as Date,
+        self.metadatas.append(Metadata(date: metadata.date as Date,
                                        etag: metadata.etag,
                                        fileId: metadata.fileId,
-                                       etagResource: metadata.etagResource,
                                        imageSize: CGSize(width: metadata.width, height: metadata.height),
                                        isImage: metadata.classFile == NKCommon.TypeClassFile.image.rawValue,
-                                       isNotFlaggedAsLivePhotoByServer: !metadata.isFlaggedAsLivePhotoByServer,
                                        isLivePhoto: !metadata.livePhotoFile.isEmpty,
                                        isVideo: metadata.classFile == NKCommon.TypeClassFile.video.rawValue,
                                        ocId: metadata.ocId,
-                                       serverUrl: metadata.serverUrl,
-                                       user: metadata.urlBase))
+                                       serverUrl: metadata.serverUrl))
     }
 
     // MARK: -

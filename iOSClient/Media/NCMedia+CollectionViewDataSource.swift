@@ -110,7 +110,7 @@ extension NCMedia: UICollectionViewDataSource {
 
         cell.date = metadata.date as Date
         cell.ocId = metadata.ocId
-        cell.account = metadata.account
+        cell.account = self.session.account
 
         if metadata.isVideo {
            cell.imageStatus.image = playImage
