@@ -50,7 +50,7 @@ class NCMediaDownloadThumbnail: ConcurrentOperation {
             etagResource = tableMetadata.etagResource
         }
 
-        NextcloudKit.shared.downloadPreview(fileId: metadata.fileId,
+        NextcloudKit.shared.downloadPreview(fileId: tableMetadata.fileId,
                                             etag: etagResource,
                                             account: media.session.account,
                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, data, _, _, etag, error in

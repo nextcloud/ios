@@ -80,7 +80,7 @@ class NCMedia: UIViewController {
         }
     }
 
-    var hiddenCellMetadats: [NCMediaDataSource.Metadata] = []
+    var hiddenCellMetadats: [String] = []
 
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: tabBarController)
@@ -364,7 +364,9 @@ class NCMedia: UIViewController {
             imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext)
             returnImage = image
         } else if NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
-            NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnail(metadata: metadata, collectionView: self.collectionView, media: self))
+            DispatchQueue.main.async {
+                NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnail(metadata: metadata, collectionView: self.collectionView, media: self))
+            }
         }
 
         return returnImage

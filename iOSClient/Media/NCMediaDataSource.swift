@@ -196,32 +196,26 @@ public class NCMediaDataSource: NSObject {
     public class Metadata: NSObject {
         let date: Date
         let etag: String
-        let fileId: String
         let imageSize: CGSize
         let isImage: Bool
         let isLivePhoto: Bool
         let isVideo: Bool
         let ocId: String
-        let serverUrl: String
 
         init(date: Date,
              etag: String,
-             fileId: String,
              imageSize: CGSize,
              isImage: Bool,
              isLivePhoto: Bool,
              isVideo: Bool,
-             ocId: String,
-             serverUrl: String) {
+             ocId: String) {
             self.date = date
             self.etag = etag
-            self.fileId = fileId
             self.imageSize = imageSize
             self.isImage = isImage
             self.isLivePhoto = isLivePhoto
             self.isVideo = isVideo
             self.ocId = ocId
-            self.serverUrl = serverUrl
         }
     }
 
@@ -242,13 +236,11 @@ public class NCMediaDataSource: NSObject {
     internal func appendMetadata(_ metadata: tableMetadata) {
         self.metadatas.append(Metadata(date: metadata.date as Date,
                                        etag: metadata.etag,
-                                       fileId: metadata.fileId,
                                        imageSize: CGSize(width: metadata.width, height: metadata.height),
                                        isImage: metadata.classFile == NKCommon.TypeClassFile.image.rawValue,
                                        isLivePhoto: !metadata.livePhotoFile.isEmpty,
                                        isVideo: metadata.classFile == NKCommon.TypeClassFile.video.rawValue,
-                                       ocId: metadata.ocId,
-                                       serverUrl: metadata.serverUrl))
+                                       ocId: metadata.ocId))
     }
 
     // MARK: -
