@@ -201,7 +201,6 @@ public class NCMediaDataSource: NSObject {
         let isLivePhoto: Bool
         let isVideo: Bool
         let ocId: String
-        let serverUrl: String
 
         init(date: Date,
              etag: String,
@@ -209,8 +208,7 @@ public class NCMediaDataSource: NSObject {
              isImage: Bool,
              isLivePhoto: Bool,
              isVideo: Bool,
-             ocId: String,
-             serverUrl: String) {
+             ocId: String) {
             self.date = date
             self.etag = etag
             self.imageSize = imageSize
@@ -218,7 +216,6 @@ public class NCMediaDataSource: NSObject {
             self.isLivePhoto = isLivePhoto
             self.isVideo = isVideo
             self.ocId = ocId
-            self.serverUrl = serverUrl
         }
     }
 
@@ -243,8 +240,7 @@ public class NCMediaDataSource: NSObject {
                                        isImage: metadata.classFile == NKCommon.TypeClassFile.image.rawValue,
                                        isLivePhoto: !metadata.livePhotoFile.isEmpty,
                                        isVideo: metadata.classFile == NKCommon.TypeClassFile.video.rawValue,
-                                       ocId: metadata.ocId,
-                                       serverUrl: metadata.serverUrl))
+                                       ocId: metadata.ocId))
     }
 
     // MARK: -
