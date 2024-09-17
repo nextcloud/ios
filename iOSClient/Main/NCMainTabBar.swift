@@ -31,6 +31,14 @@ class NCMainTabBar: UITabBar {
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private let centerButtonY: CGFloat = -28
 
+	private var centerButtonColor: UIColor? {
+		UIColor(named: "Tabbar/FabButton")
+	}
+    
+    private var customBackgroundColor: UIColor? {
+        UIColor(named: "Tabbar/Background")
+    }
+	
     public var menuRect: CGRect {
         let tabBarItemWidth = Int(self.frame.size.width) / (self.items?.count ?? 0)
         let rect = CGRect(x: 0, y: -5, width: tabBarItemWidth, height: Int(self.frame.size.height))
@@ -49,22 +57,25 @@ class NCMainTabBar: UITabBar {
     }
 
     @objc func changeTheming() {
+        layer.shadowOffset = CGSize(width: 0, height: 0)
+        layer.shadowRadius = 2.0
+        layer.shadowOpacity = 0.5
         tintColor = NCBrandColor.shared.brandElement
         if let centerButton = self.viewWithTag(99) {
-            centerButton.backgroundColor = NCBrandColor.shared.brandElement
+            centerButton.backgroundColor = centerButtonColor
         }
     }
 
-    override var backgroundColor: UIColor? {
-        get {
-            return self.fillColor
-        }
-        set {
-            fillColor = newValue
-            self.setNeedsDisplay()
-        }
-    }
-
+	override var backgroundColor: UIColor? {
+		get {
+			return self.fillColor
+		}
+		set {
+			fillColor = newValue
+			self.setNeedsDisplay()
+		}
+	}
+	
     override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
         let button = self.viewWithTag(99)
         if self.bounds.contains(point) || (button != nil && button!.frame.contains(point)) {
@@ -82,23 +93,14 @@ class NCMainTabBar: UITabBar {
     }
 
     private func addShape() {
-        let blurEffect = UIBlurEffect(style: .systemThinMaterial)
-
-        let blurView = UIVisualEffectView(effect: blurEffect)
-        blurView.frame = self.bounds
+        let backgroundView = UIView(frame: self.bounds)
+        backgroundView.backgroundColor = customBackgroundColor
 
         let maskLayer = CAShapeLayer()
         maskLayer.path = createPath()
 
-        blurView.layer.mask = maskLayer
-
-        let border = CALayer()
-        border.backgroundColor = UIColor.separator.cgColor
-        border.frame = CGRect(x: 0, y: 0, width: blurView.frame.width, height: 0.5)
-
-        blurView.layer.addSublayer(border)
-
-        self.addSubview(blurView)
+        backgroundView.layer.mask = maskLayer
+        self.addSubview(backgroundView)
     }
 
     private func createPath() -> CGPath {
@@ -170,15 +172,12 @@ class NCMainTabBar: UITabBar {
 
         centerButton.setTitle("", for: .normal)
         centerButton.setImage(imagePlus, for: .normal)
-        centerButton.backgroundColor = NCBrandColor.shared.brandElement
+        centerButton.backgroundColor = centerButtonColor
         centerButton.tintColor = UIColor.white
         centerButton.tag = 99
         centerButton.accessibilityLabel = NSLocalizedString("_accessibility_add_upload_", comment: "")
         centerButton.layer.cornerRadius = centerButton.frame.size.width / 2.0
         centerButton.layer.masksToBounds = false
-        centerButton.layer.shadowOffset = CGSize(width: 0, height: 0)
-        centerButton.layer.shadowRadius = 3.0
-        centerButton.layer.shadowOpacity = 0.5
         centerButton.action(for: .touchUpInside) { _ in
 
             if let controller = self.window?.rootViewController as? NCMainTabBarController {

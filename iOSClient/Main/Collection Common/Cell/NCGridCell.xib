@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="dark"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -18,20 +18,11 @@
                 <rect key="frame" x="0.0" y="0.0" width="416" height="529"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <visualEffectView hidden="YES" contentMode="scaleAspectFill" translatesAutoresizingMaskIntoConstraints="NO" id="LfR-yV-Xml" userLabel="VisualEffect">
-                        <rect key="frame" x="0.0" y="20" width="416" height="419"/>
-                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="h0r-Oi-xfW">
-                            <rect key="frame" x="0.0" y="0.0" width="416" height="419"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        </view>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <blurEffect style="extraLight"/>
-                    </visualEffectView>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="5Ci-V1-hf5" userLabel="imageItem">
                         <rect key="frame" x="0.0" y="20" width="416" height="419"/>
                     </imageView>
                     <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="star.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="AYs-f2-vve" userLabel="imageFavorite">
-                        <rect key="frame" x="391" y="24.5" width="20" height="20"/>
+                        <rect key="frame" x="391" y="25" width="20" height="20"/>
                         <color key="tintColor" systemColor="separatorColor"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="20" id="ZjS-Hv-JNm"/>
@@ -111,15 +102,11 @@
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="top" secondItem="VXh-sQ-LeX" secondAttribute="top" id="Ouj-ZD-UFm"/>
                 <constraint firstItem="2po-8g-XeS" firstAttribute="centerX" secondItem="vf1-Kf-9uL" secondAttribute="centerX" id="TTW-HT-yEO"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="leading" secondItem="a0p-rj-jnV" secondAttribute="trailing" constant="-25" id="UtQ-6D-cYc"/>
-                <constraint firstItem="LfR-yV-Xml" firstAttribute="leading" secondItem="5Ci-V1-hf5" secondAttribute="leading" id="XVl-U4-maN"/>
-                <constraint firstItem="LfR-yV-Xml" firstAttribute="trailing" secondItem="5Ci-V1-hf5" secondAttribute="trailing" id="ZT5-7T-eis"/>
                 <constraint firstItem="81G-wH-fjN" firstAttribute="top" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="-25" id="aEb-vq-8sk"/>
                 <constraint firstItem="VXh-sQ-LeX" firstAttribute="trailing" secondItem="5Ci-V1-hf5" secondAttribute="trailing" id="cHT-cP-NN6"/>
-                <constraint firstItem="LfR-yV-Xml" firstAttribute="bottom" secondItem="5Ci-V1-hf5" secondAttribute="bottom" id="cVe-LC-fxg"/>
                 <constraint firstItem="VRH-IZ-lXO" firstAttribute="top" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="8" id="cj5-Ez-3cy"/>
                 <constraint firstItem="VRH-IZ-lXO" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" constant="5" id="dTF-dl-Awr"/>
                 <constraint firstItem="VXh-sQ-LeX" firstAttribute="bottom" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="90" id="eEC-eB-alE"/>
-                <constraint firstItem="LfR-yV-Xml" firstAttribute="top" secondItem="5Ci-V1-hf5" secondAttribute="top" id="eLX-1I-820"/>
                 <constraint firstItem="12P-pO-DHO" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" constant="25" id="fTQ-Ye-Xj2"/>
                 <constraint firstItem="12P-pO-DHO" firstAttribute="top" secondItem="2po-8g-XeS" secondAttribute="bottom" constant="3" id="hbc-KL-fRj"/>
                 <constraint firstItem="EJs-Ro-nbe" firstAttribute="trailing" secondItem="5Ci-V1-hf5" secondAttribute="trailing" id="l6Z-DK-OZi"/>
@@ -138,7 +125,6 @@
                 <outlet property="imageLocal" destination="81G-wH-fjN" id="bqj-wQ-CBV"/>
                 <outlet property="imageSelect" destination="DHy-Up-3Bh" id="mo9-rP-P4I"/>
                 <outlet property="imageStatus" destination="a0p-rj-jnV" id="6Dg-tf-evd"/>
-                <outlet property="imageVisualEffect" destination="LfR-yV-Xml" id="KSf-fc-rLn"/>
                 <outlet property="labelInfo" destination="2po-8g-XeS" id="FJ4-wI-9cW"/>
                 <outlet property="labelSubinfo" destination="12P-pO-DHO" id="K6d-7r-FGh"/>
                 <outlet property="labelTitle" destination="eU3-lY-fKr" id="0P7-yM-Asb"/>

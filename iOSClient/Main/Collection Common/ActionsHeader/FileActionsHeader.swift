@@ -34,6 +34,10 @@ class FileActionsHeader: UIView {
 	@IBOutlet weak private var btnCloseSelection: UIButton?
 	@IBOutlet weak private var lblSelectionDescription: UILabel?
 
+	private var grayButtonTintColor: UIColor {
+        UIColor(resource: .FileActionsHeader.grayButtonTint)
+	}
+	
 	@IBAction func onBtnSelectAllTap(_ sender: Any) {
 		onSelectAll?()
 	}
@@ -92,24 +96,36 @@ class FileActionsHeader: UIView {
 	
 	func setSelectionState(selectionState: FileActionsHeaderSelectionState) {
 		var textDescription = ""
-		var imageName = ""
+        var imageResource: ImageResource = .FileSelection.listItemDeselected
+        var selectAllImageColor: UIColor = .clear
 		
 		// MARK: Files Header
 		switch selectionState {
 		case .none:
 			textDescription = NSLocalizedString("_select_selectionLabel_selectAll", comment: "")
-			imageName = "FileSelection/list_item_deselected"
+            imageResource = .FileSelection.listItemDeselected
+            selectAllImageColor = grayButtonTintColor
 		case .some(let count):
 			textDescription = selectionDescription(for: count)
-			imageName = "FileSelection/list_item_some_selected"
+            imageResource = .FileSelection.listItemSomeSelected
+            selectAllImageColor = NCBrandColor.shared.brandElement
 		case .all:
 			textDescription = NSLocalizedString("_select_selectionLabel_deselectAll", comment: "")
-			imageName = "FileSelection/list_item_selected"
+            imageResource = .FileSelection.listItemSelected
+            selectAllImageColor = NCBrandColor.shared.brandElement
 		}
 
 		lblSelectionDescription?.text = textDescription
-		btnSelectAll?.setBackgroundImage(UIImage(named: imageName), for: .normal)
 		
+		var selectAllImage = UIImage(resource: imageResource)
+        var closeImage = UIImage(resource: .FileSelection.selectionModeClose)
+
+        closeImage = closeImage.withTintColor(grayButtonTintColor)
+        selectAllImage = selectAllImage.withTintColor(selectAllImageColor)
+
+		btnSelectAll?.setBackgroundImage(selectAllImage, for: .normal)
+		btnCloseSelection?.setBackgroundImage(closeImage, for: .normal)
+
 		func selectionDescription(for count: Int) -> String {
 			if count == 1 {
 				return NSLocalizedString("_select_selectionLabel_oneItemSelected", comment: "")

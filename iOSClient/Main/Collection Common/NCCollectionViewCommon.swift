@@ -628,12 +628,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if layoutKey == NCGlobal.shared.layoutViewFiles {
             navigationItem.leftItemsSupplementBackButton = true
             if navigationController?.viewControllers.count == 1 {
-                let burgerMenuItem = UIBarButtonItem(image: UIImage(systemName: "line.3.horizontal"),
+                let burgerMenuItem = UIBarButtonItem(image: UIImage(resource: .BurgerMenu.bars),
                                                      style: .plain,
                                                      action: { [weak self] in
                     self?.showBurgerMenu()
                 })
-                burgerMenuItem.tintColor = NCBrandColor.shared.iconImageColor
+                burgerMenuItem.tintColor = UIColor(resource: .BurgerMenu.navigationBarButton)
                 navigationItem.setLeftBarButtonItems([burgerMenuItem], animated: true)
             }
         } else if (layoutKey == NCGlobal.shared.layoutViewRecent) ||
