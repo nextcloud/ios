@@ -66,7 +66,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .appBackground
         
         btnContact.imageView?.contentMode = .scaleAspectFit
 
@@ -79,7 +79,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         tableView.dataSource = self
         tableView.delegate = self
         tableView.allowsSelection = false
-        tableView.backgroundColor = .systemBackground
+        tableView.backgroundColor = .appBackground
         tableView.contentInset = UIEdgeInsets(top: 8, left: 0, bottom: 10, right: 0)
 
         tableView.register(UINib(nibName: "NCShareLinkCell", bundle: nil), forCellReuseIdentifier: "cellLink")
@@ -250,7 +250,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
         blurEffectView.frame = CGRect(x: 0, y: 0, width: 500, height: 20)
 
-        appearance.backgroundColor = .systemBackground
+        appearance.backgroundColor = .appBackground
         appearance.cornerRadius = 10
         appearance.shadowColor = .black
         appearance.shadowOpacity = 0.2

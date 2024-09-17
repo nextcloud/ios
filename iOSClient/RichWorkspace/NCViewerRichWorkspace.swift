@@ -43,7 +43,7 @@ import MarkdownKit
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .appBackground
         navigationController?.navigationBar.tintColor = NCBrandColor.shared.iconImageColor
         presentationController?.delegate = self
 

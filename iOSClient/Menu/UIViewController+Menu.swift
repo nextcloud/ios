@@ -107,7 +107,7 @@ extension UIViewController {
         present(mail, animated: true)
     }
 
-    func presentMenu(with actions: [NCMenuAction], menuColor: UIColor = .systemBackground, textColor: UIColor = NCBrandColor.shared.textColor) {
+    func presentMenu(with actions: [NCMenuAction], menuColor: UIColor = .appBackground, textColor: UIColor = NCBrandColor.shared.textColor) {
         guard !actions.isEmpty else { return }
         let actions = actions.sorted(by: { $0.order < $1.order })
         guard let menuViewController = NCMenu.makeNCMenu(with: actions, menuColor: menuColor, textColor: textColor) else {

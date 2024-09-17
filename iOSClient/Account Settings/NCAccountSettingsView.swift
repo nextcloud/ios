@@ -261,6 +261,7 @@ struct NCAccountSettingsView: View {
                     }
                 })
             }
+            .applyGlobalFormStyle()
             .navigationBarTitle(NSLocalizedString("_account_settings_", comment: ""))
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarItems(trailing: Button(action: {

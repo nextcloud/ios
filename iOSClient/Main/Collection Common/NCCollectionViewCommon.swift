@@ -124,8 +124,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         collectionView.alwaysBounceVertical = true
 
         // Color
-        view.backgroundColor = .systemBackground
-        collectionView.backgroundColor = .systemBackground
+        view.backgroundColor = .appBackground
+        collectionView.backgroundColor = .appBackground
         refreshControl.tintColor = NCBrandColor.shared.textColor2
 
         if enableSearchBar {
@@ -756,7 +756,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             
             let addAccountSubmenu = UIMenu(title: "", options: .displayInline, children: childrenAccountSubmenu)
             let menu = UIMenu(children: accountActions + [addAccountSubmenu])
-            
             accountButton.menu = menu
             accountButton.showsMenuAsPrimaryAction = true
             

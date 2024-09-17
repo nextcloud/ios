@@ -64,6 +64,8 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
         webView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 0).isActive = true
         webView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor, constant: 0).isActive = true
         webView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0).isActive = true
+        webView.backgroundColor = .appBackground
+        webView.scrollView.backgroundColor = .appBackground
         bottomConstraint = webView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: 0)
         bottomConstraint?.isActive = true
 

@@ -66,20 +66,24 @@ class NCMedia: UIViewController {
     var playImage = UIImage()
     var photoImage = UIImage()
     var videoImage = UIImage()
+    
+    private var appBackground: UIColor? {
+        UIColor(named: "AppBackground")
+    }
 
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = appBackground
+        collectionView.backgroundColor = appBackground
         activeAccount = NCManageDatabase.shared.getActiveAccount() ?? tableAccount()
 
         collectionView.register(UINib(nibName: "NCSectionFirstHeaderEmptyData", bundle: nil), forSupplementaryViewOfKind: mediaSectionHeader, withReuseIdentifier: "sectionFirstHeaderEmptyData")
         collectionView.register(UINib(nibName: "NCGridMediaCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
         collectionView.alwaysBounceVertical = true
         collectionView.contentInset = UIEdgeInsets(top: insetsTop, left: 0, bottom: 50, right: 0)
-        collectionView.backgroundColor = .systemBackground
         collectionView.prefetchDataSource = self
         collectionView.dragInteractionEnabled = true
         collectionView.dragDelegate = self

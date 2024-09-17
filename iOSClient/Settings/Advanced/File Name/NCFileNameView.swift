@@ -58,6 +58,7 @@ struct NCFileNameView: View {
         }
         .navigationBarTitle(NSLocalizedString("_mode_filename_", comment: ""))
         .defaultViewModifier(model)
+        .applyGlobalFormStyle()
         .padding(.top, 0)
         .transition(.slide)
     }
