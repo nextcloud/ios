@@ -31,7 +31,6 @@ class NCGridMediaCell: UICollectionViewCell {
     @IBOutlet weak var imageStatus: UIImageView!
 
     var ocId: String = ""
-    var account: String = ""
     var date: Date?
 
     override func awakeFromNib() {
