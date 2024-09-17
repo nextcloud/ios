@@ -69,8 +69,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 		loginButton.setTitle(NSLocalizedString("_login_", comment: ""), for: .normal)
 		
 		// Labels
-		lblWelcome.text = NSLocalizedString("_login_welcome_", comment: "")
-		lblDescription.text = NSLocalizedString("_login_description_", comment: "")
+		lblWelcome.text = NSLocalizedString("_login_welcome_", tableName: nil, bundle: Bundle.main, value: "Welcome to the cloud storage", comment: "")
+		lblDescription.text = NSLocalizedString("_login_description_", tableName: nil, bundle: Bundle.main, value: "You need to login over browser", comment: "")
 		
 		// Navigation Controller
 		navigationController?.isNavigationBarHidden = true

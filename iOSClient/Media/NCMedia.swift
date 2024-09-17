@@ -248,7 +248,7 @@ class NCMedia: UIViewController {
     }
     
     func updateHeadersMenu() {
-        fileActionsHeader?.setSortingMenu(sortingMenuElements: createMenuElements(), title: NSLocalizedString("_media_options_", comment: ""), image: nil)
+        fileActionsHeader?.setSortingMenu(sortingMenuElements: createMenuElements(), title: NSLocalizedString("_media_options_", tableName: nil, bundle: Bundle.main, value: "Media Options", comment: ""), image: nil)
     }
     
     func setNavigationLeftItems() {
