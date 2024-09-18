@@ -36,7 +36,7 @@ class NCImageCache: NSObject {
     private let allowExtensions = [NCGlobal.shared.previewExt256, NCGlobal.shared.previewExt128, NCGlobal.shared.previewExt64]
     private var brandElementColor: UIColor?
 
-    var countLimit = 5_000
+    public var countLimit = 5_000
     lazy var cacheImage: LRUCache<String, UIImage> = {
         return LRUCache<String, UIImage>(countLimit: countLimit)
     }()
@@ -59,13 +59,15 @@ class NCImageCache: NSObject {
 
     func addImageCache(ocId: String, etag: String, data: Data, ext: String, cost: Int) {
         guard allowExtensions.contains(ext),
+              cacheImage.count < countLimit,
               let image = UIImage(data: data) else { return }
 
         cacheImage.setValue(image, forKey: ocId + etag + ext, cost: cost)
     }
 
     func addImageCache(ocId: String, etag: String, image: UIImage, ext: String, cost: Int) {
-        guard allowExtensions.contains(ext) else { return }
+        guard allowExtensions.contains(ext),
+              cacheImage.count < countLimit else { return }
 
         cacheImage.setValue(image, forKey: ocId + etag + ext, cost: cost)
     }

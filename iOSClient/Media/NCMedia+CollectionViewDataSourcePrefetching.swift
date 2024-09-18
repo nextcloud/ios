@@ -32,10 +32,9 @@ extension NCMedia: UICollectionViewDataSourcePrefetching {
         let cost = indexPaths.first?.row ?? 0
 
         DispatchQueue.global(qos: .userInteractive).async {
-            let percentageMetadata = (Double(indexPaths.first?.row ?? 0) / Double(self.dataSource.count() - 1)) * 100
             let percentageCache = (Double(self.imageCache.count()) / Double(self.imageCache.countLimit - 1)) * 100
 
-            if percentageMetadata > 20, percentageCache > 75 {
+            if cost > self.imageCache.countLimit, percentageCache > 75 {
                 for ocIdPlusEtag in self.hiddenCellMetadats {
                     self.imageCache.removeImageCache(ocIdPlusEtag: ocIdPlusEtag)
                 }
@@ -45,7 +44,9 @@ extension NCMedia: UICollectionViewDataSourcePrefetching {
             metadatas.forEach { metadata in
                 if self.imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) == nil,
                    let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
-                    self.imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext, cost: cost)
+                    if self.imageCache.count() < self.imageCache.countLimit {
+                        self.imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext, cost: cost)
+                    }
                 }
             }
         }
