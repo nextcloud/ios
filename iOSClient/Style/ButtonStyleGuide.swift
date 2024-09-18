@@ -11,10 +11,8 @@ import SwiftUI
 fileprivate class ButtonStyleGuide {
 	static let defaultFont			:Font = .title2
 	static let defaultBorderWidth	:CGFloat = 3
-	static let defaultHeight		:CGFloat = 32
-	static var defaultWidth			:CGFloat {
-		UIDevice.current.userInterfaceIdiom == .phone ? 100 : 240
-	}
+	static let defaultHeight		:CGFloat = 36
+	static var defaultWidth			:CGFloat  = 96
 }
 
 // MARK: - Primary
@@ -39,7 +37,7 @@ struct ButtonStylePrimary: ButtonStyle {
 			.padding()
 			.foregroundStyle(foregroundColor(for: configuration))
 			.background{
-				Capsule(style: .continuous)
+				Capsule(style: .circular)
 					.stroke(backgroundColor(for: configuration), lineWidth: ButtonStyleGuide.defaultBorderWidth)
 					.background(content: {
 						Capsule().fill(backgroundColor(for: configuration))
@@ -80,7 +78,7 @@ struct ButtonStyleSecondary: ButtonStyle {
 			.padding()
 			.foregroundStyle(foregroundColor(for: configuration))
 			.background{
-				Capsule(style: .continuous)
+				Capsule(style: .circular)
 					.stroke(borderColor(for: configuration), lineWidth: ButtonStyleGuide.defaultBorderWidth)
 					.background(content: {
 						Capsule().fill(backgroundColor(for: configuration))
