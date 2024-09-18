@@ -33,7 +33,7 @@ class NCMedia: UIViewController {
     var layoutType = NCGlobal.shared.mediaLayoutRatio
     var activeAccount = tableAccount()
     var documentPickerViewController: NCDocumentPickerViewController?
-    var tabBarSelect: NCMediaSelectTabBar!
+    var tabBarSelect: NCCollectionViewCommonSelectToolbar!
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
@@ -92,7 +92,7 @@ class NCMedia: UIViewController {
         collectionView.collectionViewLayout = layout
         layoutType = NCManageDatabase.shared.getLayoutForView(account: activeAccount.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")?.layout ?? NCGlobal.shared.mediaLayoutRatio
 
-        tabBarSelect = NCMediaSelectTabBar(tabBarController: self.tabBarController, delegate: self)
+        tabBarSelect = NCCollectionViewCommonSelectToolbar(delegate: self, displayedButtons: [.delete])
 
         livePhotoImage = utility.loadImage(named: "livephoto", colors: [.white])
         playImage = utility.loadImage(named: "play.fill", colors: [.white])
@@ -206,7 +206,7 @@ class NCMedia: UIViewController {
         super.viewWillLayoutSubviews()
 
         if let frame = tabBarController?.tabBar.frame {
-            tabBarSelect.hostingController.view.frame = frame
+            tabBarSelect.hostingController?.view.frame = frame
         }
     }
 
@@ -232,7 +232,7 @@ class NCMedia: UIViewController {
         fileActionsHeader?.onSelectAll = { [weak self] in
             guard let self = self else { return }
             self.selectAllOrDeselectAll()
-            tabBarSelect.selectCount = selectOcId.count
+            tabBarSelect.update(selectOcId: selectOcId)
             self.fileActionsHeader?.setSelectionState(selectionState: selectionState)
         }
     }
