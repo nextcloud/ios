@@ -262,7 +262,7 @@ struct NCSettingsView: View {
             /// `Watermark` Section
             Section(content: {
             }, footer: {
-                Text(model.footerApp + model.footerServer + model.footerSlogan)
+                Text(model.footerApp + model.footerServer)
             })
         }
         .navigationBarTitle(NSLocalizedString("_settings_", comment: ""))
