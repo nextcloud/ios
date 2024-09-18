@@ -43,8 +43,9 @@ let userAgent: String = {
     var linkLoginHost: String = "https://nextcloud.com/install"
     var linkloginPreferredProviders: String = "https://nextcloud.com/signup-ios"
     var webLoginAutenticationProtocol: String = "nc://"                                                // example "abc://"
-    var privacy: String = "https://nextcloud.com/privacy"
-    var sourceCode: String = "https://github.com/nextcloud/ios"
+    var privacy: String = "https://wl.hidrive.com/easy/ios/privacy.html"
+    var acknowloedgements: String = "https://wl.hidrive.com/easy/0171"
+    var sourceCode: String = "https://wl.hidrive.com/easy/0181"
     var mobileconfig: String = "/remote.php/dav/provisioning/apple-provisioning.mobileconfig"
     var appStoreUrl: String = "https://apps.apple.com/in/app/nextcloud/id1125420102"
 
