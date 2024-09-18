@@ -53,7 +53,7 @@ extension NCMedia {
             DispatchQueue.global(qos: .userInteractive).asyncAfter(deadline: .now() + 0.2) {
                 self.imageCache.removeAll()
                 for metadata in self.dataSource.getMetadatas() {
-                    if self.imageCache.count() >= self.imageCache.countLimit { break }
+                    if self.imageCache.cache.count >= self.imageCache.countLimit { break }
                     if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
                         self.imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext, cost: cost)
                         cost += 1
