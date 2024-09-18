@@ -31,11 +31,13 @@ class NCMediaDownloadThumbnail: ConcurrentOperation {
     let utilityFileSystem = NCUtilityFileSystem()
     let media: NCMedia?
     var width: CGFloat?
+    let cost: Int
 
-    init(metadata: NCMediaDataSource.Metadata, collectionView: UICollectionView?, media: NCMedia?) {
+    init(metadata: NCMediaDataSource.Metadata, collectionView: UICollectionView?, media: NCMedia?, cost: Int) {
         self.metadata = metadata
         self.collectionView = collectionView
         self.media = media
+        self.cost = cost
 
         if let collectionView, let numberOfColumns = self.media?.numberOfColumns {
             width = collectionView.frame.size.width / CGFloat(numberOfColumns)
@@ -58,9 +60,9 @@ class NCMediaDownloadThumbnail: ConcurrentOperation {
 
                 self.media?.filesExists.append(self.metadata.ocId)
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
-                NCUtility().createImage(metadata: tableMetadata, data: data)
+                NCUtility().createImage(metadata: tableMetadata, data: data, cost: self.cost)
 
-                let image = self.media?.getImage(metadata: self.metadata, width: self.width)
+                let image = self.media?.getImage(metadata: self.metadata, width: self.width, cost: self.cost)
 
                 DispatchQueue.main.async {
                     for case let cell as NCGridMediaCell in collectionView.visibleCells {

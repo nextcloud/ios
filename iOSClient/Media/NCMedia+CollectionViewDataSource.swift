@@ -97,10 +97,10 @@ extension NCMedia: UICollectionViewDataSource {
 
         if imageCache == nil {
             if self.transitionColumns {
-                cell.imageItem.image = getImage(metadata: metadata, width: width)
+                cell.imageItem.image = getImage(metadata: metadata, width: width, cost: indexPath.row)
             } else {
                 DispatchQueue.global(qos: .userInteractive).async {
-                    let image = self.getImage(metadata: metadata, width: width)
+                    let image = self.getImage(metadata: metadata, width: width, cost: indexPath.row)
                     DispatchQueue.main.async {
                         cell.imageItem.image = image
                     }

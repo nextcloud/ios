@@ -46,6 +46,7 @@ extension NCMedia {
         guard !transitionColumns, !dataSource.getMetadatas().isEmpty else { return }
         let width = self.collectionView.frame.size.width / CGFloat(self.numberOfColumns)
         let ext = NCGlobal.shared.getSizeExtension(width: width)
+        var cost = 0
 
         if currentExt != ext {
             currentExt = ext
@@ -53,7 +54,8 @@ extension NCMedia {
                 self.imageCache.removeAll()
                 self.dataSource.getMetadatas().forEach { metadata in
                     if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
-                        self.imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext)
+                        self.imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext, cost: cost)
+                        cost += 1
                     }
                 }
             }

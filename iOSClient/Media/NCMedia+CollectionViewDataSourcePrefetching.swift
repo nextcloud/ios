@@ -29,6 +29,7 @@ extension NCMedia: UICollectionViewDataSourcePrefetching {
         let metadatas = self.dataSource.getMetadatas(indexPaths: indexPaths)
         let width = self.collectionView.frame.size.width / CGFloat(self.numberOfColumns)
         let ext = NCGlobal.shared.getSizeExtension(width: width)
+        let cost = indexPaths.first?.row ?? 0
 
         DispatchQueue.global(qos: .userInteractive).async {
             let percentageMetadata = (Double(indexPaths.first?.row ?? 0) / Double(self.dataSource.count() - 1)) * 100
@@ -44,7 +45,7 @@ extension NCMedia: UICollectionViewDataSourcePrefetching {
             metadatas.forEach { metadata in
                 if self.imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) == nil,
                    let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
-                    self.imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext)
+                    self.imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext, cost: cost)
                 }
             }
         }
