@@ -142,9 +142,9 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         labelTitle.text = ""
         labelInfo.text = ""
         labelSubinfo.text = ""
-        labelTitle.textColor = NCBrandColor.shared.textColor
-        labelInfo.textColor = NCBrandColor.shared.textColor2
-        labelSubinfo.textColor = NCBrandColor.shared.textColor2
+        labelTitle.textColor = UIColor(resource: .ListCell.title)
+        labelInfo.textColor = UIColor(resource: .ListCell.subtitle)
+        labelSubinfo.textColor = UIColor(resource: .ListCell.subtitle)
 
         imageFavoriteBackground.isHidden = true
     }
@@ -309,7 +309,7 @@ protocol NCListCellDelegate: AnyObject {
 // MARK: - List Layout
 
 class NCListLayout: UICollectionViewFlowLayout {
-    var itemHeight: CGFloat = 60
+    var itemHeight: CGFloat = 48
 
     override init() {
         super.init()

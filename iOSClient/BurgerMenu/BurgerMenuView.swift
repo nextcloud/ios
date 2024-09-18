@@ -30,7 +30,7 @@ struct BurgerMenuView: View {
                         Image(.ionosEasyStorageLogo)
                             .resizable()
                             .renderingMode(.template)
-                            .foregroundStyle(Color(.BurgerMenu.logoTint))
+                            .foregroundStyle(Color(.NavigationBar.logoTint))
                             .scaledToFit()
                             .padding(EdgeInsets(top: 24,
                                                 leading: 0,

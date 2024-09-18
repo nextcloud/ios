@@ -74,17 +74,6 @@ struct MediaTabBarSelectView: View {
             Spacer().frame(height: sizeClass == .compact ? 5 : 10)
             HStack {
                 Spacer().frame(maxWidth: .infinity)
-                Group {
-                    if tabBarSelect.selectCount == 0 {
-                        Text(NSLocalizedString("_select_photos_", comment: ""))
-                    } else if tabBarSelect.selectCount == 1 {
-                        Text(String(tabBarSelect.selectCount) + " " + NSLocalizedString("_selected_photo_", comment: ""))
-                    } else {
-                        Text(String(tabBarSelect.selectCount) + " " + NSLocalizedString("_selected_photos_", comment: ""))
-                    }
-                }
-                .frame(minWidth: 250, maxWidth: .infinity)
-
                 Button {
                     tabBarSelect.delegate?.delete()
                 } label: {
@@ -94,7 +83,7 @@ struct MediaTabBarSelectView: View {
                 }
                 .tint(.red)
                 .disabled(tabBarSelect.selectCount == 0)
-                .frame(maxWidth: .infinity)
+                Spacer().frame(maxWidth: .infinity)
             }
             .frame(maxWidth: .infinity)
         }

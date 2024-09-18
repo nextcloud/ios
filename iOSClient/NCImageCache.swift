@@ -279,7 +279,7 @@ class NCImageCache: NSObject {
         images.checkedYes = UIImage(named: "FileSelection/list_item_selected")
         images.checkedNo =  UIImage(named: "FileSelection/list_item_deselected")
 
-        images.buttonMore = utility.loadImage(named: "ellipsis", colors: [NCBrandColor.shared.iconImageColor])
+        images.buttonMore = UIImage(resource: .more).withTintColor(NCBrandColor.shared.brandElement)
         images.buttonStop = utility.loadImage(named: "stop.circle", colors: [NCBrandColor.shared.iconImageColor])
         images.buttonMoreLock = utility.loadImage(named: "lock.fill", colors: [NCBrandColor.shared.iconImageColor])
 
