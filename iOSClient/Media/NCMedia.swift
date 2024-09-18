@@ -71,7 +71,7 @@ class NCMedia: UIViewController {
 
     var lastScale: CGFloat = 1.0
     var currentScale: CGFloat = 1.0
-    let maxColumns: Int = 10
+    let maxColumns: Int = 12
     var transitionColumns = false
     var currentExt: String = ""
     var numberOfColumns: Int = 0 {
