@@ -26,13 +26,18 @@ import UIKit
 
 extension NCMedia: UICollectionViewDataSourcePrefetching {
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
-        let metadatas = dataSource.getMetadatas(indexPaths: indexPaths)
+        let metadatas = self.dataSource.getMetadatas(indexPaths: indexPaths)
         let width = self.collectionView.frame.size.width / CGFloat(self.numberOfColumns)
         let ext = NCGlobal.shared.getSizeExtension(width: width)
 
         DispatchQueue.global(qos: .userInteractive).async {
-            for ocIdPlusEtag in self.hiddenCellMetadats {
-                self.imageCache.removeImageCache(ocIdPlusEtag: ocIdPlusEtag)
+            let percentageMetadata = (Double(indexPaths.first?.row ?? 0) / Double(self.dataSource.count() - 1)) * 100
+            let percentageCache = (Double(self.imageCache.count()) / Double(self.imageCache.countLimit - 1)) * 100
+
+            if (75...100).contains(percentageMetadata), (75...100).contains(percentageCache) {
+                for ocIdPlusEtag in self.hiddenCellMetadats {
+                    self.imageCache.removeImageCache(ocIdPlusEtag: ocIdPlusEtag)
+                }
             }
             self.hiddenCellMetadats.removeAll()
 

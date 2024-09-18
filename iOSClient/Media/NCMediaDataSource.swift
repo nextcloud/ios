@@ -271,6 +271,10 @@ public class NCMediaDataSource: NSObject {
         return self.metadatas.isEmpty
     }
 
+    func count() -> Int {
+        return self.metadatas.count
+    }
+
     func getMetadatas() -> [Metadata] {
         return self.metadatas
     }
