@@ -243,6 +243,24 @@ public class NCMediaDataSource: NSObject {
                                        ocId: metadata.ocId))
     }
 
+    internal func insertMetadata(_ metadata: tableMetadata) {
+        let metadata = Metadata(date: metadata.date as Date,
+                                etag: metadata.etag,
+                                imageSize: CGSize(width: metadata.width, height: metadata.height),
+                                isImage: metadata.classFile == NKCommon.TypeClassFile.image.rawValue,
+                                isLivePhoto: !metadata.livePhotoFile.isEmpty,
+                                isVideo: metadata.classFile == NKCommon.TypeClassFile.video.rawValue,
+                                ocId: metadata.ocId)
+
+        for i in 0..<self.metadatas.count {
+            if (metadata.date as Date) < self.metadatas[i].date {
+                self.metadatas.insert(metadata, at: i)
+                return
+            }
+        }
+        self.metadatas.append(metadata)
+    }
+
     // MARK: -
 
     func removeAll() {
@@ -282,6 +300,6 @@ public class NCMediaDataSource: NSObject {
 
     func addMetadata(_ metadata: tableMetadata) {
         removeMetadata([metadata.ocId])
-        appendMetadata(metadata)
+        insertMetadata(metadata)
     }
 }
