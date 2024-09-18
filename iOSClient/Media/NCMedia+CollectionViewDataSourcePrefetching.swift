@@ -34,7 +34,7 @@ extension NCMedia: UICollectionViewDataSourcePrefetching {
             let percentageMetadata = (Double(indexPaths.first?.row ?? 0) / Double(self.dataSource.count() - 1)) * 100
             let percentageCache = (Double(self.imageCache.count()) / Double(self.imageCache.countLimit - 1)) * 100
 
-            if (75...100).contains(percentageMetadata), (75...100).contains(percentageCache) {
+            if percentageMetadata > 20, percentageCache > 75 {
                 for ocIdPlusEtag in self.hiddenCellMetadats {
                     self.imageCache.removeImageCache(ocIdPlusEtag: ocIdPlusEtag)
                 }
