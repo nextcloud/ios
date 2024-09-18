@@ -33,7 +33,7 @@ stages:
     --url $FB_PLIST_PATH 
     --header "Authorization:Bearer ${FB_PLIST_PROJECT_TOKEN}"  | jq -r '.content' | base64 --decode >> "./GoogleService-Info.plist"
  
- .download_google_info_plist_beta: &download_google_info_plist_beta
+.download_google_info_plist_beta: &download_google_info_plist_beta
   - curl
     --fail
     --location
