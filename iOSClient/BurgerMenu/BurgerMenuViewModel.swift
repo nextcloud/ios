@@ -79,7 +79,7 @@ class BurgerMenuViewModel: ObservableObject {
 
         let quotaUsed: String = utilityFileSystem.transformedSize(activeAccount.quotaUsed)
 
-        let messageUsed = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
+        let messageUsed = String.localizedStringWithFormat(NSLocalizedString("_used_of_space", comment: ""), quotaUsed, quota)
         return messageUsed
     }
     

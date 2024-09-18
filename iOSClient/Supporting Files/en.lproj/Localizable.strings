@@ -1102,3 +1102,8 @@
 //MARK: Login
 "_login_welcome_"				 	= "Welcome to the cloud storage";
 "_login_description_" 				= "You need to login over browser";
+
+//MARK: Burger menu
+"_previous_" = "Previous";
+"_storage_used_"                = "Storage used";
+"_used_of_space"                = "%@ of %@ used";
