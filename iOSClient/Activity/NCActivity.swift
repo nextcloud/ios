@@ -266,9 +266,9 @@ extension NCActivity: UITableViewDataSource {
             let fileNameIcon = (activity.icon as NSString).lastPathComponent
             let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileNameIcon
 
-            let image = fileNameIcon.contains(".svg") ? SVGKImage(contentsOfFile: fileNameLocalPath).uiImage : UIImage(contentsOfFile: fileNameLocalPath)
-
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
+                let image = fileNameIcon.contains(".svg") ? SVGKImage(contentsOfFile: fileNameLocalPath)?.uiImage : UIImage(contentsOfFile: fileNameLocalPath)
+
                 if let image {
                     cell.icon.image = image.withTintColor(NCBrandColor.shared.textColor, renderingMode: .alwaysOriginal)
                 }
