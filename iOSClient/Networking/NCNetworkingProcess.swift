@@ -83,10 +83,10 @@ class NCNetworkingProcess {
                 self.hasRun = true
 
                 let resultsTransfer = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status IN %@", self.global.metadataStatusInTransfer))
-                if resultsTransfer == nil {
-                    // No tranfer, disable
+                if resultsTransfer.isEmptyOrNil {
+                    ScreenAwakeManager.shared.mode = .off
                 } else {
-                    // transfer enable
+                    ScreenAwakeManager.shared.mode = NCKeychain().screenAwakeMode
                 }
 
                 guard let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal)) else { return }
