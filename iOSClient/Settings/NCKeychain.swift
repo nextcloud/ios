@@ -355,6 +355,30 @@ import KeychainAccess
         }
     }
 
+    var screenAwakeMode: AwakeMode {
+        get {
+            if let value = try? keychain.get("screenAwakeMode") {
+                if value == "off" {
+                    return .off
+                } else if value == "on" {
+                    return .on
+                } else {
+                    return .whileCharging
+                }
+            }
+            return .off
+        }
+        set {
+            if newValue == .off {
+                keychain["screenAwakeMode"] = "off"
+            } else if newValue == .on {
+                keychain["screenAwakeMode"] = "on"
+            } else {
+                keychain["screenAwakeMode"] = "whileCharging"
+            }
+        }
+    }
+
     var fileNameType: Bool {
         get {
             if let value = try? keychain.get("fileNameType"), let result = Bool(value) {
