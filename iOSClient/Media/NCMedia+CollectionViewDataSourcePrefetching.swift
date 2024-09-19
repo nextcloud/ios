@@ -26,20 +26,24 @@ import UIKit
 
 extension NCMedia: UICollectionViewDataSourcePrefetching {
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
-        let metadatas = dataSource.getMetadatas(indexPaths: indexPaths)
+        let cost = indexPaths.first?.row ?? 0
+        let metadatas = self.dataSource.getMetadatas(indexPaths: indexPaths)
         let width = self.collectionView.frame.size.width / CGFloat(self.numberOfColumns)
         let ext = NCGlobal.shared.getSizeExtension(width: width)
+        let percentageCache = (Double(self.imageCache.cache.count) / Double(self.imageCache.countLimit - 1)) * 100
 
-        DispatchQueue.global(qos: .userInteractive).async {
-            for ocIdPlusEtag in self.hiddenCellMetadats {
+        if cost > self.imageCache.countLimit, percentageCache > 75 {
+            self.hiddenCellMetadats.forEach { ocIdPlusEtag in
                 self.imageCache.removeImageCache(ocIdPlusEtag: ocIdPlusEtag)
             }
-            self.hiddenCellMetadats.removeAll()
+        }
+        self.hiddenCellMetadats.removeAll()
 
-            metadatas.forEach { metadata in
-                if self.imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) == nil,
-                   let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
-                    self.imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext)
+        metadatas.forEach { metadata in
+            if self.imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) == nil,
+               let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
+                if self.imageCache.cache.count < self.imageCache.countLimit {
+                    self.imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext, cost: cost)
                 }
             }
         }

@@ -128,17 +128,17 @@ extension NCMedia {
             UIAction(title: NSLocalizedString("_media_viewimage_show_", comment: ""), image: utility.loadImage(named: "photo")) { _ in
                 self.showOnlyImages = true
                 self.showOnlyVideos = false
-                self.reloadDataSource()
+                self.loadDataSource()
             },
             UIAction(title: NSLocalizedString("_media_viewvideo_show_", comment: ""), image: utility.loadImage(named: "video")) { _ in
                 self.showOnlyImages = false
                 self.showOnlyVideos = true
-                self.reloadDataSource()
+                self.loadDataSource()
             },
             UIAction(title: NSLocalizedString("_media_show_all_", comment: ""), image: utility.loadImage(named: "photo.on.rectangle")) { _ in
                 self.showOnlyImages = false
                 self.showOnlyVideos = false
-                self.reloadDataSource()
+                self.loadDataSource()
             }
         ])
         let viewLayoutMenu = UIAction(title: layoutTitle, image: layoutImage) { _ in
@@ -167,9 +167,18 @@ extension NCMedia {
         ])
 
         let zoomOut = UIAction(title: NSLocalizedString("_zoom_out_", comment: ""), image: utility.loadImage(named: "minus.magnifyingglass"), attributes: self.attributesZoomOut) { _ in
+            let lastExt = NCGlobal.shared.getSizeExtension(width: self.collectionView.frame.size.width / CGFloat(self.numberOfColumns))
+
             UIView.animate(withDuration: 0.0, animations: {
                 self.numberOfColumns += 1
+                let ext = NCGlobal.shared.getSizeExtension(width: self.collectionView.frame.size.width / CGFloat(self.numberOfColumns))
+
                 NCManageDatabase.shared.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: self.numberOfColumns)
+
+                if ext != lastExt {
+                    self.imageCache.removeAll()
+                }
+
                 self.createMenu()
                 self.collectionView.reloadData()
                 self.setTitleDate()
@@ -177,9 +186,18 @@ extension NCMedia {
         }
 
         let zoomIn = UIAction(title: NSLocalizedString("_zoom_in_", comment: ""), image: utility.loadImage(named: "plus.magnifyingglass"), attributes: self.attributesZoomIn) { _ in
+            let lastExt = NCGlobal.shared.getSizeExtension(width: self.collectionView.frame.size.width / CGFloat(self.numberOfColumns))
+
             UIView.animate(withDuration: 0.0, animations: {
                 self.numberOfColumns -= 1
+                let ext = NCGlobal.shared.getSizeExtension(width: self.collectionView.frame.size.width / CGFloat(self.numberOfColumns))
+
                 NCManageDatabase.shared.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: self.numberOfColumns)
+
+                if ext != lastExt {
+                    self.imageCache.removeAll()
+                }
+
                 self.createMenu()
                 self.collectionView.reloadData()
                 self.setTitleDate()
@@ -230,17 +248,17 @@ extension NCMedia {
             UIAction(title: NSLocalizedString("_media_viewimage_show_", comment: ""), image: utility.loadImage(named: "photo")) { _ in
                 self.showOnlyImages = true
                 self.showOnlyVideos = false
-                self.reloadDataSource()
+                self.loadDataSource()
             },
             UIAction(title: NSLocalizedString("_media_viewvideo_show_", comment: ""), image: utility.loadImage(named: "video")) { _ in
                 self.showOnlyImages = false
                 self.showOnlyVideos = true
-                self.reloadDataSource()
+                self.loadDataSource()
             },
             UIAction(title: NSLocalizedString("_media_show_all_", comment: ""), image: utility.loadImage(named: "photo.on.rectangle")) { _ in
                 self.showOnlyImages = false
                 self.showOnlyVideos = false
-                self.reloadDataSource()
+                self.loadDataSource()
             }
         ])
 

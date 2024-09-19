@@ -82,7 +82,14 @@ class NCNetworkingProcess {
                 guard !self.hasRun, NCNetworking.shared.isOnline else { return }
                 self.hasRun = true
 
-                guard let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %d", NCGlobal.shared.metadataStatusNormal)) else { return }
+                let resultsTransfer = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status IN %@", self.global.metadataStatusInTransfer))
+                if resultsTransfer == nil {
+                    // No tranfer, disable
+                } else {
+                    // transfer enable
+                }
+
+                guard let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal)) else { return }
 
                 if results.isEmpty {
                     /// Remove Photo CameraRoll

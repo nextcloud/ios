@@ -36,8 +36,8 @@ class NCImageCache: NSObject {
     private let allowExtensions = [NCGlobal.shared.previewExt256, NCGlobal.shared.previewExt128, NCGlobal.shared.previewExt64]
     private var brandElementColor: UIColor?
 
-    var countLimit = 10_000
-    lazy var cacheImage: LRUCache<String, UIImage> = {
+    public var countLimit = 5_000
+    lazy var cache: LRUCache<String, UIImage> = {
         return LRUCache<String, UIImage>(countLimit: countLimit)
     }()
 
@@ -51,27 +51,29 @@ class NCImageCache: NSObject {
     }
 
     @objc func handleMemoryWarning() {
-        cacheImage.removeAllValues()
+        cache.removeAllValues()
         countLimit = countLimit - 500
         if countLimit <= 0 { countLimit = 100 }
-        self.cacheImage = LRUCache<String, UIImage>(countLimit: countLimit)
+        self.cache = LRUCache<String, UIImage>(countLimit: countLimit)
     }
 
-    func addImageCache(ocId: String, etag: String, data: Data, ext: String) {
+    func addImageCache(ocId: String, etag: String, data: Data, ext: String, cost: Int) {
         guard allowExtensions.contains(ext),
+              cache.count < countLimit,
               let image = UIImage(data: data) else { return }
 
-        cacheImage.setValue(image, forKey: ocId + etag + ext)
+        cache.setValue(image, forKey: ocId + etag + ext, cost: cost)
     }
 
-    func addImageCache(ocId: String, etag: String, image: UIImage, ext: String) {
-        guard allowExtensions.contains(ext) else { return }
+    func addImageCache(ocId: String, etag: String, image: UIImage, ext: String, cost: Int) {
+        guard allowExtensions.contains(ext),
+              cache.count < countLimit else { return }
 
-        cacheImage.setValue(image, forKey: ocId + etag + ext)
+        cache.setValue(image, forKey: ocId + etag + ext, cost: cost)
     }
 
     func getImageCache(ocId: String, etag: String, ext: String) -> UIImage? {
-        return cacheImage.value(forKey: ocId + etag + ext)
+        return cache.value(forKey: ocId + etag + ext)
     }
 
     func removeImageCache(ocIdPlusEtag: String) {
@@ -82,16 +84,12 @@ class NCImageCache: NSObject {
                     global.previewExt64]
 
         for i in 0..<exts.count {
-            cacheImage.removeValue(forKey: ocIdPlusEtag + exts[i])
+            cache.removeValue(forKey: ocIdPlusEtag + exts[i])
         }
     }
 
     func removeAll() {
-        cacheImage.removeAllValues()
-    }
-
-    func count() -> Int {
-        return cacheImage.count
+        cache.removeAllValues()
     }
 
     // MARK: -

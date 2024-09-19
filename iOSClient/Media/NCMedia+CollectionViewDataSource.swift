@@ -90,17 +90,25 @@ extension NCMedia: UICollectionViewDataSource {
         guard let metadata = dataSource.getMetadata(indexPath: indexPath),
               let cell = (cell as? NCGridMediaCell) else { return }
         let width = self.collectionView.frame.size.width / CGFloat(self.numberOfColumns)
+        let ext = NCGlobal.shared.getSizeExtension(width: width)
+        let imageCache = imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext)
+        let cost = indexPath.row
 
-        if self.transitionColumns {
-            cell.imageItem.image = getImage(metadata: metadata, width: width)
-        } else {
-            cell.imageItem.image = nil
-            DispatchQueue.global(qos: .userInteractive).async {
-                let image = self.getImage(metadata: metadata, width: width)
-                DispatchQueue.main.async {
-                    cell.imageItem.image = image
+        cell.imageItem.image = imageCache
+
+        if imageCache == nil {
+            if self.transitionColumns {
+                cell.imageItem.image = getImage(metadata: metadata, width: width, cost: cost)
+            } else {
+                DispatchQueue.global(qos: .userInteractive).async {
+                    let image = self.getImage(metadata: metadata, width: width, cost: cost)
+                    DispatchQueue.main.async {
+                        cell.imageItem.image = image
+                    }
                 }
             }
+        } else {
+            print("[DEBUG] in cache, cost \(indexPath.row)")
         }
     }
 

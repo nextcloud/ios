@@ -122,7 +122,7 @@ extension NCUtility {
         return UIImage(cgImage: thumbnailImageRef)
     }
 
-    func createImageFrom(metadata: tableMetadata) {
+    func createImageFrom(metadata: tableMetadata, cost: Int = 0) {
         if metadata.classFile != NKCommon.TypeClassFile.image.rawValue, metadata.classFile != NKCommon.TypeClassFile.video.rawValue { return }
         var image: UIImage?
         let fileNamePath1024 = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
@@ -139,14 +139,14 @@ extension NCUtility {
 
         guard let image else { return }
 
-        createImageStandard(ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile, image: image)
+        createImageStandard(ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile, image: image, cost: cost)
     }
 
-    func createImage(metadata: tableMetadata, data: Data) {
-        createImage(ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile, data: data)
+    func createImage(metadata: tableMetadata, data: Data, cost: Int = 0) {
+        createImage(ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile, data: data, cost: cost)
     }
 
-    func createImage(ocId: String, etag: String, classFile: String, data: Data) {
+    func createImage(ocId: String, etag: String, classFile: String, data: Data, cost: Int = 0) {
         guard let image = UIImage(data: data) else { return }
         let fileNamePath1024 = self.utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: global.previewExt1024)
 
@@ -154,10 +154,10 @@ extension NCUtility {
             try data.write(to: URL(fileURLWithPath: fileNamePath1024), options: .atomic)
         } catch { }
 
-        createImageStandard(ocId: ocId, etag: etag, classFile: classFile, image: image)
+        createImageStandard(ocId: ocId, etag: etag, classFile: classFile, image: image, cost: cost)
     }
 
-    private func createImageStandard(ocId: String, etag: String, classFile: String, image: UIImage) {
+    private func createImageStandard(ocId: String, etag: String, classFile: String, image: UIImage, cost: Int) {
         let ext = [global.previewExt512, global.previewExt256, global.previewExt128, global.previewExt64]
         let size = [global.size512, global.size256, global.size128, global.size64]
         let compressionQuality = [0.6, 0.7, 0.8, 0.9]
@@ -170,7 +170,7 @@ extension NCUtility {
                     let fileNamePath = utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: ext[i])
                     try data.write(to: URL(fileURLWithPath: fileNamePath))
                     #if !EXTENSION
-                    NCImageCache.shared.addImageCache(ocId: ocId, etag: etag, data: data, ext: ext[i])
+                    NCImageCache.shared.addImageCache(ocId: ocId, etag: etag, data: data, ext: ext[i], cost: cost)
                     #endif
                 } catch { }
             }
