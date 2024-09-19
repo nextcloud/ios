@@ -128,6 +128,11 @@ extension NCMedia {
 
                 if error == .success, let files, self.session.account == account {
 
+                    if lessDate == Date.distantFuture, greaterDate == Date.distantPast, files.isEmpty {
+                        self.dataSource.removeAll()
+                        self.collectionViewReloadData()
+                    }
+
                     self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
                         self.database.addMetadatas(metadatas)
 
@@ -142,19 +147,24 @@ extension NCMedia {
                                 }
                             }
                         }
+                    }
 
-                        if self.isViewActived {
-                            for metadata in metadatas {
-                                self.dataSource.addMetadata(metadata)
-                            }
-                            self.collectionViewReloadData()
+                    if !files.isEmpty {
+                        var news: Bool = false
+
+                        // • For many new elements (e.g., hundreds or thousands): It might be more efficient to add all the elements and then sort, especially if the sorting cost  O(n \log n)  is manageable and the final sort is preferable to handling many individual insertions.
+                        // • For a few new elements (fewer than 100): Inserting each element into the correct position might be simpler and less costly, particularly if the array isn’t too large.
+
+                        if files.count > 100 {
+                            news = self.dataSource.appendFilesWithSort(files)
                         } else {
-                            if lessDate == Date.distantFuture, greaterDate == Date.distantPast, metadatas.count == 0 {
-                                DispatchQueue.main.async {
-                                    self.dataSource.removeAll()
-                                    self.collectionViewReloadData()
-                                }
+                            for file in files {
+                                news = self.dataSource.addFile(file)
                             }
+                        }
+
+                        if news {
+                            self.collectionViewReloadData()
                         }
                     }
                 } else {
@@ -162,9 +172,11 @@ extension NCMedia {
                         NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(error.errorCode) " + error.errorDescription)
                     }
                 }
+
                 DispatchQueue.main.async {
                     self.activityIndicator.stopAnimating()
                 }
+
                 self.hasRunSearchMedia = false
             }
         }
@@ -231,23 +243,30 @@ public class NCMediaDataSource: NSObject {
         super.init()
         self.metadatas.removeAll()
         for metadata in metadatas {
-            appendMetadata(metadata)
+            let metadata = getMetadataFromTableMetadata(metadata)
+            self.metadatas.append(metadata)
         }
     }
 
-    private func insertMetadata(_ metadata: tableMetadata) {
-        let metadata = getMetadataFromTableMetadata(metadata)
+    private func insertInMetadata(tableMetadata: tableMetadata? = nil, file: NKFile? = nil) {
+        var metadata: Metadata?
+
+        if let tableMetadata {
+            metadata = getMetadataFromTableMetadata(tableMetadata)
+        }
+        if let file {
+            metadata = getMetadataFromFile(file)
+        }
+
+        guard let metadata else { return }
+
         for i in 0..<self.metadatas.count {
             if (metadata.date as Date) < self.metadatas[i].date {
                 self.metadatas.insert(metadata, at: i)
                 return
             }
         }
-        self.metadatas.append(metadata)
-    }
 
-    private func appendMetadata(_ metadata: tableMetadata) {
-        let metadata = getMetadataFromTableMetadata(metadata)
         self.metadatas.append(metadata)
     }
 
@@ -259,6 +278,16 @@ public class NCMediaDataSource: NSObject {
                         isLivePhoto: !metadata.livePhotoFile.isEmpty,
                         isVideo: metadata.classFile == NKCommon.TypeClassFile.video.rawValue,
                         ocId: metadata.ocId)
+    }
+
+    private func getMetadataFromFile(_ file: NKFile) -> Metadata {
+        return Metadata(date: file.date as Date,
+                        etag: file.etag,
+                        imageSize: CGSize(width: file.width, height: file.height),
+                        isImage: file.classFile == NKCommon.TypeClassFile.image.rawValue,
+                        isLivePhoto: !file.livePhotoFile.isEmpty,
+                        isVideo: file.classFile == NKCommon.TypeClassFile.video.rawValue,
+                        ocId: file.ocId)
     }
 
     // MARK: -
@@ -283,6 +312,7 @@ public class NCMediaDataSource: NSObject {
         if indexPath.row < self.metadatas.count {
             return self.metadatas[indexPath.row]
         }
+
         return nil
     }
 
@@ -293,6 +323,7 @@ public class NCMediaDataSource: NSObject {
                 metadatas.append(self.metadatas[indexPath.row])
             }
         }
+
         return metadatas
     }
 
@@ -302,15 +333,50 @@ public class NCMediaDataSource: NSObject {
         }
     }
 
-    func addMetadata(_ metadata: tableMetadata) {
-        if let index = metadatas.firstIndex(where: { $0.ocId == metadata.ocId }) {
-            metadatas[index] = getMetadataFromTableMetadata(metadata)
+    @discardableResult
+    func addMetadata(_ tableMetadata: tableMetadata) -> Bool {
+        var hasInserted: Bool = false
+
+        if let index = metadatas.firstIndex(where: { $0.ocId == tableMetadata.ocId }) {
+            metadatas[index] = getMetadataFromTableMetadata(tableMetadata)
         } else {
-            insertMetadata(metadata)
+            insertInMetadata(tableMetadata: tableMetadata)
+            hasInserted = true
         }
+
+        return hasInserted
     }
 
-    func sort() {
-        metadatas = metadatas.sorted { $0.date > $1.date }
+    func addFile(_ file: NKFile) -> Bool {
+        var hasInserted: Bool = false
+
+        if let index = metadatas.firstIndex(where: { $0.ocId == file.ocId }) {
+            metadatas[index] = getMetadataFromFile(file)
+        } else {
+            insertInMetadata(file: file)
+            hasInserted = true
+        }
+
+        return hasInserted
+    }
+
+    func appendFilesWithSort(_ files: [NKFile]) -> Bool {
+        var hasAppend: Bool = false
+
+        for file in files {
+            let metadata = getMetadataFromFile(file)
+            if let index = metadatas.firstIndex(where: { $0.ocId == metadata.ocId }) {
+                self.metadatas[index] = metadata
+            } else {
+                self.metadatas.append(metadata)
+                hasAppend = true
+            }
+        }
+
+        if hasAppend {
+            self.metadatas = self.metadatas.sorted { $0.date > $1.date }
+        }
+
+        return hasAppend
     }
 }
