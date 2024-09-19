@@ -999,7 +999,7 @@
 "_users_"                   = "Users";
 "_users_footer_"            = "Every time the app is reactivated, the account will be requested.";
 "_additional_view_options_" = "Additional view options";
-"_while_charging_"          = "Only while charging";
+"_while_charging_"          = "While charging";
 "_additional_options_"      = "Additional options";
 "_keep_screen_awake_"       = "Keep screen awake while transfering files";
 

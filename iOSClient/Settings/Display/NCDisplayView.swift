@@ -75,7 +75,9 @@ struct NCDisplayView: View {
                     Text(NSLocalizedString("_on_", comment: "")).tag(AwakeMode.on)
                     Text(NSLocalizedString("_while_charging_", comment: "")).tag(AwakeMode.whileCharging)
                 }
-            }.pickerStyle(.menu)
+                       .frame(height: 50)
+            }
+            .pickerStyle(.menu)
         }
         .navigationBarTitle(NSLocalizedString("_display_", comment: ""))
         .defaultViewModifier(model)
