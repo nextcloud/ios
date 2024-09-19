@@ -128,17 +128,17 @@ extension NCMedia {
             UIAction(title: NSLocalizedString("_media_viewimage_show_", comment: ""), image: utility.loadImage(named: "photo")) { _ in
                 self.showOnlyImages = true
                 self.showOnlyVideos = false
-                self.reloadDataSource()
+                self.loadDataSource()
             },
             UIAction(title: NSLocalizedString("_media_viewvideo_show_", comment: ""), image: utility.loadImage(named: "video")) { _ in
                 self.showOnlyImages = false
                 self.showOnlyVideos = true
-                self.reloadDataSource()
+                self.loadDataSource()
             },
             UIAction(title: NSLocalizedString("_media_show_all_", comment: ""), image: utility.loadImage(named: "photo.on.rectangle")) { _ in
                 self.showOnlyImages = false
                 self.showOnlyVideos = false
-                self.reloadDataSource()
+                self.loadDataSource()
             }
         ])
         let viewLayoutMenu = UIAction(title: layoutTitle, image: layoutImage) { _ in
@@ -230,17 +230,17 @@ extension NCMedia {
             UIAction(title: NSLocalizedString("_media_viewimage_show_", comment: ""), image: utility.loadImage(named: "photo")) { _ in
                 self.showOnlyImages = true
                 self.showOnlyVideos = false
-                self.reloadDataSource()
+                self.loadDataSource()
             },
             UIAction(title: NSLocalizedString("_media_viewvideo_show_", comment: ""), image: utility.loadImage(named: "video")) { _ in
                 self.showOnlyImages = false
                 self.showOnlyVideos = true
-                self.reloadDataSource()
+                self.loadDataSource()
             },
             UIAction(title: NSLocalizedString("_media_show_all_", comment: ""), image: utility.loadImage(named: "photo.on.rectangle")) { _ in
                 self.showOnlyImages = false
                 self.showOnlyVideos = false
-                self.reloadDataSource()
+                self.loadDataSource()
             }
         ])
 

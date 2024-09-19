@@ -25,7 +25,7 @@ import UIKit
 import NextcloudKit
 
 extension NCMedia {
-    func reloadDataSource() {
+    func loadDataSource() {
         DispatchQueue.global().async {
             if let metadatas = self.database.getResultsMetadatas(predicate: self.getPredicate(filterLivePhotoFile: true), sortedByKeyPath: "date") {
                 self.dataSource = NCMediaDataSource(metadatas: metadatas)
@@ -125,12 +125,11 @@ extension NCMedia {
                                             showHiddenFiles: NCKeychain().showHiddenFiles,
                                             account: self.session.account,
                                             options: options) { account, files, _, error in
-                if error == .success,
-                   let files,
-                   self.session.account == account {
+
+                if error == .success, let files, self.session.account == account {
 
                     self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
-                        let isNewInsert = self.database.addMetadatasWithReturnIsNewInsert(metadatas)
+                        self.database.addMetadatas(metadatas)
 
                         if let firstCellDate, let lastCellDate, self.isViewActived {
                             let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [ NSPredicate(format: "date >= %@ AND date =< %@", lastCellDate as NSDate, firstCellDate as NSDate), self.getPredicate(filterLivePhotoFile: false)])
@@ -144,8 +143,11 @@ extension NCMedia {
                             }
                         }
 
-                        if self.isViewActived, isNewInsert {
-                            self.reloadDataSource()
+                        if self.isViewActived {
+                            for metadata in metadatas {
+                                self.dataSource.addMetadata(metadata)
+                            }
+                            self.collectionViewReloadData()
                         } else {
                             if lessDate == Date.distantFuture, greaterDate == Date.distantPast, metadatas.count == 0 {
                                 DispatchQueue.main.async {
@@ -155,12 +157,9 @@ extension NCMedia {
                             }
                         }
                     }
-                } else if error == .success {
-                    self.reloadDataSource()
                 } else {
                     DispatchQueue.main.async {
                         NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(error.errorCode) " + error.errorDescription)
-                        self.collectionViewReloadData()
                     }
                 }
                 DispatchQueue.main.async {
@@ -236,25 +235,8 @@ public class NCMediaDataSource: NSObject {
         }
     }
 
-    internal func appendMetadata(_ metadata: tableMetadata) {
-        self.metadatas.append(Metadata(date: metadata.date as Date,
-                                       etag: metadata.etag,
-                                       imageSize: CGSize(width: metadata.width, height: metadata.height),
-                                       isImage: metadata.classFile == NKCommon.TypeClassFile.image.rawValue,
-                                       isLivePhoto: !metadata.livePhotoFile.isEmpty,
-                                       isVideo: metadata.classFile == NKCommon.TypeClassFile.video.rawValue,
-                                       ocId: metadata.ocId))
-    }
-
-    internal func insertMetadata(_ metadata: tableMetadata) {
-        let metadata = Metadata(date: metadata.date as Date,
-                                etag: metadata.etag,
-                                imageSize: CGSize(width: metadata.width, height: metadata.height),
-                                isImage: metadata.classFile == NKCommon.TypeClassFile.image.rawValue,
-                                isLivePhoto: !metadata.livePhotoFile.isEmpty,
-                                isVideo: metadata.classFile == NKCommon.TypeClassFile.video.rawValue,
-                                ocId: metadata.ocId)
-
+    private func insertMetadata(_ metadata: tableMetadata) {
+        let metadata = getMetadataFromTableMetadata(metadata)
         for i in 0..<self.metadatas.count {
             if (metadata.date as Date) < self.metadatas[i].date {
                 self.metadatas.insert(metadata, at: i)
@@ -262,6 +244,21 @@ public class NCMediaDataSource: NSObject {
             }
         }
         self.metadatas.append(metadata)
+    }
+
+    private func appendMetadata(_ metadata: tableMetadata) {
+        let metadata = getMetadataFromTableMetadata(metadata)
+        self.metadatas.append(metadata)
+    }
+
+    private func getMetadataFromTableMetadata(_ metadata: tableMetadata) -> Metadata {
+        return Metadata(date: metadata.date as Date,
+                        etag: metadata.etag,
+                        imageSize: CGSize(width: metadata.width, height: metadata.height),
+                        isImage: metadata.classFile == NKCommon.TypeClassFile.image.rawValue,
+                        isLivePhoto: !metadata.livePhotoFile.isEmpty,
+                        isVideo: metadata.classFile == NKCommon.TypeClassFile.video.rawValue,
+                        ocId: metadata.ocId)
     }
 
     // MARK: -
@@ -306,7 +303,14 @@ public class NCMediaDataSource: NSObject {
     }
 
     func addMetadata(_ metadata: tableMetadata) {
-        removeMetadata([metadata.ocId])
-        insertMetadata(metadata)
+        if let index = metadatas.firstIndex(where: { $0.ocId == metadata.ocId }) {
+            metadatas[index] = getMetadataFromTableMetadata(metadata)
+        } else {
+            insertMetadata(metadata)
+        }
+    }
+
+    func sort() {
+        metadatas = metadatas.sorted { $0.date > $1.date }
     }
 }

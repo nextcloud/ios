@@ -142,7 +142,7 @@ class NCMedia: UIViewController {
 
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
-            self.reloadDataSource()
+            self.loadDataSource()
         }
 
         let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture(_:)))
@@ -150,7 +150,7 @@ class NCMedia: UIViewController {
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
             self.layoutType = self.database.getLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")?.layout ?? NCGlobal.shared.mediaLayoutRatio
-            self.reloadDataSource()
+            self.loadDataSource()
             self.searchMediaUI(true)
         }
 
@@ -175,7 +175,7 @@ class NCMedia: UIViewController {
 
         navigationController?.setMediaAppreance()
         if dataSource.isEmpty() {
-            reloadDataSource()
+            loadDataSource()
         }
     }
 
@@ -326,7 +326,7 @@ class NCMedia: UIViewController {
         setEditMode(false)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            self.reloadDataSource()
+            self.loadDataSource()
             self.searchMediaUI()
         }
     }
@@ -343,7 +343,7 @@ class NCMedia: UIViewController {
         setEditMode(false)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            self.reloadDataSource()
+            self.loadDataSource()
             self.searchMediaUI()
         }
     }
@@ -436,7 +436,7 @@ extension NCMedia: NCSelectDelegate {
         let home = utilityFileSystem.getHomeServer(session: session)
         let mediaPath = serverUrl.replacingOccurrences(of: home, with: "")
         database.setAccountMediaPath(mediaPath, account: session.account)
-        reloadDataSource()
+        loadDataSource()
         searchNewMedia()
     }
 }
