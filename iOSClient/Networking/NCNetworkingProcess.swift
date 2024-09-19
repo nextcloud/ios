@@ -82,11 +82,15 @@ class NCNetworkingProcess {
                 guard !self.hasRun, NCNetworking.shared.isOnline else { return }
                 self.hasRun = true
 
-                let resultsTransfer = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status IN %@", self.global.metadataStatusInTransfer))
-                if resultsTransfer == nil {
-                    // No tranfer, disable
-                } else {
-                    // transfer enable
+                Task {
+                    let hasSynchronizationTask = await NCNetworking.shared.hasSynchronizationTask()
+                    print("[DEBUG] \(hasSynchronizationTask)")
+                    let resultsTransfer = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status IN %@", self.global.metadataStatusInTransfer))
+                    if resultsTransfer == nil && !hasSynchronizationTask {
+                        // No tranfer, disable
+                    } else {
+                        // transfer enable
+                    }
                 }
 
                 guard let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal)) else { return }

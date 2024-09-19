@@ -31,7 +31,7 @@ extension NCNetworking {
                          add: Bool,
                          completion: @escaping (_ errorCode: Int, _ num: Int) -> Void = { _, _ in }) {
         let startDate = Date()
-        let options = NKRequestOptions(timeout: 120, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+        let options = NKRequestOptions(timeout: 120, taskDescription: "synchronization", queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
                                              depth: "infinity",
@@ -93,5 +93,19 @@ extension NCNetworking {
         } else {
             return false
         }
+    }
+
+    func hasSynchronizationTask() async -> Bool {
+        guard let nkSessions = NextcloudKit.shared.nkCommonInstance.nksessions.getArray() else { return false }
+
+        for nkSession in nkSessions {
+            let tasks = await nkSession.sessionData.session.tasks
+            for task in tasks.0 {
+                if task.taskDescription == "synchronization" {
+                    return true
+                }
+            }
+        }
+        return false
     }
 }
