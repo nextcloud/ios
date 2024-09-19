@@ -86,38 +86,18 @@ extension NCMedia: UICollectionViewDataSource {
         }
     }
 
-    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let metadata = dataSource.getMetadata(indexPath: indexPath),
-              let cell = (cell as? NCGridMediaCell) else { return }
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridMediaCell) else {
+            fatalError("Unable to dequeue NCGridMediaCell with identifier gridCell")
+        }
+        guard let metadata = dataSource.getMetadata(indexPath: indexPath) else { return cell }
+
         let width = self.collectionView.frame.size.width / CGFloat(self.numberOfColumns)
         let ext = NCGlobal.shared.getSizeExtension(width: width)
         let imageCache = imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext)
         let cost = indexPath.row
 
         cell.imageItem.image = imageCache
-
-        if imageCache == nil {
-            if self.transitionColumns {
-                cell.imageItem.image = getImage(metadata: metadata, width: width, cost: cost)
-            } else {
-                DispatchQueue.global(qos: .userInteractive).async {
-                    let image = self.getImage(metadata: metadata, width: width, cost: cost)
-                    DispatchQueue.main.async {
-                        cell.imageItem.image = image
-                    }
-                }
-            }
-        } else {
-            print("[DEBUG] in cache, cost \(indexPath.row)")
-        }
-    }
-
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridMediaCell)!
-        guard let metadata = dataSource.getMetadata(indexPath: indexPath) else {
-            return cell
-        }
-
         cell.date = metadata.date as Date
         cell.ocId = metadata.ocId
 
@@ -133,6 +113,24 @@ extension NCMedia: UICollectionViewDataSource {
             cell.selected(true)
         } else {
             cell.selected(false)
+        }
+
+        if imageCache == nil {
+            if self.transitionColumns {
+                cell.imageItem.image = getImage(metadata: metadata, width: width, cost: cost)
+            } else {
+                DispatchQueue.global(qos: .userInteractive).async {
+                    let image = self.getImage(metadata: metadata, width: width, cost: cost)
+                    DispatchQueue.main.async {
+                        if let currentCell = collectionView.cellForItem(at: indexPath) as? NCGridMediaCell,
+                           currentCell.ocId == metadata.ocId {
+                            currentCell.imageItem.image = image
+                        }
+                    }
+                }
+            }
+        } else {
+            print("[DEBUG] in cache, cost \(indexPath.row)")
         }
 
         return cell
