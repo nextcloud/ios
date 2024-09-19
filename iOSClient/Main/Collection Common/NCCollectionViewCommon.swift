@@ -1117,7 +1117,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
            NCNetworking.shared.isOnline,
            let results = database.getResultsMetadatas(predicate: NSPredicate(format: "status IN %@", [global.metadataStatusWaitUpload, global.metadataStatusUploading])),
            !results.isEmpty {
-            return results
+            return Array(results)
         }
         return nil
     }

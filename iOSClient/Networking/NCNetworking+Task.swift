@@ -143,7 +143,7 @@ extension NCNetworking {
                                                                                          self.global.metadataStatusDownloading,
                                                                                          self.global.metadataStatusDownloadError,
                                                                                                    sessionDownload)) {
-            self.database.clearMetadataSession(metadatas: results)
+            self.database.clearMetadataSession(metadatas: Array(results))
         }
     }
 
@@ -165,7 +165,7 @@ extension NCNetworking {
                                                                                                  self.global.metadataStatusDownloading,
                                                                                                  self.global.metadataStatusDownloadError,
                                                                                                  sessionDownloadBackground)) {
-                    self.database.clearMetadataSession(metadatas: results)
+                    self.database.clearMetadataSession(metadatas: Array(results))
                 }
             }
         }
@@ -186,12 +186,12 @@ extension NCNetworking {
 
         if let metadata {
             self.database.deleteMetadataOcId(metadata.ocId)
-        } else if let metadatas = self.database.getResultsMetadatas(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND session == %@",
+        } else if let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND session == %@",
                                                                                          self.global.metadataStatusWaitUpload,
                                                                                          self.global.metadataStatusUploading,
                                                                                          self.global.metadataStatusUploadError,
                                                                                                    sessionUpload)) {
-            self.database.deleteMetadatas(metadatas)
+            self.database.deleteMetadatas(Array(results))
         }
     }
 
@@ -227,7 +227,7 @@ extension NCNetworking {
 
                 if let metadata {
                     self.database.deleteMetadataOcId(metadata.ocId)
-                } else if let metadatas = self.database.getResultsMetadatas(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND (session == %@ || session == %@ || session == %@)",
+                } else if let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "(status == %d || status == %d || status == %d) AND (session == %@ || session == %@ || session == %@)",
                                                                                                  self.global.metadataStatusWaitUpload,
                                                                                                  self.global.metadataStatusUploading,
                                                                                                  self.global.metadataStatusUploadError,
@@ -235,7 +235,7 @@ extension NCNetworking {
                                                                                                            sessionUploadBackgroundWWan,
                                                                                                            sessionUploadBackgroundExt
                                                                                                           )) {
-                    self.database.deleteMetadatas(metadatas)
+                    self.database.deleteMetadatas(Array(results))
                 }
             }
         }
