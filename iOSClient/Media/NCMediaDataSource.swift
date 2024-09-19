@@ -214,7 +214,7 @@ public class NCMediaDataSource: NSObject {
             let metadata = getMetadataFromTableMetadata(metadata)
             self.metadatas.append(metadata)
         }
-        ///
+
         let reference = ThreadSafeReference(to: metadatas)
         DispatchQueue.main.async {
             do {
