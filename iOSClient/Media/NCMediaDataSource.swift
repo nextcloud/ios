@@ -336,9 +336,12 @@ public class NCMediaDataSource: NSObject {
     @discardableResult
     func addMetadata(_ tableMetadata: tableMetadata) -> Bool {
         var hasInserted: Bool = false
+        let metadata = getMetadataFromTableMetadata(tableMetadata)
+
+        if metadata.isLivePhoto, metadata.isVideo { return false }
 
         if let index = metadatas.firstIndex(where: { $0.ocId == tableMetadata.ocId }) {
-            metadatas[index] = getMetadataFromTableMetadata(tableMetadata)
+            metadatas[index] = metadata
         } else {
             insertInMetadata(tableMetadata: tableMetadata)
             hasInserted = true
@@ -349,9 +352,12 @@ public class NCMediaDataSource: NSObject {
 
     func addFile(_ file: NKFile) -> Bool {
         var hasInserted: Bool = false
+        let metadata = getMetadataFromFile(file)
+
+        if metadata.isLivePhoto, metadata.isVideo { return false }
 
         if let index = metadatas.firstIndex(where: { $0.ocId == file.ocId }) {
-            metadatas[index] = getMetadataFromFile(file)
+            self.metadatas[index] = metadata
         } else {
             insertInMetadata(file: file)
             hasInserted = true
@@ -365,7 +371,10 @@ public class NCMediaDataSource: NSObject {
 
         for file in files {
             let metadata = getMetadataFromFile(file)
-            if let index = metadatas.firstIndex(where: { $0.ocId == metadata.ocId }) {
+
+            if metadata.isLivePhoto, metadata.isVideo { continue }
+
+            if let index = self.metadatas.firstIndex(where: { $0.ocId == file.ocId }) {
                 self.metadatas[index] = metadata
             } else {
                 self.metadatas.append(metadata)
