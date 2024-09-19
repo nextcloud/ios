@@ -25,6 +25,7 @@
 import UIKit
 import SwiftRichString
 import NextcloudKit
+import SVGKit
 
 class NCActivity: UIViewController, NCSharePagingContent {
     @IBOutlet weak var viewContainerConstraint: NSLayoutConstraint!
@@ -150,10 +151,6 @@ extension NCActivity: UITableViewDelegate {
         return 50
     }
 
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 80
-    }
-
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 50))
         view.backgroundColor = .clear
@@ -223,7 +220,6 @@ extension NCActivity: UITableViewDataSource {
         cell.indexPath = indexPath
         cell.tableComments = comment
         cell.delegate = self
-        cell.sizeToFit()
 
         // Image
         let fileName = NCSession.shared.getFileName(urlBase: metadata.urlBase, user: comment.actorId)
@@ -233,7 +229,7 @@ extension NCActivity: UITableViewDataSource {
         cell.labelUser.textColor = NCBrandColor.shared.textColor
         // Date
         cell.labelDate.text = utility.dateDiff(comment.creationDateTime as Date)
-        cell.labelDate.textColor = .systemGray4
+        cell.labelDate.textColor = .lightGray
         // Message
         cell.labelMessage.text = comment.message
         cell.labelMessage.textColor = NCBrandColor.shared.textColor
@@ -243,6 +239,8 @@ extension NCActivity: UITableViewDataSource {
         } else {
             cell.buttonMenu.isHidden = true
         }
+
+        cell.sizeToFit()
 
         return cell
     }
@@ -264,11 +262,14 @@ extension NCActivity: UITableViewDataSource {
 
         // icon
         if !activity.icon.isEmpty {
+            activity.icon = activity.icon.replacingOccurrences(of: ".png", with: ".svg")
             let fileNameIcon = (activity.icon as NSString).lastPathComponent
             let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileNameIcon
 
+            let image = fileNameIcon.contains(".svg") ? SVGKImage(contentsOfFile: fileNameLocalPath).uiImage : UIImage(contentsOfFile: fileNameLocalPath)
+
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
-                if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                if let image {
                     cell.icon.image = image.withTintColor(NCBrandColor.shared.textColor, renderingMode: .alwaysOriginal)
                 }
             } else {
