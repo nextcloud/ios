@@ -111,7 +111,7 @@ class FileActionsHeader: UIView {
 		// MARK: Files Header
 		switch selectionState {
 		case .none:
-			textDescription = NSLocalizedString("_select_selectionLabel_selectAll", tableName: nil, bundle: Bundle.main, value: "select all", comment: "")
+			textDescription = NSLocalizedString("_select_selectionLabel_selectAll_", tableName: nil, bundle: Bundle.main, value: "select all", comment: "")
             imageResource = .FileSelection.listItemDeselected
             selectAllImageColor = grayButtonTintColor
 		case .some(let count):
@@ -119,7 +119,7 @@ class FileActionsHeader: UIView {
             imageResource = .FileSelection.listItemSomeSelected
             selectAllImageColor = NCBrandColor.shared.brandElement
 		case .all:
-			textDescription = NSLocalizedString("_select_selectionLabel_deselectAll", tableName: nil, bundle: Bundle.main, value: "deselect all", comment: "")
+			textDescription = NSLocalizedString("_select_selectionLabel_deselectAll_", tableName: nil, bundle: Bundle.main, value: "deselect all", comment: "")
             imageResource = .FileSelection.listItemSelected
             selectAllImageColor = NCBrandColor.shared.brandElement
 		}
@@ -137,9 +137,9 @@ class FileActionsHeader: UIView {
 
 		func selectionDescription(for count: Int) -> String {
 			if count == 1 {
-				return NSLocalizedString("_select_selectionLabel_oneItemSelected", tableName: nil, bundle: Bundle.main, value: "one item selected", comment: "")
+				return NSLocalizedString("_select_selectionLabel_oneItemSelected_", tableName: nil, bundle: Bundle.main, value: "one item selected", comment: "")
 			}
-			return String.localizedStringWithFormat(NSLocalizedString("_select_selectionLabel_manyItemsSelected", tableName: nil, bundle: Bundle.main, value: "%@ items selected", comment: ""), "\(count)")
+			return String.localizedStringWithFormat(NSLocalizedString("_select_selectionLabel_manyItemsSelected_", tableName: nil, bundle: Bundle.main, value: "%@ items selected", comment: ""), "\(count)")
 		}
 	}
 	

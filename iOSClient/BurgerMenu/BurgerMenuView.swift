@@ -48,7 +48,7 @@ struct BurgerMenuView: View {
                                     .resizable()
                                     .scaledToFit()
                                     .frame(width: 10, height: 16)
-                                Text(NSLocalizedString("_previous_", comment: ""))
+                                Text(NSLocalizedString("_previous_", tableName: nil, bundle: Bundle.main, value: "Previous", comment: ""))
                                     .font(_Constants.font)
                             }
                             .foregroundStyle(Color(.BurgerMenu.buttonForeground))
@@ -110,7 +110,7 @@ private struct BurgerMenuMainSectionView: View {
                         HStack(spacing: 12, content: {
                             Image(.BurgerMenu.cloud)
                                 .buttonIconStyled()
-                            Text(NSLocalizedString("_storage_used_",
+                            Text(NSLocalizedString("_storage_used_", tableName: nil, bundle: Bundle.main, value: "Storage used",
                                                    comment: ""))
                             .font(_Constants.font.weight(.semibold))
                         })
