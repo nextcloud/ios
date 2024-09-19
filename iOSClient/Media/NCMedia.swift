@@ -73,14 +73,10 @@ class NCMedia: UIViewController {
     var currentScale: CGFloat = 1.0
     let maxColumns: Int = 7
     var transitionColumns = false
-    var currentExt: String = ""
-    var numberOfColumns: Int = 0 {
-        didSet {
-            rebuildCache()
-        }
-    }
+    var numberOfColumns: Int = 0
+    var lastNumberOfColumns: Int = 0
 
-    var hiddenCellMetadats: [String] = []
+    var hiddenCellMetadats: ThreadSafeArray<String> = ThreadSafeArray()
 
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: tabBarController)
@@ -142,30 +138,28 @@ class NCMedia: UIViewController {
 
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
-            self.reloadDataSource()
+            self.loadDataSource()
         }
 
-        // let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture(_:)))
-        // collectionView.addGestureRecognizer(pinchGesture)
+        let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture(_:)))
+        collectionView.addGestureRecognizer(pinchGesture)
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
             self.layoutType = self.database.getLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")?.layout ?? NCGlobal.shared.mediaLayoutRatio
-            self.reloadDataSource()
+            self.imageCache.removeAll()
+            self.loadDataSource()
             self.searchMediaUI(true)
         }
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterClearCache), object: nil, queue: nil) { _ in
             self.dataSource.removeAll()
+            self.imageCache.removeAll()
             self.searchMediaUI(true)
         }
 
         NotificationCenter.default.addObserver(self, selector: #selector(fileExists(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFileExists), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
-
-        NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
-
-        NotificationCenter.default.addObserver(self, selector: #selector(uploadedLivePhoto(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedLivePhoto), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(networkRemoveAll), name: UIApplication.didEnterBackgroundNotification, object: nil)
     }
@@ -175,7 +169,7 @@ class NCMedia: UIViewController {
 
         navigationController?.setMediaAppreance()
         if dataSource.isEmpty() {
-            reloadDataSource()
+            loadDataSource()
         }
     }
 
@@ -286,34 +280,6 @@ class NCMedia: UIViewController {
         }
     }
 
-    @objc func uploadedFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let error = userInfo["error"] as? NKError,
-              let ocId = userInfo["ocId"] as? String else { return }
-
-        if error == .success, let metadata = database.getMetadataFromOcId(ocId),
-           metadata.isImageOrVideo {
-            dataSource.addMetadata(metadata)
-            collectionViewReloadData()
-        }
-    }
-
-    @objc func uploadedLivePhoto(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let error = userInfo["error"] as? NKError,
-              let ocId = userInfo["ocId"] as? String else { return }
-
-        if error == .success, let metadata = database.getMetadataFromOcId(ocId) {
-            if metadata.isImage {
-                dataSource.addMetadata(metadata)
-                collectionViewReloadData()
-            } else if let metadataImage = self.database.getResultMetadata(predicate: NSPredicate(format: "account == %@ AND fileId == %@", metadata.account, metadata.livePhotoFile)) {
-                dataSource.addMetadata(metadataImage)
-                collectionViewReloadData()
-            }
-        }
-    }
-
     @objc func moveFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let error = userInfo["error"] as? NKError,
@@ -326,7 +292,7 @@ class NCMedia: UIViewController {
         setEditMode(false)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            self.reloadDataSource()
+            self.loadDataSource()
             self.searchMediaUI()
         }
     }
@@ -343,7 +309,7 @@ class NCMedia: UIViewController {
         setEditMode(false)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            self.reloadDataSource()
+            self.loadDataSource()
             self.searchMediaUI()
         }
     }
@@ -361,7 +327,6 @@ class NCMedia: UIViewController {
         if let image = imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
             returnImage = image
         } else if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
-            imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext, cost: cost)
             returnImage = image
         } else if NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
             DispatchQueue.main.async {
@@ -436,8 +401,11 @@ extension NCMedia: NCSelectDelegate {
         guard let serverUrl else { return }
         let home = utilityFileSystem.getHomeServer(session: session)
         let mediaPath = serverUrl.replacingOccurrences(of: home, with: "")
+
         database.setAccountMediaPath(mediaPath, account: session.account)
-        reloadDataSource()
+
+        imageCache.removeAll()
+        loadDataSource()
         searchNewMedia()
     }
 }
