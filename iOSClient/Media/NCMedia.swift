@@ -163,10 +163,6 @@ class NCMedia: UIViewController {
 
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
-
-        NotificationCenter.default.addObserver(self, selector: #selector(uploadedLivePhoto(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedLivePhoto), object: nil)
-
         NotificationCenter.default.addObserver(self, selector: #selector(networkRemoveAll), name: UIApplication.didEnterBackgroundNotification, object: nil)
     }
 
@@ -283,34 +279,6 @@ class NCMedia: UIViewController {
             dataSource.removeMetadata([ocId])
             database.deleteMetadataOcId(ocId)
             collectionViewReloadData()
-        }
-    }
-
-    @objc func uploadedFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let error = userInfo["error"] as? NKError,
-              let ocId = userInfo["ocId"] as? String else { return }
-
-        if error == .success, let metadata = database.getMetadataFromOcId(ocId),
-           metadata.isImageOrVideo {
-            dataSource.addMetadata(metadata)
-            collectionViewReloadData()
-        }
-    }
-
-    @objc func uploadedLivePhoto(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let error = userInfo["error"] as? NKError,
-              let ocId = userInfo["ocId"] as? String else { return }
-
-        if error == .success, let metadata = database.getMetadataFromOcId(ocId) {
-            if metadata.isImage {
-                dataSource.addMetadata(metadata)
-                collectionViewReloadData()
-            } else if let metadataImage = self.database.getResultMetadata(predicate: NSPredicate(format: "account == %@ AND fileId == %@", metadata.account, metadata.livePhotoFile)) {
-                dataSource.addMetadata(metadataImage)
-                collectionViewReloadData()
-            }
         }
     }
 
