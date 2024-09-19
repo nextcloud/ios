@@ -166,12 +166,12 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         if isOffline {
             if metadata.directory {
                 self.database.setDirectory(serverUrl: serverUrl, offline: false, metadata: metadata)
-                if let metadatas = database.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND sessionSelector == %@ AND status == %d",
+                if let results = database.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND sessionSelector == %@ AND status == %d",
                                                                                        metadata.account,
                                                                                        serverUrl,
                                                                                        NCGlobal.shared.selectorSynchronizationOffline,
                                                                                        NCGlobal.shared.metadataStatusWaitDownload)) {
-                    database.clearMetadataSession(metadatas: metadatas)
+                    database.clearMetadataSession(metadatas: Array(results))
                 }
             } else {
                 database.setOffLocalFile(ocId: metadata.ocId)

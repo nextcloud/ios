@@ -101,7 +101,7 @@ class NCGlobal: NSObject {
     func getSizeExtension(width: CGFloat?) -> String {
         guard let width else { return previewExt512 }
 
-        switch (width * 3) {
+        switch (width * 4) {
         case 0...119:
             return previewExt64
         case 120...192:
