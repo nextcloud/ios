@@ -42,27 +42,6 @@ extension NCMedia {
         }
     }
 
-    func rebuildCache() {
-        guard !transitionColumns, !dataSource.getMetadatas().isEmpty else { return }
-        let width = self.collectionView.frame.size.width / CGFloat(self.numberOfColumns)
-        let ext = NCGlobal.shared.getSizeExtension(width: width)
-        var cost = 0
-
-        if currentExt != ext {
-            currentExt = ext
-            DispatchQueue.global(qos: .userInteractive).asyncAfter(deadline: .now() + 0.2) {
-                self.imageCache.removeAll()
-                for metadata in self.dataSource.getMetadatas() {
-                    if self.imageCache.cache.count >= self.imageCache.countLimit { break }
-                    if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
-                        self.imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext, cost: cost)
-                        cost += 1
-                    }
-                }
-            }
-        }
-    }
-
     // MARK: - Search media
 
     @objc func searchMediaUI(_ distant: Bool = false) {

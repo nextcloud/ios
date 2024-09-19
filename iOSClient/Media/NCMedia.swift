@@ -71,14 +71,10 @@ class NCMedia: UIViewController {
 
     var lastScale: CGFloat = 1.0
     var currentScale: CGFloat = 1.0
-    let maxColumns: Int = 12
+    let maxColumns: Int = 7
     var transitionColumns = false
-    var currentExt: String = ""
-    var numberOfColumns: Int = 0 {
-        didSet {
-            rebuildCache()
-        }
-    }
+    var numberOfColumns: Int = 0
+    var lastNumberOfColumns: Int = 0
 
     var hiddenCellMetadats: ThreadSafeArray<String> = ThreadSafeArray()
 
@@ -150,12 +146,14 @@ class NCMedia: UIViewController {
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
             self.layoutType = self.database.getLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")?.layout ?? NCGlobal.shared.mediaLayoutRatio
+            self.imageCache.removeAll()
             self.loadDataSource()
             self.searchMediaUI(true)
         }
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterClearCache), object: nil, queue: nil) { _ in
             self.dataSource.removeAll()
+            self.imageCache.removeAll()
             self.searchMediaUI(true)
         }
 
@@ -403,7 +401,10 @@ extension NCMedia: NCSelectDelegate {
         guard let serverUrl else { return }
         let home = utilityFileSystem.getHomeServer(session: session)
         let mediaPath = serverUrl.replacingOccurrences(of: home, with: "")
+
         database.setAccountMediaPath(mediaPath, account: session.account)
+
+        imageCache.removeAll()
         loadDataSource()
         searchNewMedia()
     }
