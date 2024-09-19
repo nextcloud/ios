@@ -136,7 +136,7 @@ extension NCMedia {
                     DispatchQueue.global(qos: .background).async {
                         self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
                             self.database.addMetadatas(metadatas)
-        
+
                             if let firstCellDate, let lastCellDate, self.isViewActived {
                                 let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [ NSPredicate(format: "date >= %@ AND date =< %@", lastCellDate as NSDate, firstCellDate as NSDate), self.getPredicate(filterLivePhotoFile: false)])
 
