@@ -50,7 +50,6 @@ class NCMedia: UIViewController {
     var dataSource = NCMediaDataSource()
     var serverUrl = ""
     let refreshControl = UIRefreshControl()
-    let taskDescriptionRetrievesProperties = "retrievesProperties"
     var isTop: Bool = true
     var isEditMode = false
     var fileSelect: [String] = []
@@ -241,14 +240,12 @@ class NCMedia: UIViewController {
         NCNetworking.shared.fileExistsQueue.cancelAll()
         NCNetworking.shared.downloadThumbnailQueue.cancelAll()
 
-        if let nkSession = NextcloudKit.shared.nkCommonInstance.getSession(account: session.account) {
-            nkSession.sessionData.session.getTasksWithCompletionHandler { dataTasks, _, _ in
-                dataTasks.forEach {
-                    if $0.taskDescription == self.taskDescriptionRetrievesProperties {
-                        $0.cancel()
-                    }
-                }
+        Task {
+            let tasks = await NCNetworking.shared.getAllDataTask()
+            for task in tasks.filter({ $0.description == NCGlobal.shared.taskDescriptionRetrievesProperties }) {
+                task.cancel()
             }
+
         }
     }
 

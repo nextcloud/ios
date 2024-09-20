@@ -415,4 +415,8 @@ class NCGlobal: NSObject {
     // GROUP AMIN
     //
     let groupAdmin                          = "admin"
+
+    // DATA TASK DESCRIPTION
+    //
+    let taskDescriptionRetrievesProperties  = "retrievesProperties"
 }

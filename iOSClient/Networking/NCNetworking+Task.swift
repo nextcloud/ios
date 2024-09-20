@@ -241,7 +241,23 @@ extension NCNetworking {
         }
     }
 
-    // MARK: - Zombie
+    // MARK: -
+
+    func getAllDataTask() async -> [URLSessionDataTask] {
+        guard let nkSessions = NextcloudKit.shared.nkCommonInstance.nksessions.getArray() else { return [] }
+        var taskArray: [URLSessionDataTask] = []
+
+        for nkSession in nkSessions {
+            let tasks = await nkSession.sessionData.session.tasks
+            for task in tasks.0 {
+                taskArray.append(task)
+            }
+        }
+        return taskArray
+    }
+
+
+    // MARK: -
 
     func verifyZombie() async {
         var metadatas: [tableMetadata] = []
