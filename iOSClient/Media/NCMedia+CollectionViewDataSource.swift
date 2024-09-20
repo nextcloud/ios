@@ -97,6 +97,7 @@ extension NCMedia: UICollectionViewDataSource {
         let imageCache = imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext)
         let cost = indexPath.row
 
+        cell.backgroundColor = .secondarySystemBackground
         cell.imageItem.image = imageCache
         cell.date = metadata.date as Date
         cell.ocId = metadata.ocId
@@ -115,7 +116,7 @@ extension NCMedia: UICollectionViewDataSource {
             cell.selected(false)
         }
 
-        if imageCache == nil {
+        if cell.imageItem.image == nil {
             if self.transitionColumns {
                 cell.imageItem.image = getImage(metadata: metadata, width: width, cost: cost)
             } else {
@@ -123,8 +124,9 @@ extension NCMedia: UICollectionViewDataSource {
                     let image = self.getImage(metadata: metadata, width: width, cost: cost)
                     DispatchQueue.main.async {
                         if let currentCell = collectionView.cellForItem(at: indexPath) as? NCGridMediaCell,
-                           currentCell.ocId == metadata.ocId {
+                           currentCell.ocId == metadata.ocId, let image {
                             currentCell.imageItem.image = image
+                            currentCell.backgroundColor = .black
                         }
                     }
                 }
