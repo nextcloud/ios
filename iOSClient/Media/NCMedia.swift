@@ -67,6 +67,7 @@ class NCMedia: UIViewController {
     let playImage = NCUtility().loadImage(named: "play.fill", colors: [.white])
     var photoImage = UIImage()
     var videoImage = UIImage()
+    var pinchGesture: UIPinchGestureRecognizer = UIPinchGestureRecognizer()
 
     var lastScale: CGFloat = 1.0
     var currentScale: CGFloat = 1.0
@@ -91,6 +92,10 @@ class NCMedia: UIViewController {
 
     var isViewActived: Bool {
         return self.isViewLoaded && self.view.window != nil
+    }
+
+    var isPinchGestureActive: Bool {
+        return pinchGesture.state == .began || pinchGesture.state == .changed
     }
 
     // MARK: - View Life Cycle
@@ -145,7 +150,7 @@ class NCMedia: UIViewController {
         }
 
 #if DEBUG
-        let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture(_:)))
+        pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture(_:)))
         collectionView.addGestureRecognizer(pinchGesture)
 #endif
 

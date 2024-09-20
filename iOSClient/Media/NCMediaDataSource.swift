@@ -49,7 +49,7 @@ extension NCMedia {
         self.lockQueue.sync {
             guard self.isViewActived,
                   !self.hasRunSearchMedia,
-                  !self.transitionColumns,
+                  !self.isPinchGestureActive,
                   !isEditMode,
                   NCNetworking.shared.downloadThumbnailQueue.operationCount == 0,
                   let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account))

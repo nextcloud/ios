@@ -116,7 +116,7 @@ extension NCMedia: UICollectionViewDataSource {
         }
 
         if cell.imageItem.image == nil {
-            if self.transitionColumns {
+            if isPinchGestureActive || ext == NCGlobal.shared.previewExt512 || ext == NCGlobal.shared.previewExt1024 {
                 cell.imageItem.image = getImage(metadata: metadata, cost: cost)
             } else {
                 DispatchQueue.global(qos: .userInteractive).async {
