@@ -64,6 +64,8 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
         labelTitle.text = ""
         labelInfo.text = ""
         labelSubinfo.text = ""
+        
+        imageSelect.image = UIImage(resource: .FileSelection.gridItemSelected)
     }
 
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
@@ -104,9 +106,10 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
             setA11yActions()
         }
         if status {
-            imageSelect.image = NCImageCache.images.checkedYes
+            setBorderForGridViewCell(isSelected: true)
             imageSelect.isHidden = false
         } else {
+            setBorderForGridViewCell(isSelected: false)
             imageSelect.isHidden = true
         }
     }

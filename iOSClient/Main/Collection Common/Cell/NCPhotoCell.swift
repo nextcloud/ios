@@ -28,7 +28,6 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
-    @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var imageItemBottom: NSLayoutConstraint!
 
@@ -95,11 +94,8 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
         accessibilityLabel = nil
         accessibilityValue = nil
 
-        imageVisualEffect.clipsToBounds = true
-        imageVisualEffect.alpha = 0.5
-
         imageSelect.isHidden = true
-        imageSelect.image = NCImageCache.images.checkedYes
+        imageSelect.image = UIImage(resource: .FileSelection.gridItemSelected)
 
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPress(gestureRecognizer:)))
         longPressedGesture.minimumPressDuration = 0.5
@@ -118,11 +114,11 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
 
     func selected(_ status: Bool, isEditMode: Bool) {
         if status {
+            setBorderForGridViewCell(isSelected: true)
             imageSelect.isHidden = false
-            imageVisualEffect.isHidden = false
         } else {
+            setBorderForGridViewCell(isSelected: false)
             imageSelect.isHidden = true
-            imageVisualEffect.isHidden = true
         }
     }
 
