@@ -108,7 +108,7 @@ class NCContentPresenter: NSObject {
             switch error.errorCode {
             case Int(CFNetworkErrors.cfurlErrorNotConnectedToInternet.rawValue):
                 let image = UIImage(named: "InfoNetwork")?.image(color: .white, size: 20)
-                self.noteTop(text: NSLocalizedString(title, comment: ""), image: image, color: .lightGray, delay: delay, priority: .max)
+                self.noteTop(text: NSLocalizedString("_network_not_available_", comment: ""), image: image, color: .lightGray, delay: delay, priority: .max)
             default:
                 var responseMessage = ""
                 if let data = error.responseData {

@@ -184,7 +184,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         // Refresh Control
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
-            self.dataSource.removeAll()
             self.database.cleanEtagDirectory(serverUrl: self.serverUrl, account: self.session.account)
             self.reloadDataSourceNetwork()
         }

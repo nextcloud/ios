@@ -97,18 +97,21 @@ class NCViewerProviderContextMenu: UIViewController {
             }
             // AUTO DOWNLOAD IMAGE GIF
             if !utilityFileSystem.fileProviderStorageExists(metadata),
+               NCNetworking.shared.isOnline,
                metadata.contentType == "image/gif",
                NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
                 NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: ""))
             }
             // AUTO DOWNLOAD IMAGE SVG
             if !utilityFileSystem.fileProviderStorageExists(metadata),
+               NCNetworking.shared.isOnline,
                metadata.contentType == "image/svg+xml",
                NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
                 NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: ""))
             }
             // AUTO DOWNLOAD LIVE PHOTO
             if let metadataLivePhoto = self.metadataLivePhoto,
+               NCNetworking.shared.isOnline,
                !utilityFileSystem.fileProviderStorageExists(metadataLivePhoto),
                NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
                 NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadataLivePhoto, selector: ""))

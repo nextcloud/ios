@@ -65,10 +65,17 @@ extension NCMedia {
     }
 
     func setTitleDate() {
-        if let firstVisibleIndexPath = collectionView.indexPathsForVisibleItems.min(by: { $0.row < $1.row && $0.section <= $1.section }),
-           let metadata = dataSource.getMetadata(indexPath: firstVisibleIndexPath) {
-            titleDate?.text = utility.getTitleFromDate(metadata.date as Date)
+
+        if let layoutAttributes = collectionView.collectionViewLayout.layoutAttributesForElements(in: collectionView.bounds) {
+            let sortedAttributes = layoutAttributes.sorted { $0.frame.minY < $1.frame.minY || ($0.frame.minY == $1.frame.minY && $0.frame.minX < $1.frame.minX) }
+
+            if let firstAttribute = sortedAttributes.first, let metadata = dataSource.getMetadata(indexPath: firstAttribute.indexPath) {
+                titleDate?.text = utility.getTitleFromDate(metadata.date as Date)
+                return
+            }
         }
+
+        titleDate?.text = ""
     }
 
     func setColor() {
@@ -148,6 +155,7 @@ extension NCMedia {
                 viewController.delegate = self
                 viewController.typeOfCommandView = .select
                 viewController.type = "mediaFolder"
+                viewController.session = self.session
                 self.present(navigationController, animated: true)
             })
         ])
