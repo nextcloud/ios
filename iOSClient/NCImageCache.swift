@@ -33,13 +33,15 @@ class NCImageCache: NSObject {
     private let utility = NCUtility()
     private let global = NCGlobal.shared
 
-    private let allowExtensions = [NCGlobal.shared.previewExt256]
+    private let allowExtensions = [NCGlobal.shared.previewExt256, NCGlobal.shared.previewExt128]
     private var brandElementColor: UIColor?
 
     public var countLimit = 10_000
     lazy var cache: LRUCache<String, UIImage> = {
         return LRUCache<String, UIImage>(countLimit: countLimit)
     }()
+
+    public var isLoadingCache: Bool = false
 
     override init() {
         super.init()
@@ -80,12 +82,8 @@ class NCImageCache: NSObject {
     }
 
     func removeImageCache(ocIdPlusEtag: String) {
-        let exts = [global.previewExt1024,
-                    global.previewExt512,
-                    global.previewExt256]
-
-        for i in 0..<exts.count {
-            cache.removeValue(forKey: ocIdPlusEtag + exts[i])
+        for i in 0..<allowExtensions.count {
+            cache.removeValue(forKey: ocIdPlusEtag + allowExtensions[i])
         }
     }
 
@@ -97,20 +95,25 @@ class NCImageCache: NSObject {
 
     func createMediaCache(session: NCSession.Session) {
         var cost: Int = 0
-        guard let layout = NCManageDatabase.shared.getLayoutForView(account: session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "") else { return }
-        let ext = NCGlobal.shared.getSizeExtension(column: layout.columnPhoto)
 
         if let metadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: getMediaPredicate(filterLivePhotoFile: true, session: session, showOnlyImages: false, showOnlyVideos: false), sortedByKeyPath: "date") {
 
             cache.removeAllValues()
+            isLoadingCache = true
 
             for metadata in metadatas {
-                if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
-                    addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext, cost: cost)
+                if let image128 = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt128),
+                   let image256 = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt256) {
+
+                    addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image128, ext: NCGlobal.shared.previewExt128, cost: cost)
+                    addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image256, ext: NCGlobal.shared.previewExt256, cost: cost)
+
                     cost += 1
                     if cost == countLimit { break }
                 }
             }
+            isLoadingCache = false
+            print(cost)
         }
     }
 

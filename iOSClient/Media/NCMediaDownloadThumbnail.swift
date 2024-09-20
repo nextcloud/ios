@@ -60,14 +60,7 @@ class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
 
                 self.media?.filesExists.append(self.metadata.ocId)
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
-                NCUtility().createImage(metadata: tableMetadata, data: data, cost: self.cost)
-
-                if NCImageCache.shared.cache.count < NCImageCache.shared.countLimit,
-                   self.cost < NCImageCache.shared.countLimit {
-                    NCImageCache.shared.addImageCache(ocId: self.metadata.ocId, etag: self.metadata.etag, data: data, ext: NCGlobal.shared.getSizeExtension(column: self.media?.numberOfColumns ?? 3), cost: self.cost)
-                }
-
-                let image = self.media?.getImage(metadata: self.metadata, cost: self.cost)
+                NCUtility().createImage(metadata: tableMetadata, data: data)
 
                 DispatchQueue.main.async {
                     for case let cell as NCGridMediaCell in collectionView.visibleCells {
@@ -75,7 +68,7 @@ class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
                             UIView.transition(with: cell.imageItem,
                                               duration: 0.75,
                                               options: .transitionCrossDissolve,
-                                              animations: { cell.imageItem.image = image },
+                                              animations: { cell.imageItem.image = self.media?.getImage(metadata: self.metadata, cost: self.cost) },
                                               completion: nil)
                             break
                         }
