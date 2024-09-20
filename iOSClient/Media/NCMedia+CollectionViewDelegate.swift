@@ -38,15 +38,15 @@ extension NCMedia: UICollectionViewDelegate {
                 }
             }
             if isEditMode {
-                if let index = selectOcId.firstIndex(of: metadata.ocId) {
-                    selectOcId.remove(at: index)
+                if let index = fileSelect.firstIndex(of: metadata.ocId) {
+                    fileSelect.remove(at: index)
                     mediaCell?.selected(false)
                 } else {
-                    selectOcId.append(metadata.ocId)
+                    fileSelect.append(metadata.ocId)
                     mediaCell?.selected(true)
 
                 }
-                tabBarSelect.selectCount = selectOcId.count
+                tabBarSelect.selectCount = fileSelect.count
             } else {
                 // ACTIVE SERVERURL
                 serverUrl = metadata.serverUrl

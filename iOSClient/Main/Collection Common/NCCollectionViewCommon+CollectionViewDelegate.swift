@@ -33,13 +33,13 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         else { return }
 
         if isEditMode {
-            if let index = selectOcId.firstIndex(of: metadata.ocId) {
-                selectOcId.remove(at: index)
+            if let index = fileSelect.firstIndex(of: metadata.ocId) {
+                fileSelect.remove(at: index)
             } else {
-                selectOcId.append(metadata.ocId)
+                fileSelect.append(metadata.ocId)
             }
             collectionView.reloadItems(at: [indexPath])
-            tabBarSelect.update(selectOcId: selectOcId, metadatas: getSelectedMetadatas(), userId: metadata.userId)
+            tabBarSelect.update(fileSelect: fileSelect, metadatas: getSelectedMetadatas(), userId: metadata.userId)
             return
         }
 

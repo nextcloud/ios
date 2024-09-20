@@ -110,7 +110,7 @@ extension NCMedia: UICollectionViewDataSource {
             cell.imageStatus.image = nil
         }
 
-        if isEditMode, selectOcId.contains(metadata.ocId) {
+        if isEditMode, fileSelect.contains(metadata.ocId) {
             cell.selected(true)
         } else {
             cell.selected(false)

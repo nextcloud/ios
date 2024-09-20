@@ -53,8 +53,9 @@ class NCMedia: UIViewController {
     let taskDescriptionRetrievesProperties = "retrievesProperties"
     var isTop: Bool = true
     var isEditMode = false
-    var selectOcId: [String] = []
+    var fileSelect: [String] = []
     var filesExists: [String] = []
+    var fileDeleted: [String] = []
     var attributesZoomIn: UIMenuElement.Attributes = []
     var attributesZoomOut: UIMenuElement.Attributes = []
     let gradient: CAGradientLayer = CAGradientLayer()
@@ -253,6 +254,8 @@ class NCMedia: UIViewController {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? [String],
               let error = userInfo["error"] as? NKError else { return }
+
+        fileDeleted = fileDeleted + ocId
 
         dataSource.removeMetadata(ocId)
         collectionViewReloadData()

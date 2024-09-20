@@ -346,7 +346,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         // Edit mode
-        if selectOcId.contains(metadata.ocId) {
+        if fileSelect.contains(metadata.ocId) {
             cell.selected(true, isEditMode: isEditMode, account: metadata.account)
             a11yValues.append(NSLocalizedString("_selected_", comment: ""))
         } else {

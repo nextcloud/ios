@@ -29,13 +29,13 @@ class NCDragDrop: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
     let database = NCManageDatabase.shared
 
-    func performDrag(metadata: tableMetadata? = nil, selectOcId: [String]? = nil) -> [UIDragItem] {
+    func performDrag(metadata: tableMetadata? = nil, fileSelect: [String]? = nil) -> [UIDragItem] {
         var metadatas: [tableMetadata] = []
 
         if let metadata, metadata.status == 0, !metadata.isDirectoryE2EE, !metadata.e2eEncrypted {
             metadatas.append(metadata)
-        } else if let selectOcId {
-            for ocId in selectOcId {
+        } else if let fileSelect {
+            for ocId in fileSelect {
                 if let metadata = database.getMetadataFromOcId(ocId), metadata.status == 0, !metadata.isDirectoryE2EE, !metadata.e2eEncrypted {
                     metadatas.append(metadata)
                 }

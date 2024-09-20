@@ -37,13 +37,16 @@ extension NCMedia {
     }
 
     func setSelectcancelButton() {
-        selectOcId.removeAll()
-        tabBarSelect.selectCount = selectOcId.count
+        fileSelect.removeAll()
+        fileDeleted.removeAll()
+        tabBarSelect.selectCount = fileSelect.count
+
         if let visibleCells = self.collectionView?.indexPathsForVisibleItems.compactMap({ self.collectionView?.cellForItem(at: $0) }) {
             for case let cell as NCGridMediaCell in visibleCells {
                 cell.selected(false)
             }
         }
+
         if isEditMode {
             activityIndicatorTrailing.constant = 150
             selectOrCancelButton.setTitle( NSLocalizedString("_cancel_", comment: ""), for: .normal)
@@ -322,16 +325,16 @@ extension NCMedia {
 
 extension NCMedia: NCMediaSelectTabBarDelegate {
     func delete() {
-        let selectOcId = self.selectOcId.map { $0 }
+        let fileSelect = self.fileSelect.map { $0 }
         var alertStyle = UIAlertController.Style.actionSheet
         if UIDevice.current.userInterfaceIdiom == .pad { alertStyle = .alert }
-        if !selectOcId.isEmpty {
+        if !fileSelect.isEmpty {
             let alertController = UIAlertController(title: nil, message: nil, preferredStyle: alertStyle)
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_delete_selected_photos_", comment: ""), style: .destructive) { (_: UIAlertAction) in
                 Task {
                     var error = NKError()
                     var ocIds: [String] = []
-                    for ocId in selectOcId where error == .success {
+                    for ocId in fileSelect where error == .success {
                         if let metadata = self.database.getMetadataFromOcId(ocId) {
                             error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false, sceneIdentifier: self.controller?.sceneIdentifier)
                             if error == .success {
