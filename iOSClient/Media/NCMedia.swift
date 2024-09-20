@@ -236,6 +236,8 @@ class NCMedia: UIViewController {
         timerSearchNewMedia?.invalidate()
         timerSearchNewMedia = nil
         filesExists.removeAll()
+        fileDeleted.removeAll()
+
         NCNetworking.shared.fileExistsQueue.cancelAll()
         NCNetworking.shared.downloadThumbnailQueue.cancelAll()
 

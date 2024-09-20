@@ -108,6 +108,14 @@ extension NCMedia {
 
                 if error == .success, let files, self.session.account == account {
 
+                    /// Removes all files in `files` that have an `ocId` present in `fileDeleted`
+                    var files = files
+                    files.removeAll { file in
+                        self.fileDeleted.contains(file.ocId)
+                    }
+                    self.fileDeleted.removeAll()
+
+                    /// No files, remove all
                     if lessDate == Date.distantFuture, greaterDate == Date.distantPast, files.isEmpty {
                         self.dataSource.removeAll()
                         self.collectionViewReloadData()
