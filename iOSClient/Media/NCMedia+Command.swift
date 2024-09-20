@@ -64,26 +64,10 @@ extension NCMedia {
         }
     }
 
-    func setTitleDate(_ offset: CGFloat = 10) {
-        titleDate?.text = ""
-        if let metadata = dataSource.getMetadatas().first {
-            let contentOffsetY = collectionView.contentOffset.y
-            let top = insetsTop + view.safeAreaInsets.top + offset
-            if insetsTop + view.safeAreaInsets.top + contentOffsetY < 10 {
-                titleDate?.text = utility.getTitleFromDate(metadata.date as Date)
-                return
-            }
-            let point = CGPoint(x: offset, y: top + contentOffsetY)
-            if let indexPath = collectionView.indexPathForItem(at: point) {
-                let cell = self.collectionView(collectionView, cellForItemAt: indexPath) as? NCGridMediaCell
-                if let date = cell?.date {
-                    self.titleDate?.text = utility.getTitleFromDate(date)
-                }
-            } else {
-                if offset < 20 {
-                    self.setTitleDate(20)
-                }
-            }
+    func setTitleDate() {
+        if let firstVisibleIndexPath = collectionView.indexPathsForVisibleItems.min(by: { $0.row < $1.row && $0.section <= $1.section }),
+           let metadata = dataSource.getMetadata(indexPath: firstVisibleIndexPath) {
+            titleDate?.text = utility.getTitleFromDate(metadata.date as Date)
         }
     }
 
@@ -154,7 +138,6 @@ extension NCMedia {
             }
             self.createMenu()
             self.collectionView.reloadData()
-            self.setTitleDate()
         }
 
         let viewOptionsMedia = UIMenu(title: "", options: .displayInline, children: [
@@ -170,11 +153,11 @@ extension NCMedia {
         ])
 
         let zoomOut = UIAction(title: NSLocalizedString("_zoom_out_", comment: ""), image: utility.loadImage(named: "minus.magnifyingglass"), attributes: self.attributesZoomOut) { _ in
-            let lastExt = NCGlobal.shared.getSizeExtension(width: self.collectionView.frame.size.width / CGFloat(self.numberOfColumns))
+            let lastExt = NCGlobal.shared.getSizeExtension(column: self.numberOfColumns)
 
             UIView.animate(withDuration: 0.0, animations: {
                 self.numberOfColumns += 1
-                let ext = NCGlobal.shared.getSizeExtension(width: self.collectionView.frame.size.width / CGFloat(self.numberOfColumns))
+                let ext = NCGlobal.shared.getSizeExtension(column: self.numberOfColumns)
 
                 NCManageDatabase.shared.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: self.numberOfColumns)
 
@@ -184,16 +167,15 @@ extension NCMedia {
 
                 self.createMenu()
                 self.collectionView.reloadData()
-                self.setTitleDate()
             })
         }
 
         let zoomIn = UIAction(title: NSLocalizedString("_zoom_in_", comment: ""), image: utility.loadImage(named: "plus.magnifyingglass"), attributes: self.attributesZoomIn) { _ in
-            let lastExt = NCGlobal.shared.getSizeExtension(width: self.collectionView.frame.size.width / CGFloat(self.numberOfColumns))
+            let lastExt = NCGlobal.shared.getSizeExtension(column: self.numberOfColumns)
 
             UIView.animate(withDuration: 0.0, animations: {
                 self.numberOfColumns -= 1
-                let ext = NCGlobal.shared.getSizeExtension(width: self.collectionView.frame.size.width / CGFloat(self.numberOfColumns))
+                let ext = NCGlobal.shared.getSizeExtension(column: self.numberOfColumns)
 
                 NCManageDatabase.shared.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: self.numberOfColumns)
 
@@ -203,7 +185,6 @@ extension NCMedia {
 
                 self.createMenu()
                 self.collectionView.reloadData()
-                self.setTitleDate()
             })
         }
 

@@ -25,7 +25,7 @@ import UIKit
 import Queuer
 import NextcloudKit
 
-class NCOperationSaveLivePhoto: ConcurrentOperation {
+class NCOperationSaveLivePhoto: ConcurrentOperation, @unchecked Sendable {
     var metadata: tableMetadata
     var metadataMOV: tableMetadata
     let hud: NCHud?

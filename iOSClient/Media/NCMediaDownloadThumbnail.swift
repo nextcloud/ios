@@ -25,7 +25,7 @@ import UIKit
 import NextcloudKit
 import Queuer
 
-class NCMediaDownloadThumbnail: ConcurrentOperation {
+class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
     var metadata: NCMediaDataSource.Metadata
     var collectionView: UICollectionView?
     let utilityFileSystem = NCUtilityFileSystem()
@@ -64,10 +64,10 @@ class NCMediaDownloadThumbnail: ConcurrentOperation {
 
                 if NCImageCache.shared.cache.count < NCImageCache.shared.countLimit,
                    self.cost < NCImageCache.shared.countLimit {
-                    NCImageCache.shared.addImageCache(ocId: self.metadata.ocId, etag: self.metadata.etag, data: data, ext: NCGlobal.shared.getSizeExtension(width: self.width), cost: self.cost)
+                    NCImageCache.shared.addImageCache(ocId: self.metadata.ocId, etag: self.metadata.etag, data: data, ext: NCGlobal.shared.getSizeExtension(column: self.media?.numberOfColumns ?? 3), cost: self.cost)
                 }
 
-                let image = self.media?.getImage(metadata: self.metadata, width: self.width, cost: self.cost)
+                let image = self.media?.getImage(metadata: self.metadata, cost: self.cost)
 
                 DispatchQueue.main.async {
                     for case let cell as NCGridMediaCell in collectionView.visibleCells {

@@ -85,7 +85,7 @@ extension NCTrash {
     }
 }
 
-class NCOperationDownloadThumbnailTrash: ConcurrentOperation {
+class NCOperationDownloadThumbnailTrash: ConcurrentOperation, @unchecked Sendable {
     var trash: tableTrash
     var fileId: String
     var collectionView: UICollectionView?

@@ -50,7 +50,6 @@ class NCMedia: UIViewController {
     var dataSource = NCMediaDataSource()
     var serverUrl = ""
     let refreshControl = UIRefreshControl()
-    let taskDescriptionRetrievesProperties = "retrievesProperties"
     var isTop: Bool = true
     var isEditMode = false
     var fileSelect: [String] = []
@@ -61,7 +60,6 @@ class NCMedia: UIViewController {
     let gradient: CAGradientLayer = CAGradientLayer()
     var showOnlyImages = false
     var showOnlyVideos = false
-    var lastContentOffsetY: CGFloat = 0
     var timeIntervalSearchNewMedia: TimeInterval = 2.0
     var timerSearchNewMedia: Timer?
     let insetsTop: CGFloat = 75
@@ -201,9 +199,7 @@ class NCMedia: UIViewController {
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
-        coordinator.animate(alongsideTransition: nil) { _ in
-            self.setTitleDate()
-        }
+        coordinator.animate(alongsideTransition: nil) { _ in }
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -236,17 +232,17 @@ class NCMedia: UIViewController {
         timerSearchNewMedia?.invalidate()
         timerSearchNewMedia = nil
         filesExists.removeAll()
+        fileDeleted.removeAll()
+
         NCNetworking.shared.fileExistsQueue.cancelAll()
         NCNetworking.shared.downloadThumbnailQueue.cancelAll()
 
-        if let nkSession = NextcloudKit.shared.nkCommonInstance.getSession(account: session.account) {
-            nkSession.sessionData.session.getTasksWithCompletionHandler { dataTasks, _, _ in
-                dataTasks.forEach {
-                    if $0.taskDescription == self.taskDescriptionRetrievesProperties {
-                        $0.cancel()
-                    }
-                }
+        Task {
+            let tasks = await NCNetworking.shared.getAllDataTask()
+            for task in tasks.filter({ $0.description == NCGlobal.shared.taskDescriptionRetrievesProperties }) {
+                task.cancel()
             }
+
         }
     }
 
@@ -319,13 +315,10 @@ class NCMedia: UIViewController {
 
     // MARK: - Image
 
-    func getImage(metadata: NCMediaDataSource.Metadata, width: CGFloat? = nil, cost: Int) -> UIImage? {
+    func getImage(metadata: NCMediaDataSource.Metadata, cost: Int, forceExt: String? = nil) -> UIImage? {
         var returnImage: UIImage?
-        var width = width
-        if width == nil {
-            width = self.collectionView.frame.size.width / CGFloat(self.numberOfColumns)
-        }
-        let ext = NCGlobal.shared.getSizeExtension(width: width)
+        var ext = NCGlobal.shared.getSizeExtension(column: self.numberOfColumns)
+        if let forceExt { ext = forceExt }
 
         if let image = imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
             returnImage = image
@@ -366,11 +359,8 @@ extension NCMedia: UIScrollViewDelegate {
         if !dataSource.isEmpty() {
             isTop = scrollView.contentOffset.y <= -(insetsTop + view.safeAreaInsets.top - 25)
             setColor()
+            setTitleDate()
             setNeedsStatusBarAppearanceUpdate()
-            if lastContentOffsetY == 0 || lastContentOffsetY / 2 <= scrollView.contentOffset.y || lastContentOffsetY / 2 >= scrollView.contentOffset.y {
-                setTitleDate()
-                lastContentOffsetY = scrollView.contentOffset.y
-            }
         } else {
             setColor()
         }

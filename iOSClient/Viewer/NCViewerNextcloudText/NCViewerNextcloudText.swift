@@ -22,7 +22,7 @@
 //
 
 import UIKit
-import WebKit
+@preconcurrency import WebKit
 
 class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMessageHandler, WKUIDelegate {
     var webView = WKWebView()

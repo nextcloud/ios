@@ -98,8 +98,8 @@ class NCGlobal: NSObject {
     let previewExt128                               = ".128.preview.jpg"
     let previewExt64                                = ".64.preview.jpg"
 
-    func getSizeExtension(width: CGFloat?) -> String {
-        guard let width else { return previewExt512 }
+    func getSizeExtension(column: Int) -> String {
+        let width = UIScreen.main.bounds.width / CGFloat(column)
 
         switch (width * 4) {
         case 0...119:
@@ -415,4 +415,11 @@ class NCGlobal: NSObject {
     // GROUP AMIN
     //
     let groupAdmin                          = "admin"
+
+    // DATA TASK DESCRIPTION
+    //
+    let taskDescriptionRetrievesProperties  = "retrievesProperties"
+    let taskDescriptionSynchronization      = "synchronization"
+    let taskDescriptionDeleteFileOrFolder   = "deleteFileOrFolder"
+
 }

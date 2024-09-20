@@ -202,7 +202,7 @@ extension NCActivityTableViewCell: UICollectionViewDelegateFlowLayout {
     }
 }
 
-class NCOperationDownloadThumbnailActivity: ConcurrentOperation {
+class NCOperationDownloadThumbnailActivity: ConcurrentOperation, @unchecked Sendable {
     var collectionView: UICollectionView?
     var fileNamePreviewLocalPath: String
     var fileId: String

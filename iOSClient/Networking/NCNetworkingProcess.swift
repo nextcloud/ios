@@ -83,9 +83,10 @@ class NCNetworkingProcess {
                 self.hasRun = true
 
                 Task {
-                    let hasSynchronizationTask = await NCNetworking.shared.hasSynchronizationTask()
-                    print("[DEBUG] \(hasSynchronizationTask)")
+                    let tasks = await NCNetworking.shared.getAllDataTask()
+                    let hasSynchronizationTask = tasks.contains { $0.description == NCGlobal.shared.taskDescriptionSynchronization }
                     let resultsTransfer = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status IN %@", self.global.metadataStatusInTransfer))
+
                     if resultsTransfer == nil && !hasSynchronizationTask {
                         // No tranfer, disable
                     } else {
