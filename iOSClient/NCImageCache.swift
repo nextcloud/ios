@@ -33,7 +33,7 @@ class NCImageCache: NSObject {
     private let utility = NCUtility()
     private let global = NCGlobal.shared
 
-    private let allowExtensions = [NCGlobal.shared.previewExt256, NCGlobal.shared.previewExt128]
+    private let allowExtensions = [NCGlobal.shared.previewExt256]
     private var brandElementColor: UIColor?
 
     public var countLimit = 10_000
@@ -82,8 +82,7 @@ class NCImageCache: NSObject {
     func removeImageCache(ocIdPlusEtag: String) {
         let exts = [global.previewExt1024,
                     global.previewExt512,
-                    global.previewExt256,
-                    global.previewExt128]
+                    global.previewExt256]
 
         for i in 0..<exts.count {
             cache.removeValue(forKey: ocIdPlusEtag + exts[i])
