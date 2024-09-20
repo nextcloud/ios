@@ -67,8 +67,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 controller.account = activeTableAccount.account
                 /// Create media cache
                 DispatchQueue.global(qos: .utility).async {
-                    let session = NCSession.shared.getSession(account: activeTableAccount.account)
-                    NCImageCache.shared.createMediaCache(session: session)
+                    if NCImageCache.shared.cache.count == 0 {
+                        let session = NCSession.shared.getSession(account: activeTableAccount.account)
+                        NCImageCache.shared.createMediaCache(session: session)
+                    }
                 }
             }
         } else {
