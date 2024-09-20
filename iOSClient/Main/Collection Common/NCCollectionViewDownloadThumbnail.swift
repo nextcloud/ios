@@ -27,7 +27,7 @@ import Queuer
 import NextcloudKit
 import RealmSwift
 
-class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
+class NCCollectionViewDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
     var metadata: tableMetadata
     var collectionView: UICollectionView?
     var ext = ""

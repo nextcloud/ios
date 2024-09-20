@@ -25,7 +25,7 @@ import UIKit
 import NextcloudKit
 import Queuer
 
-class NCMediaDownloadThumbnail: ConcurrentOperation {
+class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
     var metadata: NCMediaDataSource.Metadata
     var collectionView: UICollectionView?
     let utilityFileSystem = NCUtilityFileSystem()

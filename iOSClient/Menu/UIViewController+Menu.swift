@@ -121,7 +121,7 @@ extension UIViewController {
     }
 }
 
-extension UIViewController: MFMailComposeViewControllerDelegate {
+extension UIViewController: @retroactive MFMailComposeViewControllerDelegate {
     public func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
         controller.dismiss(animated: true)
     }

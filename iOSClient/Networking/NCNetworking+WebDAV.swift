@@ -432,7 +432,7 @@ extension NCNetworking {
             return NKError(errorCode: self.global.errorInternalError, errorDescription: "_no_permission_delete_file_")
         }
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-        let options = NKRequestOptions(customHeader: customHeader)
+        let options = NKRequestOptions(customHeader: customHeader, taskDescription: NCGlobal.shared.taskDescriptionDeleteFileOrFolder)
         let result = await deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: metadata.account, options: options)
 
         if result.error == .success || result.error.errorCode == self.global.errorResourceNotFound {
@@ -926,7 +926,7 @@ extension NCNetworking {
     }
 }
 
-class NCOperationDownloadAvatar: ConcurrentOperation {
+class NCOperationDownloadAvatar: ConcurrentOperation, @unchecked Sendable {
     var user: String
     var fileName: String
     var etag: String?
@@ -981,7 +981,7 @@ class NCOperationDownloadAvatar: ConcurrentOperation {
     }
 }
 
-class NCOperationFileExists: ConcurrentOperation {
+class NCOperationFileExists: ConcurrentOperation, @unchecked Sendable {
     var serverUrlFileName: String
     var account: String
     var ocId: String
