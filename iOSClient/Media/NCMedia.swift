@@ -60,7 +60,6 @@ class NCMedia: UIViewController {
     let gradient: CAGradientLayer = CAGradientLayer()
     var showOnlyImages = false
     var showOnlyVideos = false
-    var lastContentOffsetY: CGFloat = 0
     var timeIntervalSearchNewMedia: TimeInterval = 2.0
     var timerSearchNewMedia: Timer?
     let insetsTop: CGFloat = 75
@@ -200,9 +199,7 @@ class NCMedia: UIViewController {
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
-        coordinator.animate(alongsideTransition: nil) { _ in
-            self.setTitleDate()
-        }
+        coordinator.animate(alongsideTransition: nil) { _ in }
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -362,11 +359,8 @@ extension NCMedia: UIScrollViewDelegate {
         if !dataSource.isEmpty() {
             isTop = scrollView.contentOffset.y <= -(insetsTop + view.safeAreaInsets.top - 25)
             setColor()
+            setTitleDate()
             setNeedsStatusBarAppearanceUpdate()
-            if lastContentOffsetY == 0 || lastContentOffsetY / 2 <= scrollView.contentOffset.y || lastContentOffsetY / 2 >= scrollView.contentOffset.y {
-                setTitleDate()
-                lastContentOffsetY = scrollView.contentOffset.y
-            }
         } else {
             setColor()
         }
