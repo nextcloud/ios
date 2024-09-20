@@ -61,6 +61,7 @@ extension NCMedia {
         case .began:
             networkRemoveAll()
             lastScale = gestureRecognizer.scale
+            lastNumberOfColumns = numberOfColumns
         case .changed:
             guard !transitionColumns else {
                 return
@@ -81,6 +82,13 @@ extension NCMedia {
         case .ended:
             currentScale = 1.0
             collectionView.transform = .identity
+            DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + 1) {
+                let lasteExt = NCGlobal.shared.getSizeExtension(column: self.lastNumberOfColumns)
+                let ext = NCGlobal.shared.getSizeExtension(column: self.numberOfColumns)
+                if lasteExt != ext, (ext == NCGlobal.shared.previewExt128 || ext == NCGlobal.shared.previewExt256) {
+                    NCImageCache.shared.createMediaCache(session: self.session)
+                }
+            }
         default:
             break
         }

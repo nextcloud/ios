@@ -36,7 +36,7 @@ class NCImageCache: NSObject {
     private let allowExtensions = [NCGlobal.shared.previewExt256, NCGlobal.shared.previewExt128]
     private var brandElementColor: UIColor?
 
-    public var countLimit = 5_000
+    public var countLimit = 10_000
     lazy var cache: LRUCache<String, UIImage> = {
         return LRUCache<String, UIImage>(countLimit: countLimit)
     }()
@@ -55,6 +55,9 @@ class NCImageCache: NSObject {
         countLimit = countLimit - 500
         if countLimit <= 0 { countLimit = 100 }
         self.cache = LRUCache<String, UIImage>(countLimit: countLimit)
+#if DEBUG
+        NCContentPresenter().messageNotification("Cache image memory warning \(countLimit)", error: .success, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
+#endif
     }
 
     func addImageCache(ocId: String, etag: String, data: Data, ext: String, cost: Int) {
@@ -99,6 +102,8 @@ class NCImageCache: NSObject {
         let ext = NCGlobal.shared.getSizeExtension(column: layout.columnPhoto)
 
         if let metadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: getMediaPredicate(filterLivePhotoFile: true, session: session, showOnlyImages: false, showOnlyVideos: false), sortedByKeyPath: "date") {
+
+            cache.removeAllValues()
 
             for metadata in metadatas {
                 if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
