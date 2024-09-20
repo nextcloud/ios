@@ -81,7 +81,6 @@ extension NCMedia {
         case .ended:
             currentScale = 1.0
             collectionView.transform = .identity
-            self.collectionViewReloadData()
         default:
             break
         }
