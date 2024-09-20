@@ -147,8 +147,7 @@ class NCUtilityFileSystem: NSObject {
         if fileProviderStorageImageExists(ocId, etag: etag, ext: NCGlobal.shared.previewExt1024),
            fileProviderStorageImageExists(ocId, etag: etag, ext: NCGlobal.shared.previewExt512),
            fileProviderStorageImageExists(ocId, etag: etag, ext: NCGlobal.shared.previewExt256),
-           fileProviderStorageImageExists(ocId, etag: etag, ext: NCGlobal.shared.previewExt128),
-           fileProviderStorageImageExists(ocId, etag: etag, ext: NCGlobal.shared.previewExt64) {
+           fileProviderStorageImageExists(ocId, etag: etag, ext: NCGlobal.shared.previewExt128) {
             return true
         }
         return false

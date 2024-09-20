@@ -158,9 +158,9 @@ extension NCUtility {
     }
 
     private func createImageStandard(ocId: String, etag: String, classFile: String, image: UIImage, cost: Int) {
-        let ext = [global.previewExt512, global.previewExt256, global.previewExt128, global.previewExt64]
-        let size = [global.size512, global.size256, global.size128, global.size64]
-        let compressionQuality = [0.6, 0.7, 0.8, 0.9]
+        let ext = [global.previewExt512, global.previewExt256, global.previewExt128]
+        let size = [global.size512, global.size256, global.size128]
+        let compressionQuality = [0.6, 0.7, 0.8]
 
         for i in 0..<ext.count {
             if !utilityFileSystem.fileProviderStorageImageExists(ocId, etag: etag, ext: ext[i]),
