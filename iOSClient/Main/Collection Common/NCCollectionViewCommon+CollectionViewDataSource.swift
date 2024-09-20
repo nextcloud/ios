@@ -344,7 +344,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         // Color string find in search
         cell.fileTitleLabel?.textColor = UIColor(resource: .ListCell.title)
-        cell.fileTitleLabel?.font = .systemFont(ofSize: 12, weight: .semibold)
+        cell.fileTitleLabel?.font = .systemFont(ofSize: 12, weight: .medium)
 
         if isSearchingMode, let literalSearch = self.literalSearch, let title = cell.fileTitleLabel?.text {
             let longestWordRange = (title.lowercased() as NSString).range(of: literalSearch)
