@@ -92,7 +92,24 @@ class NCImageCache: NSObject {
         cache.removeAllValues()
     }
 
-    // MARK: -
+    // MARK: - MEDIA -
+
+    func createMediaCache(session: NCSession.Session) {
+        var cost: Int = 0
+        guard let layout = NCManageDatabase.shared.getLayoutForView(account: session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "") else { return }
+        let ext = NCGlobal.shared.getSizeExtension(column: layout.columnPhoto)
+
+        if let metadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: getMediaPredicate(filterLivePhotoFile: true, session: session, showOnlyImages: false, showOnlyVideos: false), sortedByKeyPath: "date") {
+
+            for metadata in metadatas {
+                if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
+                    addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext, cost: cost)
+                    cost += 1
+                    if cost == countLimit { break }
+                }
+            }
+        }
+    }
 
     func getMediaPredicate(filterLivePhotoFile: Bool, session: NCSession.Session, showOnlyImages: Bool, showOnlyVideos: Bool) -> NSPredicate {
         guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else { return NSPredicate() }

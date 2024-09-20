@@ -170,11 +170,11 @@ extension NCMedia {
         ])
 
         let zoomOut = UIAction(title: NSLocalizedString("_zoom_out_", comment: ""), image: utility.loadImage(named: "minus.magnifyingglass"), attributes: self.attributesZoomOut) { _ in
-            let lastExt = NCGlobal.shared.getSizeExtension(width: self.collectionView.frame.size.width / CGFloat(self.numberOfColumns))
+            let lastExt = NCGlobal.shared.getSizeExtension(column: self.numberOfColumns)
 
             UIView.animate(withDuration: 0.0, animations: {
                 self.numberOfColumns += 1
-                let ext = NCGlobal.shared.getSizeExtension(width: self.collectionView.frame.size.width / CGFloat(self.numberOfColumns))
+                let ext = NCGlobal.shared.getSizeExtension(column: self.numberOfColumns)
 
                 NCManageDatabase.shared.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: self.numberOfColumns)
 
@@ -189,11 +189,11 @@ extension NCMedia {
         }
 
         let zoomIn = UIAction(title: NSLocalizedString("_zoom_in_", comment: ""), image: utility.loadImage(named: "plus.magnifyingglass"), attributes: self.attributesZoomIn) { _ in
-            let lastExt = NCGlobal.shared.getSizeExtension(width: self.collectionView.frame.size.width / CGFloat(self.numberOfColumns))
+            let lastExt = NCGlobal.shared.getSizeExtension(column: self.numberOfColumns)
 
             UIView.animate(withDuration: 0.0, animations: {
                 self.numberOfColumns -= 1
-                let ext = NCGlobal.shared.getSizeExtension(width: self.collectionView.frame.size.width / CGFloat(self.numberOfColumns))
+                let ext = NCGlobal.shared.getSizeExtension(column: self.numberOfColumns)
 
                 NCManageDatabase.shared.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: self.numberOfColumns)
 

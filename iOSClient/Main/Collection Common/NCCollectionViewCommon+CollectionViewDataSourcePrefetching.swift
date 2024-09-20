@@ -27,7 +27,7 @@ import UIKit
 extension NCCollectionViewCommon: UICollectionViewDataSourcePrefetching {
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
         guard !isSearchingMode else { return }
-        let ext = global.getSizeExtension(width: self.sizeImage.width)
+        let ext = global.getSizeExtension(column: self.column)
         let metadatas = self.dataSource.getMetadatas(indexPaths: indexPaths)
         let cost = indexPaths.first?.row ?? 0
 

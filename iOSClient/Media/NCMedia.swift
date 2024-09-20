@@ -321,13 +321,10 @@ class NCMedia: UIViewController {
 
     // MARK: - Image
 
-    func getImage(metadata: NCMediaDataSource.Metadata, width: CGFloat? = nil, cost: Int) -> UIImage? {
+    func getImage(metadata: NCMediaDataSource.Metadata, cost: Int, forceExt: String? = nil) -> UIImage? {
         var returnImage: UIImage?
-        var width = width
-        if width == nil {
-            width = self.collectionView.frame.size.width / CGFloat(self.numberOfColumns)
-        }
-        let ext = NCGlobal.shared.getSizeExtension(width: width)
+        var ext = NCGlobal.shared.getSizeExtension(column: self.numberOfColumns)
+        if let forceExt { ext = forceExt }
 
         if let image = imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
             returnImage = image

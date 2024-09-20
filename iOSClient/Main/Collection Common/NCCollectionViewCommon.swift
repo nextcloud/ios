@@ -119,6 +119,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
+    var column: Int {
+        if isLayoutPhoto {
+            return layoutForView?.columnPhoto ?? 3
+        } else if isLayoutGrid {
+            return layoutForView?.columnGrid ?? 3
+        } else {
+            return 0
+        }
+    }
+
     var controller: NCMainTabBarController? {
         self.tabBarController as? NCMainTabBarController
     }
