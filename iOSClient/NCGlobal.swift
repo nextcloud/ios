@@ -419,4 +419,5 @@ class NCGlobal: NSObject {
     // DATA TASK DESCRIPTION
     //
     let taskDescriptionRetrievesProperties  = "retrievesProperties"
+    let taskDescriptionSynchronization      = "synchronization"
 }

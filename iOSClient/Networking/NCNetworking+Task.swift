@@ -256,7 +256,6 @@ extension NCNetworking {
         return taskArray
     }
 
-
     // MARK: -
 
     func verifyZombie() async {
