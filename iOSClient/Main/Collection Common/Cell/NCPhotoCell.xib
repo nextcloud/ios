@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="dark"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -19,15 +19,6 @@
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="5Ci-V1-hf5" userLabel="imageItem">
                         <rect key="frame" x="0.0" y="0.0" width="400" height="400"/>
                     </imageView>
-                    <visualEffectView hidden="YES" contentMode="scaleAspectFill" translatesAutoresizingMaskIntoConstraints="NO" id="bQY-LA-65a" userLabel="VisualEffect">
-                        <rect key="frame" x="0.0" y="0.0" width="400" height="400"/>
-                        <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="kdN-fK-b6F">
-                            <rect key="frame" x="0.0" y="0.0" width="400" height="400"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        </view>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        <blurEffect style="extraLight"/>
-                    </visualEffectView>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="a0p-rj-jnV" userLabel="imageStatus">
                         <rect key="frame" x="5" y="383" width="12" height="12"/>
                         <constraints>
@@ -55,15 +46,11 @@
                 <constraint firstItem="AKw-Xc-akO" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" constant="10" id="42P-uq-qMZ"/>
                 <constraint firstAttribute="trailing" secondItem="AKw-Xc-akO" secondAttribute="trailing" constant="10" id="78q-3N-aQm"/>
                 <constraint firstAttribute="bottom" secondItem="a0p-rj-jnV" secondAttribute="bottom" constant="5" id="9Qc-jT-y8N"/>
-                <constraint firstItem="bQY-LA-65a" firstAttribute="top" secondItem="vf1-Kf-9uL" secondAttribute="top" id="A1R-of-6Ra"/>
                 <constraint firstItem="DHy-Up-3Bh" firstAttribute="top" secondItem="vf1-Kf-9uL" secondAttribute="top" constant="5" id="ESV-qE-tbO"/>
-                <constraint firstAttribute="bottom" secondItem="bQY-LA-65a" secondAttribute="bottom" id="ET1-N7-SQl"/>
                 <constraint firstAttribute="bottom" secondItem="AKw-Xc-akO" secondAttribute="bottom" constant="2" id="JkG-ef-Hn5"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="top" secondItem="vf1-Kf-9uL" secondAttribute="top" id="Ouj-ZD-UFm"/>
-                <constraint firstItem="bQY-LA-65a" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" id="Q47-7m-Z2O"/>
                 <constraint firstAttribute="trailing" secondItem="5Ci-V1-hf5" secondAttribute="trailing" id="cHT-cP-NN6"/>
                 <constraint firstAttribute="bottom" secondItem="5Ci-V1-hf5" secondAttribute="bottom" id="eEC-eB-alE"/>
-                <constraint firstAttribute="trailing" secondItem="bQY-LA-65a" secondAttribute="trailing" id="q1v-Cn-HZf"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" id="qT3-WD-iTV"/>
                 <constraint firstItem="a0p-rj-jnV" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" constant="5" id="vjD-yv-602"/>
             </constraints>
@@ -73,7 +60,6 @@
                 <outlet property="imageItemBottom" destination="eEC-eB-alE" id="FyV-lA-B3t"/>
                 <outlet property="imageSelect" destination="DHy-Up-3Bh" id="mo9-rP-P4I"/>
                 <outlet property="imageStatus" destination="a0p-rj-jnV" id="6Dg-tf-evd"/>
-                <outlet property="imageVisualEffect" destination="bQY-LA-65a" id="NMK-Ke-CSu"/>
                 <outlet property="labelTitle" destination="AKw-Xc-akO" id="f1O-Qv-Riz"/>
             </connections>
             <point key="canvasLocation" x="233.59999999999999" y="241.97901049475263"/>
