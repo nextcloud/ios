@@ -9,10 +9,10 @@
 import SwiftUI
 
 fileprivate class ButtonStyleGuide {
-	static let defaultFont			:Font = .title2
+	static let defaultFont			:Font = .system(size: 16)
 	static let defaultBorderWidth	:CGFloat = 3
-	static let defaultHeight		:CGFloat = 36
-	static var defaultWidth			:CGFloat  = 96
+	static let defaultHeight		:CGFloat = 42
+	static var defaultWidth			:CGFloat  = 78
 }
 
 // MARK: - Primary
@@ -33,12 +33,13 @@ struct ButtonStylePrimary: ButtonStyle {
 	func makeBody(configuration: Configuration) -> some View {
 		configuration.label
 			.font(ButtonStyleGuide.defaultFont)
-			.frame(width: ButtonStyleGuide.defaultWidth, height: ButtonStyleGuide.defaultHeight)
+			.frame(width: ButtonStyleGuide.defaultWidth * 0.8, height: ButtonStyleGuide.defaultHeight * 0.9)
 			.padding()
 			.foregroundStyle(foregroundColor(for: configuration))
 			.background{
 				Capsule(style: .circular)
 					.stroke(backgroundColor(for: configuration), lineWidth: ButtonStyleGuide.defaultBorderWidth)
+					.frame(width: ButtonStyleGuide.defaultWidth, height: ButtonStyleGuide.defaultHeight)
 					.background(content: {
 						Capsule().fill(backgroundColor(for: configuration))
 					})
@@ -74,12 +75,13 @@ struct ButtonStyleSecondary: ButtonStyle {
 	func makeBody(configuration: Configuration) -> some View {
 		configuration.label
 			.font(ButtonStyleGuide.defaultFont)
-			.frame(width: ButtonStyleGuide.defaultWidth, height: ButtonStyleGuide.defaultHeight)
+			.frame(width: ButtonStyleGuide.defaultWidth * 0.8, height: ButtonStyleGuide.defaultHeight * 0.9)
 			.padding()
 			.foregroundStyle(foregroundColor(for: configuration))
 			.background{
 				Capsule(style: .circular)
 					.stroke(borderColor(for: configuration), lineWidth: ButtonStyleGuide.defaultBorderWidth)
+					.frame(width: ButtonStyleGuide.defaultWidth, height: ButtonStyleGuide.defaultHeight)
 					.background(content: {
 						Capsule().fill(backgroundColor(for: configuration))
 					})

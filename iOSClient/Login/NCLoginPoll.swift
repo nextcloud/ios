@@ -62,7 +62,7 @@ struct NCLoginPoll: View {
 					.tint(.white)
 				Spacer()
 
-				HStack(spacing: 20) {
+				HStack(spacing: 0) {
 					Button(NSLocalizedString("_cancel_", comment: "")) {
 						dismiss()
 					}
@@ -74,7 +74,6 @@ struct NCLoginPoll: View {
 					}
 					.buttonStyle(.primary)
 				}
-				.padding()
 				.padding(.bottom, size.height * 0.15)
 			}
 			.frame(maxWidth: .infinity, maxHeight: .infinity)
