@@ -25,6 +25,8 @@
 		3781B9B023DB2B7E006B4B1D /* AppDelegate+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3781B9AF23DB2B7E006B4B1D /* AppDelegate+Menu.swift */; };
 		3CEA5F122BFBBCAF0097E536 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		422CA3EF2C932F7200241F29 /* AccountButtonFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 422CA3EE2C932F7200241F29 /* AccountButtonFactory.swift */; };
+		4232DC0A2C9D7C44008D546D /* UIView+GridSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4232DC092C9D7C44008D546D /* UIView+GridSelection.swift */; };
+		4232DC0B2C9D7C44008D546D /* UIView+GridSelection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4232DC092C9D7C44008D546D /* UIView+GridSelection.swift */; };
 		4240DB4E2C5646B400E72FC0 /* BurgerMenuAttachController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4240DB4D2C5646B400E72FC0 /* BurgerMenuAttachController.swift */; };
 		4240DB502C5648E300E72FC0 /* BurgerMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4240DB4F2C5648E300E72FC0 /* BurgerMenuViewController.swift */; };
 		4240DB522C5649A900E72FC0 /* BurgerMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4240DB512C5649A900E72FC0 /* BurgerMenuView.swift */; };
@@ -1127,6 +1129,7 @@
 		371B5A3223D0BD5500FAFAE9 /* FloatingPanel.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FloatingPanel.framework; path = Carthage/Build/iOS/FloatingPanel.framework; sourceTree = "<group>"; };
 		3781B9AF23DB2B7E006B4B1D /* AppDelegate+Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDelegate+Menu.swift"; sourceTree = "<group>"; };
 		422CA3EE2C932F7200241F29 /* AccountButtonFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountButtonFactory.swift; sourceTree = "<group>"; };
+		4232DC092C9D7C44008D546D /* UIView+GridSelection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+GridSelection.swift"; sourceTree = "<group>"; };
 		4240DB4D2C5646B400E72FC0 /* BurgerMenuAttachController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BurgerMenuAttachController.swift; sourceTree = "<group>"; };
 		4240DB4F2C5648E300E72FC0 /* BurgerMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BurgerMenuViewController.swift; sourceTree = "<group>"; };
 		4240DB512C5649A900E72FC0 /* BurgerMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BurgerMenuView.swift; sourceTree = "<group>"; };
@@ -2707,6 +2710,7 @@
 				F77BB747289985270090FC19 /* UITabBarController+Extension.swift */,
 				AFCE353227E4ED1900FEA6C2 /* UIToolbar+Extension.swift */,
 				F7E41315294A19B300839300 /* UIView+Extension.swift */,
+				4232DC092C9D7C44008D546D /* UIView+GridSelection.swift */,
 				F77BB745289984CA0090FC19 /* UIViewController+Extension.swift */,
 				F7E8A390295DC5E0006CB2D0 /* View+Extension.swift */,
 				F7EE66AC2A20B226009AE765 /* UILabel+Extension.swift */,
@@ -4154,6 +4158,7 @@
 				F757CC8529E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift in Sources */,
 				F768823A2C0DD230001CF441 /* NCKeychain.swift in Sources */,
 				F737DA9E2B7B893C0063BAFC /* NCPasscode.swift in Sources */,
+				4232DC0B2C9D7C44008D546D /* UIView+GridSelection.swift in Sources */,
 				D51C00442C2C1C1C00A04554 /* NCBrand-IONOS.swift in Sources */,
 				F7817D0129802D5F00FFBC65 /* NCViewCertificateDetails.swift in Sources */,
 				F7D57C8B26317BDE00DE301D /* NCAccountRequest.swift in Sources */,
@@ -4363,6 +4368,7 @@
 				F70D87D025EE6E58008CBBBD /* NCRenameFile.swift in Sources */,
 				F71CD6CA2930D7B1006C95C1 /* NCApplicationHandle.swift in Sources */,
 				F73EF7D72B0226080087E6E9 /* NCManageDatabase+Tip.swift in Sources */,
+				4232DC0A2C9D7C44008D546D /* UIView+GridSelection.swift in Sources */,
 				6215F7F22C86F16C002ACE64 /* NCCollectionViewCommonSelectToolbarView.swift in Sources */,
 				F76882402C0DD30B001CF441 /* ViewOnAppear.swift in Sources */,
 				F790110E21415BF600D7B136 /* NCViewerRichDocument.swift in Sources */,
