@@ -197,7 +197,7 @@ public class NCMediaDataSource: NSObject {
         super.init()
 
         self.metadatas.removeAll()
-        for metadata in metadatas {
+        metadatas.forEach { metadata in
             let metadata = getMetadataFromTableMetadata(metadata)
             self.metadatas.append(metadata)
         }
