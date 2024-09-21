@@ -102,13 +102,10 @@ class NCImageCache: NSObject {
             isLoadingCache = true
 
             metadatas.forEach { metadata in
-                if let image128 = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt128),
-                   let image256 = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt256) {
-
-                    addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image128, ext: NCGlobal.shared.previewExt128, cost: cost)
-                    addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image256, ext: NCGlobal.shared.previewExt256, cost: cost)
-
+                if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt256) {
+                    addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: NCGlobal.shared.previewExt256, cost: cost)
                     cost += 1
+                    print(cost)
                 }
             }
 
