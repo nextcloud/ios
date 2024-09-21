@@ -96,12 +96,12 @@ class NCImageCache: NSObject {
     func createMediaCache(session: NCSession.Session) {
         var cost: Int = 0
 
-        if let metadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: getMediaPredicate(filterLivePhotoFile: true, session: session, showOnlyImages: false, showOnlyVideos: false), sortedByKeyPath: "date") {
+        if let metadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: getMediaPredicate(filterLivePhotoFile: true, session: session, showOnlyImages: false, showOnlyVideos: false), sortedByKeyPath: "date", freeze: true)?.prefix(countLimit) {
 
             cache.removeAllValues()
             isLoadingCache = true
 
-            for metadata in metadatas {
+            metadatas.forEach { metadata in
                 if let image128 = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt128),
                    let image256 = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt256) {
 
@@ -109,11 +109,10 @@ class NCImageCache: NSObject {
                     addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image256, ext: NCGlobal.shared.previewExt256, cost: cost)
 
                     cost += 1
-                    if cost == countLimit { break }
                 }
             }
+
             isLoadingCache = false
-            print(cost)
         }
     }
 

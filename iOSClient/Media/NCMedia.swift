@@ -250,10 +250,9 @@ class NCMedia: UIViewController {
 
         Task {
             let tasks = await NCNetworking.shared.getAllDataTask()
-            for task in tasks.filter({ $0.description == NCGlobal.shared.taskDescriptionRetrievesProperties }) {
+            for task in tasks.filter({ $0.taskDescription == NCGlobal.shared.taskDescriptionRetrievesProperties }) {
                 task.cancel()
             }
-
         }
     }
 

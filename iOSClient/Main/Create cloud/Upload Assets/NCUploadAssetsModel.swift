@@ -208,12 +208,9 @@ class NCUploadAssetsModel: NSObject, ObservableObject, NCCreateFormUploadConflic
 
             // Check if is in upload
             if let results = database.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@ AND session != ''",
-                                                                                                session.account,
-                                                                                                serverUrl,
-                                                                                                fileName),
-                                                                         sortedByKeyPath: "fileName",
-                                                                         ascending: false),
-               !results.isEmpty {
+                                                                                 session.account,
+                                                                                 serverUrl,
+                                                                                 fileName), sortedByKeyPath: "fileName", ascending: false), !results.isEmpty {
                 continue
             }
 
