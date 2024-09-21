@@ -71,11 +71,7 @@ class NCMedia: UIViewController {
 
     var lastScale: CGFloat = 1.0
     var currentScale: CGFloat = 1.0
-#if DEBUG
     let maxColumns: Int = 10
-#else
-    let maxColumns: Int = 7
-#endif
     var transitionColumns = false
     var numberOfColumns: Int = 0
     var lastNumberOfColumns: Int = 0
@@ -149,10 +145,8 @@ class NCMedia: UIViewController {
             self.loadDataSource()
         }
 
-#if DEBUG
         pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture(_:)))
         collectionView.addGestureRecognizer(pinchGesture)
-#endif
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
             self.layoutType = self.database.getLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")?.layout ?? NCGlobal.shared.mediaLayoutRatio

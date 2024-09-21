@@ -64,15 +64,13 @@ class NCImageCache: NSObject {
 
     func addImageCache(ocId: String, etag: String, data: Data, ext: String, cost: Int) {
         guard allowExtensions.contains(ext),
-              cache.count < countLimit,
               let image = UIImage(data: data) else { return }
 
         cache.setValue(image, forKey: ocId + etag + ext, cost: cost)
     }
 
     func addImageCache(ocId: String, etag: String, image: UIImage, ext: String, cost: Int) {
-        guard allowExtensions.contains(ext),
-              cache.count < countLimit else { return }
+        guard allowExtensions.contains(ext) else { return }
 
         cache.setValue(image, forKey: ocId + etag + ext, cost: cost)
     }
