@@ -120,8 +120,12 @@
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES"
       launchAutomaticallySubstyle = "2">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <RemoteRunnable
+         runnableDebuggingMode = "0"
+         BundleIdentifier = "it.twsweb.Nextcloud"
+         RemotePath = "/var/containers/Bundle/Application/92F13FE8-7056-4509-8468-5856675AB1CA/Nextcloud.app">
+      </RemoteRunnable>
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F77B0DEB1D118A16002130FE"
@@ -129,7 +133,7 @@
             BlueprintName = "Nextcloud"
             ReferencedContainer = "container:Nextcloud.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
