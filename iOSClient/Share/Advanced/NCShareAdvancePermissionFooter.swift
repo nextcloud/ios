@@ -30,7 +30,7 @@ protocol NCShareAdvanceFotterDelegate: AnyObject {
 
 class NCShareAdvancePermissionFooter: UIView {
     @IBOutlet weak var buttonCancel: UIButton!
-    @IBOutlet weak var buttonNext: UIButton!
+    @IBOutlet weak var buttonNext: PrimaryButton!
     weak var delegate: NCShareAdvanceFotterDelegate?
 
     func setupUI(delegate: NCShareAdvanceFotterDelegate?) {
