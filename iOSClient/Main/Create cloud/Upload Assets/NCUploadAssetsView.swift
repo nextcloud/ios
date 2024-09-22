@@ -24,12 +24,11 @@ struct NCUploadAssetsView: View {
     var metadata: tableMetadata?
     let gridItems: [GridItem] = [GridItem()]
     let fileNamePath = NSTemporaryDirectory() + "Photo.jpg"
+    let utilityFileSystem = NCUtilityFileSystem()
 
     @Environment(\.presentationMode) var presentationMode
 
     var body: some View {
-        let utilityFileSystem = NCUtilityFileSystem()
-
         NavigationView {
             ZStack(alignment: .top) {
                 List {
