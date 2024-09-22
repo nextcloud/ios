@@ -49,7 +49,7 @@ class NCRecent: NCCollectionViewCommon {
 
     override func queryDB() {
         super.queryDB()
-        let metadatas = self.database.getResultsMetadatas(predicate: NSPredicate(format: "account == %@", session.account), sortedByKeyPath: "date", ascending: false, arraySlice: 200)
+        let metadatas = self.database.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND fileName != '.'", session.account), sortedByKeyPath: "date", ascending: false, arraySlice: 200)
 
         layoutForView?.sort = "date"
         layoutForView?.ascending = false

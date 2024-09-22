@@ -369,6 +369,7 @@ class NCGlobal: NSObject {
     let configuration_disable_openin_file                       = "disable_openin_file"
 
     // MORE NEXTCLOUD APPS
+    //
     let talkSchemeUrl                                           = "nextcloudtalk://"
     let notesSchemeUrl                                          = "nextcloudnotes://"
     let talkAppStoreUrl                                         = "https://apps.apple.com/in/app/nextcloud-talk/id1296825574"
