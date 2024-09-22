@@ -27,25 +27,18 @@ import Queuer
 
 class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
     var metadata: NCMediaDataSource.Metadata
-    var collectionView: UICollectionView?
     let utilityFileSystem = NCUtilityFileSystem()
     let media: NCMedia?
-    var width: CGFloat?
-    let cost: Int
 
-    init(metadata: NCMediaDataSource.Metadata, collectionView: UICollectionView?, media: NCMedia?, cost: Int) {
+    init(metadata: NCMediaDataSource.Metadata, media: NCMedia?) {
         self.metadata = metadata
-        self.collectionView = collectionView
         self.media = media
-        self.cost = cost
-
-        if let collectionView, let numberOfColumns = self.media?.numberOfColumns {
-            width = collectionView.frame.size.width / CGFloat(numberOfColumns)
-        }
     }
 
     override func start() {
-        guard !isCancelled, let tableMetadata = NCManageDatabase.shared.getMetadataFromOcId(self.metadata.ocId), let media = self.media else { return self.finish() }
+        guard !isCancelled,
+              let tableMetadata = NCManageDatabase.shared.getMetadataFromOcId(self.metadata.ocId),
+              let media = self.media else { return self.finish() }
         var etagResource: String?
 
         if utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag) {
@@ -56,7 +49,7 @@ class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
                                             etag: etagResource,
                                             account: media.session.account,
                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, data, _, _, etag, error in
-            if error == .success, let data, let collectionView = self.collectionView, let media = self.media {
+            if error == .success, let data {
 
                 media.filesExists.append(self.metadata.ocId)
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
@@ -64,7 +57,7 @@ class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
                 let image = NCUtility().getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: NCGlobal.shared.getSizeExtension(column: media.numberOfColumns))
 
                 DispatchQueue.main.async {
-                    for case let cell as NCGridMediaCell in collectionView.visibleCells {
+                    for case let cell as NCGridMediaCell in media.collectionView.visibleCells {
                         if cell.ocId == self.metadata.ocId {
                             UIView.transition(with: cell.imageItem, duration: 0.75, options: .transitionCrossDissolve, animations: { cell.imageItem.image = image
                             }, completion: nil)
