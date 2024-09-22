@@ -33,7 +33,7 @@ class NCImageCache: NSObject {
     private let utility = NCUtility()
     private let global = NCGlobal.shared
 
-    private let allowExtensions = [NCGlobal.shared.previewExt256, NCGlobal.shared.previewExt128]
+    private let allowExtensions = [NCGlobal.shared.previewExt256]
     private var brandElementColor: UIColor?
 
     public var countLimit = 10_000

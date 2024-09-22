@@ -89,12 +89,10 @@ class NCGlobal: NSObject {
     let size1024: CGSize                            = CGSize(width: 1024, height: 1024)
     let size512: CGSize                             = CGSize(width: 512, height: 512)
     let size256: CGSize                             = CGSize(width: 256, height: 256)
-    let size128: CGSize                             = CGSize(width: 128, height: 128)
     // Image extension
     let previewExt1024                              = ".1024.preview.jpg"
     let previewExt512                               = ".512.preview.jpg"
     let previewExt256                               = ".256.preview.jpg"
-    let previewExt128                               = ".128.preview.jpg"
 
     func getSizeExtension(column: Int) -> String {
         let width = UIScreen.main.bounds.width / CGFloat(column)
