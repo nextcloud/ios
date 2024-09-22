@@ -103,7 +103,6 @@ class NCImageCache: NSObject {
                 if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt256) {
                     addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: NCGlobal.shared.previewExt256, cost: cost)
                     cost += 1
-                    print(cost)
                 }
             }
 
