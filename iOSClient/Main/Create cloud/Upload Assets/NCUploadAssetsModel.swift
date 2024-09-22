@@ -70,7 +70,9 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
             for asset in self.assets {
                 guard let image = asset.fullResolutionImage?.resizeImage(size: CGSize(width: 300, height: 300), isAspectRation: true),
                       let localIdentifier = asset.phAsset?.localIdentifier else { continue }
-                self.previewStore.append(PreviewStore(id: localIdentifier, asset: asset, assetType: asset.type, fileName: "", image: image))
+                DispatchQueue.main.async {
+                    self.previewStore.append(PreviewStore(id: localIdentifier, asset: asset, assetType: asset.type, fileName: "", image: image))
+                }
             }
             DispatchQueue.main.async {
                 self.showHUD = false
