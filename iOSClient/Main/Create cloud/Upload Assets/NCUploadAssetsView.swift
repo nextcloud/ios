@@ -160,26 +160,28 @@ struct NCUploadAssetsView: View {
                         }
                     }
 
-                    Button(NSLocalizedString("_save_", comment: "")) {
-                        if model.useAutoUploadFolder, model.useAutoUploadSubFolder {
-                            model.showHUD = true
-                        }
-                        model.uploadInProgress.toggle()
-                        model.save { metadatasNOConflict, metadatasUploadInConflict in
-                            if metadatasUploadInConflict.isEmpty {
-                                model.dismissCreateFormUploadConflict(metadatas: metadatasNOConflict)
-                            } else {
-                                model.metadatasNOConflict = metadatasNOConflict
-                                model.metadatasUploadInConflict = metadatasUploadInConflict
-                                showUploadConflict = true
+                    Section {
+                        Button(NSLocalizedString("_save_", comment: "")) {
+                            if model.useAutoUploadFolder, model.useAutoUploadSubFolder {
+                                model.showHUD = true
+                            }
+                            model.uploadInProgress.toggle()
+                            model.save { metadatasNOConflict, metadatasUploadInConflict in
+                                if metadatasUploadInConflict.isEmpty {
+                                    model.dismissCreateFormUploadConflict(metadatas: metadatasNOConflict)
+                                } else {
+                                    model.metadatasNOConflict = metadatasNOConflict
+                                    model.metadatasUploadInConflict = metadatasUploadInConflict
+                                    showUploadConflict = true
+                                }
                             }
                         }
+                        .frame(maxWidth: .infinity)
+                        .buttonStyle(ButtonRounded(disabled: model.uploadInProgress, account: model.session.account))
+                        .listRowBackground(Color(UIColor.systemGroupedBackground))
+                        .disabled(model.uploadInProgress)
+                        .hiddenConditionally(isHidden: model.hiddenSave)
                     }
-                    .frame(maxWidth: .infinity)
-                    .buttonStyle(ButtonRounded(disabled: model.uploadInProgress, account: model.session.account))
-                    .listRowBackground(Color(UIColor.systemGroupedBackground))
-                    .disabled(model.uploadInProgress)
-                    .hiddenConditionally(isHidden: model.hiddenSave)
                 }
             }
             .navigationTitle(NSLocalizedString("_upload_photos_videos_", comment: ""))
