@@ -187,7 +187,7 @@ struct NCUploadAssetsView: View {
             .navigationTitle(NSLocalizedString("_upload_photos_videos_", comment: ""))
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarItems(trailing: Button(action: {
-                presentationMode.wrappedValue.dismiss()
+                model.dismissView = true
             }) {
                 Image(systemName: "xmark")
                     .font(Font.system(.body).weight(.light))
@@ -212,9 +212,6 @@ struct NCUploadAssetsView: View {
             if newValue {
                 presentationMode.wrappedValue.dismiss()
             }
-        }
-        .onTapGesture {
-            SceneManager.shared.getWindow(controller: model.controller)?.endEditing(true)
         }
         .onDisappear {
             model.dismissView = true
