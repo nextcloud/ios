@@ -11,6 +11,7 @@ import NextcloudKit
 
 struct NCUploadAssetsView: View {
     @ObservedObject var model: NCUploadAssetsModel
+
     @State private var showSelect = false
     @State private var showUploadConflict = false
     @State private var showQuickLook = false
