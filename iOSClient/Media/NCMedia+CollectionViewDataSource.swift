@@ -91,7 +91,7 @@ extension NCMedia: UICollectionViewDataSource {
 
         if !utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag),
            NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
-            NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnail(metadata: metadata, collectionView: self.collectionView, media: self, cost: indexPath.row))
+            NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnail(metadata: metadata, media: self))
         }
     }
 
