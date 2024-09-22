@@ -61,15 +61,13 @@ class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
                 media.filesExists.append(self.metadata.ocId)
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
                 NCUtility().createImage(metadata: tableMetadata, data: data)
+                let image = NCUtility().getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: NCGlobal.shared.getSizeExtension(column: media.numberOfColumns))
 
                 DispatchQueue.main.async {
                     for case let cell as NCGridMediaCell in collectionView.visibleCells {
                         if cell.ocId == self.metadata.ocId {
-                            UIView.transition(with: cell.imageItem,
-                                              duration: 0.75,
-                                              options: .transitionCrossDissolve,
-                                              animations: { cell.imageItem.image = NCUtility().getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: NCGlobal.shared.getSizeExtension(column: media.numberOfColumns)) },
-                                              completion: nil)
+                            UIView.transition(with: cell.imageItem, duration: 0.75, options: .transitionCrossDissolve, animations: { cell.imageItem.image = image
+                            }, completion: nil)
                             break
                         }
                     }
