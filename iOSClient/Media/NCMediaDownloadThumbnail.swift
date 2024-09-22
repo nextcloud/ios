@@ -56,9 +56,9 @@ class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
                                             etag: etagResource,
                                             account: media.session.account,
                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, data, _, _, etag, error in
-            if error == .success, let data, let collectionView = self.collectionView {
+            if error == .success, let data, let collectionView = self.collectionView, let media = self.media {
 
-                self.media?.filesExists.append(self.metadata.ocId)
+                media.filesExists.append(self.metadata.ocId)
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
                 NCUtility().createImage(metadata: tableMetadata, data: data)
 
@@ -68,7 +68,7 @@ class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
                             UIView.transition(with: cell.imageItem,
                                               duration: 0.75,
                                               options: .transitionCrossDissolve,
-                                              animations: { cell.imageItem.image = self.media?.getImage(metadata: self.metadata, cost: self.cost) },
+                                              animations: { cell.imageItem.image = NCUtility().getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: NCGlobal.shared.getSizeExtension(column: media.numberOfColumns)) },
                                               completion: nil)
                             break
                         }

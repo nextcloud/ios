@@ -317,26 +317,6 @@ class NCMedia: UIViewController {
         }
     }
 
-    // MARK: - Image
-
-    func getImage(metadata: NCMediaDataSource.Metadata, cost: Int, forceExt: String? = nil) -> UIImage? {
-        var returnImage: UIImage?
-        var ext = NCGlobal.shared.getSizeExtension(column: self.numberOfColumns)
-        if let forceExt { ext = forceExt }
-
-        if let image = imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
-            returnImage = image
-        } else if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
-            returnImage = image
-        } else if NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
-            DispatchQueue.main.async {
-                NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnail(metadata: metadata, collectionView: self.collectionView, media: self, cost: cost))
-            }
-        }
-
-        return returnImage
-    }
-
     func buildMediaPhotoVideo(columnCount: Int) {
         var pointSize: CGFloat = 0
 

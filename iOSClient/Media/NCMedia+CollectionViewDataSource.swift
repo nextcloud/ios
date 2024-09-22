@@ -86,6 +86,15 @@ extension NCMedia: UICollectionViewDataSource {
         }
     }
 
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        guard let metadata = dataSource.getMetadata(indexPath: indexPath) else { return }
+
+        if !utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag),
+           NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
+            NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnail(metadata: metadata, collectionView: self.collectionView, media: self, cost: indexPath.row))
+        }
+    }
+
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridMediaCell) else {
             fatalError("Unable to dequeue NCGridMediaCell with identifier gridCell")
@@ -94,7 +103,6 @@ extension NCMedia: UICollectionViewDataSource {
 
         let ext = NCGlobal.shared.getSizeExtension(column: self.numberOfColumns)
         let imageCache = imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext)
-        let cost = indexPath.row
 
         cell.backgroundColor = .secondarySystemBackground
         cell.imageItem.image = imageCache
@@ -117,10 +125,10 @@ extension NCMedia: UICollectionViewDataSource {
 
         if cell.imageItem.image == nil {
             if isPinchGestureActive || ext == NCGlobal.shared.previewExt512 || ext == NCGlobal.shared.previewExt1024 {
-                cell.imageItem.image = getImage(metadata: metadata, cost: cost)
+                cell.imageItem.image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext)
             } else {
                 DispatchQueue.global(qos: .userInteractive).async {
-                    let image = self.getImage(metadata: metadata, cost: cost)
+                    let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext)
                     DispatchQueue.main.async {
                         if let currentCell = collectionView.cellForItem(at: indexPath) as? NCGridMediaCell,
                            currentCell.ocId == metadata.ocId, let image {
