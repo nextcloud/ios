@@ -181,19 +181,19 @@ struct NCUploadAssetsView: View {
                     .disabled(model.uploadInProgress)
                     .hiddenConditionally(isHidden: model.hiddenSave)
                 }
-                .navigationTitle(NSLocalizedString("_upload_photos_videos_", comment: ""))
-                .navigationBarTitleDisplayMode(.inline)
-                .navigationBarItems(trailing: Button(action: {
-                    presentationMode.wrappedValue.dismiss()
-                }) {
-                    Image(systemName: "xmark")
-                        .font(Font.system(.body).weight(.light))
-                        .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
-                })
-                NCHUDView(showHUD: $model.showHUD, textLabel: NSLocalizedString("_wait_", comment: ""), image: "doc.badge.arrow.up", color: NCBrandColor.shared.getElement(account: model.session.account))
-                    .offset(y: model.showHUD ? 5 : -200)
-                    .animation(.easeOut, value: model.showHUD)
             }
+            .navigationTitle(NSLocalizedString("_upload_photos_videos_", comment: ""))
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarItems(trailing: Button(action: {
+                presentationMode.wrappedValue.dismiss()
+            }) {
+                Image(systemName: "xmark")
+                    .font(Font.system(.body).weight(.light))
+                    .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
+            })
+            NCHUDView(showHUD: $model.showHUD, textLabel: NSLocalizedString("_wait_", comment: ""), image: "doc.badge.arrow.up", color: NCBrandColor.shared.getElement(account: model.session.account))
+                .offset(y: model.showHUD ? 5 : -200)
+                .animation(.easeOut, value: model.showHUD)
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .sheet(isPresented: $showSelect) {

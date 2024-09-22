@@ -39,7 +39,7 @@ struct PreviewStore {
     var image: UIImage
 }
 
-class NCUploadAssetsModel: NSObject, ObservableObject, NCCreateFormUploadConflictDelegate {
+class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate {
     @Published var serverUrl: String
     @Published var assets: [TLPHAsset]
     @Published var previewStore: [PreviewStore] = []
@@ -65,7 +65,6 @@ class NCUploadAssetsModel: NSObject, ObservableObject, NCCreateFormUploadConflic
         self.serverUrl = serverUrl
         self.controller = controller
         self.showHUD = true
-        super.init()
 
         DispatchQueue.global(qos: .userInteractive).async {
             for asset in self.assets {
