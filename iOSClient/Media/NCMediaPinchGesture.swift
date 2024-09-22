@@ -61,6 +61,7 @@ extension NCMedia {
         case .began:
             networkRemoveAll()
             lastScale = gestureRecognizer.scale
+            lastNumberOfColumns = numberOfColumns
         case .changed:
             guard !transitionColumns else {
                 return

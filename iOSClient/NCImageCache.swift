@@ -36,10 +36,12 @@ class NCImageCache: NSObject {
     private let allowExtensions = [NCGlobal.shared.previewExt256, NCGlobal.shared.previewExt128]
     private var brandElementColor: UIColor?
 
-    public var countLimit = 5_000
+    public var countLimit = 10_000
     lazy var cache: LRUCache<String, UIImage> = {
         return LRUCache<String, UIImage>(countLimit: countLimit)
     }()
+
+    public var isLoadingCache: Bool = false
 
     override init() {
         super.init()
@@ -55,19 +57,20 @@ class NCImageCache: NSObject {
         countLimit = countLimit - 500
         if countLimit <= 0 { countLimit = 100 }
         self.cache = LRUCache<String, UIImage>(countLimit: countLimit)
+#if DEBUG
+        NCContentPresenter().messageNotification("Cache image memory warning \(countLimit)", error: .success, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
+#endif
     }
 
     func addImageCache(ocId: String, etag: String, data: Data, ext: String, cost: Int) {
         guard allowExtensions.contains(ext),
-              cache.count < countLimit,
               let image = UIImage(data: data) else { return }
 
         cache.setValue(image, forKey: ocId + etag + ext, cost: cost)
     }
 
     func addImageCache(ocId: String, etag: String, image: UIImage, ext: String, cost: Int) {
-        guard allowExtensions.contains(ext),
-              cache.count < countLimit else { return }
+        guard allowExtensions.contains(ext) else { return }
 
         cache.setValue(image, forKey: ocId + etag + ext, cost: cost)
     }
@@ -77,13 +80,8 @@ class NCImageCache: NSObject {
     }
 
     func removeImageCache(ocIdPlusEtag: String) {
-        let exts = [global.previewExt1024,
-                    global.previewExt512,
-                    global.previewExt256,
-                    global.previewExt128]
-
-        for i in 0..<exts.count {
-            cache.removeValue(forKey: ocIdPlusEtag + exts[i])
+        for i in 0..<allowExtensions.count {
+            cache.removeValue(forKey: ocIdPlusEtag + allowExtensions[i])
         }
     }
 
@@ -95,18 +93,20 @@ class NCImageCache: NSObject {
 
     func createMediaCache(session: NCSession.Session) {
         var cost: Int = 0
-        guard let layout = NCManageDatabase.shared.getLayoutForView(account: session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "") else { return }
-        let ext = NCGlobal.shared.getSizeExtension(column: layout.columnPhoto)
 
-        if let metadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: getMediaPredicate(filterLivePhotoFile: true, session: session, showOnlyImages: false, showOnlyVideos: false), sortedByKeyPath: "date") {
+        if let metadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: getMediaPredicate(filterLivePhotoFile: true, session: session, showOnlyImages: false, showOnlyVideos: false), sortedByKeyPath: "date", freeze: true)?.prefix(countLimit) {
 
-            for metadata in metadatas {
-                if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
-                    addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext, cost: cost)
+            cache.removeAllValues()
+            isLoadingCache = true
+
+            metadatas.forEach { metadata in
+                if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt256) {
+                    addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: NCGlobal.shared.previewExt256, cost: cost)
                     cost += 1
-                    if cost == countLimit { break }
                 }
             }
+
+            isLoadingCache = false
         }
     }
 

@@ -99,16 +99,14 @@ class NCGlobal: NSObject {
     func getSizeExtension(column: Int) -> String {
         let width = UIScreen.main.bounds.width / CGFloat(column)
 
-        switch (width * 4) {
-        case 0...192:
-            return previewExt128
-        case 193...384:
-             return previewExt256
-        case 385...768:
-            return previewExt512
-        default:
-            return previewExt1024
-        }
+         switch (width * 4) {
+         case 0...384:
+              return previewExt256
+         case 385...768:
+             return previewExt512
+         default:
+             return previewExt1024
+         }
     }
 
     // E2EE

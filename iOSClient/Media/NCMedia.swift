@@ -71,11 +71,7 @@ class NCMedia: UIViewController {
 
     var lastScale: CGFloat = 1.0
     var currentScale: CGFloat = 1.0
-#if DEBUG
     let maxColumns: Int = 10
-#else
-    let maxColumns: Int = 7
-#endif
     var transitionColumns = false
     var numberOfColumns: Int = 0
     var lastNumberOfColumns: Int = 0
@@ -149,10 +145,8 @@ class NCMedia: UIViewController {
             self.loadDataSource()
         }
 
-#if DEBUG
         pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture(_:)))
         collectionView.addGestureRecognizer(pinchGesture)
-#endif
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
             self.layoutType = self.database.getLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")?.layout ?? NCGlobal.shared.mediaLayoutRatio
@@ -250,10 +244,9 @@ class NCMedia: UIViewController {
 
         Task {
             let tasks = await NCNetworking.shared.getAllDataTask()
-            for task in tasks.filter({ $0.description == NCGlobal.shared.taskDescriptionRetrievesProperties }) {
+            for task in tasks.filter({ $0.taskDescription == NCGlobal.shared.taskDescriptionRetrievesProperties }) {
                 task.cancel()
             }
-
         }
     }
 
@@ -322,26 +315,6 @@ class NCMedia: UIViewController {
             self.loadDataSource()
             self.searchMediaUI()
         }
-    }
-
-    // MARK: - Image
-
-    func getImage(metadata: NCMediaDataSource.Metadata, cost: Int, forceExt: String? = nil) -> UIImage? {
-        var returnImage: UIImage?
-        var ext = NCGlobal.shared.getSizeExtension(column: self.numberOfColumns)
-        if let forceExt { ext = forceExt }
-
-        if let image = imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
-            returnImage = image
-        } else if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
-            returnImage = image
-        } else if NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
-            DispatchQueue.main.async {
-                NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnail(metadata: metadata, collectionView: self.collectionView, media: self, cost: cost))
-            }
-        }
-
-        return returnImage
     }
 
     func buildMediaPhotoVideo(columnCount: Int) {

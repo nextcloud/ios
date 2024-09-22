@@ -11,6 +11,7 @@ import NextcloudKit
 
 struct NCUploadAssetsView: View {
     @ObservedObject var model: NCUploadAssetsModel
+
     @State private var showSelect = false
     @State private var showUploadConflict = false
     @State private var showQuickLook = false
@@ -23,12 +24,11 @@ struct NCUploadAssetsView: View {
     var metadata: tableMetadata?
     let gridItems: [GridItem] = [GridItem()]
     let fileNamePath = NSTemporaryDirectory() + "Photo.jpg"
+    let utilityFileSystem = NCUtilityFileSystem()
 
     @Environment(\.presentationMode) var presentationMode
 
     var body: some View {
-        let utilityFileSystem = NCUtilityFileSystem()
-
         NavigationView {
             ZStack(alignment: .top) {
                 List {
@@ -160,40 +160,42 @@ struct NCUploadAssetsView: View {
                         }
                     }
 
-                    Button(NSLocalizedString("_save_", comment: "")) {
-                        if model.useAutoUploadFolder, model.useAutoUploadSubFolder {
-                            model.showHUD = true
-                        }
-                        model.uploadInProgress.toggle()
-                        model.save { metadatasNOConflict, metadatasUploadInConflict in
-                            if metadatasUploadInConflict.isEmpty {
-                                model.dismissCreateFormUploadConflict(metadatas: metadatasNOConflict)
-                            } else {
-                                model.metadatasNOConflict = metadatasNOConflict
-                                model.metadatasUploadInConflict = metadatasUploadInConflict
-                                showUploadConflict = true
+                    Section {
+                        Button(NSLocalizedString("_save_", comment: "")) {
+                            if model.useAutoUploadFolder, model.useAutoUploadSubFolder {
+                                model.showHUD = true
+                            }
+                            model.uploadInProgress.toggle()
+                            model.save { metadatasNOConflict, metadatasUploadInConflict in
+                                if metadatasUploadInConflict.isEmpty {
+                                    model.dismissCreateFormUploadConflict(metadatas: metadatasNOConflict)
+                                } else {
+                                    model.metadatasNOConflict = metadatasNOConflict
+                                    model.metadatasUploadInConflict = metadatasUploadInConflict
+                                    showUploadConflict = true
+                                }
                             }
                         }
+                        .frame(maxWidth: .infinity)
+                        .buttonStyle(ButtonRounded(disabled: model.uploadInProgress, account: model.session.account))
+                        .listRowBackground(Color(UIColor.systemGroupedBackground))
+                        .disabled(model.uploadInProgress)
+                        .hiddenConditionally(isHidden: model.hiddenSave)
                     }
-                    .frame(maxWidth: .infinity)
-                    .buttonStyle(ButtonRounded(disabled: model.uploadInProgress, account: model.session.account))
-                    .listRowBackground(Color(UIColor.systemGroupedBackground))
-                    .disabled(model.uploadInProgress)
-                    .hiddenConditionally(isHidden: model.hiddenSave)
                 }
-                .navigationTitle(NSLocalizedString("_upload_photos_videos_", comment: ""))
-                .navigationBarTitleDisplayMode(.inline)
-                .navigationBarItems(trailing: Button(action: {
-                    presentationMode.wrappedValue.dismiss()
-                }) {
-                    Image(systemName: "xmark")
-                        .font(Font.system(.body).weight(.light))
-                        .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
-                })
-                NCHUDView(showHUD: $model.showHUD, textLabel: NSLocalizedString("_wait_", comment: ""), image: "doc.badge.arrow.up", color: NCBrandColor.shared.getElement(account: model.session.account))
-                    .offset(y: model.showHUD ? 5 : -200)
-                    .animation(.easeOut, value: model.showHUD)
             }
+            .navigationTitle(NSLocalizedString("_upload_photos_videos_", comment: ""))
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarItems(trailing: Button(action: {
+                model.dismissView = true
+            }) {
+                Image(systemName: "xmark")
+                    .font(Font.system(.body).weight(.light))
+                    .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
+            })
+            NCHUDView(showHUD: $model.showHUD, textLabel: NSLocalizedString("_wait_", comment: ""), image: "doc.badge.arrow.up", color: NCBrandColor.shared.getElement(account: model.session.account))
+                .offset(y: model.showHUD ? 5 : -200)
+                .animation(.easeOut, value: model.showHUD)
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .sheet(isPresented: $showSelect) {
@@ -210,9 +212,6 @@ struct NCUploadAssetsView: View {
             if newValue {
                 presentationMode.wrappedValue.dismiss()
             }
-        }
-        .onTapGesture {
-            SceneManager.shared.getWindow(controller: model.controller)?.endEditing(true)
         }
         .onDisappear {
             model.dismissView = true

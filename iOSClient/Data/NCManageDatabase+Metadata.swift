@@ -939,7 +939,7 @@ extension NCManageDatabase {
         return []
     }
 
-    func getResultsMetadatas(predicate: NSPredicate, sortedByKeyPath: String, ascending: Bool, arraySlice: Int = 0) -> [tableMetadata] {
+    func getResultsMetadatas(predicate: NSPredicate, sortedByKeyPath: String, ascending: Bool, arraySlice: Int) -> [tableMetadata] {
         do {
             let realm = try Realm()
             let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sortedByKeyPath, ascending: ascending).prefix(arraySlice)
@@ -1059,26 +1059,44 @@ extension NCManageDatabase {
     }
 
     func getResultMetadataFromFileId(_ fileId: String?) -> tableMetadata? {
+        guard let fileId else { return nil }
+
         do {
             let realm = try Realm()
-            guard let fileId = fileId else { return nil }
-            guard let result = realm.objects(tableMetadata.self).filter("fileId == %@", fileId).first else { return nil }
-            return result
+            return realm.objects(tableMetadata.self).filter("fileId == %@", fileId).first
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
         return nil
     }
 
-    func getResultsMetadatas(predicate: NSPredicate, sortedByKeyPath: String? = nil, ascending: Bool = false) -> Results<tableMetadata>? {
+    func getResultMetadataFromOcId(_ ocId: String?) -> tableMetadata? {
+        guard let ocId else { return nil }
+
+        do {
+            let realm = try Realm()
+            return realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
+        }
+        return nil
+    }
+
+    func getResultsMetadatas(predicate: NSPredicate, sortedByKeyPath: String? = nil, ascending: Bool = false, freeze: Bool = false) -> Results<tableMetadata>? {
         do {
             let realm = try Realm()
             realm.refresh()
             if let sortedByKeyPath {
                 let results = realm.objects(tableMetadata.self).filter(predicate).sorted(byKeyPath: sortedByKeyPath, ascending: ascending)
+                if freeze {
+                    return results.freeze()
+                }
                 return results
             } else {
                 let results = realm.objects(tableMetadata.self).filter(predicate)
+                if freeze {
+                    return results.freeze()
+                }
                 return results
             }
         } catch let error as NSError {

@@ -98,7 +98,8 @@ class NCManageDatabase: NSObject {
 
         if isAppex {
             if bundleFileName == "File Provider Extension.appex" {
-                objectTypesAppex = [tableMetadata.self,
+                objectTypesAppex = [NCKeyValue.self,
+                                    tableMetadata.self,
                                     tableLocalFile.self,
                                     tableDirectory.self,
                                     tableTag.self,

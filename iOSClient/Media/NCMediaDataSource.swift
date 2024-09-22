@@ -125,6 +125,10 @@ extension NCMedia {
                         self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
                             self.database.addMetadatas(metadatas)
 
+                            if self.dataSource.addMetadatas(metadatas) {
+                                self.collectionViewReloadData()
+                            }
+
                             if let firstCellDate, let lastCellDate, self.isViewActived {
                                 let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [ NSPredicate(format: "date >= %@ AND date =< %@", lastCellDate as NSDate, firstCellDate as NSDate), self.imageCache.getMediaPredicate(filterLivePhotoFile: false, session: self.session, showOnlyImages: self.showOnlyImages, showOnlyVideos: self.showOnlyVideos)])
 
@@ -137,10 +141,6 @@ extension NCMedia {
                                 }
                             }
                         }
-                    }
-
-                    if self.dataSource.addFiles(files) {
-                        self.collectionViewReloadData()
                     }
 
                 } else {
@@ -197,7 +197,7 @@ public class NCMediaDataSource: NSObject {
         super.init()
 
         self.metadatas.removeAll()
-        for metadata in metadatas {
+        metadatas.forEach { metadata in
             let metadata = getMetadataFromTableMetadata(metadata)
             self.metadatas.append(metadata)
         }
@@ -232,16 +232,6 @@ public class NCMediaDataSource: NSObject {
                         isLivePhoto: !metadata.livePhotoFile.isEmpty,
                         isVideo: metadata.classFile == NKCommon.TypeClassFile.video.rawValue,
                         ocId: metadata.ocId)
-    }
-
-    private func getMetadataFromFile(_ file: NKFile) -> Metadata {
-        return Metadata(date: file.date as Date,
-                        etag: file.etag,
-                        imageSize: CGSize(width: file.width, height: file.height),
-                        isImage: file.classFile == NKCommon.TypeClassFile.image.rawValue,
-                        isLivePhoto: !file.livePhotoFile.isEmpty,
-                        isVideo: file.classFile == NKCommon.TypeClassFile.video.rawValue,
-                        ocId: file.ocId)
     }
 
     // MARK: -
@@ -291,15 +281,15 @@ public class NCMediaDataSource: NSObject {
         }
     }
 
-    func addFiles(_ files: [NKFile]) -> Bool {
+    func addMetadatas(_ metadatas: [tableMetadata]) -> Bool {
         var metadatasToInsert: [Metadata] = []
 
-        for file in files {
-            let metadata = getMetadataFromFile(file)
+        for tableMetadata in metadatas {
+            let metadata = getMetadataFromTableMetadata(tableMetadata)
 
             if metadata.isLivePhoto, metadata.isVideo { continue }
 
-            if let index = self.metadatas.firstIndex(where: { $0.ocId == file.ocId }) {
+            if let index = self.metadatas.firstIndex(where: { $0.ocId == tableMetadata.ocId }) {
                 self.metadatas[index] = metadata
             } else {
                 metadatasToInsert.append(metadata)

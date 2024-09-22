@@ -51,7 +51,8 @@ extension NCMedia: UICollectionViewDelegate {
                 // ACTIVE SERVERURL
                 serverUrl = metadata.serverUrl
                 if let results = dataSource.getTableMetadatas() {
-                    NCViewer().view(viewController: self, metadata: metadata, metadatas: Array(results), indexMetadatas: indexPath.row, image: getImage(metadata: metadataDatasource, cost: indexPath.row, forceExt: NCGlobal.shared.previewExt1024))
+                    let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024)
+                    NCViewer().view(viewController: self, metadata: metadata, metadatas: Array(results), indexMetadatas: indexPath.row, image: image)
                 }
             }
         }

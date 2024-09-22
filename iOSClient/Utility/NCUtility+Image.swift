@@ -169,9 +169,6 @@ extension NCUtility {
                 do {
                     let fileNamePath = utilityFileSystem.getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: ext[i])
                     try data.write(to: URL(fileURLWithPath: fileNamePath))
-                    #if !EXTENSION
-                    NCImageCache.shared.addImageCache(ocId: ocId, etag: etag, data: data, ext: ext[i], cost: cost)
-                    #endif
                 } catch { }
             }
         }
