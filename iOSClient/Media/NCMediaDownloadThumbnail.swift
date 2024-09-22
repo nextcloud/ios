@@ -28,17 +28,16 @@ import Queuer
 class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
     var metadata: NCMediaDataSource.Metadata
     let utilityFileSystem = NCUtilityFileSystem()
-    let media: NCMedia?
+    let media: NCMedia
 
-    init(metadata: NCMediaDataSource.Metadata, media: NCMedia?) {
+    init(metadata: NCMediaDataSource.Metadata, media: NCMedia) {
         self.metadata = metadata
         self.media = media
     }
 
     override func start() {
         guard !isCancelled,
-              let tableMetadata = NCManageDatabase.shared.getMetadataFromOcId(self.metadata.ocId),
-              let media = self.media else { return self.finish() }
+              let tableMetadata = NCManageDatabase.shared.getResultMetadataFromOcId(self.metadata.ocId)?.freeze() else { return self.finish() }
         var etagResource: String?
 
         if utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag) {
@@ -51,13 +50,13 @@ class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, data, _, _, etag, error in
             if error == .success, let data {
 
-                media.filesExists.append(self.metadata.ocId)
+                self.media.filesExists.append(self.metadata.ocId)
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
                 NCUtility().createImage(metadata: tableMetadata, data: data)
-                let image = NCUtility().getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: NCGlobal.shared.getSizeExtension(column: media.numberOfColumns))
+                let image = NCUtility().getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: NCGlobal.shared.getSizeExtension(column: self.media.numberOfColumns))
 
                 DispatchQueue.main.async {
-                    for case let cell as NCGridMediaCell in media.collectionView.visibleCells {
+                    for case let cell as NCGridMediaCell in self.media.collectionView.visibleCells {
                         if cell.ocId == self.metadata.ocId {
                             UIView.transition(with: cell.imageItem, duration: 0.75, options: .transitionCrossDissolve, animations: { cell.imageItem.image = image
                             }, completion: nil)

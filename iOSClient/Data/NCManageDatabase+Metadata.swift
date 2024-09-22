@@ -1059,11 +1059,23 @@ extension NCManageDatabase {
     }
 
     func getResultMetadataFromFileId(_ fileId: String?) -> tableMetadata? {
+        guard let fileId else { return nil }
+
         do {
             let realm = try Realm()
-            guard let fileId = fileId else { return nil }
-            guard let result = realm.objects(tableMetadata.self).filter("fileId == %@", fileId).first else { return nil }
-            return result
+            return realm.objects(tableMetadata.self).filter("fileId == %@", fileId).first
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
+        }
+        return nil
+    }
+
+    func getResultMetadataFromOcId(_ ocId: String?) -> tableMetadata? {
+        guard let ocId else { return nil }
+
+        do {
+            let realm = try Realm()
+            return realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
