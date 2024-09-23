@@ -56,7 +56,7 @@ extension NCMedia {
             else { return }
             self.hasRunSearchMedia = true
 
-            let limit = max(collectionView.visibleCells.count * 2, 300)
+            let limit = max(collectionView.visibleCells.count * 3, 300)
             var lessDate = Date.distantFuture
             var greaterDate = Date.distantPast
             let countMetadatas = self.dataSource.metadatas.count
