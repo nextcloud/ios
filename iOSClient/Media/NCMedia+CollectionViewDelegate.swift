@@ -31,10 +31,6 @@ extension NCMedia: UICollectionViewDelegate {
               let cell = collectionView.cellForItem(at: indexPath) as? NCGridMediaCell,
               let results = dataSource.getTableMetadatas() else { return }
 
-        var selectMetadata: tableMetadata?
-        var indexMetadatas: Int = 0
-        let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024)
-
         if isEditMode {
             if let index = fileSelect.firstIndex(of: metadata.ocId) {
                 fileSelect.remove(at: index)
@@ -45,25 +41,17 @@ extension NCMedia: UICollectionViewDelegate {
             }
             tabBarSelect.selectCount = fileSelect.count
         } else {
+            let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024)
+
             if let results = dataSource.getTableMetadatas() {
                 if results[indexPath.row].ocId == metadata.ocId {
-                    selectMetadata = tableMetadata.init(value: results[indexPath.row])
-                    indexMetadatas = indexPath.row
+                    NCViewer().view(viewController: self, metadata: tableMetadata.init(value: results[indexPath.row]), metadatas: Array(results), indexMetadatas: indexPath.row, image: image)
                 } else {
-                    for indexPath in collectionView.indexPathsForVisibleItems {
-                        if results[indexPath.row].ocId == metadata.ocId {
-                            selectMetadata = tableMetadata.init(value: results[indexPath.row])
-                            indexMetadatas = indexPath.row
-                            break
-                        }
+                    for indexPath in collectionView.indexPathsForVisibleItems where results[indexPath.row].ocId == metadata.ocId {
+                        NCViewer().view(viewController: self, metadata: tableMetadata.init(value: results[indexPath.row]), metadatas: Array(results), indexMetadatas: indexPath.row, image: image)
+                        break
                     }
                 }
-            }
-
-            if let metadata = selectMetadata {
-                NCViewer().view(viewController: self, metadata: metadata, metadatas: Array(results), indexMetadatas: indexMetadatas, image: image)
-            } else {
-                self.loadDataSource()
             }
         }
     }
