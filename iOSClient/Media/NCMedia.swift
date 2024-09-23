@@ -269,6 +269,7 @@ class NCMedia: UIViewController {
         }
 
         dataSource.removeMetadata(ocIds)
+
         if indexPaths.count == ocIds.count {
             collectionView.deleteItems(at: indexPaths)
         } else {
@@ -288,12 +289,26 @@ class NCMedia: UIViewController {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               let fileExists = userInfo["fileExists"] as? Bool else { return }
+        var indexPaths: [IndexPath] = []
 
         filesExists.append(ocId)
 
         if !fileExists {
+            if let index = dataSource.metadatas.firstIndex(where: {$0.ocId == ocId}),
+               let cell = collectionView.cellForItem(at: IndexPath(row: index, section: 0)) as? NCGridMediaCell,
+               dataSource.metadatas[index].ocId == cell.ocId {
+                indexPaths.append(IndexPath(row: index, section: 0))
+            }
+
             dataSource.removeMetadata([ocId])
             database.deleteMetadataOcId(ocId)
+
+            if !indexPaths.isEmpty {
+                collectionView.deleteItems(at: indexPaths)
+            } else {
+                collectionViewReloadData()
+            }
+
             collectionViewReloadData()
         }
     }
