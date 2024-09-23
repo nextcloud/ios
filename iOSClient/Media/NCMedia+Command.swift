@@ -42,7 +42,7 @@ extension NCMedia {
         tabBarSelect.selectCount = fileSelect.count
 
         if let visibleCells = self.collectionView?.indexPathsForVisibleItems.compactMap({ self.collectionView?.cellForItem(at: $0) }) {
-            for case let cell as NCGridMediaCell in visibleCells {
+            for case let cell as NCMediaCell in visibleCells {
                 cell.selected(false)
             }
         }

@@ -70,7 +70,7 @@ extension NCMedia {
 
             if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }), !distant {
 
-                firstCellDate = (visibleCells.first as? NCGridMediaCell)?.date
+                firstCellDate = (visibleCells.first as? NCMediaCell)?.date
                 if firstCellDate == self.dataSource.metadatas.first?.date {
                     lessDate = Date.distantFuture
                 } else {
@@ -81,7 +81,7 @@ extension NCMedia {
                     }
                 }
 
-                lastCellDate = (visibleCells.last as? NCGridMediaCell)?.date
+                lastCellDate = (visibleCells.last as? NCMediaCell)?.date
                 if lastCellDate == self.dataSource.metadatas.last?.date {
                     greaterDate = Date.distantPast
                 } else {
