@@ -138,8 +138,6 @@ extension NCMedia: UICollectionViewDataSource {
                     }
                 }
             }
-        } else {
-            print("[DEBUG] in cache, cost \(indexPath.row)")
         }
 
         return cell
