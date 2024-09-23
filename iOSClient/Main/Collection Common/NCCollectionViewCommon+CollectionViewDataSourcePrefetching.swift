@@ -28,7 +28,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSourcePrefetching {
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
         guard !isSearchingMode, !imageCache.isLoadingCache else { return }
 
-        let ext = global.getSizeExtension(column: self.column)
+        let ext = global.getSizeExtension(column: self.numberOfColumns)
         let metadatas = self.dataSource.getMetadatas(indexPaths: indexPaths)
         let cost = indexPaths.first?.row ?? 0
 

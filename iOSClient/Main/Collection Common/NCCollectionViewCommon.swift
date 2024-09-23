@@ -36,6 +36,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     let utility = NCUtility()
     let utilityFileSystem = NCUtilityFileSystem()
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    var pinchGesture: UIPinchGestureRecognizer = UIPinchGestureRecognizer()
 
     var autoUploadFileName = ""
     var autoUploadDirectory = ""
@@ -65,7 +66,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var tabBarSelect: NCCollectionViewCommonSelectTabBar!
     var attributesZoomIn: UIMenuElement.Attributes = []
     var attributesZoomOut: UIMenuElement.Attributes = []
-    let maxImageGrid: CGFloat = 7
 
     // DECLARE
     var layoutKey = ""
@@ -82,6 +82,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var emptyDescription: String = ""
     var emptyDataPortaitOffset: CGFloat = 0
     var emptyDataLandscapeOffset: CGFloat = -20
+
+    var lastScale: CGFloat = 1.0
+    var currentScale: CGFloat = 1.0
+    let maxColumns: Int = 10
+    var transitionColumns = false
+    var numberOfColumns: Int = 0
+    var lastNumberOfColumns: Int = 0
 
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: tabBarController)
@@ -116,16 +123,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             return CGSize(width: collectionView.frame.width / column, height: collectionView.frame.width / column)
         } else {
             return CGSize(width: 40, height: 40)
-        }
-    }
-
-    var column: Int {
-        if isLayoutPhoto {
-            return layoutForView?.columnPhoto ?? 3
-        } else if isLayoutGrid {
-            return layoutForView?.columnGrid ?? 3
-        } else {
-            return 0
         }
     }
 
@@ -199,6 +196,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         collectionView.dragInteractionEnabled = true
         collectionView.dragDelegate = self
         collectionView.dropDelegate = self
+
+        pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture(_:)))
+        collectionView.addGestureRecognizer(pinchGesture)
 
         let dropInteraction = UIDropInteraction(delegate: self)
         self.navigationController?.navigationItem.leftBarButtonItems?.first?.customView?.addInteraction(dropInteraction)
@@ -672,7 +672,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             if layoutForView.layout != global.layoutPhotoSquare && layoutForView.layout != global.layoutPhotoRatio {
                 self.attributesZoomIn = .disabled
                 self.attributesZoomOut = .disabled
-            } else if CGFloat(columnPhoto) >= maxImageGrid - 1 {
+            } else if columnPhoto >= maxColumns - 1 {
                 self.attributesZoomIn = []
                 self.attributesZoomOut = .disabled
             } else if columnPhoto <= 1 {
