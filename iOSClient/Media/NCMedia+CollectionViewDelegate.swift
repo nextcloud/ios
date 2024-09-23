@@ -43,7 +43,7 @@ extension NCMedia: UICollectionViewDelegate {
             let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024)
             let ocIds = dataSource.getMetadatas().map { $0.ocId }
 
-            NCViewer().view(viewController: self, metadata: metadata, ocIds: ocIds, index: indexPath.row, image: image)
+            NCViewer().view(viewController: self, metadata: metadata, ocIds: ocIds, image: image)
         }
     }
 

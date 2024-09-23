@@ -66,9 +66,8 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 let ocIds = metadatas.filter { $0.classFile == NKCommon.TypeClassFile.image.rawValue ||
                                                $0.classFile == NKCommon.TypeClassFile.video.rawValue ||
                                                $0.classFile == NKCommon.TypeClassFile.audio.rawValue }.map(\.ocId)
-                let index = ocIds.firstIndex(where: { $0 == metadata.ocId }) ?? 0
 
-                return NCViewer().view(viewController: self, metadata: metadata, ocIds: ocIds, index: index, image: image)
+                return NCViewer().view(viewController: self, metadata: metadata, ocIds: ocIds, image: image)
 
             } else if metadata.isAvailableEditorView ||
                       utilityFileSystem.fileProviderStorageExists(metadata) ||
