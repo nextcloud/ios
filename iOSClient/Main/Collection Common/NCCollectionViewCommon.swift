@@ -144,7 +144,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.navigationController?.presentationController?.delegate = self
         collectionView.alwaysBounceVertical = true
 
-        // Color
         view.backgroundColor = .systemBackground
         collectionView.backgroundColor = .systemBackground
         refreshControl.tintColor = NCBrandColor.shared.textColor2
@@ -178,14 +177,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         collectionView.register(UINib(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
         collectionView.register(UINib(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: mediaSectionFooter, withReuseIdentifier: "sectionFooter")
 
-        // Refresh Control
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
             self.database.cleanEtagDirectory(serverUrl: self.serverUrl, account: self.session.account)
             self.reloadDataSourceNetwork()
         }
 
-        // Long Press on CollectionView
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPressCollecationView(_:)))
         longPressedGesture.minimumPressDuration = 0.5
         longPressedGesture.delegate = self
