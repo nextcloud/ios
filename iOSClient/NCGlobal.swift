@@ -95,6 +95,7 @@ class NCGlobal: NSObject {
     let previewExt256                               = ".256.preview.jpg"
 
     func getSizeExtension(column: Int) -> String {
+        if column == 0 { return previewExt256 }
         let width = UIScreen.main.bounds.width / CGFloat(column)
 
          switch (width * 4) {
@@ -369,6 +370,7 @@ class NCGlobal: NSObject {
     let configuration_disable_openin_file                       = "disable_openin_file"
 
     // MORE NEXTCLOUD APPS
+    //
     let talkSchemeUrl                                           = "nextcloudtalk://"
     let notesSchemeUrl                                          = "nextcloudnotes://"
     let talkAppStoreUrl                                         = "https://apps.apple.com/in/app/nextcloud-talk/id1296825574"

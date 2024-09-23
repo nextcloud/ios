@@ -46,6 +46,10 @@ class NCMainTabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         delegate = self
+
+        if #available(iOS 17.0, *) {
+            traitOverrides.horizontalSizeClass = .compact
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {

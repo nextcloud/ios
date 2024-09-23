@@ -189,7 +189,6 @@ public class NCMediaDataSource: NSObject {
     private let utilityFileSystem = NCUtilityFileSystem()
     private let global = NCGlobal.shared
     private var metadatas: [Metadata] = []
-    private var tableMetadatas: Results<tableMetadata>?
 
     override init() { super.init() }
 
@@ -200,16 +199,6 @@ public class NCMediaDataSource: NSObject {
         metadatas.forEach { metadata in
             let metadata = getMetadataFromTableMetadata(metadata)
             self.metadatas.append(metadata)
-        }
-
-        let reference = ThreadSafeReference(to: metadatas)
-        DispatchQueue.main.async {
-            do {
-                let realm = try Realm()
-                self.tableMetadatas = realm.resolve(reference)
-            } catch let error as NSError {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
-            }
         }
     }
 
@@ -250,10 +239,6 @@ public class NCMediaDataSource: NSObject {
 
     func getMetadatas() -> [Metadata] {
         return self.metadatas
-    }
-
-    func getTableMetadatas() -> Results<tableMetadata>? {
-        return self.tableMetadatas
     }
 
     func getMetadata(indexPath: IndexPath) -> Metadata? {
