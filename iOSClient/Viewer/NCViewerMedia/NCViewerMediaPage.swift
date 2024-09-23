@@ -35,26 +35,13 @@ var viewerMediaScreenMode: ScreenMode = .normal
 class NCViewerMediaPage: UIViewController {
     @IBOutlet weak var progressView: UIProgressView!
 
-    // swiftlint:disable force_cast
-    var pageViewController: UIPageViewController {
-        return self.children[0] as! UIPageViewController
-    }
-
-    var currentViewController: NCViewerMedia {
-        return self.pageViewController.viewControllers![0] as! NCViewerMedia
-    }
-    // swiftlint:enable force_cast
-
-    private var hideStatusBar: Bool = false {
-        didSet {
-            setNeedsStatusBarAppearanceUpdate()
-        }
-    }
-
+    /// Parameters
     var ocIds: [String] = []
-    var delegateViewController: UIViewController?
-    var modifiedOcId: [String] = []
     var currentIndex: Int = 0
+    var delegateViewController: UIViewController?
+
+    ///
+    var modifiedOcId: [String] = []
     var nextIndex: Int?
     var panGestureRecognizer: UIPanGestureRecognizer!
     var singleTapGestureRecognizer: UITapGestureRecognizer!
@@ -78,6 +65,22 @@ class NCViewerMediaPage: UIViewController {
 
     private lazy var moreNavigationItem = UIBarButtonItem(image: NCImageCache.shared.getImageButtonMore(), style: .plain, target: self, action: #selector(openMenuMore))
     private lazy var imageDetailNavigationItem = UIBarButtonItem(image: NCUtility().loadImage(named: "info.circle", colors: [NCBrandColor.shared.iconImageColor]), style: .plain, target: self, action: #selector(toggleDetail))
+
+    // swiftlint:disable force_cast
+    var pageViewController: UIPageViewController {
+        return self.children[0] as! UIPageViewController
+    }
+
+    var currentViewController: NCViewerMedia {
+        return self.pageViewController.viewControllers![0] as! NCViewerMedia
+    }
+    // swiftlint:enable force_cast
+
+    private var hideStatusBar: Bool = false {
+        didSet {
+            setNeedsStatusBarAppearanceUpdate()
+        }
+    }
 
     // MARK: - View Life Cycle
 
