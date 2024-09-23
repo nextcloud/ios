@@ -39,8 +39,8 @@ extension NCMedia: UICollectionViewDataSource {
             return header
         } else {
             guard let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as? NCSectionFooter else { return NCSectionFooter() }
-            let images = dataSource.getMetadatas().filter({ $0.isImage }).count
-            let video = dataSource.getMetadatas().count - images
+            let images = dataSource.metadatas.filter({ $0.isImage }).count
+            let video = dataSource.metadatas.count - images
 
             footer.setTitleLabel("\(images) " + NSLocalizedString("_images_", comment: "") + " • " + "\(video) " + NSLocalizedString("_video_", comment: ""))
             footer.separatorIsHidden(true)
@@ -49,7 +49,7 @@ extension NCMedia: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let numberOfItemsInSection = dataSource.getMetadatas().count
+        let numberOfItemsInSection = dataSource.metadatas.count
         self.numberOfColumns = getColumnCount()
 
         if numberOfItemsInSection == 0 || NCNetworking.shared.isOffline {

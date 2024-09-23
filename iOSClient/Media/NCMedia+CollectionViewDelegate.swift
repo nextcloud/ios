@@ -41,7 +41,7 @@ extension NCMedia: UICollectionViewDelegate {
             tabBarSelect.selectCount = fileSelect.count
         } else if let metadata = database.getMetadataFromOcId(metadata.ocId) {
             let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024)
-            let ocIds = dataSource.getMetadatas().map { $0.ocId }
+            let ocIds = dataSource.metadatas.map { $0.ocId }
 
             NCViewer().view(viewController: self, metadata: metadata, ocIds: ocIds, image: image)
         }

@@ -156,7 +156,7 @@ class NCMedia: UIViewController {
         }
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterClearCache), object: nil, queue: nil) { _ in
-            self.dataSource.removeAll()
+            self.dataSource.metadatas.removeAll()
             self.imageCache.removeAll()
             self.searchMediaUI(true)
         }
@@ -172,7 +172,7 @@ class NCMedia: UIViewController {
         super.viewWillAppear(animated)
 
         navigationController?.setMediaAppreance()
-        if dataSource.isEmpty() {
+        if dataSource.metadatas.isEmpty {
             loadDataSource()
         }
     }
@@ -252,21 +252,24 @@ class NCMedia: UIViewController {
 
     @objc func deleteFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? [String],
+              let ocIds = userInfo["ocId"] as? [String],
               let error = userInfo["error"] as? NKError else { return }
 
-        fileDeleted = fileDeleted + ocId
+        fileDeleted = fileDeleted + ocIds
 
         var indexPaths: [IndexPath] = []
+        let indices = dataSource.metadatas.enumerated().filter { ocIds.contains($0.element.ocId) }.map { $0.offset }
 
-        for ocId in ocId {
-            if let row = dataSource.getMetadatas().firstIndex(where: {$0.ocId == ocId}) {
-                indexPaths.append(IndexPath(row: row, section: 0))
+        for index in indices {
+            let indexPath = IndexPath(row: index, section: 0)
+            if let cell = collectionView.cellForItem(at: indexPath) as? NCGridMediaCell,
+               dataSource.metadatas[index].ocId == cell.ocId {
+                indexPaths.append(indexPath)
             }
         }
 
-        dataSource.removeMetadata(ocId)
-        if indexPaths.count == ocId.count {
+        dataSource.removeMetadata(ocIds)
+        if indexPaths.count == ocIds.count {
             collectionView.deleteItems(at: indexPaths)
         } else {
             collectionViewReloadData()
@@ -352,7 +355,7 @@ class NCMedia: UIViewController {
 
 extension NCMedia: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if !dataSource.isEmpty() {
+        if !dataSource.metadatas.isEmpty {
             isTop = scrollView.contentOffset.y <= -(insetsTop + view.safeAreaInsets.top - 25)
             setColor()
             setTitleDate()

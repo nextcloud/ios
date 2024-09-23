@@ -59,7 +59,7 @@ extension NCMedia {
             let limit = max(collectionView.visibleCells.count * 2, 300)
             var lessDate = Date.distantFuture
             var greaterDate = Date.distantPast
-            let countMetadatas = self.dataSource.getMetadatas().count
+            let countMetadatas = self.dataSource.metadatas.count
             let options = NKRequestOptions(timeout: 120, taskDescription: NCGlobal.shared.taskDescriptionRetrievesProperties, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
             var firstCellDate: Date?
             var lastCellDate: Date?
@@ -71,7 +71,7 @@ extension NCMedia {
             if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }), !distant {
 
                 firstCellDate = (visibleCells.first as? NCGridMediaCell)?.date
-                if firstCellDate == self.dataSource.getMetadatas().first?.date {
+                if firstCellDate == self.dataSource.metadatas.first?.date {
                     lessDate = Date.distantFuture
                 } else {
                     if let date = firstCellDate {
@@ -82,7 +82,7 @@ extension NCMedia {
                 }
 
                 lastCellDate = (visibleCells.last as? NCGridMediaCell)?.date
-                if lastCellDate == self.dataSource.getMetadatas().last?.date {
+                if lastCellDate == self.dataSource.metadatas.last?.date {
                     greaterDate = Date.distantPast
                 } else {
                     if let date = lastCellDate {
@@ -117,7 +117,7 @@ extension NCMedia {
 
                     /// No files, remove all
                     if lessDate == Date.distantFuture, greaterDate == Date.distantPast, files.isEmpty {
-                        self.dataSource.removeAll()
+                        self.dataSource.metadatas.removeAll()
                         self.collectionViewReloadData()
                     }
 
@@ -188,7 +188,7 @@ public class NCMediaDataSource: NSObject {
 
     private let utilityFileSystem = NCUtilityFileSystem()
     private let global = NCGlobal.shared
-    private var metadatas: [Metadata] = []
+    var metadatas: [Metadata] = []
 
     override init() { super.init() }
 
@@ -224,22 +224,6 @@ public class NCMediaDataSource: NSObject {
     }
 
     // MARK: -
-
-    func removeAll() {
-        self.metadatas.removeAll()
-    }
-
-    func isEmpty() -> Bool {
-        return self.metadatas.isEmpty
-    }
-
-    func count() -> Int {
-        return self.metadatas.count
-    }
-
-    func getMetadatas() -> [Metadata] {
-        return self.metadatas
-    }
 
     func getMetadata(indexPath: IndexPath) -> Metadata? {
         if indexPath.row < self.metadatas.count {
