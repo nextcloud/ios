@@ -28,6 +28,7 @@ class NCMainTabBar: UITabBar {
     private var fillColor: UIColor!
     private var shapeLayer: CALayer?
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    private let centerButtonY: CGFloat = -28
     public var color = NCBrandColor.shared.customer
 
     public var menuRect: CGRect {
@@ -116,15 +117,6 @@ class NCMainTabBar: UITabBar {
     }
 
     private func createButtons() {
-        let centerButtonHeight: CGFloat = 57
-        var centerButtonY: CGFloat = -28
-        var centerButtonFrame = CGRect(x: (self.bounds.width / 2) - (centerButtonHeight / 2), y: centerButtonY, width: centerButtonHeight, height: centerButtonHeight)
-
-        if UIDevice.current.userInterfaceIdiom == .pad {
-            if #available(iOS 18, *) {
-                centerButtonFrame = CGRect(x: 100, y: 10, width: 50, height: 50)
-            }
-        }
 
         // File
         if let item = items?[0] {
@@ -169,7 +161,8 @@ class NCMainTabBar: UITabBar {
             centerButton.removeFromSuperview()
         }
 
-        let centerButton = UIButton(frame: centerButtonFrame)
+        let centerButtonHeight: CGFloat = 57
+        let centerButton = UIButton(frame: CGRect(x: (self.bounds.width / 2) - (centerButtonHeight / 2), y: centerButtonY, width: centerButtonHeight, height: centerButtonHeight))
 
         centerButton.setTitle("", for: .normal)
         centerButton.setImage(imagePlus, for: .normal)
@@ -244,5 +237,9 @@ class NCMainTabBar: UITabBar {
         } else {
             return nil
         }
+    }
+
+    func getHeight() -> CGFloat {
+        return (frame.size.height - centerButtonY)
     }
 }
