@@ -48,7 +48,6 @@ class NCMedia: UIViewController {
     let database = NCManageDatabase.shared
     let imageCache = NCImageCache.shared
     var dataSource = NCMediaDataSource()
-    var serverUrl = ""
     let refreshControl = UIRefreshControl()
     var isTop: Bool = true
     var isEditMode = false

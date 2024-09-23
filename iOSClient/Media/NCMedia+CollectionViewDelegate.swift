@@ -27,33 +27,43 @@ import RealmSwift
 
 extension NCMedia: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        var mediaCell: NCGridMediaCell?
-        if let metadataDatasource = dataSource.getMetadata(indexPath: indexPath),
-           let metadata = database.getMetadataFromOcId(metadataDatasource.ocId) {
-            if let visibleCells = self.collectionView?.indexPathsForVisibleItems.compactMap({ self.collectionView?.cellForItem(at: $0) }) {
-                for case let cell as NCGridMediaCell in visibleCells {
-                    if cell.ocId == metadata.ocId {
-                        mediaCell = cell
+        guard let metadata = dataSource.getMetadata(indexPath: indexPath),
+              let cell = collectionView.cellForItem(at: indexPath) as? NCGridMediaCell,
+              let results = dataSource.getTableMetadatas() else { return }
+
+        var selectMetadata: tableMetadata?
+        var indexMetadatas: Int = 0
+        let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024)
+
+        if isEditMode {
+            if let index = fileSelect.firstIndex(of: metadata.ocId) {
+                fileSelect.remove(at: index)
+                cell.selected(false)
+            } else {
+                fileSelect.append(metadata.ocId)
+                cell.selected(true)
+            }
+            tabBarSelect.selectCount = fileSelect.count
+        } else {
+            if let results = dataSource.getTableMetadatas() {
+                if results[indexPath.row].ocId == metadata.ocId {
+                    selectMetadata = tableMetadata.init(value: results[indexPath.row])
+                    indexMetadatas = indexPath.row
+                } else {
+                    for indexPath in collectionView.indexPathsForVisibleItems {
+                        if results[indexPath.row].ocId == metadata.ocId {
+                            selectMetadata = tableMetadata.init(value: results[indexPath.row])
+                            indexMetadatas = indexPath.row
+                            break
+                        }
                     }
                 }
             }
-            if isEditMode {
-                if let index = fileSelect.firstIndex(of: metadata.ocId) {
-                    fileSelect.remove(at: index)
-                    mediaCell?.selected(false)
-                } else {
-                    fileSelect.append(metadata.ocId)
-                    mediaCell?.selected(true)
 
-                }
-                tabBarSelect.selectCount = fileSelect.count
+            if let metadata = selectMetadata {
+                NCViewer().view(viewController: self, metadata: metadata, metadatas: Array(results), indexMetadatas: indexMetadatas, image: image)
             } else {
-                // ACTIVE SERVERURL
-                serverUrl = metadata.serverUrl
-                if let results = dataSource.getTableMetadatas() {
-                    let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024)
-                    NCViewer().view(viewController: self, metadata: metadata, metadatas: Array(results), indexMetadatas: indexPath.row, image: image)
-                }
+                self.loadDataSource()
             }
         }
     }
@@ -64,7 +74,6 @@ extension NCMedia: UICollectionViewDelegate {
         else { return nil }
         let identifier = indexPath as NSCopying
         let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024)
-        self.serverUrl = metadata.serverUrl
 
         return UIContextMenuConfiguration(identifier: identifier, previewProvider: {
             return NCViewerProviderContextMenu(metadata: metadata, image: image)
