@@ -51,7 +51,7 @@ class NCViewerMediaPage: UIViewController {
         }
     }
 
-    var metadatas: [tableMetadata] = []
+    var ocIds: [String] = []
     var delegateViewController: UIViewController?
     var modifiedOcId: [String] = []
     var currentIndex: Int = 0
@@ -67,6 +67,7 @@ class NCViewerMediaPage: UIViewController {
     var nextTrackCommand: Any?
     var previousTrackCommand: Any?
     let utilityFileSystem = NCUtilityFileSystem()
+    let database = NCManageDatabase.shared
 
     // This prevents the scroll views to scroll when you drag and drop files/images/subjects (from this or other apps)
     // https://forums.developer.apple.com/forums/thread/89396 and https://forums.developer.apple.com/forums/thread/115736
@@ -96,6 +97,7 @@ class NCViewerMediaPage: UIViewController {
         super.viewDidLoad()
 
         navigationController?.navigationBar.tintColor = NCBrandColor.shared.iconImageColor
+        let metadata = database.getMetadataFromOcId(ocIds[currentIndex])!
 
         singleTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(didSingleTapWith(gestureRecognizer:)))
         panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(didPanWith(gestureRecognizer:)))
@@ -111,11 +113,11 @@ class NCViewerMediaPage: UIViewController {
         pageViewController.view.addGestureRecognizer(singleTapGestureRecognizer)
         pageViewController.view.addGestureRecognizer(longtapGestureRecognizer)
 
-        progressView.tintColor = NCBrandColor.shared.getElement(account: metadatas.first?.account)
+        progressView.tintColor = NCBrandColor.shared.getElement(account: metadata.account)
         progressView.trackTintColor = .clear
         progressView.progress = 0
 
-        let viewerMedia = getViewerMedia(index: currentIndex, metadata: tableMetadata(value: metadatas[currentIndex]))
+        let viewerMedia = getViewerMedia(index: currentIndex, metadata: metadata)
         pageViewController.setViewControllers([viewerMedia], direction: .forward, animated: true, completion: nil)
         changeScreenMode(mode: viewerMediaScreenMode)
 
@@ -411,8 +413,7 @@ class NCViewerMediaPage: UIViewController {
 
     @objc func renameFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String,
-              let index = metadatas.firstIndex(where: {$0.ocId == ocId})
+              let ocId = userInfo["ocId"] as? String
         else { return }
 
         // Stop media
@@ -420,8 +421,7 @@ class NCViewerMediaPage: UIViewController {
             ncplayer.playerPause()
         }
 
-        let metadata = metadatas[index]
-        if index == currentIndex {
+        if currentIndex == ocIds.firstIndex(where: { $0 == ocId}), let metadata = database.getMetadataFromOcId(ocId) {
             navigationItem.title = metadata.fileNameView
             currentViewController.metadata = metadata
             self.currentViewController.metadata = metadata
@@ -534,16 +534,16 @@ class NCViewerMediaPage: UIViewController {
 extension NCViewerMediaPage: UIPageViewControllerDelegate, UIPageViewControllerDataSource {
 
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
-        if currentIndex == 0 { return nil }
-        let metadata = tableMetadata(value: metadatas[currentIndex - 1])
+        guard currentIndex > 0,
+              let metadata = database.getMetadataFromOcId(ocIds[currentIndex - 1]) else { return nil }
 
         let viewerMedia = getViewerMedia(index: currentIndex - 1, metadata: metadata)
         return viewerMedia
     }
 
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
-        if currentIndex == metadatas.count - 1 { return nil }
-        let metadata = tableMetadata(value: metadatas[currentIndex + 1])
+        guard currentIndex < ocIds.count - 1,
+              let metadata = database.getMetadataFromOcId(ocIds[currentIndex + 1]) else { return nil }
 
         let viewerMedia = getViewerMedia(index: currentIndex + 1, metadata: metadata)
         return viewerMedia

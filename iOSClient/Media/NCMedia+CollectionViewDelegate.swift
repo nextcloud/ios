@@ -28,8 +28,7 @@ import RealmSwift
 extension NCMedia: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let metadata = dataSource.getMetadata(indexPath: indexPath),
-              let cell = collectionView.cellForItem(at: indexPath) as? NCGridMediaCell,
-              let results = dataSource.getTableMetadatas() else { return }
+              let cell = collectionView.cellForItem(at: indexPath) as? NCGridMediaCell else { return }
 
         if isEditMode {
             if let index = fileSelect.firstIndex(of: metadata.ocId) {
@@ -40,19 +39,11 @@ extension NCMedia: UICollectionViewDelegate {
                 cell.selected(true)
             }
             tabBarSelect.selectCount = fileSelect.count
-        } else {
+        } else if let results = dataSource.getTableMetadatas() {
             let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024)
+            let ocIds = dataSource.getMetadatas().map { $0.ocId }
 
-            if let results = dataSource.getTableMetadatas() {
-                if results[indexPath.row].ocId == metadata.ocId {
-                    NCViewer().view(viewController: self, metadata: tableMetadata.init(value: results[indexPath.row]), metadatas: Array(results), indexMetadatas: indexPath.row, image: image)
-                } else {
-                    for indexPath in collectionView.indexPathsForVisibleItems where results[indexPath.row].ocId == metadata.ocId {
-                        NCViewer().view(viewController: self, metadata: tableMetadata.init(value: results[indexPath.row]), metadatas: Array(results), indexMetadatas: indexPath.row, image: image)
-                        break
-                    }
-                }
-            }
+            NCViewer().view(viewController: self, metadata: tableMetadata.init(value: results[indexPath.row]), ocIds: ocIds, index: indexPath.row, image: image)
         }
     }
 

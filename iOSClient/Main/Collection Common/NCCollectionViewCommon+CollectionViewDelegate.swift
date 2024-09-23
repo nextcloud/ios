@@ -63,19 +63,29 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024)
             if !metadata.isDirectoryE2EE, (metadata.isImage || metadata.isAudioOrVideo) {
                 let metadatas = self.dataSource.getResultMetadatas()
-                let metadatasMedia = metadatas.filter { $0.classFile == NKCommon.TypeClassFile.image.rawValue || $0.classFile == NKCommon.TypeClassFile.video.rawValue || $0.classFile == NKCommon.TypeClassFile.audio.rawValue }
-                let indexMetadatas = metadatasMedia.firstIndex(where: { $0.ocId == metadata.ocId }) ?? 0
-                return NCViewer().view(viewController: self, metadata: metadata, metadatas: metadatasMedia, indexMetadatas: indexMetadatas, image: image)
-            } else if metadata.isAvailableEditorView || utilityFileSystem.fileProviderStorageExists(metadata) || metadata.name == NCGlobal.shared.talkName {
-                NCViewer().view(viewController: self, metadata: metadata, metadatas: [metadata], image: image)
+                let ocIds = metadatas.filter { $0.classFile == NKCommon.TypeClassFile.image.rawValue ||
+                                               $0.classFile == NKCommon.TypeClassFile.video.rawValue ||
+                                               $0.classFile == NKCommon.TypeClassFile.audio.rawValue }.map(\.ocId)
+                let index = ocIds.firstIndex(where: { $0 == metadata.ocId }) ?? 0
+
+                return NCViewer().view(viewController: self, metadata: metadata, ocIds: ocIds, index: index, image: image)
+
+            } else if metadata.isAvailableEditorView ||
+                      utilityFileSystem.fileProviderStorageExists(metadata) ||
+                      metadata.name == NCGlobal.shared.talkName {
+
+                NCViewer().view(viewController: self, metadata: metadata, image: image)
+
             } else if NextcloudKit.shared.isNetworkReachable(),
                       let metadata = database.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                                session: NCNetworking.shared.sessionDownload,
                                                                                                selector: global.selectorLoadFileView,
                                                                                                sceneIdentifier: self.controller?.sceneIdentifier) {
+
                 NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
             } else {
                 let error = NKError(errorCode: global.errorOffline, errorDescription: "_go_online_")
+
                 NCContentPresenter().showInfo(error: error)
             }
         }
