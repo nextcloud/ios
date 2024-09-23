@@ -87,11 +87,13 @@ extension NCTrash {
 
 class NCOperationDownloadThumbnailTrash: ConcurrentOperation, @unchecked Sendable {
     var fileId: String
+    var fileName: String
     var collectionView: UICollectionView
     var account: String
 
-    init(fileId: String, account: String, collectionView: UICollectionView) {
+    init(fileId: String, fileName: String, account: String, collectionView: UICollectionView) {
         self.fileId = fileId
+        self.fileName = fileName
         self.account = account
         self.collectionView = collectionView
     }
@@ -102,7 +104,7 @@ class NCOperationDownloadThumbnailTrash: ConcurrentOperation, @unchecked Sendabl
         NextcloudKit.shared.downloadTrashPreview(fileId: fileId, account: account) { _, data, _, _, error in
             if error == .success, let data {
 
-                NCUtility().createImage(ocId: self.fileId, etag: self.fileId, data: data)
+                NCUtility().createImage(ocId: self.fileId, etag: self.fileName, data: data)
 
                 for case let cell as NCTrashCellProtocol in self.collectionView.visibleCells where cell.objectId == self.fileId {
                     cell.imageItem?.contentMode = .scaleAspectFill
