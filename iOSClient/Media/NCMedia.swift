@@ -257,8 +257,20 @@ class NCMedia: UIViewController {
 
         fileDeleted = fileDeleted + ocId
 
+        var indexPaths: [IndexPath] = []
+
+        for ocId in ocId {
+            if let row = dataSource.getMetadatas().firstIndex(where: {$0.ocId == ocId}) {
+                indexPaths.append(IndexPath(row: row, section: 0))
+            }
+        }
+
         dataSource.removeMetadata(ocId)
-        collectionViewReloadData()
+        if indexPaths.count == ocId.count {
+            collectionView.deleteItems(at: indexPaths)
+        } else {
+            collectionViewReloadData()
+        }
 
         if error != .success {
             NCContentPresenter().showError(error: error)
