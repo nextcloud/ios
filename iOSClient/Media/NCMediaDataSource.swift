@@ -50,6 +50,8 @@ extension NCMedia {
             guard self.isViewActived,
                   !self.hasRunSearchMedia,
                   !self.isPinchGestureActive,
+                  !self.showOnlyImages,
+                  !self.showOnlyVideos,
                   !isEditMode,
                   NCNetworking.shared.downloadThumbnailQueue.operationCount == 0,
                   let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account))
@@ -106,7 +108,7 @@ extension NCMedia {
                                             account: self.session.account,
                                             options: options) { account, files, _, error in
 
-                if error == .success, let files, self.session.account == account {
+                if error == .success, let files, self.session.account == account, !self.showOnlyImages, !self.showOnlyVideos {
 
                     /// Removes all files in `files` that have an `ocId` present in `fileDeleted`
                     var files = files

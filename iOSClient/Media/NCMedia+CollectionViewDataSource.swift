@@ -108,13 +108,14 @@ extension NCMedia: UICollectionViewDataSource {
         cell.imageItem.image = imageCache
         cell.date = metadata.date as Date
         cell.ocId = metadata.ocId
+        cell.imageStatus.image = nil
 
-        if metadata.isVideo {
-           cell.imageStatus.image = playImage
-        } else if metadata.isLivePhoto {
-            cell.imageStatus.image = livePhotoImage
-        } else {
-            cell.imageStatus.image = nil
+        if cell.imageItem.frame.width > 60 {
+            if metadata.isVideo {
+                cell.imageStatus.image = playImage
+            } else if metadata.isLivePhoto {
+                cell.imageStatus.image = livePhotoImage
+            }
         }
 
         if isEditMode, fileSelect.contains(metadata.ocId) {
