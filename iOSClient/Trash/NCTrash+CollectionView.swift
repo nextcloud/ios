@@ -85,7 +85,7 @@ extension NCTrash: UICollectionViewDataSource {
         } else {
             if resultTableTrash.hasPreview {
                 if NCNetworking.shared.downloadThumbnailTrashQueue.operations.filter({ ($0 as? NCOperationDownloadThumbnailTrash)?.fileId == resultTableTrash.fileId }).isEmpty {
-                    NCNetworking.shared.downloadThumbnailTrashQueue.addOperation(NCOperationDownloadThumbnailTrash(resultTableTrash: resultTableTrash, fileId: resultTableTrash.fileId, account: session.account, cell: cell, collectionView: collectionView))
+                    NCNetworking.shared.downloadThumbnailTrashQueue.addOperation(NCOperationDownloadThumbnailTrash(fileId: resultTableTrash.fileId, account: session.account, collectionView: collectionView))
                 }
             }
         }
