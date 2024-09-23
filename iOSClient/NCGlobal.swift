@@ -95,6 +95,7 @@ class NCGlobal: NSObject {
     let previewExt256                               = ".256.preview.jpg"
 
     func getSizeExtension(column: Int) -> String {
+        if column == 0 { return previewExt256 }
         let width = UIScreen.main.bounds.width / CGFloat(column)
 
          switch (width * 4) {
