@@ -142,6 +142,7 @@ class NCMedia: UIViewController {
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
             self.loadDataSource()
+            self.searchMediaUI(true)
         }
 
         pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture(_:)))
