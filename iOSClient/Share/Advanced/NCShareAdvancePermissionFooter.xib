@@ -15,11 +15,8 @@
             <rect key="frame" x="0.0" y="0.0" width="688" height="376"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rCI-63-PtL">
-                    <rect key="frame" x="16" y="171" width="320" height="48"/>
-                    <constraints>
-                        <constraint firstAttribute="height" constant="48" id="vdI-sH-cTb"/>
-                    </constraints>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rCI-63-PtL" customClass="SecondaryButton" customModule="Nextcloud" customModuleProvider="target">
+                    <rect key="frame" x="16" y="178" width="320" height="34"/>
                     <fontDescription key="fontDescription" type="system" pointSize="18"/>
                     <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                     <state key="normal" title="Cancel">
@@ -27,7 +24,7 @@
                     </state>
                 </button>
                 <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Mg2-Ou-yoX" customClass="PrimaryButton" customModule="Nextcloud" customModuleProvider="target">
-                    <rect key="frame" x="352" y="171" width="320" height="48"/>
+                    <rect key="frame" x="352" y="178" width="320" height="34"/>
                     <color key="backgroundColor" systemColor="systemBlueColor"/>
                     <fontDescription key="fontDescription" type="system" pointSize="18"/>
                     <state key="normal" title="Send share">
@@ -41,7 +38,6 @@
                 <constraint firstItem="Mg2-Ou-yoX" firstAttribute="leading" secondItem="rCI-63-PtL" secondAttribute="trailing" constant="16" id="4Px-cS-Hta"/>
                 <constraint firstItem="sWQ-1v-CIt" firstAttribute="trailing" secondItem="Mg2-Ou-yoX" secondAttribute="trailing" constant="16" id="Jdi-WJ-zVF"/>
                 <constraint firstItem="sWQ-1v-CIt" firstAttribute="centerY" secondItem="Mg2-Ou-yoX" secondAttribute="centerY" id="SzT-aI-aUz"/>
-                <constraint firstItem="Mg2-Ou-yoX" firstAttribute="height" secondItem="rCI-63-PtL" secondAttribute="height" id="bNp-Nf-uMw"/>
                 <constraint firstItem="Mg2-Ou-yoX" firstAttribute="width" secondItem="rCI-63-PtL" secondAttribute="width" id="dfu-GZ-P99"/>
                 <constraint firstItem="rCI-63-PtL" firstAttribute="centerY" secondItem="Mg2-Ou-yoX" secondAttribute="centerY" id="hEl-ij-sMX"/>
                 <constraint firstItem="rCI-63-PtL" firstAttribute="leading" secondItem="sWQ-1v-CIt" secondAttribute="leading" constant="16" id="s9t-ud-ofw"/>
@@ -59,7 +55,7 @@
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemBlueColor">
-            <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

@@ -12,13 +12,20 @@ class PrimaryButton: UIButton {
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        
         backgroundColor = UIColor(resource: .Button.Primary.Background.normal)
+        
         setTitleColor(UIColor(resource: .Button.Primary.Text.normal), for: .normal)
         setTitleColor(UIColor(resource: .Button.Primary.Text.selected), for: .selected)
         setTitleColor(UIColor(resource: .Button.Primary.Text.disabled), for: .disabled)
-        layer.cornerRadius = bounds.height/2.0
+        
         layer.masksToBounds = true
-        titleLabel?.font = .systemFont(ofSize: 14.0)
+        
+        titleLabel?.font = CommonButtonConstants.defaultUIFont
+    }
+    
+    override var intrinsicContentSize: CGSize {
+        return CommonButtonConstants.intrinsicContentSize
     }
     
     override public var isEnabled: Bool {
@@ -44,6 +51,10 @@ class PrimaryButton: UIButton {
         }
     }
     
+    override func layoutSubviews() {
+        layer.cornerRadius = bounds.height/2.0
+        super.layoutSubviews()
+    }
     
 }
 

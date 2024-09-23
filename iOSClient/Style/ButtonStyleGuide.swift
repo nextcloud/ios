@@ -8,15 +8,6 @@
 
 import SwiftUI
 
-fileprivate class ButtonStyleGuide {
-	static let defaultFont			:Font = .title2
-	static let defaultBorderWidth	:CGFloat = 3
-	static let defaultHeight		:CGFloat = 32
-	static var defaultWidth			:CGFloat {
-		UIDevice.current.userInterfaceIdiom == .phone ? 100 : 240
-	}
-}
-
 // MARK: - Primary
 struct ButtonStylePrimary: ButtonStyle {
 	@Environment(\.isEnabled) private var isEnabled: Bool
@@ -34,13 +25,13 @@ struct ButtonStylePrimary: ButtonStyle {
 	
 	func makeBody(configuration: Configuration) -> some View {
 		configuration.label
-			.font(ButtonStyleGuide.defaultFont)
-			.frame(width: ButtonStyleGuide.defaultWidth, height: ButtonStyleGuide.defaultHeight)
+			.font(CommonButtonConstants.defaultFont)
+			.frame(width: CommonButtonConstants.defaultWidth, height: CommonButtonConstants.defaultHeight)
 			.padding()
 			.foregroundStyle(foregroundColor(for: configuration))
 			.background{
 				Capsule(style: .continuous)
-					.stroke(backgroundColor(for: configuration), lineWidth: ButtonStyleGuide.defaultBorderWidth)
+					.stroke(backgroundColor(for: configuration), lineWidth: CommonButtonConstants.defaultBorderWidth)
 					.background(content: {
 						Capsule().fill(backgroundColor(for: configuration))
 					})
@@ -75,13 +66,13 @@ struct ButtonStyleSecondary: ButtonStyle {
 	
 	func makeBody(configuration: Configuration) -> some View {
 		configuration.label
-			.font(ButtonStyleGuide.defaultFont)
-			.frame(width: ButtonStyleGuide.defaultWidth, height: ButtonStyleGuide.defaultHeight)
+			.font(CommonButtonConstants.defaultFont)
+			.frame(width: CommonButtonConstants.defaultWidth, height: CommonButtonConstants.defaultHeight)
 			.padding()
 			.foregroundStyle(foregroundColor(for: configuration))
 			.background{
 				Capsule(style: .continuous)
-					.stroke(borderColor(for: configuration), lineWidth: ButtonStyleGuide.defaultBorderWidth)
+					.stroke(borderColor(for: configuration), lineWidth: CommonButtonConstants.defaultBorderWidth)
 					.background(content: {
 						Capsule().fill(backgroundColor(for: configuration))
 					})
