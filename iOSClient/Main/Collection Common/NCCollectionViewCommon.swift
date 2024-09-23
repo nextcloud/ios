@@ -658,26 +658,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         func createMenuActions() -> [UIMenuElement] {
             guard let layoutForView = database.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl) else { return [] }
-            let columnPhoto = self.layoutForView?.columnPhoto ?? 3
 
             func saveLayout(_ layoutForView: NCDBLayoutForView) {
                 database.setLayoutForView(layoutForView: layoutForView)
                 NotificationCenter.default.postOnMainThread(name: global.notificationCenterReloadDataSource)
                 setNavigationRightItems()
-            }
-
-            if layoutForView.layout != global.layoutPhotoSquare && layoutForView.layout != global.layoutPhotoRatio {
-                self.attributesZoomIn = .disabled
-                self.attributesZoomOut = .disabled
-            } else if columnPhoto >= maxColumns - 1 {
-                self.attributesZoomIn = []
-                self.attributesZoomOut = .disabled
-            } else if columnPhoto <= 1 {
-                self.attributesZoomIn = .disabled
-                self.attributesZoomOut = []
-            } else {
-                self.attributesZoomIn = []
-                self.attributesZoomOut = []
             }
 
             let select = UIAction(title: NSLocalizedString("_select_", comment: ""),
@@ -710,53 +695,31 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.setNavigationRightItems()
             }
 
-            let menuPhoto = UIMenu(title: "", options: .displayInline, children: [
-                UIAction(title: NSLocalizedString("_media_square_", comment: ""), image: utility.loadImage(named: "square.grid.3x3"), state: layoutForView.layout == global.layoutPhotoSquare ? .on : .off) { _ in
-                    layoutForView.layout = self.global.layoutPhotoSquare
-                    self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
-                    self.layoutType = self.global.layoutPhotoSquare
+            let mediaSquare = UIAction(title: NSLocalizedString("_media_square_", comment: ""), image: utility.loadImage(named: "square.grid.3x3"), state: layoutForView.layout == global.layoutPhotoSquare ? .on : .off) { _ in
+                layoutForView.layout = self.global.layoutPhotoSquare
+                self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
+                self.layoutType = self.global.layoutPhotoSquare
 
-                    self.collectionView.reloadData()
-                    self.collectionView.collectionViewLayout.invalidateLayout()
-                    self.collectionView.setCollectionViewLayout(self.mediaLayout, animated: true) {_ in self.isTransitioning = false }
+                self.collectionView.reloadData()
+                self.collectionView.collectionViewLayout.invalidateLayout()
+                self.collectionView.setCollectionViewLayout(self.mediaLayout, animated: true) {_ in self.isTransitioning = false }
 
-                    self.reloadDataSource()
-                    self.setNavigationRightItems()
-                },
-                UIAction(title: NSLocalizedString("_media_ratio_", comment: ""), image: utility.loadImage(named: "rectangle.grid.3x2"), state: layoutForView.layout == self.global.layoutPhotoRatio ? .on : .off) { _ in
-                    layoutForView.layout = self.global.layoutPhotoRatio
-                    self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
-                    self.layoutType = self.global.layoutPhotoRatio
+                self.setNavigationRightItems()
+            }
 
-                    self.collectionView.reloadData()
-                    self.collectionView.collectionViewLayout.invalidateLayout()
-                    self.collectionView.setCollectionViewLayout(self.mediaLayout, animated: true) {_ in self.isTransitioning = false }
+            let mediaRatio = UIAction(title: NSLocalizedString("_media_ratio_", comment: ""), image: utility.loadImage(named: "rectangle.grid.3x2"), state: layoutForView.layout == self.global.layoutPhotoRatio ? .on : .off) { _ in
+                layoutForView.layout = self.global.layoutPhotoRatio
+                self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
+                self.layoutType = self.global.layoutPhotoRatio
 
-                    self.reloadDataSource()
-                    self.setNavigationRightItems()
-                }
-            ])
+                self.collectionView.reloadData()
+                self.collectionView.collectionViewLayout.invalidateLayout()
+                self.collectionView.setCollectionViewLayout(self.mediaLayout, animated: true) {_ in self.isTransitioning = false }
 
-            let menuZoom = UIMenu(title: "", options: .displayInline, children: [
-                UIAction(title: NSLocalizedString("_zoom_out_", comment: ""), image: utility.loadImage(named: "minus.magnifyingglass"), attributes: self.attributesZoomOut) { _ in
-                    layoutForView.columnPhoto = columnPhoto + 1
-                    self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
-                    self.setNavigationRightItems()
-                    UIView.transition(with: self.collectionView, duration: 0.5, options: .transitionCrossDissolve, animations: {
-                        self.collectionView.reloadData()
-                    }, completion: nil)
-                },
-                UIAction(title: NSLocalizedString("_zoom_in_", comment: ""), image: utility.loadImage(named: "plus.magnifyingglass"), attributes: self.attributesZoomIn) { _ in
-                    layoutForView.columnPhoto = columnPhoto - 1
-                    self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
-                    self.setNavigationRightItems()
-                    UIView.transition(with: self.collectionView, duration: 0.5, options: .transitionCrossDissolve, animations: {
-                        self.collectionView.reloadData()
-                    }, completion: nil)
-                }
-            ])
+                self.setNavigationRightItems()
+            }
 
-            let viewStyleSubmenu = UIMenu(title: "", options: .displayInline, children: [list, grid, UIMenu(title: NSLocalizedString("_additional_view_options_", comment: ""), children: [menuPhoto, menuZoom])])
+            let viewStyleSubmenu = UIMenu(title: "", options: .displayInline, children: [list, grid, mediaSquare, mediaRatio])
 
             let ascending = layoutForView.ascending
             let ascendingChevronImage = utility.loadImage(named: ascending ? "chevron.up" : "chevron.down")
