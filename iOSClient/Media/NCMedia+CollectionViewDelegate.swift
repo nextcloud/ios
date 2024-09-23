@@ -28,7 +28,7 @@ import RealmSwift
 extension NCMedia: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let metadata = dataSource.getMetadata(indexPath: indexPath),
-              let cell = collectionView.cellForItem(at: indexPath) as? NCGridMediaCell else { return }
+              let cell = collectionView.cellForItem(at: indexPath) as? NCMediaCell else { return }
 
         if isEditMode {
             if let index = fileSelect.firstIndex(of: metadata.ocId) {

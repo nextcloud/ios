@@ -56,7 +56,7 @@ class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
                 let image = NCUtility().getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: NCGlobal.shared.getSizeExtension(column: self.media.numberOfColumns))
 
                 DispatchQueue.main.async {
-                    for case let cell as NCGridMediaCell in self.media.collectionView.visibleCells {
+                    for case let cell as NCMediaCell in self.media.collectionView.visibleCells {
                         if cell.ocId == self.metadata.ocId {
                             UIView.transition(with: cell.imageItem, duration: 0.75, options: .transitionCrossDissolve, animations: { cell.imageItem.image = image
                             }, completion: nil)

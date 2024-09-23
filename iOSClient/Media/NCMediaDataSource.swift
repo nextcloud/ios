@@ -50,13 +50,15 @@ extension NCMedia {
             guard self.isViewActived,
                   !self.hasRunSearchMedia,
                   !self.isPinchGestureActive,
+                  !self.showOnlyImages,
+                  !self.showOnlyVideos,
                   !isEditMode,
                   NCNetworking.shared.downloadThumbnailQueue.operationCount == 0,
                   let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account))
             else { return }
             self.hasRunSearchMedia = true
 
-            let limit = max(collectionView.visibleCells.count * 2, 300)
+            let limit = max(collectionView.visibleCells.count * 3, 300)
             var lessDate = Date.distantFuture
             var greaterDate = Date.distantPast
             let countMetadatas = self.dataSource.metadatas.count
@@ -70,7 +72,7 @@ extension NCMedia {
 
             if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }), !distant {
 
-                firstCellDate = (visibleCells.first as? NCGridMediaCell)?.date
+                firstCellDate = (visibleCells.first as? NCMediaCell)?.date
                 if firstCellDate == self.dataSource.metadatas.first?.date {
                     lessDate = Date.distantFuture
                 } else {
@@ -81,7 +83,7 @@ extension NCMedia {
                     }
                 }
 
-                lastCellDate = (visibleCells.last as? NCGridMediaCell)?.date
+                lastCellDate = (visibleCells.last as? NCMediaCell)?.date
                 if lastCellDate == self.dataSource.metadatas.last?.date {
                     greaterDate = Date.distantPast
                 } else {
@@ -106,7 +108,7 @@ extension NCMedia {
                                             account: self.session.account,
                                             options: options) { account, files, _, error in
 
-                if error == .success, let files, self.session.account == account {
+                if error == .success, let files, self.session.account == account, !self.showOnlyImages, !self.showOnlyVideos {
 
                     /// Removes all files in `files` that have an `ocId` present in `fileDeleted`
                     var files = files

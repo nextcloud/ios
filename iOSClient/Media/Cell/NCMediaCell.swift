@@ -1,5 +1,5 @@
 //
-//  NCGridMediaCell.swift
+//  NCMediaCell.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 12/02/2019.
@@ -23,7 +23,7 @@
 
 import UIKit
 
-class NCGridMediaCell: UICollectionViewCell {
+class NCMediaCell: UICollectionViewCell {
 
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!

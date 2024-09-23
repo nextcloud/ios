@@ -42,7 +42,7 @@ extension NCMedia {
         tabBarSelect.selectCount = fileSelect.count
 
         if let visibleCells = self.collectionView?.indexPathsForVisibleItems.compactMap({ self.collectionView?.cellForItem(at: $0) }) {
-            for case let cell as NCGridMediaCell in visibleCells {
+            for case let cell as NCMediaCell in visibleCells {
                 cell.selected(false)
             }
         }
@@ -65,7 +65,6 @@ extension NCMedia {
     }
 
     func setTitleDate() {
-
         if let layoutAttributes = collectionView.collectionViewLayout.layoutAttributesForElements(in: collectionView.bounds) {
             let sortedAttributes = layoutAttributes.sorted { $0.frame.minY < $1.frame.minY || ($0.frame.minY == $1.frame.minY && $0.frame.minX < $1.frame.minX) }
 
@@ -112,16 +111,19 @@ extension NCMedia {
                 self.showOnlyImages = true
                 self.showOnlyVideos = false
                 self.loadDataSource()
+                self.networkRemoveAll()
             },
             UIAction(title: NSLocalizedString("_media_viewvideo_show_", comment: ""), image: utility.loadImage(named: "video")) { _ in
                 self.showOnlyImages = false
                 self.showOnlyVideos = true
                 self.loadDataSource()
+                self.networkRemoveAll()
             },
             UIAction(title: NSLocalizedString("_media_show_all_", comment: ""), image: utility.loadImage(named: "photo.on.rectangle")) { _ in
                 self.showOnlyImages = false
                 self.showOnlyVideos = false
                 self.loadDataSource()
+                self.searchMediaUI()
             }
         ])
 

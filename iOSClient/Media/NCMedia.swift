@@ -102,7 +102,7 @@ class NCMedia: UIViewController {
 
         collectionView.register(UINib(nibName: "NCSectionFirstHeaderEmptyData", bundle: nil), forSupplementaryViewOfKind: mediaSectionHeader, withReuseIdentifier: "sectionFirstHeaderEmptyData")
         collectionView.register(UINib(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: mediaSectionFooter, withReuseIdentifier: "sectionFooter")
-        collectionView.register(UINib(nibName: "NCGridMediaCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
+        collectionView.register(UINib(nibName: "NCMediaCell", bundle: nil), forCellWithReuseIdentifier: "mediaCell")
         collectionView.alwaysBounceVertical = true
         collectionView.contentInset = UIEdgeInsets(top: insetsTop, left: 0, bottom: 50, right: 0)
         collectionView.backgroundColor = .systemBackground
@@ -262,13 +262,14 @@ class NCMedia: UIViewController {
 
         for index in indices {
             let indexPath = IndexPath(row: index, section: 0)
-            if let cell = collectionView.cellForItem(at: indexPath) as? NCGridMediaCell,
+            if let cell = collectionView.cellForItem(at: indexPath) as? NCMediaCell,
                dataSource.metadatas[index].ocId == cell.ocId {
                 indexPaths.append(indexPath)
             }
         }
 
         dataSource.removeMetadata(ocIds)
+
         if indexPaths.count == ocIds.count {
             collectionView.deleteItems(at: indexPaths)
         } else {
@@ -288,12 +289,26 @@ class NCMedia: UIViewController {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               let fileExists = userInfo["fileExists"] as? Bool else { return }
+        var indexPaths: [IndexPath] = []
 
         filesExists.append(ocId)
 
         if !fileExists {
+            if let index = dataSource.metadatas.firstIndex(where: {$0.ocId == ocId}),
+               let cell = collectionView.cellForItem(at: IndexPath(row: index, section: 0)) as? NCMediaCell,
+               dataSource.metadatas[index].ocId == cell.ocId {
+                indexPaths.append(IndexPath(row: index, section: 0))
+            }
+
             dataSource.removeMetadata([ocId])
             database.deleteMetadataOcId(ocId)
+
+            if !indexPaths.isEmpty {
+                collectionView.deleteItems(at: indexPaths)
+            } else {
+                collectionViewReloadData()
+            }
+
             collectionViewReloadData()
         }
     }

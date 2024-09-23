@@ -96,8 +96,8 @@ extension NCMedia: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridMediaCell) else {
-            fatalError("Unable to dequeue NCGridMediaCell with identifier gridCell")
+        guard let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "mediaCell", for: indexPath) as? NCMediaCell) else {
+            fatalError("Unable to dequeue MediaCell with identifier mediaCell")
         }
         guard let metadata = dataSource.getMetadata(indexPath: indexPath) else { return cell }
 
@@ -108,13 +108,14 @@ extension NCMedia: UICollectionViewDataSource {
         cell.imageItem.image = imageCache
         cell.date = metadata.date as Date
         cell.ocId = metadata.ocId
+        cell.imageStatus.image = nil
 
-        if metadata.isVideo {
-           cell.imageStatus.image = playImage
-        } else if metadata.isLivePhoto {
-            cell.imageStatus.image = livePhotoImage
-        } else {
-            cell.imageStatus.image = nil
+        if cell.imageItem.frame.width > 60 {
+            if metadata.isVideo {
+                cell.imageStatus.image = playImage
+            } else if metadata.isLivePhoto {
+                cell.imageStatus.image = livePhotoImage
+            }
         }
 
         if isEditMode, fileSelect.contains(metadata.ocId) {
@@ -130,7 +131,7 @@ extension NCMedia: UICollectionViewDataSource {
                 DispatchQueue.global(qos: .userInteractive).async {
                     let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext)
                     DispatchQueue.main.async {
-                        if let currentCell = collectionView.cellForItem(at: indexPath) as? NCGridMediaCell,
+                        if let currentCell = collectionView.cellForItem(at: indexPath) as? NCMediaCell,
                            currentCell.ocId == metadata.ocId, let image {
                             currentCell.imageItem.image = image
                             currentCell.backgroundColor = .black
@@ -138,8 +139,6 @@ extension NCMedia: UICollectionViewDataSource {
                     }
                 }
             }
-        } else {
-            print("[DEBUG] in cache, cost \(indexPath.row)")
         }
 
         return cell

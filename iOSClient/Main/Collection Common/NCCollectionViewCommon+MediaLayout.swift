@@ -27,11 +27,15 @@ import NextcloudKit
 
 extension NCCollectionViewCommon: NCMediaLayoutDelegate {
     func getColumnCount() -> Int {
-        if let column = self.layoutForView?.columnPhoto, column > 0 {
-            return column
+        if self.numberOfColumns == 0,
+           let layoutForView = database.getLayoutForView(account: session.account, key: NCGlobal.shared.layoutViewFiles, serverUrl: self.serverUrl) {
+            if layoutForView.columnPhoto > 0 {
+                self.numberOfColumns = layoutForView.columnPhoto
+            } else {
+                self.numberOfColumns = 3
+            }
         }
-        self.layoutForView?.columnPhoto = 3
-        return 3
+        return self.numberOfColumns
     }
 
     func getLayout() -> String? {
@@ -63,11 +67,16 @@ extension NCCollectionViewCommon: NCMediaLayoutDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: IndexPath, columnCount: Int, typeLayout: String) -> CGSize {
-        if typeLayout == global.layoutPhotoRatio,
-           let metadata = self.dataSource.getMetadata(indexPath: indexPath),
-           metadata.imageSize != CGSize.zero {
-            return metadata.imageSize
+        if typeLayout == NCGlobal.shared.layoutPhotoSquare {
+            return CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
+        } else {
+            guard let metadata = dataSource.getMetadata(indexPath: indexPath) else { return .zero }
+
+            if metadata.imageSize != CGSize.zero {
+                return metadata.imageSize
+            } else {
+                return CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
+            }
         }
-        return CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
     }
 }
