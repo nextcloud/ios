@@ -38,7 +38,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     var ocId = ""
     var ocIdTransfer = ""
     var account = ""
-    private var user = ""
+    var user = ""
 
     weak var gridCellDelegate: NCGridCellDelegate?
 
