@@ -27,8 +27,9 @@ import RealmSwift
 
 extension NCMedia {
     func loadDataSource() {
+        let session = self.session
         DispatchQueue.global().async {
-            if let metadatas = self.database.getResultsMetadatas(predicate: self.imageCache.getMediaPredicate(filterLivePhotoFile: true, session: self.session, showOnlyImages: self.showOnlyImages, showOnlyVideos: self.showOnlyVideos), sortedByKeyPath: "date") {
+            if let metadatas = self.database.getResultsMetadatas(predicate: self.imageCache.getMediaPredicate(filterLivePhotoFile: true, session: session, showOnlyImages: self.showOnlyImages, showOnlyVideos: self.showOnlyVideos), sortedByKeyPath: "date") {
                 self.dataSource = NCMediaDataSource(metadatas: metadatas)
             }
             self.collectionViewReloadData()
@@ -46,6 +47,8 @@ extension NCMedia {
     // MARK: - Search media
 
     @objc func searchMediaUI(_ distant: Bool = false) {
+        let session = self.session
+
         self.lockQueue.sync {
             guard self.isViewActived,
                   !self.hasRunSearchMedia,
@@ -108,7 +111,7 @@ extension NCMedia {
                                             account: self.session.account,
                                             options: options) { account, files, _, error in
 
-                if error == .success, let files, self.session.account == account, !self.showOnlyImages, !self.showOnlyVideos {
+                if error == .success, let files, session.account == account, !self.showOnlyImages, !self.showOnlyVideos {
 
                     /// Removes all files in `files` that have an `ocId` present in `fileDeleted`
                     var files = files
@@ -123,7 +126,7 @@ extension NCMedia {
                         self.collectionViewReloadData()
                     }
 
-                    DispatchQueue.global(qos: .background).async {
+                    DispatchQueue.global(qos: .userInteractive).async {
                         self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
                             self.database.addMetadatas(metadatas)
 
@@ -131,13 +134,17 @@ extension NCMedia {
                                 self.collectionViewReloadData()
                             }
 
-                            if let firstCellDate, let lastCellDate, self.isViewActived {
-                                let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [ NSPredicate(format: "date >= %@ AND date =< %@", lastCellDate as NSDate, firstCellDate as NSDate), self.imageCache.getMediaPredicate(filterLivePhotoFile: false, session: self.session, showOnlyImages: self.showOnlyImages, showOnlyVideos: self.showOnlyVideos)])
+                            DispatchQueue.main.async {
+                                if let firstCellDate, let lastCellDate, self.isViewActived {
+                                    DispatchQueue.global(qos: .background).async {
+                                        let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [ NSPredicate(format: "date >= %@ AND date =< %@", lastCellDate as NSDate, firstCellDate as NSDate), self.imageCache.getMediaPredicate(filterLivePhotoFile: false, session: session, showOnlyImages: self.showOnlyImages, showOnlyVideos: self.showOnlyVideos)])
 
-                                if let resultsMetadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: predicate) {
-                                    for metadata in resultsMetadatas where !self.filesExists.contains(metadata.ocId) {
-                                        if NCNetworking.shared.fileExistsQueue.operations.filter({ ($0 as? NCOperationFileExists)?.ocId == metadata.ocId }).isEmpty {
-                                            NCNetworking.shared.fileExistsQueue.addOperation(NCOperationFileExists(metadata: metadata))
+                                        if let resultsMetadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: predicate) {
+                                            for metadata in resultsMetadatas where !self.filesExists.contains(metadata.ocId) {
+                                                if NCNetworking.shared.fileExistsQueue.operations.filter({ ($0 as? NCOperationFileExists)?.ocId == metadata.ocId }).isEmpty {
+                                                    NCNetworking.shared.fileExistsQueue.addOperation(NCOperationFileExists(metadata: metadata))
+                                                }
+                                            }
                                         }
                                     }
                                 }

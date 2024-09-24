@@ -29,10 +29,12 @@ class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
     var metadata: NCMediaDataSource.Metadata
     let utilityFileSystem = NCUtilityFileSystem()
     let media: NCMedia
+    var session: NCSession.Session
 
     init(metadata: NCMediaDataSource.Metadata, media: NCMedia) {
         self.metadata = metadata
         self.media = media
+        self.session = media.session
     }
 
     override func start() {
@@ -46,7 +48,7 @@ class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
 
         NextcloudKit.shared.downloadPreview(fileId: tableMetadata.fileId,
                                             etag: etagResource,
-                                            account: media.session.account,
+                                            account: self.session.account,
                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, data, _, _, etag, error in
             if error == .success, let data {
 
