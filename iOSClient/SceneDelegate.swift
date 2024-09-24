@@ -26,7 +26,6 @@ import UIKit
 import NextcloudKit
 import WidgetKit
 import SwiftEntryKit
-import TOPasscodeViewController
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?

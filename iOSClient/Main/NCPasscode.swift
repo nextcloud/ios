@@ -23,7 +23,6 @@
 
 import UIKit
 import LocalAuthentication
-import TOPasscodeViewController
 
 public protocol NCPasscodeDelegate: AnyObject {
     func evaluatePolicy(_ passcodeViewController: TOPasscodeViewController, isCorrectCode: Bool)

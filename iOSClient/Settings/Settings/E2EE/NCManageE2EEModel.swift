@@ -24,7 +24,6 @@
 import UIKit
 import SwiftUI
 import NextcloudKit
-import TOPasscodeViewController
 import LocalAuthentication
 
 class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEndInitializeDelegate, TOPasscodeViewControllerDelegate {

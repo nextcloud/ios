@@ -25,7 +25,6 @@
 
 import UIKit
 import NextcloudKit
-import TOPasscodeViewController
 
 enum NCShareExtensionError: Error {
     case cancel, fileUpload, noAccount, noFiles

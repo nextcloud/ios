@@ -25,7 +25,6 @@
 import Foundation
 import UIKit
 import SwiftUI
-import TOPasscodeViewController
 import LocalAuthentication
 
 class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
