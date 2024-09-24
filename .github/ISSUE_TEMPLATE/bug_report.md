@@ -1,5 +1,5 @@
 ---
-name: 🐛 Bug report: Nextcloud iOS Client
+name: 🐛 Bug report
 about: Submit a report and help us improve the Nextcloud iOS Client
 labels: bug, 0. Needs triage
 ---
