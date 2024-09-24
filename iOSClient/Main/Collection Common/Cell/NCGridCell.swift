@@ -99,25 +99,26 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         accessibilityValue = nil
         isAccessibilityElement = true
 
+        imageItem.image = nil
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
-
+        imageSelect.isHidden = true
+        imageSelect.image = NCImageCache.shared.getImageCheckedYes()
+        imageStatus.image = nil
+        imageFavorite.image = nil
+        imageLocal.image = nil
+        labelTitle.text = ""
+        labelInfo.text = ""
+        labelSubinfo.text = ""
         imageVisualEffect.layer.cornerRadius = 6
         imageVisualEffect.clipsToBounds = true
         imageVisualEffect.alpha = 0.5
-
-        imageSelect.isHidden = true
-        imageSelect.image = NCImageCache.shared.getImageCheckedYes()
 
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPress(gestureRecognizer:)))
         longPressedGesture.minimumPressDuration = 0.5
         longPressedGesture.delegate = self
         longPressedGesture.delaysTouchesBegan = true
         self.addGestureRecognizer(longPressedGesture)
-
-        labelTitle.text = ""
-        labelInfo.text = ""
-        labelSubinfo.text = ""
     }
 
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {

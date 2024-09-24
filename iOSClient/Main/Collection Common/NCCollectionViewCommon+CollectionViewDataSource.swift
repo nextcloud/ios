@@ -112,29 +112,10 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             isMounted = metadata.permissions.contains(permissions.permissionMounted) && !metadataFolder!.permissions.contains(permissions.permissionMounted)
         }
 
-        cell.fileStatusImage?.image = nil
-        cell.fileLocalImage?.image = nil
-        cell.fileFavoriteImage?.image = nil
-        cell.fileSharedImage?.image = nil
-        cell.fileMoreImage?.image = nil
-        cell.filePreviewImageView?.image = nil
-        cell.filePreviewImageView?.backgroundColor = nil
         cell.fileAccount = metadata.account
         cell.fileOcId = metadata.ocId
         cell.fileOcIdTransfer = metadata.ocIdTransfer
         cell.fileUser = metadata.ownerId
-
-        cell.hideImageItem(false)
-        cell.hideImageFavorite(false)
-        cell.hideImageStatus(false)
-        cell.hideImageLocal(false)
-        cell.hideLabelTitle(false)
-        cell.hideLabelInfo(false)
-        cell.hideLabelSubinfo(false)
-        cell.hideButtonShare(false)
-        cell.hideButtonMore(false)
-
-        cell.titleInfoTrailingDefault()
 
         if isSearchingMode {
             cell.fileTitleLabel?.text = metadata.fileName
@@ -380,6 +361,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     cell.hideButtonMore(true)
                     cell.hideLabelInfo(true)
                     cell.hideLabelSubinfo(true)
+                    cell.hideImageStatus(true)
                 }
             }
         }
