@@ -1,3 +1,9 @@
+---
+name: 🐛 Bug report: Nextcloud iOS Client
+about: Submit a report and help us improve the Nextcloud iOS Client
+labels: bug, 0. Needs triage
+---
+
 ### Steps to reproduce
 
 1.
@@ -26,7 +32,7 @@ If applicable, you can post the iOS app or server logs (removing any sensitive i
 
 ### Environment data
 
-**iOS version:** e.g. iOS 14.4.1
+**iOS version:** e.g. iOS 17.6.1
 
 **Nextcloud iOS app version:** see More > Settings
 
