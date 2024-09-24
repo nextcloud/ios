@@ -10,8 +10,8 @@ import Foundation
 import SwiftUI
 
 enum CommonButtonConstants {
-    static let defaultFont: Font = .title2
-    static let defaultUIFont: UIFont = .preferredFont(forTextStyle: .title2)
+    static let defaultFont: Font = .system(size: 14, weight: .semibold)
+    static let defaultUIFont: UIFont = .systemFont(ofSize: 14, weight: .semibold)
     
     static let defaultBorderWidth: CGFloat = 2.0
     

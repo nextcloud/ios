@@ -436,7 +436,8 @@ struct UploadScanDocumentView: View {
                                 }
                             }
                         }
-                        .buttonStyle(ButtonRounded(disabled: fileName.isEmpty))
+                        .disabled(fileName.isEmpty)
+                        .buttonStyle(.primary)
                     }
 
                     Section(header: Text(NSLocalizedString("_quality_image_title_", comment: ""))) {

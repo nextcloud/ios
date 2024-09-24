@@ -26,11 +26,12 @@ struct ButtonStylePrimary: ButtonStyle {
 	func makeBody(configuration: Configuration) -> some View {
 		configuration.label
 			.font(CommonButtonConstants.defaultFont)
-			.frame(width: CommonButtonConstants.defaultWidth, height: CommonButtonConstants.defaultHeight)
-			.padding()
+			.frame(idealWidth: CommonButtonConstants.defaultWidth,
+                   minHeight: CommonButtonConstants.defaultHeight)
+            .padding([.leading, .trailing], 24)
 			.foregroundStyle(foregroundColor(for: configuration))
 			.background{
-				Capsule(style: .continuous)
+				Capsule(style: .circular)
 					.stroke(backgroundColor(for: configuration), lineWidth: CommonButtonConstants.defaultBorderWidth)
 					.background(content: {
 						Capsule().fill(backgroundColor(for: configuration))
@@ -57,7 +58,7 @@ struct ButtonStyleSecondary: ButtonStyle {
 	}
 	
 	private func borderColor(for configuration: Configuration) -> Color {
-		isEnabled ? Color(.Button.Secondary.Background.selected) : Color(.Button.Secondary.Background.disabled)
+		isEnabled ? Color(.Button.Secondary.Border.normal) : Color(.Button.Secondary.Border.disabled)
 	}
 	
 	private func backgroundColor(for configuration: Configuration) -> Color {
@@ -67,11 +68,12 @@ struct ButtonStyleSecondary: ButtonStyle {
 	func makeBody(configuration: Configuration) -> some View {
 		configuration.label
 			.font(CommonButtonConstants.defaultFont)
-			.frame(width: CommonButtonConstants.defaultWidth, height: CommonButtonConstants.defaultHeight)
-			.padding()
+			.frame(idealWidth: CommonButtonConstants.defaultWidth, 
+                   minHeight: CommonButtonConstants.defaultHeight)
+            .padding([.leading, .trailing], 24)
 			.foregroundStyle(foregroundColor(for: configuration))
 			.background{
-				Capsule(style: .continuous)
+				Capsule(style: .circular)
 					.stroke(borderColor(for: configuration), lineWidth: CommonButtonConstants.defaultBorderWidth)
 					.background(content: {
 						Capsule().fill(backgroundColor(for: configuration))
@@ -86,3 +88,36 @@ extension ButtonStyle where Self == ButtonStyleSecondary {
 	}
 }
 
+#Preview {
+    VStack(content: {
+        Button {
+        } label: {
+            Text("Primary default state")
+        }
+        .buttonStyle(.primary)
+        
+        Button {
+        } label: {
+            Text("Primary disabled state")
+        }
+        .buttonStyle(.primary)
+        .disabled(true)
+        
+        Spacer()
+            .frame(height: 30)
+        Button {
+        } label: {
+            Text("Secondary default state")
+        }
+        .buttonStyle(.secondary)
+        
+        Button {
+        } label: {
+            Text("Secondary disabled state")
+        }
+        .buttonStyle(.secondary)
+        .disabled(true)
+    })
+    .frame(width: 300, height: 500)
+    .background(Color(.Common.background))
+}
