@@ -97,18 +97,12 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         /// CONTENT MODE
         cell.fileAvatarImageView?.contentMode = .center
         cell.filePreviewImageView?.layer.borderWidth = 0
-        if isLayoutPhoto {
-            if metadata.isImageOrVideo, existsImagePreview {
-                cell.filePreviewImageView?.contentMode = .scaleAspectFill
-            } else {
-                cell.filePreviewImageView?.contentMode = .scaleAspectFit
-            }
+
+        if existsImagePreview {
+            cell.filePreviewImageView?.contentMode = .scaleAspectFill
         } else {
-            if existsImagePreview {
-                cell.filePreviewImageView?.contentMode = .scaleAspectFill
-            } else {
-                cell.filePreviewImageView?.contentMode = .scaleAspectFit
-            }
+            cell.filePreviewImageView?.contentMode = .scaleAspectFit
+
         }
 
         guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else { return cell }
