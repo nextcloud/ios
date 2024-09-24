@@ -112,14 +112,9 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
         photoCellDelegate?.longPressGridItem(with: objectId, indexPath: indexPath, gestureRecognizer: gestureRecognizer)
     }
 
-    func selected(_ status: Bool, isEditMode: Bool) {
-        if status {
-            setBorderForGridViewCell(isSelected: true)
-            imageSelect.isHidden = false
-        } else {
-            setBorderForGridViewCell(isSelected: false)
-            imageSelect.isHidden = true
-        }
+    func selected(_ isSelected: Bool, isEditMode: Bool) {
+        setBorderForGridViewCell(isSelected: isSelected)
+        imageSelect.isHidden = !isSelected
     }
 
     func setAccessibility(label: String, value: String) {
