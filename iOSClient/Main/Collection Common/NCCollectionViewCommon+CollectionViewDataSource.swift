@@ -40,30 +40,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         let existsPreview = utility.existsImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024)
         let ext = global.getSizeExtension(column: self.numberOfColumns)
 
-        func downloadAvatar(fileName: String, user: String, dispalyName: String?) {
-            if let image = database.getImageAvatarLoaded(fileName: fileName) {
-                cell.fileAvatarImageView?.contentMode = .scaleAspectFill
-                cell.fileAvatarImageView?.image = image
-            } else {
-                NCNetworking.shared.downloadAvatar(user: user, dispalyName: dispalyName, fileName: fileName, account: metadata.account, cell: cell, view: collectionView)
-            }
-        }
-        /// CONTENT MODE
-        cell.filePreviewImageView?.layer.borderWidth = 0
-        if isLayoutPhoto {
-            if metadata.isImageOrVideo, existsPreview {
-                cell.filePreviewImageView?.contentMode = .scaleAspectFill
-            } else {
-                cell.filePreviewImageView?.contentMode = .scaleAspectFit
-            }
-        } else {
-            if existsPreview {
-                cell.filePreviewImageView?.contentMode = .scaleAspectFill
-            } else {
-                cell.filePreviewImageView?.contentMode = .scaleAspectFit
-            }
-        }
-        cell.fileAvatarImageView?.contentMode = .center
         /// THUMBNAIL
         if !metadata.directory {
             if metadata.hasPreviewBorder {
@@ -115,7 +91,12 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 if !metadata.iconUrl.isEmpty {
                     if let ownerId = getAvatarFromIconUrl(metadata: metadata) {
                         let fileName = NCSession.shared.getFileName(urlBase: metadata.urlBase, user: ownerId)
-                        downloadAvatar(fileName: fileName, user: ownerId, dispalyName: nil)
+                        if let image = database.getImageAvatarLoaded(fileName: fileName) {
+                            cell.fileAvatarImageView?.contentMode = .scaleAspectFill
+                            cell.fileAvatarImageView?.image = image
+                        } else {
+                            NCNetworking.shared.downloadAvatar(user: ownerId, dispalyName: nil, fileName: fileName, account: metadata.account, cell: cell, view: collectionView)
+                        }
                     }
                 }
             }
@@ -123,9 +104,13 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         /// AVATAR
         if !metadata.ownerId.isEmpty,
            metadata.ownerId != metadata.userId {
-           // appDelegate.account == metadata.account {
             let fileName = NCSession.shared.getFileName(urlBase: metadata.urlBase, user: metadata.ownerId)
-            downloadAvatar(fileName: fileName, user: metadata.ownerId, dispalyName: metadata.ownerDisplayName)
+            if let image = database.getImageAvatarLoaded(fileName: fileName) {
+                cell.fileAvatarImageView?.contentMode = .scaleAspectFill
+                cell.fileAvatarImageView?.image = image
+            } else {
+                NCNetworking.shared.downloadAvatar(user: metadata.ownerId, dispalyName: metadata.ownerDisplayName, fileName: fileName, account: metadata.account, cell: cell, view: collectionView)
+            }
         }
     }
 
@@ -145,6 +130,13 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         var isMounted = false
         var a11yValues: [String] = []
         let metadata = self.dataSource.getMetadata(indexPath: indexPath) ?? tableMetadata()
+        let existsImagePreview = utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag)
+
+        defer {
+            if !metadata.isSharable() || NCCapabilities.shared.disableSharesView(account: metadata.account) {
+                cell.hideButtonShare(true)
+            }
+        }
 
         // LAYOUT PHOTO
         if isLayoutPhoto {
@@ -168,13 +160,25 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             listCell.listCellDelegate = self
             cell = listCell
         }
-        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else { return cell }
 
-        defer {
-            if !metadata.isSharable() || NCCapabilities.shared.disableSharesView(account: metadata.account) {
-                cell.hideButtonShare(true)
+        /// CONTENT MODE
+        cell.fileAvatarImageView?.contentMode = .center
+        cell.filePreviewImageView?.layer.borderWidth = 0
+        if isLayoutPhoto {
+            if metadata.isImageOrVideo, existsImagePreview {
+                cell.filePreviewImageView?.contentMode = .scaleAspectFill
+            } else {
+                cell.filePreviewImageView?.contentMode = .scaleAspectFit
+            }
+        } else {
+            if existsImagePreview {
+                cell.filePreviewImageView?.contentMode = .scaleAspectFill
+            } else {
+                cell.filePreviewImageView?.contentMode = .scaleAspectFit
             }
         }
+
+        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else { return cell }
 
         if metadataFolder != nil {
             isShare = metadata.permissions.contains(permissions.permissionShared) && !metadataFolder!.permissions.contains(permissions.permissionShared)

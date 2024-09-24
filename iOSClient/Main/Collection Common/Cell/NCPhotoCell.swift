@@ -33,7 +33,8 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
 
     var ocId = ""
     var ocIdTransfer = ""
-    private var user = ""
+    var user = ""
+
     weak var photoCellDelegate: NCPhotoCellDelegate?
 
     var fileOcId: String? {
