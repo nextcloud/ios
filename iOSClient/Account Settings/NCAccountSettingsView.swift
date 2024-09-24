@@ -52,6 +52,15 @@ struct NCAccountSettingsView: View {
                 addAccountSection
                 deleteAccountSection
             }
+            .navigationBarTitle(NSLocalizedString("_account_settings_", comment: ""))
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarItems(trailing: Button(action: {
+                presentationMode.wrappedValue.dismiss()
+            }) {
+                Image(systemName: "xmark")
+                    .font(Font.system(.body).weight(.light))
+                    .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
+            })
         }
         .defaultViewModifier(model)
         .navigationViewStyle(StackNavigationViewStyle())
