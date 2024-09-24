@@ -375,15 +375,18 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         cell.setTags(tags: Array(metadata.tags))
 
         // Layout photo
-        if isLayoutPhoto, sizeImage.width < 120 {
-            cell.hideImageFavorite(true)
-            cell.hideImageLocal(true)
-            cell.fileTitleLabel?.font = UIFont.systemFont(ofSize: 10)
-            if sizeImage.width < 100 {
-                cell.hideImageItem(true)
-                cell.hideButtonMore(true)
-                cell.hideLabelInfo(true)
-                cell.hideLabelSubinfo(true)
+        if isLayoutPhoto {
+            let width = UIScreen.main.bounds.width / CGFloat(self.numberOfColumns)
+            if width < 120 {
+                cell.hideImageFavorite(true)
+                cell.hideImageLocal(true)
+                cell.fileTitleLabel?.font = UIFont.systemFont(ofSize: 10)
+                if width < 100 {
+                    cell.hideImageItem(true)
+                    cell.hideButtonMore(true)
+                    cell.hideLabelInfo(true)
+                    cell.hideLabelSubinfo(true)
+                }
             }
         }
 
