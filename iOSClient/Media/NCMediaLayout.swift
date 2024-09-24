@@ -117,10 +117,6 @@ public class NCMediaLayout: UICollectionViewLayout {
 
         columnCount = delegate.getColumnCount()
         (delegate as? NCMedia)?.buildMediaPhotoVideo(columnCount: columnCount)
-        if UIDevice.current.userInterfaceIdiom == .phone,
-           (UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight) {
-            columnCount += 2
-        }
 
         // Initialize variables
         headersAttribute.removeAll(keepingCapacity: false)
