@@ -25,27 +25,21 @@ import UIKit
 import NextcloudKit
 import Queuer
 
-class NCMediaDownloadThumbnail: ConcurrentOperation {
+class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
     var metadata: NCMediaDataSource.Metadata
-    var collectionView: UICollectionView?
     let utilityFileSystem = NCUtilityFileSystem()
-    let media: NCMedia?
-    var width: CGFloat?
-    let cost: Int
+    let media: NCMedia
+    var session: NCSession.Session
 
-    init(metadata: NCMediaDataSource.Metadata, collectionView: UICollectionView?, media: NCMedia?, cost: Int) {
+    init(metadata: NCMediaDataSource.Metadata, media: NCMedia) {
         self.metadata = metadata
-        self.collectionView = collectionView
         self.media = media
-        self.cost = cost
-
-        if let collectionView, let numberOfColumns = self.media?.numberOfColumns {
-            width = collectionView.frame.size.width / CGFloat(numberOfColumns)
-        }
+        self.session = media.session
     }
 
     override func start() {
-        guard !isCancelled, let tableMetadata = NCManageDatabase.shared.getMetadataFromOcId(self.metadata.ocId), let media = self.media else { return self.finish() }
+        guard !isCancelled,
+              let tableMetadata = NCManageDatabase.shared.getResultMetadataFromOcId(self.metadata.ocId)?.freeze() else { return self.finish() }
         var etagResource: String?
 
         if utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag) {
@@ -54,29 +48,20 @@ class NCMediaDownloadThumbnail: ConcurrentOperation {
 
         NextcloudKit.shared.downloadPreview(fileId: tableMetadata.fileId,
                                             etag: etagResource,
-                                            account: media.session.account,
+                                            account: self.session.account,
                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, data, _, _, etag, error in
-            if error == .success, let data, let collectionView = self.collectionView {
+            if error == .success, let data {
 
-                self.media?.filesExists.append(self.metadata.ocId)
+                self.media.filesExists.append(self.metadata.ocId)
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
-                NCUtility().createImage(metadata: tableMetadata, data: data, cost: self.cost)
-
-                if NCImageCache.shared.cache.count < NCImageCache.shared.countLimit,
-                   self.cost < NCImageCache.shared.countLimit {
-                    NCImageCache.shared.addImageCache(ocId: self.metadata.ocId, etag: self.metadata.etag, data: data, ext: NCGlobal.shared.getSizeExtension(width: self.width), cost: self.cost)
-                }
-
-                let image = self.media?.getImage(metadata: self.metadata, width: self.width, cost: self.cost)
+                NCUtility().createImage(metadata: tableMetadata, data: data)
+                let image = NCUtility().getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: NCGlobal.shared.getSizeExtension(column: self.media.numberOfColumns))
 
                 DispatchQueue.main.async {
-                    for case let cell as NCGridMediaCell in collectionView.visibleCells {
+                    for case let cell as NCMediaCell in self.media.collectionView.visibleCells {
                         if cell.ocId == self.metadata.ocId {
-                            UIView.transition(with: cell.imageItem,
-                                              duration: 0.75,
-                                              options: .transitionCrossDissolve,
-                                              animations: { cell.imageItem.image = image },
-                                              completion: nil)
+                            UIView.transition(with: cell.imageItem, duration: 0.75, options: .transitionCrossDissolve, animations: { cell.imageItem.image = image
+                            }, completion: nil)
                             break
                         }
                     }

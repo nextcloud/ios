@@ -23,11 +23,13 @@
 
 import UIKit
 import NextcloudKit
+import RealmSwift
 
 extension NCMedia {
     func loadDataSource() {
+        let session = self.session
         DispatchQueue.global().async {
-            if let metadatas = self.database.getResultsMetadatas(predicate: self.getPredicate(filterLivePhotoFile: true), sortedByKeyPath: "date") {
+            if let metadatas = self.database.getResultsMetadatas(predicate: self.imageCache.getMediaPredicate(filterLivePhotoFile: true, session: session, showOnlyImages: self.showOnlyImages, showOnlyVideos: self.showOnlyVideos), sortedByKeyPath: "date") {
                 self.dataSource = NCMediaDataSource(metadatas: metadatas)
             }
             self.collectionViewReloadData()
@@ -45,21 +47,25 @@ extension NCMedia {
     // MARK: - Search media
 
     @objc func searchMediaUI(_ distant: Bool = false) {
+        let session = self.session
+
         self.lockQueue.sync {
             guard self.isViewActived,
                   !self.hasRunSearchMedia,
-                  !self.transitionColumns,
+                  !self.isPinchGestureActive,
+                  !self.showOnlyImages,
+                  !self.showOnlyVideos,
                   !isEditMode,
                   NCNetworking.shared.downloadThumbnailQueue.operationCount == 0,
                   let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account))
             else { return }
             self.hasRunSearchMedia = true
 
-            let limit = max(collectionView.visibleCells.count * 2, 300)
+            let limit = max(collectionView.visibleCells.count * 3, 300)
             var lessDate = Date.distantFuture
             var greaterDate = Date.distantPast
-            let countMetadatas = self.dataSource.getMetadatas().count
-            let options = NKRequestOptions(timeout: 120, taskDescription: self.taskDescriptionRetrievesProperties, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+            let countMetadatas = self.dataSource.metadatas.count
+            let options = NKRequestOptions(timeout: 120, taskDescription: NCGlobal.shared.taskDescriptionRetrievesProperties, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
             var firstCellDate: Date?
             var lastCellDate: Date?
 
@@ -69,8 +75,8 @@ extension NCMedia {
 
             if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }), !distant {
 
-                firstCellDate = (visibleCells.first as? NCGridMediaCell)?.date
-                if firstCellDate == self.dataSource.getMetadatas().first?.date {
+                firstCellDate = (visibleCells.first as? NCMediaCell)?.date
+                if firstCellDate == self.dataSource.metadatas.first?.date {
                     lessDate = Date.distantFuture
                 } else {
                     if let date = firstCellDate {
@@ -80,8 +86,8 @@ extension NCMedia {
                     }
                 }
 
-                lastCellDate = (visibleCells.last as? NCGridMediaCell)?.date
-                if lastCellDate == self.dataSource.getMetadatas().last?.date {
+                lastCellDate = (visibleCells.last as? NCMediaCell)?.date
+                if lastCellDate == self.dataSource.metadatas.last?.date {
                     greaterDate = Date.distantPast
                 } else {
                     if let date = lastCellDate {
@@ -105,33 +111,45 @@ extension NCMedia {
                                             account: self.session.account,
                                             options: options) { account, files, _, error in
 
-                if error == .success, let files, self.session.account == account {
+                if error == .success, let files, session.account == account, !self.showOnlyImages, !self.showOnlyVideos {
 
+                    /// Removes all files in `files` that have an `ocId` present in `fileDeleted`
+                    var files = files
+                    files.removeAll { file in
+                        self.fileDeleted.contains(file.ocId)
+                    }
+                    self.fileDeleted.removeAll()
+
+                    /// No files, remove all
                     if lessDate == Date.distantFuture, greaterDate == Date.distantPast, files.isEmpty {
-                        self.dataSource.removeAll()
+                        self.dataSource.metadatas.removeAll()
                         self.collectionViewReloadData()
                     }
 
-                    DispatchQueue.global(qos: .background).async {
+                    DispatchQueue.global(qos: .userInteractive).async {
                         self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
                             self.database.addMetadatas(metadatas)
 
-                            if let firstCellDate, let lastCellDate, self.isViewActived {
-                                let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [ NSPredicate(format: "date >= %@ AND date =< %@", lastCellDate as NSDate, firstCellDate as NSDate), self.getPredicate(filterLivePhotoFile: false)])
+                            if self.dataSource.addMetadatas(metadatas) {
+                                self.collectionViewReloadData()
+                            }
 
-                                if let resultsMetadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: predicate) {
-                                    for metadata in resultsMetadatas where !self.filesExists.contains(metadata.ocId) {
-                                        if NCNetworking.shared.fileExistsQueue.operations.filter({ ($0 as? NCOperationFileExists)?.ocId == metadata.ocId }).isEmpty {
-                                            NCNetworking.shared.fileExistsQueue.addOperation(NCOperationFileExists(metadata: metadata))
+                            DispatchQueue.main.async {
+                                if let firstCellDate, let lastCellDate, self.isViewActived {
+                                    DispatchQueue.global(qos: .background).async {
+                                        let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [ NSPredicate(format: "date >= %@ AND date =< %@", lastCellDate as NSDate, firstCellDate as NSDate), self.imageCache.getMediaPredicate(filterLivePhotoFile: false, session: session, showOnlyImages: self.showOnlyImages, showOnlyVideos: self.showOnlyVideos)])
+
+                                        if let resultsMetadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: predicate) {
+                                            for metadata in resultsMetadatas where !self.filesExists.contains(metadata.ocId) {
+                                                if NCNetworking.shared.fileExistsQueue.operations.filter({ ($0 as? NCOperationFileExists)?.ocId == metadata.ocId }).isEmpty {
+                                                    NCNetworking.shared.fileExistsQueue.addOperation(NCOperationFileExists(metadata: metadata))
+                                                }
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
-                    }
-
-                    if self.dataSource.addFiles(files) {
-                        self.collectionViewReloadData()
                     }
 
                 } else {
@@ -144,27 +162,6 @@ extension NCMedia {
 
                 self.hasRunSearchMedia = false
             }
-        }
-    }
-
-    func getPredicate(filterLivePhotoFile: Bool) -> NSPredicate {
-        guard let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else { return NSPredicate() }
-        let startServerUrl = NCUtilityFileSystem().getHomeServer(session: session) + tableAccount.mediaPath
-
-        var showBothPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND hasPreview == true AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload')"
-        var showOnlyPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND hasPreview == true AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')"
-
-        if filterLivePhotoFile {
-            showBothPredicateMediaString = showBothPredicateMediaString + " AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
-            showOnlyPredicateMediaString = showOnlyPredicateMediaString + " AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
-        }
-
-        if showOnlyImages {
-            return NSPredicate(format: showOnlyPredicateMediaString, session.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue)
-        } else if showOnlyVideos {
-            return NSPredicate(format: showOnlyPredicateMediaString, session.account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)
-        } else {
-            return NSPredicate(format: showBothPredicateMediaString, session.account, startServerUrl)
         }
     }
 }
@@ -200,14 +197,15 @@ public class NCMediaDataSource: NSObject {
 
     private let utilityFileSystem = NCUtilityFileSystem()
     private let global = NCGlobal.shared
-    private var metadatas: [Metadata] = []
+    var metadatas: [Metadata] = []
 
     override init() { super.init() }
 
-    init(metadatas: [tableMetadata]) {
+    init(metadatas: Results<tableMetadata>) {
         super.init()
+
         self.metadatas.removeAll()
-        for metadata in metadatas {
+        metadatas.forEach { metadata in
             let metadata = getMetadataFromTableMetadata(metadata)
             self.metadatas.append(metadata)
         }
@@ -234,33 +232,7 @@ public class NCMediaDataSource: NSObject {
                         ocId: metadata.ocId)
     }
 
-    private func getMetadataFromFile(_ file: NKFile) -> Metadata {
-        return Metadata(date: file.date as Date,
-                        etag: file.etag,
-                        imageSize: CGSize(width: file.width, height: file.height),
-                        isImage: file.classFile == NKCommon.TypeClassFile.image.rawValue,
-                        isLivePhoto: !file.livePhotoFile.isEmpty,
-                        isVideo: file.classFile == NKCommon.TypeClassFile.video.rawValue,
-                        ocId: file.ocId)
-    }
-
     // MARK: -
-
-    func removeAll() {
-        self.metadatas.removeAll()
-    }
-
-    func isEmpty() -> Bool {
-        return self.metadatas.isEmpty
-    }
-
-    func count() -> Int {
-        return self.metadatas.count
-    }
-
-    func getMetadatas() -> [Metadata] {
-        return self.metadatas
-    }
 
     func getMetadata(indexPath: IndexPath) -> Metadata? {
         if indexPath.row < self.metadatas.count {
@@ -287,15 +259,15 @@ public class NCMediaDataSource: NSObject {
         }
     }
 
-    func addFiles(_ files: [NKFile]) -> Bool {
+    func addMetadatas(_ metadatas: [tableMetadata]) -> Bool {
         var metadatasToInsert: [Metadata] = []
 
-        for file in files {
-            let metadata = getMetadataFromFile(file)
+        for tableMetadata in metadatas {
+            let metadata = getMetadataFromTableMetadata(tableMetadata)
 
             if metadata.isLivePhoto, metadata.isVideo { continue }
 
-            if let index = self.metadatas.firstIndex(where: { $0.ocId == file.ocId }) {
+            if let index = self.metadatas.firstIndex(where: { $0.ocId == tableMetadata.ocId }) {
                 self.metadatas[index] = metadata
             } else {
                 metadatasToInsert.append(metadata)

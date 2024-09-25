@@ -39,8 +39,8 @@ extension NCMedia: UICollectionViewDataSource {
             return header
         } else {
             guard let footer = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFooter", for: indexPath) as? NCSectionFooter else { return NCSectionFooter() }
-            let images = dataSource.getMetadatas().filter({ $0.isImage }).count
-            let video = dataSource.getMetadatas().count - images
+            let images = dataSource.metadatas.filter({ $0.isImage }).count
+            let video = dataSource.metadatas.count - images
 
             footer.setTitleLabel("\(images) " + NSLocalizedString("_images_", comment: "") + " • " + "\(video) " + NSLocalizedString("_video_", comment: ""))
             footer.separatorIsHidden(true)
@@ -49,7 +49,7 @@ extension NCMedia: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let numberOfItemsInSection = dataSource.getMetadatas().count
+        let numberOfItemsInSection = dataSource.metadatas.count
         self.numberOfColumns = getColumnCount()
 
         if numberOfItemsInSection == 0 || NCNetworking.shared.isOffline {
@@ -87,52 +87,58 @@ extension NCMedia: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let metadata = dataSource.getMetadata(indexPath: indexPath),
-              let cell = (cell as? NCGridMediaCell) else { return }
-        let width = self.collectionView.frame.size.width / CGFloat(self.numberOfColumns)
-        let ext = NCGlobal.shared.getSizeExtension(width: width)
-        let imageCache = imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext)
-        let cost = indexPath.row
+        guard let metadata = dataSource.getMetadata(indexPath: indexPath) else { return }
 
-        cell.imageItem.image = imageCache
-
-        if imageCache == nil {
-            if self.transitionColumns {
-                cell.imageItem.image = getImage(metadata: metadata, width: width, cost: cost)
-            } else {
-                DispatchQueue.global(qos: .userInteractive).async {
-                    let image = self.getImage(metadata: metadata, width: width, cost: cost)
-                    DispatchQueue.main.async {
-                        cell.imageItem.image = image
-                    }
-                }
-            }
-        } else {
-            print("[DEBUG] in cache, cost \(indexPath.row)")
+        if !utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag),
+           NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
+            NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnail(metadata: metadata, media: self))
         }
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridMediaCell)!
-        guard let metadata = dataSource.getMetadata(indexPath: indexPath) else {
-            return cell
+        guard let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "mediaCell", for: indexPath) as? NCMediaCell) else {
+            fatalError("Unable to dequeue MediaCell with identifier mediaCell")
         }
+        guard let metadata = dataSource.getMetadata(indexPath: indexPath) else { return cell }
 
+        let ext = NCGlobal.shared.getSizeExtension(column: self.numberOfColumns)
+        let imageCache = imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext)
+
+        cell.backgroundColor = .secondarySystemBackground
+        cell.imageItem.image = imageCache
         cell.date = metadata.date as Date
         cell.ocId = metadata.ocId
+        cell.imageStatus.image = nil
 
-        if metadata.isVideo {
-           cell.imageStatus.image = playImage
-        } else if metadata.isLivePhoto {
-            cell.imageStatus.image = livePhotoImage
-        } else {
-            cell.imageStatus.image = nil
+        if cell.imageItem.frame.width > 60 {
+            if metadata.isVideo {
+                cell.imageStatus.image = playImage
+            } else if metadata.isLivePhoto {
+                cell.imageStatus.image = livePhotoImage
+            }
         }
 
-        if isEditMode, selectOcId.contains(metadata.ocId) {
+        if isEditMode, fileSelect.contains(metadata.ocId) {
             cell.selected(true)
         } else {
             cell.selected(false)
+        }
+
+        if cell.imageItem.image == nil {
+            if isPinchGestureActive || ext == NCGlobal.shared.previewExt512 || ext == NCGlobal.shared.previewExt1024 {
+                cell.imageItem.image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext)
+            } else {
+                DispatchQueue.global(qos: .userInteractive).async {
+                    let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext)
+                    DispatchQueue.main.async {
+                        if let currentCell = collectionView.cellForItem(at: indexPath) as? NCMediaCell,
+                           currentCell.ocId == metadata.ocId, let image {
+                            currentCell.imageItem.image = image
+                            currentCell.backgroundColor = .black
+                        }
+                    }
+                }
+            }
         }
 
         return cell

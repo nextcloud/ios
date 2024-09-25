@@ -33,7 +33,8 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
 
     var ocId = ""
     var ocIdTransfer = ""
-    private var user = ""
+    var user = ""
+
     weak var photoCellDelegate: NCPhotoCellDelegate?
 
     var fileOcId: String? {
@@ -52,25 +53,9 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
         get { return user }
         set { user = newValue ?? "" }
     }
-    var fileInfoLabel: UILabel? {
-        get { return nil }
-        set { }
-    }
-    var fileSubinfoLabel: UILabel? {
-        get { return nil }
-        set { }
-    }
     var fileStatusImage: UIImageView? {
         get { return imageStatus }
         set { imageStatus = newValue }
-    }
-    var fileLocalImage: UIImageView? {
-        get { return nil }
-        set { }
-    }
-    var fileFavoriteImage: UIImageView? {
-        get { return nil }
-        set { }
     }
 
     override func awakeFromNib() {
@@ -88,11 +73,12 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
         accessibilityLabel = nil
         accessibilityValue = nil
 
-        imageVisualEffect.clipsToBounds = true
-        imageVisualEffect.alpha = 0.5
-
+        imageItem.image = nil
         imageSelect.isHidden = true
         imageSelect.image = NCImageCache.shared.getImageCheckedYes()
+        imageStatus.image = nil
+        imageVisualEffect.clipsToBounds = true
+        imageVisualEffect.alpha = 0.5
 
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPress(gestureRecognizer:)))
         longPressedGesture.minimumPressDuration = 0.5
@@ -129,6 +115,10 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
 
     func hideButtonMore(_ status: Bool) {
         buttonMore.isHidden = status
+    }
+
+    func hideImageStatus(_ status: Bool) {
+        imageStatus.isHidden = status
     }
 
     func selected(_ status: Bool, isEditMode: Bool, account: String) {

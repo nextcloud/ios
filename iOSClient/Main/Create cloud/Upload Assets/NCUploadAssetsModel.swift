@@ -39,7 +39,7 @@ struct PreviewStore {
     var image: UIImage
 }
 
-class NCUploadAssetsModel: NSObject, ObservableObject, NCCreateFormUploadConflictDelegate {
+class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate {
     @Published var serverUrl: String
     @Published var assets: [TLPHAsset]
     @Published var previewStore: [PreviewStore] = []
@@ -65,13 +65,14 @@ class NCUploadAssetsModel: NSObject, ObservableObject, NCCreateFormUploadConflic
         self.serverUrl = serverUrl
         self.controller = controller
         self.showHUD = true
-        super.init()
 
         DispatchQueue.global(qos: .userInteractive).async {
             for asset in self.assets {
                 guard let image = asset.fullResolutionImage?.resizeImage(size: CGSize(width: 300, height: 300), isAspectRation: true),
                       let localIdentifier = asset.phAsset?.localIdentifier else { continue }
-                self.previewStore.append(PreviewStore(id: localIdentifier, asset: asset, assetType: asset.type, fileName: "", image: image))
+                DispatchQueue.main.async {
+                    self.previewStore.append(PreviewStore(id: localIdentifier, asset: asset, assetType: asset.type, fileName: "", image: image))
+                }
             }
             DispatchQueue.main.async {
                 self.showHUD = false
@@ -208,12 +209,9 @@ class NCUploadAssetsModel: NSObject, ObservableObject, NCCreateFormUploadConflic
 
             // Check if is in upload
             if let results = database.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@ AND session != ''",
-                                                                                                session.account,
-                                                                                                serverUrl,
-                                                                                                fileName),
-                                                                         sortedByKeyPath: "fileName",
-                                                                         ascending: false),
-               !results.isEmpty {
+                                                                                 session.account,
+                                                                                 serverUrl,
+                                                                                 fileName), sortedByKeyPath: "fileName", ascending: false), !results.isEmpty {
                 continue
             }
 

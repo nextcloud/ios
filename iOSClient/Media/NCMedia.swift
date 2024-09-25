@@ -48,19 +48,17 @@ class NCMedia: UIViewController {
     let database = NCManageDatabase.shared
     let imageCache = NCImageCache.shared
     var dataSource = NCMediaDataSource()
-    var serverUrl = ""
     let refreshControl = UIRefreshControl()
-    let taskDescriptionRetrievesProperties = "retrievesProperties"
     var isTop: Bool = true
     var isEditMode = false
-    var selectOcId: [String] = []
+    var fileSelect: [String] = []
     var filesExists: [String] = []
+    var fileDeleted: [String] = []
     var attributesZoomIn: UIMenuElement.Attributes = []
     var attributesZoomOut: UIMenuElement.Attributes = []
     let gradient: CAGradientLayer = CAGradientLayer()
     var showOnlyImages = false
     var showOnlyVideos = false
-    var lastContentOffsetY: CGFloat = 0
     var timeIntervalSearchNewMedia: TimeInterval = 2.0
     var timerSearchNewMedia: Timer?
     let insetsTop: CGFloat = 75
@@ -68,10 +66,16 @@ class NCMedia: UIViewController {
     let playImage = NCUtility().loadImage(named: "play.fill", colors: [.white])
     var photoImage = UIImage()
     var videoImage = UIImage()
+    var pinchGesture: UIPinchGestureRecognizer = UIPinchGestureRecognizer()
 
     var lastScale: CGFloat = 1.0
     var currentScale: CGFloat = 1.0
-    let maxColumns: Int = 7
+    var maxColumns: Int {
+        let screenWidth = min(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
+        let column = Int(screenWidth / 44)
+
+        return column
+    }
     var transitionColumns = false
     var numberOfColumns: Int = 0
     var lastNumberOfColumns: Int = 0
@@ -90,6 +94,10 @@ class NCMedia: UIViewController {
         return self.isViewLoaded && self.view.window != nil
     }
 
+    var isPinchGestureActive: Bool {
+        return pinchGesture.state == .began || pinchGesture.state == .changed
+    }
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -99,7 +107,7 @@ class NCMedia: UIViewController {
 
         collectionView.register(UINib(nibName: "NCSectionFirstHeaderEmptyData", bundle: nil), forSupplementaryViewOfKind: mediaSectionHeader, withReuseIdentifier: "sectionFirstHeaderEmptyData")
         collectionView.register(UINib(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: mediaSectionFooter, withReuseIdentifier: "sectionFooter")
-        collectionView.register(UINib(nibName: "NCGridMediaCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
+        collectionView.register(UINib(nibName: "NCMediaCell", bundle: nil), forCellWithReuseIdentifier: "mediaCell")
         collectionView.alwaysBounceVertical = true
         collectionView.contentInset = UIEdgeInsets(top: insetsTop, left: 0, bottom: 50, right: 0)
         collectionView.backgroundColor = .systemBackground
@@ -139,9 +147,10 @@ class NCMedia: UIViewController {
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
             self.loadDataSource()
+            self.searchMediaUI(true)
         }
 
-        let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture(_:)))
+        pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture(_:)))
         collectionView.addGestureRecognizer(pinchGesture)
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { _ in
@@ -152,7 +161,7 @@ class NCMedia: UIViewController {
         }
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterClearCache), object: nil, queue: nil) { _ in
-            self.dataSource.removeAll()
+            self.dataSource.metadatas.removeAll()
             self.imageCache.removeAll()
             self.searchMediaUI(true)
         }
@@ -168,7 +177,7 @@ class NCMedia: UIViewController {
         super.viewWillAppear(animated)
 
         navigationController?.setMediaAppreance()
-        if dataSource.isEmpty() {
+        if dataSource.metadatas.isEmpty {
             loadDataSource()
         }
     }
@@ -200,9 +209,7 @@ class NCMedia: UIViewController {
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
-        coordinator.animate(alongsideTransition: nil) { _ in
-            self.setTitleDate()
-        }
+        coordinator.animate(alongsideTransition: nil) { _ in }
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -235,27 +242,44 @@ class NCMedia: UIViewController {
         timerSearchNewMedia?.invalidate()
         timerSearchNewMedia = nil
         filesExists.removeAll()
+        fileDeleted.removeAll()
+
         NCNetworking.shared.fileExistsQueue.cancelAll()
         NCNetworking.shared.downloadThumbnailQueue.cancelAll()
 
-        if let nkSession = NextcloudKit.shared.nkCommonInstance.getSession(account: session.account) {
-            nkSession.sessionData.session.getTasksWithCompletionHandler { dataTasks, _, _ in
-                dataTasks.forEach {
-                    if $0.taskDescription == self.taskDescriptionRetrievesProperties {
-                        $0.cancel()
-                    }
-                }
+        Task {
+            let tasks = await NCNetworking.shared.getAllDataTask()
+            for task in tasks.filter({ $0.taskDescription == NCGlobal.shared.taskDescriptionRetrievesProperties }) {
+                task.cancel()
             }
         }
     }
 
     @objc func deleteFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? [String],
+              let ocIds = userInfo["ocId"] as? [String],
               let error = userInfo["error"] as? NKError else { return }
 
-        dataSource.removeMetadata(ocId)
-        collectionViewReloadData()
+        fileDeleted = fileDeleted + ocIds
+
+        var indexPaths: [IndexPath] = []
+        let indices = dataSource.metadatas.enumerated().filter { ocIds.contains($0.element.ocId) }.map { $0.offset }
+
+        for index in indices {
+            let indexPath = IndexPath(row: index, section: 0)
+            if let cell = collectionView.cellForItem(at: indexPath) as? NCMediaCell,
+               dataSource.metadatas[index].ocId == cell.ocId {
+                indexPaths.append(indexPath)
+            }
+        }
+
+        dataSource.removeMetadata(ocIds)
+
+        if indexPaths.count == ocIds.count {
+            collectionView.deleteItems(at: indexPaths)
+        } else {
+            collectionViewReloadData()
+        }
 
         if error != .success {
             NCContentPresenter().showError(error: error)
@@ -270,12 +294,26 @@ class NCMedia: UIViewController {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               let fileExists = userInfo["fileExists"] as? Bool else { return }
+        var indexPaths: [IndexPath] = []
 
         filesExists.append(ocId)
 
         if !fileExists {
+            if let index = dataSource.metadatas.firstIndex(where: {$0.ocId == ocId}),
+               let cell = collectionView.cellForItem(at: IndexPath(row: index, section: 0)) as? NCMediaCell,
+               dataSource.metadatas[index].ocId == cell.ocId {
+                indexPaths.append(IndexPath(row: index, section: 0))
+            }
+
             dataSource.removeMetadata([ocId])
             database.deleteMetadataOcId(ocId)
+
+            if !indexPaths.isEmpty {
+                collectionView.deleteItems(at: indexPaths)
+            } else {
+                collectionViewReloadData()
+            }
+
             collectionViewReloadData()
         }
     }
@@ -314,29 +352,6 @@ class NCMedia: UIViewController {
         }
     }
 
-    // MARK: - Image
-
-    func getImage(metadata: NCMediaDataSource.Metadata, width: CGFloat? = nil, cost: Int) -> UIImage? {
-        var returnImage: UIImage?
-        var width = width
-        if width == nil {
-            width = self.collectionView.frame.size.width / CGFloat(self.numberOfColumns)
-        }
-        let ext = NCGlobal.shared.getSizeExtension(width: width)
-
-        if let image = imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
-            returnImage = image
-        } else if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
-            returnImage = image
-        } else if NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
-            DispatchQueue.main.async {
-                NCNetworking.shared.downloadThumbnailQueue.addOperation(NCMediaDownloadThumbnail(metadata: metadata, collectionView: self.collectionView, media: self, cost: cost))
-            }
-        }
-
-        return returnImage
-    }
-
     func buildMediaPhotoVideo(columnCount: Int) {
         var pointSize: CGFloat = 0
 
@@ -360,14 +375,11 @@ class NCMedia: UIViewController {
 
 extension NCMedia: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if !dataSource.isEmpty() {
+        if !dataSource.metadatas.isEmpty {
             isTop = scrollView.contentOffset.y <= -(insetsTop + view.safeAreaInsets.top - 25)
             setColor()
+            setTitleDate()
             setNeedsStatusBarAppearanceUpdate()
-            if lastContentOffsetY == 0 || lastContentOffsetY / 2 <= scrollView.contentOffset.y || lastContentOffsetY / 2 >= scrollView.contentOffset.y {
-                setTitleDate()
-                lastContentOffsetY = scrollView.contentOffset.y
-            }
         } else {
             setColor()
         }

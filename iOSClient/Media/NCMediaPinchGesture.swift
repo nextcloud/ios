@@ -61,6 +61,7 @@ extension NCMedia {
         case .began:
             networkRemoveAll()
             lastScale = gestureRecognizer.scale
+            lastNumberOfColumns = numberOfColumns
         case .changed:
             guard !transitionColumns else {
                 return
@@ -79,9 +80,10 @@ extension NCMedia {
 
             lastScale = scale
         case .ended:
-            currentScale = 1.0
-            collectionView.transform = .identity
-            self.collectionViewReloadData()
+            UIView.animate(withDuration: 0.30) {
+                self.currentScale = 1.0
+                self.collectionView.transform = .identity
+            }
         default:
             break
         }

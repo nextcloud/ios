@@ -89,30 +89,23 @@ class NCGlobal: NSObject {
     let size1024: CGSize                            = CGSize(width: 1024, height: 1024)
     let size512: CGSize                             = CGSize(width: 512, height: 512)
     let size256: CGSize                             = CGSize(width: 256, height: 256)
-    let size128: CGSize                             = CGSize(width: 128, height: 128)
-    let size64: CGSize                              = CGSize(width: 64, height: 64)
     // Image extension
     let previewExt1024                              = ".1024.preview.jpg"
     let previewExt512                               = ".512.preview.jpg"
     let previewExt256                               = ".256.preview.jpg"
-    let previewExt128                               = ".128.preview.jpg"
-    let previewExt64                                = ".64.preview.jpg"
 
-    func getSizeExtension(width: CGFloat?) -> String {
-        guard let width else { return previewExt512 }
+    func getSizeExtension(column: Int) -> String {
+        if column == 0 { return previewExt256 }
+        let width = UIScreen.main.bounds.width / CGFloat(column)
 
-        switch (width * 3) {
-        case 0...119:
-            return previewExt64
-        case 120...192:
-            return previewExt128
-        case 193...384:
-             return previewExt256
-        case 384...768:
-            return previewExt512
-        default:
-            return previewExt1024
-        }
+         switch (width * 4) {
+         case 0...384:
+              return previewExt256
+         case 385...768:
+             return previewExt512
+         default:
+             return previewExt1024
+         }
     }
 
     // E2EE
@@ -377,6 +370,7 @@ class NCGlobal: NSObject {
     let configuration_disable_openin_file                       = "disable_openin_file"
 
     // MORE NEXTCLOUD APPS
+    //
     let talkSchemeUrl                                           = "nextcloudtalk://"
     let notesSchemeUrl                                          = "nextcloudnotes://"
     let talkAppStoreUrl                                         = "https://apps.apple.com/in/app/nextcloud-talk/id1296825574"
@@ -415,4 +409,11 @@ class NCGlobal: NSObject {
     // GROUP AMIN
     //
     let groupAdmin                          = "admin"
+
+    // DATA TASK DESCRIPTION
+    //
+    let taskDescriptionRetrievesProperties  = "retrievesProperties"
+    let taskDescriptionSynchronization      = "synchronization"
+    let taskDescriptionDeleteFileOrFolder   = "deleteFileOrFolder"
+
 }

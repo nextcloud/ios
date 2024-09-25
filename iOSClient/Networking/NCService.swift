@@ -22,7 +22,6 @@
 //
 
 import UIKit
-import SVGKit
 import NextcloudKit
 import RealmSwift
 

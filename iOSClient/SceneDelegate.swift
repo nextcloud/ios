@@ -26,7 +26,6 @@ import UIKit
 import NextcloudKit
 import WidgetKit
 import SwiftEntryKit
-import TOPasscodeViewController
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
@@ -65,6 +64,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 window?.makeKeyAndVisible()
                 /// Set the ACCOUNT
                 controller.account = activeTableAccount.account
+                /// Create media cache
+                DispatchQueue.global(qos: .utility).async {
+                    if NCImageCache.shared.cache.count == 0 {
+                        let session = NCSession.shared.getSession(account: activeTableAccount.account)
+                        NCImageCache.shared.createMediaCache(session: session)
+                    }
+                }
             }
         } else {
             NCKeychain().removeAll()

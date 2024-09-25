@@ -27,12 +27,12 @@ import NextcloudKit
 
 extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
     func selectAll() {
-        if !selectOcId.isEmpty, self.dataSource.getResultMetadatas().count == selectOcId.count {
-            selectOcId = []
+        if !fileSelect.isEmpty, self.dataSource.getResultMetadatas().count == fileSelect.count {
+            fileSelect = []
         } else {
-            selectOcId = self.dataSource.getResultMetadatas().compactMap({ $0.ocId })
+            fileSelect = self.dataSource.getResultMetadatas().compactMap({ $0.ocId })
         }
-        tabBarSelect.update(selectOcId: selectOcId, metadatas: getSelectedMetadatas(), userId: session.userId)
+        tabBarSelect.update(fileSelect: fileSelect, metadatas: getSelectedMetadatas(), userId: session.userId)
         collectionView.reloadData()
     }
 
@@ -124,7 +124,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
 
     func getSelectedMetadatas() -> [tableMetadata] {
         var selectedMetadatas: [tableMetadata] = []
-        for ocId in selectOcId {
+        for ocId in fileSelect {
             guard let metadata = database.getMetadataFromOcId(ocId) else { continue }
             selectedMetadatas.append(metadata)
         }
@@ -133,7 +133,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
 
     func setEditMode(_ editMode: Bool) {
         isEditMode = editMode
-        selectOcId.removeAll()
+        fileSelect.removeAll()
 
         if editMode {
             navigationItem.leftBarButtonItems = nil

@@ -22,7 +22,7 @@
 //
 
 import UIKit
-import WebKit
+@preconcurrency import WebKit
 
 class NCViewerRichWorkspaceWebView: UIViewController, WKNavigationDelegate, WKScriptMessageHandler {
 

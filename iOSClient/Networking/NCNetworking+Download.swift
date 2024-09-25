@@ -299,7 +299,7 @@ extension NCNetworking {
 #endif
 }
 
-class NCOperationDownload: ConcurrentOperation {
+class NCOperationDownload: ConcurrentOperation, @unchecked Sendable {
     var metadata: tableMetadata
     var selector: String
 

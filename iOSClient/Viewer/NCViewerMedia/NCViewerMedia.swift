@@ -255,6 +255,7 @@ class NCViewerMedia: UIViewController {
         let fileNameExtension = (metadata.fileNameView as NSString).pathExtension.uppercased()
 
         if metadata.isLivePhoto,
+           NCNetworking.shared.isOnline,
            let metadata = self.database.getMetadataLivePhoto(metadata: metadata),
            !utilityFileSystem.fileProviderStorageExists(metadata),
            let metadata = self.database.setMetadatasSessionInWaitDownload(metadatas: [metadata], session: NCNetworking.shared.sessionDownload, selector: "") {

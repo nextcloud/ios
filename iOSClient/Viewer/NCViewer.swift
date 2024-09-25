@@ -30,12 +30,8 @@ class NCViewer: NSObject {
     let utility = NCUtility()
     let database = NCManageDatabase.shared
     private var viewerQuickLook: NCViewerQuickLook?
-    private var metadata = tableMetadata()
-    private var metadatas: [tableMetadata] = []
 
-    func view(viewController: UIViewController, metadata: tableMetadata, metadatas: [tableMetadata], indexMetadatas: Int = 0, image: UIImage? = nil) {
-        self.metadata = metadata
-        self.metadatas = metadatas
+    func view(viewController: UIViewController, metadata: tableMetadata, ocIds: [String]? = nil, image: UIImage? = nil) {
         let session = NCSession.shared.getSession(account: metadata.account)
 
         // URL
@@ -64,9 +60,17 @@ class NCViewer: NSObject {
         if metadata.isImage || metadata.isAudioOrVideo {
             if let navigationController = viewController.navigationController,
                let viewerMediaPageContainer: NCViewerMediaPage = UIStoryboard(name: "NCViewerMediaPage", bundle: nil).instantiateInitialViewController() as? NCViewerMediaPage {
-                viewerMediaPageContainer.currentIndex = indexMetadatas
-                viewerMediaPageContainer.metadatas = metadatas
+
                 viewerMediaPageContainer.delegateViewController = viewController
+
+                if let ocIds {
+                    viewerMediaPageContainer.currentIndex = ocIds.firstIndex(where: { $0 == metadata.ocId }) ?? 0
+                    viewerMediaPageContainer.ocIds = ocIds
+                } else {
+                    viewerMediaPageContainer.currentIndex = 0
+                    viewerMediaPageContainer.ocIds = [metadata.ocId]
+                }
+
                 navigationController.pushViewController(viewerMediaPageContainer, animated: true)
             }
             return

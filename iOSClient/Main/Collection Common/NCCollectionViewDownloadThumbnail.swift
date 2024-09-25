@@ -27,7 +27,7 @@ import Queuer
 import NextcloudKit
 import RealmSwift
 
-class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
+class NCCollectionViewDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
     var metadata: tableMetadata
     var collectionView: UICollectionView?
     var ext = ""
@@ -60,8 +60,8 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
                 let image = self.utility.getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: self.ext)
 
                 DispatchQueue.main.async {
-                    for case let cell as NCCellProtocol in collectionView.visibleCells {
-                        if cell.fileOcId == self.metadata.ocId, let filePreviewImageView = cell.filePreviewImageView {
+                    for case let cell as NCCellProtocol in collectionView.visibleCells where cell.fileOcId == self.metadata.ocId {
+                        if let filePreviewImageView = cell.filePreviewImageView {
                             filePreviewImageView.contentMode = .scaleAspectFill
                             if self.metadata.hasPreviewBorder {
                                 filePreviewImageView.layer.borderWidth = 0.2

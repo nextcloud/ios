@@ -62,7 +62,7 @@ class NCFiles: NCCollectionViewCommon {
                 self.serverUrl = self.utilityFileSystem.getHomeServer(session: self.session)
                 self.isSearchingMode = false
                 self.isEditMode = false
-                self.selectOcId.removeAll()
+                self.fileSelect.removeAll()
                 self.layoutForView = self.database.getLayoutForView(account: self.session.account, key: self.layoutKey, serverUrl: self.serverUrl)
 
                 if self.isLayoutList {

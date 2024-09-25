@@ -85,36 +85,35 @@ extension NCTrash {
     }
 }
 
-class NCOperationDownloadThumbnailTrash: ConcurrentOperation {
-    var trash: tableTrash
+class NCOperationDownloadThumbnailTrash: ConcurrentOperation, @unchecked Sendable {
     var fileId: String
-    var collectionView: UICollectionView?
-    var cell: NCTrashCellProtocol?
+    var fileName: String
+    var collectionView: UICollectionView
     var account: String
 
-    init(resultTableTrash: tableTrash, fileId: String, account: String, cell: NCTrashCellProtocol?, collectionView: UICollectionView?) {
-        self.trash = tableTrash(value: resultTableTrash)
+    init(fileId: String, fileName: String, account: String, collectionView: UICollectionView) {
         self.fileId = fileId
+        self.fileName = fileName
         self.account = account
-        self.cell = cell
         self.collectionView = collectionView
     }
 
     override func start() {
         guard !isCancelled else { return self.finish() }
 
-        NextcloudKit.shared.downloadTrashPreview(fileId: trash.fileId,
-                                                 account: account) { _, data, _, _, error in
-            if error == .success,
-               let data,
-               self.fileId == self.cell?.objectId,
-               let imageView = self.cell?.imageItem {
-                    self.cell?.imageItem?.contentMode = .scaleAspectFill
-                    UIView.transition(with: imageView,
+        NextcloudKit.shared.downloadTrashPreview(fileId: fileId, account: account) { _, data, _, _, error in
+            if error == .success, let data {
+
+                NCUtility().createImage(ocId: self.fileId, etag: self.fileName, data: data)
+
+                for case let cell as NCTrashCellProtocol in self.collectionView.visibleCells where cell.objectId == self.fileId {
+                    cell.imageItem?.contentMode = .scaleAspectFill
+                    UIView.transition(with: cell.imageItem,
                                       duration: 0.75,
                                       options: .transitionCrossDissolve,
-                                      animations: { imageView.image = UIImage(data: data) },
+                                      animations: { cell.imageItem.image = UIImage(data: data) },
                                       completion: nil)
+                }
             }
             self.finish()
         }

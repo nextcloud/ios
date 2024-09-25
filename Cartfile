@@ -1,2 +1,0 @@
-github "https://github.com/marinofaggiana/TOPasscodeViewController" "master"
-binary "https://code.videolan.org/videolan/VLCKit/raw/master/Packaging/MobileVLCKit.json" ~> 3.5.1

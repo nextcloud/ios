@@ -30,7 +30,7 @@ import NextcloudKit
 extension NCMedia: UICollectionViewDragDelegate {
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
         if isEditMode {
-            return NCDragDrop().performDrag(selectOcId: selectOcId)
+            return NCDragDrop().performDrag(fileSelect: fileSelect)
         } else if let ocId = dataSource.getMetadata(indexPath: indexPath)?.ocId,
                   let metadata = database.getMetadataFromOcId(ocId) {
             return NCDragDrop().performDrag(metadata: metadata)

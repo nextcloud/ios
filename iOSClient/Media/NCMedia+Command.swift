@@ -37,13 +37,16 @@ extension NCMedia {
     }
 
     func setSelectcancelButton() {
-        selectOcId.removeAll()
-        tabBarSelect.selectCount = selectOcId.count
+        fileSelect.removeAll()
+        fileDeleted.removeAll()
+        tabBarSelect.selectCount = fileSelect.count
+
         if let visibleCells = self.collectionView?.indexPathsForVisibleItems.compactMap({ self.collectionView?.cellForItem(at: $0) }) {
-            for case let cell as NCGridMediaCell in visibleCells {
+            for case let cell as NCMediaCell in visibleCells {
                 cell.selected(false)
             }
         }
+
         if isEditMode {
             activityIndicatorTrailing.constant = 150
             selectOrCancelButton.setTitle( NSLocalizedString("_cancel_", comment: ""), for: .normal)
@@ -61,27 +64,17 @@ extension NCMedia {
         }
     }
 
-    func setTitleDate(_ offset: CGFloat = 10) {
-        titleDate?.text = ""
-        if let metadata = dataSource.getMetadatas().first {
-            let contentOffsetY = collectionView.contentOffset.y
-            let top = insetsTop + view.safeAreaInsets.top + offset
-            if insetsTop + view.safeAreaInsets.top + contentOffsetY < 10 {
+    func setTitleDate() {
+        if let layoutAttributes = collectionView.collectionViewLayout.layoutAttributesForElements(in: collectionView.bounds) {
+            let sortedAttributes = layoutAttributes.sorted { $0.frame.minY < $1.frame.minY || ($0.frame.minY == $1.frame.minY && $0.frame.minX < $1.frame.minX) }
+
+            if let firstAttribute = sortedAttributes.first, let metadata = dataSource.getMetadata(indexPath: firstAttribute.indexPath) {
                 titleDate?.text = utility.getTitleFromDate(metadata.date as Date)
                 return
             }
-            let point = CGPoint(x: offset, y: top + contentOffsetY)
-            if let indexPath = collectionView.indexPathForItem(at: point) {
-                let cell = self.collectionView(collectionView, cellForItemAt: indexPath) as? NCGridMediaCell
-                if let date = cell?.date {
-                    self.titleDate?.text = utility.getTitleFromDate(date)
-                }
-            } else {
-                if offset < 20 {
-                    self.setTitleDate(20)
-                }
-            }
         }
+
+        titleDate?.text = ""
     }
 
     func setColor() {
@@ -113,152 +106,24 @@ extension NCMedia {
         let layoutTitle = (layout == NCGlobal.shared.mediaLayoutRatio) ? NSLocalizedString("_media_square_", comment: "") : NSLocalizedString("_media_ratio_", comment: "")
         let layoutImage = (layout == NCGlobal.shared.mediaLayoutRatio) ? utility.loadImage(named: "square.grid.3x3") : utility.loadImage(named: "rectangle.grid.3x2")
 
-        if numberOfColumns >= maxColumns {
-            self.attributesZoomIn = []
-            self.attributesZoomOut = .disabled
-        } else if numberOfColumns <= 1 {
-            self.attributesZoomIn = .disabled
-            self.attributesZoomOut = []
-        } else {
-            self.attributesZoomIn = []
-            self.attributesZoomOut = []
-        }
-
         let viewFilterMenu = UIMenu(title: "", options: .displayInline, children: [
             UIAction(title: NSLocalizedString("_media_viewimage_show_", comment: ""), image: utility.loadImage(named: "photo")) { _ in
                 self.showOnlyImages = true
                 self.showOnlyVideos = false
                 self.loadDataSource()
+                self.networkRemoveAll()
             },
             UIAction(title: NSLocalizedString("_media_viewvideo_show_", comment: ""), image: utility.loadImage(named: "video")) { _ in
                 self.showOnlyImages = false
                 self.showOnlyVideos = true
                 self.loadDataSource()
+                self.networkRemoveAll()
             },
             UIAction(title: NSLocalizedString("_media_show_all_", comment: ""), image: utility.loadImage(named: "photo.on.rectangle")) { _ in
                 self.showOnlyImages = false
                 self.showOnlyVideos = false
                 self.loadDataSource()
-            }
-        ])
-        let viewLayoutMenu = UIAction(title: layoutTitle, image: layoutImage) { _ in
-            if layout == NCGlobal.shared.mediaLayoutRatio {
-                NCManageDatabase.shared.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", layout: NCGlobal.shared.mediaLayoutSquare)
-                self.layoutType = NCGlobal.shared.mediaLayoutSquare
-            } else {
-                NCManageDatabase.shared.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", layout: NCGlobal.shared.mediaLayoutRatio)
-                self.layoutType = NCGlobal.shared.mediaLayoutRatio
-            }
-            self.createMenu()
-            self.collectionView.reloadData()
-            self.setTitleDate()
-        }
-
-        let viewOptionsMedia = UIMenu(title: "", options: .displayInline, children: [
-            UIMenu(title: NSLocalizedString("_media_view_options_", comment: ""), children: [viewFilterMenu, viewLayoutMenu]),
-            UIAction(title: NSLocalizedString("_select_media_folder_", comment: ""), image: utility.loadImage(named: "folder"), handler: { _ in
-                guard let navigationController = UIStoryboard(name: "NCSelect", bundle: nil).instantiateInitialViewController() as? UINavigationController,
-                      let viewController = navigationController.topViewController as? NCSelect else { return }
-                viewController.delegate = self
-                viewController.typeOfCommandView = .select
-                viewController.type = "mediaFolder"
-                self.present(navigationController, animated: true)
-            })
-        ])
-
-        let zoomOut = UIAction(title: NSLocalizedString("_zoom_out_", comment: ""), image: utility.loadImage(named: "minus.magnifyingglass"), attributes: self.attributesZoomOut) { _ in
-            let lastExt = NCGlobal.shared.getSizeExtension(width: self.collectionView.frame.size.width / CGFloat(self.numberOfColumns))
-
-            UIView.animate(withDuration: 0.0, animations: {
-                self.numberOfColumns += 1
-                let ext = NCGlobal.shared.getSizeExtension(width: self.collectionView.frame.size.width / CGFloat(self.numberOfColumns))
-
-                NCManageDatabase.shared.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: self.numberOfColumns)
-
-                if ext != lastExt {
-                    self.imageCache.removeAll()
-                }
-
-                self.createMenu()
-                self.collectionView.reloadData()
-                self.setTitleDate()
-            })
-        }
-
-        let zoomIn = UIAction(title: NSLocalizedString("_zoom_in_", comment: ""), image: utility.loadImage(named: "plus.magnifyingglass"), attributes: self.attributesZoomIn) { _ in
-            let lastExt = NCGlobal.shared.getSizeExtension(width: self.collectionView.frame.size.width / CGFloat(self.numberOfColumns))
-
-            UIView.animate(withDuration: 0.0, animations: {
-                self.numberOfColumns -= 1
-                let ext = NCGlobal.shared.getSizeExtension(width: self.collectionView.frame.size.width / CGFloat(self.numberOfColumns))
-
-                NCManageDatabase.shared.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", columnPhoto: self.numberOfColumns)
-
-                if ext != lastExt {
-                    self.imageCache.removeAll()
-                }
-
-                self.createMenu()
-                self.collectionView.reloadData()
-                self.setTitleDate()
-            })
-        }
-
-        let playFile = UIAction(title: NSLocalizedString("_play_from_files_", comment: ""), image: utility.loadImage(named: "play.circle")) { _ in
-            guard let controller = self.tabBarController as? NCMainTabBarController else { return }
-            self.documentPickerViewController = NCDocumentPickerViewController(controller: controller, isViewerMedia: true, allowsMultipleSelection: false, viewController: self)
-        }
-
-        let playURL = UIAction(title: NSLocalizedString("_play_from_url_", comment: ""), image: utility.loadImage(named: "link")) { _ in
-            let alert = UIAlertController(title: NSLocalizedString("_valid_video_url_", comment: ""), message: nil, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
-            alert.addTextField(configurationHandler: { textField in
-                textField.placeholder = "http://myserver.com/movie.mkv"
-            })
-            alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
-                guard let stringUrl = alert.textFields?.first?.text, !stringUrl.isEmpty, let url = URL(string: stringUrl) else { return }
-                let fileName = url.lastPathComponent
-                let metadata = self.database.createMetadata(fileName: fileName,
-                                                            fileNameView: fileName,
-                                                            ocId: NSUUID().uuidString,
-                                                            serverUrl: "",
-                                                            url: stringUrl,
-                                                            contentType: "",
-                                                            session: self.session,
-                                                            sceneIdentifier: self.controller?.sceneIdentifier)
-                self.database.addMetadata(metadata)
-                NCViewer().view(viewController: self, metadata: metadata, metadatas: [metadata])
-            }))
-            self.present(alert, animated: true)
-        }
-
-        menuButton.menu = UIMenu(title: "", children: [zoomOut, zoomIn, viewOptionsMedia, playFile, playURL])
-    }
-
-    func createMenuNEW() {
-        let layoutForView = database.getLayoutForView(account: session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")
-        var layout = layoutForView?.layout ?? NCGlobal.shared.mediaLayoutRatio
-        /// Overwrite default value
-        if layout == NCGlobal.shared.layoutList { layout = NCGlobal.shared.mediaLayoutRatio }
-        ///
-        let layoutTitle = (layout == NCGlobal.shared.mediaLayoutRatio) ? NSLocalizedString("_media_square_", comment: "") : NSLocalizedString("_media_ratio_", comment: "")
-        let layoutImage = (layout == NCGlobal.shared.mediaLayoutRatio) ? utility.loadImage(named: "square.grid.3x3") : utility.loadImage(named: "rectangle.grid.3x2")
-
-        let viewFilterMenu = UIMenu(title: "", options: .displayInline, children: [
-            UIAction(title: NSLocalizedString("_media_viewimage_show_", comment: ""), image: utility.loadImage(named: "photo")) { _ in
-                self.showOnlyImages = true
-                self.showOnlyVideos = false
-                self.loadDataSource()
-            },
-            UIAction(title: NSLocalizedString("_media_viewvideo_show_", comment: ""), image: utility.loadImage(named: "video")) { _ in
-                self.showOnlyImages = false
-                self.showOnlyVideos = true
-                self.loadDataSource()
-            },
-            UIAction(title: NSLocalizedString("_media_show_all_", comment: ""), image: utility.loadImage(named: "photo.on.rectangle")) { _ in
-                self.showOnlyImages = false
-                self.showOnlyVideos = false
-                self.loadDataSource()
+                self.searchMediaUI()
             }
         ])
 
@@ -311,7 +176,7 @@ extension NCMedia {
                                                             session: self.session,
                                                             sceneIdentifier: self.controller?.sceneIdentifier)
                 self.database.addMetadata(metadata)
-                NCViewer().view(viewController: self, metadata: metadata, metadatas: [metadata])
+                NCViewer().view(viewController: self, metadata: metadata)
             }))
             self.present(alert, animated: true)
         }
@@ -322,16 +187,16 @@ extension NCMedia {
 
 extension NCMedia: NCMediaSelectTabBarDelegate {
     func delete() {
-        let selectOcId = self.selectOcId.map { $0 }
+        let fileSelect = self.fileSelect.map { $0 }
         var alertStyle = UIAlertController.Style.actionSheet
         if UIDevice.current.userInterfaceIdiom == .pad { alertStyle = .alert }
-        if !selectOcId.isEmpty {
+        if !fileSelect.isEmpty {
             let alertController = UIAlertController(title: nil, message: nil, preferredStyle: alertStyle)
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_delete_selected_photos_", comment: ""), style: .destructive) { (_: UIAlertAction) in
                 Task {
                     var error = NKError()
                     var ocIds: [String] = []
-                    for ocId in selectOcId where error == .success {
+                    for ocId in fileSelect where error == .success {
                         if let metadata = self.database.getMetadataFromOcId(ocId) {
                             error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false, sceneIdentifier: self.controller?.sceneIdentifier)
                             if error == .success {

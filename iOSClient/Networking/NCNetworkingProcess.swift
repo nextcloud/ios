@@ -82,11 +82,16 @@ class NCNetworkingProcess {
                 guard !self.hasRun, NCNetworking.shared.isOnline else { return }
                 self.hasRun = true
 
-                let resultsTransfer = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status IN %@", self.global.metadataStatusInTransfer))
-                if resultsTransfer.isEmptyOrNil {
-                    ScreenAwakeManager.shared.mode = .off
-                } else {
-                    ScreenAwakeManager.shared.mode = NCKeychain().screenAwakeMode
+                Task {
+                    let tasks = await NCNetworking.shared.getAllDataTask()
+                    let hasSynchronizationTask = tasks.contains { $0.taskDescription == NCGlobal.shared.taskDescriptionSynchronization }
+                    let resultsTransfer = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status IN %@", self.global.metadataStatusInTransfer))
+
+                    if resultsTransfer.isEmptyOrNil && !hasSynchronizationTask {
+                        ScreenAwakeManager.shared.mode = .off
+                    } else {
+                        ScreenAwakeManager.shared.mode = NCKeychain().screenAwakeMode
+                    }
                 }
 
                 guard let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal)) else { return }

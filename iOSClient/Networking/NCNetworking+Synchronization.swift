@@ -31,7 +31,7 @@ extension NCNetworking {
                          add: Bool,
                          completion: @escaping (_ errorCode: Int, _ num: Int) -> Void = { _, _ in }) {
         let startDate = Date()
-        let options = NKRequestOptions(timeout: 120, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+        let options = NKRequestOptions(timeout: 120, taskDescription: NCGlobal.shared.taskDescriptionSynchronization, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
                                              depth: "infinity",

@@ -22,7 +22,7 @@
 //
 
 import UIKit
-import WebKit
+@preconcurrency import WebKit
 import NextcloudKit
 
 class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMessageHandler, NCSelectDelegate {

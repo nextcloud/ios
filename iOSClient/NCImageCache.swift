@@ -33,13 +33,15 @@ class NCImageCache: NSObject {
     private let utility = NCUtility()
     private let global = NCGlobal.shared
 
-    private let allowExtensions = [NCGlobal.shared.previewExt256, NCGlobal.shared.previewExt128, NCGlobal.shared.previewExt64]
+    private let allowExtensions = [NCGlobal.shared.previewExt256]
     private var brandElementColor: UIColor?
 
-    public var countLimit = 5_000
+    public var countLimit = 10_000
     lazy var cache: LRUCache<String, UIImage> = {
         return LRUCache<String, UIImage>(countLimit: countLimit)
     }()
+
+    public var isLoadingCache: Bool = false
 
     override init() {
         super.init()
@@ -55,19 +57,20 @@ class NCImageCache: NSObject {
         countLimit = countLimit - 500
         if countLimit <= 0 { countLimit = 100 }
         self.cache = LRUCache<String, UIImage>(countLimit: countLimit)
+#if DEBUG
+        NCContentPresenter().messageNotification("Cache image memory warning \(countLimit)", error: .success, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
+#endif
     }
 
     func addImageCache(ocId: String, etag: String, data: Data, ext: String, cost: Int) {
         guard allowExtensions.contains(ext),
-              cache.count < countLimit,
               let image = UIImage(data: data) else { return }
 
         cache.setValue(image, forKey: ocId + etag + ext, cost: cost)
     }
 
     func addImageCache(ocId: String, etag: String, image: UIImage, ext: String, cost: Int) {
-        guard allowExtensions.contains(ext),
-              cache.count < countLimit else { return }
+        guard allowExtensions.contains(ext) else { return }
 
         cache.setValue(image, forKey: ocId + etag + ext, cost: cost)
     }
@@ -77,19 +80,55 @@ class NCImageCache: NSObject {
     }
 
     func removeImageCache(ocIdPlusEtag: String) {
-        let exts = [global.previewExt1024,
-                    global.previewExt512,
-                    global.previewExt256,
-                    global.previewExt128,
-                    global.previewExt64]
-
-        for i in 0..<exts.count {
-            cache.removeValue(forKey: ocIdPlusEtag + exts[i])
+        for i in 0..<allowExtensions.count {
+            cache.removeValue(forKey: ocIdPlusEtag + allowExtensions[i])
         }
     }
 
     func removeAll() {
         cache.removeAllValues()
+    }
+
+    // MARK: - MEDIA -
+
+    func createMediaCache(session: NCSession.Session) {
+        var cost: Int = 0
+
+        if let metadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: getMediaPredicate(filterLivePhotoFile: true, session: session, showOnlyImages: false, showOnlyVideos: false), sortedByKeyPath: "date", freeze: true)?.prefix(countLimit) {
+
+            cache.removeAllValues()
+            isLoadingCache = true
+
+            metadatas.forEach { metadata in
+                if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt256) {
+                    addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: NCGlobal.shared.previewExt256, cost: cost)
+                    cost += 1
+                }
+            }
+
+            isLoadingCache = false
+        }
+    }
+
+    func getMediaPredicate(filterLivePhotoFile: Bool, session: NCSession.Session, showOnlyImages: Bool, showOnlyVideos: Bool) -> NSPredicate {
+        guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else { return NSPredicate() }
+        let startServerUrl = NCUtilityFileSystem().getHomeServer(session: session) + tableAccount.mediaPath
+
+        var showBothPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND hasPreview == true AND (classFile == '\(NKCommon.TypeClassFile.image.rawValue)' OR classFile == '\(NKCommon.TypeClassFile.video.rawValue)') AND NOT (session CONTAINS[c] 'upload')"
+        var showOnlyPredicateMediaString = "account == %@ AND serverUrl BEGINSWITH %@ AND hasPreview == true AND classFile == %@ AND NOT (session CONTAINS[c] 'upload')"
+
+        if filterLivePhotoFile {
+            showBothPredicateMediaString = showBothPredicateMediaString + " AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
+            showOnlyPredicateMediaString = showOnlyPredicateMediaString + " AND NOT (livePhotoFile != '' AND classFile == '\(NKCommon.TypeClassFile.video.rawValue)')"
+        }
+
+        if showOnlyImages {
+            return NSPredicate(format: showOnlyPredicateMediaString, session.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue)
+        } else if showOnlyVideos {
+            return NSPredicate(format: showOnlyPredicateMediaString, session.account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)
+        } else {
+            return NSPredicate(format: showBothPredicateMediaString, session.account, startServerUrl)
+        }
     }
 
     // MARK: -

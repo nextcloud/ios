@@ -36,6 +36,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     let utility = NCUtility()
     let utilityFileSystem = NCUtilityFileSystem()
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    var pinchGesture: UIPinchGestureRecognizer = UIPinchGestureRecognizer()
 
     var autoUploadFileName = ""
     var autoUploadDirectory = ""
@@ -45,7 +46,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var backgroundImageView = UIImageView()
     var serverUrl: String = ""
     var isEditMode = false
-    var selectOcId: [String] = []
+    var fileSelect: [String] = []
     var metadataFolder: tableMetadata?
     var dataSource = NCCollectionViewDataSource()
     let imageCache = NCImageCache.shared
@@ -65,7 +66,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var tabBarSelect: NCCollectionViewCommonSelectTabBar!
     var attributesZoomIn: UIMenuElement.Attributes = []
     var attributesZoomOut: UIMenuElement.Attributes = []
-    let maxImageGrid: CGFloat = 7
 
     // DECLARE
     var layoutKey = ""
@@ -82,6 +82,18 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var emptyDescription: String = ""
     var emptyDataPortaitOffset: CGFloat = 0
     var emptyDataLandscapeOffset: CGFloat = -20
+
+    var lastScale: CGFloat = 1.0
+    var currentScale: CGFloat = 1.0
+    var maxColumns: Int {
+        let screenWidth = min(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
+        let column = Int(screenWidth / 44)
+
+        return column
+    }
+    var transitionColumns = false
+    var numberOfColumns: Int = 0
+    var lastNumberOfColumns: Int = 0
 
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: tabBarController)
@@ -107,18 +119,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         layoutForView?.layout == global.layoutList ? " - " : ""
     }
 
-    var sizeImage: CGSize {
-        if isLayoutPhoto {
-            let column = CGFloat(layoutForView?.columnPhoto ?? 3)
-            return CGSize(width: collectionView.frame.width / column, height: collectionView.frame.width / column)
-        } else if isLayoutGrid {
-            let column = CGFloat(layoutForView?.columnGrid ?? 3)
-            return CGSize(width: collectionView.frame.width / column, height: collectionView.frame.width / column)
-        } else {
-            return CGSize(width: 40, height: 40)
-        }
-    }
-
     var controller: NCMainTabBarController? {
         self.tabBarController as? NCMainTabBarController
     }
@@ -137,7 +137,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.navigationController?.presentationController?.delegate = self
         collectionView.alwaysBounceVertical = true
 
-        // Color
         view.backgroundColor = .systemBackground
         collectionView.backgroundColor = .systemBackground
         refreshControl.tintColor = NCBrandColor.shared.textColor2
@@ -171,15 +170,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         collectionView.register(UINib(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
         collectionView.register(UINib(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: mediaSectionFooter, withReuseIdentifier: "sectionFooter")
 
-        // Refresh Control
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
-            self.dataSource.removeAll()
             self.database.cleanEtagDirectory(serverUrl: self.serverUrl, account: self.session.account)
             self.reloadDataSourceNetwork()
         }
 
-        // Long Press on CollectionView
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPressCollecationView(_:)))
         longPressedGesture.minimumPressDuration = 0.5
         longPressedGesture.delegate = self
@@ -190,6 +186,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         collectionView.dragInteractionEnabled = true
         collectionView.dragDelegate = self
         collectionView.dropDelegate = self
+
+        pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture(_:)))
+        collectionView.addGestureRecognizer(pinchGesture)
 
         let dropInteraction = UIDropInteraction(delegate: self)
         self.navigationController?.navigationItem.leftBarButtonItems?.first?.customView?.addInteraction(dropInteraction)
@@ -652,26 +651,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         func createMenuActions() -> [UIMenuElement] {
             guard let layoutForView = database.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl) else { return [] }
-            let columnPhoto = self.layoutForView?.columnPhoto ?? 3
 
             func saveLayout(_ layoutForView: NCDBLayoutForView) {
                 database.setLayoutForView(layoutForView: layoutForView)
                 NotificationCenter.default.postOnMainThread(name: global.notificationCenterReloadDataSource)
                 setNavigationRightItems()
-            }
-
-            if layoutForView.layout != global.layoutPhotoSquare && layoutForView.layout != global.layoutPhotoRatio {
-                self.attributesZoomIn = .disabled
-                self.attributesZoomOut = .disabled
-            } else if CGFloat(columnPhoto) >= maxImageGrid - 1 {
-                self.attributesZoomIn = []
-                self.attributesZoomOut = .disabled
-            } else if columnPhoto <= 1 {
-                self.attributesZoomIn = .disabled
-                self.attributesZoomOut = []
-            } else {
-                self.attributesZoomIn = []
-                self.attributesZoomOut = []
             }
 
             let select = UIAction(title: NSLocalizedString("_select_", comment: ""),
@@ -704,53 +688,31 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.setNavigationRightItems()
             }
 
-            let menuPhoto = UIMenu(title: "", options: .displayInline, children: [
-                UIAction(title: NSLocalizedString("_media_square_", comment: ""), image: utility.loadImage(named: "square.grid.3x3"), state: layoutForView.layout == global.layoutPhotoSquare ? .on : .off) { _ in
-                    layoutForView.layout = self.global.layoutPhotoSquare
-                    self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
-                    self.layoutType = self.global.layoutPhotoSquare
+            let mediaSquare = UIAction(title: NSLocalizedString("_media_square_", comment: ""), image: utility.loadImage(named: "square.grid.3x3"), state: layoutForView.layout == global.layoutPhotoSquare ? .on : .off) { _ in
+                layoutForView.layout = self.global.layoutPhotoSquare
+                self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
+                self.layoutType = self.global.layoutPhotoSquare
 
-                    self.collectionView.reloadData()
-                    self.collectionView.collectionViewLayout.invalidateLayout()
-                    self.collectionView.setCollectionViewLayout(self.mediaLayout, animated: true) {_ in self.isTransitioning = false }
+                self.collectionView.reloadData()
+                self.collectionView.collectionViewLayout.invalidateLayout()
+                self.collectionView.setCollectionViewLayout(self.mediaLayout, animated: true) {_ in self.isTransitioning = false }
 
-                    self.reloadDataSource()
-                    self.setNavigationRightItems()
-                },
-                UIAction(title: NSLocalizedString("_media_ratio_", comment: ""), image: utility.loadImage(named: "rectangle.grid.3x2"), state: layoutForView.layout == self.global.layoutPhotoRatio ? .on : .off) { _ in
-                    layoutForView.layout = self.global.layoutPhotoRatio
-                    self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
-                    self.layoutType = self.global.layoutPhotoRatio
+                self.setNavigationRightItems()
+            }
 
-                    self.collectionView.reloadData()
-                    self.collectionView.collectionViewLayout.invalidateLayout()
-                    self.collectionView.setCollectionViewLayout(self.mediaLayout, animated: true) {_ in self.isTransitioning = false }
+            let mediaRatio = UIAction(title: NSLocalizedString("_media_ratio_", comment: ""), image: utility.loadImage(named: "rectangle.grid.3x2"), state: layoutForView.layout == self.global.layoutPhotoRatio ? .on : .off) { _ in
+                layoutForView.layout = self.global.layoutPhotoRatio
+                self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
+                self.layoutType = self.global.layoutPhotoRatio
 
-                    self.reloadDataSource()
-                    self.setNavigationRightItems()
-                }
-            ])
+                self.collectionView.reloadData()
+                self.collectionView.collectionViewLayout.invalidateLayout()
+                self.collectionView.setCollectionViewLayout(self.mediaLayout, animated: true) {_ in self.isTransitioning = false }
 
-            let menuZoom = UIMenu(title: "", options: .displayInline, children: [
-                UIAction(title: NSLocalizedString("_zoom_out_", comment: ""), image: utility.loadImage(named: "minus.magnifyingglass"), attributes: self.attributesZoomOut) { _ in
-                    layoutForView.columnPhoto = columnPhoto + 1
-                    self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
-                    self.setNavigationRightItems()
-                    UIView.transition(with: self.collectionView, duration: 0.5, options: .transitionCrossDissolve, animations: {
-                        self.collectionView.reloadData()
-                    }, completion: nil)
-                },
-                UIAction(title: NSLocalizedString("_zoom_in_", comment: ""), image: utility.loadImage(named: "plus.magnifyingglass"), attributes: self.attributesZoomIn) { _ in
-                    layoutForView.columnPhoto = columnPhoto - 1
-                    self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
-                    self.setNavigationRightItems()
-                    UIView.transition(with: self.collectionView, duration: 0.5, options: .transitionCrossDissolve, animations: {
-                        self.collectionView.reloadData()
-                    }, completion: nil)
-                }
-            ])
+                self.setNavigationRightItems()
+            }
 
-            let viewStyleSubmenu = UIMenu(title: "", options: .displayInline, children: [list, grid, UIMenu(title: NSLocalizedString("_additional_view_options_", comment: ""), children: [menuPhoto, menuZoom])])
+            let viewStyleSubmenu = UIMenu(title: "", options: .displayInline, children: [list, grid, mediaSquare, mediaRatio])
 
             let ascending = layoutForView.ascending
             let ascendingChevronImage = utility.loadImage(named: ascending ? "chevron.up" : "chevron.down")
@@ -817,7 +779,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
 
         if isEditMode {
-            tabBarSelect.update(selectOcId: selectOcId, metadatas: getSelectedMetadatas(), userId: session.userId)
+            tabBarSelect.update(fileSelect: fileSelect, metadatas: getSelectedMetadatas(), userId: session.userId)
             tabBarSelect.show()
             let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) {
                 self.setEditMode(false)
@@ -1117,7 +1079,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
            NCNetworking.shared.isOnline,
            let results = database.getResultsMetadatas(predicate: NSPredicate(format: "status IN %@", [global.metadataStatusWaitUpload, global.metadataStatusUploading])),
            !results.isEmpty {
-            return results
+            return Array(results)
         }
         return nil
     }

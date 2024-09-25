@@ -110,47 +110,42 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 
     override func awakeFromNib() {
         super.awakeFromNib()
+        initCell()
+    }
 
-        imageItem.layer.cornerRadius = 6
-        imageItem.layer.masksToBounds = true
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        initCell()
+    }
 
-        // use entire cell as accessibility element
+    func initCell() {
         accessibilityHint = nil
         accessibilityLabel = nil
         accessibilityValue = nil
         isAccessibilityElement = true
+
+        imageItem.image = nil
+        imageItem.layer.cornerRadius = 6
+        imageItem.layer.masksToBounds = true
+        imageStatus.image = nil
+        imageFavorite.image = nil
+        imageFavoriteBackground.isHidden = true
+        imageLocal.image = nil
+        labelTitle.text = ""
+        labelInfo.text = ""
+        labelSubinfo.text = ""
+        imageShared.image = nil
+        imageMore.image = nil
+        separatorHeightConstraint.constant = 0.5
+        tag0.text = ""
+        tag1.text = ""
+        titleInfoTrailingDefault()
 
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPress(gestureRecognizer:)))
         longPressedGesture.minimumPressDuration = 0.5
         longPressedGesture.delegate = self
         longPressedGesture.delaysTouchesBegan = true
         self.addGestureRecognizer(longPressedGesture)
-
-        separator.backgroundColor = .separator
-        separatorHeightConstraint.constant = 0.5
-
-        labelTitle.text = ""
-        labelInfo.text = ""
-        labelSubinfo.text = ""
-        labelTitle.textColor = NCBrandColor.shared.textColor
-        labelInfo.textColor = NCBrandColor.shared.textColor2
-        labelSubinfo.textColor = NCBrandColor.shared.textColor2
-
-        imageFavoriteBackground.isHidden = true
-    }
-
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        imageItem.backgroundColor = nil
-        if fileFavoriteImage?.image != nil {
-            imageFavoriteBackground.isHidden = false
-        } else {
-            imageFavoriteBackground.isHidden = true
-        }
-
-        accessibilityHint = nil
-        accessibilityLabel = nil
-        accessibilityValue = nil
     }
 
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
