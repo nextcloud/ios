@@ -13,15 +13,10 @@ class SecondaryButton: UIButton {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        backgroundColor = UIColor(resource: .Button.Secondary.Background.normal)
-        
-        setTitleColor(UIColor(resource: .Button.Secondary.Text.normal), for: .normal)
-        setTitleColor(UIColor(resource: .Button.Secondary.Text.selected), for: .selected)
-        setTitleColor(UIColor(resource: .Button.Secondary.Text.disabled), for: .disabled)
-        
         layer.masksToBounds = true
         layer.borderWidth = CommonButtonConstants.defaultBorderWidth
-        layer.borderColor = borderColor()
+        
+        updateApperance()
         
         titleLabel?.font = CommonButtonConstants.defaultUIFont
     }
@@ -32,24 +27,13 @@ class SecondaryButton: UIButton {
     
     override public var isEnabled: Bool {
         didSet {
-            if self.isEnabled {
-                self.backgroundColor = UIColor(resource: .Button.Secondary.Background.normal)
-            } else {
-                self.backgroundColor = UIColor(resource: .Button.Secondary.Background.disabled)
-            }
+            updateApperance()
         }
     }
     
     override open var isHighlighted: Bool {
         didSet {
-            super.isHighlighted = isHighlighted
-            
-            if !isEnabled {
-                backgroundColor = UIColor(resource: .Button.Secondary.Background.disabled)
-                return
-            }
-            
-            backgroundColor = isHighlighted ? UIColor(resource: .Button.Secondary.Background.selected) : UIColor(resource: .Button.Secondary.Background.normal)
+            updateApperance()
         }
     }
     
@@ -61,11 +45,37 @@ class SecondaryButton: UIButton {
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
         if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
-            layer.borderColor = borderColor()
+            updateApperance()
         }
+    }
+    
+    private func updateApperance() {
+        setTitleColor(titleColor(), for: .normal)
+        backgroundColor = backgroundColor()
+        layer.borderColor = borderColor()
     }
     
     private func borderColor() -> CGColor {
         return UIColor(resource: isEnabled ? .Button.Secondary.Border.normal : .Button.Secondary.Border.disabled).cgColor
+    }
+    
+    private func backgroundColor() -> UIColor {
+        guard isEnabled else {
+            return UIColor(resource: .Button.Secondary.Background.disabled)
+        }
+        if isHighlighted {
+            return UIColor(resource: .Button.Secondary.Background.selected)
+        }
+        return UIColor(resource: .Button.Secondary.Background.normal)
+    }
+    
+    private func titleColor() -> UIColor {
+        guard isEnabled else {
+            return UIColor(resource: .Button.Secondary.Text.disabled)
+        }
+        if isHighlighted {
+            return UIColor(resource: .Button.Secondary.Text.selected)
+        }
+        return UIColor(resource: .Button.Secondary.Text.normal)
     }
 }

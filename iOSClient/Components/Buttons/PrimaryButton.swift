@@ -13,14 +13,8 @@ class PrimaryButton: UIButton {
     override func awakeFromNib() {
         super.awakeFromNib()
         
-        backgroundColor = UIColor(resource: .Button.Primary.Background.normal)
-        
-        setTitleColor(UIColor(resource: .Button.Primary.Text.normal), for: .normal)
-        setTitleColor(UIColor(resource: .Button.Primary.Text.selected), for: .selected)
-        setTitleColor(UIColor(resource: .Button.Primary.Text.disabled), for: .disabled)
-        
         layer.masksToBounds = true
-        
+        updateApperance()
         titleLabel?.font = CommonButtonConstants.defaultUIFont
     }
     
@@ -30,24 +24,13 @@ class PrimaryButton: UIButton {
     
     override public var isEnabled: Bool {
         didSet {
-            if self.isEnabled {
-                self.backgroundColor = UIColor(resource: .Button.Primary.Background.normal)
-            } else {
-                self.backgroundColor = UIColor(resource: .Button.Primary.Background.disabled)
-            }
+            updateApperance()
         }
     }
     
     override open var isHighlighted: Bool {
         didSet {
-            super.isHighlighted = isHighlighted
-            
-            if !isEnabled {
-                backgroundColor = UIColor(resource: .Button.Primary.Background.disabled)
-                return
-            }
-            
-            backgroundColor = isHighlighted ? UIColor(resource: .Button.Primary.Background.selected) : UIColor(resource: .Button.Primary.Background.normal)
+            updateApperance()
         }
     }
     
@@ -56,5 +39,29 @@ class PrimaryButton: UIButton {
         super.layoutSubviews()
     }
     
+    private func updateApperance() {
+        setTitleColor(titleColor(), for: .normal)
+        backgroundColor = backgroundColor()
+    }
+    
+    private func backgroundColor() -> UIColor {
+        guard isEnabled else {
+            return UIColor(resource: .Button.Primary.Background.disabled)
+        }
+        if isHighlighted {
+            return UIColor(resource: .Button.Primary.Background.selected)
+        }
+        return UIColor(resource: .Button.Primary.Background.normal)
+    }
+    
+    private func titleColor() -> UIColor {
+        guard isEnabled else {
+            return UIColor(resource: .Button.Primary.Text.disabled)
+        }
+        if isHighlighted {
+            return UIColor(resource: .Button.Primary.Text.selected)
+        }
+        return UIColor(resource: .Button.Primary.Text.normal)
+    }
 }
 
