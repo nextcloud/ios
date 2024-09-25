@@ -276,27 +276,6 @@ extension NCNetworking {
             }
         }
     }
-
-#if !EXTENSION
-    func downloadAvatar(user: String,
-                        dispalyName: String?,
-                        fileName: String,
-                        account: String,
-                        cell: NCCellProtocol,
-                        view: UIView?) {
-        let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
-
-        if let image = database.getImageAvatarLoaded(fileName: fileName) {
-            cell.fileAvatarImageView?.image = image
-            return
-        }
-
-        cell.fileAvatarImageView?.image = utility.loadUserImage(for: user, displayName: dispalyName, urlBase: NCSession.shared.getSession(account: account).urlBase)
-
-        for case let operation as NCOperationDownloadAvatar in downloadAvatarQueue.operations where operation.fileName == fileName { return }
-        downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: user, fileName: fileName, fileNameLocalPath: fileNameLocalPath, account: account, cell: cell, view: view))
-    }
-#endif
 }
 
 class NCOperationDownload: ConcurrentOperation, @unchecked Sendable {

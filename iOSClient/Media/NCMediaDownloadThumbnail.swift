@@ -54,7 +54,7 @@ class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
 
                 self.media.filesExists.append(self.metadata.ocId)
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
-                NCUtility().createImage(metadata: tableMetadata, data: data)
+                NCUtility().createImageFileFrom(data: data, metadata: tableMetadata)
                 let image = NCUtility().getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: NCGlobal.shared.getSizeExtension(column: self.media.numberOfColumns))
 
                 DispatchQueue.main.async {

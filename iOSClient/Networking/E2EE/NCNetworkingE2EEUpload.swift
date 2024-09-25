@@ -206,7 +206,7 @@ class NCNetworkingE2EEUpload: NSObject {
 
             self.database.addMetadata(metadata)
             self.database.addLocalFile(metadata: metadata)
-            utility.createImageFrom(metadata: metadata)
+            utility.createImageFileFrom(metadata: metadata)
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile,
                                                         object: nil,
                                                         userInfo: ["ocId": metadata.ocId,

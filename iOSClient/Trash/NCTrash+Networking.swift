@@ -103,11 +103,11 @@ class NCOperationDownloadThumbnailTrash: ConcurrentOperation, @unchecked Sendabl
 
         NextcloudKit.shared.downloadTrashPreview(fileId: fileId, account: account) { _, data, _, _, error in
             if error == .success, let data {
-
-                NCUtility().createImage(ocId: self.fileId, etag: self.fileName, data: data)
+                NCUtility().createImageFileFrom(data: data, ocId: self.fileId, etag: self.fileName)
 
                 for case let cell as NCTrashCellProtocol in self.collectionView.visibleCells where cell.objectId == self.fileId {
                     cell.imageItem?.contentMode = .scaleAspectFill
+
                     UIView.transition(with: cell.imageItem,
                                       duration: 0.75,
                                       options: .transitionCrossDissolve,

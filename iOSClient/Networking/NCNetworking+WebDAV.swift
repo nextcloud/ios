@@ -931,17 +931,17 @@ class NCOperationDownloadAvatar: ConcurrentOperation, @unchecked Sendable {
     var fileName: String
     var etag: String?
     var fileNameLocalPath: String
-    var cell: NCCellProtocol!
     var view: UIView?
     var account: String
+    var isPreviewImageView: Bool
 
-    init(user: String, fileName: String, fileNameLocalPath: String, account: String, cell: NCCellProtocol, view: UIView?) {
+    init(user: String, fileName: String, fileNameLocalPath: String, account: String, view: UIView?, isPreviewImageView: Bool = false) {
         self.user = user
         self.fileName = fileName
         self.fileNameLocalPath = fileNameLocalPath
         self.account = account
-        self.cell = cell
         self.view = view
+        self.isPreviewImageView = isPreviewImageView
         self.etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
     }
 
@@ -954,22 +954,24 @@ class NCOperationDownloadAvatar: ConcurrentOperation, @unchecked Sendable {
                                            avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
                                            etag: self.etag,
                                            account: account,
-                                           options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imageAvatar, _, etag, error in
-            if error == .success, let imageAvatar {
+                                           options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, image, _, etag, error in
+
+            if error == .success, let image {
                 NCManageDatabase.shared.addAvatar(fileName: self.fileName, etag: etag ?? "")
+
                 DispatchQueue.main.async {
-                    if self.user == self.cell.fileUser, let cellFileAvatarImageView = self.cell.fileAvatarImageView {
-                        cellFileAvatarImageView.contentMode = .scaleAspectFill
-                        UIView.transition(with: cellFileAvatarImageView,
-                                          duration: 0.75,
-                                          options: .transitionCrossDissolve,
-                                          animations: { cellFileAvatarImageView.image = imageAvatar },
-                                          completion: nil)
-                    } else {
-                        if self.view is UICollectionView {
-                            (self.view as? UICollectionView)?.reloadData()
-                        } else if self.view is UITableView {
-                            (self.view as? UITableView)?.reloadData()
+                    let visibleCells: [UIView] = (self.view as? UICollectionView)?.visibleCells ?? (self.view as? UITableView)?.visibleCells ?? []
+                    for case let cell as NCCellProtocol in visibleCells {
+                        if self.user == cell.fileUser {
+
+                            if self.isPreviewImageView, let filePreviewImageView = cell.filePreviewImageView {
+                                filePreviewImageView.contentMode = .scaleAspectFill
+                                UIView.transition(with: filePreviewImageView, duration: 0.75, options: .transitionCrossDissolve, animations: { filePreviewImageView.image = image}, completion: nil)
+                            } else if let fileAvatarImageView = cell.fileAvatarImageView {
+                                fileAvatarImageView.contentMode = .scaleAspectFill
+                                UIView.transition(with: fileAvatarImageView, duration: 0.75, options: .transitionCrossDissolve, animations: { fileAvatarImageView.image = image}, completion: nil)
+                            }
+                            break
                         }
                     }
                 }

@@ -217,10 +217,12 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                     if let ownerId = getAvatarFromIconUrl(metadata: metadata) {
                         let fileName = NCSession.shared.getFileName(urlBase: metadata.urlBase, user: ownerId)
                         if let image = database.getImageAvatarLoaded(fileName: fileName) {
-                            cell.fileAvatarImageView?.contentMode = .scaleAspectFill
-                            cell.fileAvatarImageView?.image = image
+                            cell.filePreviewImageView?.contentMode = .scaleAspectFill
+                            cell.filePreviewImageView?.image = image
                         } else {
-                            NCNetworking.shared.downloadAvatar(user: ownerId, dispalyName: nil, fileName: fileName, account: metadata.account, cell: cell, view: collectionView)
+                            let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
+                            cell.filePreviewImageView?.image = utility.loadUserImage(for: ownerId, displayName: nil, urlBase: metadata.urlBase)
+                            NCNetworking.shared.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: metadata.ownerId, fileName: fileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account, view: collectionView, isPreviewImageView: true))
                         }
                     }
                 }
@@ -303,7 +305,15 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.fileAvatarImageView?.contentMode = .scaleAspectFill
                 cell.fileAvatarImageView?.image = image
             } else {
-                NCNetworking.shared.downloadAvatar(user: metadata.ownerId, dispalyName: metadata.ownerDisplayName, fileName: fileName, account: metadata.account, cell: cell, view: collectionView)
+                if let image = database.getImageAvatarLoaded(fileName: fileName) {
+                    cell.fileAvatarImageView?.image = image
+                } else {
+                    cell.fileAvatarImageView?.image = utility.loadUserImage(for: metadata.ownerId, displayName: metadata.ownerDisplayName, urlBase: metadata.urlBase)
+                    if NCNetworking.shared.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
+                        let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
+                        NCNetworking.shared.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: metadata.ownerId, fileName: fileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account, view: collectionView))
+                    }
+                }
             }
         }
 

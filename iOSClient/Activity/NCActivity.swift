@@ -221,9 +221,18 @@ extension NCActivity: UITableViewDataSource {
         cell.tableComments = comment
         cell.delegate = self
 
-        // Image
+        // Avatar
         let fileName = NCSession.shared.getFileName(urlBase: metadata.urlBase, user: comment.actorId)
-        NCNetworking.shared.downloadAvatar(user: comment.actorId, dispalyName: comment.actorDisplayName, fileName: fileName, account: comment.account, cell: cell, view: tableView)
+        if let image = database.getImageAvatarLoaded(fileName: fileName) {
+            cell.fileAvatarImageView?.image = image
+        } else {
+            cell.fileAvatarImageView?.image = utility.loadUserImage(for: comment.actorId, displayName: comment.actorDisplayName, urlBase: NCSession.shared.getSession(account: account).urlBase)
+            if NCNetworking.shared.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
+                let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
+                NCNetworking.shared.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: comment.actorId, fileName: fileName, fileNameLocalPath: fileNameLocalPath, account: account, view: tableView))
+            }
+        }
+
         // Username
         cell.labelUser.text = comment.actorDisplayName
         cell.labelUser.textColor = NCBrandColor.shared.textColor
@@ -289,7 +298,10 @@ extension NCActivity: UITableViewDataSource {
             cell.avatar.isHidden = false
             cell.fileUser = activity.user
             let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: activity.user)
-            NCNetworking.shared.downloadAvatar(user: activity.user, dispalyName: nil, fileName: fileName, account: session.account, cell: cell, view: tableView)
+            if NCNetworking.shared.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
+                let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
+                NCNetworking.shared.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: activity.user, fileName: fileName, fileNameLocalPath: fileNameLocalPath, account: session.account, view: tableView))
+            }
             cell.subjectLeadingConstraint.constant = 15
         } else {
             cell.subjectLeadingConstraint.constant = -30

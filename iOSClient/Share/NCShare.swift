@@ -360,7 +360,15 @@ extension NCShare: UITableViewDataSource {
                 cell.delegate = self
                 cell.setupCellUI(userId: session.userId)
                 let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: tableShare.shareWith)
-                NCNetworking.shared.downloadAvatar(user: tableShare.shareWith, dispalyName: tableShare.shareWithDisplayname, fileName: fileName, account: metadata.account, cell: cell, view: tableView)
+                if let image = database.getImageAvatarLoaded(fileName: fileName) {
+                    cell.fileAvatarImageView?.image = image
+                } else {
+                    cell.fileAvatarImageView?.image = utility.loadUserImage(for: tableShare.shareWith, displayName: tableShare.shareWithDisplayname, urlBase: metadata.urlBase)
+                    if NCNetworking.shared.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
+                        let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
+                        NCNetworking.shared.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: tableShare.shareWith, fileName: fileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account, view: tableView))
+                    }
+                }                
                 return cell
             }
         }
