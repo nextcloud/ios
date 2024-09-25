@@ -44,7 +44,6 @@ class NCNetworkingE2EEUpload: NSObject {
     var numChunks: Int = 0
 
     func upload(metadata: tableMetadata, uploadE2EEDelegate: uploadE2EEDelegate? = nil, hudView: UIView?, hud: JGProgressHUD?) async -> NKError {
-
         var metadata = metadata
         let ocIdTemp = metadata.ocId
 

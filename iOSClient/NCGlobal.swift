@@ -451,6 +451,11 @@ class NCGlobal: NSObject {
 
     var capabilitySecurityGuardDiagnostics                      = false
 
+    var capabilityForbiddenFileNames: [String]                    = []
+    var capabilityForbiddenFileNameBasenames: [String]            = []
+    var capabilityForbiddenFileNameCharacters: [String]           = []
+    var capabilityForbiddenFileNameExtensions: [String]           = []
+
     // MORE NEXTCLOUD APPS
     let talkSchemeUrl                                           = "nextcloudtalk://"
     let notesSchemeUrl                                          = "nextcloudnotes://"
@@ -464,6 +469,7 @@ class NCGlobal: NSObject {
 
     // FORBIDDEN CHARACTERS
     //
+    // TODO: Remove this
     let forbiddenCharacters = ["/", "\\", ":", "\"", "|", "?", "*", "<", ">"]
 
     // DIAGNOSTICS CLIENTS

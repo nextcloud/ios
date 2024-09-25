@@ -23,6 +23,7 @@
 
 import Foundation
 import UniformTypeIdentifiers
+import NextcloudKit
 
 extension NCShareExtension {
     @objc func reloadDatasource(withLoadFolder: Bool) {
