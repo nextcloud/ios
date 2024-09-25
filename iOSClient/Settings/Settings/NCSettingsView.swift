@@ -46,7 +46,7 @@ struct NCSettingsView: View {
                     NCAutoUploadView(model: NCAutoUploadModel(viewController: model.controller?.currentViewController()))
                 }) {
                     HStack {
-                        Image(systemName: "camera")
+						Image(.Settings.camera)
                             .resizable()
                             .scaledToFit()
 							.font(.settingsIconsFont)
@@ -63,7 +63,7 @@ struct NCSettingsView: View {
                     showPasscode.toggle()
                 }, label: {
                     HStack {
-                        Image(systemName: model.isLockActive ? "lock" : "lock.open")
+						lockImage(isLocked: model.isLockActive)
                             .resizable()
                             .scaledToFit()
 							.font(.settingsIconsFont)
@@ -227,6 +227,10 @@ struct NCSettingsView: View {
         .applyGlobalFormStyle()
         .defaultViewModifier(model)
     }
+	
+	private func lockImage(isLocked: Bool) -> Image {
+		isLocked ? Image(.itemLock) : Image(.itemLockOpen)
+	}
 }
 
 struct E2EESection: View {
