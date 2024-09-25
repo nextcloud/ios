@@ -1946,7 +1946,6 @@
 		0F08D6B52C9426B800136502 /* Style */ = {
 			isa = PBXGroup;
 			children = (
-				0F08D6B82C94270600136502 /* ButtonStyleGuide.swift */,
 				0F08D6BA2C94275600136502 /* CircleItemSpinner.swift */,
 			);
 			path = Style;
@@ -2015,6 +2014,7 @@
 				42C684B62CA1A20100DD46F0 /* CommonButtonConstants.swift */,
 				D5C2D21E2C9DC0EF00E7579D /* PrimaryButton.swift */,
 				42C684B32CA1806000DD46F0 /* SecondaryButton.swift */,
+				0F08D6B82C94270600136502 /* ButtonStyleGuide.swift */,
 			);
 			path = Buttons;
 			sourceTree = "<group>";

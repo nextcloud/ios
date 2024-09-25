@@ -573,7 +573,6 @@ class NCSelectCommandView: UIView {
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
 
     var selectView: NCSelect?
-    private let gradient: CAGradientLayer = CAGradientLayer()
 
     override func awakeFromNib() {
         super.awakeFromNib()

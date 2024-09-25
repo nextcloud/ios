@@ -89,35 +89,72 @@ extension ButtonStyle where Self == ButtonStyleSecondary {
 }
 
 #Preview {
-    VStack(content: {
-        Button {
-        } label: {
-            Text("Primary default state")
+    VStack(spacing: 30) {
+        VStack {
+            Button {
+            } label: {
+                Text("Primary default state")
+            }
+            .buttonStyle(.primary)
+            
+            Button {
+            } label: {
+                Text("Primary disabled state")
+            }
+            .buttonStyle(.primary)
+            .disabled(true)
+            
+            Spacer()
+                .frame(height: 30)
+            
+            Button {
+            } label: {
+                Text("Secondary default state")
+            }
+            .buttonStyle(.secondary)
+            
+            Button {
+            } label: {
+                Text("Secondary disabled state")
+            }
+            .buttonStyle(.secondary)
+            .disabled(true)
         }
-        .buttonStyle(.primary)
-        
-        Button {
-        } label: {
-            Text("Primary disabled state")
+        .frame(width: 300, height: 300)
+        .background(Color(.Common.background))
+        .environment(\.colorScheme, .light)
+        VStack {
+            Button {
+            } label: {
+                Text("Primary default state")
+            }
+            .buttonStyle(.primary)
+            
+            Button {
+            } label: {
+                Text("Primary disabled state")
+            }
+            .buttonStyle(.primary)
+            .disabled(true)
+            
+            Spacer()
+                .frame(height: 30)
+            
+            Button {
+            } label: {
+                Text("Secondary default state")
+            }
+            .buttonStyle(.secondary)
+            
+            Button {
+            } label: {
+                Text("Secondary disabled state")
+            }
+            .buttonStyle(.secondary)
+            .disabled(true)
         }
-        .buttonStyle(.primary)
-        .disabled(true)
-        
-        Spacer()
-            .frame(height: 30)
-        Button {
-        } label: {
-            Text("Secondary default state")
-        }
-        .buttonStyle(.secondary)
-        
-        Button {
-        } label: {
-            Text("Secondary disabled state")
-        }
-        .buttonStyle(.secondary)
-        .disabled(true)
-    })
-    .frame(width: 300, height: 500)
-    .background(Color(.Common.background))
+        .frame(width: 300, height: 300)
+        .background(Color(.Common.background))
+        .environment(\.colorScheme, .dark)
+    }
 }

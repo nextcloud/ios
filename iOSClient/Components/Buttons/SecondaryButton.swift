@@ -66,6 +66,6 @@ class SecondaryButton: UIButton {
     }
     
     private func borderColor() -> CGColor {
-        return UIColor(resource: isEnabled ? .Button.Secondary.Background.selected : .Button.Secondary.Background.disabled).cgColor
+        return UIColor(resource: isEnabled ? .Button.Secondary.Border.normal : .Button.Secondary.Border.disabled).cgColor
     }
 }
