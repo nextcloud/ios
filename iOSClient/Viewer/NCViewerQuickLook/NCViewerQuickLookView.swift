@@ -154,7 +154,7 @@ struct NCViewerQuickLookView: UIViewControllerRepresentable {
             let cropViewController = Mantis.cropViewController(image: image, config: config, cropToolbar: toolbar)
 
             cropViewController.delegate = self
-            cropViewController.backgroundColor = .systemBackground
+            cropViewController.backgroundColor = NCBrandColor.shared.appBackgroundColor
             cropViewController.modalPresentationStyle = .fullScreen
 
             viewController?.present(cropViewController, animated: true)

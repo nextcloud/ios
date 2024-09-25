@@ -79,8 +79,8 @@ class NCUserStatus: UIViewController {
         navigationController?.navigationBar.tintColor = NCBrandColor.shared.iconImageColor
         navigationItem.title = NSLocalizedString("_online_status_", comment: "")
 
-        view.backgroundColor = .systemBackground
-        tableView.backgroundColor = .systemBackground
+        view.backgroundColor = NCBrandColor.shared.appBackgroundColor
+        tableView.backgroundColor = NCBrandColor.shared.appBackgroundColor
 
         buttonCancel.image = utility.loadImage(named: "xmark", colors: [NCBrandColor.shared.iconImageColor])
 

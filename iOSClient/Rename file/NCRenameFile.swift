@@ -59,6 +59,8 @@ class NCRenameFile: UIViewController, UITextFieldDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        view.backgroundColor = NCBrandColor.shared.appBackgroundColor
+        
         if let metadata = self.metadata {
 
             if metadata.directory {
