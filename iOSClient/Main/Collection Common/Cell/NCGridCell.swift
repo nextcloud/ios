@@ -144,7 +144,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         buttonMore.isHidden = status
     }
 
-    func selected(_ status: Bool, isEditMode: Bool) {
+    func selected(_ isSelected: Bool, isEditMode: Bool) {
         if isEditMode {
             buttonMore.isHidden = true
             accessibilityCustomActions = nil
@@ -152,13 +152,8 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             buttonMore.isHidden = false
             setA11yActions()
         }
-        if status {
-            setBorderForGridViewCell(isSelected: true)
-            imageSelect.isHidden = false
-        } else {
-            setBorderForGridViewCell(isSelected: false)
-            imageSelect.isHidden = true
-        }
+        setBorderForGridViewCell(isSelected: isSelected)
+        imageSelect.isHidden = !isSelected
     }
 
     func writeInfoDateSize(date: NSDate, size: Int64) {
