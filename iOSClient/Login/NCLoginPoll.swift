@@ -31,28 +31,38 @@ struct NCLoginPoll: View {
 
     var cancelButtonDisabled = false
 
+	var isIPad: Bool {
+		UIDevice.current.userInterfaceIdiom == .pad
+	}
+	
     @ObservedObject private var loginManager = LoginManager()
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
 		GeometryReader { geometry in
 			let size = geometry.size
-
+			let welcomeLabelWidthRatio = isIPad ? 0.6 : 0.78
+			let descriptionFont = Font.system(size: isIPad ? 36.0 : 16.0)
+			
 			VStack {
 				Image(.logo)
-					.padding(.top, size.height * 0.05)
+					.resizable()
+					.aspectRatio(159/22, contentMode: .fit)
+					.frame(width: size.width * 0.45)
+					.padding(.top, size.height * 0.12)
 				Text(NSLocalizedString("_poll_desc_", comment: ""))
+					.font(descriptionFont)
 					.multilineTextAlignment(.center)
 					.foregroundStyle(.white)
-					.padding(20)
-					.padding(.top, 80)
+					.frame(width: size.width * welcomeLabelWidthRatio)
+					.padding(.top, size.height * 0.1)
 				
 				Spacer()
 				CircleItemSpinner()
 					.tint(.white)
 				Spacer()
 
-				HStack(spacing: 20) {
+				HStack(spacing: 0) {
 					Button(NSLocalizedString("_cancel_", comment: "")) {
 						dismiss()
 					}
@@ -64,7 +74,6 @@ struct NCLoginPoll: View {
 					}
 					.buttonStyle(.primary)
 				}
-				.padding()
 				.padding(.bottom, size.height * 0.15)
 			}
 			.frame(maxWidth: .infinity, maxHeight: .infinity)
