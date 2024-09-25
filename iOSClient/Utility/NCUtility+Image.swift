@@ -94,7 +94,7 @@ extension NCUtility {
             localImage = UIGraphicsGetImageFromCurrentImageContext() ?? localImage
             UIGraphicsEndImageContext()
             return localImage
-        } else if let loadedAvatar = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) {
+        } else if let loadedAvatar = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName).image {
             return loadedAvatar
         } else if let displayName = displayName, !displayName.isEmpty, let avatarImg = createAvatar(displayName: displayName, size: 30) {
             return avatarImg

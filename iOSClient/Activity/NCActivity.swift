@@ -223,14 +223,18 @@ extension NCActivity: UITableViewDataSource {
 
         // Avatar
         let fileName = NCSession.shared.getFileName(urlBase: metadata.urlBase, user: comment.actorId)
-        if let image = database.getImageAvatarLoaded(fileName: fileName) {
-            cell.fileAvatarImageView?.image = image
-        } else {
+        let results = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName)
+
+        if results.image == nil {
             cell.fileAvatarImageView?.image = utility.loadUserImage(for: comment.actorId, displayName: comment.actorDisplayName, urlBase: NCSession.shared.getSession(account: account).urlBase)
-            if NCNetworking.shared.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
-                let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
-                NCNetworking.shared.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: comment.actorId, fileName: fileName, fileNameLocalPath: fileNameLocalPath, account: account, view: tableView))
-            }
+        } else {
+            cell.fileAvatarImageView?.image = results.image
+        }
+
+        if let tableAvatar = results.tableAvatar,
+           !tableAvatar.loaded,
+           NCNetworking.shared.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
+            NCNetworking.shared.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: comment.actorId, fileName: fileName, account: account, view: tableView))
         }
 
         // Username
@@ -300,13 +304,17 @@ extension NCActivity: UITableViewDataSource {
             cell.subjectLeadingConstraint.constant = 15
 
             let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: activity.user)
-            if let image = database.getImageAvatarLoaded(fileName: fileName) {
-                cell.avatar.image = image
+            let results = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName)
+
+            if results.image == nil {
+                cell.fileAvatarImageView?.image = utility.loadUserImage(for: activity.user, displayName: nil, urlBase: session.urlBase)
             } else {
-                if NCNetworking.shared.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
-                    let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
-                    NCNetworking.shared.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: activity.user, fileName: fileName, fileNameLocalPath: fileNameLocalPath, account: session.account, view: tableView))
-                }
+                cell.fileAvatarImageView?.image = results.image
+            }
+
+            if !(results.tableAvatar?.loaded ?? false),
+               NCNetworking.shared.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
+                NCNetworking.shared.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: activity.user, fileName: fileName, account: session.account, view: tableView))
             }
         } else {
             cell.subjectLeadingConstraint.constant = -30

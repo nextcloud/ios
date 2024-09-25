@@ -930,15 +930,13 @@ class NCOperationDownloadAvatar: ConcurrentOperation, @unchecked Sendable {
     var user: String
     var fileName: String
     var etag: String?
-    var fileNameLocalPath: String
     var view: UIView?
     var account: String
     var isPreviewImageView: Bool
 
-    init(user: String, fileName: String, fileNameLocalPath: String, account: String, view: UIView?, isPreviewImageView: Bool = false) {
+    init(user: String, fileName: String, account: String, view: UIView?, isPreviewImageView: Bool = false) {
         self.user = user
         self.fileName = fileName
-        self.fileNameLocalPath = fileNameLocalPath
         self.account = account
         self.view = view
         self.isPreviewImageView = isPreviewImageView
@@ -949,7 +947,7 @@ class NCOperationDownloadAvatar: ConcurrentOperation, @unchecked Sendable {
         guard !isCancelled else { return self.finish() }
 
         NextcloudKit.shared.downloadAvatar(user: user,
-                                           fileNameLocalPath: fileNameLocalPath,
+                                           fileNameLocalPath: NCUtilityFileSystem().directoryUserData + "/" + fileName,
                                            sizeImage: NCGlobal.shared.avatarSize,
                                            avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
                                            etag: self.etag,
@@ -965,10 +963,8 @@ class NCOperationDownloadAvatar: ConcurrentOperation, @unchecked Sendable {
                         if self.user == cell.fileUser {
 
                             if self.isPreviewImageView, let filePreviewImageView = cell.filePreviewImageView {
-                                filePreviewImageView.contentMode = .scaleAspectFill
                                 UIView.transition(with: filePreviewImageView, duration: 0.75, options: .transitionCrossDissolve, animations: { filePreviewImageView.image = image}, completion: nil)
                             } else if let fileAvatarImageView = cell.fileAvatarImageView {
-                                fileAvatarImageView.contentMode = .scaleAspectFill
                                 UIView.transition(with: fileAvatarImageView, duration: 0.75, options: .transitionCrossDissolve, animations: { fileAvatarImageView.image = image}, completion: nil)
                             }
                             break

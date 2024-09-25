@@ -146,15 +146,16 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         sharedWithYouByImage.addGestureRecognizer(shareAction)
         let shareLabelAction = UITapGestureRecognizer(target: self, action: #selector(openShareProfile))
         sharedWithYouByLabel.addGestureRecognizer(shareLabelAction)
-        let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: metadata.ownerId)
 
-        if self.database.getImageAvatarLoaded(fileName: fileName) == nil {
-            let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
+        let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: metadata.ownerId)
+        let results = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName)
+
+        if results.image == nil {
             let etag = self.database.getTableAvatar(fileName: fileName)?.etag
 
             NextcloudKit.shared.downloadAvatar(
                 user: metadata.ownerId,
-                fileNameLocalPath: fileNameLocalPath,
+                fileNameLocalPath: utilityFileSystem.directoryUserData + "/" + fileName,
                 sizeImage: NCGlobal.shared.avatarSize,
                 avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
                 etag: etag,
@@ -359,16 +360,21 @@ extension NCShare: UITableViewDataSource {
                 cell.tableShare = tableShare
                 cell.delegate = self
                 cell.setupCellUI(userId: session.userId)
+
                 let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: tableShare.shareWith)
-                if let image = database.getImageAvatarLoaded(fileName: fileName) {
-                    cell.fileAvatarImageView?.image = image
-                } else {
+                let results = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName)
+
+                if results.image == nil {
                     cell.fileAvatarImageView?.image = utility.loadUserImage(for: tableShare.shareWith, displayName: tableShare.shareWithDisplayname, urlBase: metadata.urlBase)
-                    if NCNetworking.shared.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
-                        let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
-                        NCNetworking.shared.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: tableShare.shareWith, fileName: fileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account, view: tableView))
-                    }
-                }                
+                } else {
+                    cell.fileAvatarImageView?.image = results.image
+                }
+
+                if !(results.tableAvatar?.loaded ?? false),
+                   NCNetworking.shared.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
+                    NCNetworking.shared.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: tableShare.shareWith, fileName: fileName, account: metadata.account, view: tableView))
+                }
+
                 return cell
             }
         }
