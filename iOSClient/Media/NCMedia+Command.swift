@@ -35,7 +35,7 @@ extension NCMedia {
 
     func updateTabBarOnEditModeChange() {
         selectOcId.removeAll()
-        tabBarSelect.selectCount = selectOcId.count
+        tabBarSelect.update(selectOcId: selectOcId)
         if let visibleCells = self.collectionView?.indexPathsForVisibleItems.compactMap({ self.collectionView?.cellForItem(at: $0) }) {
             for case let cell as NCGridMediaCell in visibleCells {
                 cell.selected(false)
@@ -132,13 +132,14 @@ extension NCMedia {
     }
 }
 
-extension NCMedia: NCMediaSelectTabBarDelegate {
+extension NCMedia: NCCollectionViewCommonSelectToolbarDelegate {
     func delete() {
         let selectOcId = self.selectOcId.map { $0 }
         var alertStyle = UIAlertController.Style.actionSheet
         if UIDevice.current.userInterfaceIdiom == .pad { alertStyle = .alert }
         if !selectOcId.isEmpty {
             let alertController = UIAlertController(title: nil, message: nil, preferredStyle: alertStyle)
+            alertController.view.backgroundColor = NCBrandColor.shared.appBackgroundColor
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_delete_selected_photos_", comment: ""), style: .destructive) { (_: UIAlertAction) in
                 Task {
                     var error = NKError()
@@ -158,5 +159,13 @@ extension NCMedia: NCMediaSelectTabBarDelegate {
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { (_: UIAlertAction) in })
             present(alertController, animated: true, completion: { })
         }
+    }
+    
+    func toolbarWillAppear() {
+        self.tabBarController?.tabBar.isHidden = true
+    }
+    
+    func toolbarWillDisappear() {
+        self.tabBarController?.tabBar.isHidden = false
     }
 }

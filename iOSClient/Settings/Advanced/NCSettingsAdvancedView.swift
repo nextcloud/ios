@@ -69,13 +69,6 @@ struct NCSettingsAdvancedView: View {
                         model.updateLivePhoto()
                 }
                 .font(.system(size: 16))
-            }, footer: {
-                (
-                    Text(NSLocalizedString("_format_compatibility_footer_", comment: ""))
-                    +
-                    Text(NSLocalizedString("_upload_mov_livephoto_footer_", comment: ""))
-                ).font(.system(size: 12))
-                    .multilineTextAlignment(.leading)
             })
             /// Remove from Camera Roll
             Section(content: {
@@ -85,10 +78,6 @@ struct NCSettingsAdvancedView: View {
                         model.updateRemoveFromCameraRoll()
                 }
                 .font(.system(size: 16))
-            }, footer: {
-                Text(NSLocalizedString("_remove_photo_CameraRoll_desc_", comment: ""))
-                    .font(.system(size: 12))
-                    .multilineTextAlignment(.leading)
             })
             /// Section : Files App
             if !NCBrandOptions.shared.disable_openin_file {
@@ -99,10 +88,6 @@ struct NCSettingsAdvancedView: View {
                             model.updateAppIntegration()
                     }
                     .font(.system(size: 16))
-                }, footer: {
-                    Text(NSLocalizedString("_disable_files_app_footer_", comment: ""))
-                        .font(.system(size: 12))
-                        .multilineTextAlignment(.leading)
                 })
             }
             /// Section: Privacy
@@ -124,10 +109,6 @@ struct NCSettingsAdvancedView: View {
                     })
                 }, header: {
                     Text(NSLocalizedString("_privacy_", comment: ""))
-                }, footer: {
-                    Text(NSLocalizedString("_privacy_footer_", comment: ""))
-                        .font(.system(size: 12))
-                        .multilineTextAlignment(.leading)
                 })
             }
             /// Section: Diagnostic LOG
@@ -138,11 +119,11 @@ struct NCSettingsAdvancedView: View {
                         model.viewLogFile()
                     }, label: {
                         HStack {
-                            Image(systemName: "doc.badge.gearshape")
+							Image(.Settings.folderGear)
                                 .resizable()
+								.renderingMode(.template)
                                 .scaledToFit()
-                                .font(Font.system(.body).weight(.light))
-                                .frame(width: 25, height: 25)
+                                .frame(width: 20, height: 20)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             Text(NSLocalizedString("_view_log_", comment: ""))
                         }
@@ -167,8 +148,8 @@ struct NCSettingsAdvancedView: View {
                             Image(systemName: "xmark")
                                 .resizable()
                                 .scaledToFit()
-                                .font(Font.system(.body).weight(.light))
-                                .frame(width: 25, height: 15)
+								.font(.settingsIconsFont)
+                                .frame(width: 15, height: 20)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             Text(NSLocalizedString("_clear_log_", comment: ""))
                         }
@@ -191,8 +172,8 @@ struct NCSettingsAdvancedView: View {
                                 Image(systemName: "list.bullet")
                                     .resizable()
                                     .scaledToFit()
-                                    .font(Font.system(.body).weight(.light))
-                                    .frame(width: 25, height: 25)
+									.font(.settingsIconsFont)
+                                    .frame(width: 20, height: 20)
                                     .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                                 Text(NSLocalizedString("_capabilities_", comment: ""))
                             }
@@ -224,8 +205,8 @@ struct NCSettingsAdvancedView: View {
                         Image(systemName: "xmark")
                             .resizable()
                             .scaledToFit()
-                            .font(Font.system(.body).weight(.light))
-                            .frame(width: 15, height: 15)
+							.font(.settingsIconsFont)
+                            .frame(width: 15, height: 20)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_clear_cache_", comment: ""))
                     }
@@ -254,8 +235,8 @@ struct NCSettingsAdvancedView: View {
                         Image(systemName: "xmark")
                             .resizable()
                             .scaledToFit()
-                            .font(Font.system(.body).weight(.light))
-                            .frame(width: 15, height: 15)
+							.font(.settingsIconsFont)
+                            .frame(width: 15, height: 20)
                             .foregroundColor(Color(UIColor.systemRed))
                         Text(NSLocalizedString("_exit_", comment: ""))
                             .foregroundColor(Color(UIColor.systemRed))
@@ -280,7 +261,9 @@ struct NCSettingsAdvancedView: View {
             })
         }
         .navigationBarTitle(NSLocalizedString("_advanced_", comment: ""))
+        .applyGlobalFormStyle()
         .defaultViewModifier(model)
+        .applyGlobalFormStyle()
     }
 }
 

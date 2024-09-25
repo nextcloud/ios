@@ -47,7 +47,7 @@ extension NCMedia: UICollectionViewDelegate {
 
                 }
                 fileActionsHeader?.setSelectionState(selectionState: selectionState)
-                tabBarSelect.selectCount = selectOcId.count
+                tabBarSelect.update(selectOcId: selectOcId)
             } else {
                 // ACTIVE SERVERURL
                 serverUrl = metadata.serverUrl

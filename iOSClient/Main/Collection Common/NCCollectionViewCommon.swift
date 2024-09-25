@@ -125,8 +125,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         collectionView.alwaysBounceVertical = true
 
         // Color
-        view.backgroundColor = .systemBackground
-        collectionView.backgroundColor = .systemBackground
+        view.backgroundColor = NCBrandColor.shared.appBackgroundColor
+        collectionView.backgroundColor = NCBrandColor.shared.appBackgroundColor
         refreshControl.tintColor = NCBrandColor.shared.textColor2
 
         if enableSearchBar {

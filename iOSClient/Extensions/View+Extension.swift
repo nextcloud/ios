@@ -24,6 +24,7 @@
 import SwiftUI
 
 extension View {
+    
     func complexModifier<V: View>(@ViewBuilder _ closure: (Self) -> V) -> some View {
         closure(self)
     }
@@ -53,6 +54,27 @@ extension View {
 
     func onFirstAppear(perform action: @escaping () -> Void) -> some View {
         modifier(ViewFirstAppearModifier(perform: action))
+    }
+    
+    func applyScrollContentBackground() -> some View {
+        self.modifier(ScrollContentBackgroundModifier())
+    }
+    
+    
+    func applyGlobalFormStyle() -> some View {
+        self
+            .applyScrollContentBackground()
+            .background(Color(NCBrandColor.shared.formBackgroundColor))
+    }
+}
+
+struct ScrollContentBackgroundModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 16.0, *) {
+            content.scrollContentBackground(.hidden)
+        } else {
+            content
+        }
     }
 }
 

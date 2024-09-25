@@ -22,10 +22,7 @@ class FileActionsHeader: UIView {
 	@IBOutlet weak private var btnSort: UIButton?
 	@IBOutlet weak private var btnSelect: UIButton?
 	@IBOutlet weak private var btnViewMode: UIButton?
-	
-    @IBOutlet weak var btnSelectAndBtnViewModeSpacing: NSLayoutConstraint!
-    @IBOutlet weak var btnSelectAndSuperViewSpacing: NSLayoutConstraint!
-    
+	    
     @IBAction func onBtnSelectTap(_ sender: Any) {
 		setIsEditingMode(isEditingMode: true)
 		onSelectModeChange?(true)
@@ -66,6 +63,7 @@ class FileActionsHeader: UIView {
 										 owner: self,
 										 options: nil)
 		addSubview(contentView)
+        contentView.backgroundColor = NCBrandColor.shared.appBackgroundColor
 		contentView.frame = bounds
 		contentView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 	}
@@ -94,8 +92,6 @@ class FileActionsHeader: UIView {
     
     func showViewModeButton(_ show: Bool) {
         btnViewMode?.isHidden = !show
-        btnSelectAndBtnViewModeSpacing.isActive = show
-        btnSelectAndSuperViewSpacing.isActive = !show
     }
 	
 	func setIsEditingMode(isEditingMode: Bool) {
@@ -111,7 +107,7 @@ class FileActionsHeader: UIView {
 		// MARK: Files Header
 		switch selectionState {
 		case .none:
-			textDescription = NSLocalizedString("_select_selectionLabel_selectAll", tableName: nil, bundle: Bundle.main, value: "select all", comment: "")
+			textDescription = NSLocalizedString("_select_selectionLabel_selectAll_", tableName: nil, bundle: Bundle.main, value: "select all", comment: "")
             imageResource = .FileSelection.listItemDeselected
             selectAllImageColor = grayButtonTintColor
 		case .some(let count):
@@ -119,7 +115,7 @@ class FileActionsHeader: UIView {
             imageResource = .FileSelection.listItemSomeSelected
             selectAllImageColor = NCBrandColor.shared.brandElement
 		case .all:
-			textDescription = NSLocalizedString("_select_selectionLabel_deselectAll", tableName: nil, bundle: Bundle.main, value: "deselect all", comment: "")
+			textDescription = NSLocalizedString("_select_selectionLabel_deselectAll_", tableName: nil, bundle: Bundle.main, value: "deselect all", comment: "")
             imageResource = .FileSelection.listItemSelected
             selectAllImageColor = NCBrandColor.shared.brandElement
 		}
@@ -137,9 +133,9 @@ class FileActionsHeader: UIView {
 
 		func selectionDescription(for count: Int) -> String {
 			if count == 1 {
-				return NSLocalizedString("_select_selectionLabel_oneItemSelected", tableName: nil, bundle: Bundle.main, value: "one item selected", comment: "")
+				return NSLocalizedString("_select_selectionLabel_oneItemSelected_", tableName: nil, bundle: Bundle.main, value: "one item selected", comment: "")
 			}
-			return String.localizedStringWithFormat(NSLocalizedString("_select_selectionLabel_manyItemsSelected", tableName: nil, bundle: Bundle.main, value: "%@ items selected", comment: ""), "\(count)")
+			return String.localizedStringWithFormat(NSLocalizedString("_select_selectionLabel_manyItemsSelected_", tableName: nil, bundle: Bundle.main, value: "%@ items selected", comment: ""), "\(count)")
 		}
 	}
 	

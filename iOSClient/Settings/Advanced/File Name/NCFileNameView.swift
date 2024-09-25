@@ -57,7 +57,9 @@ struct NCFileNameView: View {
                 .animation(.easeInOut, value: model.addFileNameType)
         }
         .navigationBarTitle(NSLocalizedString("_mode_filename_", comment: ""))
+        .applyGlobalFormStyle()
         .defaultViewModifier(model)
+        .applyGlobalFormStyle()
         .padding(.top, 0)
         .transition(.slide)
     }

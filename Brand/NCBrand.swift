@@ -151,6 +151,18 @@ class NCBrandColor: NSObject {
 	var menuFolderIconColor: UIColor {
 		iconImageColor
 	}
+    
+    var appBackgroundColor: UIColor {
+        .systemBackground
+    }
+    
+    var formBackgroundColor: UIColor {
+        .systemBackground
+    }
+    
+    var formRowBackgroundColor: UIColor {
+        .secondarySystemGroupedBackground
+    }
 
     let iconImageColor: UIColor = .label
     let iconImageColor2: UIColor = .secondaryLabel
