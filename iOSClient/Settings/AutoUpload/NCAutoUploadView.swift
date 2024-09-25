@@ -52,6 +52,7 @@ struct NCAutoUploadView: View {
         .navigationBarTitle(NSLocalizedString("_auto_upload_folder_", comment: ""))
         .applyGlobalFormStyle()
         .defaultViewModifier(model)
+        .applyGlobalFormStyle()
         .alert(model.error, isPresented: $model.showErrorAlert) {
             Button(NSLocalizedString("_ok_", comment: ""), role: .cancel) { }
         }
