@@ -180,7 +180,7 @@ class NCMainTabBar: UITabBar {
         centerButton.layer.shadowOffset = CGSize(width: 0, height: 0)
         centerButton.layer.shadowRadius = 3.0
         centerButton.layer.shadowOpacity = 0.5
-        centerButton.action(for: .touchUpInside) { _ in
+        centerButton.action(for: .touchUpInside) { [self] _ in
 
             if let controller = self.window?.rootViewController as? NCMainTabBarController {
                 let serverUrl = controller.currentServerUrl()
@@ -191,6 +191,16 @@ class NCMainTabBar: UITabBar {
                         return
                     }
                 }
+
+                let fileFolderPath = NCUtilityFileSystem().getFileNamePath("", serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+                let fileFolderName = (serverUrl as NSString).lastPathComponent
+
+                if !FileNameValidator.shared.checkFolderPath(folderPath: fileFolderPath) {
+                    controller.present(UIAlertController.warning(message: "\(String(format: NSLocalizedString("_file_name_validator_error_reserved_name_", comment: ""), fileFolderName)) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
+
+                    return
+                }
+
                 self.appDelegate.toggleMenu(controller: controller)
             }
         }

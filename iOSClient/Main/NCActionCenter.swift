@@ -575,6 +575,12 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
 
         var copyItems: [tableMetadata] = []
         for item in items {
+            if let fileNameError = FileNameValidator.shared.checkFileName(item.fileNameView) {
+                controller?.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
+
+                return
+            }
+
             copyItems.append(item)
         }
 

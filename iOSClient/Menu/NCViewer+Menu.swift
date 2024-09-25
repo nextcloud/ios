@@ -152,18 +152,7 @@ extension NCViewer {
                     title: NSLocalizedString("_rename_", comment: ""),
                     icon: utility.loadImage(named: "text.cursor", colors: [NCBrandColor.shared.iconImageColor]),
                     action: { _ in
-
-                        if let vcRename = UIStoryboard(name: "NCRenameFile", bundle: nil).instantiateInitialViewController() as? NCRenameFile {
-
-                            vcRename.metadata = metadata
-                            vcRename.disableChangeExt = true
-                            vcRename.imagePreview = imageIcon
-                            vcRename.indexPath = indexPath
-
-                            let popup = NCPopupViewController(contentController: vcRename, popupWidth: vcRename.width, popupHeight: vcRename.height)
-
-                            viewController.present(popup, animated: true)
-                        }
+                        viewController.present(UIAlertController.renameFile(metadata: metadata, indexPath: indexPath), animated: true)
                     }
                 )
             )
