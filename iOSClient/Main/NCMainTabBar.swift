@@ -31,8 +31,8 @@ class NCMainTabBar: UITabBar {
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private let centerButtonY: CGFloat = -28
 
-	private var centerButtonColor: UIColor? {
-		UIColor(named: "Tabbar/FabButton")
+	private var centerButtonColor: UIColor {
+        UIColor(resource: .Tabbar.fabButton)
 	}
     
     private var customBackgroundColor: UIColor? {
@@ -60,7 +60,7 @@ class NCMainTabBar: UITabBar {
         layer.shadowOffset = CGSize(width: 0, height: 0)
         layer.shadowRadius = 2.0
         layer.shadowOpacity = 0.5
-        tintColor = NCBrandColor.shared.brandElement
+        tintColor = UIColor(resource: .Tabbar.activeItem)
         if let centerButton = self.viewWithTag(99) {
             centerButton.backgroundColor = centerButtonColor
         }

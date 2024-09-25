@@ -46,19 +46,16 @@ struct NCSettingsView: View {
                     NCAutoUploadView(model: NCAutoUploadModel(viewController: model.controller?.currentViewController()))
                 }) {
                     HStack {
-                        Image(systemName: "photo.circle")
+                        Image(systemName: "camera")
                             .resizable()
                             .scaledToFit()
-                            .font(Font.system(.body).weight(.light))
-                            .frame(width: 25, height: 25)
+							.font(.settingsIconsFont)
+                            .frame(width: 20, height: 20)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_settings_autoupload_", comment: ""))
                     }
                     .font(.system(size: 16))
                 }
-            }, header: {
-            }, footer: {
-                Text(NSLocalizedString("_autoupload_description_", comment: ""))
             })
             /// `Privacy` Section
             Section(content: {
@@ -69,7 +66,7 @@ struct NCSettingsView: View {
                         Image(systemName: model.isLockActive ? "lock" : "lock.open")
                             .resizable()
                             .scaledToFit()
-                            .font(Font.system(.body).weight(.light))
+							.font(.settingsIconsFont)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             .frame(width: 20, height: 20)
                         Text(model.isLockActive ? NSLocalizedString("_lock_active_", comment: "") : NSLocalizedString("_lock_not_active_", comment: ""))
@@ -87,20 +84,6 @@ struct NCSettingsView: View {
                     .onChange(of: model.enableTouchID) { _ in
                         model.updateTouchIDSetting()
                     }
-                /// Lock no screen
-                Toggle(NSLocalizedString("_lock_protection_no_screen_", comment: ""), isOn: $model.lockScreen)
-                    .tint(Color(NCBrandColor.shared.brandElement))
-                    .font(.system(size: 16))
-                    .onChange(of: model.lockScreen) { _ in
-                        model.updateLockScreenSetting()
-                    }
-                /// Privacy screen
-                Toggle(NSLocalizedString("_privacy_screen_", comment: ""), isOn: $model.privacyScreen)
-                    .tint(Color(NCBrandColor.shared.brandElement))
-                    .font(.system(size: 16))
-                    .onChange(of: model.privacyScreen) { _ in
-                        model.updatePrivacyScreenSetting()
-                    }
                 /// Reset app wrong attempts
                 Toggle(NSLocalizedString("_reset_wrong_passcode_", comment: ""), isOn: $model.resetWrongAttempts)
                     .tint(Color(NCBrandColor.shared.brandElement))
@@ -111,26 +94,9 @@ struct NCSettingsView: View {
             }, header: {
                 Text(NSLocalizedString("_privacy_", comment: ""))
             }, footer: {
-                Text(NSLocalizedString("_lock_protection_no_screen_footer_", comment: "") + "\n" + String(format: NSLocalizedString("_reset_wrong_passcode_desc_", comment: ""), NCBrandOptions.shared.resetAppPasscodeAttempts))
+                Text(String(format: NSLocalizedString("_reset_wrong_passcode_desc_", comment: ""), NCBrandOptions.shared.resetAppPasscodeAttempts))
                     .font(.system(size: 12))
                     .lineSpacing(1)
-            })
-            /// Display
-            Section(header: Text(NSLocalizedString("_display_", comment: "")), content: {
-                NavigationLink(destination: LazyView {
-                    NCDisplayView(model: NCDisplayModel())
-                }) {
-                    HStack {
-                        Image(systemName: "sun.max.circle")
-                            .resizable()
-                            .scaledToFit()
-                            .font(Font.system(.body).weight(.light))
-                            .frame(width: 20, height: 20)
-                            .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
-                        Text(NSLocalizedString("_display_", comment: ""))
-                    }
-                    .font(.system(size: 16))
-                }
             })
             /// Calender & Contacts
             if !NCBrandOptions.shared.disable_mobileconfig {
@@ -139,11 +105,11 @@ struct NCSettingsView: View {
                         model.getConfigFiles()
                     }, label: {
                         HStack {
-                            Image(systemName: "calendar.badge.plus")
+							Image(.Settings.calendarUser)
                                 .resizable()
+								.renderingMode(.template)
                                 .scaledToFit()
-                                .font(Font.system(.body).weight(.light))
-                                .frame(width: 25, height: 25)
+                                .frame(width: 23, height: 20)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             Text(NSLocalizedString("_mobile_config_", comment: ""))
                         }
@@ -163,25 +129,6 @@ struct NCSettingsView: View {
 
                 })
             }
-            /// Users
-            Section(content: {
-                Toggle(NSLocalizedString("_settings_account_request_", comment: ""), isOn: $model.accountRequest)
-                    .font(.system(size: 16))
-                    .tint(Color(NCBrandColor.shared.brandElement))
-                    .onChange(of: model.accountRequest, perform: { _ in
-                        model.updateAccountRequest()
-                    })
-            }, header: {
-                Text(NSLocalizedString("_users_", comment: ""))
-            }, footer: {
-                Text(NSLocalizedString("_users_footer_", comment: ""))
-                    .font(.system(size: 12))
-                    .lineSpacing(1)
-            })
-            /// E2EEncryption` Section
-            if NCGlobal.shared.capabilityE2EEEnabled && NCGlobal.shared.e2eeVersions.contains(NCGlobal.shared.capabilityE2EEApiVersion) {
-                E2EESection(model: model)
-            }
             /// `Advanced` Section
             Section {
                 NavigationLink(destination: LazyView {
@@ -190,11 +137,11 @@ struct NCSettingsView: View {
                                            showCacheAlert: false)
                 }) {
                     HStack {
-                        Image(systemName: "gear")
+						Image(.Settings.gear)
                             .resizable()
+							.renderingMode(.template)
                             .scaledToFit()
-                            .font(Font.system(.body).weight(.light))
-                            .frame(width: 25, height: 25)
+                            .frame(width: 20, height: 20)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_advanced_", comment: ""))
                     }
@@ -208,11 +155,12 @@ struct NCSettingsView: View {
                     showAcknowledgements.toggle()
                 }, label: {
                     HStack {
-                        Image("acknowledgements")
+						Image(.Settings.handshake)
                             .resizable()
                             .renderingMode(.template)
-                            .frame(width: 25, height: 25)
-                            .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
+							.scaledToFit()
+                            .frame(width: 25, height: 20)
+							.foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_acknowledgements_", comment: ""))
                     }
                     .font(.system(size: 16))
@@ -226,11 +174,11 @@ struct NCSettingsView: View {
                     showBrowser.toggle()
                 }, label: {
                     HStack {
-                        Image(systemName: "shield.checkerboard")
+						Image(.Settings.shieldHalved)
                             .resizable()
+							.renderingMode(.template)
                             .scaledToFit()
-                            .font(Font.system(.body).weight(.light))
-                            .frame(width: 25, height: 25)
+                            .frame(width: 20, height: 20)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_privacy_legal_", comment: ""))
                     }
@@ -245,10 +193,10 @@ struct NCSettingsView: View {
                     showSourceCode.toggle()
                 }, label: {
                     HStack {
-                        Image("gitHub")
+						Image(.Settings.github)
                             .resizable()
                             .renderingMode(.template)
-                            .frame(width: 25, height: 25)
+                            .frame(width: 20, height: 20)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_source_code_", comment: ""))
                     }
@@ -276,6 +224,7 @@ struct NCSettingsView: View {
                 })
             }
         }
+        .applyGlobalFormStyle()
         .defaultViewModifier(model)
         .applyGlobalFormStyle()
     }
@@ -302,6 +251,12 @@ struct E2EESection: View {
             }
         })
     }
+}
+
+extension Font {
+	static var settingsIconsFont: Font {
+		return Font(UIFont.settingsIconsFont)
+	}
 }
 
 #Preview {

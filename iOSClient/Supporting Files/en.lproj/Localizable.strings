@@ -614,6 +614,7 @@
 "_media_viewvideo_show_"        = "Show only video";
 "_media_show_all_"              = "Show both";
 "_media_view_options_"          = "View options";
+"_media_options_"               = "Media options";
 "_media_by_created_date_"       = "Sort by created date";
 "_media_by_upload_date_"        = "Sort by upload date";
 "_media_by_modified_date_"      = "Sort by modified date";
@@ -628,10 +629,10 @@
 
 // MARK: Files Header
 
-"_select_selectionLabel_selectAll"			= "select all";
-"_select_selectionLabel_oneItemSelected"	= "one item selected";
-"_select_selectionLabel_manyItemsSelected"  = "%@ items selected";
-"_select_selectionLabel_deselectAll"		= "deselect all";
+"_select_selectionLabel_selectAll_"			= "select all";
+"_select_selectionLabel_oneItemSelected_"	= "one item selected";
+"_select_selectionLabel_manyItemsSelected_"  = "%@ items selected";
+"_select_selectionLabel_deselectAll_"		= "deselect all";
 
 // MARK: Share
 
@@ -1097,3 +1098,12 @@
 
 // MARK: Login poll
 "_poll_desc_"                    = "Please complete the log in process in your browser";
+
+//MARK: Login
+"_login_welcome_"				 	= "Welcome to the cloud storage";
+"_login_description_" 				= "You need to login over browser";
+
+//MARK: Burger menu
+"_previous_" = "Previous";
+"_storage_used_"                = "Storage used";
+"_used_of_space_"                = "%@ of %@ used";

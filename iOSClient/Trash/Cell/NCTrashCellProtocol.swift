@@ -37,7 +37,7 @@ extension NCTrashCellProtocol where Self: UICollectionViewCell {
     mutating func setupCellUI(tableTrash: tableTrash, image: UIImage?) {
         self.objectId = tableTrash.fileId
         self.labelTitle.text = tableTrash.trashbinFileName
-        self.labelTitle.textColor = NCBrandColor.shared.textColor
+        self.labelTitle.textColor = UIColor(resource: .ListCell.title)
         if self is NCTrashListCell {
             self.labelInfo?.text = NCUtility().dateDiff(tableTrash.trashbinDeletionTime as Date)
         } else {

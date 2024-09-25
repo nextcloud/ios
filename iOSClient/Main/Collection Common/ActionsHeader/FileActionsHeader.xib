@@ -14,6 +14,8 @@
                 <outlet property="btnCloseSelection" destination="uIk-II-rrq" id="uIz-Mq-xsf"/>
                 <outlet property="btnSelect" destination="RYI-12-k5i" id="yFC-ec-nyE"/>
                 <outlet property="btnSelectAll" destination="aiH-0h-GkD" id="M3d-NQ-p8R"/>
+                <outlet property="btnSelectAndBtnViewModeSpacing" destination="BHS-61-WSC" id="JQO-im-Co1"/>
+                <outlet property="btnSelectAndSuperViewSpacing" destination="top-nP-uSu" id="bbN-B0-AiF"/>
                 <outlet property="btnSort" destination="h7d-nu-xII" id="2Wf-BB-iXa"/>
                 <outlet property="btnViewMode" destination="cqG-WX-M71" id="CfF-wG-c8g"/>
                 <outlet property="contentView" destination="iN0-l3-epB" id="BpV-Up-eBG"/>
@@ -70,9 +72,15 @@
                         <constraint firstItem="h7d-nu-xII" firstAttribute="leading" secondItem="M8K-l1-441" secondAttribute="leading" constant="15" id="Oss-Sr-l6J"/>
                         <constraint firstItem="h7d-nu-xII" firstAttribute="height" secondItem="M8K-l1-441" secondAttribute="height" id="hZX-B3-GMF"/>
                         <constraint firstAttribute="trailing" secondItem="cqG-WX-M71" secondAttribute="trailing" id="nVE-wf-sOh"/>
+                        <constraint firstAttribute="trailing" secondItem="RYI-12-k5i" secondAttribute="trailing" constant="10" id="top-nP-uSu"/>
                         <constraint firstItem="h7d-nu-xII" firstAttribute="centerY" secondItem="M8K-l1-441" secondAttribute="centerY" id="yd9-FS-ivg"/>
                         <constraint firstItem="cqG-WX-M71" firstAttribute="centerY" secondItem="M8K-l1-441" secondAttribute="centerY" id="zGL-NS-txw"/>
                     </constraints>
+                    <variation key="default">
+                        <mask key="constraints">
+                            <exclude reference="top-nP-uSu"/>
+                        </mask>
+                    </variation>
                 </view>
                 <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="SEO-fb-HgO" userLabel="EditMode">
                     <rect key="frame" x="0.0" y="0.0" width="393" height="48"/>

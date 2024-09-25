@@ -10,205 +10,187 @@ import Foundation
 import UIKit
 
 class NCImagesRepository: NSObject {
+    
+    private enum ImageName: String {
+        case favorite = "star.filled"
+        case addToFavorite = "star.hollow"
+        case livePhoto = "livephoto"
+        case details = "details"
+        case share = "menu.share"
+        case unshare = "unshare"
+        case trash = "trash_icon"
+        case rename = "rename"
+        case viewInFolder = "viewInFolder"
+        case moveOrCopy = "moveOrCopy"
+        case addToOffline = "offline"
+        case availableOffline = "synced"
+        case goToPage = "goToPage"
+        case modifyWithQuickLook = "modifyWithQuickLook"
+        case search = "menu.search"
+        case lock = "item.lock"
+        case lockOpen = "item.lock.open"
+        case readOnly = "readOnly"
+        case edit = "allowEdit"
+        case add = "menu.add"
+        case selectAll = "checkmark.circle.fill"
+        case close = "xmark"
+        case photoOrVideo = "photoOrVideo"
+        case uploadFile = "uploadFile"
+        case scan = "scan"
+        case document = "document"
+        case spreadsheet = "spreadsheet"
+        case presentation = "presentation"
+        case createFolder = "createFolder"
+    }
+    
     private static let utility = NCUtility()
     
     static var favorite: UIImage {
         utility.loadImage(
-            named: "star.fill",
+            named: ImageName.favorite.rawValue,
             colors: [NCBrandColor.shared.brandElement])
     }
     
     static var shareHeaderFavorite: UIImage {
         utility.loadImage(
-            named: "star.fill",
+            named: ImageName.favorite.rawValue,
             colors: [NCBrandColor.shared.brandElement],
             size: 20)
     }
     
     static var livePhoto: UIImage {
         utility.loadImage(
-            named: "livephoto",
+            named: ImageName.livePhoto.rawValue,
             colors: [NCBrandColor.shared.iconImageColor])
     }
     
     static var menuIconRemoveFromFavorite: UIImage {
-        favorite.image(color: .menuIconTint)
+        menuIcon(ImageName.favorite)
     }
     
     static var menuIconAddToFavorite: UIImage {
-        utility.loadImage(
-            named: "star.hollow",
-            colors: [.menuIconTint])
+        menuIcon(ImageName.addToFavorite)
     }
     
     static var menuIconDetails: UIImage {
-        utility.loadImage(
-            named: "details",
-            colors: [.menuIconTint])
+        menuIcon(ImageName.details)
     }
     
     static var menuIconShare: UIImage {
-        utility.loadImage(
-            named: "menu.share",
-            colors: [.menuIconTint])
+        menuIcon(ImageName.share)
     }
     
     static var menuIconTrash: UIImage {
-        utility.loadImage(
-            named: "trash_icon",
-            colors: [.menuIconTint])
+        menuIcon(ImageName.trash)
     }
     
     static var menuIconRename: UIImage {
-        utility.loadImage(
-            named: "rename",
-            colors: [.menuIconTint])
+        menuIcon(ImageName.rename)
     }
     
     static var menuIconViewInFolder: UIImage {
-        utility.loadImage(
-            named: "questionmark.folder",
-            colors: [.menuIconTint])
+        menuIcon(ImageName.viewInFolder)
     }
     
     static var menuIconMoveOrCopy: UIImage {
-        utility.loadImage(
-            named: "moveOrCopy",
-            colors: [.menuIconTint])
+        menuIcon(ImageName.moveOrCopy)
     }
     
     static var menuIconAddToOffline: UIImage {
-        utility.loadImage(
-            named: "offline",
-            colors: [.menuIconTint])
+        menuIcon(ImageName.addToOffline)
     }
     
     static var menuIconAvailableOffline: UIImage {
-        utility.loadImage(
-            named: "synced")
+        utility.loadImage(named: ImageName.availableOffline.rawValue)
     }
     
     static var menuIconDownloadFullResolutionImage: UIImage {
-        utility.loadImage(
-            named: "media",
-            colors: [.menuIconTint])
+        menuIcon(ImageName.photoOrVideo)
     }
     
     static var menuIconGoToPage: UIImage {
-        utility.loadImage(
-            named: "book.pages",
-            colors: [.menuIconTint])
+        menuIcon(ImageName.goToPage)
     }
     
     static var menuIconModifyWithQuickLook: UIImage {
-        utility.loadImage(
-            named: "pencil.tip.crop.circle",
-            colors: [.menuIconTint])
+        menuIcon(ImageName.modifyWithQuickLook)
     }
     
     static var menuIconSearch: UIImage {
-        utility.loadImage(
-            named: "magnifyingglass",
-            colors: [.menuIconTint])
+        menuIcon(ImageName.search)
     }
     
     static var menuIconLivePhoto: UIImage {
-        livePhoto.image(color: .menuIconTint)
+        menuIcon(ImageName.livePhoto)
     }
     
     static var menuIconSaveAsScan: UIImage {
-        utility.loadImage(
-            named: "doc.viewfinder",
-            colors: [.menuIconTint])
+        menuIcon(ImageName.scan)
     }
 
     static var menuIconLock: UIImage {
-        utility.loadImage(
-            named: "item.lock",
-            colors: [.menuIconTint])
+        menuIcon(ImageName.lock)
     }
     
     static var menuIconLockOpen: UIImage {
-        utility.loadImage(
-            named: "item.lock.open",
-            colors: [.menuIconTint])
+        menuIcon(ImageName.lockOpen)
     }
     
     static var menuIconUnshare: UIImage {
-        utility.loadImage(
-            named: "person.2.slash",
-            colors: [.menuIconTint])
+        menuIcon(ImageName.unshare)
     }
     
     static var menuIconReadOnly: UIImage {
-        utility.loadImage(
-            named: "eye",
-            colors: [.menuIconTint])
+        menuIcon(ImageName.readOnly)
     }
     
     static var menuIconEdit: UIImage {
-        utility.loadImage(
-            named: "pencil",
-            colors: [.menuIconTint])
+        menuIcon(ImageName.edit)
     }
     
     static var menuIconAdd: UIImage {
-        utility.loadImage(
-            named: "plus",
-            colors: [.menuIconTint])
+        menuIcon(ImageName.add)
     }
     
     static var menuIconSelectAll: UIImage {
-        utility.loadImage(
-            named: "checkmark.circle.fill",
-            colors: [.menuIconTint])
+        menuIcon(ImageName.selectAll)
     }
     
-    static var menuIconCancel: UIImage {
-        utility.loadImage(
-            named: "xmark",
-            colors: [.menuIconTint])
+    static var menuIconClose: UIImage {
+        menuIcon(ImageName.close)
     }
     
     static var menuIconUploadPhotosVideos: UIImage {
-        utility.loadImage(
-            named: "upload_photos_or_videos",
-            colors: [.menuIconTint])
+        menuIcon(ImageName.photoOrVideo)
     }
     
-    static var menuIconUploadUploadFile: UIImage {
-        utility.loadImage(
-            named: "uploadFile",
-            colors: [.menuIconTint])
+    static var menuIconUploadFile: UIImage {
+        menuIcon(ImageName.uploadFile)
     }
     
     static var menuIconScan: UIImage {
-        utility.loadImage(
-            named: "scan",
-            colors: [.menuIconTint])
+        menuIcon(ImageName.scan)
     }
     
-    static var menuIconCreateNewDocument: UIImage {
-        utility.loadImage(
-            named: "doc.text",
-            colors: [.menuIconTint])
+    static var menuIconCreateFolder: UIImage {
+        menuIcon(ImageName.createFolder)
     }
     
-    static var menuIconCreateNewSpreadsheet: UIImage {
-        utility.loadImage(
-            named: "tablecells",
-            colors: [.menuIconTint])
+    static var menuIconCreateDocument: UIImage {
+        menuIcon(ImageName.document)
     }
     
-    static var menuIconCreateNewPresentation: UIImage {
-        utility.loadImage(
-            named: "play.rectangle",
-            colors: [.menuIconTint])
+    static var menuIconCreateSpreadsheet: UIImage {
+        menuIcon(ImageName.spreadsheet)
     }
     
-    static var menuIconCreateNewRichDocument: UIImage {
+    static var menuIconCreatePresentation: UIImage {
+        menuIcon(ImageName.presentation)
+    }
+    
+    private static func menuIcon(_ imageName: ImageName) -> UIImage {
         utility.loadImage(
-            named: "doc.richtext",
+            named: imageName.rawValue,
             colors: [.menuIconTint])
     }
 }

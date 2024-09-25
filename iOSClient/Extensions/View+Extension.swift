@@ -60,8 +60,6 @@ extension View {
         modifier(ViewFirstAppearModifier(perform: action))
     }
     
-    
-    
     func applyScrollContentBackground() -> some View {
         self.modifier(ScrollContentBackgroundModifier())
     }
@@ -70,10 +68,9 @@ extension View {
     func applyGlobalFormStyle() -> some View {
         self
             .applyScrollContentBackground()
-            .background(Color(formBackgroundColor!))
+            .background(Color(.Common.background))
     }
 }
-
 
 struct ScrollContentBackgroundModifier: ViewModifier {
     func body(content: Content) -> some View {

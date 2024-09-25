@@ -93,7 +93,7 @@ extension NCMenuAction {
     static func cancelAction(action: @escaping () -> Void) -> NCMenuAction {
         NCMenuAction(
             title: NSLocalizedString("_cancel_", comment: ""),
-            icon: NCImagesRepository.menuIconCancel,
+            icon: NCImagesRepository.menuIconClose,
             action: { _ in action() }
         )
     }

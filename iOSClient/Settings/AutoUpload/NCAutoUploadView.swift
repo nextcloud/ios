@@ -50,6 +50,7 @@ struct NCAutoUploadView: View {
             }
         }
         .navigationBarTitle(NSLocalizedString("_auto_upload_folder_", comment: ""))
+        .applyGlobalFormStyle()
         .defaultViewModifier(model)
         .applyGlobalFormStyle()
         .alert(model.error, isPresented: $model.showErrorAlert) {
@@ -64,11 +65,11 @@ struct NCAutoUploadView: View {
                 model.autoUploadFolder.toggle()
             }, label: {
                 HStack {
-                    Image(systemName: "folder")
+					Image(.Settings.autouploadFolder)
                         .resizable()
+						.renderingMode(.template)
                         .scaledToFit()
-                        .font(Font.system(.body).weight(.light))
-                        .frame(width: 25, height: 25)
+                        .frame(width: 20, height: 20)
                         .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                     Text(NSLocalizedString("_autoupload_select_folder_", comment: ""))
                 }

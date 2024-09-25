@@ -11,7 +11,6 @@ import SwiftUI
 
 struct NCCollectionViewCommonSelectToolbarView: View {
     @ObservedObject var tabBarSelect: NCCollectionViewCommonSelectToolbar
-    @Environment(\.verticalSizeClass) var sizeClass
 
     var body: some View {
         GeometryReader { geometry in
@@ -21,41 +20,51 @@ struct NCCollectionViewCommonSelectToolbarView: View {
                 Spacer().frame(height: 10)
 
                 HStack(alignment: .top) {
-                    TabButton(
-                        action: {tabBarSelect.delegate?.share()},
-                        image: .SelectTabBar.share,
-                        label: "_share_",
-                        isDisabled: tabBarSelect.isSelectedEmpty || tabBarSelect.isAllDirectory,
-                        isOneRowStyle: isWideScreen
-                    )
-                    TabButton(
-                        action: {tabBarSelect.delegate?.move()},
-                        image: .SelectTabBar.copy,
-                        label: "_move_or_copy_",
-                        isDisabled: tabBarSelect.isSelectedEmpty,
-                        isOneRowStyle: isWideScreen
-                    )
-                    TabButton(
-                        action: {tabBarSelect.delegate?.delete()},
-                        image: .SelectTabBar.delete,
-                        label: "_delete_",
-                        isDisabled: tabBarSelect.isSelectedEmpty,
-                        isOneRowStyle: isWideScreen
-                    )
-                    TabButton(
-                        action: {tabBarSelect.delegate?.saveAsAvailableOffline(isAnyOffline: tabBarSelect.isAnyOffline)},
-                        image: .SelectTabBar.download,
-                        label: "_download_",
-                        isDisabled: !tabBarSelect.isAnyOffline && (!tabBarSelect.canSetAsOffline || tabBarSelect.isSelectedEmpty),
-                        isOneRowStyle: isWideScreen
-                    )
-                    TabButton(
-                        action: {tabBarSelect.delegate?.lock(isAnyLocked: tabBarSelect.isAnyLocked)},
-                        image: (tabBarSelect.isAnyLocked ? .SelectTabBar.unlock : .SelectTabBar.lock),
-                        label: tabBarSelect.isAnyLocked ? "_unlock_" : "_lock_",
-                        isDisabled: !tabBarSelect.enableLock || tabBarSelect.isSelectedEmpty,
-                        isOneRowStyle: isWideScreen
-                    )
+                    if tabBarSelect.displayedButtons.contains(.share) {
+                        TabButton(
+                            action: {tabBarSelect.delegate?.share()},
+                            image: .SelectTabBar.share,
+                            label: "_share_",
+                            isDisabled: tabBarSelect.isSelectedEmpty || tabBarSelect.isAllDirectory,
+                            isOneRowStyle: isWideScreen
+                        )
+                    }
+                    if tabBarSelect.displayedButtons.contains(.moveOrCopy) {
+                        TabButton(
+                            action: {tabBarSelect.delegate?.move()},
+                            image: .SelectTabBar.copy,
+                            label: "_move_or_copy_",
+                            isDisabled: tabBarSelect.isSelectedEmpty,
+                            isOneRowStyle: isWideScreen
+                        )
+                    }
+                    if tabBarSelect.displayedButtons.contains(.delete) {
+                        TabButton(
+                            action: {tabBarSelect.delegate?.delete()},
+                            image: .SelectTabBar.delete,
+                            label: "_delete_",
+                            isDisabled: tabBarSelect.isSelectedEmpty,
+                            isOneRowStyle: isWideScreen
+                        )
+                    }
+                    if tabBarSelect.displayedButtons.contains(.download) {
+                        TabButton(
+                            action: {tabBarSelect.delegate?.saveAsAvailableOffline(isAnyOffline: tabBarSelect.isAnyOffline)},
+                            image: .SelectTabBar.download,
+                            label: "_download_",
+                            isDisabled: !tabBarSelect.isAnyOffline && (!tabBarSelect.canSetAsOffline || tabBarSelect.isSelectedEmpty),
+                            isOneRowStyle: isWideScreen
+                        )
+                    }
+                    if tabBarSelect.displayedButtons.contains(.lockOrUnlock) {
+                        TabButton(
+                            action: {tabBarSelect.delegate?.lock(isAnyLocked: tabBarSelect.isAnyLocked)},
+                            image: (tabBarSelect.isAnyLocked ? .SelectTabBar.unlock : .SelectTabBar.lock),
+                            label: tabBarSelect.isAnyLocked ? "_unlock_" : "_lock_",
+                            isDisabled: !tabBarSelect.enableLock || tabBarSelect.isSelectedEmpty,
+                            isOneRowStyle: isWideScreen
+                        )
+                    }
                 }
                 .frame(maxWidth: isWideScreen ? eightyPercentOfWidth : .infinity)
             }
@@ -100,7 +109,7 @@ private struct IconWithText: View {
     var label: String
     
     var body: some View {
-        var iconWidth = CGFloat( sizeClass == .compact ? 28 : 34)
+        var iconWidth = CGFloat(sizeClass == .compact ? 28 : 34)
         var iconHeight = iconWidth - 10
         Image(image)
             .resizable()
