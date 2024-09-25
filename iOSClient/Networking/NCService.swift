@@ -38,7 +38,6 @@ class NCService: NSObject {
             return
         }
 
-        self.database.clearAllAvatarLoaded()
         NCPushNotification.shared.pushNotification()
 
         Task {

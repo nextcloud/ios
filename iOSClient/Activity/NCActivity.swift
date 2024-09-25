@@ -297,12 +297,17 @@ extension NCActivity: UITableViewDataSource {
         if !activity.user.isEmpty && activity.user != session.userId {
             cell.avatar.isHidden = false
             cell.fileUser = activity.user
-            let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: activity.user)
-            if NCNetworking.shared.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
-                let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
-                NCNetworking.shared.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: activity.user, fileName: fileName, fileNameLocalPath: fileNameLocalPath, account: session.account, view: tableView))
-            }
             cell.subjectLeadingConstraint.constant = 15
+
+            let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: activity.user)
+            if let image = database.getImageAvatarLoaded(fileName: fileName) {
+                cell.avatar.image = image
+            } else {
+                if NCNetworking.shared.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
+                    let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
+                    NCNetworking.shared.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: activity.user, fileName: fileName, fileNameLocalPath: fileNameLocalPath, account: session.account, view: tableView))
+                }
+            }
         } else {
             cell.subjectLeadingConstraint.constant = -30
         }
