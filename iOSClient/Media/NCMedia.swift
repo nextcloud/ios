@@ -69,18 +69,14 @@ class NCMedia: UIViewController {
         
         return selectedItemsCount == 0 ? .none : .some(selectedItemsCount)
     }
-    
-    private var appBackground: UIColor? {
-        UIColor(named: "AppBackground")
-    }
 
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = appBackground
-        collectionView.backgroundColor = appBackground
+        view.backgroundColor = NCBrandColor.shared.appBackgroundColor
+        collectionView.backgroundColor = NCBrandColor.shared.appBackgroundColor
         activeAccount = NCManageDatabase.shared.getActiveAccount() ?? tableAccount()
 
         collectionView.register(UINib(nibName: "NCSectionFirstHeaderEmptyData", bundle: nil), forSupplementaryViewOfKind: mediaSectionHeader, withReuseIdentifier: "sectionFirstHeaderEmptyData")

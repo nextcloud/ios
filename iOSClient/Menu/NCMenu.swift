@@ -35,7 +35,7 @@ extension Array where Element == NCMenuAction {
 class NCMenu: UITableViewController {
 
     var actions = [NCMenuAction]()
-    var menuColor: UIColor = .appBackground
+    var menuColor: UIColor = NCBrandColor.shared.appBackgroundColor
     var textColor = NCBrandColor.shared.textColor
 
     static func makeNCMenu(with actions: [NCMenuAction], menuColor: UIColor, textColor: UIColor) -> NCMenu? {

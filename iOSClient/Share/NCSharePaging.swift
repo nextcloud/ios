@@ -48,7 +48,7 @@ class NCSharePaging: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = .appBackground
+        view.backgroundColor = NCBrandColor.shared.appBackgroundColor
         title = NSLocalizedString("_details_", comment: "")
 
         navigationController?.navigationBar.tintColor = NCBrandColor.shared.iconImageColor
@@ -60,9 +60,9 @@ class NCSharePaging: UIViewController {
 
         // *** MUST BE THE FIRST ONE ***
         pagingViewController.metadata = metadata
-        pagingViewController.backgroundColor = .appBackground
-        pagingViewController.menuBackgroundColor = .appBackground
-        pagingViewController.selectedBackgroundColor = .appBackground
+        pagingViewController.backgroundColor = NCBrandColor.shared.appBackgroundColor
+        pagingViewController.menuBackgroundColor = NCBrandColor.shared.appBackgroundColor
+        pagingViewController.selectedBackgroundColor = NCBrandColor.shared.appBackgroundColor
         pagingViewController.indicatorColor = NCBrandColor.shared.brandElement
         pagingViewController.textColor = NCBrandColor.shared.textColor
         pagingViewController.selectedTextColor = NCBrandColor.shared.brandElement
@@ -265,7 +265,7 @@ class NCSharePagingView: PagingView {
     override func setupConstraints() {
         guard let headerView = Bundle.main.loadNibNamed("NCShareHeader", owner: self, options: nil)?.first as? NCShareHeader else { return }
         header = headerView
-        headerView.backgroundColor = .appBackground
+        headerView.backgroundColor = NCBrandColor.shared.appBackgroundColor
 
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .short

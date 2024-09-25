@@ -40,7 +40,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectToolbarDelegate {
         var alertStyle = UIAlertController.Style.actionSheet
         if UIDevice.current.userInterfaceIdiom == .pad { alertStyle = .alert }
         let alertController = UIAlertController(title: NSLocalizedString("_confirm_delete_selected_", comment: ""), message: nil, preferredStyle: alertStyle)
-        alertController.view.backgroundColor = .appBackground
+        alertController.view.backgroundColor = NCBrandColor.shared.appBackgroundColor
         let metadatas = getSelectedMetadatas()
         let canDeleteServer = metadatas.allSatisfy { !$0.lock }
 

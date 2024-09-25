@@ -42,7 +42,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
                 style: .destructive,
                 handler: { _ in self.navigationController?.popViewController(animated: true) }))
             alert.addAction(UIAlertAction(title: NSLocalizedString("_continue_editing_", comment: ""), style: .default))
-            alert.view.backgroundColor = .appBackground
+            alert.view.backgroundColor = NCBrandColor.shared.appBackgroundColor
             self.present(alert, animated: true)
             return
         }
@@ -80,7 +80,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
         super.viewDidLoad()
         self.shareConfig = NCShareConfig(parentMetadata: metadata, share: share)
 
-        tableView.backgroundColor = .appBackground
+        tableView.backgroundColor = NCBrandColor.shared.appBackgroundColor
         tableView.estimatedRowHeight = tableView.rowHeight
         tableView.rowHeight = UITableView.automaticDimension
         self.setNavigationTitle()
