@@ -194,9 +194,22 @@ extension NCMenuAction {
             icon: NCImagesRepository.menuIconMoveOrCopy,
             order: order,
             action: { _ in
-                let controller = viewController.mainTabBarController
-                NCActionCenter.shared.openSelectView(items: selectedMetadatas, controller: controller)
-                completion?()
+                var fileNameError: NKError?
+
+                for metadata in selectedMetadatas {
+                    if let checkError = FileNameValidator.shared.checkFileName(metadata.fileNameView) {
+                        fileNameError = checkError
+                        break
+                    }
+                }
+
+                if let fileNameError {
+                    viewController.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true, completion: nil)
+                } else {
+                    let controller = viewController.mainTabBarController
+                    NCActionCenter.shared.openSelectView(items: selectedMetadatas, controller: controller)
+                    completion?()
+                }
             }
         )
     }

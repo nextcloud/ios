@@ -54,7 +54,7 @@ extension FileProviderExtension {
                     }
                 }
             } else {
-                completionHandler(nil, NSFileProviderError(.serverUnreachable))
+                completionHandler(nil, NSFileProviderError(.filenameCollision))
             }
         }
     }
@@ -70,7 +70,7 @@ extension FileProviderExtension {
         let fileName = metadata.fileName
 
         NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: metadata.account) { account, error in
-            if error == .success { // || error == kOCErrorServerPathNotFound {
+            if error == .success {
                 let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(itemIdentifier.rawValue)
 
                 do {
@@ -122,6 +122,8 @@ extension FileProviderExtension {
                 let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
 
                 completionHandler(item, nil)
+            } else if error.errorCode == NCGlobal.shared.errorBadRequest {
+                completionHandler(nil, NSFileProviderError(.noSuchItem, userInfo: [NSLocalizedDescriptionKey: error.errorDescription, NSLocalizedFailureReasonErrorKey: ""]))
             } else {
                 completionHandler(nil, NSFileProviderError(.serverUnreachable))
             }
@@ -161,6 +163,8 @@ extension FileProviderExtension {
                 }
                 let item = FileProviderItem(metadata: tableMetadata.init(value: metadata), parentItemIdentifier: parentItemIdentifier)
                 completionHandler(item, nil)
+            } else if error.errorCode == NCGlobal.shared.errorBadRequest  {
+                completionHandler(nil, NSFileProviderError(.noSuchItem, userInfo: [NSLocalizedDescriptionKey: error.errorDescription, NSLocalizedFailureReasonErrorKey: ""]))
             } else {
                 completionHandler(nil, NSFileProviderError(.serverUnreachable))
             }
