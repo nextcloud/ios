@@ -50,7 +50,6 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
     /// Footer
     var footerApp = ""
     var footerServer = ""
-    var footerSlogan = ""
 
     /// Initializes the view model with default values.
     init(controller: NCMainTabBarController?) {
@@ -68,7 +67,6 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
         accountRequest = keychain.accountRequest
         footerApp = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility().getVersionApp(withBuild: true)) + "\n\n"
         footerServer = String(format: NCBrandOptions.shared.textCopyrightNextcloudServer, NCGlobal.shared.capabilityServerVersion) + "\n"
-        footerSlogan = NCGlobal.shared.capabilityThemingName + " - " + NCGlobal.shared.capabilityThemingSlogan + "\n\n"
     }
 
     // MARK: - All functions

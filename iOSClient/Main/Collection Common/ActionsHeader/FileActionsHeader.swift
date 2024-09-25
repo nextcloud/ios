@@ -63,6 +63,7 @@ class FileActionsHeader: UIView {
 										 owner: self,
 										 options: nil)
 		addSubview(contentView)
+        contentView.backgroundColor = NCBrandColor.shared.appBackgroundColor
 		contentView.frame = bounds
 		contentView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
 	}

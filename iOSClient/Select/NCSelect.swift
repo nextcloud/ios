@@ -83,7 +83,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         navigationController?.presentationController?.delegate = self
         navigationController?.navigationBar.tintColor = NCBrandColor.shared.iconImageColor
 
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = NCBrandColor.shared.appBackgroundColor
         selectCommandViewSelect?.separatorView.backgroundColor = .separator
 
         activeAccount = NCManageDatabase.shared.getActiveAccount()
@@ -99,7 +99,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         // Footer
         collectionView.register(UINib(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
         collectionView.alwaysBounceVertical = true
-        collectionView.backgroundColor = .systemBackground
+        collectionView.backgroundColor = NCBrandColor.shared.appBackgroundColor
 
         buttonCancel.title = NSLocalizedString("_cancel_", comment: "")
 		buttonCancel.tintColor = UIColor(named: "SelectToolbar/CancelTint")

@@ -33,6 +33,18 @@ class NCBrandColorIONOS: NCBrandColor {
 	override var menuFolderIconColor: UIColor {
 		UIColor(named: "FileMenu/FolderIcon") ?? iconImageColor
 	}
+    
+    override var appBackgroundColor: UIColor {
+        UIColor(named: "AppBackground/Main") ?? .systemBackground
+    }
+    
+    override var formBackgroundColor: UIColor {
+        UIColor(named: "AppBackground/Form") ?? .systemBackground
+    }
+    
+    override var formRowBackgroundColor: UIColor {
+        UIColor(named: "AppBackground/FormRow") ?? .secondarySystemGroupedBackground
+    }
 	
     override init() {
         super.init()
