@@ -121,7 +121,7 @@ extension ButtonStyle where Self == ButtonStyleSecondary {
             .disabled(true)
         }
         .frame(width: 300, height: 300)
-        .background(Color(.Common.background))
+        .background(Color(.AppBackground.main))
         .environment(\.colorScheme, .light)
         VStack {
             Button {
@@ -154,7 +154,7 @@ extension ButtonStyle where Self == ButtonStyleSecondary {
             .disabled(true)
         }
         .frame(width: 300, height: 300)
-        .background(Color(.Common.background))
+        .background(Color(.AppBackground.main))
         .environment(\.colorScheme, .dark)
     }
 }
