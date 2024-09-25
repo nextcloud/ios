@@ -178,9 +178,6 @@ class NCMainTabBar: UITabBar {
         centerButton.accessibilityLabel = NSLocalizedString("_accessibility_add_upload_", comment: "")
         centerButton.layer.cornerRadius = centerButton.frame.size.width / 2.0
         centerButton.layer.masksToBounds = false
-        centerButton.layer.shadowOffset = CGSize(width: 0, height: 0)
-        centerButton.layer.shadowRadius = 3.0
-        centerButton.layer.shadowOpacity = 0.5
         centerButton.action(for: .touchUpInside) { [self] _ in
 
             if let controller = self.window?.rootViewController as? NCMainTabBarController {
