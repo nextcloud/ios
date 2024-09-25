@@ -167,7 +167,7 @@ struct NCSettingsView: View {
                 })
                 .tint(Color(NCBrandColor.shared.textColor))
                 .sheet(isPresented: $showAcknowledgements) {
-                    NCAcknowledgementsView(browserTitle: NSLocalizedString("_acknowledgements_", comment: ""))
+                    NCBrowserWebView(urlBase: URL(string: NCBrandOptions.shared.acknowloedgements)!, browserTitle: NSLocalizedString("_acknowledgements_", comment: ""))
                 }
                 /// Terms & Privacy Conditions
                 Button(action: {
@@ -210,7 +210,7 @@ struct NCSettingsView: View {
             /// `Watermark` Section
             Section(content: {
             }, footer: {
-                Text(model.footerApp + model.footerServer + model.footerSlogan)
+                Text(model.footerApp + model.footerServer)
             }).listRowBackground(Color(NCBrandColor.shared.formRowBackgroundColor))
         }
         .navigationBarTitle(NSLocalizedString("_settings_", comment: ""))
