@@ -222,11 +222,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             collectionView?.collectionViewLayout = mediaLayout
             self.layoutType = global.layoutPhotoSquare
         }
-
-        // FIXME: iPAD PDF landscape mode iOS 16
-        DispatchQueue.main.async {
-            self.collectionView?.collectionViewLayout.invalidateLayout()
-        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
