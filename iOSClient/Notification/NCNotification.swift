@@ -132,11 +132,13 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
 
             let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: user)
             let results = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName)
+
             if results.image == nil {
                 cell.fileAvatarImageView?.image = utility.loadUserImage(for: user, displayName: json["user"]?["name"].string, urlBase: session.urlBase)
             } else {
                 cell.fileAvatarImageView?.image = results.image
             }
+
             if !(results.tableAvatar?.loaded ?? false),
                NCNetworking.shared.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
                 NCNetworking.shared.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: user, fileName: fileName, account: session.account, view: tableView))
