@@ -14,8 +14,6 @@
                 <outlet property="btnCloseSelection" destination="uIk-II-rrq" id="uIz-Mq-xsf"/>
                 <outlet property="btnSelect" destination="RYI-12-k5i" id="yFC-ec-nyE"/>
                 <outlet property="btnSelectAll" destination="aiH-0h-GkD" id="M3d-NQ-p8R"/>
-                <outlet property="btnSelectAndBtnViewModeSpacing" destination="BHS-61-WSC" id="JQO-im-Co1"/>
-                <outlet property="btnSelectAndSuperViewSpacing" destination="top-nP-uSu" id="bbN-B0-AiF"/>
                 <outlet property="btnSort" destination="h7d-nu-xII" id="2Wf-BB-iXa"/>
                 <outlet property="btnViewMode" destination="cqG-WX-M71" id="CfF-wG-c8g"/>
                 <outlet property="contentView" destination="iN0-l3-epB" id="BpV-Up-eBG"/>
@@ -41,46 +39,55 @@
                                 <color key="titleColor" name="FileActionsHeader/SortButtonText"/>
                             </state>
                         </button>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RYI-12-k5i" userLabel="btnSelect">
-                            <rect key="frame" x="303" y="8" width="32" height="32"/>
-                            <color key="backgroundColor" name="FileActionsHeader/SelectionModeButtonBackground"/>
-                            <constraints>
-                                <constraint firstAttribute="width" secondItem="RYI-12-k5i" secondAttribute="height" id="G23-hh-FMt"/>
-                                <constraint firstAttribute="height" constant="32" id="f66-pf-OBU"/>
-                            </constraints>
-                            <color key="tintColor" name="FileActionsHeader/ButtonTint"/>
-                            <state key="normal" image="FileSelection/files_selection"/>
-                            <connections>
-                                <action selector="onBtnSelectTap:" destination="-1" eventType="touchUpInside" id="G0R-TM-QuX"/>
-                            </connections>
-                        </button>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cqG-WX-M71" userLabel="btnViewMode">
-                            <rect key="frame" x="345" y="0.0" width="48" height="48"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="48" id="HA6-hr-9aP"/>
-                                <constraint firstAttribute="width" secondItem="cqG-WX-M71" secondAttribute="height" id="bOr-22-3hP"/>
-                            </constraints>
-                            <fontDescription key="fontDescription" type="system" pointSize="18"/>
-                            <color key="tintColor" name="FileActionsHeader/ButtonTint"/>
-                            <inset key="imageEdgeInsets" minX="12" minY="12" maxX="12" maxY="12"/>
-                        </button>
+                        <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" translatesAutoresizingMaskIntoConstraints="NO" id="o8w-RU-RYD">
+                            <rect key="frame" x="297" y="0.0" width="96" height="48"/>
+                            <subviews>
+                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="uuS-7H-Ugk">
+                                    <rect key="frame" x="0.0" y="0.0" width="48" height="48"/>
+                                    <subviews>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RYI-12-k5i" userLabel="btnSelect">
+                                            <rect key="frame" x="8" y="8" width="32" height="32"/>
+                                            <color key="backgroundColor" name="FileActionsHeader/SelectionModeButtonBackground"/>
+                                            <constraints>
+                                                <constraint firstAttribute="width" secondItem="RYI-12-k5i" secondAttribute="height" id="G23-hh-FMt"/>
+                                                <constraint firstAttribute="width" constant="32" id="srR-yT-efN"/>
+                                            </constraints>
+                                            <color key="tintColor" name="FileActionsHeader/ButtonTint"/>
+                                            <state key="normal" image="FileSelection/files_selection"/>
+                                            <connections>
+                                                <action selector="onBtnSelectTap:" destination="-1" eventType="touchUpInside" id="G0R-TM-QuX"/>
+                                            </connections>
+                                        </button>
+                                    </subviews>
+                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    <constraints>
+                                        <constraint firstItem="RYI-12-k5i" firstAttribute="centerY" secondItem="uuS-7H-Ugk" secondAttribute="centerY" id="4Zp-wm-nw4"/>
+                                        <constraint firstItem="RYI-12-k5i" firstAttribute="centerX" secondItem="uuS-7H-Ugk" secondAttribute="centerX" id="PsR-2h-lD7"/>
+                                        <constraint firstAttribute="width" secondItem="uuS-7H-Ugk" secondAttribute="height" id="aza-Ml-i8V"/>
+                                    </constraints>
+                                </view>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cqG-WX-M71" userLabel="btnViewMode">
+                                    <rect key="frame" x="48" y="0.0" width="48" height="48"/>
+                                    <constraints>
+                                        <constraint firstAttribute="width" secondItem="cqG-WX-M71" secondAttribute="height" id="bOr-22-3hP"/>
+                                    </constraints>
+                                    <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                    <color key="tintColor" name="FileActionsHeader/ButtonTint"/>
+                                    <inset key="imageEdgeInsets" minX="12" minY="12" maxX="12" maxY="12"/>
+                                </button>
+                            </subviews>
+                            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        </stackView>
                     </subviews>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
-                        <constraint firstItem="RYI-12-k5i" firstAttribute="centerY" secondItem="M8K-l1-441" secondAttribute="centerY" id="3WJ-9f-KUx"/>
-                        <constraint firstItem="cqG-WX-M71" firstAttribute="leading" secondItem="RYI-12-k5i" secondAttribute="trailing" constant="10" id="BHS-61-WSC"/>
+                        <constraint firstItem="o8w-RU-RYD" firstAttribute="height" secondItem="M8K-l1-441" secondAttribute="height" id="GHi-wk-nWQ"/>
                         <constraint firstItem="h7d-nu-xII" firstAttribute="leading" secondItem="M8K-l1-441" secondAttribute="leading" constant="15" id="Oss-Sr-l6J"/>
+                        <constraint firstAttribute="trailing" secondItem="o8w-RU-RYD" secondAttribute="trailing" id="dgp-hk-bYb"/>
                         <constraint firstItem="h7d-nu-xII" firstAttribute="height" secondItem="M8K-l1-441" secondAttribute="height" id="hZX-B3-GMF"/>
-                        <constraint firstAttribute="trailing" secondItem="cqG-WX-M71" secondAttribute="trailing" id="nVE-wf-sOh"/>
-                        <constraint firstAttribute="trailing" secondItem="RYI-12-k5i" secondAttribute="trailing" constant="10" id="top-nP-uSu"/>
+                        <constraint firstItem="o8w-RU-RYD" firstAttribute="centerY" secondItem="M8K-l1-441" secondAttribute="centerY" id="lLp-Rg-atd"/>
                         <constraint firstItem="h7d-nu-xII" firstAttribute="centerY" secondItem="M8K-l1-441" secondAttribute="centerY" id="yd9-FS-ivg"/>
-                        <constraint firstItem="cqG-WX-M71" firstAttribute="centerY" secondItem="M8K-l1-441" secondAttribute="centerY" id="zGL-NS-txw"/>
                     </constraints>
-                    <variation key="default">
-                        <mask key="constraints">
-                            <exclude reference="top-nP-uSu"/>
-                        </mask>
-                    </variation>
                 </view>
                 <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="SEO-fb-HgO" userLabel="EditMode">
                     <rect key="frame" x="0.0" y="0.0" width="393" height="48"/>

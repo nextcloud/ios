@@ -44,7 +44,7 @@ class NCShareCell: UITableViewCell {
         self.fileName = fileName
         let resultInternalType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false)
 
-        backgroundColor = .systemBackground
+        backgroundColor = NCBrandColor.shared.appBackgroundColor
         imageCell?.layer.cornerRadius = 6
         imageCell?.layer.masksToBounds = true
 

@@ -75,7 +75,8 @@ class NCMedia: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = NCBrandColor.shared.appBackgroundColor
+        collectionView.backgroundColor = NCBrandColor.shared.appBackgroundColor
         activeAccount = NCManageDatabase.shared.getActiveAccount() ?? tableAccount()
 
         collectionView.register(UINib(nibName: "NCSectionFirstHeaderEmptyData", bundle: nil), forSupplementaryViewOfKind: mediaSectionHeader, withReuseIdentifier: "sectionFirstHeaderEmptyData")

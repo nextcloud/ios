@@ -89,7 +89,7 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
         delegate?.tapRestoreListItem(with: objectId, image: imageItem.image, sender: sender)
     }
 	
-    func selected(_ status: Bool, isEditMode: Bool) {
+    func selected(_ isSelected: Bool, isEditMode: Bool) {
         if isEditMode {
             imageItemLeftConstraint.constant = 45
             imageSelect.isHidden = false
@@ -106,7 +106,7 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
             buttonMore.isHidden = false
             backgroundView = nil
         }
-        if status {
+        if isSelected {
             imageSelect.image = NCImageCache.images.checkedYes?.withTintColor(NCBrandColor.shared.brandElement)
         } else {
             imageSelect.image = NCImageCache.images.checkedNo?.withTintColor(UIColor(resource: .FileSelection.listItemDeselected))

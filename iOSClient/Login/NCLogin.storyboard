@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina6_72" orientation="portrait" appearance="dark"/>
+    <device id="ipad10_2" orientation="portrait" layout="fullscreen" appearance="dark"/>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
@@ -14,64 +14,82 @@
             <objects>
                 <viewController storyboardIdentifier="NCLogin" id="yj9-jo-WIn" customClass="NCLogin" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Bv6-g3-l0M">
-                        <rect key="frame" x="0.0" y="0.0" width="430" height="932"/>
+                        <rect key="frame" x="0.0" y="0.0" width="810" height="1080"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="gradientBackground" translatesAutoresizingMaskIntoConstraints="NO" id="9ke-OB-mlJ" userLabel="background">
-                                <rect key="frame" x="0.0" y="0.0" width="430" height="932"/>
+                                <rect key="frame" x="0.0" y="0.0" width="810" height="1080"/>
                             </imageView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hwa-hT-QjM" userLabel="loginContentView">
-                                <rect key="frame" x="0.0" y="0.0" width="430" height="932"/>
+                                <rect key="frame" x="0.0" y="0.0" width="810" height="1080"/>
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="O7g-q0-SHY" userLabel="logo">
-                                        <rect key="frame" x="135.66666666666666" y="132.66666666666666" width="158.99999999999997" height="22"/>
+                                        <rect key="frame" x="223" y="140" width="364.5" height="50"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="O7g-q0-SHY" secondAttribute="height" multiplier="159:22" id="pid-4S-EEo"/>
+                                        </constraints>
                                     </imageView>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ySx-9E-GUK" userLabel="lblWelcome">
-                                        <rect key="frame" x="18" y="254.66666666666666" width="394" height="0.0"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <rect key="frame" x="18" y="378" width="774" height="0.0"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
+                                        <variation key="heightClass=regular-widthClass=regular">
+                                            <fontDescription key="fontDescription" type="system" pointSize="36"/>
+                                        </variation>
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HQd-pF-3cE" customClass="LoginButton" customModule="Nextcloud" customModuleProvider="target">
-                                        <rect key="frame" x="43" y="693.66666666666663" width="344" height="48"/>
+                                        <rect key="frame" x="277" y="883.5" width="256" height="48"/>
                                         <color key="backgroundColor" name="Button/Primary/Background/Normal"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="48" id="3yh-bo-Bzr"/>
-                                            <constraint firstAttribute="width" relation="lessThanOrEqual" constant="350" id="W6Y-SA-nDg"/>
+                                            <constraint firstAttribute="width" relation="lessThanOrEqual" constant="256" id="W6Y-SA-nDg"/>
                                         </constraints>
                                         <color key="tintColor" name="Button/Primary/Text/Normal"/>
                                         <state key="normal">
                                             <color key="titleColor" name="Button/Primary/Background/Normal"/>
                                         </state>
+                                        <variation key="default">
+                                            <mask key="constraints">
+                                                <exclude reference="W6Y-SA-nDg"/>
+                                            </mask>
+                                        </variation>
+                                        <variation key="heightClass=regular-widthClass=regular">
+                                            <mask key="constraints">
+                                                <include reference="W6Y-SA-nDg"/>
+                                            </mask>
+                                        </variation>
                                         <connections>
                                             <action selector="actionButtonLogin:" destination="yj9-jo-WIn" eventType="touchUpInside" id="vFP-SJ-rFq"/>
                                         </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5fY-iq-Tv0" userLabel="lblDescription">
-                                        <rect key="frame" x="10" y="781.66666666666663" width="410" height="0.0"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <rect key="frame" x="10" y="961.5" width="790" height="0.0"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="large" translatesAutoresizingMaskIntoConstraints="NO" id="048-Uj-QCi">
-                                        <rect key="frame" x="196.66666666666666" y="447.66666666666669" width="37" height="37"/>
+                                        <rect key="frame" x="386.5" y="521.5" width="37" height="37"/>
                                         <color key="color" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     </activityIndicatorView>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstItem="HQd-pF-3cE" firstAttribute="centerX" secondItem="hwa-hT-QjM" secondAttribute="centerX" id="4sQ-aN-HDA"/>
-                                    <constraint firstItem="5fY-iq-Tv0" firstAttribute="top" secondItem="HQd-pF-3cE" secondAttribute="bottom" constant="40" id="6Z8-DQ-07h"/>
+                                    <constraint firstItem="5fY-iq-Tv0" firstAttribute="top" secondItem="HQd-pF-3cE" secondAttribute="bottom" priority="750" constant="30" id="6Z8-DQ-07h"/>
                                     <constraint firstItem="048-Uj-QCi" firstAttribute="centerX" secondItem="hwa-hT-QjM" secondAttribute="centerX" id="7TG-TY-4Ou"/>
+                                    <constraint firstItem="ySx-9E-GUK" firstAttribute="centerY" secondItem="hwa-hT-QjM" secondAttribute="centerY" multiplier="0.7" id="CTT-QW-bgf"/>
                                     <constraint firstAttribute="trailingMargin" secondItem="ySx-9E-GUK" secondAttribute="trailing" constant="10" id="F9S-a8-SDX"/>
                                     <constraint firstItem="O7g-q0-SHY" firstAttribute="centerX" secondItem="hwa-hT-QjM" secondAttribute="centerXWithinMargins" id="G3n-3t-0Z4"/>
                                     <constraint firstItem="HQd-pF-3cE" firstAttribute="width" secondItem="hwa-hT-QjM" secondAttribute="width" multiplier="0.8" priority="750" id="ICF-Pm-rYI"/>
                                     <constraint firstItem="O7g-q0-SHY" firstAttribute="centerY" secondItem="hwa-hT-QjM" secondAttribute="centerYWithinMargins" multiplier="0.3" id="KvX-vV-wBl"/>
-                                    <constraint firstItem="HQd-pF-3cE" firstAttribute="centerY" secondItem="hwa-hT-QjM" secondAttribute="centerYWithinMargins" multiplier="1.5" id="N5W-JR-rNk"/>
+                                    <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="5fY-iq-Tv0" secondAttribute="bottom" constant="10" id="Kyt-mv-UMw"/>
+                                    <constraint firstItem="HQd-pF-3cE" firstAttribute="centerY" secondItem="hwa-hT-QjM" secondAttribute="centerYWithinMargins" multiplier="1.65" id="N5W-JR-rNk"/>
                                     <constraint firstItem="048-Uj-QCi" firstAttribute="centerY" secondItem="hwa-hT-QjM" secondAttribute="centerY" id="OM7-bz-e1C"/>
                                     <constraint firstAttribute="trailing" secondItem="5fY-iq-Tv0" secondAttribute="trailing" constant="10" id="cEP-rs-Tcj"/>
+                                    <constraint firstItem="O7g-q0-SHY" firstAttribute="width" secondItem="hwa-hT-QjM" secondAttribute="width" multiplier="0.45" id="eA8-lj-CFb"/>
                                     <constraint firstItem="5fY-iq-Tv0" firstAttribute="leading" secondItem="hwa-hT-QjM" secondAttribute="leading" constant="10" id="j1g-YM-IiX"/>
-                                    <constraint firstItem="ySx-9E-GUK" firstAttribute="top" secondItem="O7g-q0-SHY" secondAttribute="bottom" constant="100" id="oLc-50-Cf4"/>
                                     <constraint firstItem="ySx-9E-GUK" firstAttribute="leading" secondItem="hwa-hT-QjM" secondAttribute="leadingMargin" constant="10" id="udj-JU-CJE"/>
                                 </constraints>
                             </view>
@@ -105,7 +123,7 @@
             <objects>
                 <viewController storyboardIdentifier="NCLoginProvider" id="yEb-Ky-35s" customClass="NCLoginProvider" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="UX5-cJ-bY6">
-                        <rect key="frame" x="0.0" y="0.0" width="430" height="932"/>
+                        <rect key="frame" x="0.0" y="0.0" width="810" height="1080"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <viewLayoutGuide key="safeArea" id="vqz-4v-cZu"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -117,8 +135,8 @@
         </scene>
     </scenes>
     <resources>
-        <image name="gradientBackground" width="320" height="568"/>
-        <image name="logo" width="159" height="22"/>
+        <image name="gradientBackground" width="768" height="1024"/>
+        <image name="logo" width="500" height="69"/>
         <namedColor name="Button/Primary/Background/Normal">
             <color red="0.078431372549019607" green="0.45490196078431372" blue="0.7686274509803922" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

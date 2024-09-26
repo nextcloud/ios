@@ -139,6 +139,7 @@ extension NCMedia: NCCollectionViewCommonSelectToolbarDelegate {
         if UIDevice.current.userInterfaceIdiom == .pad { alertStyle = .alert }
         if !selectOcId.isEmpty {
             let alertController = UIAlertController(title: nil, message: nil, preferredStyle: alertStyle)
+            alertController.view.backgroundColor = NCBrandColor.shared.appBackgroundColor
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_delete_selected_photos_", comment: ""), style: .destructive) { (_: UIAlertAction) in
                 Task {
                     var error = NKError()

@@ -46,7 +46,7 @@ struct NCSettingsView: View {
                     NCAutoUploadView(model: NCAutoUploadModel(viewController: model.controller?.currentViewController()))
                 }) {
                     HStack {
-                        Image(systemName: "camera")
+						Image(.Settings.camera)
                             .resizable()
                             .scaledToFit()
 							.font(.settingsIconsFont)
@@ -56,14 +56,14 @@ struct NCSettingsView: View {
                     }
                     .font(.system(size: 16))
                 }
-            })
+            }).listRowBackground(Color(NCBrandColor.shared.formRowBackgroundColor))
             /// `Privacy` Section
             Section(content: {
                 Button(action: {
                     showPasscode.toggle()
                 }, label: {
                     HStack {
-                        Image(systemName: model.isLockActive ? "lock" : "lock.open")
+						lockImage(isLocked: model.isLockActive)
                             .resizable()
                             .scaledToFit()
 							.font(.settingsIconsFont)
@@ -97,7 +97,7 @@ struct NCSettingsView: View {
                 Text(String(format: NSLocalizedString("_reset_wrong_passcode_desc_", comment: ""), NCBrandOptions.shared.resetAppPasscodeAttempts))
                     .font(.system(size: 12))
                     .lineSpacing(1)
-            })
+            }).listRowBackground(Color(NCBrandColor.shared.formRowBackgroundColor))
             /// Calender & Contacts
             if !NCBrandOptions.shared.disable_mobileconfig {
                 Section(content: {
@@ -127,7 +127,7 @@ struct NCSettingsView: View {
                             .font(.system(size: 12))
                     }
 
-                })
+                }).listRowBackground(Color(NCBrandColor.shared.formRowBackgroundColor))
             }
             /// `Advanced` Section
             Section {
@@ -147,7 +147,7 @@ struct NCSettingsView: View {
                     }
                     .font(.system(size: 16))
                 }
-            }
+            }.listRowBackground(Color(NCBrandColor.shared.formRowBackgroundColor))
             /// `Information` Section
             Section(header: Text(NSLocalizedString("_information_", comment: "")), content: {
                 // Acknowledgements
@@ -167,7 +167,7 @@ struct NCSettingsView: View {
                 })
                 .tint(Color(NCBrandColor.shared.textColor))
                 .sheet(isPresented: $showAcknowledgements) {
-                    NCAcknowledgementsView(browserTitle: NSLocalizedString("_acknowledgements_", comment: ""))
+                    NCBrowserWebView(urlBase: URL(string: NCBrandOptions.shared.acknowloedgements)!, browserTitle: NSLocalizedString("_acknowledgements_", comment: ""))
                 }
                 /// Terms & Privacy Conditions
                 Button(action: {
@@ -206,12 +206,12 @@ struct NCSettingsView: View {
                 .sheet(isPresented: $showSourceCode) {
                     NCBrowserWebView(urlBase: URL(string: NCBrandOptions.shared.sourceCode)!, browserTitle: NSLocalizedString("_source_code_", comment: ""))
                 }
-            })
+            }).listRowBackground(Color(NCBrandColor.shared.formRowBackgroundColor))
             /// `Watermark` Section
             Section(content: {
             }, footer: {
-                Text(model.footerApp + model.footerServer + model.footerSlogan)
-            })
+                Text(model.footerApp + model.footerServer)
+            }).listRowBackground(Color(NCBrandColor.shared.formRowBackgroundColor))
         }
         .navigationBarTitle(NSLocalizedString("_settings_", comment: ""))
         .toolbar {
@@ -224,9 +224,13 @@ struct NCSettingsView: View {
                 })
             }
         }
-        .applyGlobalFormStyle()
         .defaultViewModifier(model)
+        .applyGlobalFormStyle()
     }
+	
+	private func lockImage(isLocked: Bool) -> Image {
+		isLocked ? Image(.itemLock) : Image(.itemLockOpen)
+	}
 }
 
 struct E2EESection: View {

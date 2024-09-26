@@ -52,13 +52,8 @@ class NCGridMediaCell: UICollectionViewCell {
         imageSelect.isHidden = true
     }
 
-    func selected(_ status: Bool) {
-        if status {
-            setBorderForGridViewCell(isSelected: true)
-            imageSelect.isHidden = false
-        } else {
-            setBorderForGridViewCell(isSelected: false)
-            imageSelect.isHidden = true
-        }
+    func selected(_ isSelected: Bool) {
+        setBorderForGridViewCell(isSelected: isSelected)
+        imageSelect.isHidden = !isSelected
     }
 }

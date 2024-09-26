@@ -24,6 +24,7 @@
 import SwiftUI
 
 extension View {
+    
     func complexModifier<V: View>(@ViewBuilder _ closure: (Self) -> V) -> some View {
         closure(self)
     }
@@ -63,7 +64,7 @@ extension View {
     func applyGlobalFormStyle() -> some View {
         self
             .applyScrollContentBackground()
-            .background(Color(.Common.background))
+            .background(Color(NCBrandColor.shared.formBackgroundColor))
     }
 }
 

@@ -45,7 +45,7 @@ extension UINavigationController {
         let scrollEdgeAppearance = UINavigationBarAppearance()
         scrollEdgeAppearance.configureWithDefaultBackground()
 
-        scrollEdgeAppearance.backgroundColor = .systemBackground
+        scrollEdgeAppearance.backgroundColor = NCBrandColor.shared.appBackgroundColor
         scrollEdgeAppearance.shadowColor = .clear
         scrollEdgeAppearance.shadowImage = UIImage()
         navigationBar.scrollEdgeAppearance = scrollEdgeAppearance

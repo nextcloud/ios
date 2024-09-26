@@ -220,6 +220,7 @@ extension NCNetworking {
         if fileNameFolder.isEmpty {
             return completion(NKError())
         }
+
         let fileNameFolderUrl = serverUrl + "/" + fileNameFolder
 
         NextcloudKit.shared.createFolder(serverUrlFileName: fileNameFolderUrl, account: account) { account, _, _, error in
@@ -411,7 +412,6 @@ extension NCNetworking {
     func renameMetadata(_ metadata: tableMetadata,
                         fileNameNew: String,
                         indexPath: IndexPath,
-                        viewController: UIViewController?,
                         completion: @escaping (_ error: NKError) -> Void) {
         let metadataLive = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
         let fileNameNew = fileNameNew.trimmingCharacters(in: .whitespacesAndNewlines)
