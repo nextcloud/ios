@@ -29,10 +29,6 @@ import EasyTipView
 import JGProgressHUD
 
 class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCPhotoCellDelegate, NCSectionFirstHeaderDelegate, NCSectionFooterDelegate, NCSectionFirstHeaderEmptyDataDelegate, UIAdaptivePresentationControllerDelegate, UIContextMenuInteractionDelegate {
-
-    static let screensToShowLogoInNavigationBar = [NCGlobal.shared.layoutViewFiles,
-                                                   NCGlobal.shared.layoutViewShares,
-                                                   NCGlobal.shared.layoutViewFavorite]
     
     @IBOutlet weak var collectionView: UICollectionView!
 	@IBOutlet weak var headerTop: NSLayoutConstraint?
@@ -199,7 +195,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         navigationController?.setNavigationBarHidden(false, animated: true)
         navigationItem.title = titleCurrentFolder
         
-        if Self.screensToShowLogoInNavigationBar.contains(layoutKey) && (self.navigationController?.viewControllers.count == 1) {
+        if isCurrentScreenInMainTabBar() && (navigationController?.viewControllers.count == 1) {
             let logo = UIImage(resource: .ionosEasyStorageLogo).withTintColor(UIColor(resource: .NavigationBar.logoTint))
             navigationItem.titleView = UIImageView(image: logo)
         }
@@ -640,7 +636,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             return
         }
         
-        if Self.screensToShowLogoInNavigationBar.contains(layoutKey) {
+        if isCurrentScreenInMainTabBar() {
             navigationItem.leftItemsSupplementBackButton = true
             if navigationController?.viewControllers.count == 1 {
                 let burgerMenuItem = UIBarButtonItem(image: UIImage(resource: .BurgerMenu.bars),
@@ -699,7 +695,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             commonSelectToolbar.show()
         } else {
             commonSelectToolbar.hide()
-			navigationItem.rightBarButtonItems = layoutKey == NCGlobal.shared.layoutViewFiles ? [createAccountButton()] : []
+			navigationItem.rightBarButtonItems = isCurrentScreenInMainTabBar() ? [createAccountButton()] : []
         }
         // fix, if the tabbar was hidden before the update, set it in hidden
         if isTabBarHidden, isTabBarSelectHidden {
@@ -717,6 +713,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             return NCBrandOptions.shared.brand
         }
         return userAlias
+    }
+    
+    private func isCurrentScreenInMainTabBar() -> Bool {
+        return self.tabBarController is NCMainTabBarController
     }
 
     // MARK: - SEARCH
