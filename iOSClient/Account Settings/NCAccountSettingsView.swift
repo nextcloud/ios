@@ -39,18 +39,28 @@ struct NCAccountSettingsView: View {
     var body: some View {
         NavigationView {
             Form {
-                userAccountsSection
-                changeAliasSection
-                if NCGlobal.shared.capabilityUserStatusEnabled {
-                    userStatusButtonView
+                  Section {
+                    if let activeAccount = model.activeAccount {
+                        let userStatus = model.getUserStatus()
+                        AccountView(account: activeAccount, userStatus: userStatus)
+                            .font(.system(size: 14))
+                            .frame(height: model.getTableViewHeight())
+                        PersonalDataView(account: activeAccount)
+                    }
+                    changeAliasSection
+                    if NCGlobal.shared.capabilityUserStatusEnabled {
+                        userStatusButtonView
+                    }
+                    if model.isAdminGroup() {
+                        sertificateDetailsButtonView
+                        sertificatePNButtonView
+                    }
                 }
-                if model.isAdminGroup() {
-                    sertificateDetailsButtonView
-                    sertificatePNButtonView
+                Section {
+                    switchAccountSection
+                    addAccountSection
+                    deleteAccountSection  
                 }
-                switchAccountSection
-                addAccountSection
-                deleteAccountSection
             }
             .applyGlobalFormStyle()
             .navigationBarTitle(NSLocalizedString("_account_settings_", comment: ""))
@@ -77,24 +87,6 @@ struct NCAccountSettingsView: View {
 }
 
 extension NCAccountSettingsView {
-    
-    private var userAccountsSection: some View {
-        TabView(selection: $model.indexActiveAccount) {
-            ForEach(0..<model.accounts.count, id: \.self) { index in
-                let userStatus = model.getUserStatus()
-                let userAvatar = NCUtility().loadUserImage(for: AppDelegate().user, displayName: model.activeAccount?.displayName, userBaseUrl: AppDelegate())
-                AccountView(account: model.accounts[index], userAvatar: userAvatar, userStatus: userStatus)
-            }
-        }
-        .font(.system(size: 14))
-        .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-        .frame(height: model.getTableViewHeight())
-        .animation(.easeIn(duration: 0.3), value: animation)
-        .onChange(of: model.indexActiveAccount) { index in
-            animation.toggle()
-            model.setAccount(account: model.accounts[index].account)
-        }
-    }
     
     private var changeAliasSection: some View {
         VStack {
@@ -196,20 +188,13 @@ extension NCAccountSettingsView {
     }
     
     private var switchAccountSection: some View {
-        VStack {
-            ForEach(0..<model.accounts.count, id: \.self) { index in
-                let userAvatar = NCUtility().loadUserImage(for: model.accounts[index].user, displayName: model.accounts[index].displayName, userBaseUrl: model.accounts[index])
-                Button(action: {
-                    model.setAccount(account: model.accounts[index].account)
-                    model.changeAccount()
-                }) {
-                    SwitchAccountRowView(
-                        image: userAvatar,
-                        userName: model.accounts[index].displayName,
-                        userEmail: model.accounts[index].email,
-                        isActive: model.accounts[index].active)
-                }
-                
+        let allAccounts = model.accounts
+        return ForEach(0..<allAccounts.count, id: \.self) { index in
+            let tableAccount = allAccounts[index]
+            Button(action: {
+                model.setAccount(account: tableAccount.account)
+            }) {
+                SwitchAccountRowView(account:tableAccount, isSelected: tableAccount.account == model.activeAccount?.account)
             }
         }
     }
@@ -267,10 +252,11 @@ extension NCAccountSettingsView {
 
 struct AccountView: View {
     let account: tableAccount
-    let userAvatar: UIImage
     let userStatus: (statusImage: UIImage?, statusMessage: String, descriptionMessage: String)
 
     var body: some View {
+        let userAvatar = NCUtility().loadUserImage(for: account.user, displayName: account.displayName, userBaseUrl: account)
+
         VStack {
             UserImageView(avatar: userAvatar, onlineStatus: userStatus.statusImage)
             Text(account.displayName)
@@ -279,7 +265,6 @@ struct AccountView: View {
             Text(userStatus.statusMessage)
                 .font(.system(size: 10))
             Spacer().frame(height: 20)
-            PersonalDataView(account: account)
         }
     }
 }
@@ -351,31 +336,32 @@ struct UserImageView: View {
 }
 
 struct SwitchAccountRowView: View {
-    let image: UIImage
-    let userName: String
-    let userEmail: String
-    let isActive: Bool
+    let account: tableAccount
+    let isSelected: Bool
 
     var body: some View {
+        let userName = account.alias.isEmpty ? account.displayName : account.alias
+        let userAvatar = NCUtility().loadUserImage(for: account.user, displayName: account.displayName, userBaseUrl: account)
+        
         HStack {
             Image(uiImage: UIImage(named: "accountCheckmark")!)
                 .resizable()
                 .frame(width: 20, height: 15)
                 .padding(.trailing, 10)
-                .hiddenConditionally(isHidden: !isActive)
+                .hiddenConditionally(isHidden: !isSelected)
             VStack(alignment: .leading) {
                 Text(userName)
                     .foregroundStyle(Color(NCBrandColor.shared.textColor))
                     .padding(.trailing, 20)
                     .font(.system(size: 17))
-                Text(userEmail)
+                Text(account.email)
                     .foregroundStyle(Color(UIColor.lightGray))
                     .padding(.trailing, 20)
                     .font(.system(size: 16))
             }
             .lineLimit(1)
             Spacer()
-            Image(uiImage: image)
+            Image(uiImage: userAvatar)
                 .resizable()
                 .scaledToFit()
                 .frame(width: 35, height: 35)
