@@ -29,7 +29,8 @@ import RealmSwift
 
 class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegate {
 
-    @IBOutlet weak var collectionView: UICollectionView!
+	@IBOutlet weak var vHeader: FileActionsHeader!
+	@IBOutlet weak var collectionView: UICollectionView!
 
     var filePath = ""
     var titleCurrentFolder = NSLocalizedString("_trash_view_", comment: "")
@@ -38,7 +39,11 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
-    var isEditMode = false
+	var isEditMode = false {
+		didSet {
+			vHeader.setIsEditingMode(isEditingMode: isEditMode)
+		}
+	}
     var selectOcId: [String] = []
     var selectionToolbar: NCTrashSelectToolBar!
     var datasource: [tableTrash] = []
@@ -75,9 +80,30 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         refreshControl.tintColor = NCBrandColor.shared.textColor2
         refreshControl.addTarget(self, action: #selector(loadListingTrash), for: .valueChanged)
 
+		updateHeadersView()
+		
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataSource), object: nil)
     }
 
+	private func updateHeadersView() {
+		vHeader?.setIsEditingMode(isEditingMode: isEditMode)
+		vHeader?.setViewModeMenu(viewMenuElements: createViewModeMenuActions(), image: viewModeImage?.templateRendered())
+		
+		vHeader?.onSelectModeChange = { [weak self] isSelectionMode in
+			self?.setEditMode(isSelectionMode)
+			self?.updateHeadersView()
+			self?.vHeader?.setSelectionState(selectionState: .none)
+		}
+		
+		vHeader?.onSelectAll = { [weak self] in
+			guard let self = self else { return }
+			self.selectAll()
+			let selectionState: FileActionsHeaderSelectionState = self.selectOcId.count == 0 ? .none : .all
+			self.vHeader?.setSelectionState(selectionState: selectionState)
+		}
+		updateSelectionToolbar()
+	}
+	
 	private var selectToolBarFrame: CGRect {
 		let toolbarHeight = AppScreenConstants.toolbarHeight
 		return CGRect(x: 0, y: view.bounds.size.height - toolbarHeight, width: view.bounds.size.width, height: toolbarHeight)
@@ -96,9 +122,9 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         }
 
         isEditMode = false
-        setNavigationRightItems()
         setNavigationLeftItems()
-
+		updateHeadersView()
+		
         reloadDataSource()
         loadListingTrash()
     }
@@ -126,38 +152,12 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
     // MARK: - Layout
 
-    func setNavigationRightItems() {
-        func createMenuActions() -> [UIMenuElement] {
-            guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: "") else { return [] }
-            let select = UIAction(title: NSLocalizedString("_select_", comment: ""), image: utility.loadImage(named: "checkmark.circle", colors: [NCBrandColor.shared.iconImageColor]), attributes: self.datasource.isEmpty ? .disabled : []) { _ in
-                self.setEditMode(true)
-            }
-            let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: utility.loadImage(named: "list.bullet", colors: [NCBrandColor.shared.iconImageColor]), state: layoutForView.layout == NCGlobal.shared.layoutList ? .on : .off) { _ in
-                self.onListSelected()
-                self.setNavigationRightItems()
-            }
-            let grid = UIAction(title: NSLocalizedString("_icons_", comment: ""), image: utility.loadImage(named: "square.grid.2x2", colors: [NCBrandColor.shared.iconImageColor]), state: layoutForView.layout == NCGlobal.shared.layoutGrid ? .on : .off) { _ in
-                self.onGridSelected()
-                self.setNavigationRightItems()
-            }
-            let viewStyleSubmenu = UIMenu(title: "", options: .displayInline, children: [list, grid])
-
-            return [select, viewStyleSubmenu]
-        }
-
+    func updateSelectionToolbar() {
         if isEditMode {
             selectionToolbar.update(selectOcId: selectOcId)
             selectionToolbar.show()
-            let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) {
-                self.setEditMode(false)
-            }
-            navigationItem.rightBarButtonItems = [select]
         } else if navigationItem.rightBarButtonItems == nil || (!isEditMode && !selectionToolbar.isHidden()) {
             selectionToolbar.hide()
-            let menu = UIBarButtonItem(image: utility.loadImage(named: "ellipsis.circle", colors: [NCBrandColor.shared.iconImageColor]), menu: UIMenu(children: createMenuActions()))
-            navigationItem.rightBarButtonItems = [menu]
-        } else {
-            navigationItem.rightBarButtonItems?.first?.menu = navigationItem.rightBarButtonItems?.first?.menu?.replacingChildren(createMenuActions())
         }
     }
     
@@ -219,7 +219,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
         datasource = NCManageDatabase.shared.getTrash(filePath: getFilePath(), account: appDelegate.account)
         collectionView.reloadData()
-        setNavigationRightItems()
+        updateHeadersView()
 
         guard let blinkFileId = blinkFileId else { return }
         for itemIx in 0..<self.datasource.count where self.datasource[itemIx].fileId.contains(blinkFileId) {
@@ -248,4 +248,30 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
             return filePath + "/"
         }
     }
+}
+
+
+extension NCTrash {
+	private var viewModeImage: UIImage? {
+		let imageName = collectionView.collectionViewLayout == listLayout ? "FileSelection/view_mode_list" : "FileSelection/view_mode_grid"
+		return UIImage(named: imageName)
+	}
+	
+	func createViewModeMenuActions() -> [UIMenuElement] {
+		let layoutForView = collectionView.collectionViewLayout
+
+		let listImage = UIImage(named: "FileSelection/view_mode_list")?.templateRendered()
+		let gridImage = UIImage(named: "FileSelection/view_mode_grid")?.templateRendered()
+
+		let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: listImage, state: layoutForView == listLayout ? .on : .off) { [weak self] _ in
+			self?.onListSelected()
+			self?.updateHeadersView()
+		}
+
+		let grid = UIAction(title: NSLocalizedString("_icons_", comment: ""), image: gridImage, state: layoutForView == gridLayout ? .on : .off) { [weak self] _ in
+			self?.onGridSelected()
+			self?.updateHeadersView()
+		}
+		return [list, grid]
+	}
 }

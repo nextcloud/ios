@@ -82,46 +82,33 @@ struct NCTrashSelectTabBarView: View {
     @ObservedObject var tabBarSelect: NCTrashSelectToolBar
     @Environment(\.verticalSizeClass) var sizeClass
 
-    var body: some View {
-        VStack {
-            Spacer().frame(height: sizeClass == .compact ? 5 : 10)
+	var body: some View {
+		GeometryReader { geometry in
+			let isWideScreen = geometry.size.width > 460
+			let eightyPercentOfWidth = geometry.size.width * 0.85
+			VStack {
+				Spacer().frame(height: 10)
 
-            HStack {
-                Button {
-                    tabBarSelect.delegate?.recover()
-                } label: {
-                    Image(systemName: "arrow.circlepath")
-                        .font(Font.system(.body).weight(.light))
-                        .imageScale(sizeClass == .compact ? .medium : .large)
-                }
-                .tint(Color(NCBrandColor.shared.iconImageColor))
-                .frame(maxWidth: .infinity)
-                .disabled(tabBarSelect.isSelectedEmpty)
-
-                Button {
-                    tabBarSelect.delegate?.delete()
-                } label: {
-                    Image(systemName: "trash")
-                        .font(Font.system(.body).weight(.light))
-                        .imageScale(sizeClass == .compact ? .medium : .large)
-                }
-                .tint(.red)
-                .frame(maxWidth: .infinity)
-                .disabled(tabBarSelect.isSelectedEmpty)
-
-                Button {
-                    tabBarSelect.delegate?.selectAll()
-                } label: {
-                    Image(systemName: "checkmark")
-                        .font(Font.system(.body).weight(.light))
-                        .imageScale(sizeClass == .compact ? .medium : .large)
-                }
-                .tint(Color(NCBrandColor.shared.iconImageColor))
-                .frame(maxWidth: .infinity)
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .background(.thinMaterial)
-        .overlay(Rectangle().frame(width: nil, height: 0.5, alignment: .top).foregroundColor(Color(UIColor.separator)), alignment: .top)
-    }
+				HStack(alignment: .top) {
+					TabButton(
+						action: { tabBarSelect.delegate?.recover() },
+						image: .restoreFromTrash,
+						label: "_restore_" ,
+						isDisabled: tabBarSelect.isSelectedEmpty,
+						isOneRowStyle: isWideScreen
+					)
+					TabButton(
+						action: { tabBarSelect.delegate?.delete() },
+						image: .SelectTabBar.delete,
+						label: "_delete_",
+						isDisabled: tabBarSelect.isSelectedEmpty,
+						isOneRowStyle: isWideScreen
+					)
+				}
+				.frame(maxWidth: isWideScreen ? eightyPercentOfWidth : .infinity)
+			}
+			.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+			.background(Color(.Tabbar.background))
+		}
+	}	
 }
