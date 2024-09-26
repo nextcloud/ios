@@ -30,6 +30,7 @@
 		4240DB502C5648E300E72FC0 /* BurgerMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4240DB4F2C5648E300E72FC0 /* BurgerMenuViewController.swift */; };
 		4240DB522C5649A900E72FC0 /* BurgerMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4240DB512C5649A900E72FC0 /* BurgerMenuView.swift */; };
 		42678ABE2C57C5FB00307DEF /* BurgerMenuViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42678ABD2C57C5FB00307DEF /* BurgerMenuViewModel.swift */; };
+		4294B88B2CA5550B002E6FED /* LinkButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4294B88A2CA5550B002E6FED /* LinkButton.swift */; };
 		42C684B42CA1806000DD46F0 /* SecondaryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42C684B32CA1806000DD46F0 /* SecondaryButton.swift */; };
 		42C684B72CA1A20100DD46F0 /* CommonButtonConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42C684B62CA1A20100DD46F0 /* CommonButtonConstants.swift */; };
 		42D3D0972C94284C008A5AD4 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 42F5047F2C6F553D001AA432 /* Colors.xcassets */; };
@@ -1138,6 +1139,7 @@
 		4240DB4F2C5648E300E72FC0 /* BurgerMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BurgerMenuViewController.swift; sourceTree = "<group>"; };
 		4240DB512C5649A900E72FC0 /* BurgerMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BurgerMenuView.swift; sourceTree = "<group>"; };
 		42678ABD2C57C5FB00307DEF /* BurgerMenuViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BurgerMenuViewModel.swift; sourceTree = "<group>"; };
+		4294B88A2CA5550B002E6FED /* LinkButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkButton.swift; sourceTree = "<group>"; };
 		42C684B32CA1806000DD46F0 /* SecondaryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondaryButton.swift; sourceTree = "<group>"; };
 		42C684B62CA1A20100DD46F0 /* CommonButtonConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonButtonConstants.swift; sourceTree = "<group>"; };
 		42F5047F2C6F553D001AA432 /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
@@ -2017,6 +2019,7 @@
 				42C684B62CA1A20100DD46F0 /* CommonButtonConstants.swift */,
 				D5C2D21E2C9DC0EF00E7579D /* PrimaryButton.swift */,
 				42C684B32CA1806000DD46F0 /* SecondaryButton.swift */,
+				4294B88A2CA5550B002E6FED /* LinkButton.swift */,
 				0F08D6B82C94270600136502 /* ButtonStyleGuide.swift */,
 			);
 			path = Buttons;
@@ -4641,6 +4644,7 @@
 				F77BB748289985270090FC19 /* UITabBarController+Extension.swift in Sources */,
 				F763D29D2A249C4500A3C901 /* NCManageDatabase+Capabilities.swift in Sources */,
 				F76882252C0DD1E7001CF441 /* NCSettingsAdvancedModel.swift in Sources */,
+				4294B88B2CA5550B002E6FED /* LinkButton.swift in Sources */,
 				F7C7B489245EBA4100D93E60 /* NCViewerQuickLook.swift in Sources */,
 				F758B45E212C569D00515F55 /* NCScanCell.swift in Sources */,
 				F78B87E72B62527100C65ADC /* NCMediaDataSource.swift in Sources */,
