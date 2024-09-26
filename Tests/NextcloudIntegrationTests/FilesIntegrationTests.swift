@@ -63,7 +63,7 @@ final class FilesIntegrationTests: BaseIntegrationXCTestCase {
 
                 Task {
                     // Test deleting folder
-                    await _ = NCNetworking.shared.deleteMetadata(metadataFolder!, onlyLocalCache: false)
+                    await _ = NCNetworking.shared.deleteMetadata(metadataFolder!)
 
                     XCTAssertEqual(NKError.success.errorCode, error.errorCode)
                     XCTAssertEqual(NKError.success.errorDescription, error.errorDescription)

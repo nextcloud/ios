@@ -323,12 +323,13 @@ extension NCNetworking {
 
     // MARK: - Delete
 
-    func tapHudDeleteMetadata() {
-        tapHudStopDelete = true
+    func tapHudDeleteCache() {
+        tapHudStopDeleteCache = true
     }
 
-    func deleteMetadata(_ metadata: tableMetadata, onlyLocalCache: Bool, sceneIdentifier: String?) async -> (NKError) {
+    func deleteCache(_ metadata: tableMetadata, sceneIdentifier: String?) async -> (NKError) {
         let ncHud = NCHud()
+
         var num: Float = 0
 
         func numIncrement() -> Float {
@@ -349,40 +350,42 @@ extension NCNetworking {
             #endif
         }
 
-        self.tapHudStopDelete = false
+        self.tapHudStopDeleteCache = false
 
+        if metadata.directory {
+            #if !EXTENSION
+            if let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier) {
+                await MainActor.run {
+                    ncHud.initHudRing(view: controller.view, tapToCancelDetailText: true, tapOperation: tapHudDeleteCache)
+                }
+            }
+            #endif
+            let serverUrl = metadata.serverUrl + "/" + metadata.fileName
+            let metadatas = self.database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == false", metadata.account, serverUrl))
+            let numMetadatas = Float(metadatas.count)
+            for metadata in metadatas {
+                deleteLocalFile(metadata: metadata)
+                let num = numIncrement()
+                ncHud.progress(num: num, total: numMetadatas)
+                if tapHudStopDeleteCache { break }
+            }
+            #if !EXTENSION
+            ncHud.dismiss()
+            #endif
+        } else {
+            deleteLocalFile(metadata: metadata)
+        }
+
+        return .success
+    }
+
+    func deleteMetadata(_ metadata: tableMetadata) async -> (NKError) {
         if metadata.status == global.metadataStatusWaitCreateFolder {
             let metadatas = database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND status IN %@", metadata.account, metadata.serverUrl, global.metadataStatusAllUp))
             for metadata in metadatas {
                 database.deleteMetadataOcId(metadata.ocId)
                 utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
             }
-        } else if onlyLocalCache {
-            if metadata.directory {
-                #if !EXTENSION
-                if let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier) {
-                    await MainActor.run {
-                        ncHud.initHudRing(view: controller.view, tapToCancelDetailText: true, tapOperation: tapHudDeleteMetadata)
-                    }
-                }
-                #endif
-                let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-                let metadatas = self.database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == false", metadata.account, serverUrl))
-                let numMetadatas = Float(metadatas.count)
-                for metadata in metadatas {
-                    deleteLocalFile(metadata: metadata)
-                    let num = numIncrement()
-                    ncHud.progress(num: num, total: numMetadatas)
-                    if tapHudStopDelete { break }
-                }
-                #if !EXTENSION
-                ncHud.dismiss()
-                #endif
-            } else {
-                deleteLocalFile(metadata: metadata)
-            }
-
-            return .success
         }
 
         if metadata.status == NCGlobal.shared.metadataStatusWaitCreateFolder {

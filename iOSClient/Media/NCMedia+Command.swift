@@ -198,7 +198,7 @@ extension NCMedia: NCMediaSelectTabBarDelegate {
                     var ocIds: [String] = []
                     for ocId in fileSelect where error == .success {
                         if let metadata = self.database.getMetadataFromOcId(ocId) {
-                            error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false, sceneIdentifier: self.controller?.sceneIdentifier)
+                            error = await NCNetworking.shared.deleteMetadata(metadata)
                             if error == .success {
                                 ocIds.append(metadata.ocId)
                             }

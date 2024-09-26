@@ -121,7 +121,7 @@ extension UIAlertController {
                     var error = NKError()
                     var ocId: [String] = []
                     for metadata in selectedMetadatas where error == .success {
-                        error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false, sceneIdentifier: sceneIdentifier)
+                        error = await NCNetworking.shared.deleteMetadata(metadata)
                         if error == .success {
                             ocId.append(metadata.ocId)
                         }
@@ -137,7 +137,7 @@ extension UIAlertController {
                 var error = NKError()
                 var ocId: [String] = []
                 for metadata in selectedMetadatas where error == .success {
-                    error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true, sceneIdentifier: sceneIdentifier)
+                    error = await NCNetworking.shared.deleteCache(metadata, sceneIdentifier: sceneIdentifier)
                     if error == .success {
                         ocId.append(metadata.ocId)
                     }

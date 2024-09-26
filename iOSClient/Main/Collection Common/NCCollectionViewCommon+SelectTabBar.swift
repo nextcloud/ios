@@ -50,7 +50,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
                     var error = NKError()
                     var ocId: [String] = []
                     for metadata in copyMetadatas where error == .success {
-                        error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false, sceneIdentifier: self.controller?.sceneIdentifier)
+                        error = await NCNetworking.shared.deleteMetadata(metadata)
                         if error == .success {
                             ocId.append(metadata.ocId)
                         }
@@ -68,7 +68,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
                 var error = NKError()
                 var ocId: [String] = []
                 for metadata in copyMetadatas where error == .success {
-                    error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true, sceneIdentifier: self.controller?.sceneIdentifier)
+                    error = await NCNetworking.shared.deleteCache(metadata, sceneIdentifier: self.controller?.sceneIdentifier)
                     if error == .success {
                         ocId.append(metadata.ocId)
                     }
