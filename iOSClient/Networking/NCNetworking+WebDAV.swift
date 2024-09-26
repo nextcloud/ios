@@ -57,7 +57,7 @@ extension NCNetworking {
                                            serverUrl: serverUrl,
                                            account: metadataFolder.account)
 
-                self.database.updateFilesMetadatas(metadatas, serverUrl: serverUrl, account: account)
+                self.database.updateMetadatasFiles(metadatas, serverUrl: serverUrl, account: account)
                 completion(account, metadataFolder, metadatas, error)
             }
         }

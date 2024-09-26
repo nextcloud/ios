@@ -681,6 +681,24 @@ extension NCManageDatabase {
         }
     }
 
+    func updateMetadatasFiles(_ metadatas: [tableMetadata], serverUrl: String, account: String) {
+        do {
+            let realm = try Realm()
+            try realm.write {
+                let results = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal))
+                realm.delete(results)
+                for metadata in metadatas {
+                    if realm.objects(tableMetadata.self).filter(NSPredicate(format: "ocId == %@ AND status != %d", metadata.ocId, NCGlobal.shared.metadataStatusNormal)).first != nil {
+                        continue
+                    }
+                    realm.add(tableMetadata(value: metadata), update: .all)
+                }
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
+        }
+    }
+
     func setMetadataEncrypted(ocId: String, encrypted: Bool) {
         do {
             let realm = try Realm()
@@ -725,43 +743,6 @@ extension NCManageDatabase {
                 let results = realm.objects(tableMetadata.self).filter("assetLocalIdentifier IN %@", assetLocalIdentifiers)
                 for result in results {
                     result.assetLocalIdentifier = ""
-                }
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
-        }
-    }
-
-    func replaceMetadata(_ metadatas: [tableMetadata], predicate: NSPredicate) {
-        do {
-            let realm = try Realm()
-            try realm.write {
-                let results = realm.objects(tableMetadata.self).filter(predicate)
-                realm.delete(results)
-                for metadata in metadatas {
-                    if results.where({ $0.ocId == metadata.ocId }).isEmpty {
-                        realm.add(tableMetadata(value: metadata), update: .modified)
-                    } else {
-                        continue
-                    }
-                }
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
-        }
-    }
-
-    func updateFilesMetadatas(_ metadatas: [tableMetadata], serverUrl: String, account: String) {
-        do {
-            let realm = try Realm()
-            try realm.write {
-                let results = realm.objects(tableMetadata.self).filter(NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, NCGlobal.shared.metadataStatusNormal))
-                realm.delete(results)
-                for metadata in metadatas {
-                    if realm.objects(tableMetadata.self).filter(NSPredicate(format: "ocId == %@ AND status != %d", metadata.ocId, NCGlobal.shared.metadataStatusNormal)).first != nil {
-                        continue
-                    }
-                    realm.add(tableMetadata(value: metadata), update: .all)
                 }
             }
         } catch let error {
