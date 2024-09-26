@@ -151,6 +151,10 @@ extension NCActivity: UITableViewDelegate {
         return 50
     }
 
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 80.0
+    }
+
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let view = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.width, height: 50))
         view.backgroundColor = .clear
@@ -221,9 +225,22 @@ extension NCActivity: UITableViewDataSource {
         cell.tableComments = comment
         cell.delegate = self
 
-        // Image
+        // Avatar
         let fileName = NCSession.shared.getFileName(urlBase: metadata.urlBase, user: comment.actorId)
-        NCNetworking.shared.downloadAvatar(user: comment.actorId, dispalyName: comment.actorDisplayName, fileName: fileName, account: comment.account, cell: cell, view: tableView)
+        let results = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName)
+
+        if results.image == nil {
+            cell.fileAvatarImageView?.image = utility.loadUserImage(for: comment.actorId, displayName: comment.actorDisplayName, urlBase: NCSession.shared.getSession(account: account).urlBase)
+        } else {
+            cell.fileAvatarImageView?.image = results.image
+        }
+
+        if let tableAvatar = results.tableAvatar,
+           !tableAvatar.loaded,
+           NCNetworking.shared.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
+            NCNetworking.shared.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: comment.actorId, fileName: fileName, account: account, view: tableView))
+        }
+
         // Username
         cell.labelUser.text = comment.actorDisplayName
         cell.labelUser.textColor = NCBrandColor.shared.textColor
@@ -288,9 +305,21 @@ extension NCActivity: UITableViewDataSource {
         if !activity.user.isEmpty && activity.user != session.userId {
             cell.avatar.isHidden = false
             cell.fileUser = activity.user
-            let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: activity.user)
-            NCNetworking.shared.downloadAvatar(user: activity.user, dispalyName: nil, fileName: fileName, account: session.account, cell: cell, view: tableView)
             cell.subjectLeadingConstraint.constant = 15
+
+            let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: activity.user)
+            let results = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName)
+
+            if results.image == nil {
+                cell.fileAvatarImageView?.image = utility.loadUserImage(for: activity.user, displayName: nil, urlBase: session.urlBase)
+            } else {
+                cell.fileAvatarImageView?.image = results.image
+            }
+
+            if !(results.tableAvatar?.loaded ?? false),
+               NCNetworking.shared.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
+                NCNetworking.shared.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: activity.user, fileName: fileName, account: session.account, view: tableView))
+            }
         } else {
             cell.subjectLeadingConstraint.constant = -30
         }

@@ -224,7 +224,8 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                                                                            account: activeTableAccount.account,
                                                                            options: options)
                     if result.error == .success, let data = result.data {
-                        utility.createImage(ocId: file.ocId, etag: file.etag, data: data)
+                        utility.createImageFileFrom(data: data, ocId: file.ocId, etag: file.etag)
+                        image = utility.getImage(ocId: file.ocId, etag: file.etag, ext: NCGlobal.shared.previewExt256)
                     }
                 }
                 if image == nil {

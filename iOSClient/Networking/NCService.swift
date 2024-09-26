@@ -147,11 +147,10 @@ class NCService: NSObject {
     func getAvatar(account: String) {
         let session = NCSession.shared.getSession(account: account)
         let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: session.user)
-        let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
         let etag = self.database.getTableAvatar(fileName: fileName)?.etag
 
         NextcloudKit.shared.downloadAvatar(user: session.userId,
-                                           fileNameLocalPath: fileNameLocalPath,
+                                           fileNameLocalPath: utilityFileSystem.directoryUserData + "/" + fileName,
                                            sizeImage: NCGlobal.shared.avatarSize,
                                            avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
                                            etag: etag,

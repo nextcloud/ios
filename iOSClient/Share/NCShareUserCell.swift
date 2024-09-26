@@ -173,13 +173,14 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
         imageItem.image = utility.loadUserImage(for: sharee.shareWith, displayName: nil, urlBase: session.urlBase)
 
         let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: sharee.shareWith)
-        if NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) == nil {
-            let fileNameLocalPath = NCUtilityFileSystem().directoryUserData + "/" + fileName
+        let results = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName)
+
+        if results.image == nil {
             let etag = NCManageDatabase.shared.getTableAvatar(fileName: fileName)?.etag
 
             NextcloudKit.shared.downloadAvatar(
                 user: sharee.shareWith,
-                fileNameLocalPath: fileNameLocalPath,
+                fileNameLocalPath: NCUtilityFileSystem().directoryUserData + "/" + fileName,
                 sizeImage: NCGlobal.shared.avatarSize,
                 avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
                 etag: etag, account: session.account) { _, imageAvatar, _, etag, error in

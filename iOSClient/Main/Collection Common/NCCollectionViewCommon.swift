@@ -223,7 +223,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             self.layoutType = global.layoutPhotoSquare
         }
 
-        // FIXME: iPAD PDF landscape mode iOS 16
         DispatchQueue.main.async {
             self.collectionView?.collectionViewLayout.invalidateLayout()
         }
@@ -312,9 +311,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
-        collectionView?.collectionViewLayout.invalidateLayout()
-        collectionView?.reloadData()
-        dismissTip()
+        coordinator.animate(alongsideTransition: nil) { _ in
+            self.collectionView?.collectionViewLayout.invalidateLayout()
+            self.dismissTip()
+        }
     }
 
     override var canBecomeFirstResponder: Bool {

@@ -131,13 +131,17 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
             cell.avatarLeadingMargin.constant = 50
 
             let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: user)
-            let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
+            let results = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName)
 
-            if let image = UIImage(contentsOfFile: fileNameLocalPath) {
-                cell.avatar.image = image
-            } else if !FileManager.default.fileExists(atPath: fileNameLocalPath) {
-                cell.fileUser = user
-                NCNetworking.shared.downloadAvatar(user: user, dispalyName: json["user"]?["name"].string, fileName: fileName, account: session.account, cell: cell, view: tableView)
+            if results.image == nil {
+                cell.fileAvatarImageView?.image = utility.loadUserImage(for: user, displayName: json["user"]?["name"].string, urlBase: session.urlBase)
+            } else {
+                cell.fileAvatarImageView?.image = results.image
+            }
+
+            if !(results.tableAvatar?.loaded ?? false),
+               NCNetworking.shared.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
+                NCNetworking.shared.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: user, fileName: fileName, account: session.account, view: tableView))
             }
         }
 
