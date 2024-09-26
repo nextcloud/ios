@@ -43,7 +43,7 @@ public class NCPopupViewController: UIViewController {
     private(set) public var popupHeight: CGFloat?
 
     // Background alpha, default is 0.3
-    public var backgroundAlpha: CGFloat = 0.3
+    public var backgroundAlpha: CGFloat = 0.2
 
     // Background color, default is black
     public var backgroundColor = UIColor.black

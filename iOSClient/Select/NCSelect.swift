@@ -148,11 +148,11 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        self.navigationItem.title = titleCurrentFolder
+        let folderPath = utilityFileSystem.getFileNamePath("", serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
 
-        // set the serverUrl
-        if serverUrl.isEmpty {
+        if serverUrl.isEmpty || !FileNameValidator.shared.checkFolderPath(folderPath: folderPath) {
             serverUrl = utilityFileSystem.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId)
+            titleCurrentFolder = NCBrandOptions.shared.brand
         }
 
         // get auto upload folder
@@ -160,6 +160,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: activeAccount.urlBase, userId: activeAccount.userId, account: activeAccount.account)
 
         loadDatasource(withLoadFolder: true)
+
+        self.navigationItem.title = titleCurrentFolder
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -253,7 +255,11 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         viewController.titleCurrentFolder = metadata.fileNameView
         viewController.serverUrl = serverUrlPush
 
-        self.navigationController?.pushViewController(viewController, animated: true)
+        if let fileNameError = FileNameValidator.shared.checkFileName(metadata.fileNameView) {
+            present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
+        } else {
+            navigationController?.pushViewController(viewController, animated: true)
+        }
     }
 }
 
@@ -266,11 +272,8 @@ extension NCSelect: UICollectionViewDelegate {
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
 
         if metadata.directory {
-
             pushMetadata(metadata)
-
         } else {
-
             delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadata, type: type, items: items, overwrite: overwrite, copy: false, move: false)
             self.dismiss(animated: true, completion: nil)
         }

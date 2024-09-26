@@ -229,11 +229,19 @@ extension NCManageDatabase {
                             let bigfilechunking: Bool?
                             let versiondeletion: Bool?
                             let versionlabeling: Bool?
+                            let forbiddenFileNames: [String]?
+                            let forbiddenFileNameBasenames: [String]?
+                            let forbiddenFileNameCharacters: [String]?
+                            let forbiddenFileNameExtensions: [String]?
 
                             enum CodingKeys: String, CodingKey {
                                 case undelete, locking, comments, versioning, directEditing, bigfilechunking
                                 case versiondeletion = "version_deletion"
                                 case versionlabeling = "version_labeling"
+                                case forbiddenFileNames = "forbidden_filenames"
+                                case forbiddenFileNameBasenames = "forbidden_filename_basenames"
+                                case forbiddenFileNameCharacters = "forbidden_filename_characters"
+                                case forbiddenFileNameExtensions = "forbidden_filename_extensions"
                             }
 
                             struct DirectEditing: Codable {
@@ -360,6 +368,11 @@ extension NCManageDatabase {
             }
             global.capabilityGroupfoldersEnabled = data.capabilities.groupfolders?.hasGroupFolders ?? false
             global.capabilitySecurityGuardDiagnostics = data.capabilities.securityguard?.diagnostics ?? false
+
+            global.capabilityForbiddenFileNames = data.capabilities.files?.forbiddenFileNames ?? []
+            global.capabilityForbiddenFileNameBasenames = data.capabilities.files?.forbiddenFileNameBasenames ?? []
+            global.capabilityForbiddenFileNameCharacters = data.capabilities.files?.forbiddenFileNameCharacters ?? []
+            global.capabilityForbiddenFileNameExtensions = data.capabilities.files?.forbiddenFileNameExtensions ?? []
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
             return
