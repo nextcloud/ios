@@ -56,7 +56,7 @@ extension NCShareExtension {
         NCNetworking.shared.readFolder(serverUrl: serverUrl, account: session.account) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()
-        } completion: { _, metadataFolder, _, _, _, error in
+        } completion: { _, metadataFolder, _, error in
             DispatchQueue.main.async {
                 if error != .success {
                     self.showAlert(description: error.errorDescription)

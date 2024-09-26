@@ -32,9 +32,8 @@ extension NCNetworking {
 
     func readFolder(serverUrl: String,
                     account: String,
-                    forceReplaceMetadatas: Bool = false,
                     taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
-                    completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ metadatasDifferentCount: Int, _ metadatasModified: Int, _ error: NKError) -> Void) {
+                    completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ error: NKError) -> Void) {
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
                                              depth: "1",
                                              showHiddenFiles: NCKeychain().showHiddenFiles,
@@ -43,7 +42,7 @@ extension NCNetworking {
             taskHandler(task)
         } completion: { account, files, _, error in
             guard error == .success, let files else {
-                return completion(account, nil, nil, 0, 0, error)
+                return completion(account, nil, nil, error)
             }
 
             self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: true) { metadataFolder, metadatas in
@@ -58,15 +57,8 @@ extension NCNetworking {
                                            serverUrl: serverUrl,
                                            account: metadataFolder.account)
 
-                let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, self.global.metadataStatusNormal)
-
-                if forceReplaceMetadatas {
-                    self.database.replaceMetadata(metadatas, predicate: predicate)
-                    completion(account, metadataFolder, metadatas, 1, 1, error)
-                } else {
-                    let results = self.database.updateMetadatas(metadatas, predicate: predicate)
-                    completion(account, metadataFolder, metadatas, results.metadatasDifferentCount, results.metadatasModified, error)
-                }
+                self.database.updateFilesMetadatas(metadatas, serverUrl: serverUrl, account: account)
+                completion(account, metadataFolder, metadatas, error)
             }
         }
     }

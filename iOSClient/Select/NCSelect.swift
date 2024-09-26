@@ -498,7 +498,7 @@ extension NCSelect {
         NCNetworking.shared.readFolder(serverUrl: serverUrl, account: session.account) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()
-        } completion: { _, _, _, _, _, error in
+        } completion: { _, _, _, error in
             DispatchQueue.main.async {
                 if error != .success {
                     NCContentPresenter().showError(error: error)
