@@ -59,17 +59,20 @@ class ScreenAwakeManager {
     }
 
     private func updateMode() {
-        switch mode {
-        case .whileCharging:
-            startMonitoring()
-            application.isIdleTimerDisabled = isPlugged
-        case .on:
-            stopMonitoring()
-            application.isIdleTimerDisabled = true
-        case .off:
-            stopMonitoring()
-            application.isIdleTimerDisabled = false
+        DispatchQueue.main.async { [self] in
+            switch mode {
+            case .whileCharging:
+                startMonitoring()
+                application.isIdleTimerDisabled = isPlugged
+            case .on:
+                stopMonitoring()
+                application.isIdleTimerDisabled = true
+            case .off:
+                stopMonitoring()
+                application.isIdleTimerDisabled = false
+            }
         }
+
     }
 
     private var isPlugged: Bool {

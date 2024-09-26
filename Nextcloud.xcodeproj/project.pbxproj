@@ -160,7 +160,6 @@
 		F3BB464D2A39ADCC00461F6E /* NCMoreAppSuggestionsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F3BB464C2A39ADCC00461F6E /* NCMoreAppSuggestionsCell.xib */; };
 		F3BB46522A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46512A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift */; };
 		F3BB46542A3A1E9D00461F6E /* CCCellMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */; };
-		F3CA5AF52C99C2C400F673FC /* Insomnia in Frameworks */ = {isa = PBXBuildFile; productRef = F3CA5AF42C99C2C400F673FC /* Insomnia */; };
 		F3E173B02C9AF637006D177A /* ScreenAwakeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E173AF2C9AF637006D177A /* ScreenAwakeManager.swift */; };
 		F3E173C02C9B1067006D177A /* AwakeMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E173BF2C9B1067006D177A /* AwakeMode.swift */; };
 		F3E173C12C9B1067006D177A /* AwakeMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E173BF2C9B1067006D177A /* AwakeMode.swift */; };
@@ -5925,14 +5924,6 @@
 				minimumVersion = 2.9.1;
 			};
 		};
-		F3CA5AF32C99C2C400F673FC /* XCRemoteSwiftPackageReference "Insomnia" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/ochococo/Insomnia";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.0.1;
-			};
-		};
 		F70B86732642CE3B00ED5349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -6297,11 +6288,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F3A0479C2BD268B500658E7B /* XCRemoteSwiftPackageReference "PopupView" */;
 			productName = PopupView;
-		};
-		F3CA5AF42C99C2C400F673FC /* Insomnia */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F3CA5AF32C99C2C400F673FC /* XCRemoteSwiftPackageReference "Insomnia" */;
-			productName = Insomnia;
 		};
 		F3F0419A2B9F7E6700D5155F /* RealmSwift */ = {
 			isa = XCSwiftPackageProductDependency;
