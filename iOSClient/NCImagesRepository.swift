@@ -42,6 +42,15 @@ class NCImagesRepository: NSObject {
         case presentation = "presentation"
         case createFolder = "createFolder"
         case signOut = "sign.out"
+		
+		case mediaForward = "MediaPlayer/Forward"
+		case mediaFullscreen = "MediaPlayer/Fullscreen"
+		case mediaCloseFullscreen = "MediaPlayer/CloseFullscreen"
+		case mediaMessage = "MediaPlayer/Message"
+		case mediaPause = "MediaPlayer/Pause"
+		case mediaPlay = "MediaPlayer/Play"
+		case mediaRewind = "MediaPlayer/Rewind"
+		case mediaSound = "MediaPlayer/Sound"
     }
     
     private static let utility = NCUtility()
@@ -70,6 +79,7 @@ class NCImagesRepository: NSObject {
             named: ImageName.signOut.rawValue)
     }
     
+	// menu
     static var menuIconRemoveFromFavorite: UIImage {
         menuIcon(ImageName.favorite)
     }
@@ -199,6 +209,47 @@ class NCImagesRepository: NSObject {
             named: imageName.rawValue,
             colors: [.menuIconTint])
     }
+	
+	// media player
+	static let mediaBigIconSize: CGFloat = 48
+	static let mediaMediumIconSize: CGFloat = 24
+	
+	static var mediaIconForward: UIImage {
+		mediaIcon(ImageName.mediaForward, size: mediaBigIconSize)
+	}
+
+	static var mediaIconFullscreen: UIImage {
+		mediaIcon(ImageName.mediaFullscreen)
+	}
+
+	static var mediaIconCloseFullscreen: UIImage {
+		mediaIcon(ImageName.mediaCloseFullscreen)
+	}
+	
+	static var mediaIconMessage: UIImage {
+		mediaIcon(ImageName.mediaMessage)
+	}
+
+	static var mediaIconPause: UIImage {
+		mediaIcon(ImageName.mediaPause, size: mediaBigIconSize)
+	}
+
+	static var mediaIconPlay: UIImage {
+		mediaIcon(ImageName.mediaPlay, size: mediaBigIconSize)
+	}
+
+	static var mediaIconRewind: UIImage {
+		mediaIcon(ImageName.mediaRewind, size: mediaBigIconSize)
+	}
+
+	static var mediaIconSound: UIImage {
+		mediaIcon(ImageName.mediaSound)
+	}
+
+	private static func mediaIcon(_ imageName: ImageName, size: CGFloat = mediaMediumIconSize) -> UIImage {
+		let color = UIColor(named: "MediaPlayer/IconTint") ?? .white
+		return UIImage(named: imageName.rawValue)?.image(color: color, size: size) ??  utility.loadImage(named: imageName.rawValue, size: size)
+	}
 }
 
 extension UIColor {

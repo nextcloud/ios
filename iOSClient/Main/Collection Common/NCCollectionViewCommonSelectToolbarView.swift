@@ -74,7 +74,7 @@ struct NCCollectionViewCommonSelectToolbarView: View {
     }
 }
 
-private struct TabButton: View {
+struct TabButton: View {
     let action: (() -> Void)?
     let image: ImageResource
     let label: String
