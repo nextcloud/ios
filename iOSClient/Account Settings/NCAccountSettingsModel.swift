@@ -35,7 +35,7 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     /// AppDelegate
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     /// All account
-    var accounts: [tableAccount] = []
+    @Published var accounts: [tableAccount] = []
     /// Delegate
     weak var delegate: NCAccountSettingsModelDelegate?
     /// Timer change user
@@ -193,5 +193,11 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
                 appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
             }
         }
+    }
+    
+    func deleteAllAccounts() {
+        appDelegate.deleteAllAccounts()
+        dismissView = true
+        appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
     }
 }
