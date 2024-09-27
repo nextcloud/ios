@@ -31,6 +31,7 @@ extension NCNetworking {
     func cancelAllTask() {
         cancelAllQueue()
         cancelAllDataTask()
+        cancelAllWaitTask()
         cancelAllDownloadUploadTask()
     }
 
@@ -57,7 +58,6 @@ extension NCNetworking {
         ///
         if metadata.status == global.metadataStatusWaitDelete {
             database.setMetadataStatus(ocId: metadata.ocId, status: global.metadataStatusNormal)
-            database.cleanEtagDirectory(serverUrl: metadata.serverUrl, account: metadata.account)
             NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
             return
         }
@@ -70,6 +70,8 @@ extension NCNetworking {
                 database.deleteMetadataOcId(metadata.ocId)
                 utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
             }
+            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
+            return
         }
 
         /// NO SESSION
@@ -120,6 +122,22 @@ extension NCNetworking {
                                                                    "account": metadata.account],
                                                         second: 0.5)
         }
+    }
+
+    func cancelAllWaitTask() {
+        let metadatas = database.getMetadatas(predicate: NSPredicate(format: "status IN %@", [global.metadataStatusWaitCreateFolder, global.metadataStatusWaitDelete]))
+        for metadata in metadatas {
+            if metadata.status == global.metadataStatusWaitDelete {
+                database.setMetadataStatus(ocId: metadata.ocId, status: global.metadataStatusNormal)
+            } else if metadata.status == global.metadataStatusWaitCreateFolder {
+                let metadatas = database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND status != 0", metadata.account, metadata.serverUrl))
+                for metadata in metadatas {
+                    database.deleteMetadataOcId(metadata.ocId)
+                    utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+                }
+            }
+        }
+        NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
     }
 
     func cancelAllDataTask() {
