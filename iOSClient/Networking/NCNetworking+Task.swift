@@ -52,7 +52,15 @@ extension NCNetworking {
     // MARK: -
 
     func cancelTask(metadata: tableMetadata) {
-        utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+
+        /// DELETE
+        ///
+        if metadata.status == global.metadataStatusWaitDelete {
+            database.setMetadataStatus(ocId: metadata.ocId, status: global.metadataStatusNormal)
+            database.cleanEtagDirectory(serverUrl: metadata.serverUrl, account: metadata.account)
+            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
+            return
+        }
 
         /// DIRECTORY
         ///
@@ -64,19 +72,11 @@ extension NCNetworking {
             }
         }
 
-        /// DELETE
-        ///
-        if metadata.status == global.metadataStatusWaitDelete {
-            database.setMetadataStatus(ocId: metadata.ocId, status: global.metadataStatusNormal)
-            database.cleanEtagDirectory(serverUrl: metadata.serverUrl, account: metadata.account)
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
-            return
-        }
-
         /// NO SESSION
         ///
         if metadata.session.isEmpty {
             self.database.deleteMetadataOcId(metadata.ocId)
+            utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
             NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
             return
         }
@@ -104,12 +104,12 @@ extension NCNetworking {
         /// UPLOAD
         ///
         if metadata.session.contains("upload") {
-
             if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionUpload {
                 cancelUploadTasks(metadata: metadata)
             } else {
                 cancelUploadBackgroundTask(metadata: metadata)
             }
+            utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
 
             NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadCancelFile,
                                                         object: nil,
