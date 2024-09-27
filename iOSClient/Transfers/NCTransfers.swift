@@ -35,7 +35,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         enableSearchBar = false
         headerRichWorkspaceDisable = true
         headerMenuTransferView = false
-        emptyImageName = "arrow.left.arrow.right"
+        emptyImageName = "arrow.left.arrow.right.circle"
         emptyTitle = "_no_transfer_"
         emptyDescription = "_no_transfer_sub_"
     }

@@ -112,7 +112,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         // ITEM : Transfer
         item = NKExternalSite()
         item.name = "_transfers_"
-        item.icon = "arrow.left.arrow.right"
+        item.icon = "arrow.left.arrow.right.circle"
         item.url = "segueTransfers"
         item.order = 10
         functionMenu.append(item)
