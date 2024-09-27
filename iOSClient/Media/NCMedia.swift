@@ -257,32 +257,11 @@ class NCMedia: UIViewController {
 
     @objc func deleteFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocIds = userInfo["ocId"] as? [String],
               let error = userInfo["error"] as? NKError else { return }
-
-        fileDeleted = fileDeleted + ocIds
-
-        var indexPaths: [IndexPath] = []
-        let indices = dataSource.metadatas.enumerated().filter { ocIds.contains($0.element.ocId) }.map { $0.offset }
-
-        for index in indices {
-            let indexPath = IndexPath(row: index, section: 0)
-            if let cell = collectionView.cellForItem(at: indexPath) as? NCMediaCell,
-               dataSource.metadatas[index].ocId == cell.ocId {
-                indexPaths.append(indexPath)
-            }
-        }
-
-        dataSource.removeMetadata(ocIds)
-
-        if indexPaths.count == ocIds.count {
-            collectionView.deleteItems(at: indexPaths)
-        } else {
-            collectionViewReloadData()
-        }
 
         if error != .success {
             NCContentPresenter().showError(error: error)
+            self.loadDataSource()
         }
     }
 
