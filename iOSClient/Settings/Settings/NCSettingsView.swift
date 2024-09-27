@@ -46,7 +46,8 @@ struct NCSettingsView: View {
                     NCAutoUploadView(model: NCAutoUploadModel(viewController: model.controller?.currentViewController()))
                 }) {
                     HStack {
-						Image(.Settings.camera)
+                        Image(.Settings.camera)
+                            .renderingMode(.template)
                             .resizable()
                             .scaledToFit()
 							.font(.settingsIconsFont)
