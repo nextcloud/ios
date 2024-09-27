@@ -46,7 +46,7 @@ extension NCMedia {
                 } completion: { _ in
                     self.setTitleDate()
 
-                    if let layoutForView = self.database.getLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "") {
+                    if let layoutForView = self.database.getLayoutForView(account: self.session.account, key: self.global.layoutViewMedia, serverUrl: "") {
                         layoutForView.columnPhoto = self.numberOfColumns
                         self.database.setLayoutForView(layoutForView: layoutForView)
                     }

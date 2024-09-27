@@ -30,7 +30,7 @@ extension NCMedia: UICollectionViewDataSourcePrefetching {
 
         let cost = indexPaths.first?.row ?? 0
         let metadatas = self.dataSource.getMetadatas(indexPaths: indexPaths)
-        let ext = NCGlobal.shared.getSizeExtension(column: self.numberOfColumns)
+        let ext = global.getSizeExtension(column: self.numberOfColumns)
         let percentageCache = (Double(self.imageCache.cache.count) / Double(self.imageCache.countLimit - 1)) * 100
 
         if cost > self.imageCache.countLimit, percentageCache > 75 {

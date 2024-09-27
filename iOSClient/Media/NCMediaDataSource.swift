@@ -65,7 +65,7 @@ extension NCMedia {
             var lessDate = Date.distantFuture
             var greaterDate = Date.distantPast
             let countMetadatas = self.dataSource.metadatas.count
-            let options = NKRequestOptions(timeout: 120, taskDescription: NCGlobal.shared.taskDescriptionRetrievesProperties, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+            let options = NKRequestOptions(timeout: 120, taskDescription: global.taskDescriptionRetrievesProperties, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
             var firstCellDate: Date?
             var lastCellDate: Date?
 
