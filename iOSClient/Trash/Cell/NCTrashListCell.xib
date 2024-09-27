@@ -72,7 +72,7 @@
                         </connections>
                     </button>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Egg-cb-EhZ" userLabel="separator">
-                        <rect key="frame" x="75" y="160" width="545" height="1"/>
+                        <rect key="frame" x="0.0" y="160" width="620" height="1"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
@@ -92,11 +92,11 @@
             <constraints>
                 <constraint firstItem="Gu8-oz-zWa" firstAttribute="bottom" secondItem="Egg-cb-EhZ" secondAttribute="bottom" id="81D-sw-EaX"/>
                 <constraint firstItem="nwZ-pi-Igj" firstAttribute="centerY" secondItem="3mk-e2-iDg" secondAttribute="centerY" id="A31-Yy-Gyn"/>
-                <constraint firstItem="Egg-cb-EhZ" firstAttribute="leading" secondItem="w2m-Vw-hpd" secondAttribute="trailing" id="JCm-UU-Pxu"/>
                 <constraint firstItem="UtT-L6-mgW" firstAttribute="leading" secondItem="w2m-Vw-hpd" secondAttribute="trailing" constant="10" id="PQ8-0b-fLa"/>
                 <constraint firstItem="yhy-xd-w5C" firstAttribute="leading" secondItem="3mk-e2-iDg" secondAttribute="trailing" constant="5" id="PxA-lT-Gll"/>
                 <constraint firstItem="AXX-71-9Q6" firstAttribute="leading" secondItem="w2m-Vw-hpd" secondAttribute="trailing" constant="10" id="Qvq-r5-AX9"/>
                 <constraint firstItem="AyA-hP-r6w" firstAttribute="leading" secondItem="Gu8-oz-zWa" secondAttribute="leading" constant="15" id="RYl-cO-cCN"/>
+                <constraint firstItem="Egg-cb-EhZ" firstAttribute="leading" secondItem="Gu8-oz-zWa" secondAttribute="leading" id="T7d-XW-eRq"/>
                 <constraint firstItem="3mk-e2-iDg" firstAttribute="leading" secondItem="AXX-71-9Q6" secondAttribute="trailing" constant="5" id="UtX-Ca-aBN"/>
                 <constraint firstItem="dgL-g5-Nkc" firstAttribute="centerY" secondItem="yhy-xd-w5C" secondAttribute="centerY" id="Yad-MJ-UU7"/>
                 <constraint firstItem="yhy-xd-w5C" firstAttribute="centerY" secondItem="Gu8-oz-zWa" secondAttribute="centerY" id="ZO7-Ny-L3I"/>

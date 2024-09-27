@@ -77,8 +77,8 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
 
-        separator.backgroundColor = .separator
-        separatorHeightConstraint.constant = 0.5
+		separator.backgroundColor = UIColor(resource: .ListCell.separator)
+        separatorHeightConstraint.constant = 1
     }
 
     @IBAction func touchUpInsideMore(_ sender: Any) {

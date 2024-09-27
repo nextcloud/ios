@@ -14,8 +14,7 @@ struct NCCollectionViewCommonSelectToolbarView: View {
 
     var body: some View {
         GeometryReader { geometry in
-            let isWideScreen = geometry.size.width > 460
-            let eightyPercentOfWidth = geometry.size.width * 0.85
+			let isWideScreen = geometry.size.width > AppScreenConstants.compactMaxSize
             VStack {
                 Spacer().frame(height: 10)
 
@@ -66,7 +65,7 @@ struct NCCollectionViewCommonSelectToolbarView: View {
                         )
                     }
                 }
-                .frame(maxWidth: isWideScreen ? eightyPercentOfWidth : .infinity)
+                .frame(maxWidth: isWideScreen ? geometry.size.width * 0.85 : .infinity)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
 			.background(Color(.Tabbar.background))
