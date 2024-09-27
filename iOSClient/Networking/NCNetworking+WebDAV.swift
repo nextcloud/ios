@@ -381,7 +381,7 @@ extension NCNetworking {
 
     func deleteMetadata(_ metadata: tableMetadata) async -> (NKError) {
         if metadata.status == global.metadataStatusWaitCreateFolder {
-            let metadatas = database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND status IN %@", metadata.account, metadata.serverUrl, global.metadataStatusAllUp))
+            let metadatas = database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@", metadata.account, metadata.serverUrl))
             for metadata in metadatas {
                 database.deleteMetadataOcId(metadata.ocId)
                 utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))

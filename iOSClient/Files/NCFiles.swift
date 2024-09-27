@@ -123,7 +123,7 @@ class NCFiles: NCCollectionViewCommon {
         let predicateDirectory = NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, self.serverUrl)
 
         if NCKeychain().getPersonalFilesOnly(account: session.account) {
-            predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND (ownerId == %@ || ownerId == '') AND mountType == '' AND NOT (status IN %@)", session.account, self.serverUrl, session.userId, global.metadataStatusFileUp)
+            predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND (ownerId == %@ || ownerId == '') AND mountType == '' AND NOT (status IN %@)", session.account, self.serverUrl, session.userId, global.metadataStatusHideInView)
         }
 
         self.metadataFolder = database.getMetadataFolder(session: session, serverUrl: self.serverUrl)

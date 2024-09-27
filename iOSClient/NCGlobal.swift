@@ -271,11 +271,11 @@ class NCGlobal: NSObject {
     let metadataStatusUploadError: Int          = 3
 
     let metadataStatusWaitCreateFolder: Int     = 10
+    let metadataStatusDelete: Int               = 11
 
     let metadataStatusInTransfer                = [-1, -2, 1, 2]
     let metadataStatusFileDown                  = [-1, -2, -3]
-    let metadataStatusFileUp                    = [1, 2, 3]
-    let metadataStatusAllUp                     = [1, 2, 3, 10]
+    let metadataStatusHideInView                = [1, 2, 3, 11]
 
     // Auto upload subfolder granularity
     //
