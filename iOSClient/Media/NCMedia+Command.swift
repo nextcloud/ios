@@ -187,25 +187,18 @@ extension NCMedia {
 
 extension NCMedia: NCMediaSelectTabBarDelegate {
     func delete() {
-        let fileSelect = self.fileSelect.map { $0 }
+        let ocIds = self.fileSelect.map { $0 }
         var alertStyle = UIAlertController.Style.actionSheet
         if UIDevice.current.userInterfaceIdiom == .pad { alertStyle = .alert }
         if !fileSelect.isEmpty {
             let alertController = UIAlertController(title: nil, message: nil, preferredStyle: alertStyle)
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_delete_selected_photos_", comment: ""), style: .destructive) { (_: UIAlertAction) in
-                Task {
-                    var error = NKError()
-                    var ocIds: [String] = []
-                    for ocId in fileSelect where error == .success {
-                        if let metadata = self.database.getMetadataFromOcId(ocId) {
-                            error = await NCNetworking.shared.deleteMetadata(metadata)
-                            if error == .success {
-                                ocIds.append(metadata.ocId)
-                            }
-                        }
+                for ocId in ocIds {
+                    if let metadata = self.database.getMetadataFromOcId(ocId) {
+                        NCNetworking.shared.deleteMetadata(metadata)
                     }
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocIds, "onlyLocalCache": false, "error": error])
                 }
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
                 self.isEditMode = false
                 self.setSelectcancelButton()
             })

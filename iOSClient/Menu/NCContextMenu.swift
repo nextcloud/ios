@@ -157,14 +157,8 @@ class NCContextMenu: NSObject {
             }
             let alertController = UIAlertController(title: nil, message: nil, preferredStyle: alertStyle)
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_delete_file_", comment: ""), style: .destructive) { _ in
-                Task {
-                    var ocId: [String] = []
-                    let error = await NCNetworking.shared.deleteMetadata(metadata)
-                    if error == .success {
-                        ocId.append(metadata.ocId)
-                    }
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "onlyLocalCache": false, "error": error])
-                }
+                NCNetworking.shared.deleteMetadata(metadata)
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
             })
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { _ in })
             viewController.present(alertController, animated: true, completion: nil)

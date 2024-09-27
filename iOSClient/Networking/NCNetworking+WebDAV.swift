@@ -379,6 +379,26 @@ extension NCNetworking {
         return .success
     }
 
+    func deleteMetadata(_ metadata: tableMetadata) {
+        let permission = NCUtility().permissionsContainsString(metadata.permissions, permissions: NCPermissions().permissionCanDelete)
+        if !metadata.permissions.isEmpty && permission == false {
+            NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_delete_file_"))
+            return
+        }
+
+        if metadata.status == global.metadataStatusWaitCreateFolder {
+            let metadatas = database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@", metadata.account, metadata.serverUrl))
+            for metadata in metadatas {
+                database.deleteMetadataOcId(metadata.ocId)
+                utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+            }
+            return
+        }
+        self.database.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusDelete)
+    }
+
+
+    /*
     func deleteMetadata(_ metadata: tableMetadata) async -> (NKError) {
         if metadata.status == global.metadataStatusWaitCreateFolder {
             let metadatas = database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@", metadata.account, metadata.serverUrl))
@@ -419,6 +439,7 @@ extension NCNetworking {
             }
         }
     }
+    */
 
     func deleteMetadataPlain(_ metadata: tableMetadata, customHeader: [String: String]? = nil) async -> NKError {
         // verify permission
