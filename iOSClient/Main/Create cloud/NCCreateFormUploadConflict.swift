@@ -491,10 +491,8 @@ extension NCCreateFormUploadConflict: NCCreateFormUploadConflictCellDelegate {
 
         if result {
             buttonContinue.isEnabled = true
-            buttonContinue.setTitleColor(NCBrandColor.shared.textColor, for: .normal)
         } else {
             buttonContinue.isEnabled = false
-            buttonContinue.setTitleColor(NCBrandColor.shared.textColor2, for: .normal)
         }
     }
 }
