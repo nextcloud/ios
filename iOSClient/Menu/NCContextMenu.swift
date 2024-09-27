@@ -172,7 +172,7 @@ class NCContextMenu: NSObject {
                 if error == .success {
                     ocId.append(metadata.ocId)
                 }
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "onlyLocalCache": true, "error": error])
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "error": error])
             }
         }
 

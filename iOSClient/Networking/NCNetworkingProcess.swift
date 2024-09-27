@@ -140,6 +140,17 @@ class NCNetworkingProcess {
         var counterDownloading = metadatasDownloading.count
         var counterUploading = metadatasUploading.count
 
+        /// ------------------------ DELETE
+        ///
+        if let metadatasDelete = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitDelete), sortedByKeyPath: "serverUrl", ascending: true) {
+            for metadata in metadatasDelete {
+                if NCNetworking.shared.deleteFileOrFolderQueue.operations.filter({ ($0 as? NCOperationDeleteFileOrFolder)?.ocId == metadata.ocId }).isEmpty {
+                 //   NCNetworking.shared.deleteFileOrFolderQueue.addOperation(NCOperationDeleteFileOrFolder(metadata: metadata))
+                }
+                return (counterDownloading, counterUploading)
+            }
+        }
+
         /// ------------------------ FOLDER
         ///
         if let metadatasWaitCreateFolder = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitCreateFolder), sortedByKeyPath: "serverUrl", ascending: true) {

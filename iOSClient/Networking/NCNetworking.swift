@@ -93,6 +93,7 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
     let downloadQueue = Queuer(name: "downloadQueue", maxConcurrentOperationCount: NCBrandOptions.shared.maxConcurrentOperationDownload, qualityOfService: .default)
     let downloadAvatarQueue = Queuer(name: "downloadAvatarQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     let fileExistsQueue = Queuer(name: "fileExistsQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
+    let deleteFileOrFolderQueue = Queuer(name: "deleteFileOrFolderQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
 
     // MARK: - init
 

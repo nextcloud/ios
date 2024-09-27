@@ -66,7 +66,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
                         ocId.append(metadata.ocId)
                     }
                 }
-                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "onlyLocalCache": true, "error": error])
+                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "error": error])
             }
             self.setEditMode(false)
         })

@@ -64,6 +64,15 @@ extension NCNetworking {
             }
         }
 
+        /// DELETE
+        ///
+        if metadata.status == global.metadataStatusWaitDelete {
+            database.setMetadataStatus(ocId: metadata.ocId, status: global.metadataStatusNormal)
+            database.cleanEtagDirectory(serverUrl: metadata.serverUrl, account: metadata.account)
+            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
+            return
+        }
+
         /// NO SESSION
         ///
         if metadata.session.isEmpty {
