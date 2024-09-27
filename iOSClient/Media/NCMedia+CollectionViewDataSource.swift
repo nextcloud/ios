@@ -101,7 +101,7 @@ extension NCMedia: UICollectionViewDataSource {
         }
         guard let metadata = dataSource.getMetadata(indexPath: indexPath) else { return cell }
 
-        let ext = NCGlobal.shared.getSizeExtension(column: self.numberOfColumns)
+        let ext = global.getSizeExtension(column: self.numberOfColumns)
         let imageCache = imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext)
 
         cell.backgroundColor = .secondarySystemBackground
@@ -125,7 +125,7 @@ extension NCMedia: UICollectionViewDataSource {
         }
 
         if cell.imageItem.image == nil {
-            if isPinchGestureActive || ext == NCGlobal.shared.previewExt512 || ext == NCGlobal.shared.previewExt1024 {
+            if isPinchGestureActive || ext == global.previewExt512 || ext == global.previewExt1024 {
                 cell.imageItem.image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext)
             } else {
                 DispatchQueue.global(qos: .userInteractive).async {

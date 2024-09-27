@@ -98,13 +98,13 @@ extension NCMedia {
     }
 
     func createMenu() {
-        let layoutForView = database.getLayoutForView(account: session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")
-        var layout = layoutForView?.layout ?? NCGlobal.shared.mediaLayoutRatio
+        let layoutForView = database.getLayoutForView(account: session.account, key: global.layoutViewMedia, serverUrl: "")
+        var layout = layoutForView?.layout ?? global.mediaLayoutRatio
         /// Overwrite default value
-        if layout == NCGlobal.shared.layoutList { layout = NCGlobal.shared.mediaLayoutRatio }
+        if layout == global.layoutList { layout = global.mediaLayoutRatio }
         ///
-        let layoutTitle = (layout == NCGlobal.shared.mediaLayoutRatio) ? NSLocalizedString("_media_square_", comment: "") : NSLocalizedString("_media_ratio_", comment: "")
-        let layoutImage = (layout == NCGlobal.shared.mediaLayoutRatio) ? utility.loadImage(named: "square.grid.3x3") : utility.loadImage(named: "rectangle.grid.3x2")
+        let layoutTitle = (layout == global.mediaLayoutRatio) ? NSLocalizedString("_media_square_", comment: "") : NSLocalizedString("_media_ratio_", comment: "")
+        let layoutImage = (layout == global.mediaLayoutRatio) ? utility.loadImage(named: "square.grid.3x3") : utility.loadImage(named: "rectangle.grid.3x2")
 
         let viewFilterMenu = UIMenu(title: "", options: .displayInline, children: [
             UIAction(title: NSLocalizedString("_media_viewimage_show_", comment: ""), image: utility.loadImage(named: "photo")) { _ in
@@ -129,12 +129,12 @@ extension NCMedia {
 
         let viewLayoutMenu = UIMenu(title: "", options: .displayInline, children: [
             UIAction(title: layoutTitle, image: layoutImage) { _ in
-                if layout == NCGlobal.shared.mediaLayoutRatio {
-                    self.database.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", layout: NCGlobal.shared.mediaLayoutSquare)
-                    self.layoutType = NCGlobal.shared.mediaLayoutSquare
+                if layout == self.global.mediaLayoutRatio {
+                    self.database.setLayoutForView(account: self.session.account, key: self.global.layoutViewMedia, serverUrl: "", layout: self.global.mediaLayoutSquare)
+                    self.layoutType = self.global.mediaLayoutSquare
                 } else {
-                    self.database.setLayoutForView(account: self.session.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "", layout: NCGlobal.shared.mediaLayoutRatio)
-                    self.layoutType = NCGlobal.shared.mediaLayoutRatio
+                    self.database.setLayoutForView(account: self.session.account, key: self.global.layoutViewMedia, serverUrl: "", layout: self.global.mediaLayoutRatio)
+                    self.layoutType = self.global.mediaLayoutRatio
                 }
                 self.createMenu()
                 self.collectionViewReloadData()
@@ -187,29 +187,44 @@ extension NCMedia {
 
 extension NCMedia: NCMediaSelectTabBarDelegate {
     func delete() {
-        let fileSelect = self.fileSelect.map { $0 }
+        let ocIds = self.fileSelect.map { $0 }
         var alertStyle = UIAlertController.Style.actionSheet
+        var indexPaths: [IndexPath] = []
+
         if UIDevice.current.userInterfaceIdiom == .pad { alertStyle = .alert }
-        if !fileSelect.isEmpty {
+
+        if !ocIds.isEmpty {
+            let indices = dataSource.metadatas.enumerated().filter { ocIds.contains($0.element.ocId) }.map { $0.offset }
             let alertController = UIAlertController(title: nil, message: nil, preferredStyle: alertStyle)
+
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_delete_selected_photos_", comment: ""), style: .destructive) { (_: UIAlertAction) in
-                Task {
-                    var error = NKError()
-                    var ocIds: [String] = []
-                    for ocId in fileSelect where error == .success {
-                        if let metadata = self.database.getMetadataFromOcId(ocId) {
-                            error = await NCNetworking.shared.deleteMetadata(metadata)
-                            if error == .success {
-                                ocIds.append(metadata.ocId)
-                            }
-                        }
-                    }
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocIds, "onlyLocalCache": false, "error": error])
-                }
                 self.isEditMode = false
                 self.setSelectcancelButton()
+
+                for ocId in ocIds {
+                    if let metadata = self.database.getMetadataFromOcId(ocId) {
+                        NCNetworking.shared.deleteMetadata(metadata)
+                    }
+                }
+
+                for index in indices {
+                    let indexPath = IndexPath(row: index, section: 0)
+                    if let cell = self.collectionView.cellForItem(at: indexPath) as? NCMediaCell,
+                       self.dataSource.metadatas[index].ocId == cell.ocId {
+                        indexPaths.append(indexPath)
+                    }
+                }
+
+                self.dataSource.removeMetadata(ocIds)
+                if indexPaths.count == ocIds.count {
+                    self.collectionView.deleteItems(at: indexPaths)
+                } else {
+                    self.collectionViewReloadData()
+                }
             })
+
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { (_: UIAlertAction) in })
+
             present(alertController, animated: true, completion: { })
         }
     }
