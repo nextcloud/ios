@@ -68,6 +68,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     private var dataSource = NCDataSource()
     internal var richWorkspaceText: String?
     internal var headerMenu: NCSectionFirstHeader?
+    private let enableRichWorkspace: Bool = false
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
     private var backgroundImageView = UIImageView()
@@ -540,8 +541,10 @@ extension NCSelect {
             loadFolder()
         }
 
-        let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", activeAccount.account, serverUrl))
-        richWorkspaceText = directory?.richWorkspace
+        if enableRichWorkspace {
+            let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", activeAccount.account, serverUrl))
+            richWorkspaceText = directory?.richWorkspace
+        }
 
         DispatchQueue.main.async {
             self.collectionView.reloadData()
