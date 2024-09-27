@@ -72,7 +72,6 @@ class ScreenAwakeManager {
                 application.isIdleTimerDisabled = false
             }
         }
-
     }
 
     private var isPlugged: Bool {
