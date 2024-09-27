@@ -253,15 +253,15 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
 extension NCTrash {
 	private var viewModeImage: UIImage? {
-		let imageName = collectionView.collectionViewLayout == listLayout ? "FileSelection/view_mode_list" : "FileSelection/view_mode_grid"
-		return UIImage(named: imageName)
+		let imageResource: ImageResource = collectionView.collectionViewLayout == listLayout ? .FileSelection.viewModeList : .FileSelection.viewModeGrid
+		return UIImage(resource: imageResource)
 	}
 	
 	func createViewModeMenuActions() -> [UIMenuElement] {
 		let layoutForView = collectionView.collectionViewLayout
 
-		let listImage = UIImage(named: "FileSelection/view_mode_list")?.templateRendered()
-		let gridImage = UIImage(named: "FileSelection/view_mode_grid")?.templateRendered()
+		let listImage = UIImage(resource: .FileSelection.viewModeList).templateRendered()
+		let gridImage = UIImage(resource: .FileSelection.viewModeGrid).templateRendered()
 
 		let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: listImage, state: layoutForView == listLayout ? .on : .off) { [weak self] _ in
 			self?.onListSelected()
