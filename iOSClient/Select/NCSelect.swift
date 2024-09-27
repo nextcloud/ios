@@ -140,7 +140,6 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
             bottomContraint?.constant = 150
         }
 
-        NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataSource), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(createFolder(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCreateFolder), object: nil)
     }
 
@@ -153,13 +152,12 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
             titleCurrentFolder = NCBrandOptions.shared.brand
         }
 
-        // get auto upload folder
         autoUploadFileName = self.database.getAccountAutoUploadFileName()
         autoUploadDirectory = self.database.getAccountAutoUploadDirectory(session: session)
 
-        loadDatasource(withLoadFolder: true)
-
         self.navigationItem.title = titleCurrentFolder
+
+        reloadDataSourceNetwork()
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -460,13 +458,8 @@ extension NCSelect: UICollectionViewDelegateFlowLayout {
 // MARK: -
 
 extension NCSelect {
-    @objc func reloadDataSource() {
-        loadDatasource(withLoadFolder: false)
-    }
-
-    @objc func loadDatasource(withLoadFolder: Bool) {
+    func reloadDataSourceNetwork() {
         var predicate = NSPredicate()
-        self.dataSource.removeAll()
 
         if includeDirectoryE2EEncryption {
             if includeImages {
@@ -484,27 +477,16 @@ extension NCSelect {
             }
         }
 
-        let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: NCDBLayoutForView())
-        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas)
-
-        if withLoadFolder {
-            loadFolder()
-        }
-
-        self.collectionView.reloadData()
-    }
-
-    func loadFolder() {
-        NCNetworking.shared.readFolder(serverUrl: serverUrl, account: session.account) { task in
+        NCNetworking.shared.readFolder(serverUrl: serverUrl, account: session.account, queue: .main) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()
-        } completion: { _, _, _, error in
-            DispatchQueue.main.async {
-                if error != .success {
-                    NCContentPresenter().showError(error: error)
-                }
-                self.loadDatasource(withLoadFolder: false)
-            }
+        } completion: { _, _, _, _ in
+            let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: NCDBLayoutForView())
+
+            self.dataSource = NCCollectionViewDataSource(metadatas: metadatas)
+            self.collectionView.reloadData()
+
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": self.serverUrl])
         }
     }
 }

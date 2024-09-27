@@ -194,7 +194,8 @@ class NCFiles: NCCollectionViewCommon {
             }
 
             NCNetworking.shared.readFolder(serverUrl: self.serverUrl,
-                                           account: metadata.account) { task in
+                                           account: metadata.account,
+                                           queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue) { task in
                 self.dataSourceTask = task
                 self.collectionView.reloadData()
             } completion: { account, metadataFolder, metadatas, error in

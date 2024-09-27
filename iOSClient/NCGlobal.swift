@@ -293,7 +293,7 @@ class NCGlobal: NSObject {
     let notificationCenterReloadAvatar                          = "reloadAvatar"
     let notificationCenterClearCache                            = "clearCache"
 
-    let notificationCenterReloadDataSource                      = "reloadDataSource"
+    let notificationCenterReloadDataSource                      = "reloadDataSource"                // userInfo: serverUrl?
     let notificationCenterReloadDataSourceNetwork               = "reloadDataSourceNetwork"         // userInfo: withQueryDB
 
     let notificationCenterChangeStatusFolderE2EE                = "changeStatusFolderE2EE"          // userInfo: serverUrl

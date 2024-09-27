@@ -32,13 +32,14 @@ extension NCNetworking {
 
     func readFolder(serverUrl: String,
                     account: String,
+                    queue: DispatchQueue,
                     taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
                     completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ error: NKError) -> Void) {
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
                                              depth: "1",
                                              showHiddenFiles: NCKeychain().showHiddenFiles,
                                              account: account,
-                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
+                                             options: NKRequestOptions(queue: queue)) { task in
             taskHandler(task)
         } completion: { account, files, _, error in
             guard error == .success, let files else {
