@@ -35,15 +35,19 @@ class NCBrandColorIONOS: NCBrandColor {
 	}
     
     override var appBackgroundColor: UIColor {
-        UIColor(named: "AppBackground/Main") ?? .systemBackground
+        UIColor(named: "AppBackground/Main") ?? super.appBackgroundColor
     }
     
     override var formBackgroundColor: UIColor {
-        UIColor(named: "AppBackground/Form") ?? .systemBackground
+        UIColor(named: "AppBackground/Form") ?? super.formBackgroundColor
     }
     
     override var formRowBackgroundColor: UIColor {
-        UIColor(named: "AppBackground/FormRow") ?? .secondarySystemGroupedBackground
+        UIColor(named: "AppBackground/FormRow") ?? super.formRowBackgroundColor
+    }
+    
+    override var formSeparatorColor: UIColor {
+        UIColor(named: "formSeparator") ?? super.formSeparatorColor
     }
 	
     override init() {

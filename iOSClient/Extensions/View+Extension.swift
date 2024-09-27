@@ -66,6 +66,12 @@ extension View {
             .applyScrollContentBackground()
             .background(Color(NCBrandColor.shared.formBackgroundColor))
     }
+    
+    func applyGlobalFormSectionStyle() -> some View {
+        self
+            .listRowBackground(Color(NCBrandColor.shared.formRowBackgroundColor))
+            .listRowSeparatorTint(Color(NCBrandColor.shared.formSeparatorColor))
+    }
 }
 
 struct ScrollContentBackgroundModifier: ViewModifier {

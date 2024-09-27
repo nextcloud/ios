@@ -163,6 +163,10 @@ class NCBrandColor: NSObject {
     var formRowBackgroundColor: UIColor {
         .secondarySystemGroupedBackground
     }
+    
+    var formSeparatorColor: UIColor {
+        .separator
+    }
 
     let iconImageColor: UIColor = .label
     let iconImageColor2: UIColor = .secondaryLabel

@@ -42,9 +42,7 @@ struct NCAccountSettingsView: View {
                   Section {
                     if let activeAccount = model.activeAccount {
                         let userStatus = model.getUserStatus()
-                        AccountView(account: activeAccount, userStatus: userStatus)
-                            .font(.system(size: 14))
-                            .frame(height: model.getTableViewHeight())
+                        AccountView(account: activeAccount, userStatus: userStatus) .listRowSeparator(.hidden)
                         PersonalDataView(account: activeAccount)
                     }
                     changeAliasSection
@@ -55,12 +53,12 @@ struct NCAccountSettingsView: View {
                         sertificateDetailsButtonView
                         sertificatePNButtonView
                     }
-                }
+                  }.applyGlobalFormSectionStyle()
                 Section {
                     switchAccountSection
                     addAccountSection
-                    deleteAccountSection  
-                }
+                    deleteAccountSection
+                }.applyGlobalFormSectionStyle()
             }
             .applyGlobalFormStyle()
             .navigationBarTitle(NSLocalizedString("_account_settings_", comment: ""))
@@ -232,7 +230,7 @@ extension NCAccountSettingsView {
                     .font(Font.system(.body).weight(.light))
                     .frame(width: 20, height: 20)
                     .padding(.trailing, 10)
-                    .foregroundStyle(.red)
+                    .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
                 Text(NSLocalizedString("_sign_out_of_all_accounts_", tableName: nil, bundle: Bundle.main, value: "Sign out of all accounts", comment: ""))
                     .lineLimit(1)
                     .truncationMode(.middle)
@@ -266,7 +264,7 @@ struct AccountView: View {
             Text(userStatus.statusMessage)
                 .font(.system(size: 10))
             Spacer().frame(height: 20)
-        }
+        }.font(.system(size: 14))
     }
 }
 
@@ -284,7 +282,7 @@ struct PersonalDataView: View {
             if !account.address.isEmpty {
                 PersonalDataRow(icon: "house", data: account.address)
             }
-        }
+         }.font(.system(size: 14))
     }
 }
 
@@ -345,10 +343,11 @@ struct SwitchAccountRowView: View {
         let userAvatar = NCUtility().loadUserImage(for: account.user, displayName: account.displayName, userBaseUrl: account)
         
         HStack {
-            Image(uiImage: UIImage(named: "accountCheckmark")!)
+            Image(uiImage: UIImage(resource:.accountCheckmark))
                 .resizable()
                 .frame(width: 20, height: 15)
                 .padding(.trailing, 10)
+                .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
                 .hiddenConditionally(isHidden: !isSelected)
             VStack(alignment: .leading) {
                 Text(userName)

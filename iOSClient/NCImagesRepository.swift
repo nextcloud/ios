@@ -41,7 +41,6 @@ class NCImagesRepository: NSObject {
         case spreadsheet = "spreadsheet"
         case presentation = "presentation"
         case createFolder = "createFolder"
-        case signOut = "sign.out"
 		
 		case mediaForward = "MediaPlayer/Forward"
 		case mediaFullscreen = "MediaPlayer/Fullscreen"
@@ -75,8 +74,7 @@ class NCImagesRepository: NSObject {
     }
     
     static var signOut: UIImage {
-        utility.loadImage(
-            named: ImageName.signOut.rawValue)
+        UIImage(resource: .signOut)
     }
     
 	// menu
