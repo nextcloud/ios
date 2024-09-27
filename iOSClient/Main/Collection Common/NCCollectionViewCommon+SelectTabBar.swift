@@ -46,17 +46,10 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
         if canDeleteServer {
             let copyMetadatas = metadatas
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .destructive) { _ in
-                Task {
-                    var error = NKError()
-                    var ocId: [String] = []
-                    for metadata in copyMetadatas where error == .success {
-                        error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false, sceneIdentifier: self.controller?.sceneIdentifier)
-                        if error == .success {
-                            ocId.append(metadata.ocId)
-                        }
-                    }
-                    NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "onlyLocalCache": false, "error": error])
+                for metadata in copyMetadatas {
+                    NCNetworking.shared.deleteMetadata(metadata)
                 }
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
                 self.setEditMode(false)
             })
         }
@@ -68,12 +61,12 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
                 var error = NKError()
                 var ocId: [String] = []
                 for metadata in copyMetadatas where error == .success {
-                    error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true, sceneIdentifier: self.controller?.sceneIdentifier)
+                    error = await NCNetworking.shared.deleteCache(metadata, sceneIdentifier: self.controller?.sceneIdentifier)
                     if error == .success {
                         ocId.append(metadata.ocId)
                     }
                 }
-                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "onlyLocalCache": true, "error": error])
+                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "error": error])
             }
             self.setEditMode(false)
         })

@@ -32,18 +32,18 @@ extension NCNetworking {
 
     func readFolder(serverUrl: String,
                     account: String,
-                    forceReplaceMetadatas: Bool = false,
+                    queue: DispatchQueue,
                     taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
-                    completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ metadatasDifferentCount: Int, _ metadatasModified: Int, _ error: NKError) -> Void) {
+                    completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ error: NKError) -> Void) {
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
                                              depth: "1",
                                              showHiddenFiles: NCKeychain().showHiddenFiles,
                                              account: account,
-                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { task in
+                                             options: NKRequestOptions(queue: queue)) { task in
             taskHandler(task)
         } completion: { account, files, _, error in
             guard error == .success, let files else {
-                return completion(account, nil, nil, 0, 0, error)
+                return completion(account, nil, nil, error)
             }
 
             self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: true) { metadataFolder, metadatas in
@@ -58,15 +58,8 @@ extension NCNetworking {
                                            serverUrl: serverUrl,
                                            account: metadataFolder.account)
 
-                let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND status == %d", account, serverUrl, self.global.metadataStatusNormal)
-
-                if forceReplaceMetadatas {
-                    self.database.replaceMetadata(metadatas, predicate: predicate)
-                    completion(account, metadataFolder, metadatas, 1, 1, error)
-                } else {
-                    let results = self.database.updateMetadatas(metadatas, predicate: predicate)
-                    completion(account, metadataFolder, metadatas, results.metadatasDifferentCount, results.metadatasModified, error)
-                }
+                self.database.updateMetadatasFiles(metadatas, serverUrl: serverUrl, account: account)
+                completion(account, metadataFolder, metadatas, error)
             }
         }
     }
@@ -331,12 +324,13 @@ extension NCNetworking {
 
     // MARK: - Delete
 
-    func tapHudDeleteMetadata() {
-        tapHudStopDelete = true
+    func tapHudDeleteCache() {
+        tapHudStopDeleteCache = true
     }
 
-    func deleteMetadata(_ metadata: tableMetadata, onlyLocalCache: Bool, sceneIdentifier: String?) async -> (NKError) {
+    func deleteCache(_ metadata: tableMetadata, sceneIdentifier: String?) async -> (NKError) {
         let ncHud = NCHud()
+
         var num: Float = 0
 
         func numIncrement() -> Float {
@@ -357,111 +351,51 @@ extension NCNetworking {
             #endif
         }
 
-        self.tapHudStopDelete = false
+        self.tapHudStopDeleteCache = false
+
+        if metadata.directory {
+            #if !EXTENSION
+            if let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier) {
+                await MainActor.run {
+                    ncHud.initHudRing(view: controller.view, tapToCancelDetailText: true, tapOperation: tapHudDeleteCache)
+                }
+            }
+            #endif
+            let serverUrl = metadata.serverUrl + "/" + metadata.fileName
+            let metadatas = self.database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == false", metadata.account, serverUrl))
+            let numMetadatas = Float(metadatas.count)
+            for metadata in metadatas {
+                deleteLocalFile(metadata: metadata)
+                let num = numIncrement()
+                ncHud.progress(num: num, total: numMetadatas)
+                if tapHudStopDeleteCache { break }
+            }
+            #if !EXTENSION
+            ncHud.dismiss()
+            #endif
+        } else {
+            deleteLocalFile(metadata: metadata)
+        }
+
+        return .success
+    }
+
+    func deleteMetadata(_ metadata: tableMetadata) {
+        let permission = NCUtility().permissionsContainsString(metadata.permissions, permissions: NCPermissions().permissionCanDelete)
+        if !metadata.permissions.isEmpty && permission == false {
+            NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_delete_file_"))
+            return
+        }
 
         if metadata.status == global.metadataStatusWaitCreateFolder {
-            let metadatas = database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND status IN %@", metadata.account, metadata.serverUrl, global.metadataStatusAllUp))
+            let metadatas = database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@", metadata.account, metadata.serverUrl))
             for metadata in metadatas {
                 database.deleteMetadataOcId(metadata.ocId)
                 utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
             }
-        } else if onlyLocalCache {
-            if metadata.directory {
-                #if !EXTENSION
-                if let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier) {
-                    await MainActor.run {
-                        ncHud.initHudRing(view: controller.view, tapToCancelDetailText: true, tapOperation: tapHudDeleteMetadata)
-                    }
-                }
-                #endif
-                let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-                let metadatas = self.database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == false", metadata.account, serverUrl))
-                let numMetadatas = Float(metadatas.count)
-                for metadata in metadatas {
-                    deleteLocalFile(metadata: metadata)
-                    let num = numIncrement()
-                    ncHud.progress(num: num, total: numMetadatas)
-                    if tapHudStopDelete { break }
-                }
-                #if !EXTENSION
-                ncHud.dismiss()
-                #endif
-            } else {
-                deleteLocalFile(metadata: metadata)
-            }
-
-            return .success
+            return
         }
-
-        if metadata.status == NCGlobal.shared.metadataStatusWaitCreateFolder {
-            self.database.deleteMetadataOcId(metadata.ocId)
-            return .success
-        } else if metadata.isDirectoryE2EE {
-#if !EXTENSION
-            if let metadataLive = self.database.getMetadataLivePhoto(metadata: metadata) {
-                let error = await NCNetworkingE2EEDelete().delete(metadata: metadataLive)
-                if error == .success {
-                    return await NCNetworkingE2EEDelete().delete(metadata: metadata)
-                } else {
-                    return error
-                }
-            } else {
-                return await NCNetworkingE2EEDelete().delete(metadata: metadata)
-            }
-#else
-            return .success
-#endif
-        } else {
-            if let metadataLive = self.database.getMetadataLivePhoto(metadata: metadata), metadata.isNotFlaggedAsLivePhotoByServer {
-                let error = await deleteMetadataPlain(metadataLive)
-                if error == .success {
-                    return await deleteMetadataPlain(metadata)
-                } else {
-                    return error
-                }
-            } else {
-                return await deleteMetadataPlain(metadata)
-            }
-        }
-    }
-
-    func deleteMetadataPlain(_ metadata: tableMetadata, customHeader: [String: String]? = nil) async -> NKError {
-        // verify permission
-        let permission = utility.permissionsContainsString(metadata.permissions, permissions: NCPermissions().permissionCanDelete)
-        if !metadata.permissions.isEmpty && permission == false {
-            return NKError(errorCode: self.global.errorInternalError, errorDescription: "_no_permission_delete_file_")
-        }
-        let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-        let options = NKRequestOptions(customHeader: customHeader, taskDescription: NCGlobal.shared.taskDescriptionDeleteFileOrFolder)
-        let result = await deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: metadata.account, options: options)
-
-        if result.error == .success || result.error.errorCode == self.global.errorResourceNotFound {
-            do {
-                try FileManager.default.removeItem(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-            } catch { }
-            #if !EXTENSION
-            NCImageCache.shared.removeImageCache(ocIdPlusEtag: metadata.ocId + metadata.etag)
-            #endif
-
-            self.database.deleteVideo(metadata: metadata)
-            self.database.deleteMetadataOcId(metadata.ocId)
-            self.database.deleteLocalFileOcId(metadata.ocId)
-            // LIVE PHOTO SERVER
-            if let metadataLive = self.database.getMetadataLivePhoto(metadata: metadata), metadataLive.isFlaggedAsLivePhotoByServer {
-                do {
-                    try FileManager.default.removeItem(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId))
-                } catch { }
-
-                self.database.deleteVideo(metadata: metadataLive)
-                self.database.deleteMetadataOcId(metadataLive.ocId)
-                self.database.deleteLocalFileOcId(metadataLive.ocId)
-            }
-
-            if metadata.directory {
-                self.database.deleteDirectoryAndSubDirectory(serverUrl: utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: metadata.account)
-            }
-        }
-        return result.error
+        self.database.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusWaitDelete)
     }
 
     // MARK: - Rename
@@ -1008,6 +942,57 @@ class NCOperationFileExists: ConcurrentOperation, @unchecked Sendable {
             } else if error.errorCode == NCGlobal.shared.errorResourceNotFound {
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterFileExists, userInfo: ["ocId": self.ocId, "fileExists": false])
             }
+            self.finish()
+        }
+    }
+}
+
+class NCOperationDeleteFileOrFolder: ConcurrentOperation, @unchecked Sendable {
+    let database = NCManageDatabase.shared
+    let global = NCGlobal.shared
+    let utility = NCUtility()
+    let utilityFileSystem = NCUtilityFileSystem()
+
+    var metadata: tableMetadata
+    var ocId: String
+
+    init(metadata: tableMetadata) {
+        self.metadata = metadata
+        self.ocId = metadata.ocId
+    }
+
+    override func start() {
+        guard !isCancelled else { return self.finish() }
+
+        let options = NKRequestOptions(taskDescription: global.taskDescriptionDeleteFileOrFolder,
+                                       queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+
+        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: self.metadata.serverUrl + "/" + self.metadata.fileName,
+                                               account: self.metadata.account,
+                                               options: options) { _, error in
+
+            if error == .success || error.errorCode == NCGlobal.shared.errorResourceNotFound {
+                do {
+                    try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(self.metadata.ocId))
+                } catch { }
+
+#if !EXTENSION
+                NCImageCache.shared.removeImageCache(ocIdPlusEtag: self.metadata.ocId + self.metadata.etag)
+#endif
+
+                self.database.deleteVideo(metadata: self.metadata)
+                self.database.deleteMetadataOcId(self.metadata.ocId)
+                self.database.deleteLocalFileOcId(self.metadata.ocId)
+
+                if self.metadata.directory {
+                    self.database.deleteDirectoryAndSubDirectory(serverUrl: NCUtilityFileSystem().stringAppendServerUrl(self.metadata.serverUrl, addFileName: self.metadata.fileName), account: self.metadata.account)
+                }
+            } else {
+                self.database.setMetadataStatus(ocId: self.ocId, status: self.global.metadataStatusNormal )
+            }
+
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": [self.ocId], "error": error])
+
             self.finish()
         }
     }

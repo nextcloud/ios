@@ -31,6 +31,7 @@ extension NCNetworking {
     func cancelAllTask() {
         cancelAllQueue()
         cancelAllDataTask()
+        cancelAllWaitTask()
         cancelAllDownloadUploadTask()
     }
 
@@ -52,7 +53,14 @@ extension NCNetworking {
     // MARK: -
 
     func cancelTask(metadata: tableMetadata) {
-        utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+
+        /// DELETE
+        ///
+        if metadata.status == global.metadataStatusWaitDelete {
+            database.setMetadataStatus(ocId: metadata.ocId, status: global.metadataStatusNormal)
+            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
+            return
+        }
 
         /// DIRECTORY
         ///
@@ -62,12 +70,15 @@ extension NCNetworking {
                 database.deleteMetadataOcId(metadata.ocId)
                 utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
             }
+            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
+            return
         }
 
         /// NO SESSION
         ///
         if metadata.session.isEmpty {
             self.database.deleteMetadataOcId(metadata.ocId)
+            utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
             NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
             return
         }
@@ -95,12 +106,12 @@ extension NCNetworking {
         /// UPLOAD
         ///
         if metadata.session.contains("upload") {
-
             if metadata.session == NextcloudKit.shared.nkCommonInstance.identifierSessionUpload {
                 cancelUploadTasks(metadata: metadata)
             } else {
                 cancelUploadBackgroundTask(metadata: metadata)
             }
+            utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
 
             NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadCancelFile,
                                                         object: nil,
@@ -111,6 +122,22 @@ extension NCNetworking {
                                                                    "account": metadata.account],
                                                         second: 0.5)
         }
+    }
+
+    func cancelAllWaitTask() {
+        let metadatas = database.getMetadatas(predicate: NSPredicate(format: "status IN %@", [global.metadataStatusWaitCreateFolder, global.metadataStatusWaitDelete]))
+        for metadata in metadatas {
+            if metadata.status == global.metadataStatusWaitDelete {
+                database.setMetadataStatus(ocId: metadata.ocId, status: global.metadataStatusNormal)
+            } else if metadata.status == global.metadataStatusWaitCreateFolder {
+                let metadatas = database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND status != 0", metadata.account, metadata.serverUrl))
+                for metadata in metadatas {
+                    database.deleteMetadataOcId(metadata.ocId)
+                    utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+                }
+            }
+        }
+        NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
     }
 
     func cancelAllDataTask() {

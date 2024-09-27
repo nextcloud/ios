@@ -75,7 +75,7 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
     weak var certificateDelegate: ClientCertificateDelegate?
     var p12Data: Data?
     var p12Password: String?
-    var tapHudStopDelete = false
+    var tapHudStopDeleteCache = false
 
     var isOffline: Bool {
         return networkReachability == NKCommon.TypeReachability.notReachable || networkReachability == NKCommon.TypeReachability.unknown
@@ -93,6 +93,7 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
     let downloadQueue = Queuer(name: "downloadQueue", maxConcurrentOperationCount: NCBrandOptions.shared.maxConcurrentOperationDownload, qualityOfService: .default)
     let downloadAvatarQueue = Queuer(name: "downloadAvatarQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     let fileExistsQueue = Queuer(name: "fileExistsQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
+    let deleteFileOrFolderQueue = Queuer(name: "deleteFileOrFolderQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
 
     // MARK: - init
 

@@ -65,7 +65,7 @@ extension NCMedia {
             var lessDate = Date.distantFuture
             var greaterDate = Date.distantPast
             let countMetadatas = self.dataSource.metadatas.count
-            let options = NKRequestOptions(timeout: 120, taskDescription: NCGlobal.shared.taskDescriptionRetrievesProperties, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+            let options = NKRequestOptions(timeout: 120, taskDescription: global.taskDescriptionRetrievesProperties, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
             var firstCellDate: Date?
             var lastCellDate: Date?
 
@@ -128,6 +128,10 @@ extension NCMedia {
 
                     DispatchQueue.global(qos: .userInteractive).async {
                         self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
+                            let metadatas = metadatas.filter { metadata in
+                                let tableMetadata = self.database.getMetadataFromOcId(metadata.ocId)
+                                return tableMetadata?.status == self.global.metadataStatusNormal
+                            }
                             self.database.addMetadatas(metadatas)
 
                             if self.dataSource.addMetadatas(metadatas) {

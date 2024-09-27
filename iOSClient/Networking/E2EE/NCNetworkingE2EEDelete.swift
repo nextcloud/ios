@@ -46,10 +46,31 @@ class NCNetworkingE2EEDelete: NSObject {
 
         // DELETE FILE
         //
-        let deleteMetadataPlainError = await NCNetworking.shared.deleteMetadataPlain(metadata, customHeader: ["e2e-token": e2eToken])
-        guard deleteMetadataPlainError == .success else {
+        let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+        let options = NKRequestOptions(customHeader: ["e2e-token": e2eToken], taskDescription: NCGlobal.shared.taskDescriptionDeleteFileOrFolder)
+        let result = await NCNetworking.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: metadata.account, options: options)
+        if result.error == .success || result.error.errorCode == NCGlobal.shared.errorResourceNotFound {
+            do {
+                try FileManager.default.removeItem(atPath: NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId))
+                database.deleteVideo(metadata: metadata)
+                database.deleteMetadataOcId(metadata.ocId)
+                database.deleteLocalFileOcId(metadata.ocId)
+                // LIVE PHOTO SERVER
+                if let metadataLive = self.database.getMetadataLivePhoto(metadata: metadata), metadataLive.isFlaggedAsLivePhotoByServer {
+                    do {
+                        try FileManager.default.removeItem(atPath: NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadataLive.ocId))
+                    } catch { }
+                    self.database.deleteVideo(metadata: metadataLive)
+                    self.database.deleteMetadataOcId(metadataLive.ocId)
+                    self.database.deleteLocalFileOcId(metadataLive.ocId)
+                }
+                if metadata.directory {
+                    self.database.deleteDirectoryAndSubDirectory(serverUrl: NCUtilityFileSystem().stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: metadata.account)
+                }
+            } catch { }
+        } else {
             await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
-            return deleteMetadataPlainError
+            return result.error
         }
 
         // DOWNLOAD METADATA

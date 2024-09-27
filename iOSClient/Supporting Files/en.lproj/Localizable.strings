@@ -606,7 +606,8 @@
 "_status_in_download_"          = "In download";
 "_status_downloading_"          = "Downloading";
 "_status_wait_upload_"          = "Waiting for upload";
-"_status_wait_create_folder_"   = "Waiting online to create the folder";
+"_status_wait_create_folder_"   = "Waiting to create the folder";
+"_status_wait_delete_"          = "Waiting to delete";
 "_status_in_upload_"            = "In upload";
 "_status_uploading_"            = "Uploading";
 "_status_upload_error_"         = "Error, waiting for upload";

@@ -271,11 +271,11 @@ class NCGlobal: NSObject {
     let metadataStatusUploadError: Int          = 3
 
     let metadataStatusWaitCreateFolder: Int     = 10
+    let metadataStatusWaitDelete: Int           = 11
 
     let metadataStatusInTransfer                = [-1, -2, 1, 2]
     let metadataStatusFileDown                  = [-1, -2, -3]
-    let metadataStatusFileUp                    = [1, 2, 3]
-    let metadataStatusAllUp                     = [1, 2, 3, 10]
+    let metadataStatusHideInView                = [1, 2, 3, 11]
 
     // Auto upload subfolder granularity
     //
@@ -293,7 +293,7 @@ class NCGlobal: NSObject {
     let notificationCenterReloadAvatar                          = "reloadAvatar"
     let notificationCenterClearCache                            = "clearCache"
 
-    let notificationCenterReloadDataSource                      = "reloadDataSource"
+    let notificationCenterReloadDataSource                      = "reloadDataSource"                // userInfo: serverUrl?
     let notificationCenterReloadDataSourceNetwork               = "reloadDataSourceNetwork"         // userInfo: withQueryDB
 
     let notificationCenterChangeStatusFolderE2EE                = "changeStatusFolderE2EE"          // userInfo: serverUrl
@@ -312,7 +312,7 @@ class NCGlobal: NSObject {
     let notificationCenterUpdateBadgeNumber                     = "updateBadgeNumber"               // userInfo: counterDownload, counterUpload
 
     let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId, serverUrl, account, withPush, sceneIdentifier
-    let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: [ocId], onlyLocalCache, error
+    let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: [ocId], error
     let notificationCenterMoveFile                              = "moveFile"                        // userInfo: [ocId], error, dragdrop
     let notificationCenterCopyFile                              = "copyFile"                        // userInfo: [ocId], error, dragdrop
     let notificationCenterRenameFile                            = "renameFile"                      // userInfo: ocId, account
