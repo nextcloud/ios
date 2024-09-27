@@ -44,6 +44,7 @@ class NCMedia: UIViewController {
     var documentPickerViewController: NCDocumentPickerViewController?
     var tabBarSelect: NCMediaSelectTabBar!
     let utilityFileSystem = NCUtilityFileSystem()
+    let global = NCGlobal.shared
     let utility = NCUtility()
     let database = NCManageDatabase.shared
     let imageCache = NCImageCache.shared
@@ -170,6 +171,8 @@ class NCMedia: UIViewController {
 
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
 
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataSource), object: nil)
+
         NotificationCenter.default.addObserver(self, selector: #selector(networkRemoveAll), name: UIApplication.didEnterBackgroundNotification, object: nil)
     }
 
@@ -253,6 +256,10 @@ class NCMedia: UIViewController {
                 task.cancel()
             }
         }
+    }
+
+    @objc func reloadDataSource(_ notification: NSNotification) {
+        self.loadDataSource()
     }
 
     @objc func deleteFile(_ notification: NSNotification) {

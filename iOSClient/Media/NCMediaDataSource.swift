@@ -128,6 +128,10 @@ extension NCMedia {
 
                     DispatchQueue.global(qos: .userInteractive).async {
                         self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
+                            let metadatas = metadatas.filter { metadata in
+                                let tableMetadata = self.database.getMetadataFromOcId(metadata.ocId)
+                                return tableMetadata?.status == self.global.metadataStatusNormal
+                            }
                             self.database.addMetadatas(metadatas)
 
                             if self.dataSource.addMetadatas(metadatas) {
