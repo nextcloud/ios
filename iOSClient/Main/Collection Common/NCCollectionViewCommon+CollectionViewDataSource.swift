@@ -284,7 +284,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         case NCGlobal.shared.metadataStatusWaitUpload:
             cell.fileStatusImage?.image = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
         case NCGlobal.shared.metadataStatusWaitCreateFolder:
-            cell.fileStatusImage?.image = utility.loadImage(named: "exclamationmark.arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.fileStatusImage?.image = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
         case NCGlobal.shared.metadataStatusDownloading:
             if #available(iOS 17.0, *) {
                 cell.fileStatusImage?.image = utility.loadImage(named: "arrowshape.down.circle", colors: NCBrandColor.shared.iconImageMultiColors)
@@ -423,7 +423,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                         header.emptyTitle.text = NSLocalizedString(emptyTitle, comment: "")
                         header.emptyDescription.text = NSLocalizedString(emptyDescription, comment: "")
                     } else if metadataFolder?.status == global.metadataStatusWaitCreateFolder {
-                        header.emptyImage.image = utility.loadImage(named: "exclamationmark.arrow.triangle.2.circlepath", colors: [NCBrandColor.shared.getElement(account: session.account)])
+                        header.emptyImage.image = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: [NCBrandColor.shared.getElement(account: session.account)])
                         header.emptyTitle.text = NSLocalizedString("_files_no_files_", comment: "")
                         header.emptyDescription.text = NSLocalizedString("_folder_offline_desc_", comment: "")
                     } else {

@@ -142,18 +142,18 @@ class NCNetworkingProcess {
 
         /// ------------------------ DELETE
         ///
-        if let metadatasDelete = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitDelete), sortedByKeyPath: "serverUrl", ascending: true) {
+        if let metadatasDelete = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitDelete), sortedByKeyPath: "serverUrl", ascending: true), !metadatasDelete.isEmpty {
             for metadata in metadatasDelete {
                 if NCNetworking.shared.deleteFileOrFolderQueue.operations.filter({ ($0 as? NCOperationDeleteFileOrFolder)?.ocId == metadata.ocId }).isEmpty {
                     NCNetworking.shared.deleteFileOrFolderQueue.addOperation(NCOperationDeleteFileOrFolder(metadata: metadata))
                 }
-                return (counterDownloading, counterUploading)
             }
+            return (counterDownloading, counterUploading)
         }
 
         /// ------------------------ FOLDER
         ///
-        if let metadatasWaitCreateFolder = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitCreateFolder), sortedByKeyPath: "serverUrl", ascending: true) {
+        if let metadatasWaitCreateFolder = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitCreateFolder), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitCreateFolder.isEmpty {
             for metadata in metadatasWaitCreateFolder {
                 let error = await NCNetworking.shared.createFolderOffline(metadata: metadata)
                 if error != .success {
