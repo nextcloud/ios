@@ -65,8 +65,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         super.viewDidLoad()
 		
 		// Login Button
-		loginButton.layer.cornerRadius = loginButton.frame.height / 2
 		loginButton.setTitle(NSLocalizedString("_login_", comment: ""), for: .normal)
+        loginButton.overrideUserInterfaceStyle = .dark
 		
 		// Labels
 		lblWelcome.text = NSLocalizedString("_login_welcome_", tableName: nil, bundle: Bundle.main, value: "Welcome to the cloud storage", comment: "")
