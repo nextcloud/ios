@@ -224,15 +224,16 @@ extension NCAccountSettingsView {
         Button(action: {
             showDeleteAccountAlert.toggle()
         }, label: {
+            
             HStack {
-                Image(systemName: "trash")
+                Image(uiImage: NCImagesRepository.signOut)
                     .resizable()
                     .scaledToFit()
                     .font(Font.system(.body).weight(.light))
                     .frame(width: 20, height: 20)
                     .padding(.trailing, 10)
                     .foregroundStyle(.red)
-                Text(NSLocalizedString("_remove_local_account_", comment: ""))
+                Text(NSLocalizedString("_sign_out_of_all_accounts_", tableName: nil, bundle: Bundle.main, value: "Sign out of all accounts", comment: ""))
                     .lineLimit(1)
                     .truncationMode(.middle)
                     .foregroundStyle(Color(NCBrandColor.shared.textColor))
@@ -240,9 +241,9 @@ extension NCAccountSettingsView {
             }
             .font(.system(size: 16))
         })
-        .alert(NSLocalizedString("_want_delete_account_", comment: ""), isPresented: $showDeleteAccountAlert) {
-            Button(NSLocalizedString("_remove_local_account_", comment: ""), role: .destructive) {
-                model.deleteAccount()
+        .alert(NSLocalizedString("_want_sign_out_of_all_accounts_", tableName: nil, bundle: Bundle.main, value: "Do you want to sign out of all accounts?", comment: ""), isPresented: $showDeleteAccountAlert) {
+            Button(NSLocalizedString("_sign_out_of_all_accounts_", tableName: nil, bundle: Bundle.main, value: "Sign out of all accounts", comment: ""), role: .destructive) {
+                model.deleteAllAccounts()
             }
             Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel) { }
         }

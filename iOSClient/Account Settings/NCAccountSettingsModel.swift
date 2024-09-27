@@ -194,4 +194,10 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
             }
         }
     }
+    
+    func deleteAllAccounts() {
+        appDelegate.deleteAllAccounts()
+        dismissView = true
+        appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
+    }
 }

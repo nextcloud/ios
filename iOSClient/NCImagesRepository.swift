@@ -41,6 +41,7 @@ class NCImagesRepository: NSObject {
         case spreadsheet = "spreadsheet"
         case presentation = "presentation"
         case createFolder = "createFolder"
+        case signOut = "sign.out"
     }
     
     private static let utility = NCUtility()
@@ -62,6 +63,11 @@ class NCImagesRepository: NSObject {
         utility.loadImage(
             named: ImageName.livePhoto.rawValue,
             colors: [NCBrandColor.shared.iconImageColor])
+    }
+    
+    static var signOut: UIImage {
+        utility.loadImage(
+            named: ImageName.signOut.rawValue)
     }
     
     static var menuIconRemoveFromFavorite: UIImage {
