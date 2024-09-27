@@ -437,16 +437,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func createFolder(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
-              let serverUrl = userInfo["serverUrl"] as? String,
-              serverUrl == self.serverUrl,
               let account = userInfo["account"] as? String,
               account == session.account,
-              let withPush = userInfo["withPush"] as? Bool
+              let withPush = userInfo["withPush"] as? Bool,
+              let metadata = database.getMetadataFromOcId(ocId)
         else { return }
 
-        reloadDataSource()
-
-        if withPush, let metadata = database.getMetadataFromOcId(ocId) {
+        if metadata.serverUrl + "/" + metadata.fileName == self.serverUrl {
+            reloadDataSource()
+        } else if withPush, metadata.serverUrl == self.serverUrl {
+            reloadDataSource()
             if let sceneIdentifier = userInfo["sceneIdentifier"] as? String {
                 if sceneIdentifier == controller?.sceneIdentifier {
                     pushMetadata(metadata)

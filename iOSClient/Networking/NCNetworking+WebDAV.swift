@@ -209,22 +209,6 @@ extension NCNetworking {
         if fileNameFolder.isEmpty {
             return completion(.success)
         }
-        if isOffline {
-            let metadataForUpload = self.database.createMetadata(fileName: fileNameFolder,
-                                                                 fileNameView: fileNameFolder,
-                                                                 ocId: NSUUID().uuidString,
-                                                                 serverUrl: serverUrl,
-                                                                 url: "",
-                                                                 contentType: "httpd/unix-directory",
-                                                                 directory: true,
-                                                                 session: session,
-                                                                 sceneIdentifier: sceneIdentifier)
-            metadataForUpload.status = global.metadataStatusWaitCreateFolder
-            self.database.addMetadata(metadataForUpload)
-
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterCreateFolder, userInfo: ["ocId": metadataForUpload.ocId, "serverUrl": metadataForUpload.serverUrl, "account": metadataForUpload.account, "withPush": withPush, "sceneIdentifier": sceneIdentifier as Any])
-            return completion(.success)
-        }
 
         let fileNameFolderUrl = serverUrl + "/" + fileNameFolder
         NextcloudKit.shared.createFolder(serverUrlFileName: fileNameFolderUrl, account: session.account) { account, _, _, error in

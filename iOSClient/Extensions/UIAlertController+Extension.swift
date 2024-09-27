@@ -51,13 +51,18 @@ extension UIAlertController {
                     }
                 }
             } else {
-                NCNetworking.shared.createFolder(fileName: fileNameFolder, serverUrl: serverUrl, overwrite: false, withPush: true, sceneIdentifier: sceneIdentifier, session: session) { error in
-                    if let completion = completion {
-                        completion(error)
-                    } else if error != .success {
-                        NCContentPresenter().showError(error: error)
-                    } // else: successful, no action
-                }
+                let metadataForCreateFolder = NCManageDatabase.shared.createMetadata(fileName: fileNameFolder,
+                                                                                     fileNameView: fileNameFolder,
+                                                                                     ocId: NSUUID().uuidString,
+                                                                                     serverUrl: serverUrl,
+                                                                                     url: "",
+                                                                                     contentType: "httpd/unix-directory",
+                                                                                     directory: true,
+                                                                                     session: session,
+                                                                                     sceneIdentifier: sceneIdentifier)
+                metadataForCreateFolder.status = NCGlobal.shared.metadataStatusWaitCreateFolder
+                NCManageDatabase.shared.addMetadata(metadataForCreateFolder)
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": metadataForCreateFolder.ocId, "serverUrl": metadataForCreateFolder.serverUrl, "account": metadataForCreateFolder.account, "withPush": true, "sceneIdentifier": sceneIdentifier as Any])
             }
         })
 
