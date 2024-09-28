@@ -142,8 +142,8 @@ class NCNetworkingProcess {
 
         /// ------------------------ DELETE
         ///
-        if let metadatasDelete = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitDelete), sortedByKeyPath: "serverUrl", ascending: true), !metadatasDelete.isEmpty {
-            for metadata in metadatasDelete {
+        if let metadatasWaitDelete = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitDelete), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitDelete.isEmpty {
+            for metadata in metadatasWaitDelete {
                 if NCNetworking.shared.deleteFileOrFolderQueue.operations.filter({ ($0 as? NCOperationDeleteFileOrFolder)?.ocId == metadata.ocId }).isEmpty {
                     NCNetworking.shared.deleteFileOrFolderQueue.addOperation(NCOperationDeleteFileOrFolder(metadata: metadata))
                 }
