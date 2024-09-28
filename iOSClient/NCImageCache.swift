@@ -36,7 +36,7 @@ class NCImageCache: NSObject {
     private let allowExtensions = [NCGlobal.shared.previewExt256]
     private var brandElementColor: UIColor?
 
-    public var countLimit = 10_000
+    public var countLimit: Int = 0
     lazy var cache: LRUCache<String, UIImage> = {
         return LRUCache<String, UIImage>(countLimit: countLimit)
     }()
@@ -45,11 +45,24 @@ class NCImageCache: NSObject {
 
     override init() {
         super.init()
+
+        countLimit = calculateMaxImages(percentage: 5.0, imageSizeKB: 30.0) // 5% of cache = 20
+        NextcloudKit.shared.nkCommonInstance.writeLog("Counter cache image: \(countLimit)")
+
         NotificationCenter.default.addObserver(self, selector: #selector(handleMemoryWarning), name: LRUCacheMemoryWarningNotification, object: nil)
     }
 
     deinit {
         NotificationCenter.default.removeObserver(self, name: LRUCacheMemoryWarningNotification, object: nil)
+    }
+
+    func calculateMaxImages(percentage: Double, imageSizeKB: Double) -> Int {
+        let totalRamBytes = Double(ProcessInfo.processInfo.physicalMemory)
+        let cacheSizeBytes = totalRamBytes * (percentage / 100.0)
+        let imageSizeBytes = imageSizeKB * 1024
+        let maxImages = Int(cacheSizeBytes / imageSizeBytes)
+
+        return maxImages
     }
 
     @objc func handleMemoryWarning() {
