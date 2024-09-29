@@ -170,6 +170,8 @@ class NCFiles: NCCollectionViewCommon {
 
                     if reloadDataSource {
                         self.reloadDataSource()
+                    } else {
+                        self.collectionView.reloadData()
                     }
                 } else {
                     self.reloadDataSource(withQueryDB: withQueryDB)
