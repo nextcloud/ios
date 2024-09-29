@@ -37,19 +37,21 @@ class NCAutoUpload: NSObject {
     // MARK: -
 
     func initAutoUpload(controller: NCMainTabBarController?, account: String, completion: @escaping (_ num: Int) -> Void) {
-        guard NCNetworking.shared.isOnline,
-              let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
-              tableAccount.autoUpload else {
-            return completion(0)
-        }
         applicationState = UIApplication.shared.applicationState
 
-        NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { hasPermission in
-            guard hasPermission else {
-                self.database.setAccountAutoUploadProperty("autoUpload", state: false)
+        DispatchQueue.global(qos: .userInteractive).async {
+            guard NCNetworking.shared.isOnline,
+                  let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
+                  tableAccount.autoUpload else {
                 return completion(0)
             }
-            DispatchQueue.global(qos: .userInteractive).async {
+
+            NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { hasPermission in
+                guard hasPermission else {
+                    self.database.setAccountAutoUploadProperty("autoUpload", state: false)
+                    return completion(0)
+                }
+
                 self.uploadAssetsNewAndFull(controller: controller, selector: NCGlobal.shared.selectorUploadAutoUpload, log: "Init Auto Upload", account: account) { num in
                     completion(num)
                 }

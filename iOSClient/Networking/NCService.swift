@@ -38,11 +38,11 @@ class NCService: NSObject {
             return
         }
 
-        self.database.clearAllAvatarLoaded()
-        NCPushNotification.shared.pushNotification()
-
-        Task {
+        Task(priority: .background) {
+            self.database.clearAllAvatarLoaded()
+            NCPushNotification.shared.pushNotification()
             addInternalTypeIdentifier(account: account)
+
             let result = await requestServerStatus(account: account, controller: controller)
             if result {
                 requestServerCapabilities(account: account)
