@@ -157,22 +157,24 @@ class NCFiles: NCCollectionViewCommon {
 
         super.reloadDataSourceNetwork()
 
-        networkReadFolder { tableDirectory, metadatas, reloadDataSource, error in
-            DispatchQueue.main.async {
-                if error == .success {
-                    for metadata in metadatas ?? [] where !metadata.directory && downloadMetadata(metadata) {
-                        if NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
-                            NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile))
+        DispatchQueue.global(qos: .background).async {
+            self.networkReadFolder { tableDirectory, metadatas, reloadDataSource, error in
+                DispatchQueue.main.async {
+                    if error == .success {
+                        for metadata in metadatas ?? [] where !metadata.directory && downloadMetadata(metadata) {
+                            if NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
+                                NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile))
+                            }
                         }
-                    }
 
-                    self.richWorkspaceText = tableDirectory?.richWorkspace
+                        self.richWorkspaceText = tableDirectory?.richWorkspace
 
-                    if reloadDataSource {
-                        self.reloadDataSource()
+                        if reloadDataSource {
+                            self.reloadDataSource()
+                        }
+                    } else {
+                        self.reloadDataSource(withQueryDB: withQueryDB)
                     }
-                } else {
-                    self.reloadDataSource(withQueryDB: withQueryDB)
                 }
             }
         }
