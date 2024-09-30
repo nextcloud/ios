@@ -44,16 +44,18 @@ class NCGroupfolders: NCCollectionViewCommon {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        if self.dataSource.isEmpty() {
-            reloadDataSource()
-        }
-        reloadDataSourceNetwork()
+        reloadDataSource()
     }
 
-    // MARK: - DataSource + NC Endpoint
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
 
-    override func queryDB() {
-        super.queryDB()
+        getServerData()
+    }
+
+    // MARK: - DataSource
+
+    override func reloadDataSource() {
         var metadatas: [tableMetadata] = []
 
         if self.serverUrl.isEmpty {
@@ -63,10 +65,13 @@ class NCGroupfolders: NCCollectionViewCommon {
         }
 
         self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView)
+
+        super.reloadDataSource()
     }
 
-    override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
-        super.reloadDataSourceNetwork()
+    override func getServerData() {
+        super.getServerData()
+
         let homeServerUrl = utilityFileSystem.getHomeServer(session: session)
 
         NextcloudKit.shared.getGroupfolders(account: session.account) { task in
@@ -91,9 +96,7 @@ class NCGroupfolders: NCCollectionViewCommon {
                     }
                     self.reloadDataSource()
                 }
-            } else {
-                self.reloadDataSource(withQueryDB: withQueryDB)
-            }
+            } 
         }
     }
 }
