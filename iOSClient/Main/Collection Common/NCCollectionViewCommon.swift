@@ -660,6 +660,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             guard let layoutForView = database.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl) else { return [] }
 
             func saveLayout(_ layoutForView: NCDBLayoutForView) {
+                (self.collectionView.collectionViewLayout as? NCMediaLayout)?.invalidate()
                 database.setLayoutForView(layoutForView: layoutForView)
                 NotificationCenter.default.postOnMainThread(name: global.notificationCenterReloadDataSource)
                 setNavigationRightItems()
@@ -677,7 +678,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.layoutType = self.global.layoutList
 
                 self.collectionView.reloadData()
-                self.collectionView.collectionViewLayout.invalidateLayout()
                 self.collectionView.setCollectionViewLayout(self.listLayout, animated: true) {_ in self.isTransitioning = false }
 
                 self.setNavigationRightItems()
@@ -689,7 +689,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.layoutType = self.global.layoutGrid
 
                 self.collectionView.reloadData()
-                self.collectionView.collectionViewLayout.invalidateLayout()
                 self.collectionView.setCollectionViewLayout(self.gridLayout, animated: true) {_ in self.isTransitioning = false }
 
                 self.setNavigationRightItems()
@@ -700,8 +699,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
                 self.layoutType = self.global.layoutPhotoSquare
 
+                (self.collectionView.collectionViewLayout as? NCMediaLayout)?.invalidate()
                 self.collectionView.reloadData()
-                self.collectionView.collectionViewLayout.invalidateLayout()
                 self.collectionView.setCollectionViewLayout(self.mediaLayout, animated: true) {_ in self.isTransitioning = false }
 
                 self.setNavigationRightItems()
@@ -712,8 +711,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
                 self.layoutType = self.global.layoutPhotoRatio
 
+                (self.collectionView.collectionViewLayout as? NCMediaLayout)?.invalidate()
                 self.collectionView.reloadData()
-                self.collectionView.collectionViewLayout.invalidateLayout()
                 self.collectionView.setCollectionViewLayout(self.mediaLayout, animated: true) {_ in self.isTransitioning = false }
 
                 self.setNavigationRightItems()
@@ -731,6 +730,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 if isName { // repeated press
                     layoutForView.ascending = !layoutForView.ascending
                 }
+
                 layoutForView.sort = "fileName"
                 saveLayout(layoutForView)
             }
@@ -739,6 +739,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 if isDate { // repeated press
                     layoutForView.ascending = !layoutForView.ascending
                 }
+
                 layoutForView.sort = "date"
                 saveLayout(layoutForView)
             }
@@ -747,6 +748,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 if isSize { // repeated press
                     layoutForView.ascending = !layoutForView.ascending
                 }
+
                 layoutForView.sort = "size"
                 saveLayout(layoutForView)
             }
@@ -754,6 +756,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             let sortSubmenu = UIMenu(title: NSLocalizedString("_order_by_", comment: ""), options: .displayInline, children: [byName, byNewest, byLargest])
 
             let foldersOnTop = UIAction(title: NSLocalizedString("_directory_on_top_no_", comment: ""), image: utility.loadImage(named: "folder"), state: layoutForView.directoryOnTop ? .on : .off) { _ in
+
                 layoutForView.directoryOnTop = !layoutForView.directoryOnTop
                 saveLayout(layoutForView)
             }
@@ -761,12 +764,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             let personalFilesOnly = NCKeychain().getPersonalFilesOnly(account: session.account)
             let personalFilesOnlyAction = UIAction(title: NSLocalizedString("_personal_files_only_", comment: ""), image: utility.loadImage(named: "folder.badge.person.crop", colors: NCBrandColor.shared.iconImageMultiColors), state: personalFilesOnly ? .on : .off) { _ in
                 NCKeychain().setPersonalFilesOnly(account: self.session.account, value: !personalFilesOnly)
+
+                (self.collectionView.collectionViewLayout as? NCMediaLayout)?.invalidate()
                 self.reloadDataSource()
             }
 
             let showDescriptionKeychain = NCKeychain().showDescription
             let showDescription = UIAction(title: NSLocalizedString("_show_description_", comment: ""), image: utility.loadImage(named: "list.dash.header.rectangle"), attributes: richWorkspaceText == nil ? .disabled : [], state: showDescriptionKeychain && richWorkspaceText != nil ? .on : .off) { _ in
                 NCKeychain().showDescription = !showDescriptionKeychain
+
+                (self.collectionView.collectionViewLayout as? NCMediaLayout)?.invalidate()
                 self.collectionView.reloadData()
                 self.setNavigationRightItems()
             }
