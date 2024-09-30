@@ -142,9 +142,9 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         labelTitle.text = ""
         labelInfo.text = ""
         labelSubinfo.text = ""
-        labelTitle.textColor = NCBrandColor.shared.textColor
-        labelInfo.textColor = NCBrandColor.shared.textColor2
-        labelSubinfo.textColor = NCBrandColor.shared.textColor2
+        labelTitle.textColor = UIColor(resource: .ListCell.title)
+        labelInfo.textColor = UIColor(resource: .ListCell.subtitle)
+        labelSubinfo.textColor = UIColor(resource: .ListCell.subtitle)
 
         imageFavoriteBackground.isHidden = true
     }
@@ -224,7 +224,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         separator.isHidden = status
     }
 	
-    func selected(_ status: Bool, isEditMode: Bool) {
+    func selected(_ isSelected: Bool, isEditMode: Bool) {
         if isEditMode {
             imageItemLeftConstraint.constant = 45
             imageSelect.isHidden = false
@@ -243,7 +243,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             backgroundView = nil
             setA11yActions()
         }
-        if status {
+        if isSelected {
             imageSelect.image = NCImageCache.images.checkedYes?.withTintColor(NCBrandColor.shared.brandElement)
         } else {
             imageSelect.image = NCImageCache.images.checkedNo?.withTintColor(UIColor(resource: .FileSelection.listItemDeselected))
@@ -309,7 +309,7 @@ protocol NCListCellDelegate: AnyObject {
 // MARK: - List Layout
 
 class NCListLayout: UICollectionViewFlowLayout {
-    var itemHeight: CGFloat = 60
+    var itemHeight: CGFloat = 48
 
     override init() {
         super.init()

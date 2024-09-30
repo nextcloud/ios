@@ -98,25 +98,12 @@ class NCCreateFormUploadConflict: UIViewController {
             labelAlreadyExistingFiles.text = NSLocalizedString("_file_conflict_exists_", comment: "")
         }
 
-        switchNewFiles.onTintColor = NCBrandColor.shared.brandElement
         switchNewFiles.isOn = false
-        switchAlreadyExistingFiles.onTintColor = NCBrandColor.shared.brandElement
         switchAlreadyExistingFiles.isOn = false
 
-        buttonCancel.layer.cornerRadius = 20
-        buttonCancel.layer.masksToBounds = true
-        buttonCancel.layer.borderWidth = 0.5
-        buttonCancel.layer.borderColor = UIColor.darkGray.cgColor
-        buttonCancel.backgroundColor = .systemGray5
         buttonCancel.setTitle(NSLocalizedString("_cancel_", comment: ""), for: .normal)
-        buttonCancel.setTitleColor(NCBrandColor.shared.textColor, for: .normal)
-
-        buttonContinue.layer.cornerRadius = 20
-        buttonContinue.layer.masksToBounds = true
-        buttonContinue.backgroundColor = NCBrandColor.shared.brandElement
         buttonContinue.setTitle(NSLocalizedString("_continue_", comment: ""), for: .normal)
         buttonContinue.isEnabled = false
-        buttonContinue.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
 
         let blurEffect = UIBlurEffect(style: .light)
         blurView = UIVisualEffectView(effect: blurEffect)
@@ -502,10 +489,8 @@ extension NCCreateFormUploadConflict: NCCreateFormUploadConflictCellDelegate {
 
         if result {
             buttonContinue.isEnabled = true
-            buttonContinue.setTitleColor(NCBrandColor.shared.textColor, for: .normal)
         } else {
             buttonContinue.isEnabled = false
-            buttonContinue.setTitleColor(NCBrandColor.shared.textColor2, for: .normal)
         }
     }
 }

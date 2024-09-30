@@ -36,7 +36,15 @@ protocol NCCollectionViewCommonSelectToolbarDelegate: AnyObject {
 }
 
 class NCCollectionViewCommonSelectToolbar: ObservableObject {
-    var hostingController: UIViewController?
+    enum TabButton {
+        case share
+        case moveOrCopy
+        case delete
+        case download
+        case lockOrUnlock
+    }
+    
+    private(set) var hostingController: UIViewController?
     open weak var delegate: NCCollectionViewCommonSelectToolbarDelegate?
 
     @Published var isAnyOffline = false
@@ -47,9 +55,13 @@ class NCCollectionViewCommonSelectToolbar: ObservableObject {
     @Published var canUnlock = true
     @Published var enableLock = false
     @Published var isSelectedEmpty = true
+    
+    let displayedButtons: [TabButton]
 
-    init(delegate: NCCollectionViewCommonSelectToolbarDelegate? = nil) {
+    init(delegate: NCCollectionViewCommonSelectToolbarDelegate? = nil,
+         displayedButtons: [TabButton] = [.share, .moveOrCopy, .delete, .download, .lockOrUnlock]) {
         self.delegate = delegate
+        self.displayedButtons = displayedButtons
         setupHostingController()
         setupOrientationObserver()
     }
@@ -75,6 +87,7 @@ class NCCollectionViewCommonSelectToolbar: ObservableObject {
     private func setupHostingController() {
         let rootView = NCCollectionViewCommonSelectToolbarView(tabBarSelect: self)
         hostingController = UIHostingController(rootView: rootView)
+        hostingController?.view.isHidden = true
     }
 
     private func updateToolbarFrame(for hostingController: UIViewController) {
@@ -189,4 +202,13 @@ class NCCollectionViewCommonSelectToolbar: ObservableObject {
             isAnyOffline = localFile.offline
         }
     }
+}
+
+extension NCCollectionViewCommonSelectToolbarDelegate {
+    func selectAll() { }
+    func delete() { }
+    func move() { }
+    func share() { }
+    func saveAsAvailableOffline(isAnyOffline: Bool) { }
+    func lock(isAnyLocked: Bool) { }
 }

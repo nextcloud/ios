@@ -9,7 +9,9 @@
 import Foundation
 
 class AppScreenConstants {
+	static let compactMaxSize: CGFloat = 460
+	
 	static var toolbarHeight: CGFloat {
-		UIScreen.main.bounds.size.width > 460 ? 60.0 : 80.0
+		UIScreen.main.bounds.size.width > compactMaxSize ? 60.0 : 80.0
 	}
 }

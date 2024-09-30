@@ -68,6 +68,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     private var dataSource = NCDataSource()
     internal var richWorkspaceText: String?
     internal var headerMenu: NCSectionFirstHeader?
+    private let enableRichWorkspace: Bool = false
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
     private var backgroundImageView = UIImageView()
@@ -83,7 +84,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         navigationController?.presentationController?.delegate = self
         navigationController?.navigationBar.tintColor = NCBrandColor.shared.iconImageColor
 
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = NCBrandColor.shared.appBackgroundColor
         selectCommandViewSelect?.separatorView.backgroundColor = .separator
 
         activeAccount = NCManageDatabase.shared.getActiveAccount()
@@ -99,7 +100,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         // Footer
         collectionView.register(UINib(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
         collectionView.alwaysBounceVertical = true
-        collectionView.backgroundColor = .systemBackground
+        collectionView.backgroundColor = NCBrandColor.shared.appBackgroundColor
 
         buttonCancel.title = NSLocalizedString("_cancel_", comment: "")
 		buttonCancel.tintColor = UIColor(named: "SelectToolbar/CancelTint")
@@ -540,8 +541,10 @@ extension NCSelect {
             loadFolder()
         }
 
-        let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", activeAccount.account, serverUrl))
-        richWorkspaceText = directory?.richWorkspace
+        if enableRichWorkspace {
+            let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", activeAccount.account, serverUrl))
+            richWorkspaceText = directory?.richWorkspace
+        }
 
         DispatchQueue.main.async {
             self.collectionView.reloadData()
@@ -567,23 +570,21 @@ extension NCSelect {
 class NCSelectCommandView: UIView {
 
     @IBOutlet weak var separatorView: UIView!
-    @IBOutlet weak var createFolderButton: CopyMoveDialogButton?
-    @IBOutlet weak var selectButton: CopyMoveDialogButton?
-    @IBOutlet weak var copyButton: CopyMoveDialogButton?
-    @IBOutlet weak var moveButton: CopyMoveDialogButton?
+    @IBOutlet weak var createFolderButton: PrimaryButton?
+    @IBOutlet weak var selectButton: PrimaryButton?
+    @IBOutlet weak var copyButton: PrimaryButton?
+    @IBOutlet weak var moveButton: PrimaryButton?
     @IBOutlet weak var overwriteSwitch: UISwitch?
     @IBOutlet weak var overwriteLabel: UILabel?
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
 
     var selectView: NCSelect?
-    private let gradient: CAGradientLayer = CAGradientLayer()
 
     override func awakeFromNib() {
-
+        super.awakeFromNib()
         separatorHeightConstraint.constant = 0.5
         separatorView.backgroundColor = .separator
 
-        overwriteSwitch?.onTintColor = NCBrandColor.shared.brandElement
         overwriteLabel?.text = NSLocalizedString("_overwrite_", comment: "")
 
 		setupButton(button: selectButton, titleKey: "_select_")
@@ -593,11 +594,7 @@ class NCSelectCommandView: UIView {
     }
 
 	private func setupButton(button: UIButton?, titleKey: String) {
-		button?.layer.cornerRadius = 15
-		button?.layer.masksToBounds = true
 		button?.setTitle(NSLocalizedString(titleKey, comment: ""), for: .normal)
-		button?.setTitleColor(.white, for: .highlighted)
-		button?.setTitleColor(.white, for: .normal)
 	}
 	
     @IBAction func createFolderButtonPressed(_ sender: UIButton) {

@@ -150,7 +150,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             self.handleProcessingTask(task)
         }
         
-        UISwitch.appearance().onTintColor = NCBrandColor.shared.brandElement
+        UISwitch.appearance().onTintColor = NCBrandColor.shared.switchColor
+        UISlider.appearance().thumbTintColor = UIColor(Color(.QualitySlider.thumb))
+        UISlider.appearance().maximumTrackTintColor = UIColor(Color(.QualitySlider.maximumTrack))
 
         FileNameValidator.shared.setup(
             forbiddenFileNames: NCGlobal.shared.capabilityForbiddenFileNames,

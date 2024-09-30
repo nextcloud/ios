@@ -414,7 +414,7 @@ struct UploadScanDocumentView: View {
                         }
                         HStack {
                             Toggle(NSLocalizedString("_text_recognition_", comment: ""), isOn: $isTextRecognition)
-                                .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brandElement)))
+                                .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.switchColor)))
                                 .onChange(of: isTextRecognition) { newValue in
                                     NCKeychain().textRecognitionStatus = newValue
                                 }
@@ -426,7 +426,7 @@ struct UploadScanDocumentView: View {
 
                     VStack(spacing: 20) {
                         Toggle(NSLocalizedString("_delete_all_scanned_images_", comment: ""), isOn: $removeAllFiles)
-                            .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brandElement)))
+                            .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.switchColor)))
                             .onChange(of: removeAllFiles) { newValue in
                                 NCKeychain().deleteAllScanImages = newValue
                             }
@@ -446,8 +446,8 @@ struct UploadScanDocumentView: View {
                                 }
                             }
                         }
-                        .buttonStyle(ButtonRounded(disabled: fileName.isEmpty || !footer.isEmpty))
                         .disabled(fileName.isEmpty || !footer.isEmpty)
+                        .buttonStyle(.primary)
                     }
 
                     Section(header: Text(NSLocalizedString("_quality_image_title_", comment: ""))) {

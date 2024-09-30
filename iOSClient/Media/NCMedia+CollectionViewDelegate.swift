@@ -26,6 +26,7 @@ import NextcloudKit
 import RealmSwift
 
 extension NCMedia: UICollectionViewDelegate {
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         var mediaCell: NCGridMediaCell?
         if let metadata = self.metadatas?[indexPath.row] {
@@ -45,7 +46,8 @@ extension NCMedia: UICollectionViewDelegate {
                     mediaCell?.selected(true)
 
                 }
-                tabBarSelect.selectCount = selectOcId.count
+                fileActionsHeader?.setSelectionState(selectionState: selectionState)
+                tabBarSelect.update(selectOcId: selectOcId)
             } else {
                 // ACTIVE SERVERURL
                 serverUrl = metadata.serverUrl
