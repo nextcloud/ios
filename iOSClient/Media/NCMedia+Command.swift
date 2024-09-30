@@ -137,6 +137,7 @@ extension NCMedia {
                     self.layoutType = self.global.mediaLayoutRatio
                 }
                 self.createMenu()
+                self.layout.invalidate()
                 self.collectionViewReloadData()
             }
         ])
