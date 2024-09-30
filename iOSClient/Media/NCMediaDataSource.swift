@@ -32,7 +32,6 @@ extension NCMedia {
             if let metadatas = self.database.getResultsMetadatas(predicate: self.imageCache.getMediaPredicate(filterLivePhotoFile: true, session: session, showOnlyImages: self.showOnlyImages, showOnlyVideos: self.showOnlyVideos), sortedByKeyPath: "date") {
                 self.dataSource = NCMediaDataSource(metadatas: metadatas)
             }
-            self.layout.invalidate()
             self.collectionViewReloadData()
         }
     }
@@ -40,6 +39,7 @@ extension NCMedia {
     func collectionViewReloadData() {
         DispatchQueue.main.async {
             self.refreshControl.endRefreshing()
+            self.layout.invalidate()
             self.collectionView.reloadData()
             self.setTitleDate()
         }

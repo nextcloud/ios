@@ -294,8 +294,6 @@ class NCMedia: UIViewController {
             } else {
                 collectionViewReloadData()
             }
-
-            collectionViewReloadData()
         }
     }
 
