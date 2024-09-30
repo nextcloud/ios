@@ -40,7 +40,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     var autoUploadFileName = ""
     var autoUploadDirectory = ""
-    var isTransitioning: Bool = false
     let refreshControl = UIRefreshControl()
     var searchController: UISearchController?
     var backgroundImageView = UIImageView()
@@ -648,9 +647,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             guard let layoutForView = database.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl) else { return [] }
 
             func saveLayout(_ layoutForView: NCDBLayoutForView) {
-                (self.collectionView.collectionViewLayout as? NCMediaLayout)?.invalidate()
                 database.setLayoutForView(layoutForView: layoutForView)
-                NotificationCenter.default.postOnMainThread(name: global.notificationCenterReloadDataSource)
+
+                (self.collectionView.collectionViewLayout as? NCMediaLayout)?.invalidate()
+                self.collectionView.reloadData()
+
                 setNavigationRightItems()
             }
 
@@ -666,7 +667,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.layoutType = self.global.layoutList
 
                 self.collectionView.reloadData()
-                self.collectionView.setCollectionViewLayout(self.listLayout, animated: true) {_ in self.isTransitioning = false }
+                self.collectionView.setCollectionViewLayout(self.listLayout, animated: true)
 
                 self.setNavigationRightItems()
             }
@@ -677,7 +678,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.layoutType = self.global.layoutGrid
 
                 self.collectionView.reloadData()
-                self.collectionView.setCollectionViewLayout(self.gridLayout, animated: true) {_ in self.isTransitioning = false }
+                self.collectionView.setCollectionViewLayout(self.gridLayout, animated: true)
 
                 self.setNavigationRightItems()
             }
@@ -689,7 +690,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
                 (self.collectionView.collectionViewLayout as? NCMediaLayout)?.invalidate()
                 self.collectionView.reloadData()
-                self.collectionView.setCollectionViewLayout(self.mediaLayout, animated: true) {_ in self.isTransitioning = false }
+                self.collectionView.setCollectionViewLayout(self.mediaLayout, animated: true)
 
                 self.setNavigationRightItems()
             }
@@ -701,7 +702,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
                 (self.collectionView.collectionViewLayout as? NCMediaLayout)?.invalidate()
                 self.collectionView.reloadData()
-                self.collectionView.setCollectionViewLayout(self.mediaLayout, animated: true) {_ in self.isTransitioning = false }
+                self.collectionView.setCollectionViewLayout(self.mediaLayout, animated: true)
 
                 self.setNavigationRightItems()
             }
@@ -763,6 +764,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
                 (self.collectionView.collectionViewLayout as? NCMediaLayout)?.invalidate()
                 self.collectionView.reloadData()
+
                 self.setNavigationRightItems()
             }
             showDescription.subtitle = richWorkspaceText == nil ? NSLocalizedString("_no_description_available_", comment: "") : ""
@@ -963,7 +965,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NCActionCenter.shared.pastePasteboard(serverUrl: serverUrl, account: session.account, controller: self.controller)
     }
 
-    // MARK: - DataSource + NC Endpoint
+    // MARK: - DataSource
 
     @objc func reloadDataSource() {
         guard !session.account.isEmpty, !self.isSearchingMode else { return }
