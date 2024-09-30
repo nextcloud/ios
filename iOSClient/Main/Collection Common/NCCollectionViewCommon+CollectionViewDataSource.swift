@@ -195,6 +195,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             } else {
                 cell.fileInfoLabel?.text = metadata.subline
             }
+            cell.fileSubinfoLabel?.text = nil
             cell.fileSubinfoLabel?.isHidden = true
         } else {
             cell.fileSubinfoLabel?.isHidden = false
