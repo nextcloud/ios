@@ -119,7 +119,7 @@ class NCRecent: NCCollectionViewCommon {
         <d:orderby>
             <d:order>
                 <d:prop>
-                    <d:getlastmodified/>
+        /Users/marinofaggiana/Developer/ios/iOSClient/Assistant                 <d:getlastmodified/>
                 </d:prop>
                 <d:descending/>
             </d:order>
@@ -150,7 +150,7 @@ class NCRecent: NCCollectionViewCommon {
                     self.database.addMetadatas(metadatas)
                     self.reloadDataSource()
                 }
-            } 
+            }
         }
     }
 }
