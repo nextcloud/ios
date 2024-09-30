@@ -77,6 +77,7 @@ class NCFiles: NCCollectionViewCommon {
                 self.setNavigationLeftItems()
 
                 self.reloadDataSource()
+                self.getServerData()
             }
         }
     }
