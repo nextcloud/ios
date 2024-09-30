@@ -102,7 +102,9 @@ class NCFiles: NCCollectionViewCommon {
             self.fileNameOpen = nil
         }
 
-        getServerData()
+        if !isSearchingMode {
+            getServerData()
+        }
     }
 
     override func viewDidDisappear(_ animated: Bool) {
