@@ -77,7 +77,6 @@ class NCFiles: NCCollectionViewCommon {
                 self.setNavigationLeftItems()
 
                 self.reloadDataSource()
-                self.reloadDataSourceNetwork()
             }
         }
     }
@@ -89,10 +88,7 @@ class NCFiles: NCCollectionViewCommon {
         }
         super.viewWillAppear(animated)
 
-        if self.dataSource.isEmpty() {
-            reloadDataSource(withQueryDB: true)
-        }
-        reloadDataSourceNetwork(withQueryDB: true)
+        reloadDataSource()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -104,6 +100,8 @@ class NCFiles: NCCollectionViewCommon {
             self.fileNameBlink = nil
             self.fileNameOpen = nil
         }
+
+        getServerData()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -115,8 +113,7 @@ class NCFiles: NCCollectionViewCommon {
 
     // MARK: - DataSource + NC Endpoint
 
-    override func queryDB() {
-        super.queryDB()
+    override func reloadDataSource() {
         self.dataSource.removeAll()
 
         var predicate = self.defaultPredicate
@@ -131,9 +128,13 @@ class NCFiles: NCCollectionViewCommon {
 
         let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: layoutForView)
         self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView)
+
+        super.reloadDataSource()
     }
 
-    override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
+    override func getServerData() {
+        super.getServerData()
+
         if UIApplication.shared.applicationState == .background {
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Files not reload datasource network with the application in background")
             return
@@ -151,11 +152,8 @@ class NCFiles: NCCollectionViewCommon {
                     return true
                 }
             }
-
             return false
         }
-
-        super.reloadDataSourceNetwork()
 
         DispatchQueue.global(qos: .background).async {
             self.networkReadFolder { tableDirectory, metadatas, reloadDataSource, error in
@@ -168,14 +166,9 @@ class NCFiles: NCCollectionViewCommon {
                         }
 
                         self.richWorkspaceText = tableDirectory?.richWorkspace
-
                         if reloadDataSource {
                             self.reloadDataSource()
-                        } else {
-                            self.collectionView.reloadData()
                         }
-                    } else {
-                        self.reloadDataSource(withQueryDB: withQueryDB)
                     }
                 }
             }
@@ -233,10 +226,7 @@ class NCFiles: NCCollectionViewCommon {
                                         NCContentPresenter().showError(error: error)
                                     }
                                     NCActivityIndicator.shared.stop()
-                                    self.reloadDataSource()
                                 }
-                            } else {
-                                self.reloadDataSource()
                             }
                         } else {
                             // Client Diagnostic
