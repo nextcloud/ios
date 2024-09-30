@@ -20,7 +20,11 @@ import UIKit
         disable_intro = true
         disable_request_login_url = true
 
+#if BETA
+        capabilitiesGroup = "group.de.strato.ionos.easystorage.beta"
+#else
         capabilitiesGroup = "group.com.viseven.ionos.easystorage"
+#endif
     }
 }
 
