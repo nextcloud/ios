@@ -61,7 +61,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         selectionToolbar = NCTrashSelectToolBar(containerView: view, placeholderFrame: selectToolBarFrame, delegate: self)
 
         view.backgroundColor = NCBrandColor.shared.appBackgroundColor
-        self.navigationController?.navigationBar.prefersLargeTitles = true
+        self.navigationController?.navigationBar.prefersLargeTitles = false
 
         collectionView.register(UINib(nibName: "NCTrashListCell", bundle: nil), forCellWithReuseIdentifier: "listCell")
         collectionView.register(UINib(nibName: "NCTrashGridCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
