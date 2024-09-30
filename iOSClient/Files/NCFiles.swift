@@ -114,7 +114,7 @@ class NCFiles: NCCollectionViewCommon {
         fileNameOpen = nil
     }
 
-    // MARK: - DataSource + NC Endpoint
+    // MARK: - DataSource
 
     override func reloadDataSource() {
         self.dataSource.removeAll()

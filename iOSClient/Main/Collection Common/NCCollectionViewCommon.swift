@@ -971,12 +971,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard !session.account.isEmpty, !self.isSearchingMode else { return }
 
         DispatchQueue.main.async {
-            // get auto upload folder
-            self.autoUploadFileName = self.database.getAccountAutoUploadFileName()
-            self.autoUploadDirectory = self.database.getAccountAutoUploadDirectory(session: self.session)
-            // get layout for view
-            self.layoutForView = self.database.getLayoutForView(account: self.session.account, key: self.layoutKey, serverUrl: self.serverUrl)
-
             let animator = UIViewPropertyAnimator(duration: 0.3, curve: .easeInOut) {
                 self.collectionView?.collectionViewLayout.invalidateLayout()
                 self.collectionView?.reloadData()
