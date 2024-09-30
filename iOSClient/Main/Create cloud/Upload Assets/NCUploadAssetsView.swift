@@ -123,14 +123,14 @@ struct NCUploadAssetsView: View {
                             Text(NSLocalizedString("_use_folder_auto_upload_", comment: ""))
                                 .font(.system(size: 15))
                         })
-                        .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brandElement)))
+                        .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.switchColor)))
 
                         if model.useAutoUploadFolder {
                             Toggle(isOn: $model.useAutoUploadFolder, label: {
                                 Text(NSLocalizedString("_autoupload_create_subfolder_", comment: ""))
                                     .font(.system(size: 15))
                             })
-                            .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brandElement)))
+                            .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.switchColor)))
                         }
 
                         if !model.useAutoUploadFolder {

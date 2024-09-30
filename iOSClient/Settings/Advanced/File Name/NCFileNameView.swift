@@ -33,7 +33,7 @@ struct NCFileNameView: View {
                 ///
                 Toggle(NSLocalizedString("_maintain_original_filename_", comment: ""), isOn: $model.maintainFilenameOriginal)
                     .font(.system(size: 16))
-                    .tint(Color(NCBrandColor.shared.brandElement))
+                    .tint(Color(NCBrandColor.shared.switchColor))
                     .onChange(of: model.maintainFilenameOriginal, perform: { newValue in
                         model.toggleMaintainFilenameOriginal(newValue: newValue)
                         model.getFileName()
@@ -42,13 +42,13 @@ struct NCFileNameView: View {
                 if !model.maintainFilenameOriginal {
                     Toggle(NSLocalizedString("_add_filenametype_", comment: ""), isOn: $model.addFileNameType)
                         .font(.system(size: 16))
-                        .tint(Color(NCBrandColor.shared.brandElement))
+                        .tint(Color(NCBrandColor.shared.switchColor))
                         .onChange(of: model.addFileNameType, perform: { newValue in
                             model.toggleAddFilenameType(newValue: newValue)
                             model.getFileName()
                         })
                 }
-            }
+            }.applyGlobalFormSectionStyle()
             .transition(.slide)
             .animation(.easeInOut, value: model.maintainFilenameOriginal)
 
@@ -57,7 +57,6 @@ struct NCFileNameView: View {
                 .animation(.easeInOut, value: model.addFileNameType)
         }
         .navigationBarTitle(NSLocalizedString("_mode_filename_", comment: ""))
-        .applyGlobalFormStyle()
         .defaultViewModifier(model)
         .applyGlobalFormStyle()
         .padding(.top, 0)
@@ -90,7 +89,7 @@ struct NCFileNameView: View {
                 Text(NSLocalizedString("_filename_", comment: ""))
             }, footer: {
                 Text(String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM, MMM, DD, YY, YYYY, HH, hh, mm, ss, ampm"))
-            })
+            }).applyGlobalFormSectionStyle()
         } else {
             Section(content: {
                 Text("IMG_0001.JPG")
@@ -99,7 +98,7 @@ struct NCFileNameView: View {
                 Text(NSLocalizedString("_filename_", comment: ""))
             }, footer: {
                 Text(NSLocalizedString("_default_preview_filename_footer_", comment: ""))
-            })
+            }).applyGlobalFormSectionStyle()
         }
 
     }

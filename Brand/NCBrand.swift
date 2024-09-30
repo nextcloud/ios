@@ -167,6 +167,10 @@ class NCBrandColor: NSObject {
     var formSeparatorColor: UIColor {
         .separator
     }
+    
+    var switchColor: UIColor {
+        brandElement
+    }
 
     let iconImageColor: UIColor = .label
     let iconImageColor2: UIColor = .secondaryLabel

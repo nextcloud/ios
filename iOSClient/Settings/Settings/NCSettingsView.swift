@@ -80,14 +80,14 @@ struct NCSettingsView: View {
                 }
                 /// Enable Touch ID
                 Toggle(NSLocalizedString("_enable_touch_face_id_", comment: ""), isOn: $model.enableTouchID)
-                    .tint(Color(NCBrandColor.shared.brandElement))
+                    .tint(Color(NCBrandColor.shared.switchColor))
                     .font(.system(size: 16))
                     .onChange(of: model.enableTouchID) { _ in
                         model.updateTouchIDSetting()
                     }
                 /// Reset app wrong attempts
                 Toggle(NSLocalizedString("_reset_wrong_passcode_", comment: ""), isOn: $model.resetWrongAttempts)
-                    .tint(Color(NCBrandColor.shared.brandElement))
+                    .tint(Color(NCBrandColor.shared.switchColor))
                     .font(.system(size: 16))
                     .onChange(of: model.resetWrongAttempts) { _ in
                         model.updateResetWrongAttemptsSetting()
@@ -98,7 +98,7 @@ struct NCSettingsView: View {
                 Text(String(format: NSLocalizedString("_reset_wrong_passcode_desc_", comment: ""), NCBrandOptions.shared.resetAppPasscodeAttempts))
                     .font(.system(size: 12))
                     .lineSpacing(1)
-            }).listRowBackground(Color(NCBrandColor.shared.formRowBackgroundColor))
+            }).applyGlobalFormSectionStyle()
             /// Calender & Contacts
             if !NCBrandOptions.shared.disable_mobileconfig {
                 Section(content: {
@@ -128,7 +128,7 @@ struct NCSettingsView: View {
                             .font(.system(size: 12))
                     }
 
-                }).listRowBackground(Color(NCBrandColor.shared.formRowBackgroundColor))
+                }).applyGlobalFormSectionStyle()
             }
             /// `Advanced` Section
             Section {
@@ -148,7 +148,7 @@ struct NCSettingsView: View {
                     }
                     .font(.system(size: 16))
                 }
-            }.listRowBackground(Color(NCBrandColor.shared.formRowBackgroundColor))
+            }.applyGlobalFormSectionStyle()
             /// `Information` Section
             Section(header: Text(NSLocalizedString("_information_", comment: "")), content: {
                 // Acknowledgements
@@ -207,12 +207,12 @@ struct NCSettingsView: View {
                 .sheet(isPresented: $showSourceCode) {
                     NCBrowserWebView(urlBase: URL(string: NCBrandOptions.shared.sourceCode)!, browserTitle: NSLocalizedString("_source_code_", comment: ""))
                 }
-            }).listRowBackground(Color(NCBrandColor.shared.formRowBackgroundColor))
+            }).applyGlobalFormSectionStyle()
             /// `Watermark` Section
             Section(content: {
             }, footer: {
                 Text(model.footerApp + model.footerServer)
-            }).listRowBackground(Color(NCBrandColor.shared.formRowBackgroundColor))
+            }).applyGlobalFormSectionStyle()
         }
         .navigationBarTitle(NSLocalizedString("_settings_", comment: ""))
         .toolbar {

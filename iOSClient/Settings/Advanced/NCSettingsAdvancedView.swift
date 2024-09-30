@@ -38,12 +38,12 @@ struct NCSettingsAdvancedView: View {
             /// Show Hidden Files
             Section(content: {
                 Toggle(NSLocalizedString("_show_hidden_files_", comment: ""), isOn: $model.showHiddenFiles)
-                    .tint(Color(NCBrandColor.shared.brandElement))
+                    .tint(Color(NCBrandColor.shared.switchColor))
                     .onChange(of: model.showHiddenFiles) { _ in
                         model.updateShowHiddenFiles()
                 }
                 .font(.system(size: 16))
-            }, footer: { })
+            }, footer: { }).applyGlobalFormSectionStyle()
             /// file name
             Section(content: {
                NavigationLink(destination: LazyView {
@@ -54,47 +54,47 @@ struct NCSettingsAdvancedView: View {
                }
             }, footer: {
                 Text(NSLocalizedString("_filenamemask_footer_", comment: ""))
-            })
+            }).applyGlobalFormSectionStyle()
             /// Most Compatible & Enable Live Photo
             Section(content: {
                 Toggle(NSLocalizedString("_format_compatibility_", comment: ""), isOn: $model.mostCompatible)
-                    .tint(Color(NCBrandColor.shared.brandElement))
+                    .tint(Color(NCBrandColor.shared.switchColor))
                     .onChange(of: model.mostCompatible) { _ in
                         model.updateMostCompatible()
                 }
                 .font(.system(size: 16))
                 Toggle(NSLocalizedString("_upload_mov_livephoto_", comment: ""), isOn: $model.livePhoto)
-                    .tint(Color(NCBrandColor.shared.brandElement))
+                    .tint(Color(NCBrandColor.shared.switchColor))
                     .onChange(of: model.livePhoto) { _ in
                         model.updateLivePhoto()
                 }
                 .font(.system(size: 16))
-            })
+            }).applyGlobalFormSectionStyle()
             /// Remove from Camera Roll
             Section(content: {
                 Toggle(NSLocalizedString("_remove_photo_CameraRoll_", comment: ""), isOn: $model.removeFromCameraRoll)
-                    .tint(Color(NCBrandColor.shared.brandElement))
+                    .tint(Color(NCBrandColor.shared.switchColor))
                     .onChange(of: model.removeFromCameraRoll) { _ in
                         model.updateRemoveFromCameraRoll()
                 }
                 .font(.system(size: 16))
-            })
+            }).applyGlobalFormSectionStyle()
             /// Section : Files App
             if !NCBrandOptions.shared.disable_openin_file {
                 Section(content: {
                     Toggle(NSLocalizedString("_disable_files_app_", comment: ""), isOn: $model.appIntegration)
-                        .tint(Color(NCBrandColor.shared.brandElement))
+                        .tint(Color(NCBrandColor.shared.switchColor))
                         .onChange(of: model.appIntegration) { _ in
                             model.updateAppIntegration()
                     }
                     .font(.system(size: 16))
-                })
+                }).applyGlobalFormSectionStyle()
             }
             /// Section: Privacy
             if !NCBrandOptions.shared.disable_crash_service {
                 Section(content: {
                     Toggle(NSLocalizedString("_crashservice_title_", comment: ""), isOn: $model.crashReporter)
-                        .tint(Color(NCBrandColor.shared.brandElement))
+                        .tint(Color(NCBrandColor.shared.switchColor))
                         .onChange(of: model.crashReporter) { _ in
                             model.updateCrashReporter()
                             showCrashReporter.toggle()
@@ -109,7 +109,7 @@ struct NCSettingsAdvancedView: View {
                     })
                 }, header: {
                     Text(NSLocalizedString("_privacy_", comment: ""))
-                })
+                }).applyGlobalFormSectionStyle()
             }
             /// Section: Diagnostic LOG
             if !NCBrandOptions.shared.disable_log {
@@ -161,7 +161,7 @@ struct NCSettingsAdvancedView: View {
                     }
                 }, header: {
                     Text(NSLocalizedString("_diagnostics_", comment: ""))
-                }, footer: { })
+                }, footer: { }).applyGlobalFormSectionStyle()
                 /// Set Log Level() & Capabilities
                 if model.isAdminGroup {
                     Section(content: {
@@ -183,7 +183,7 @@ struct NCSettingsAdvancedView: View {
                         Text(NSLocalizedString("_capabilities_", comment: ""))
                     }, footer: {
                         Text(NSLocalizedString("_capabilities_footer_", comment: ""))
-                    })
+                    }).applyGlobalFormSectionStyle()
                 }
             }
             /// Delete in Cache & Clear Cache
@@ -225,7 +225,7 @@ struct NCSettingsAdvancedView: View {
                 Text(model.footerTitle)
                     .font(.system(size: 12))
                     .multilineTextAlignment(.leading)
-            })
+            }).applyGlobalFormSectionStyle()
             /// Reset Application
             Section(content: {
                 Button(action: {
@@ -258,10 +258,9 @@ struct NCSettingsAdvancedView: View {
                )
                     .font(.system(size: 12))
                     .multilineTextAlignment(.leading)
-            })
+            }).applyGlobalFormSectionStyle()
         }
         .navigationBarTitle(NSLocalizedString("_advanced_", comment: ""))
-        .applyGlobalFormStyle()
         .defaultViewModifier(model)
         .applyGlobalFormStyle()
     }

@@ -98,9 +98,7 @@ class NCCreateFormUploadConflict: UIViewController {
             labelAlreadyExistingFiles.text = NSLocalizedString("_file_conflict_exists_", comment: "")
         }
 
-        switchNewFiles.onTintColor = NCBrandColor.shared.brandElement
         switchNewFiles.isOn = false
-        switchAlreadyExistingFiles.onTintColor = NCBrandColor.shared.brandElement
         switchAlreadyExistingFiles.isOn = false
 
         buttonCancel.setTitle(NSLocalizedString("_cancel_", comment: ""), for: .normal)

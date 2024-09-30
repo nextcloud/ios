@@ -582,7 +582,6 @@ class NCSelectCommandView: UIView {
         separatorHeightConstraint.constant = 0.5
         separatorView.backgroundColor = .separator
 
-        overwriteSwitch?.onTintColor = NCBrandColor.shared.brandElement
         overwriteLabel?.text = NSLocalizedString("_overwrite_", comment: "")
 
 		setupButton(button: selectButton, titleKey: "_select_")
