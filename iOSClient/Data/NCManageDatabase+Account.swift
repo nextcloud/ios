@@ -393,7 +393,7 @@ extension NCManageDatabase {
         }
     }
 
-    func setAccountAlias(_ account: String, alias: String) {
+	func setAccountAlias(_ account: String, alias: String, completion: (() -> Void)? = nil) {
         let alias = alias.trimmingCharacters(in: .whitespacesAndNewlines)
 
         do {
@@ -401,10 +401,12 @@ extension NCManageDatabase {
             try realm.write {
                 if let result = realm.objects(tableAccount.self).filter("account == %@", account).first {
                     result.alias = alias
+					completion?()
                 }
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
+			completion?()
         }
     }
 

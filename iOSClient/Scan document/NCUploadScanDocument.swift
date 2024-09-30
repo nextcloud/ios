@@ -321,6 +321,7 @@ extension NCUploadScanDocument: NCCreateFormUploadConflictDelegate {
 
 struct UploadScanDocumentView: View {
     @State var fileName = NCUtilityFileSystem().createFileNameDate("scan", ext: "")
+    @State var footer = ""
     @State var password: String = ""
     @State var isSecuredPassword: Bool = true
     @State var isTextRecognition: Bool = NCKeychain().textRecognitionStatus
@@ -349,7 +350,7 @@ struct UploadScanDocumentView: View {
         GeometryReader { geo in
             ZStack(alignment: .top) {
                 List {
-                    Section(header: Text(NSLocalizedString("_file_creation_", comment: ""))) {
+                    Section(header: Text(NSLocalizedString("_file_creation_", comment: "")), footer: Text(footer)) {
                         HStack {
                             Label {
                                 if NCUtilityFileSystem().getHomeServer(urlBase: uploadScanDocument.userBaseUrl.urlBase, userId: uploadScanDocument.userBaseUrl.userId) == uploadScanDocument.serverUrl {
@@ -383,6 +384,14 @@ struct UploadScanDocumentView: View {
                             TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $fileName)
                                 .modifier(TextFieldClearButton(text: $fileName))
                                 .multilineTextAlignment(.trailing)
+                                .onChange(of: fileName) { _ in
+                                    if let fileNameError = FileNameValidator.shared.checkFileName(fileName) {
+                                        footer = fileNameError.errorDescription
+                                    } else {
+                                        footer = ""
+
+                                    }
+                                }
                         }
                         HStack {
                             Group {
@@ -405,7 +414,7 @@ struct UploadScanDocumentView: View {
                         }
                         HStack {
                             Toggle(NSLocalizedString("_text_recognition_", comment: ""), isOn: $isTextRecognition)
-                                .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brandElement)))
+                                .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.switchColor)))
                                 .onChange(of: isTextRecognition) { newValue in
                                     NCKeychain().textRecognitionStatus = newValue
                                 }
@@ -414,9 +423,10 @@ struct UploadScanDocumentView: View {
                     .complexModifier { view in
                         view.listRowSeparator(.hidden)
                     }
+
                     VStack(spacing: 20) {
                         Toggle(NSLocalizedString("_delete_all_scanned_images_", comment: ""), isOn: $removeAllFiles)
-                            .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.brandElement)))
+                            .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.switchColor)))
                             .onChange(of: removeAllFiles) { newValue in
                                 NCKeychain().deleteAllScanImages = newValue
                             }
@@ -436,7 +446,8 @@ struct UploadScanDocumentView: View {
                                 }
                             }
                         }
-                        .buttonStyle(ButtonRounded(disabled: fileName.isEmpty))
+                        .disabled(fileName.isEmpty || !footer.isEmpty)
+                        .buttonStyle(.primary)
                     }
 
                     Section(header: Text(NSLocalizedString("_quality_image_title_", comment: ""))) {

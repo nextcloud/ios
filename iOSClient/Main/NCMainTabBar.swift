@@ -31,8 +31,8 @@ class NCMainTabBar: UITabBar {
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private let centerButtonY: CGFloat = -28
 
-	private var centerButtonColor: UIColor? {
-		UIColor(named: "Tabbar/FabButton")
+	private var centerButtonColor: UIColor {
+        UIColor(resource: .Tabbar.fabButton)
 	}
     
     private var customBackgroundColor: UIColor? {
@@ -60,7 +60,7 @@ class NCMainTabBar: UITabBar {
         layer.shadowOffset = CGSize(width: 0, height: 0)
         layer.shadowRadius = 2.0
         layer.shadowOpacity = 0.5
-        tintColor = NCBrandColor.shared.brandElement
+        tintColor = UIColor(resource: .Tabbar.activeItem)
         if let centerButton = self.viewWithTag(99) {
             centerButton.backgroundColor = centerButtonColor
         }
@@ -178,7 +178,7 @@ class NCMainTabBar: UITabBar {
         centerButton.accessibilityLabel = NSLocalizedString("_accessibility_add_upload_", comment: "")
         centerButton.layer.cornerRadius = centerButton.frame.size.width / 2.0
         centerButton.layer.masksToBounds = false
-        centerButton.action(for: .touchUpInside) { _ in
+        centerButton.action(for: .touchUpInside) { [self] _ in
 
             if let controller = self.window?.rootViewController as? NCMainTabBarController {
                 let serverUrl = controller.currentServerUrl()
@@ -189,6 +189,16 @@ class NCMainTabBar: UITabBar {
                         return
                     }
                 }
+
+                let fileFolderPath = NCUtilityFileSystem().getFileNamePath("", serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+                let fileFolderName = (serverUrl as NSString).lastPathComponent
+
+                if !FileNameValidator.shared.checkFolderPath(folderPath: fileFolderPath) {
+                    controller.present(UIAlertController.warning(message: "\(String(format: NSLocalizedString("_file_name_validator_error_reserved_name_", comment: ""), fileFolderName)) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
+
+                    return
+                }
+
                 self.appDelegate.toggleMenu(controller: controller)
             }
         }

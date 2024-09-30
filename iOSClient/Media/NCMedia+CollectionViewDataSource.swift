@@ -44,22 +44,6 @@ extension NCMedia: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         var numberOfItemsInSection = 0
         if let metadatas { numberOfItemsInSection = metadatas.count }
-        if numberOfItemsInSection == 0 {
-            selectOrCancelButton.isHidden = true
-            menuButton.isHidden = false
-            gradientView.alpha = 0
-            activityIndicatorTrailing.constant = 50
-        } else if isEditMode {
-            selectOrCancelButton.isHidden = false
-            menuButton.isHidden = true
-            activityIndicatorTrailing.constant = 150
-        } else {
-            selectOrCancelButton.isHidden = false
-            menuButton.isHidden = false
-            activityIndicatorTrailing.constant = 150
-        }
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { self.setTitleDate() }
         return numberOfItemsInSection
     }
 

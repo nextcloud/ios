@@ -68,6 +68,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     private var dataSource = NCDataSource()
     internal var richWorkspaceText: String?
     internal var headerMenu: NCSectionFirstHeader?
+    private let enableRichWorkspace: Bool = false
     private var autoUploadFileName = ""
     private var autoUploadDirectory = ""
     private var backgroundImageView = UIImageView()
@@ -83,7 +84,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         navigationController?.presentationController?.delegate = self
         navigationController?.navigationBar.tintColor = NCBrandColor.shared.iconImageColor
 
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = NCBrandColor.shared.appBackgroundColor
         selectCommandViewSelect?.separatorView.backgroundColor = .separator
 
         activeAccount = NCManageDatabase.shared.getActiveAccount()
@@ -99,7 +100,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         // Footer
         collectionView.register(UINib(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter, withReuseIdentifier: "sectionFooter")
         collectionView.alwaysBounceVertical = true
-        collectionView.backgroundColor = .systemBackground
+        collectionView.backgroundColor = NCBrandColor.shared.appBackgroundColor
 
         buttonCancel.title = NSLocalizedString("_cancel_", comment: "")
 		buttonCancel.tintColor = UIColor(named: "SelectToolbar/CancelTint")
@@ -148,11 +149,11 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        self.navigationItem.title = titleCurrentFolder
+        let folderPath = utilityFileSystem.getFileNamePath("", serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
 
-        // set the serverUrl
-        if serverUrl.isEmpty {
+        if serverUrl.isEmpty || !FileNameValidator.shared.checkFolderPath(folderPath: folderPath) {
             serverUrl = utilityFileSystem.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId)
+            titleCurrentFolder = NCBrandOptions.shared.brand
         }
 
         // get auto upload folder
@@ -160,6 +161,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: activeAccount.urlBase, userId: activeAccount.userId, account: activeAccount.account)
 
         loadDatasource(withLoadFolder: true)
+
+        self.navigationItem.title = titleCurrentFolder
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -253,7 +256,11 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         viewController.titleCurrentFolder = metadata.fileNameView
         viewController.serverUrl = serverUrlPush
 
-        self.navigationController?.pushViewController(viewController, animated: true)
+        if let fileNameError = FileNameValidator.shared.checkFileName(metadata.fileNameView) {
+            present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
+        } else {
+            navigationController?.pushViewController(viewController, animated: true)
+        }
     }
 }
 
@@ -266,11 +273,8 @@ extension NCSelect: UICollectionViewDelegate {
         guard let metadata = dataSource.cellForItemAt(indexPath: indexPath) else { return }
 
         if metadata.directory {
-
             pushMetadata(metadata)
-
         } else {
-
             delegate?.dismissSelect(serverUrl: serverUrl, metadata: metadata, type: type, items: items, overwrite: overwrite, copy: false, move: false)
             self.dismiss(animated: true, completion: nil)
         }
@@ -537,8 +541,10 @@ extension NCSelect {
             loadFolder()
         }
 
-        let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", activeAccount.account, serverUrl))
-        richWorkspaceText = directory?.richWorkspace
+        if enableRichWorkspace {
+            let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", activeAccount.account, serverUrl))
+            richWorkspaceText = directory?.richWorkspace
+        }
 
         DispatchQueue.main.async {
             self.collectionView.reloadData()
@@ -564,23 +570,21 @@ extension NCSelect {
 class NCSelectCommandView: UIView {
 
     @IBOutlet weak var separatorView: UIView!
-    @IBOutlet weak var createFolderButton: CopyMoveDialogButton?
-    @IBOutlet weak var selectButton: CopyMoveDialogButton?
-    @IBOutlet weak var copyButton: CopyMoveDialogButton?
-    @IBOutlet weak var moveButton: CopyMoveDialogButton?
+    @IBOutlet weak var createFolderButton: PrimaryButton?
+    @IBOutlet weak var selectButton: PrimaryButton?
+    @IBOutlet weak var copyButton: PrimaryButton?
+    @IBOutlet weak var moveButton: PrimaryButton?
     @IBOutlet weak var overwriteSwitch: UISwitch?
     @IBOutlet weak var overwriteLabel: UILabel?
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
 
     var selectView: NCSelect?
-    private let gradient: CAGradientLayer = CAGradientLayer()
 
     override func awakeFromNib() {
-
+        super.awakeFromNib()
         separatorHeightConstraint.constant = 0.5
         separatorView.backgroundColor = .separator
 
-        overwriteSwitch?.onTintColor = NCBrandColor.shared.brandElement
         overwriteLabel?.text = NSLocalizedString("_overwrite_", comment: "")
 
 		setupButton(button: selectButton, titleKey: "_select_")
@@ -590,11 +594,7 @@ class NCSelectCommandView: UIView {
     }
 
 	private func setupButton(button: UIButton?, titleKey: String) {
-		button?.layer.cornerRadius = 15
-		button?.layer.masksToBounds = true
 		button?.setTitle(NSLocalizedString(titleKey, comment: ""), for: .normal)
-		button?.setTitleColor(.white, for: .highlighted)
-		button?.setTitleColor(.white, for: .normal)
 	}
 	
     @IBAction func createFolderButtonPressed(_ sender: UIButton) {
