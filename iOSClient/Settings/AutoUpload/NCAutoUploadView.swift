@@ -40,7 +40,7 @@ struct NCAutoUploadView: View {
                     }
                     .font(.system(size: 16))
             }, footer: {
-                Text(NSLocalizedString("_autoupload_notice_", comment: ""))
+                Text(NSLocalizedString("_autoupload_notice_", comment: "")).listRowBackground(Color.clear)
             }).applyGlobalFormSectionStyle()
             /// If `autoUpload` state will be true, we will animate out the whole `autoUploadOnView` section
             if model.autoUpload {
@@ -76,7 +76,7 @@ struct NCAutoUploadView: View {
             })
             .tint(Color(UIColor.label))
         }, footer: {
-            Text("\(NSLocalizedString("_autoupload_current_folder_", comment: "")): \(model.returnPath())")
+            Text("\(NSLocalizedString("_autoupload_current_folder_", comment: "")): \(model.returnPath())").listRowBackground(Color.clear)
         }).applyGlobalFormSectionStyle()
         .sheet(isPresented: $model.autoUploadFolder) {
             SelectView(serverUrl: $model.serverUrl)
@@ -132,7 +132,7 @@ struct NCAutoUploadView: View {
                 model.handleAutoUploadSubfolderGranularityChange(newValue: newValue)
             }
         }, footer: {
-            Text(NSLocalizedString("_autoupload_create_subfolder_footer_", comment: ""))
+            Text(NSLocalizedString("_autoupload_create_subfolder_footer_", comment: "")).listRowBackground(Color.clear)
         }).applyGlobalFormSectionStyle()
         /// Auto Upload Full
         Section(content: {
@@ -144,7 +144,7 @@ struct NCAutoUploadView: View {
                 .font(.system(size: 16))
         }, footer: {
             Text(
-                NSLocalizedString("_autoupload_fullphotos_footer_", comment: "") + "\n \n")
+                NSLocalizedString("_autoupload_fullphotos_footer_", comment: "") + "\n \n").listRowBackground(Color.clear)
         }).applyGlobalFormSectionStyle()
     }
 }

@@ -93,10 +93,11 @@ struct NCSettingsView: View {
                         model.updateResetWrongAttemptsSetting()
                     }
             }, header: {
-                Text(NSLocalizedString("_privacy_", comment: ""))
+                Text(NSLocalizedString("_privacy_", comment: "")).listRowBackground(Color.clear)
             }, footer: {
                 Text(String(format: NSLocalizedString("_reset_wrong_passcode_desc_", comment: ""), NCBrandOptions.shared.resetAppPasscodeAttempts))
                     .font(.system(size: 12))
+                    .listRowBackground(Color.clear)
                     .lineSpacing(1)
             }).applyGlobalFormSectionStyle()
             /// Calender & Contacts
@@ -126,7 +127,7 @@ struct NCSettingsView: View {
                         Spacer()
                         Text(NSLocalizedString("_calendar_contacts_footer_", comment: ""))
                             .font(.system(size: 12))
-                    }
+                    }.listRowBackground(Color.clear)
 
                 }).applyGlobalFormSectionStyle()
             }
@@ -211,7 +212,7 @@ struct NCSettingsView: View {
             /// `Watermark` Section
             Section(content: {
             }, footer: {
-                Text(model.footerApp + model.footerServer)
+                Text(model.footerApp + model.footerServer).listRowBackground(Color.clear)
             }).applyGlobalFormSectionStyle()
         }
         .navigationBarTitle(NSLocalizedString("_settings_", comment: ""))
