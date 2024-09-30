@@ -118,7 +118,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRichdocumentGrabFocus)
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetwork, second: 2)
     }
 
     func sceneDidBecomeActive(_ scene: UIScene) {

@@ -186,7 +186,7 @@ class NCViewerMediaPage: UIViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
-        (delegateViewController as? NCCollectionViewCommon)?.reloadDataSource(withQueryDB: true)
+        (delegateViewController as? NCCollectionViewCommon)?.reloadDataSource()
         currentViewController.ncplayer?.playerStop()
         timerAutoHide?.invalidate()
         clearCommandCenter()

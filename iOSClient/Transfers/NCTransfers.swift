@@ -278,10 +278,9 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         return cell
     }
 
-    // MARK: - DataSource + NC Endpoint
+    // MARK: - DataSource
 
-    override func queryDB() {
-        super.queryDB()
+    override func reloadDataSource() {
         self.dataSource.removeAll()
 
         if let metadatas = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal), sortedByKeyPath: "sessionDate", ascending: true) {
@@ -291,13 +290,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         if self.dataSource.isEmpty() {
             NCTransferProgress.shared.removeAll()
         }
-    }
 
-    override func reloadDataSource(withQueryDB: Bool = true) {
-        super.reloadDataSource(withQueryDB: withQueryDB)
-    }
-
-    override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
-        super.reloadDataSource(withQueryDB: true)
+        super.reloadDataSource()
     }
 }
