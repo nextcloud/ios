@@ -42,13 +42,19 @@ class NCRecent: NCCollectionViewCommon {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        reloadDataSourceNetwork()
+
+        reloadDataSource()
     }
 
-    // MARK: - DataSource + NC Endpoint
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
 
-    override func queryDB() {
-        super.queryDB()
+        getServerData()
+    }
+
+    // MARK: - DataSource
+
+    override func reloadDataSource() {
         let metadatas = self.database.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND fileName != '.'", session.account), sortedByKeyPath: "date", ascending: false, arraySlice: 200)
 
         layoutForView?.sort = "date"
@@ -56,10 +62,13 @@ class NCRecent: NCCollectionViewCommon {
         layoutForView?.directoryOnTop = false
 
         self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView)
+
+        super.reloadDataSource()
     }
 
-    override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
-        super.reloadDataSourceNetwork()
+    override func getServerData() {
+        super.getServerData()
+
         let requestBodyRecent =
         """
         <?xml version=\"1.0\"?>
@@ -141,9 +150,7 @@ class NCRecent: NCCollectionViewCommon {
                     self.database.addMetadatas(metadatas)
                     self.reloadDataSource()
                 }
-            } else {
-                self.reloadDataSource(withQueryDB: withQueryDB)
-            }
+            } 
         }
     }
 }
