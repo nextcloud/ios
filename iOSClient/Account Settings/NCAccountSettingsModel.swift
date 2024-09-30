@@ -91,26 +91,30 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     }
 
     /// Triggered when the view appears.
-    func onViewAppear() {
-        var indexActiveAccount = 0
-        let accounts = NCManageDatabase.shared.getAllAccount()
-        var activeAccount = NCManageDatabase.shared.getActiveAccount()
-        var alias = ""
+	func onViewAppear() {
+		refetchAccountsInfo()
+	}
 
-        for (index, account) in accounts.enumerated() {
-            if account.active {
-                activeAccount = account
-                indexActiveAccount = index
-                alias = account.alias
-            }
-        }
+	private func refetchAccountsInfo() {
+		var indexActiveAccount = 0
+		let accounts = NCManageDatabase.shared.getAllAccount()
+		var activeAccount = NCManageDatabase.shared.getActiveAccount()
+		var alias = ""
 
-        self.indexActiveAccount = indexActiveAccount
-        self.accounts = accounts
-        self.activeAccount = activeAccount
-        self.alias = alias
-    }
+		for (index, account) in accounts.enumerated() {
+			if account.active {
+				activeAccount = account
+				indexActiveAccount = index
+				alias = account.alias
+			}
+		}
 
+		self.indexActiveAccount = indexActiveAccount
+		self.accounts = accounts
+		self.activeAccount = activeAccount
+		self.alias = alias
+	}
+	
     /// Func to get the user display name + alias
     func getUserName() -> String {
         guard let activeAccount else { return "" }
@@ -124,7 +128,10 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     /// Func to set alias
     func setAlias(_ value: String) {
         guard let activeAccount else { return }
-        NCManageDatabase.shared.setAccountAlias(activeAccount.account, alias: alias)
+		NCManageDatabase.shared.setAccountAlias(activeAccount.account, alias: alias) { 
+			[weak self] in
+			self?.refetchAccountsInfo()
+		}
     }
 
     /// Function to update the user data
