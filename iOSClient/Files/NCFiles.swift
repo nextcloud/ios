@@ -28,6 +28,7 @@ class NCFiles: NCCollectionViewCommon {
     internal var isRoot: Bool = true
     internal var fileNameBlink: String?
     internal var fileNameOpen: String?
+    internal var matadatasHash: String = ""
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -77,7 +78,7 @@ class NCFiles: NCCollectionViewCommon {
                 self.setNavigationLeftItems()
 
                 self.reloadDataSource()
-                self.reloadDataSourceNetwork()
+                self.getServerData()
             }
         }
     }
@@ -89,10 +90,7 @@ class NCFiles: NCCollectionViewCommon {
         }
         super.viewWillAppear(animated)
 
-        if self.dataSource.isEmpty() {
-            reloadDataSource(withQueryDB: true)
-        }
-        reloadDataSourceNetwork(withQueryDB: true)
+        reloadDataSource()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -104,6 +102,10 @@ class NCFiles: NCCollectionViewCommon {
             self.fileNameBlink = nil
             self.fileNameOpen = nil
         }
+
+        if !isSearchingMode {
+            getServerData()
+        }
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -113,10 +115,9 @@ class NCFiles: NCCollectionViewCommon {
         fileNameOpen = nil
     }
 
-    // MARK: - DataSource + NC Endpoint
+    // MARK: - DataSource
 
-    override func queryDB() {
-        super.queryDB()
+    override func reloadDataSource() {
         self.dataSource.removeAll()
 
         var predicate = self.defaultPredicate
@@ -131,9 +132,13 @@ class NCFiles: NCCollectionViewCommon {
 
         let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: layoutForView)
         self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView)
+
+        super.reloadDataSource()
     }
 
-    override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
+    override func getServerData() {
+        super.getServerData()
+
         if UIApplication.shared.applicationState == .background {
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Files not reload datasource network with the application in background")
             return
@@ -151,11 +156,8 @@ class NCFiles: NCCollectionViewCommon {
                     return true
                 }
             }
-
             return false
         }
-
-        super.reloadDataSourceNetwork()
 
         DispatchQueue.global(qos: .background).async {
             self.networkReadFolder { tableDirectory, metadatas, reloadDataSource, error in
@@ -170,19 +172,18 @@ class NCFiles: NCCollectionViewCommon {
                         self.richWorkspaceText = tableDirectory?.richWorkspace
 
                         if reloadDataSource {
+                            (self.collectionView.collectionViewLayout as? NCMediaLayout)?.invalidate()
                             self.reloadDataSource()
-                        } else {
+                        } else if self.dataSource.isEmpty() {
                             self.collectionView.reloadData()
                         }
-                    } else {
-                        self.reloadDataSource(withQueryDB: withQueryDB)
                     }
                 }
             }
         }
     }
 
-    private func networkReadFolder(completion: @escaping (_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ reloadDataSource: Bool, _ error: NKError) -> Void) {
+    private func networkReadFolder(completion: @escaping (_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ isEtagChanged: Bool, _ error: NKError) -> Void) {
         var tableDirectory: tableDirectory?
 
         NCNetworking.shared.readFile(serverUrlFileName: serverUrl, account: session.account) { task in
@@ -208,7 +209,6 @@ class NCFiles: NCCollectionViewCommon {
                 }
                 self.metadataFolder = metadataFolder
 
-                /// E2EE
                 guard let metadataFolder = metadataFolder,
                       metadataFolder.e2eEncrypted,
                       NCKeychain().isEndToEndEnabled(account: account),
@@ -216,6 +216,7 @@ class NCFiles: NCCollectionViewCommon {
                     return completion(tableDirectory, metadatas, true, error)
                 }
 
+                /// E2EE
                 let lock = self.database.getE2ETokenLock(account: account, serverUrl: self.serverUrl)
                 NCNetworkingE2EE().getMetadata(fileId: metadataFolder.ocId, e2eToken: lock?.e2eToken, account: account) { account, version, e2eMetadata, signature, _, error in
 
@@ -233,10 +234,7 @@ class NCFiles: NCCollectionViewCommon {
                                         NCContentPresenter().showError(error: error)
                                     }
                                     NCActivityIndicator.shared.stop()
-                                    self.reloadDataSource()
                                 }
-                            } else {
-                                self.reloadDataSource()
                             }
                         } else {
                             // Client Diagnostic

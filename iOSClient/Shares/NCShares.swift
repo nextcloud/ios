@@ -43,23 +43,19 @@ class NCShares: NCCollectionViewCommon {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        if self.dataSource.isEmpty() {
-            reloadDataSource()
-        }
-        reloadDataSourceNetwork()
+        reloadDataSource()
     }
 
-    // MARK: - DataSource + NC Endpoint
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
 
-    override func queryDB() {
-        super.queryDB()
+        getServerData()
+    }
+
+    // MARK: - DataSource
+
+    override func reloadDataSource() {
         var metadatas: [tableMetadata] = []
-
-        func reload() {
-            self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView)
-            self.refreshControl.endRefreshing()
-            self.collectionView.reloadData()
-        }
 
         let sharess = self.database.getTableShares(account: session.account)
         for share in sharess {
@@ -77,18 +73,20 @@ class NCShares: NCCollectionViewCommon {
                         self.database.addMetadata(metadata)
                         if !(metadatas.contains { $0.ocId == metadata.ocId }) {
                             metadatas.append(metadata)
-                            reload()
+                            self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: self.layoutForView)
+                            super.reloadDataSource()
                         }
                     }
                 }
             }
         }
 
-        reload()
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView)
+        super.reloadDataSource()
     }
 
-    override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
-        super.reloadDataSourceNetwork()
+    override func getServerData() {
+        super.getServerData()
 
         NextcloudKit.shared.readShares(parameters: NKShareParameter(), account: session.account) { task in
             self.dataSourceTask = task
@@ -101,8 +99,6 @@ class NCShares: NCCollectionViewCommon {
                     self.database.addShare(account: account, home: home, shares: shares)
                 }
                 self.reloadDataSource()
-            } else {
-                self.reloadDataSource(withQueryDB: withQueryDB)
             }
         }
     }

@@ -165,6 +165,12 @@ class NCCollectionViewDataSource: NSObject {
 
     // MARK: -
 
+    func isMetadatasValid() -> Bool {
+        let validMetadatas = metadatas.filter { !$0.isInvalidated }
+
+        return validMetadatas.count == self.metadatas.count
+    }
+
     func getResultMetadatas() -> [tableMetadata] {
         let validMetadatas = metadatas.filter { !$0.isInvalidated }
 

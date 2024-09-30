@@ -945,7 +945,7 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
-            let groupfolders = realm.objects(TableGroupfolders.self).filter("account == %@", session.account)
+            let groupfolders = realm.objects(TableGroupfolders.self).filter("account == %@", session.account).sorted(byKeyPath: "mountPoint", ascending: true)
             for groupfolder in groupfolders {
                 let mountPoint = groupfolder.mountPoint.hasPrefix("/") ? groupfolder.mountPoint : "/" + groupfolder.mountPoint
                 let serverUrlFileName = homeServerUrl + mountPoint
@@ -1072,5 +1072,10 @@ extension NCManageDatabase {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
         return nil
+    }
+
+    func getCalculateCumulativeHash(for metadatas: [tableMetadata], account: String, serverUrl: String) -> String {
+        let concatenatedEtags = metadatas.map { $0.etag }.joined(separator: "-")
+        return sha256Hash(concatenatedEtags)
     }
 }

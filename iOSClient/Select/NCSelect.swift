@@ -157,7 +157,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
         self.navigationItem.title = titleCurrentFolder
 
-        reloadDataSourceNetwork()
+        reloadDataSource()
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -461,7 +461,7 @@ extension NCSelect: UICollectionViewDelegateFlowLayout {
 // MARK: -
 
 extension NCSelect {
-    func reloadDataSourceNetwork() {
+    func reloadDataSource() {
         var predicate = NSPredicate()
 
         if includeDirectoryE2EEncryption {

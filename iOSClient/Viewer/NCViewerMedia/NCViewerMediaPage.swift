@@ -186,11 +186,9 @@ class NCViewerMediaPage: UIViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
-        (delegateViewController as? NCCollectionViewCommon)?.reloadDataSource(withQueryDB: true)
         currentViewController.ncplayer?.playerStop()
         timerAutoHide?.invalidate()
         clearCommandCenter()
-
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {

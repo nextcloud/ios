@@ -40,7 +40,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     var autoUploadFileName = ""
     var autoUploadDirectory = ""
-    var isTransitioning: Bool = false
     let refreshControl = UIRefreshControl()
     var searchController: UISearchController?
     var backgroundImageView = UIImageView()
@@ -173,7 +172,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
             self.database.cleanEtagDirectory(serverUrl: self.serverUrl, account: self.session.account)
-            self.reloadDataSourceNetwork()
+            self.getServerData()
         }
 
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPressCollecationView(_:)))
@@ -195,7 +194,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming(_:)), name: NSNotification.Name(rawValue: global.notificationCenterChangeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource(_:)), name: NSNotification.Name(rawValue: global.notificationCenterReloadDataSource), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(getServerData(_:)), name: NSNotification.Name(rawValue: global.notificationCenterGetServerData), object: nil)
 
+        DispatchQueue.main.async {
+            self.collectionView?.collectionViewLayout.invalidateLayout()
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -233,8 +236,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NotificationCenter.default.addObserver(self, selector: #selector(closeRichWorkspaceWebView), name: NSNotification.Name(rawValue: global.notificationCenterCloseRichWorkspaceWebView), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(changeStatusFolderE2EE(_:)), name: NSNotification.Name(rawValue: global.notificationCenterChangeStatusFolderE2EE), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadAvatar(_:)), name: NSNotification.Name(rawValue: global.notificationCenterReloadAvatar), object: nil)
-
-        NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSourceNetwork(_:)), name: NSNotification.Name(rawValue: global.notificationCenterReloadDataSourceNetwork), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: global.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: global.notificationCenterMoveFile), object: nil)
@@ -274,8 +275,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterCloseRichWorkspaceWebView), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterChangeStatusFolderE2EE), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterReloadAvatar), object: nil)
-
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterReloadDataSourceNetwork), object: nil)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterMoveFile), object: nil)
@@ -361,17 +360,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         reloadDataSource()
     }
 
-    @objc func reloadDataSourceNetwork(_ notification: NSNotification) {
-        var withQueryDB = false
-
+    @objc func getServerData(_ notification: NSNotification) {
         if let userInfo = notification.userInfo as NSDictionary?,
-           let reload = userInfo["withQueryDB"] as? Bool {
-            withQueryDB = reload
+           let serverUrl = userInfo["serverUrl"] as? String {
+            if serverUrl != self.serverUrl {
+                return
+            }
         }
 
-        if !isSearchingMode {
-            reloadDataSourceNetwork(withQueryDB: withQueryDB)
-        }
+        getServerData()
     }
 
     @objc func changeStatusFolderE2EE(_ notification: NSNotification) {
@@ -379,7 +376,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func closeRichWorkspaceWebView() {
-        reloadDataSourceNetwork()
+        reloadDataSource()
     }
 
     @objc func deleteFile(_ notification: NSNotification) {
@@ -390,7 +387,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             NCContentPresenter().showError(error: error)
         }
 
-        self.reloadDataSource()
+        reloadDataSource()
     }
 
     @objc func moveFile(_ notification: NSNotification) {
@@ -401,12 +398,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             NCContentPresenter().showError(error: error)
         }
 
-        if !isSearchingMode, let dragDrop = userInfo["dragdrop"] as? Bool, dragDrop {
-            setEditMode(false)
-            reloadDataSourceNetwork(withQueryDB: true)
-        } else {
-            reloadDataSource()
-        }
+        reloadDataSource()
     }
 
     @objc func copyFile(_ notification: NSNotification) {
@@ -417,12 +409,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             NCContentPresenter().showError(error: error)
         }
 
-        if !isSearchingMode, let dragDrop = userInfo["dragdrop"] as? Bool, dragDrop {
-            setEditMode(false)
-            reloadDataSourceNetwork(withQueryDB: true)
-        } else {
-            reloadDataSource()
-        }
+        reloadDataSource()
     }
 
     @objc func renameFile(_ notification: NSNotification) {
@@ -477,9 +464,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         else { return }
 
         if account == self.session.account, serverUrl == self.serverUrl {
-            self.reloadDataSource()
+            reloadDataSource()
         } else {
-            self.collectionView?.reloadData()
+            collectionView?.reloadData()
         }
     }
 
@@ -490,9 +477,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         else { return }
 
         if account == self.session.account, serverUrl == self.serverUrl {
-            self.reloadDataSource()
+            reloadDataSource()
         } else {
-            self.collectionView?.reloadData()
+            collectionView?.reloadData()
         }
     }
 
@@ -503,14 +490,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         else { return }
 
         if account == self.session.account, serverUrl == self.serverUrl {
-            self.reloadDataSource()
+            reloadDataSource()
         } else {
-            self.collectionView?.reloadData()
+            collectionView?.reloadData()
         }
     }
 
     @objc func uploadStartFile(_ notification: NSNotification) {
-        self.collectionView?.reloadData()
+        collectionView?.reloadData()
     }
 
     @objc func uploadedFile(_ notification: NSNotification) {
@@ -520,9 +507,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         else { return }
 
         if account == self.session.account, serverUrl == self.serverUrl {
-            self.reloadDataSource()
+            reloadDataSource()
         } else {
-            self.collectionView?.reloadData()
+            collectionView?.reloadData()
         }
     }
 
@@ -533,9 +520,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         else { return }
 
         if account == self.session.account, serverUrl == self.serverUrl {
-            self.reloadDataSource()
+            reloadDataSource()
         } else {
-            self.collectionView?.reloadData()
+            collectionView?.reloadData()
         }
     }
 
@@ -546,9 +533,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         else { return }
 
         if account == self.session.account, serverUrl == self.serverUrl {
-            self.reloadDataSource()
+            reloadDataSource()
         } else {
-            self.collectionView?.reloadData()
+            collectionView?.reloadData()
         }
     }
 
@@ -661,7 +648,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
             func saveLayout(_ layoutForView: NCDBLayoutForView) {
                 database.setLayoutForView(layoutForView: layoutForView)
-                NotificationCenter.default.postOnMainThread(name: global.notificationCenterReloadDataSource)
+
+                (self.collectionView.collectionViewLayout as? NCMediaLayout)?.invalidate()
+                self.collectionView.reloadData()
+
                 setNavigationRightItems()
             }
 
@@ -677,8 +667,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.layoutType = self.global.layoutList
 
                 self.collectionView.reloadData()
-                self.collectionView.collectionViewLayout.invalidateLayout()
-                self.collectionView.setCollectionViewLayout(self.listLayout, animated: true) {_ in self.isTransitioning = false }
+                self.collectionView.setCollectionViewLayout(self.listLayout, animated: true)
 
                 self.setNavigationRightItems()
             }
@@ -689,8 +678,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.layoutType = self.global.layoutGrid
 
                 self.collectionView.reloadData()
-                self.collectionView.collectionViewLayout.invalidateLayout()
-                self.collectionView.setCollectionViewLayout(self.gridLayout, animated: true) {_ in self.isTransitioning = false }
+                self.collectionView.setCollectionViewLayout(self.gridLayout, animated: true)
 
                 self.setNavigationRightItems()
             }
@@ -700,9 +688,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
                 self.layoutType = self.global.layoutPhotoSquare
 
+                (self.collectionView.collectionViewLayout as? NCMediaLayout)?.invalidate()
                 self.collectionView.reloadData()
-                self.collectionView.collectionViewLayout.invalidateLayout()
-                self.collectionView.setCollectionViewLayout(self.mediaLayout, animated: true) {_ in self.isTransitioning = false }
+                self.collectionView.setCollectionViewLayout(self.mediaLayout, animated: true)
 
                 self.setNavigationRightItems()
             }
@@ -712,9 +700,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
                 self.layoutType = self.global.layoutPhotoRatio
 
+                (self.collectionView.collectionViewLayout as? NCMediaLayout)?.invalidate()
                 self.collectionView.reloadData()
-                self.collectionView.collectionViewLayout.invalidateLayout()
-                self.collectionView.setCollectionViewLayout(self.mediaLayout, animated: true) {_ in self.isTransitioning = false }
+                self.collectionView.setCollectionViewLayout(self.mediaLayout, animated: true)
 
                 self.setNavigationRightItems()
             }
@@ -731,6 +719,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 if isName { // repeated press
                     layoutForView.ascending = !layoutForView.ascending
                 }
+
                 layoutForView.sort = "fileName"
                 saveLayout(layoutForView)
             }
@@ -739,6 +728,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 if isDate { // repeated press
                     layoutForView.ascending = !layoutForView.ascending
                 }
+
                 layoutForView.sort = "date"
                 saveLayout(layoutForView)
             }
@@ -747,6 +737,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 if isSize { // repeated press
                     layoutForView.ascending = !layoutForView.ascending
                 }
+
                 layoutForView.sort = "size"
                 saveLayout(layoutForView)
             }
@@ -754,6 +745,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             let sortSubmenu = UIMenu(title: NSLocalizedString("_order_by_", comment: ""), options: .displayInline, children: [byName, byNewest, byLargest])
 
             let foldersOnTop = UIAction(title: NSLocalizedString("_directory_on_top_no_", comment: ""), image: utility.loadImage(named: "folder"), state: layoutForView.directoryOnTop ? .on : .off) { _ in
+
                 layoutForView.directoryOnTop = !layoutForView.directoryOnTop
                 saveLayout(layoutForView)
             }
@@ -761,13 +753,18 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             let personalFilesOnly = NCKeychain().getPersonalFilesOnly(account: session.account)
             let personalFilesOnlyAction = UIAction(title: NSLocalizedString("_personal_files_only_", comment: ""), image: utility.loadImage(named: "folder.badge.person.crop", colors: NCBrandColor.shared.iconImageMultiColors), state: personalFilesOnly ? .on : .off) { _ in
                 NCKeychain().setPersonalFilesOnly(account: self.session.account, value: !personalFilesOnly)
+
+                (self.collectionView.collectionViewLayout as? NCMediaLayout)?.invalidate()
                 self.reloadDataSource()
             }
 
             let showDescriptionKeychain = NCKeychain().showDescription
             let showDescription = UIAction(title: NSLocalizedString("_show_description_", comment: ""), image: utility.loadImage(named: "list.dash.header.rectangle"), attributes: richWorkspaceText == nil ? .disabled : [], state: showDescriptionKeychain && richWorkspaceText != nil ? .on : .off) { _ in
                 NCKeychain().showDescription = !showDescriptionKeychain
+
+                (self.collectionView.collectionViewLayout as? NCMediaLayout)?.invalidate()
                 self.collectionView.reloadData()
+
                 self.setNavigationRightItems()
             }
             showDescription.subtitle = richWorkspaceText == nil ? NSLocalizedString("_no_description_available_", comment: "") : ""
@@ -856,7 +853,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
         if isSearchingMode && self.literalSearch?.count ?? 0 >= 2 {
-            reloadDataSourceNetwork()
+            networkSearch()
         }
     }
 
@@ -968,28 +965,24 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NCActionCenter.shared.pastePasteboard(serverUrl: serverUrl, account: session.account, controller: self.controller)
     }
 
-    // MARK: - DataSource + NC Endpoint
+    // MARK: - DataSource
 
-    func queryDB() { }
-
-    @objc func reloadDataSource(withQueryDB: Bool = true) {
+    @objc func reloadDataSource() {
         guard !session.account.isEmpty, !self.isSearchingMode else { return }
 
-        // get auto upload folder
-        autoUploadFileName = database.getAccountAutoUploadFileName()
-        autoUploadDirectory = database.getAccountAutoUploadDirectory(session: session)
-        // get layout for view
-        layoutForView = database.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl)
+        DispatchQueue.main.async {
+            let animator = UIViewPropertyAnimator(duration: 0.3, curve: .easeInOut) {
+                self.collectionView?.collectionViewLayout.invalidateLayout()
+                self.collectionView?.reloadData()
+            }
+            animator.startAnimation()
 
-        if withQueryDB { self.queryDB() }
-
-        self.refreshControl.endRefreshing()
-        self.collectionView.reloadData()
-        self.setNavigationRightItems()
+            self.refreshControl.endRefreshing()
+            self.setNavigationRightItems()
+        }
     }
 
-    @objc func reloadDataSourceNetwork(withQueryDB: Bool = false) {
-        self.collectionView?.reloadData()
+    func getServerData() {
     }
 
     @objc func networkSearch() {

@@ -44,13 +44,13 @@ class NCOffline: NCCollectionViewCommon {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
         reloadDataSource()
     }
 
     // MARK: - DataSource + NC Endpoint
 
-    override func queryDB() {
-        super.queryDB()
+    override func reloadDataSource() {
         var ocIds: [String] = []
         var metadatas: [tableMetadata] = []
         self.dataSource.removeAll()
@@ -73,10 +73,7 @@ class NCOffline: NCCollectionViewCommon {
         }
 
         self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView)
-    }
 
-    override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
-        super.reloadDataSourceNetwork(withQueryDB: withQueryDB)
-        reloadDataSource()
+        super.reloadDataSource()
     }
 }
