@@ -945,7 +945,7 @@ extension NCManageDatabase {
 
         do {
             let realm = try Realm()
-            let groupfolders = realm.objects(TableGroupfolders.self).filter("account == %@", session.account)
+            let groupfolders = realm.objects(TableGroupfolders.self).filter("account == %@", session.account).sorted(byKeyPath: "mountPoint", ascending: true)
             for groupfolder in groupfolders {
                 let mountPoint = groupfolder.mountPoint.hasPrefix("/") ? groupfolder.mountPoint : "/" + groupfolder.mountPoint
                 let serverUrlFileName = homeServerUrl + mountPoint
