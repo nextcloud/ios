@@ -28,6 +28,7 @@ class NCFiles: NCCollectionViewCommon {
     internal var isRoot: Bool = true
     internal var fileNameBlink: String?
     internal var fileNameOpen: String?
+    internal var matadatasHash: String = ""
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -181,7 +182,7 @@ class NCFiles: NCCollectionViewCommon {
         }
     }
 
-    private func networkReadFolder(completion: @escaping (_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ reloadDataSource: Bool, _ error: NKError) -> Void) {
+    private func networkReadFolder(completion: @escaping (_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ isEtagChanged: Bool, _ error: NKError) -> Void) {
         var tableDirectory: tableDirectory?
 
         NCNetworking.shared.readFile(serverUrlFileName: serverUrl, account: session.account) { task in
@@ -207,7 +208,6 @@ class NCFiles: NCCollectionViewCommon {
                 }
                 self.metadataFolder = metadataFolder
 
-                /// E2EE
                 guard let metadataFolder = metadataFolder,
                       metadataFolder.e2eEncrypted,
                       NCKeychain().isEndToEndEnabled(account: account),
@@ -215,6 +215,7 @@ class NCFiles: NCCollectionViewCommon {
                     return completion(tableDirectory, metadatas, true, error)
                 }
 
+                /// E2EE
                 let lock = self.database.getE2ETokenLock(account: account, serverUrl: self.serverUrl)
                 NCNetworkingE2EE().getMetadata(fileId: metadataFolder.ocId, e2eToken: lock?.e2eToken, account: account) { account, version, e2eMetadata, signature, _, error in
 

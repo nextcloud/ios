@@ -1073,4 +1073,9 @@ extension NCManageDatabase {
         }
         return nil
     }
+
+    func getCalculateCumulativeHash(for metadatas: [tableMetadata], account: String, serverUrl: String) -> String {
+        let concatenatedEtags = metadatas.map { $0.etag }.joined(separator: "-")
+        return sha256Hash(concatenatedEtags)
+    }
 }
