@@ -272,6 +272,7 @@ class NCGlobal: NSObject {
 
     let metadataStatusWaitCreateFolder: Int     = 10
     let metadataStatusWaitDelete: Int           = 11
+    let metadataStatusWaitRename: Int           = 12
 
     let metadataStatusInTransfer                = [-1, -2, 1, 2]
     let metadataStatusFileDown                  = [-1, -2, -3]

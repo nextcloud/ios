@@ -234,6 +234,10 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             cell.fileStatusImage?.image = utility.loadImage(named: "trash.circle", colors: NCBrandColor.shared.iconImageMultiColors)
             cell.labelStatus.text = NSLocalizedString("_status_wait_delete_", comment: "") + user
             cell.labelInfo.text = ""
+        case NCGlobal.shared.metadataStatusWaitRename:
+            cell.fileStatusImage?.image = utility.loadImage(named: "a.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.labelStatus.text = NSLocalizedString("_status_wait_rename_", comment: "") + user
+            cell.labelInfo.text = ""
         case NCGlobal.shared.metadataStatusDownloading:
             if #available(iOS 17.0, *) {
                 cell.fileStatusImage?.image = utility.loadImage(named: "arrowshape.down.circle", colors: NCBrandColor.shared.iconImageMultiColors)
