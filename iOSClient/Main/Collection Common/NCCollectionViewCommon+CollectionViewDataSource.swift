@@ -42,12 +42,13 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if !collectionView.indexPathsForVisibleItems.contains(indexPath) {
-            
-
-            guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else { return }
-            for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
-                operation.cancel()
+        if !collectionView.indexPathsForVisibleItems.contains(indexPath), let results = self.dataSource.getResults() {
+            let threadSafeResults = ThreadSafeReference(to: results)
+            DispatchQueue.global(qos: .background).async {
+                guard let metadata = self.dataSource.getMetadata(threadSafeResults: threadSafeResults, indexPath: indexPath) else { return }
+                for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
+                    operation.cancel()
+                }
             }
         }
     }
