@@ -54,10 +54,12 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if !collectionView.indexPathsForVisibleItems.contains(indexPath) {
+            /*
             guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else { return }
             for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
                 operation.cancel()
             }
+            */
         }
     }
 
@@ -108,7 +110,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.filePreviewImageView?.contentMode = .scaleAspectFill
         } else {
             cell.filePreviewImageView?.contentMode = .scaleAspectFit
-
         }
 
         guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else { return cell }
@@ -176,6 +177,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
             // color folder
             cell.filePreviewImageView?.image = cell.filePreviewImageView?.image?.colorizeFolder(metadata: metadata, tableDirectory: tableDirectory)
+
         } else {
 
             if metadata.hasPreviewBorder {
@@ -187,6 +189,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 if let image = NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
                     cell.filePreviewImageView?.image = image
                 } else if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
+                    NCImageCache.shared.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext, cost: indexPath.row)
                     cell.filePreviewImageView?.image = image
                 }
 
@@ -236,13 +239,15 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 }
             }
 
-            let tableLocalFile = database.getResultsTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))?.first
-            // image local
-            if let tableLocalFile, tableLocalFile.offline {
-                a11yValues.append(NSLocalizedString("_offline_", comment: ""))
-                cell.fileLocalImage?.image = imageCache.getImageOfflineFlag()
-            } else if utilityFileSystem.fileProviderStorageExists(metadata) {
-                cell.fileLocalImage?.image = imageCache.getImageLocal()
+            if !isLayoutPhoto {
+                let tableLocalFile = database.getResultsTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))?.first
+                // image local
+                if let tableLocalFile, tableLocalFile.offline {
+                    a11yValues.append(NSLocalizedString("_offline_", comment: ""))
+                    cell.fileLocalImage?.image = imageCache.getImageOfflineFlag()
+                } else if utilityFileSystem.fileProviderStorageExists(metadata) {
+                    cell.fileLocalImage?.image = imageCache.getImageLocal()
+                }
             }
         }
 
@@ -262,12 +267,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         } else {
             cell.fileSharedImage?.image = imageCache.getImageCanShare()
         }
-
-        /*
-        if appDelegate.account != metadata.account {
-            cell.fileSharedImage?.image = NCImageCache.images.shared
-        }
-        */
 
         // Button More
         if metadata.lock == true {

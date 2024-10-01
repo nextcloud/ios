@@ -26,6 +26,8 @@ import UIKit
 
 extension NCCollectionViewCommon: UICollectionViewDataSourcePrefetching {
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+
+        /*
         guard !isSearchingMode, !imageCache.isLoadingCache else { return }
 
         let ext = global.getSizeExtension(column: self.numberOfColumns)
@@ -40,5 +42,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSourcePrefetching {
                 }
             }
         }
+        */
     }
 }
