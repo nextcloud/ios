@@ -84,6 +84,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.filePreviewImageView?.image = image
         } else if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
             cell.filePreviewImageView?.image = image
+            self.imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext, cost: indexPath.row)
         }
 
         /// Content mode
