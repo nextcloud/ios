@@ -303,7 +303,7 @@ extension NCNetworking {
 #if !EXTENSION
             isApplicationStateActive = UIApplication.shared.applicationState == .active
 #endif
-            DispatchQueue.global(qos: .userInteractive).async {
+            DispatchQueue.global().async {
                 let selector = metadata.sessionSelector
 
                 if error == .success, let ocId = ocId, size == metadata.size {
@@ -475,7 +475,7 @@ extension NCNetworking {
             return delegate.uploadProgress(progress, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected, fileName: fileName, serverUrl: serverUrl, session: session, task: task)
         }
 
-        DispatchQueue.global(qos: .userInteractive).async {
+        DispatchQueue.global().async {
             if let metadata = self.database.getResultMetadataFromFileName(fileName, serverUrl: serverUrl, sessionTaskIdentifier: task.taskIdentifier) {
                 NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterProgressTask,
                                                             object: nil,
