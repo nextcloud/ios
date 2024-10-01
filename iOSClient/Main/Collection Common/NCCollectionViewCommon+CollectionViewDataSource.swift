@@ -72,35 +72,41 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
     }
 
-    private func photoCell(cell: NCPhotoCell, indexPath: IndexPath, metadata: tableMetadata) -> NCPhotoCell {
+    private func photoCell(cell: NCCellProtocol & UICollectionViewCell, indexPath: IndexPath, metadata: tableMetadata, ext: String) -> NCCellProtocol & UICollectionViewCell {
+        let width = UIScreen.main.bounds.width / CGFloat(self.numberOfColumns)
 
-        cell.ocId = metadata.ocId
-        cell.ocIdTransfer = metadata.ocIdTransfer
+        /// Image
+        ///
+        if let image = NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
+            cell.filePreviewImageView?.image = image
+        } else if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
+            NCImageCache.shared.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext, cost: indexPath.row)
+            cell.filePreviewImageView?.image = image
+        }
 
-        if metadata.directory {
-            cell.filePreviewImageView?.image = imageCache.getFolder(account: metadata.account)
-        } else {
-            let ext = global.getSizeExtension(column: self.numberOfColumns)
-
-            if let image = NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
-                cell.filePreviewImageView?.image = image
-            } else if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
-                NCImageCache.shared.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext, cost: indexPath.row)
-                cell.filePreviewImageView?.image = image
-            }
-
-            if cell.filePreviewImageView?.image != nil {
-                cell.filePreviewImageView?.contentMode = .scaleAspectFill
+        /// Default image
+        ///
+        if cell.filePreviewImageView?.image == nil {
+            if metadata.iconName.isEmpty {
+                cell.filePreviewImageView?.image = NCImageCache.shared.getImageFile()
             } else {
-                cell.filePreviewImageView?.contentMode = .scaleAspectFit
-                /// default image
-                if metadata.iconName.isEmpty {
-                    cell.filePreviewImageView?.image = NCImageCache.shared.getImageFile()
-                } else {
-                    cell.filePreviewImageView?.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
-                }
+                cell.filePreviewImageView?.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
             }
         }
+
+        /// Status
+        ///
+        if metadata.isLivePhoto {
+            cell.fileStatusImage?.image = utility.loadImage(named: "livephoto", colors: isLayoutPhoto ? [.white] : [NCBrandColor.shared.iconImageColor2])
+        } else if metadata.isVideo {
+            cell.fileStatusImage?.image = utility.loadImage(named: "play.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+        }
+
+        if width < 100 {
+            cell.hideButtonMore(true)
+            cell.hideImageStatus(true)
+        }
+
         return cell
     }
 
@@ -126,7 +132,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 let photoCell = (collectionView.dequeueReusableCell(withReuseIdentifier: "photoCell", for: indexPath) as? NCPhotoCell)!
                 photoCell.photoCellDelegate = self
                 cell = photoCell
-                return self.photoCell(cell: photoCell, indexPath: indexPath, metadata: metadata)
+                return self.photoCell(cell: photoCell, indexPath: indexPath, metadata: metadata, ext: ext)
             } else {
                 let gridCell = (collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridCell)!
                 gridCell.gridCellDelegate = self
@@ -408,6 +414,16 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         // Layout photo
         if isLayoutPhoto {
             let width = UIScreen.main.bounds.width / CGFloat(self.numberOfColumns)
+
+            cell.hideImageFavorite(false)
+            cell.hideImageLocal(false)
+            cell.hideImageItem(false)
+            cell.hideButtonMore(false)
+            cell.hideLabelInfo(false)
+            cell.hideLabelSubinfo(false)
+            cell.hideImageStatus(false)
+            cell.fileTitleLabel?.font = UIFont.systemFont(ofSize: 15)
+
             if width < 120 {
                 cell.hideImageFavorite(true)
                 cell.hideImageLocal(true)
