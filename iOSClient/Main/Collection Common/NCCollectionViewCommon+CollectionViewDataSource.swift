@@ -73,6 +73,10 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     }
 
     private func photoCell(cell: NCPhotoCell, indexPath: IndexPath, metadata: tableMetadata) -> NCPhotoCell {
+
+        cell.ocId = metadata.ocId
+        cell.ocIdTransfer = metadata.ocIdTransfer
+
         if metadata.directory {
             cell.filePreviewImageView?.image = imageCache.getFolder(account: metadata.account)
         } else {
@@ -85,7 +89,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 cell.filePreviewImageView?.image = image
             }
 
-            if cell.filePreviewImageView?.image == nil {
+            if cell.filePreviewImageView?.image != nil {
+                cell.filePreviewImageView?.contentMode = .scaleAspectFill
+            } else {
+                cell.filePreviewImageView?.contentMode = .scaleAspectFit
+                /// default image
                 if metadata.iconName.isEmpty {
                     cell.filePreviewImageView?.image = NCImageCache.shared.getImageFile()
                 } else {
