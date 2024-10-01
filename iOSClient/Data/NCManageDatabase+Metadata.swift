@@ -890,7 +890,7 @@ extension NCManageDatabase {
 
     // MARK: - GetResult(s)Metadata
 
-    func getResultsMetadatasPredicate(_ predicate: NSPredicate, layoutForView: NCDBLayoutForView?) -> [tableMetadata] {
+    func getResultsMetadatasPredicate(_ predicate: NSPredicate, layoutForView: NCDBLayoutForView?) -> Results<tableMetadata>? {
         do {
             let realm = try Realm()
             var results = realm.objects(tableMetadata.self).filter(predicate)
@@ -901,11 +901,11 @@ extension NCManageDatabase {
                     results = results.sorted(byKeyPath: layoutForView.sort, ascending: layoutForView.ascending).sorted(byKeyPath: "favorite", ascending: false)
                 }
             }
-            return Array(results)
+            return results
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-        return []
+        return nil
     }
 
     func getResultsMetadatas(predicate: NSPredicate, sortedByKeyPath: String, ascending: Bool, arraySlice: Int) -> [tableMetadata] {
@@ -939,25 +939,30 @@ extension NCManageDatabase {
         return nil
     }
 
-    func getResultsMetadatasFromGroupfolders(session: NCSession.Session) -> [tableMetadata] {
-        var metadatas: [tableMetadata] = []
+    func getResultsMetadatasFromGroupfolders(session: NCSession.Session) -> Results<tableMetadata>? {
+        var ocId: [String] = []
         let homeServerUrl = utilityFileSystem.getHomeServer(session: session)
 
         do {
             let realm = try Realm()
             let groupfolders = realm.objects(TableGroupfolders.self).filter("account == %@", session.account).sorted(byKeyPath: "mountPoint", ascending: true)
+
             for groupfolder in groupfolders {
                 let mountPoint = groupfolder.mountPoint.hasPrefix("/") ? groupfolder.mountPoint : "/" + groupfolder.mountPoint
                 let serverUrlFileName = homeServerUrl + mountPoint
+
                 if let directory = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", session.account, serverUrlFileName).first,
-                   let metadata = realm.objects(tableMetadata.self).filter("ocId == %@", directory.ocId).first {
-                    metadatas.append(metadata)
+                   let result = realm.objects(tableMetadata.self).filter("ocId == %@", directory.ocId).first {
+                    ocId.append(result.ocId)
                 }
             }
+
+            return realm.objects(tableMetadata.self).filter("ocId IN %@", ocId)
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-        return metadatas
+
+        return nil
     }
 
     func getResultsImageCacheMetadatas(predicate: NSPredicate) -> Results<tableMetadata>? {

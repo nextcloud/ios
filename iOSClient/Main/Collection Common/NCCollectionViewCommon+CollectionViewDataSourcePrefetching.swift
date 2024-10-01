@@ -23,16 +23,20 @@
 
 import Foundation
 import UIKit
+import RealmSwift
 
 extension NCCollectionViewCommon: UICollectionViewDataSourcePrefetching {
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
-        guard !isSearchingMode, !imageCache.isLoadingCache else { return }
-
         let ext = global.getSizeExtension(column: self.numberOfColumns)
-        let metadatas = self.dataSource.getMetadatas(indexPaths: indexPaths)
+        guard !isSearchingMode,
+              imageCache.allowExtensions(ext: ext),
+              let results = self.dataSource.getResults()
+        else { return }
+        let threadSafeResults = ThreadSafeReference(to: results)
         let cost = indexPaths.first?.row ?? 0
 
-        DispatchQueue.global(qos: .userInteractive).async {
+        DispatchQueue.global().async {
+            let metadatas = self.dataSource.getMetadata(threadSafeResults: threadSafeResults, indexPaths: indexPaths)
             for metadata in metadatas where metadata.isImageOrVideo {
                 if self.imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) == nil,
                    let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {

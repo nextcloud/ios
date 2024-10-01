@@ -23,6 +23,7 @@
 
 import UIKit
 import NextcloudKit
+import RealmSwift
 
 class NCOffline: NCCollectionViewCommon {
 
@@ -48,11 +49,11 @@ class NCOffline: NCCollectionViewCommon {
         reloadDataSource()
     }
 
-    // MARK: - DataSource + NC Endpoint
+    // MARK: - DataSource
 
     override func reloadDataSource() {
         var ocIds: [String] = []
-        var metadatas: [tableMetadata] = []
+        var results: Results<tableMetadata>?
         self.dataSource.removeAll()
 
         if self.serverUrl.isEmpty {
@@ -65,14 +66,12 @@ class NCOffline: NCCollectionViewCommon {
             for file in files {
                 ocIds.append(file.ocId)
             }
-            if let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@", session.account, ocIds)) {
-                metadatas = Array(results)
-            }
+            results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@", session.account, ocIds))
         } else {
-            metadatas = self.database.getResultsMetadatasPredicate(self.defaultPredicate, layoutForView: layoutForView)
+            results = self.database.getResultsMetadatasPredicate(self.defaultPredicate, layoutForView: layoutForView)
         }
 
-        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView)
+        self.dataSource = NCCollectionViewDataSource(results: results, layoutForView: layoutForView)
 
         super.reloadDataSource()
     }

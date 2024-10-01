@@ -39,7 +39,7 @@ class NCAutoUpload: NSObject {
     func initAutoUpload(controller: NCMainTabBarController?, account: String, completion: @escaping (_ num: Int) -> Void) {
         applicationState = UIApplication.shared.applicationState
 
-        DispatchQueue.global(qos: .userInteractive).async {
+        DispatchQueue.global().async {
             guard NCNetworking.shared.isOnline,
                   let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
                   tableAccount.autoUpload else {
@@ -73,7 +73,7 @@ class NCAutoUpload: NSObject {
 
         NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { hasPermission in
             guard hasPermission else { return }
-            DispatchQueue.global(qos: .userInteractive).async {
+            DispatchQueue.global().async {
                 self.uploadAssetsNewAndFull(controller: controller, selector: NCGlobal.shared.selectorUploadAutoUploadAll, log: log, account: account) { _ in
                     self.hud.dismiss()
                 }

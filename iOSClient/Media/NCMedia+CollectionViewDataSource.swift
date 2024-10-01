@@ -133,8 +133,8 @@ extension NCMedia: UICollectionViewDataSource {
                     DispatchQueue.main.async {
                         if let currentCell = collectionView.cellForItem(at: indexPath) as? NCMediaCell,
                            currentCell.ocId == metadata.ocId, let image {
+                            self.imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext, cost: indexPath.row)
                             currentCell.imageItem.image = image
-                            currentCell.backgroundColor = .black
                         }
                     }
                 }

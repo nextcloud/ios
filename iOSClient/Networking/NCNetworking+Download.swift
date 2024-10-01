@@ -182,7 +182,7 @@ extension NCNetworking {
             return delegate.downloadComplete(fileName: fileName, serverUrl: serverUrl, etag: etag, date: date, dateLastModified: dateLastModified, length: length, task: task, error: error)
         }
 
-        DispatchQueue.global(qos: .userInteractive).async {
+        DispatchQueue.global().async {
             guard let url = task.currentRequest?.url,
                   let metadata = self.database.getMetadata(from: url, sessionTaskIdentifier: task.taskIdentifier) else { return }
 
@@ -259,7 +259,7 @@ extension NCNetworking {
             return delegate.downloadProgress(progress, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected, fileName: fileName, serverUrl: serverUrl, session: session, task: task)
         }
 
-        DispatchQueue.global(qos: .userInteractive).async {
+        DispatchQueue.global().async {
             if let metadata = self.database.getResultMetadataFromFileName(fileName, serverUrl: serverUrl, sessionTaskIdentifier: task.taskIdentifier) {
                 NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterProgressTask,
                                                             object: nil,

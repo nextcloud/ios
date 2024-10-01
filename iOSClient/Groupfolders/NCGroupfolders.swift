@@ -56,15 +56,15 @@ class NCGroupfolders: NCCollectionViewCommon {
     // MARK: - DataSource
 
     override func reloadDataSource() {
-        var metadatas: [tableMetadata] = []
+        var results: Results<tableMetadata>?
 
         if self.serverUrl.isEmpty {
-            metadatas = database.getResultsMetadatasFromGroupfolders(session: session)
+            results = database.getResultsMetadatasFromGroupfolders(session: session)
         } else {
-            metadatas = self.database.getResultsMetadatasPredicate(self.defaultPredicate, layoutForView: layoutForView)
+            results = self.database.getResultsMetadatasPredicate(self.defaultPredicate, layoutForView: layoutForView)
         }
 
-        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView)
+        self.dataSource = NCCollectionViewDataSource(results: results, layoutForView: layoutForView)
 
         super.reloadDataSource()
     }

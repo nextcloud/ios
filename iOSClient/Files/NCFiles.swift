@@ -130,8 +130,8 @@ class NCFiles: NCCollectionViewCommon {
         self.metadataFolder = database.getMetadataFolder(session: session, serverUrl: self.serverUrl)
         self.richWorkspaceText = database.getTableDirectory(predicate: predicateDirectory)?.richWorkspace
 
-        let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: layoutForView)
-        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView)
+        let results = self.database.getResultsMetadatasPredicate(predicate, layoutForView: layoutForView)
+        self.dataSource = NCCollectionViewDataSource(results: results, layoutForView: layoutForView)
 
         super.reloadDataSource()
     }

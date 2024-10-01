@@ -62,8 +62,8 @@ class NCFavorite: NCCollectionViewCommon {
            predicate = NSPredicate(format: "account == %@ AND favorite == true", session.account)
         }
 
-        let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: layoutForView)
-        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView)
+        let results = self.database.getResultsMetadatasPredicate(predicate, layoutForView: layoutForView)
+        self.dataSource = NCCollectionViewDataSource(results: results, layoutForView: layoutForView)
 
         super.reloadDataSource()
     }

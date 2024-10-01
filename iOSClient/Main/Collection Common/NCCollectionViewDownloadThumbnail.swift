@@ -68,6 +68,7 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation, @unchecked Sendabl
                                 filePreviewImageView.layer.borderWidth = 0.2
                                 filePreviewImageView.layer.borderColor = UIColor.systemGray3.cgColor
                             }
+
                             UIView.transition(with: filePreviewImageView,
                                               duration: 0.75,
                                               options: .transitionCrossDissolve,

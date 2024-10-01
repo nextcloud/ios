@@ -23,6 +23,7 @@
 
 import UIKit
 import NextcloudKit
+import RealmSwift
 
 class NCCollectionViewDataSource: NSObject {
     private let utilityFileSystem = NCUtilityFileSystem()
@@ -30,19 +31,26 @@ class NCCollectionViewDataSource: NSObject {
     private var sectionsValue: [String] = []
     private var providers: [NKSearchProvider]?
     private var searchResults: [NKSearchResult]?
+    private var results: Results<tableMetadata>?
     private var metadatas: [tableMetadata] = []
     private var metadatasForSection: [NCMetadataForSection] = []
     private var layoutForView: NCDBLayoutForView?
 
     override init() { super.init() }
 
-    init(metadatas: [tableMetadata],
+    init(results: Results<tableMetadata>?,
          layoutForView: NCDBLayoutForView? = nil,
          providers: [NKSearchProvider]? = nil,
          searchResults: [NKSearchResult]? = nil) {
         super.init()
 
-        self.metadatas = metadatas
+        self.results = results
+        if let results {
+            self.metadatas = Array(results)
+        } else {
+            self.metadatas = []
+        }
+
         self.layoutForView = layoutForView
         /// unified search
         self.providers = providers
@@ -164,6 +172,29 @@ class NCCollectionViewDataSource: NSObject {
     }
 
     // MARK: -
+
+    func getResults() -> Results<tableMetadata>? {
+        return results
+    }
+
+    func getMetadata(threadSafeResults: ThreadSafeReference<Results<tableMetadata>>, indexPaths: [IndexPath]) -> [tableMetadata] {
+        autoreleasepool {
+            var metadatas: [tableMetadata] = []
+            do {
+                let realm = try Realm()
+                if let resolvedResults = realm.resolve(threadSafeResults) {
+                    let validMetadatas = resolvedResults.filter { !$0.isInvalidated }
+                    for indexPath in indexPaths where indexPath.row < validMetadatas.count {
+                        metadatas.append(tableMetadata(value: validMetadatas[indexPath.row]))
+                    }
+                    return metadatas
+                }
+            } catch let error as NSError {
+                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
+            }
+            return metadatas
+        }
+    }
 
     func isMetadatasValid() -> Bool {
         let validMetadatas = metadatas.filter { !$0.isInvalidated }
