@@ -45,7 +45,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         if !collectionView.indexPathsForVisibleItems.contains(indexPath), let results = self.dataSource.getResults() {
             let threadSafeResults = ThreadSafeReference(to: results)
 
-            DispatchQueue.global(qos: .background).async {
+            DispatchQueue.global().async {
                 guard let metadata = self.dataSource.getMetadata(threadSafeResults: threadSafeResults, indexPath: indexPath) else { return }
 
                 for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
@@ -59,7 +59,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         guard let results = self.dataSource.getResults() else { return }
         let threadSafeResults = ThreadSafeReference(to: results)
 
-        DispatchQueue.global(qos: .background).async {
+        DispatchQueue.global().async {
             guard let metadata = self.dataSource.getMetadata(threadSafeResults: threadSafeResults, indexPath: indexPath) else { return }
             let existsImagePreview = self.utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag)
             let ext = self.global.getSizeExtension(column: self.numberOfColumns)
