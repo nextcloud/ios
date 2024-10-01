@@ -605,12 +605,12 @@
 "_status_wait_download_"        = "Waiting for download";
 "_status_in_download_"          = "In download";
 "_status_downloading_"          = "Downloading";
-"_status_wait_upload_"          = "Waiting for upload";
+"_status_wait_upload_"          = "Waiting to upload";
 "_status_wait_create_folder_"   = "Waiting to create the folder";
 "_status_wait_delete_"          = "Waiting to delete";
 "_status_in_upload_"            = "In upload";
 "_status_uploading_"            = "Uploading";
-"_status_upload_error_"         = "Error, waiting for upload";
+"_status_upload_error_"         = "Error, waiting to upload";
 "_select_media_folder_"         = "Set Media folder";
 "_media_viewimage_show_"        = "Show only images";
 "_media_viewvideo_show_"        = "Show only video";
