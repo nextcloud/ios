@@ -212,6 +212,9 @@ extension UIAlertController {
 
             NCActivityIndicator.shared.start()
 
+            
+
+            /*
             NCNetworking.shared.renameMetadata(metadata, fileNameNew: newFileName) { error in
 
                 NCActivityIndicator.shared.stop()
@@ -220,6 +223,7 @@ extension UIAlertController {
                     NCContentPresenter().showError(error: error)
                 }
             }
+            */
         })
 
         // text field is initially empty, no action

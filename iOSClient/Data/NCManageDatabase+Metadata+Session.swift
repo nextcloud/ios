@@ -189,4 +189,28 @@ extension NCManageDatabase {
                                                   fileName,
                                                   sessionTaskIdentifier))
     }
+
+    func restoreMetadataServerUrlFileName(ocId: String) {
+        do {
+            let realm = try Realm()
+            try realm.write {
+                if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first,
+                   let encodedURLString = result.serveUrlFileName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+                   let url = URL(string: encodedURLString) {
+
+                    let lastPathComponent = url.lastPathComponent
+                    let fileName = lastPathComponent.removingPercentEncoding ?? lastPathComponent
+
+                    let baseURL = url.deletingLastPathComponent().absoluteString
+                    let serverUrl = baseURL.removingPercentEncoding ?? baseURL
+
+                    result.serverUrl = serverUrl
+                    result.fileName = fileName
+                    result.status = NCGlobal.shared.metadataStatusNormal
+                }
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
+        }
+    }
 }

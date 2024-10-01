@@ -479,6 +479,26 @@ extension NCNetworking {
         }
     }
 
+    func renameMetadata(_ metadata: tableMetadata, fileNameNew: String) {
+        let permission = utility.permissionsContainsString(metadata.permissions, permissions: NCPermissions().permissionCanRename)
+        if !metadata.permissions.isEmpty && permission == false {
+            NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_"))
+            return
+        }
+
+        /*
+        if metadata.status == global.metadataStatusWaitCreateFolder {
+            let metadatas = database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@", metadata.account, metadata.serverUrl))
+            for metadata in metadatas {
+                database.deleteMetadataOcId(metadata.ocId)
+                utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+            }
+            return
+        }
+        */
+        self.database.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusWaitDelete)
+    }
+
     // MARK: - Move
 
     func moveMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> NKError {
