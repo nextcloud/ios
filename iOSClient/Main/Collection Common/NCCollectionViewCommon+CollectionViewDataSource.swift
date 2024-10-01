@@ -24,6 +24,7 @@
 import Foundation
 import UIKit
 import NextcloudKit
+import RealmSwift
 
 extension NCCollectionViewCommon: UICollectionViewDataSource {
     func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -40,6 +41,17 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         return self.dataSource.numberOfItemsInSection(section)
     }
 
+    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if !collectionView.indexPathsForVisibleItems.contains(indexPath) {
+            
+
+            guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else { return }
+            for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
+                operation.cancel()
+            }
+        }
+    }
+
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let metadata = dataSource.getMetadata(indexPath: indexPath) else { return }
         let existsImagePreview = utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag)
@@ -52,13 +64,28 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
     }
 
-    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if !collectionView.indexPathsForVisibleItems.contains(indexPath) {
-            guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else { return }
-            for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
-                operation.cancel()
+    private func photoCell(cell: NCPhotoCell, indexPath: IndexPath, metadata: tableMetadata) -> NCPhotoCell {
+        if metadata.directory {
+            cell.filePreviewImageView?.image = imageCache.getFolder(account: metadata.account)
+        } else {
+            let ext = global.getSizeExtension(column: self.numberOfColumns)
+
+            if let image = NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
+                cell.filePreviewImageView?.image = image
+            } else if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
+                NCImageCache.shared.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext, cost: indexPath.row)
+                cell.filePreviewImageView?.image = image
+            }
+
+            if cell.filePreviewImageView?.image == nil {
+                if metadata.iconName.isEmpty {
+                    cell.filePreviewImageView?.image = NCImageCache.shared.getImageFile()
+                } else {
+                    cell.filePreviewImageView?.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
+                }
             }
         }
+        return cell
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -83,6 +110,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 let photoCell = (collectionView.dequeueReusableCell(withReuseIdentifier: "photoCell", for: indexPath) as? NCPhotoCell)!
                 photoCell.photoCellDelegate = self
                 cell = photoCell
+                return self.photoCell(cell: photoCell, indexPath: indexPath, metadata: metadata)
             } else {
                 let gridCell = (collectionView.dequeueReusableCell(withReuseIdentifier: "gridCell", for: indexPath) as? NCGridCell)!
                 gridCell.gridCellDelegate = self

@@ -283,8 +283,8 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     override func reloadDataSource() {
         self.dataSource.removeAll()
 
-        if let metadatas = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal), sortedByKeyPath: "sessionDate", ascending: true) {
-            self.dataSource = NCCollectionViewDataSource(metadatas: Array(metadatas), layoutForView: layoutForView)
+        if let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal), sortedByKeyPath: "sessionDate", ascending: true) {
+            self.dataSource = NCCollectionViewDataSource(results: results, layoutForView: layoutForView)
         }
 
         if self.dataSource.isEmpty() {

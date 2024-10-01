@@ -23,6 +23,7 @@
 
 import UIKit
 import NextcloudKit
+import RealmSwift
 
 class NCCollectionViewDataSource: NSObject {
     private let utilityFileSystem = NCUtilityFileSystem()
@@ -30,19 +31,26 @@ class NCCollectionViewDataSource: NSObject {
     private var sectionsValue: [String] = []
     private var providers: [NKSearchProvider]?
     private var searchResults: [NKSearchResult]?
+    private var results: Results<tableMetadata>?
     private var metadatas: [tableMetadata] = []
     private var metadatasForSection: [NCMetadataForSection] = []
     private var layoutForView: NCDBLayoutForView?
 
     override init() { super.init() }
 
-    init(metadatas: [tableMetadata],
+    init(results: Results<tableMetadata>?,
          layoutForView: NCDBLayoutForView? = nil,
          providers: [NKSearchProvider]? = nil,
          searchResults: [NKSearchResult]? = nil) {
         super.init()
 
-        self.metadatas = metadatas
+        self.results = results
+        if let results {
+            self.metadatas = Array(results)
+        } else {
+            self.metadatas = []
+        }
+
         self.layoutForView = layoutForView
         /// unified search
         self.providers = providers

@@ -55,13 +55,13 @@ class NCShares: NCCollectionViewCommon {
     // MARK: - DataSource
 
     override func reloadDataSource() {
-        var metadatas: [tableMetadata] = []
-
+        var ocId: [String] = []
         let sharess = self.database.getTableShares(account: session.account)
+
         for share in sharess {
-            if let metadata = self.database.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", session.account, share.serverUrl, share.fileName)) {
-                if !(metadatas.contains { $0.ocId == metadata.ocId }) {
-                    metadatas.append(metadata)
+            if let result = self.database.getResultMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", session.account, share.serverUrl, share.fileName)) {
+                if !(ocId.contains { $0 == result.ocId }) {
+                    ocId.append(result.ocId)
                 }
             } else {
                 let serverUrlFileName = share.serverUrl + "/" + share.fileName
@@ -71,17 +71,18 @@ class NCShares: NCCollectionViewCommon {
                 } completion: { _, metadata, _ in
                     if let metadata {
                         self.database.addMetadata(metadata)
-                        if !(metadatas.contains { $0.ocId == metadata.ocId }) {
-                            metadatas.append(metadata)
-                            self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: self.layoutForView)
-                            super.reloadDataSource()
+                        if !(ocId.contains { $0 == metadata.ocId }) {
+                            ocId.append(metadata.ocId)
                         }
                     }
                 }
             }
         }
 
-        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView)
+        let results = self.database.getResultsMetadatasPredicate(NSPredicate(format: "ocId IN %@", ocId), layoutForView: layoutForView)
+
+        self.dataSource = NCCollectionViewDataSource(results: results, layoutForView: layoutForView)
+
         super.reloadDataSource()
     }
 
