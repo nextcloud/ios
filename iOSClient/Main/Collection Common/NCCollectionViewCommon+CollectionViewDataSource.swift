@@ -46,7 +46,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             let threadSafeResults = ThreadSafeReference(to: results)
 
             DispatchQueue.global().async {
-                guard let metadata = self.dataSource.getMetadata(threadSafeResults: threadSafeResults, indexPath: indexPath) else { return }
+                guard let metadata = self.dataSource.getMetadata(threadSafeResults: threadSafeResults, indexPaths: [indexPath]).first else { return }
 
                 for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
                     operation.cancel()
@@ -60,7 +60,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         let threadSafeResults = ThreadSafeReference(to: results)
 
         DispatchQueue.global().async {
-            guard let metadata = self.dataSource.getMetadata(threadSafeResults: threadSafeResults, indexPath: indexPath) else { return }
+            guard let metadata = self.dataSource.getMetadata(threadSafeResults: threadSafeResults, indexPaths: [indexPath]).first else { return }
             let existsImagePreview = self.utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag)
             let ext = self.global.getSizeExtension(column: self.numberOfColumns)
 
@@ -72,16 +72,26 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
     }
 
-    private func photoCell(cell: NCCellProtocol & UICollectionViewCell, indexPath: IndexPath, metadata: tableMetadata, ext: String) -> NCCellProtocol & UICollectionViewCell {
+    private func photoCell(cell: NCPhotoCell, indexPath: IndexPath, metadata: tableMetadata, ext: String) -> NCPhotoCell {
         let width = UIScreen.main.bounds.width / CGFloat(self.numberOfColumns)
+
+        cell.ocId = metadata.ocId
+        cell.ocIdTransfer = metadata.ocIdTransfer
 
         /// Image
         ///
         if let image = NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
             cell.filePreviewImageView?.image = image
         } else if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
-            NCImageCache.shared.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext, cost: indexPath.row)
             cell.filePreviewImageView?.image = image
+        }
+
+        /// Content mode
+        ///
+        if cell.filePreviewImageView?.image != nil {
+            cell.filePreviewImageView?.contentMode = .scaleAspectFill
+        } else {
+            cell.filePreviewImageView?.contentMode = .scaleAspectFit
         }
 
         /// Default image
@@ -105,6 +115,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         if width < 100 {
             cell.hideButtonMore(true)
             cell.hideImageStatus(true)
+        } else {
+            cell.hideButtonMore(false)
+            cell.hideImageStatus(false)
         }
 
         return cell

@@ -75,6 +75,10 @@ class NCImageCache: NSObject {
 #endif
     }
 
+    func allowExtensions(ext: String) -> Bool {
+        return allowExtensions.contains(ext)
+    }
+
     func addImageCache(ocId: String, etag: String, data: Data, ext: String, cost: Int) {
         guard allowExtensions.contains(ext),
               let image = UIImage(data: data) else { return }

@@ -27,6 +27,8 @@ import UIKit
 extension NCMedia: UICollectionViewDataSourcePrefetching {
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
         guard !imageCache.isLoadingCache else { return }
+        /*
+        guard !imageCache.isLoadingCache else { return }
 
         let cost = indexPaths.first?.row ?? 0
         let metadatas = self.dataSource.getMetadatas(indexPaths: indexPaths)
@@ -48,5 +50,6 @@ extension NCMedia: UICollectionViewDataSourcePrefetching {
                 }
             }
         }
+        */
     }
 }

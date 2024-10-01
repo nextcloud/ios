@@ -177,20 +177,22 @@ class NCCollectionViewDataSource: NSObject {
         return results
     }
 
-    func getMetadata(threadSafeResults: ThreadSafeReference<Results<tableMetadata>>, indexPath: IndexPath) -> tableMetadata? {
+    func getMetadata(threadSafeResults: ThreadSafeReference<Results<tableMetadata>>, indexPaths: [IndexPath]) -> [tableMetadata] {
         autoreleasepool {
+            var metadatas: [tableMetadata] = []
             do {
                 let realm = try Realm()
                 if let resolvedResults = realm.resolve(threadSafeResults) {
                     let validMetadatas = resolvedResults.filter { !$0.isInvalidated }
-                    if indexPath.row < validMetadatas.count {
-                        return tableMetadata(value: validMetadatas[indexPath.row])
+                    for indexPath in indexPaths where indexPath.row < validMetadatas.count {
+                        metadatas.append(tableMetadata(value: validMetadatas[indexPath.row]))
                     }
+                    return metadatas
                 }
             } catch let error as NSError {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
             }
-            return nil
+            return metadatas
         }
     }
 
