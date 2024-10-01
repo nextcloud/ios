@@ -250,7 +250,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 if let image = NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
                     cell.filePreviewImageView?.image = image
                 } else if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
-                    NCImageCache.shared.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext, cost: indexPath.row)
                     cell.filePreviewImageView?.image = image
                 }
 
