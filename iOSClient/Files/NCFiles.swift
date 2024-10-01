@@ -159,7 +159,7 @@ class NCFiles: NCCollectionViewCommon {
             return false
         }
 
-        DispatchQueue.global(qos: .background).async {
+        DispatchQueue.global().async {
             self.networkReadFolder { tableDirectory, metadatas, reloadDataSource, error in
                 DispatchQueue.main.async {
                     if error == .success {

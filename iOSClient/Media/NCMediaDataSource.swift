@@ -144,7 +144,7 @@ extension NCMedia {
 
                             DispatchQueue.main.async {
                                 if let firstCellDate, let lastCellDate, self.isViewActived {
-                                    DispatchQueue.global(qos: .background).async {
+                                    DispatchQueue.global().async {
                                         let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [ NSPredicate(format: "date >= %@ AND date =< %@", lastCellDate as NSDate, firstCellDate as NSDate), self.imageCache.getMediaPredicate(filterLivePhotoFile: false, session: session, showOnlyImages: self.showOnlyImages, showOnlyVideos: self.showOnlyVideos)])
 
                                         if let resultsMetadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: predicate) {
