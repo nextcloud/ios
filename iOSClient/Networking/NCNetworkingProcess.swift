@@ -128,7 +128,7 @@ class NCNetworkingProcess {
     }
 
     @discardableResult
-    private func start() async -> (counterDownloading: Int, counterUploading: Int) {
+    private func start() async -> (counterDownloading: Int, counterUploading: Int, counterWebDAV: Int) {
         let applicationState = await checkApplicationState()
         let maxConcurrentOperationDownload = NCBrandOptions.shared.maxConcurrentOperationDownload
         var maxConcurrentOperationUpload = NCBrandOptions.shared.maxConcurrentOperationUpload
@@ -148,7 +148,7 @@ class NCNetworkingProcess {
                     NCNetworking.shared.deleteFileOrFolderQueue.addOperation(NCOperationDeleteFileOrFolder(metadata: metadata))
                 }
             }
-            return (counterDownloading, counterUploading)
+            return (counterDownloading, counterUploading, metadatasWaitDelete.count)
         }
 
         /// ------------------------ FOLDER
@@ -162,9 +162,25 @@ class NCNetworkingProcess {
                         let message = String(format: NSLocalizedString("_offlinefolder_error_", comment: ""), serverUrlFileName)
                         NCContentPresenter().messageNotification(message, error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
                     }
-                    return (counterDownloading, counterUploading)
+                    return (counterDownloading, counterUploading, metadatasWaitCreateFolder.count)
                 }
             }
+        }
+
+        /// ------------------------ RENAME
+        ///
+        if let metadatasWaitRename = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitRename), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitRename.isEmpty {
+            for metadata in metadatasWaitRename {
+                let serverUrlFileNameSource = metadata.serveUrlFileName
+                let serverUrlFileNameDestination = metadata.serverUrl + "/" + metadata.fileName
+                let result = await NCNetworking.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: false, account: metadata.account)
+                if result.error == .success {
+                    database.renameMetadata(ocId: metadata.ocId)
+                } else {
+                    database.restoreMetadataServerUrlFileName(ocId: metadata.ocId)
+                }
+            }
+            return (counterDownloading, counterUploading, metadatasWaitRename.count)
         }
 
         /// ------------------------ DOWNLOAD
@@ -195,13 +211,13 @@ class NCNetworkingProcess {
         /// E2EE - only one for time
         for metadata in metadatasUploading.unique(map: { $0.serverUrl }) {
             if metadata.isDirectoryE2EE {
-                return (counterDownloading, counterUploading)
+                return (counterDownloading, counterUploading, 0)
             }
         }
 
         /// CHUNK - only one for time
         if !metadatasUploading.filter({ $0.chunk > 0 }).isEmpty {
-            return (counterDownloading, counterUploading)
+            return (counterDownloading, counterUploading, 0)
         }
 
         for sessionSelector in sessionUploadSelectors where counterUploading < maxConcurrentOperationUpload {
@@ -287,7 +303,7 @@ class NCNetworkingProcess {
             }
         }
 
-        return (counterDownloading, counterUploading)
+        return (counterDownloading, counterUploading, 0)
     }
 
     private func checkApplicationState() async -> UIApplication.State {
@@ -301,7 +317,7 @@ class NCNetworkingProcess {
 
     // MARK: - Public
 
-    func refreshProcessingTask() async -> (counterDownloading: Int, counterUploading: Int) {
+    func refreshProcessingTask() async -> (counterDownloading: Int, counterUploading: Int, counterWebDAV: Int) {
         await withCheckedContinuation { continuation in
             self.lockQueue.sync {
                 guard !self.hasRun, NCNetworking.shared.isOnline else { return }

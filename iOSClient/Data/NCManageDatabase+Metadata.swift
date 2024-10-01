@@ -635,6 +635,24 @@ extension NCManageDatabase {
         }
     }
 
+    func renameMetadata(ocId: String) {
+        do {
+            let realm = try Realm()
+            try realm.write {
+                if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
+                    let resultsType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: result.fileName, mimeType: "", directory: result.directory, account: result.account)
+
+                    result.iconName = resultsType.iconName
+                    result.contentType = resultsType.mimeType
+                    result.classFile = resultsType.classFile
+                    result.serveUrlFileName = self.utilityFileSystem.stringAppendServerUrl(result.serverUrl, addFileName: result.fileName)
+                }
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
+        }
+    }
+
     func setMetadataEtagResource(ocId: String, etagResource: String?) {
         guard let etagResource else { return }
 
