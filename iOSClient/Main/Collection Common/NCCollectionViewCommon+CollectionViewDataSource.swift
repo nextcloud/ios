@@ -54,12 +54,10 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if !collectionView.indexPathsForVisibleItems.contains(indexPath) {
-            /*
             guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else { return }
             for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
                 operation.cancel()
             }
-            */
         }
     }
 
@@ -239,15 +237,13 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 }
             }
 
-            if !isLayoutPhoto {
-                let tableLocalFile = database.getResultsTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))?.first
-                // image local
-                if let tableLocalFile, tableLocalFile.offline {
-                    a11yValues.append(NSLocalizedString("_offline_", comment: ""))
-                    cell.fileLocalImage?.image = imageCache.getImageOfflineFlag()
-                } else if utilityFileSystem.fileProviderStorageExists(metadata) {
-                    cell.fileLocalImage?.image = imageCache.getImageLocal()
-                }
+            let tableLocalFile = database.getResultsTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))?.first
+            // image local
+            if let tableLocalFile, tableLocalFile.offline {
+                a11yValues.append(NSLocalizedString("_offline_", comment: ""))
+                cell.fileLocalImage?.image = imageCache.getImageOfflineFlag()
+            } else if utilityFileSystem.fileProviderStorageExists(metadata) {
+                cell.fileLocalImage?.image = imageCache.getImageLocal()
             }
         }
 
