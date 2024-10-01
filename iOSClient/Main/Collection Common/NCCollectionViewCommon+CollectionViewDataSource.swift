@@ -82,26 +82,26 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         ///
         if let image = NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
             cell.filePreviewImageView?.image = image
-        } else if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
-            cell.filePreviewImageView?.image = image
-            self.imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext, cost: indexPath.row)
-        }
-
-        /// Content mode
-        ///
-        if cell.filePreviewImageView?.image != nil {
             cell.filePreviewImageView?.contentMode = .scaleAspectFill
         } else {
-            cell.filePreviewImageView?.contentMode = .scaleAspectFit
-        }
-
-        /// Default image
-        ///
-        if cell.filePreviewImageView?.image == nil {
-            if metadata.iconName.isEmpty {
-                cell.filePreviewImageView?.image = NCImageCache.shared.getImageFile()
-            } else {
-                cell.filePreviewImageView?.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
+            DispatchQueue.global(qos: .userInteractive).async {
+                let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext)
+                if let image {
+                    self.imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext, cost: indexPath.row)
+                    DispatchQueue.main.async {
+                        cell.filePreviewImageView?.image = image
+                        cell.filePreviewImageView?.contentMode = .scaleAspectFill
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        cell.filePreviewImageView?.contentMode = .scaleAspectFit
+                        if metadata.iconName.isEmpty {
+                            cell.filePreviewImageView?.image = NCImageCache.shared.getImageFile()
+                        } else {
+                            cell.filePreviewImageView?.image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
+                        }
+                    }
+                }
             }
         }
 
