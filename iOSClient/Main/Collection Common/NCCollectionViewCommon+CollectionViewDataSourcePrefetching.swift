@@ -28,7 +28,10 @@ import RealmSwift
 extension NCCollectionViewCommon: UICollectionViewDataSourcePrefetching {
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
         let ext = global.getSizeExtension(column: self.numberOfColumns)
-        guard !isSearchingMode, imageCache.allowExtensions(ext: ext), let results = self.dataSource.getResults() else { return }
+        guard !isSearchingMode,
+              imageCache.allowExtensions(ext: ext),
+              let results = self.dataSource.getResults()
+        else { return }
         let threadSafeResults = ThreadSafeReference(to: results)
         let cost = indexPaths.first?.row ?? 0
 

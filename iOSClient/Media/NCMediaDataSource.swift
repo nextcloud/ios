@@ -127,7 +127,7 @@ extension NCMedia {
                         self.collectionViewReloadData()
                     }
 
-                    DispatchQueue.global(qos: .userInteractive).async {
+                    DispatchQueue.global().async {
                         self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
                             let metadatas = metadatas.filter { metadata in
                                 let tableMetadata = self.database.getMetadataFromOcId(metadata.ocId)
