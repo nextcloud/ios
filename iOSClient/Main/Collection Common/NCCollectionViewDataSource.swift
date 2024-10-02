@@ -262,30 +262,17 @@ class NCCollectionViewDataSource: NSObject {
     }
 
     func getMetadata(indexPath: IndexPath) -> tableMetadata? {
-        let validMetadatas = self.metadatas.filter { !$0.isInvalidated }
-
         if !metadatasForSection.isEmpty, indexPath.section < metadatasForSection.count {
             if let metadataForSection = getMetadataForSection(indexPath.section),
                indexPath.row < metadataForSection.metadatas.count,
                !metadataForSection.metadatas[indexPath.row].isInvalidated {
                 return tableMetadata(value: metadataForSection.metadatas[indexPath.row])
             }
-        } else if indexPath.row < validMetadatas.count {
-            let metadata = tableMetadata(value: validMetadatas[indexPath.row])
-            metadataIndexPath[indexPath] = metadata
-            return metadata
-        }
-
-        return nil
-    }
-
-    func getCacheMetadata(indexPath: IndexPath) -> tableMetadata? {
-        let validMetadatas = self.metadatas.filter { !$0.isInvalidated }
-
-        if indexPath.row < validMetadatas.count {
+        } else if indexPath.row < self.metadatas.count {
             if let metadata = metadataIndexPath[indexPath] {
                 return metadata
             } else {
+                let validMetadatas = self.metadatas.filter { !$0.isInvalidated }
                 let metadata = tableMetadata(value: validMetadatas[indexPath.row])
                 metadataIndexPath[indexPath] = metadata
                 return metadata
