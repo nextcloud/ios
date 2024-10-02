@@ -316,7 +316,7 @@ class NCGlobal: NSObject {
     let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: [ocId], error
     let notificationCenterMoveFile                              = "moveFile"                        // userInfo: [ocId], error, dragdrop
     let notificationCenterCopyFile                              = "copyFile"                        // userInfo: [ocId], error, dragdrop
-    let notificationCenterRenameFile                            = "renameFile"                      // userInfo: ocId, account
+    let notificationCenterRenameFile                            = "renameFile"                      // userInfo: serverUrl, account, error
     let notificationCenterFavoriteFile                          = "favoriteFile"                    // userInfo: ocId, serverUrl
     let notificationCenterFileExists                            = "fileExists"                      // userInfo: ocId, fileExists
 

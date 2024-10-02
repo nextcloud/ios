@@ -489,17 +489,7 @@ extension NCNetworking {
             return
         }
 
-        /*
-        if metadata.status == global.metadataStatusWaitCreateFolder {
-            let metadatas = database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@", metadata.account, metadata.serverUrl))
-            for metadata in metadatas {
-                database.deleteMetadataOcId(metadata.ocId)
-                utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-            }
-            return
-        }
-        */
-        self.database.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusWaitDelete)
+        self.database.renameMetadata(fileNameNew: fileNameNew, ocId: metadata.ocId, account: metadata.account, status: NCGlobal.shared.metadataStatusWaitRename)
     }
 
     // MARK: - Move

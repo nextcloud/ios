@@ -159,7 +159,7 @@ class NCNetworkingProcess {
                 if error != .success {
                     if metadata.sessionError.isEmpty {
                         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-                        let message = String(format: NSLocalizedString("_offlinefolder_error_", comment: ""), serverUrlFileName)
+                        let message = String(format: NSLocalizedString("_create_folder_error_", comment: ""), serverUrlFileName)
                         NCContentPresenter().messageNotification(message, error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
                     }
                     return (counterDownloading, counterUploading, metadatasWaitCreateFolder.count)
@@ -175,10 +175,11 @@ class NCNetworkingProcess {
                 let serverUrlFileNameDestination = metadata.serverUrl + "/" + metadata.fileName
                 let result = await NCNetworking.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: false, account: metadata.account)
                 if result.error == .success {
-                    database.setMetadataServeUrlFileName(ocId: metadata.ocId)
+                    database.setMetadataServeUrlFileNameStatusNormal(ocId: metadata.ocId)
                 } else {
                     database.restoreMetadataServerUrlFileName(ocId: metadata.ocId)
                 }
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRenameFile, userInfo: ["serverUrl": metadata.serverUrl, "account": metadata.account, "error": result.error])
             }
             return (counterDownloading, counterUploading, metadatasWaitRename.count)
         }
