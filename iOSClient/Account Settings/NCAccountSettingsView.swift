@@ -315,7 +315,7 @@ struct UserImageView: View {
                 Image(uiImage: avatar)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: UIScreen.main.bounds.width, height: 75)
+                    .frame(width: 75, height: 75)
             }
             if let onlineStatus = onlineStatus {
                 ZStack {
