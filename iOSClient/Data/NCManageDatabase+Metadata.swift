@@ -617,17 +617,20 @@ extension NCManageDatabase {
         }
     }
 
-    func renameMetadata(fileNameTo: String, ocId: String, account: String) {
+    func renameMetadata(fileNameNew: String, ocId: String, account: String, withServeUrlFileName: Bool = false) {
         do {
             let realm = try Realm()
             try realm.write {
                 if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
-                    let resultsType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileNameTo, mimeType: "", directory: result.directory, account: account)
-                    result.fileName = fileNameTo
-                    result.fileNameView = fileNameTo
+                    let resultsType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileNameNew, mimeType: "", directory: result.directory, account: account)
+                    result.fileName = fileNameNew
+                    result.fileNameView = fileNameNew
                     result.iconName = resultsType.iconName
                     result.contentType = resultsType.mimeType
                     result.classFile = resultsType.classFile
+                    if withServeUrlFileName {
+                        result.serveUrlFileName = self.utilityFileSystem.stringAppendServerUrl(result.serverUrl, addFileName: fileNameNew)
+                    }
                 }
             }
         } catch let error {
@@ -635,16 +638,11 @@ extension NCManageDatabase {
         }
     }
 
-    func renameMetadata(ocId: String) {
+    func setMetadataServeUrlFileName(ocId: String) {
         do {
             let realm = try Realm()
             try realm.write {
                 if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
-                    let resultsType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: result.fileName, mimeType: "", directory: result.directory, account: result.account)
-
-                    result.iconName = resultsType.iconName
-                    result.contentType = resultsType.mimeType
-                    result.classFile = resultsType.classFile
                     result.serveUrlFileName = self.utilityFileSystem.stringAppendServerUrl(result.serverUrl, addFileName: result.fileName)
                 }
             }

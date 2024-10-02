@@ -175,7 +175,7 @@ class NCNetworkingProcess {
                 let serverUrlFileNameDestination = metadata.serverUrl + "/" + metadata.fileName
                 let result = await NCNetworking.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: false, account: metadata.account)
                 if result.error == .success {
-                    database.renameMetadata(ocId: metadata.ocId)
+                    database.setMetadataServeUrlFileName(ocId: metadata.ocId)
                 } else {
                     database.restoreMetadataServerUrlFileName(ocId: metadata.ocId)
                 }

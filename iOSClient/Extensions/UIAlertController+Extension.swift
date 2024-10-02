@@ -202,28 +202,24 @@ extension UIAlertController {
         let alertController = UIAlertController(title: NSLocalizedString("_rename_", comment: ""), message: nil, preferredStyle: .alert)
 
         let okAction = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default, handler: { _ in
-            guard let newFileName = alertController.textFields?.first?.text else { return }
+            guard let fileNameNew = alertController.textFields?.first?.text else { return }
 
             // verify if already exists
-            if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, newFileName)) != nil {
+            if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameNew)) != nil {
                 NCContentPresenter().showError(error: NKError(errorCode: 0, errorDescription: "_rename_already_exists_"))
                 return
             }
 
-            NCActivityIndicator.shared.start()
-
-            
-
-            /*
-            NCNetworking.shared.renameMetadata(metadata, fileNameNew: newFileName) { error in
-
-                NCActivityIndicator.shared.stop()
-
-                if error != .success {
-                    NCContentPresenter().showError(error: error)
+            if metadata.isDirectoryE2EE, NCNetworking.shared.isOnline {
+                Task {
+                    let error = await NCNetworkingE2EERename().rename(metadata: metadata, fileNameNew: fileNameNew)
+                    if error != .success {
+                        NCContentPresenter().showError(error: error)
+                    }
                 }
+            } else {
+                NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew)
             }
-            */
         })
 
         // text field is initially empty, no action

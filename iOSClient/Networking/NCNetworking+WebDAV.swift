@@ -384,6 +384,7 @@ extension NCNetworking {
 
     // MARK: - Rename
 
+    /*
     func renameMetadata(_ metadata: tableMetadata,
                         fileNameNew: String,
                         completion: @escaping (_ error: NKError) -> Void) {
@@ -428,6 +429,7 @@ extension NCNetworking {
             }
         }
     }
+
 
     private func renameMetadataPlain(_ metadata: tableMetadata,
                                      fileNameNew: String,
@@ -478,6 +480,7 @@ extension NCNetworking {
             completion(error)
         }
     }
+     */
 
     func renameMetadata(_ metadata: tableMetadata, fileNameNew: String) {
         let permission = utility.permissionsContainsString(metadata.permissions, permissions: NCPermissions().permissionCanRename)
