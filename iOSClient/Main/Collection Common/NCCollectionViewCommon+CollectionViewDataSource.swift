@@ -42,33 +42,23 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        if !collectionView.indexPathsForVisibleItems.contains(indexPath), let results = self.dataSource.getResults() {
-            let threadSafeResults = ThreadSafeReference(to: results)
-
-            DispatchQueue.global().async {
-                guard let metadata = self.dataSource.getMetadata(threadSafeResults: threadSafeResults, indexPaths: [indexPath]).first else { return }
-
-                for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
-                    operation.cancel()
-                }
+        if !collectionView.indexPathsForVisibleItems.contains(indexPath) {
+            guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else { return }
+            for case let operation as NCCollectionViewDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
+                        operation.cancel()
             }
         }
     }
 
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        guard let results = self.dataSource.getResults() else { return }
-        let threadSafeResults = ThreadSafeReference(to: results)
+        guard let metadata = dataSource.getMetadata(indexPath: indexPath) else { return }
+        let existsImagePreview = utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag)
+        let ext = global.getSizeExtension(column: self.numberOfColumns)
 
-        DispatchQueue.global().async {
-            guard let metadata = self.dataSource.getMetadata(threadSafeResults: threadSafeResults, indexPaths: [indexPath]).first else { return }
-            let existsImagePreview = self.utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag)
-            let ext = self.global.getSizeExtension(column: self.numberOfColumns)
-
-            if metadata.hasPreview,
-               !existsImagePreview,
-               NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
-                NCNetworking.shared.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, collectionView: collectionView, ext: ext))
-            }
+        if metadata.hasPreview,
+           !existsImagePreview,
+           NCNetworking.shared.downloadThumbnailQueue.operations.filter({ ($0 as? NCMediaDownloadThumbnail)?.metadata.ocId == metadata.ocId }).isEmpty {
+            NCNetworking.shared.downloadThumbnailQueue.addOperation(NCCollectionViewDownloadThumbnail(metadata: metadata, collectionView: collectionView, ext: ext))
         }
     }
 
