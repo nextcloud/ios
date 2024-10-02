@@ -281,10 +281,10 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     // MARK: - DataSource
 
     override func reloadDataSource() {
-        self.dataSource.removeAll()
-
         if let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal), sortedByKeyPath: "sessionDate", ascending: true) {
             self.dataSource = NCCollectionViewDataSource(results: results, layoutForView: layoutForView)
+        } else {
+            self.dataSource.removeAll()
         }
 
         if self.dataSource.isEmpty() {

@@ -28,15 +28,16 @@ extension NCCollectionViewCommon: UICollectionViewDataSourcePrefetching {
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
         let ext = global.getSizeExtension(column: self.numberOfColumns)
         guard !isSearchingMode,
-              imageCache.allowExtensions(ext: ext),
-              let results = self.dataSource.getResults()
+              imageCache.allowExtensions(ext: ext)
         else { return }
         let cost = indexPaths.first?.row ?? 0
-        let metadatas = self.dataSource.getMetadatas(indexPaths: indexPaths)
 
-        for metadata in metadatas where metadata.isImageOrVideo {
-            if self.imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) == nil,
+        for indexPath in indexPaths {
+            if let metadata = self.dataSource.getMetadata(indexPath: indexPath),
+               metadata.isImageOrVideo,
+               self.imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) == nil,
                let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
+
                 self.imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext, cost: cost)
             }
         }

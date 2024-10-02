@@ -118,8 +118,6 @@ class NCFiles: NCCollectionViewCommon {
     // MARK: - DataSource
 
     override func reloadDataSource() {
-        self.dataSource.removeAll()
-
         var predicate = self.defaultPredicate
         let predicateDirectory = NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, self.serverUrl)
 

@@ -35,6 +35,7 @@ class NCCollectionViewDataSource: NSObject {
     private var metadatas: [tableMetadata] = []
     private var metadatasForSection: [NCMetadataForSection] = []
     private var layoutForView: NCDBLayoutForView?
+    private var metadataIndexPath: [IndexPath: tableMetadata] = [:]
 
     override init() { super.init() }
 
@@ -43,6 +44,7 @@ class NCCollectionViewDataSource: NSObject {
          providers: [NKSearchProvider]? = nil,
          searchResults: [NKSearchResult]? = nil) {
         super.init()
+        removeAll()
 
         self.results = results
         if let results {
@@ -64,7 +66,9 @@ class NCCollectionViewDataSource: NSObject {
     // MARK: -
 
     func removeAll() {
-        self.metadatas = []
+        self.metadatas.removeAll()
+        self.metadataIndexPath.removeAll()
+        self.results = nil
 
         self.metadatasForSection.removeAll()
         self.sectionsValue.removeAll()
@@ -177,25 +181,6 @@ class NCCollectionViewDataSource: NSObject {
         return results
     }
 
-    func getMetadata(threadSafeResults: ThreadSafeReference<Results<tableMetadata>>, indexPaths: [IndexPath]) -> [tableMetadata] {
-        autoreleasepool {
-            var metadatas: [tableMetadata] = []
-            do {
-                let realm = try Realm()
-                if let resolvedResults = realm.resolve(threadSafeResults) {
-                    let validMetadatas = resolvedResults.filter { !$0.isInvalidated }
-                    for indexPath in indexPaths where indexPath.row < validMetadatas.count {
-                        metadatas.append(tableMetadata(value: validMetadatas[indexPath.row]))
-                    }
-                    return metadatas
-                }
-            } catch let error as NSError {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
-            }
-            return metadatas
-        }
-    }
-
     func isMetadatasValid() -> Bool {
         let validMetadatas = metadatas.filter { !$0.isInvalidated }
 
@@ -266,22 +251,6 @@ class NCCollectionViewDataSource: NSObject {
         return (directories.count, files.count, size)
     }
 
-    func getMetadata(indexPath: IndexPath) -> tableMetadata? {
-        let validMetadatas = metadatas.filter { !$0.isInvalidated }
-
-        if !metadatasForSection.isEmpty, indexPath.section < metadatasForSection.count {
-            if let metadataForSection = getMetadataForSection(indexPath.section),
-               indexPath.row < metadataForSection.metadatas.count,
-               !metadataForSection.metadatas[indexPath.row].isInvalidated {
-                return tableMetadata(value: metadataForSection.metadatas[indexPath.row])
-            }
-        } else if indexPath.row < validMetadatas.count {
-            return tableMetadata(value: validMetadatas[indexPath.row])
-        }
-
-        return nil
-    }
-
     func getResultMetadata(indexPath: IndexPath) -> tableMetadata? {
         let validMetadatas = metadatas.filter { !$0.isInvalidated }
 
@@ -292,16 +261,38 @@ class NCCollectionViewDataSource: NSObject {
         return nil
     }
 
-    func getMetadatas(indexPaths: [IndexPath]) -> [tableMetadata] {
-        var metadatas: [tableMetadata] = []
+    func getMetadata(indexPath: IndexPath) -> tableMetadata? {
         let validMetadatas = self.metadatas.filter { !$0.isInvalidated }
 
-        for indexPath in indexPaths {
-            if indexPath.row < validMetadatas.count {
-                metadatas.append(tableMetadata(value: validMetadatas[indexPath.row]))
+        if !metadatasForSection.isEmpty, indexPath.section < metadatasForSection.count {
+            if let metadataForSection = getMetadataForSection(indexPath.section),
+               indexPath.row < metadataForSection.metadatas.count,
+               !metadataForSection.metadatas[indexPath.row].isInvalidated {
+                return tableMetadata(value: metadataForSection.metadatas[indexPath.row])
+            }
+        } else if indexPath.row < validMetadatas.count {
+            let metadata = tableMetadata(value: validMetadatas[indexPath.row])
+            metadataIndexPath[indexPath] = metadata
+            return metadata
+        }
+
+        return nil
+    }
+
+    func getCacheMetadata(indexPath: IndexPath) -> tableMetadata? {
+        let validMetadatas = self.metadatas.filter { !$0.isInvalidated }
+
+        if indexPath.row < validMetadatas.count {
+            if let metadata = metadataIndexPath[indexPath] {
+                return metadata
+            } else {
+                let metadata = tableMetadata(value: validMetadatas[indexPath.row])
+                metadataIndexPath[indexPath] = metadata
+                return metadata
             }
         }
-        return metadatas
+
+        return nil
     }
 
     // MARK: -
