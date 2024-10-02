@@ -623,6 +623,7 @@ extension NCManageDatabase {
             try realm.write {
                 if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
                     let fileNameView = result.fileNameView
+                    let fileIdMOV = result.livePhotoFile
                     let resultsType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileNameNew, mimeType: "", directory: result.directory, account: account)
 
                     result.fileName = fileNameNew
@@ -635,6 +636,20 @@ extension NCManageDatabase {
                     if !result.directory {
                         let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId) + "/" + fileNameView
                         let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId) + "/" + fileNameNew
+
+                        self.utilityFileSystem.moveFile(atPath: atPath, toPath: toPath)
+                    }
+
+                    if result.isLivePhoto,
+                       let resultMOV = realm.objects(tableMetadata.self).filter("fileId == %@ AND account == %@", fileIdMOV, result.account).first {
+                        let fileNameView = resultMOV.fileNameView
+                        let fileName = (fileNameNew as NSString).deletingPathExtension
+                        let ext = (resultMOV.fileName as NSString).pathExtension
+                        resultMOV.fileName = fileName + "." + ext
+                        resultMOV.fileNameView = fileName + "." + ext
+
+                        let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(resultMOV.ocId) + "/" + fileNameView
+                        let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(resultMOV.ocId) + "/" + fileName + "." + ext
 
                         self.utilityFileSystem.moveFile(atPath: atPath, toPath: toPath)
                     }
@@ -652,6 +667,7 @@ extension NCManageDatabase {
                 if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first,
                    let encodedURLString = result.serveUrlFileName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
                    let url = URL(string: encodedURLString) {
+                    let fileIdMOV = result.livePhotoFile
                     let lastPathComponent = url.lastPathComponent
                     let fileName = lastPathComponent.removingPercentEncoding ?? lastPathComponent
                     let fileNameView = result.fileNameView
@@ -663,6 +679,20 @@ extension NCManageDatabase {
                     if !result.directory {
                         let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId) + "/" + fileNameView
                         let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId) + "/" + fileName
+
+                        self.utilityFileSystem.moveFile(atPath: atPath, toPath: toPath)
+                    }
+
+                    if result.isLivePhoto,
+                       let resultMOV = realm.objects(tableMetadata.self).filter("fileId == %@ AND account == %@", fileIdMOV, result.account).first {
+                        let fileNameView = resultMOV.fileNameView
+                        let fileName = (fileName as NSString).deletingPathExtension
+                        let ext = (resultMOV.fileName as NSString).pathExtension
+                        resultMOV.fileName = fileName + "." + ext
+                        resultMOV.fileNameView = fileName + "." + ext
+
+                        let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(resultMOV.ocId) + "/" + fileNameView
+                        let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(resultMOV.ocId) + "/" + fileName + "." + ext
 
                         self.utilityFileSystem.moveFile(atPath: atPath, toPath: toPath)
                     }
