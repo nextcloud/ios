@@ -617,14 +617,15 @@ extension NCManageDatabase {
         }
     }
 
-    func renameMetadata(fileNameNew: String, ocId: String, account: String, status: Int = NCGlobal.shared.metadataStatusNormal) {
+    func renameMetadata(fileNameNew: String, ocId: String, status: Int = NCGlobal.shared.metadataStatusNormal) {
         do {
             let realm = try Realm()
             try realm.write {
                 if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
                     let fileNameView = result.fileNameView
                     let fileIdMOV = result.livePhotoFile
-                    let resultsType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileNameNew, mimeType: "", directory: result.directory, account: account)
+                    let directoryServerUrl = self.utilityFileSystem.stringAppendServerUrl(result.serverUrl, addFileName: fileNameView)
+                    let resultsType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileNameNew, mimeType: "", directory: result.directory, account: result.account)
 
                     result.fileName = fileNameNew
                     result.fileNameView = fileNameNew
@@ -633,7 +634,12 @@ extension NCManageDatabase {
                     result.classFile = resultsType.classFile
                     result.status = status
 
-                    if !result.directory {
+                    if result.directory,
+                       let resultDirectory = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", result.account, directoryServerUrl).first {
+                        let serverUrlTo = self.utilityFileSystem.stringAppendServerUrl(result.serverUrl, addFileName: fileNameNew)
+
+                        resultDirectory.serverUrl = serverUrlTo
+                    } else {
                         let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId) + "/" + fileNameView
                         let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId) + "/" + fileNameNew
 
@@ -668,6 +674,7 @@ extension NCManageDatabase {
                    let encodedURLString = result.serveUrlFileName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
                    let url = URL(string: encodedURLString) {
                     let fileIdMOV = result.livePhotoFile
+                    let directoryServerUrl = self.utilityFileSystem.stringAppendServerUrl(result.serverUrl, addFileName: result.fileNameView)
                     let lastPathComponent = url.lastPathComponent
                     let fileName = lastPathComponent.removingPercentEncoding ?? lastPathComponent
                     let fileNameView = result.fileNameView
@@ -676,7 +683,12 @@ extension NCManageDatabase {
                     result.fileNameView = fileName
                     result.status = NCGlobal.shared.metadataStatusNormal
 
-                    if !result.directory {
+                    if result.directory,
+                       let resultDirectory = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", result.account, directoryServerUrl).first {
+                        let serverUrlTo = self.utilityFileSystem.stringAppendServerUrl(result.serverUrl, addFileName: fileName)
+
+                        resultDirectory.serverUrl = serverUrlTo
+                    } else {
                         let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId) + "/" + fileNameView
                         let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId) + "/" + fileName
 

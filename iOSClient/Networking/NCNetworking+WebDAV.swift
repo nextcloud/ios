@@ -391,7 +391,7 @@ extension NCNetworking {
             return
         }
 
-        self.database.renameMetadata(fileNameNew: fileNameNew, ocId: metadata.ocId, account: metadata.account, status: NCGlobal.shared.metadataStatusWaitRename)
+        self.database.renameMetadata(fileNameNew: fileNameNew, ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusWaitRename)
     }
 
     // MARK: - Move
