@@ -151,7 +151,7 @@ class NCNetworkingProcess {
             return (counterDownloading, counterUploading, metadatasWaitDelete.count)
         }
 
-        /// ------------------------ FOLDER
+        /// ------------------------ CREATE FOLDER
         ///
         if let metadatasWaitCreateFolder = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitCreateFolder), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitCreateFolder.isEmpty {
             for metadata in metadatasWaitCreateFolder {
