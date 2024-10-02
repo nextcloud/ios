@@ -623,12 +623,42 @@ extension NCManageDatabase {
             try realm.write {
                 if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
                     let resultsType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileNameNew, mimeType: "", directory: result.directory, account: account)
+                    let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId) + "/" + result.fileNameView
+                    let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId) + "/" + fileNameNew
+
                     result.fileName = fileNameNew
                     result.fileNameView = fileNameNew
                     result.iconName = resultsType.iconName
                     result.contentType = resultsType.mimeType
                     result.classFile = resultsType.classFile
                     result.status = status
+
+                    self.utilityFileSystem.moveFile(atPath: atPath, toPath: toPath)
+                }
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
+        }
+    }
+
+    func restoreMetadataFileName(ocId: String) {
+        do {
+            let realm = try Realm()
+            try realm.write {
+                if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first,
+                   let encodedURLString = result.serveUrlFileName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+                   let url = URL(string: encodedURLString) {
+                    let lastPathComponent = url.lastPathComponent
+                    let fileName = lastPathComponent.removingPercentEncoding ?? lastPathComponent
+
+                    let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId) + "/" + result.fileNameView
+                    let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId) + "/" + fileName
+
+                    result.fileName = fileName
+                    result.fileNameView = fileName
+                    result.status = NCGlobal.shared.metadataStatusNormal
+
+                    self.utilityFileSystem.moveFile(atPath: atPath, toPath: toPath)
                 }
             }
         } catch let error {
