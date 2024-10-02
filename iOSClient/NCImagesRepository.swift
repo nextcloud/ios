@@ -41,6 +41,7 @@ class NCImagesRepository: NSObject {
         case spreadsheet = "spreadsheet"
         case presentation = "presentation"
         case createFolder = "createFolder"
+        case restore = "restore"
 		
 		case mediaForward = "MediaPlayer/Forward"
 		case mediaFullscreen = "MediaPlayer/Fullscreen"
@@ -200,6 +201,10 @@ class NCImagesRepository: NSObject {
     
     static var menuIconCreatePresentation: UIImage {
         menuIcon(ImageName.presentation)
+    }
+    
+    static var menuRestore: UIImage {
+        menuIcon(ImageName.restore)
     }
     
     private static func menuIcon(_ imageName: ImageName) -> UIImage {
