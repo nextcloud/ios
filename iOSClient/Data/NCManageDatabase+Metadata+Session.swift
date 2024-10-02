@@ -190,7 +190,7 @@ extension NCManageDatabase {
                                                   sessionTaskIdentifier))
     }
 
-    func restoreMetadataServerUrlFileName(ocId: String) {
+    func restoreMetadataFileName(ocId: String) {
         do {
             let realm = try Realm()
             try realm.write {
@@ -201,11 +201,8 @@ extension NCManageDatabase {
                     let lastPathComponent = url.lastPathComponent
                     let fileName = lastPathComponent.removingPercentEncoding ?? lastPathComponent
 
-                    let baseURL = url.deletingLastPathComponent().absoluteString
-                    let serverUrl = baseURL.removingPercentEncoding ?? baseURL
-
-                    result.serverUrl = serverUrl
                     result.fileName = fileName
+                    result.fileNameView = fileName
                     result.status = NCGlobal.shared.metadataStatusNormal
                 }
             }

@@ -177,7 +177,7 @@ class NCNetworkingProcess {
                 if result.error == .success {
                     database.setMetadataServeUrlFileNameStatusNormal(ocId: metadata.ocId)
                 } else {
-                    database.restoreMetadataServerUrlFileName(ocId: metadata.ocId)
+                    database.restoreMetadataFileName(ocId: metadata.ocId)
                 }
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRenameFile, userInfo: ["serverUrl": metadata.serverUrl, "account": metadata.account, "error": result.error])
             }

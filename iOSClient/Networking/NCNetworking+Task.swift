@@ -65,7 +65,7 @@ extension NCNetworking {
         /// RENAME
         ///
         if metadata.status == global.metadataStatusWaitRename {
-            database.restoreMetadataServerUrlFileName(ocId: metadata.ocId)
+            database.restoreMetadataFileName(ocId: metadata.ocId)
             NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
             return
         }
@@ -144,7 +144,7 @@ extension NCNetworking {
                     utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
                 }
             } else if metadata.status == global.metadataStatusWaitRename {
-                database.restoreMetadataServerUrlFileName(ocId: metadata.ocId)
+                database.restoreMetadataFileName(ocId: metadata.ocId)
             }
         }
         NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)

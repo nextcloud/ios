@@ -220,6 +220,8 @@ extension UIAlertController {
             } else {
                 NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew)
             }
+
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": metadata.serverUrl])
         })
 
         // text field is initially empty, no action
