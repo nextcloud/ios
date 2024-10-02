@@ -121,7 +121,6 @@ struct NCSettingsAdvancedView: View {
                         HStack {
 							Image(.Settings.folderGear)
                                 .resizable()
-								.renderingMode(.template)
                                 .scaledToFit()
                                 .frame(width: 20, height: 20)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
@@ -145,10 +144,9 @@ struct NCSettingsAdvancedView: View {
                         model.clearLogFile()
                     }, label: {
                         HStack {
-                            Image(systemName: "xmark")
+							Image(.Settings.xmark)
                                 .resizable()
                                 .scaledToFit()
-								.font(.settingsIconsFont)
                                 .frame(width: 15, height: 20)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             Text(NSLocalizedString("_clear_log_", comment: ""))
@@ -169,10 +167,9 @@ struct NCSettingsAdvancedView: View {
                             NCCapabilitiesView(model: NCCapabilitiesModel())
                         }) {
                             HStack {
-                                Image(systemName: "list.bullet")
+								Image(.Settings.bulletlist)
                                     .resizable()
                                     .scaledToFit()
-									.font(.settingsIconsFont)
                                     .frame(width: 20, height: 20)
                                     .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                                 Text(NSLocalizedString("_capabilities_", comment: ""))
@@ -202,10 +199,9 @@ struct NCSettingsAdvancedView: View {
                     showCacheAlert.toggle()
                 }, label: {
                     HStack {
-                        Image(systemName: "xmark")
+						Image(.Settings.xmark)
                             .resizable()
                             .scaledToFit()
-							.font(.settingsIconsFont)
                             .frame(width: 15, height: 20)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_clear_cache_", comment: ""))
@@ -232,12 +228,11 @@ struct NCSettingsAdvancedView: View {
                     showExitAlert.toggle()
                 }, label: {
                     HStack {
-                        Image(systemName: "xmark")
+						Image(.Settings.xmark)
                             .resizable()
                             .scaledToFit()
-							.font(.settingsIconsFont)
                             .frame(width: 15, height: 20)
-                            .foregroundColor(Color(UIColor.systemRed))
+							.foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_exit_", comment: ""))
                             .foregroundColor(Color(UIColor.systemRed))
                     }

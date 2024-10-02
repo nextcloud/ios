@@ -28,25 +28,5 @@ extension UIFont {
 
     static func incosolataMedium(size: CGFloat) -> UIFont {
         return UIFont(name: "Inconsolata-Medium", size: size)!
-    }
-	
-	static func awesomeLight(size: CGFloat) -> UIFont {
-		return UIFont(name: "FontAwesome6Pro-Light", size: size)!
-	}
-
-	static func awesomeRegular(size: CGFloat) -> UIFont {
-		return UIFont(name: "FontAwesome6Pro-Regular", size: size)!
-	}
-
-	static func awesomeSolid(size: CGFloat) -> UIFont {
-		return UIFont(name: "FontAwesome6Pro-Solid", size: size)!
-	}
-
-	static func awesomeThin(size: CGFloat) -> UIFont {
-		return UIFont(name: "FontAwesome6Pro-Thin", size: size)!
-	}
-	
-	static var settingsIconsFont: UIFont {
-		return UIFont.awesomeLight(size: 16)
-	}
+    }	
 }
