@@ -11,7 +11,6 @@
 		0F08D6BB2C94275600136502 /* CircleItemSpinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F08D6BA2C94275600136502 /* CircleItemSpinner.swift */; };
 		0F5090CE2C786F04009348D9 /* FileActionsHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F5090CD2C786F04009348D9 /* FileActionsHeader.swift */; };
 		0F8B9A5B2C7887F60041C17D /* FileActionsHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0F8B9A5A2C7887F60041C17D /* FileActionsHeader.xib */; };
-		0F911CAA2C85A5C400B0A6F7 /* Font Awesome 6 Pro-Light-300.otf in Resources */ = {isa = PBXBuildFile; fileRef = 0F911CA62C85A5C400B0A6F7 /* Font Awesome 6 Pro-Light-300.otf */; };
 		0F9F524F2C8F46D7004717E0 /* AppScreenConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F9F524E2C8F46D7004717E0 /* AppScreenConstants.swift */; };
 		2C1D5D7623E2DE3300334ABB /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
 		2C1D5D7923E2DE9100334ABB /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
@@ -1117,7 +1116,6 @@
 		0F08D6BA2C94275600136502 /* CircleItemSpinner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleItemSpinner.swift; sourceTree = "<group>"; };
 		0F5090CD2C786F04009348D9 /* FileActionsHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileActionsHeader.swift; sourceTree = "<group>"; };
 		0F8B9A5A2C7887F60041C17D /* FileActionsHeader.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileActionsHeader.xib; sourceTree = "<group>"; };
-		0F911CA62C85A5C400B0A6F7 /* Font Awesome 6 Pro-Light-300.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Font Awesome 6 Pro-Light-300.otf"; sourceTree = "<group>"; };
 		0F9F524E2C8F46D7004717E0 /* AppScreenConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppScreenConstants.swift; sourceTree = "<group>"; };
 		2C33C47F23E2C475005F963B /* Notification Service Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Notification Service Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C33C48123E2C475005F963B /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
@@ -1955,14 +1953,6 @@
 				0F8B9A5A2C7887F60041C17D /* FileActionsHeader.xib */,
 			);
 			path = ActionsHeader;
-			sourceTree = "<group>";
-		};
-		0F911CA32C85A5AF00B0A6F7 /* Font Awesome 6 Pro */ = {
-			isa = PBXGroup;
-			children = (
-				0F911CA62C85A5C400B0A6F7 /* Font Awesome 6 Pro-Light-300.otf */,
-			);
-			path = "Font Awesome 6 Pro";
 			sourceTree = "<group>";
 		};
 		2C33C48023E2C475005F963B /* Notification Service Extension */ = {
@@ -2998,7 +2988,6 @@
 		F7F4F0FB27ECDBDA008676F9 /* Font */ = {
 			isa = PBXGroup;
 			children = (
-				0F911CA32C85A5AF00B0A6F7 /* Font Awesome 6 Pro */,
 				F7F4F0FC27ECDBDB008676F9 /* Inconsolata */,
 			);
 			path = Font;
@@ -3862,7 +3851,6 @@
 				F704B5E72430C06700632F5F /* NCCreateFormUploadConflictCell.xib in Resources */,
 				F7E402292BA85D1D007E5609 /* PrivacyInfo.xcprivacy in Resources */,
 				F7C9555321F0C4CA0024296E /* NCActivity.storyboard in Resources */,
-				0F911CAA2C85A5C400B0A6F7 /* Font Awesome 6 Pro-Light-300.otf in Resources */,
 				F7BC287E26663F6C004D46C5 /* NCViewCertificateDetails.storyboard in Resources */,
 				625EC2712C6CAABD006411D1 /* GoogleService-Info.plist in Resources */,
 				F78ACD54219047D40088454D /* NCSectionFooter.xib in Resources */,

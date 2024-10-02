@@ -47,10 +47,8 @@ struct NCSettingsView: View {
                 }) {
                     HStack {
                         Image(.Settings.camera)
-                            .renderingMode(.template)
                             .resizable()
                             .scaledToFit()
-							.font(.settingsIconsFont)
                             .frame(width: 20, height: 20)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_settings_autoupload_", comment: ""))
@@ -67,7 +65,6 @@ struct NCSettingsView: View {
 						lockImage(isLocked: model.isLockActive)
                             .resizable()
                             .scaledToFit()
-							.font(.settingsIconsFont)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             .frame(width: 20, height: 20)
                         Text(model.isLockActive ? NSLocalizedString("_lock_active_", comment: "") : NSLocalizedString("_lock_not_active_", comment: ""))
@@ -109,7 +106,6 @@ struct NCSettingsView: View {
                         HStack {
 							Image(.Settings.calendarUser)
                                 .resizable()
-								.renderingMode(.template)
                                 .scaledToFit()
                                 .frame(width: 23, height: 20)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
@@ -141,7 +137,6 @@ struct NCSettingsView: View {
                     HStack {
 						Image(.Settings.gear)
                             .resizable()
-							.renderingMode(.template)
                             .scaledToFit()
                             .frame(width: 20, height: 20)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
@@ -159,7 +154,6 @@ struct NCSettingsView: View {
                     HStack {
 						Image(.Settings.handshake)
                             .resizable()
-                            .renderingMode(.template)
 							.scaledToFit()
                             .frame(width: 25, height: 20)
 							.foregroundColor(Color(NCBrandColor.shared.iconImageColor))
@@ -178,7 +172,6 @@ struct NCSettingsView: View {
                     HStack {
 						Image(.Settings.shieldHalved)
                             .resizable()
-							.renderingMode(.template)
                             .scaledToFit()
                             .frame(width: 20, height: 20)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
@@ -197,7 +190,6 @@ struct NCSettingsView: View {
                     HStack {
 						Image(.Settings.github)
                             .resizable()
-                            .renderingMode(.template)
                             .frame(width: 20, height: 20)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_source_code_", comment: ""))
@@ -256,12 +248,6 @@ struct E2EESection: View {
             }
         })
     }
-}
-
-extension Font {
-	static var settingsIconsFont: Font {
-		return Font(UIFont.settingsIconsFont)
-	}
 }
 
 #Preview {
