@@ -420,34 +420,41 @@ struct UploadScanDocumentView: View {
                                 }
                         }
                     }
+                    .applyGlobalFormSectionStyle()
                     .complexModifier { view in
                         view.listRowSeparator(.hidden)
                     }
 
-                    VStack(spacing: 20) {
-                        Toggle(NSLocalizedString("_delete_all_scanned_images_", comment: ""), isOn: $removeAllFiles)
-                            .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.switchColor)))
-                            .onChange(of: removeAllFiles) { newValue in
-                                NCKeychain().deleteAllScanImages = newValue
-                            }
-                        Button(NSLocalizedString("_save_", comment: "")) {
-                            let fileName = uploadScanDocument.fileName(fileName)
-                            if !fileName.isEmpty {
-                                uploadScanDocument.showHUD.toggle()
-                                uploadScanDocument.save(fileName: fileName, password: password, isTextRecognition: isTextRecognition, removeAllFiles: removeAllFiles, quality: quality) { openConflictViewController, error in
+                    Section {
+                        VStack(spacing: 20) {
+                            Toggle(NSLocalizedString("_delete_all_scanned_images_", comment: ""), isOn: $removeAllFiles)
+                                .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.switchColor)))
+                                .onChange(of: removeAllFiles) { newValue in
+                                    NCKeychain().deleteAllScanImages = newValue
+                                }
+                            Button(NSLocalizedString("_save_", comment: "")) {
+                                let fileName = uploadScanDocument.fileName(fileName)
+                                if !fileName.isEmpty {
                                     uploadScanDocument.showHUD.toggle()
-                                    if error {
-                                        print("error")
-                                    } else if openConflictViewController {
-                                        isPresentedUploadConflict = true
-                                    } else {
-                                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDismissScanDocument)
+                                    uploadScanDocument.save(fileName: fileName, password: password, isTextRecognition: isTextRecognition, removeAllFiles: removeAllFiles, quality: quality) { openConflictViewController, error in
+                                        uploadScanDocument.showHUD.toggle()
+                                        if error {
+                                            print("error")
+                                        } else if openConflictViewController {
+                                            isPresentedUploadConflict = true
+                                        } else {
+                                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDismissScanDocument)
+                                        }
                                     }
                                 }
                             }
+                            .disabled(fileName.isEmpty || !footer.isEmpty)
+                            .buttonStyle(.primary)
                         }
-                        .disabled(fileName.isEmpty || !footer.isEmpty)
-                        .buttonStyle(.primary)
+                    }
+                    .applyGlobalFormSectionStyle()
+                    .complexModifier { view in
+                        view.listRowSeparator(.hidden)
                     }
 
                     Section(header: Text(NSLocalizedString("_quality_image_title_", comment: ""))) {
@@ -462,6 +469,7 @@ struct UploadScanDocumentView: View {
                         PDFKitRepresentedView(quality: $quality, isTextRecognition: $isTextRecognition, uploadScanDocument: uploadScanDocument)
                             .frame(maxWidth: .infinity, minHeight: geo.size.height / 2)
                     }
+                    .applyGlobalFormSectionStyle()
                     .complexModifier { view in
                         view.listRowSeparator(.hidden)
                     }
@@ -471,7 +479,7 @@ struct UploadScanDocumentView: View {
                     .animation(.easeOut, value: uploadScanDocument.showHUD)
             }
         }
-        .background(Color(UIColor.systemGroupedBackground))
+        .applyGlobalFormStyle()
         .sheet(isPresented: $isPresentedSelect) {
             NCSelectViewControllerRepresentable(delegate: uploadScanDocument)
         }
