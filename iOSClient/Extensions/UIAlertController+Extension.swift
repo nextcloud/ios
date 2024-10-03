@@ -35,10 +35,14 @@ extension UIAlertController {
     static func createFolder(serverUrl: String, account: String, markE2ee: Bool = false, sceneIdentifier: String? = nil, completion: ((_ error: NKError) -> Void)? = nil) -> UIAlertController {
         let alertController = UIAlertController(title: NSLocalizedString("_create_folder_", comment: ""), message: nil, preferredStyle: .alert)
         let session = NCSession.shared.getSession(account: account)
+        let isDirectoryEncrypted = NCUtilityFileSystem().isDirectoryE2EE(session: session, serverUrl: serverUrl)
 
         let okAction = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default, handler: { _ in
             guard let fileNameFolder = alertController.textFields?.first?.text else { return }
             if markE2ee {
+                if NCNetworking.shared.isOffline {
+                    return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_offline_not_allowed_"))
+                }
                 Task {
                     let createFolderResults = await NCNetworking.shared.createFolder(serverUrlFileName: serverUrl + "/" + fileNameFolder, account: session.account)
                     if createFolderResults.error == .success {
@@ -50,6 +54,15 @@ extension UIAlertController {
                         NCContentPresenter().showError(error: createFolderResults.error)
                     }
                 }
+            } else if isDirectoryEncrypted {
+                if NCNetworking.shared.isOffline {
+                    return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_offline_not_allowed_"))
+                }
+                #if !EXTENSION
+                Task {
+                    await NCNetworkingE2EECreateFolder().createFolder(fileName: fileNameFolder, serverUrl: serverUrl, withPush: true, sceneIdentifier: sceneIdentifier, session: session)
+                }
+                #endif
             } else {
                 let metadataForCreateFolder = NCManageDatabase.shared.createMetadata(fileName: fileNameFolder,
                                                                                      fileNameView: fileNameFolder,
@@ -122,9 +135,7 @@ extension UIAlertController {
             preferredStyle: .alert)
         if canDeleteServer {
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .destructive) { (_: UIAlertAction) in
-                for metadata in selectedMetadatas {
-                    NCNetworking.shared.deleteMetadata(metadata)
-                }
+                NCNetworking.shared.deleteMetadatas(selectedMetadatas, sceneIdentifier: sceneIdentifier)
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
                 completion(false)
             })
@@ -202,24 +213,17 @@ extension UIAlertController {
         let alertController = UIAlertController(title: NSLocalizedString("_rename_", comment: ""), message: nil, preferredStyle: .alert)
 
         let okAction = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default, handler: { _ in
-            guard let newFileName = alertController.textFields?.first?.text else { return }
+            guard let fileNameNew = alertController.textFields?.first?.text else { return }
 
             // verify if already exists
-            if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, newFileName)) != nil {
+            if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameNew)) != nil {
                 NCContentPresenter().showError(error: NKError(errorCode: 0, errorDescription: "_rename_already_exists_"))
                 return
             }
 
-            NCActivityIndicator.shared.start()
+            NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew)
 
-            NCNetworking.shared.renameMetadata(metadata, fileNameNew: newFileName) { error in
-
-                NCActivityIndicator.shared.stop()
-
-                if error != .success {
-                    NCContentPresenter().showError(error: error)
-                }
-            }
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": metadata.serverUrl])
         })
 
         // text field is initially empty, no action
@@ -227,7 +231,7 @@ extension UIAlertController {
         let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel)
 
         alertController.addTextField { textField in
-            textField.text = metadata.fileName
+            textField.text = metadata.fileNameView
             textField.autocapitalizationType = .words
         }
 

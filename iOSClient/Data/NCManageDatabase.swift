@@ -42,7 +42,7 @@ class NCManageDatabase: NSObject {
 
     override init() {
         func migrationSchema(_ migration: Migration, _ oldSchemaVersion: UInt64) {
-            if oldSchemaVersion < 359 {
+            if oldSchemaVersion < 360 {
                 migration.deleteData(forType: tableMetadata.className())
                 migration.enumerateObjects(ofType: tableDirectory.className()) { _, newObject in
                     newObject?["etag"] = ""
@@ -51,11 +51,11 @@ class NCManageDatabase: NSObject {
         }
 
         func compactDB(_ totalBytes: Int, _ usedBytes: Int) -> Bool {
-            // totalBytes refers to the size of the file on disk in bytes (data + free space)
-            // usedBytes refers to the number of bytes used by data in the file
-            // Compact if the file is over 100MB in size and less than 50% 'used'
-            let oneHundredMB = 100 * 1024 * 1024
-            return (totalBytes > oneHundredMB) && (Double(usedBytes) / Double(totalBytes)) < 0.5
+            let usedPercentage = (Double(usedBytes) / Double(totalBytes)) * 100
+            /// Compact the database if more than 25% of the space is free
+            let shouldCompact = (usedPercentage < 75.0) && (totalBytes > 100 * 1024 * 1024)
+
+            return shouldCompact
         }
         var realm: Realm?
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)

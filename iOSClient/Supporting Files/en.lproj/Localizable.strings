@@ -608,6 +608,7 @@
 "_status_wait_upload_"          = "Waiting to upload";
 "_status_wait_create_folder_"   = "Waiting to create the folder";
 "_status_wait_delete_"          = "Waiting to delete";
+"_status_wait_rename_"          = "Waiting to rename";
 "_status_in_upload_"            = "In upload";
 "_status_uploading_"            = "Uploading";
 "_status_upload_error_"         = "Error, waiting to upload";
@@ -1025,11 +1026,13 @@
 "_maintenance_mode_"        = "Server is currently in maintenance mode";
 "_upload_foreground_msg_"   = "Do not close %@ to complete the transfer …";
 "_upload_background_msg_"   = "Files upload in progress …";
-"_offlinefolder_error_"     = "An error has occurred while creating the folder:\n%@.\n\nPlease resolve the issue as soon as possible.\n\nAll uploads are suspended until the problem is resolved.\n";
+"_create_folder_error_"     = "An error has occurred while creating the folder:\n%@.\n\nPlease resolve the issue as soon as possible.\n\nAll uploads are suspended until the problem is resolved.\n";
+"_rename_file_error_"       = "An error has occurred while renaming the file:\n%@.";
 "_creating_dir_progress_"   = "Creating directories in progress … keep the application active";
 "_creating_db_photo_progress"   = "Creating photo archive in progress … keep the application active";
 "_account_unauthorized_"    = "Warning, %@, you are not authorized, your account has been deleted, if you have changed your password, re-authenticate.";
 "_folder_offline_desc_"     = "Even without an internet connection, you can organize your folders, create files. Once you're back online, your pending actions will automatically sync.";
+"_offline_not_allowed_"     = "This operation is not allowed in offline mode";
 
 // Tip
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails.";

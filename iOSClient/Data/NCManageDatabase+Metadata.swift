@@ -110,6 +110,7 @@ class tableMetadata: Object {
     @objc dynamic var richWorkspace: String?
     @objc dynamic var sceneIdentifier: String?
     @objc dynamic var serverUrl = ""
+    @objc dynamic var serveUrlFileName = ""
     @objc dynamic var session = ""
     @objc dynamic var sessionDate: Date?
     @objc dynamic var sessionError = ""
@@ -392,6 +393,7 @@ extension NCManageDatabase {
         metadata.richWorkspace = file.richWorkspace
         metadata.resourceType = file.resourceType
         metadata.serverUrl = file.serverUrl
+        metadata.serveUrlFileName = file.serverUrl +  "/" + file.fileName
         metadata.sharePermissionsCollaborationServices = file.sharePermissionsCollaborationServices
         for element in file.sharePermissionsCloudMesh {
             metadata.sharePermissionsCloudMesh.append(element)
@@ -514,6 +516,7 @@ extension NCManageDatabase {
         metadata.ocIdTransfer = ocId
         metadata.permissions = "RGDNVW"
         metadata.serverUrl = serverUrl
+        metadata.serveUrlFileName = serverUrl + "/" + fileName
         metadata.subline = subline
         metadata.uploadDate = Date() as NSDate
         metadata.url = url
@@ -552,18 +555,16 @@ extension NCManageDatabase {
 
     @discardableResult
     func addMetadata(_ metadata: tableMetadata) -> tableMetadata? {
-        let result = tableMetadata(value: metadata)
-
         do {
             let realm = try Realm()
             try realm.write {
-                realm.add(result, update: .all)
+                realm.add(tableMetadata(value: metadata), update: .all)
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
             return nil
         }
-        return result
+        return tableMetadata(value: metadata)
     }
 
     func addMetadatas(_ metadatas: [tableMetadata]) {
@@ -614,17 +615,111 @@ extension NCManageDatabase {
         }
     }
 
-    func renameMetadata(fileNameTo: String, ocId: String, account: String) {
+    func renameMetadata(fileNameNew: String, ocId: String, status: Int = NCGlobal.shared.metadataStatusNormal) {
         do {
             let realm = try Realm()
             try realm.write {
                 if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
-                    let resultsType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileNameTo, mimeType: "", directory: result.directory, account: account)
-                    result.fileName = fileNameTo
-                    result.fileNameView = fileNameTo
+                    let fileNameView = result.fileNameView
+                    let fileIdMOV = result.livePhotoFile
+                    let directoryServerUrl = self.utilityFileSystem.stringAppendServerUrl(result.serverUrl, addFileName: fileNameView)
+                    let resultsType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileNameNew, mimeType: "", directory: result.directory, account: result.account)
+
+                    result.fileName = fileNameNew
+                    result.fileNameView = fileNameNew
                     result.iconName = resultsType.iconName
                     result.contentType = resultsType.mimeType
                     result.classFile = resultsType.classFile
+                    result.status = status
+
+                    if result.directory,
+                       let resultDirectory = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", result.account, directoryServerUrl).first {
+                        let serverUrlTo = self.utilityFileSystem.stringAppendServerUrl(result.serverUrl, addFileName: fileNameNew)
+
+                        resultDirectory.serverUrl = serverUrlTo
+                    } else {
+                        let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId) + "/" + fileNameView
+                        let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId) + "/" + fileNameNew
+
+                        self.utilityFileSystem.moveFile(atPath: atPath, toPath: toPath)
+                    }
+
+                    if result.isLivePhoto,
+                       let resultMOV = realm.objects(tableMetadata.self).filter("fileId == %@ AND account == %@", fileIdMOV, result.account).first {
+                        let fileNameView = resultMOV.fileNameView
+                        let fileName = (fileNameNew as NSString).deletingPathExtension
+                        let ext = (resultMOV.fileName as NSString).pathExtension
+                        resultMOV.fileName = fileName + "." + ext
+                        resultMOV.fileNameView = fileName + "." + ext
+
+                        let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(resultMOV.ocId) + "/" + fileNameView
+                        let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(resultMOV.ocId) + "/" + fileName + "." + ext
+
+                        self.utilityFileSystem.moveFile(atPath: atPath, toPath: toPath)
+                    }
+                }
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
+        }
+    }
+
+    func restoreMetadataFileName(ocId: String) {
+        do {
+            let realm = try Realm()
+            try realm.write {
+                if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first,
+                   let encodedURLString = result.serveUrlFileName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+                   let url = URL(string: encodedURLString) {
+                    let fileIdMOV = result.livePhotoFile
+                    let directoryServerUrl = self.utilityFileSystem.stringAppendServerUrl(result.serverUrl, addFileName: result.fileNameView)
+                    let lastPathComponent = url.lastPathComponent
+                    let fileName = lastPathComponent.removingPercentEncoding ?? lastPathComponent
+                    let fileNameView = result.fileNameView
+
+                    result.fileName = fileName
+                    result.fileNameView = fileName
+                    result.status = NCGlobal.shared.metadataStatusNormal
+
+                    if result.directory,
+                       let resultDirectory = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", result.account, directoryServerUrl).first {
+                        let serverUrlTo = self.utilityFileSystem.stringAppendServerUrl(result.serverUrl, addFileName: fileName)
+
+                        resultDirectory.serverUrl = serverUrlTo
+                    } else {
+                        let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId) + "/" + fileNameView
+                        let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(result.ocId) + "/" + fileName
+
+                        self.utilityFileSystem.moveFile(atPath: atPath, toPath: toPath)
+                    }
+
+                    if result.isLivePhoto,
+                       let resultMOV = realm.objects(tableMetadata.self).filter("fileId == %@ AND account == %@", fileIdMOV, result.account).first {
+                        let fileNameView = resultMOV.fileNameView
+                        let fileName = (fileName as NSString).deletingPathExtension
+                        let ext = (resultMOV.fileName as NSString).pathExtension
+                        resultMOV.fileName = fileName + "." + ext
+                        resultMOV.fileNameView = fileName + "." + ext
+
+                        let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(resultMOV.ocId) + "/" + fileNameView
+                        let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(resultMOV.ocId) + "/" + fileName + "." + ext
+
+                        self.utilityFileSystem.moveFile(atPath: atPath, toPath: toPath)
+                    }
+                }
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
+        }
+    }
+
+    func setMetadataServeUrlFileNameStatusNormal(ocId: String) {
+        do {
+            let realm = try Realm()
+            try realm.write {
+                if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
+                    result.serveUrlFileName = self.utilityFileSystem.stringAppendServerUrl(result.serverUrl, addFileName: result.fileName)
+                    result.status = NCGlobal.shared.metadataStatusNormal
                 }
             }
         } catch let error {

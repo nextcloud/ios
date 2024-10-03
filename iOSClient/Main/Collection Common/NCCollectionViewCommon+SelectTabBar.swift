@@ -44,11 +44,8 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
         let canDeleteServer = metadatas.allSatisfy { !$0.lock }
 
         if canDeleteServer {
-            let copyMetadatas = metadatas
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .destructive) { _ in
-                for metadata in copyMetadatas {
-                    NCNetworking.shared.deleteMetadata(metadata)
-                }
+                NCNetworking.shared.deleteMetadatas(metadatas, sceneIdentifier: self.controller?.sceneIdentifier)
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
                 self.setEditMode(false)
             })

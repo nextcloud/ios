@@ -272,6 +272,7 @@ class NCGlobal: NSObject {
 
     let metadataStatusWaitCreateFolder: Int     = 10
     let metadataStatusWaitDelete: Int           = 11
+    let metadataStatusWaitRename: Int           = 12
 
     let metadataStatusInTransfer                = [-1, -2, 1, 2]
     let metadataStatusFileDown                  = [-1, -2, -3]
@@ -315,7 +316,7 @@ class NCGlobal: NSObject {
     let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: [ocId], error
     let notificationCenterMoveFile                              = "moveFile"                        // userInfo: [ocId], error, dragdrop
     let notificationCenterCopyFile                              = "copyFile"                        // userInfo: [ocId], error, dragdrop
-    let notificationCenterRenameFile                            = "renameFile"                      // userInfo: ocId, account
+    let notificationCenterRenameFile                            = "renameFile"                      // userInfo: serverUrl, account, error
     let notificationCenterFavoriteFile                          = "favoriteFile"                    // userInfo: ocId, serverUrl
     let notificationCenterFileExists                            = "fileExists"                      // userInfo: ocId, fileExists
 

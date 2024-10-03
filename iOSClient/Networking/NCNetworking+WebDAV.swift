@@ -308,13 +308,12 @@ extension NCNetworking {
 
     // MARK: - Delete
 
-    func tapHudDeleteCache() {
-        tapHudStopDeleteCache = true
+    func tapHudDelete() {
+        tapHudStopDelete = true
     }
 
     func deleteCache(_ metadata: tableMetadata, sceneIdentifier: String?) async -> (NKError) {
         let ncHud = NCHud()
-
         var num: Float = 0
 
         func numIncrement() -> Float {
@@ -335,24 +334,24 @@ extension NCNetworking {
             #endif
         }
 
-        self.tapHudStopDeleteCache = false
+        self.tapHudStopDelete = false
 
         if metadata.directory {
             #if !EXTENSION
             if let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier) {
                 await MainActor.run {
-                    ncHud.initHudRing(view: controller.view, tapToCancelDetailText: true, tapOperation: tapHudDeleteCache)
+                    ncHud.initHudRing(view: controller.view, tapToCancelDetailText: true, tapOperation: tapHudDelete)
                 }
             }
             #endif
             let serverUrl = metadata.serverUrl + "/" + metadata.fileName
             let metadatas = self.database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == false", metadata.account, serverUrl))
-            let numMetadatas = Float(metadatas.count)
+            let total = Float(metadatas.count)
             for metadata in metadatas {
                 deleteLocalFile(metadata: metadata)
                 let num = numIncrement()
-                ncHud.progress(num: num, total: numMetadatas)
-                if tapHudStopDeleteCache { break }
+                ncHud.progress(num: num, total: total)
+                if tapHudStopDelete { break }
             }
             #if !EXTENSION
             ncHud.dismiss()
@@ -364,118 +363,101 @@ extension NCNetworking {
         return .success
     }
 
-    func deleteMetadata(_ metadata: tableMetadata) {
-        let permission = NCUtility().permissionsContainsString(metadata.permissions, permissions: NCPermissions().permissionCanDelete)
-        if !metadata.permissions.isEmpty && permission == false {
-            NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_delete_file_"))
-            return
+    func deleteMetadatas(_ metadatas: [tableMetadata], sceneIdentifier: String?) {
+        var metadatasPlain: [tableMetadata] = []
+        var metadatasE2EE: [tableMetadata] = []
+        let ncHud = NCHud()
+        var num: Float = 0
+
+        func numIncrement() -> Float {
+            num += 1
+            return num
         }
 
-        if metadata.status == global.metadataStatusWaitCreateFolder {
-            let metadatas = database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@", metadata.account, metadata.serverUrl))
-            for metadata in metadatas {
-                database.deleteMetadataOcId(metadata.ocId)
-                utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+        for metadata in metadatas {
+            if metadata.isDirectoryE2EE {
+                metadatasE2EE.append(metadata)
+            } else {
+                metadatasPlain.append(metadata)
             }
-            return
         }
-        self.database.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusWaitDelete)
+
+#if !EXTENSION
+        if !metadatasE2EE.isEmpty {
+            if isOffline {
+                return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_offline_not_allowed_"))
+            }
+
+            self.tapHudStopDelete = false
+            let total = Float(metadatasE2EE.count)
+
+            Task {
+                if let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier) {
+                    await MainActor.run {
+                        ncHud.initHudRing(view: controller.view, tapToCancelDetailText: true, tapOperation: tapHudDelete)
+                    }
+                }
+
+                var ocIdDeleted: [String] = []
+                var error = NKError()
+                for metadata in metadatasE2EE where error == .success {
+                    error = await NCNetworkingE2EEDelete().delete(metadata: metadata)
+                    if error == .success {
+                        ocIdDeleted.append(metadata.ocId)
+                    }
+                    let num = numIncrement()
+                    ncHud.progress(num: num, total: total)
+                    if tapHudStopDelete { break }
+                }
+
+                ncHud.dismiss()
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocIdDeleted, "error": error])
+            }
+        }
+#endif
+
+        for metadata in metadatasPlain {
+            let permission = NCUtility().permissionsContainsString(metadata.permissions, permissions: NCPermissions().permissionCanDelete)
+            if !metadata.permissions.isEmpty && permission == false {
+                NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_delete_file_"))
+                return
+            }
+
+            if metadata.status == global.metadataStatusWaitCreateFolder {
+                let metadatas = database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@", metadata.account, metadata.serverUrl))
+                for metadata in metadatas {
+                    database.deleteMetadataOcId(metadata.ocId)
+                    utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+                }
+                return
+            }
+            self.database.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusWaitDelete)
+        }
     }
 
     // MARK: - Rename
 
-    func renameMetadata(_ metadata: tableMetadata,
-                        fileNameNew: String,
-                        completion: @escaping (_ error: NKError) -> Void) {
-        let metadataLive = self.database.getMetadataLivePhoto(metadata: metadata)
-        let fileNameNew = fileNameNew.trimmingCharacters(in: .whitespacesAndNewlines)
-        let fileNameNewLive = (fileNameNew as NSString).deletingPathExtension + ".mov"
+    func renameMetadata(_ metadata: tableMetadata, fileNameNew: String) {
+        let permission = utility.permissionsContainsString(metadata.permissions, permissions: NCPermissions().permissionCanRename)
+        if !metadata.permissions.isEmpty && permission == false {
+            NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_"))
+            return
+        }
 
-        if metadata.status == NCGlobal.shared.metadataStatusWaitCreateFolder {
-            metadata.fileName = fileNameNew
-            metadata.fileNameView = fileNameNew
-            self.database.addMetadata(metadata)
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterRenameFile, userInfo: ["ocId": metadata.ocId, "account": metadata.account])
-            completion(.success)
-        } else if metadata.isDirectoryE2EE {
+        if metadata.isDirectoryE2EE {
 #if !EXTENSION
+            if isOffline {
+                return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_offline_not_allowed_"))
+            }
             Task {
-                if let metadataLive = metadataLive {
-                    let error = await NCNetworkingE2EERename().rename(metadata: metadataLive, fileNameNew: fileNameNew)
-                    if error == .success {
-                        let error = await NCNetworkingE2EERename().rename(metadata: metadata, fileNameNew: fileNameNew)
-                        DispatchQueue.main.async { completion(error) }
-                    } else {
-                        DispatchQueue.main.async { completion(error) }
-                    }
-                } else {
-                    let error = await NCNetworkingE2EERename().rename(metadata: metadata, fileNameNew: fileNameNew)
-                    DispatchQueue.main.async { completion(error) }
+                let error = await NCNetworkingE2EERename().rename(metadata: metadata, fileNameNew: fileNameNew)
+                if error != .success {
+                    NCContentPresenter().showError(error: error)
                 }
             }
 #endif
         } else {
-            if let metadataLive, metadata.isNotFlaggedAsLivePhotoByServer {
-                renameMetadataPlain(metadataLive, fileNameNew: fileNameNewLive) { error in
-                    if error == .success {
-                        self.renameMetadataPlain(metadata, fileNameNew: fileNameNew, completion: completion)
-                    } else {
-                        completion(error)
-                    }
-                }
-            } else {
-                renameMetadataPlain(metadata, fileNameNew: fileNameNew, completion: completion)
-            }
-        }
-    }
-
-    private func renameMetadataPlain(_ metadata: tableMetadata,
-                                     fileNameNew: String,
-                                     completion: @escaping (_ error: NKError) -> Void) {
-        let permission = utility.permissionsContainsString(metadata.permissions, permissions: NCPermissions().permissionCanRename)
-        if !metadata.permissions.isEmpty && !permission {
-            return completion(NKError(errorCode: self.global.errorInternalError, errorDescription: "_no_permission_modify_file_"))
-        }
-        let fileName = utility.removeForbiddenCharacters(fileNameNew)
-        if fileName != fileNameNew {
-            let errorDescription = String(format: NSLocalizedString("_forbidden_characters_", comment: ""), self.global.forbiddenCharacters.joined(separator: " "))
-            let error = NKError(errorCode: self.global.errorConflict, errorDescription: errorDescription)
-            return completion(error)
-        }
-        let fileNameNew = fileName
-        if fileNameNew.isEmpty || fileNameNew == metadata.fileNameView {
-            return completion(NKError())
-        }
-        let fileNamePath = metadata.serverUrl + "/" + metadata.fileName
-        let fileNameToPath = metadata.serverUrl + "/" + fileNameNew
-
-        NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNamePath, serverUrlFileNameDestination: fileNameToPath, overwrite: false, account: metadata.account) { account, error in
-            if error == .success {
-                self.database.renameMetadata(fileNameTo: fileNameNew, ocId: metadata.ocId, account: account)
-                if metadata.directory {
-                    let serverUrl = self.utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName)
-                    let serverUrlTo = self.utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: fileNameNew)
-                    if let directory = self.database.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
-                        self.database.setDirectory(serverUrl: serverUrl,
-                                                   serverUrlTo: serverUrlTo,
-                                                   etag: "",
-                                                   encrypted: directory.e2eEncrypted,
-                                                   account: metadata.account)
-                    }
-                } else {
-                    if (metadata.fileName as NSString).pathExtension != (fileNameNew as NSString).pathExtension {
-                        let path = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId)
-                        self.utilityFileSystem.removeFile(atPath: path)
-                    } else {
-                        self.database.setLocalFile(ocId: metadata.ocId, fileName: fileNameNew)
-                        let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + metadata.fileName
-                        let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId) + "/" + fileNameNew
-                        self.utilityFileSystem.moveFile(atPath: atPath, toPath: toPath)
-                    }
-                }
-                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterRenameFile, userInfo: ["ocId": metadata.ocId, "account": metadata.account])
-            }
-            completion(error)
+            self.database.renameMetadata(fileNameNew: fileNameNew, ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusWaitRename)
         }
     }
 

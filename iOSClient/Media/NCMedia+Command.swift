@@ -190,6 +190,7 @@ extension NCMedia: NCMediaSelectTabBarDelegate {
         let ocIds = self.fileSelect.map { $0 }
         var alertStyle = UIAlertController.Style.actionSheet
         var indexPaths: [IndexPath] = []
+        var metadatas: [tableMetadata] = []
 
         if UIDevice.current.userInterfaceIdiom == .pad { alertStyle = .alert }
 
@@ -203,9 +204,11 @@ extension NCMedia: NCMediaSelectTabBarDelegate {
 
                 for ocId in ocIds {
                     if let metadata = self.database.getMetadataFromOcId(ocId) {
-                        NCNetworking.shared.deleteMetadata(metadata)
+                        metadatas.append(metadata)
                     }
                 }
+
+                NCNetworking.shared.deleteMetadatas(metadatas, sceneIdentifier: self.controller?.sceneIdentifier)
 
                 for index in indices {
                     let indexPath = IndexPath(row: index, section: 0)

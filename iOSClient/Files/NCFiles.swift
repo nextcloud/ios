@@ -175,6 +175,8 @@ class NCFiles: NCCollectionViewCommon {
                         } else if self.dataSource.isEmpty() {
                             self.collectionView.reloadData()
                         }
+                    } else if self.dataSource.isEmpty() {
+                        self.collectionView.reloadData()
                     }
                 }
             }

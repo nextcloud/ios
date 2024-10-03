@@ -415,8 +415,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func renameFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let account = userInfo["account"] as? String,
-              account == session.account
+              let serverUrl = userInfo["serverUrl"] as? String,
+              let error = userInfo["error"] as? NKError,
+              account == session.account,
+              serverUrl == self.serverUrl
         else { return }
+
+        if error != .success {
+            NCContentPresenter().showError(error: error)
+        }
 
         reloadDataSource()
     }

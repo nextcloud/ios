@@ -75,7 +75,7 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
     weak var certificateDelegate: ClientCertificateDelegate?
     var p12Data: Data?
     var p12Password: String?
-    var tapHudStopDeleteCache = false
+    var tapHudStopDelete = false
 
     var isOffline: Bool {
         return networkReachability == NKCommon.TypeReachability.notReachable || networkReachability == NKCommon.TypeReachability.unknown
