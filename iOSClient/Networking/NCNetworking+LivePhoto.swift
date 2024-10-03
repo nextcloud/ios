@@ -36,10 +36,10 @@ extension NCNetworking {
                                                                           metadata.livePhotoFile)) else {
             metadata.livePhotoFile = ""
             self.database.addMetadata(metadata)
-            return  NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadedLivePhoto,
-                                                                object: nil,
-                                                                userInfo: aUserInfo,
-                                                                second: 0.5)
+            return NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadedLivePhoto,
+                                                               object: nil,
+                                                               userInfo: aUserInfo,
+                                                               second: 0.5)
         }
         if metadata1.status != self.global.metadataStatusNormal {
             return NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Upload set LivePhoto for files (NO Status Normal) " + (metadata1.fileName as NSString).deletingPathExtension)

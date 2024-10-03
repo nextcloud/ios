@@ -188,7 +188,9 @@ class NCFiles: NCCollectionViewCommon {
 
         NCNetworking.shared.readFile(serverUrlFileName: serverUrl, account: session.account) { task in
             self.dataSourceTask = task
-            self.collectionView.reloadData()
+            if self.dataSource.isEmpty() {
+                self.collectionView.reloadData()
+            }
         } completion: { account, metadata, error in
             guard error == .success, let metadata else {
                 return completion(nil, nil, false, error)
@@ -202,7 +204,9 @@ class NCFiles: NCCollectionViewCommon {
                                            account: metadata.account,
                                            queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue) { task in
                 self.dataSourceTask = task
-                self.collectionView.reloadData()
+                if self.dataSource.isEmpty() {
+                    self.collectionView.reloadData()
+                }
             } completion: { account, metadataFolder, metadatas, error in
                 guard error == .success else {
                     return completion(tableDirectory, nil, false, error)

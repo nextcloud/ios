@@ -73,7 +73,9 @@ class NCFavorite: NCCollectionViewCommon {
 
         NextcloudKit.shared.listingFavorites(showHiddenFiles: NCKeychain().showHiddenFiles, account: session.account) { task in
             self.dataSourceTask = task
-            self.collectionView.reloadData()
+            if self.dataSource.isEmpty() {
+                self.collectionView.reloadData()
+            }
         } completion: { account, files, _, error in
             if error == .success, let files {
                 self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in

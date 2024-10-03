@@ -76,7 +76,9 @@ class NCGroupfolders: NCCollectionViewCommon {
 
         NextcloudKit.shared.getGroupfolders(account: session.account) { task in
             self.dataSourceTask = task
-            self.collectionView.reloadData()
+            if self.dataSource.isEmpty() {
+                self.collectionView.reloadData()
+            }
         } completion: { account, results, _, error in
             if error == .success, let groupfolders = results {
                 self.database.addGroupfolders(account: account, groupfolders: groupfolders)
