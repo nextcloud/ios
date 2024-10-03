@@ -157,7 +157,7 @@ class NCContextMenu: NSObject {
             }
             let alertController = UIAlertController(title: nil, message: nil, preferredStyle: alertStyle)
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_delete_file_", comment: ""), style: .destructive) { _ in
-                NCNetworking.shared.deleteMetadata(metadata)
+                NCNetworking.shared.deleteMetadatas([metadata], sceneIdentifier: sceneIdentifier)
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
             })
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { _ in })

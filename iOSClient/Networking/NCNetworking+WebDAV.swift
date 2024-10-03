@@ -308,13 +308,12 @@ extension NCNetworking {
 
     // MARK: - Delete
 
-    func tapHudDeleteCache() {
-        tapHudStopDeleteCache = true
+    func tapHudDelete() {
+        tapHudStopDelete = true
     }
 
     func deleteCache(_ metadata: tableMetadata, sceneIdentifier: String?) async -> (NKError) {
         let ncHud = NCHud()
-
         var num: Float = 0
 
         func numIncrement() -> Float {
@@ -335,24 +334,24 @@ extension NCNetworking {
             #endif
         }
 
-        self.tapHudStopDeleteCache = false
+        self.tapHudStopDelete = false
 
         if metadata.directory {
             #if !EXTENSION
             if let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier) {
                 await MainActor.run {
-                    ncHud.initHudRing(view: controller.view, tapToCancelDetailText: true, tapOperation: tapHudDeleteCache)
+                    ncHud.initHudRing(view: controller.view, tapToCancelDetailText: true, tapOperation: tapHudDelete)
                 }
             }
             #endif
             let serverUrl = metadata.serverUrl + "/" + metadata.fileName
             let metadatas = self.database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == false", metadata.account, serverUrl))
-            let numMetadatas = Float(metadatas.count)
+            let total = Float(metadatas.count)
             for metadata in metadatas {
                 deleteLocalFile(metadata: metadata)
                 let num = numIncrement()
-                ncHud.progress(num: num, total: numMetadatas)
-                if tapHudStopDeleteCache { break }
+                ncHud.progress(num: num, total: total)
+                if tapHudStopDelete { break }
             }
             #if !EXTENSION
             ncHud.dismiss()
@@ -364,20 +363,61 @@ extension NCNetworking {
         return .success
     }
 
-    func deleteMetadata(_ metadata: tableMetadata) {
-        let permission = NCUtility().permissionsContainsString(metadata.permissions, permissions: NCPermissions().permissionCanDelete)
-        if !metadata.permissions.isEmpty && permission == false {
-            NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_delete_file_"))
-            return
+    func deleteMetadatas(_ metadatas: [tableMetadata], sceneIdentifier: String?) {
+        var metadatasPlain: [tableMetadata] = []
+        var metadatasE2EE: [tableMetadata] = []
+        let ncHud = NCHud()
+        var num: Float = 0
+
+        func numIncrement() -> Float {
+            num += 1
+            return num
         }
 
-        if metadata.isDirectoryE2EE, NCNetworking.shared.isOnline {
-            #if !EXTENSION
-            Task {
-                return await NCNetworkingE2EEDelete().delete(metadata: metadata)
+        for metadata in metadatas {
+            if metadata.isDirectoryE2EE {
+                metadatasE2EE.append(metadata)
+            } else {
+                metadatasPlain.append(metadata)
             }
-            #endif
-        } else {
+        }
+
+#if !EXTENSION
+        if !metadatasE2EE.isEmpty {
+            self.tapHudStopDelete = false
+            let total = Float(metadatasE2EE.count)
+
+            Task {
+                if let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier) {
+                    await MainActor.run {
+                        ncHud.initHudRing(view: controller.view, tapToCancelDetailText: true, tapOperation: tapHudDelete)
+                    }
+                }
+
+                var ocIdDeleted: [String] = []
+                var error = NKError()
+                for metadata in metadatasE2EE where error == .success {
+                    error = await NCNetworkingE2EEDelete().delete(metadata: metadata)
+                    if error == .success {
+                        ocIdDeleted.append(metadata.ocId)
+                    }
+                    let num = numIncrement()
+                    ncHud.progress(num: num, total: total)
+                    if tapHudStopDelete { break }
+                }
+
+                ncHud.dismiss()
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocIdDeleted, "error": error])
+            }
+        }
+#endif
+
+        for metadata in metadatasPlain {
+            let permission = NCUtility().permissionsContainsString(metadata.permissions, permissions: NCPermissions().permissionCanDelete)
+            if !metadata.permissions.isEmpty && permission == false {
+                NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_delete_file_"))
+                return
+            }
 
             if metadata.status == global.metadataStatusWaitCreateFolder {
                 let metadatas = database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@", metadata.account, metadata.serverUrl))
