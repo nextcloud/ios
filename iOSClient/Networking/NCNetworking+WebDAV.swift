@@ -384,6 +384,10 @@ extension NCNetworking {
 
 #if !EXTENSION
         if !metadatasE2EE.isEmpty {
+            if isOffline {
+                return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_offline_not_allowed_"))
+            }
+
             self.tapHudStopDelete = false
             let total = Float(metadatasE2EE.count)
 
@@ -440,7 +444,21 @@ extension NCNetworking {
             return
         }
 
-        self.database.renameMetadata(fileNameNew: fileNameNew, ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusWaitRename)
+        if metadata.isDirectoryE2EE {
+#if !EXTENSION
+            if isOffline {
+                return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_offline_not_allowed_"))
+            }
+            Task {
+                let error = await NCNetworkingE2EERename().rename(metadata: metadata, fileNameNew: fileNameNew)
+                if error != .success {
+                    NCContentPresenter().showError(error: error)
+                }
+            }
+#endif
+        } else {
+            self.database.renameMetadata(fileNameNew: fileNameNew, ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusWaitRename)
+        }
     }
 
     // MARK: - Move

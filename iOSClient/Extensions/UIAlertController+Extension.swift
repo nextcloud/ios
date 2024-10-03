@@ -215,16 +215,7 @@ extension UIAlertController {
                 return
             }
 
-            if metadata.isDirectoryE2EE, NCNetworking.shared.isOnline {
-                Task {
-                    let error = await NCNetworkingE2EERename().rename(metadata: metadata, fileNameNew: fileNameNew)
-                    if error != .success {
-                        NCContentPresenter().showError(error: error)
-                    }
-                }
-            } else {
-                NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew)
-            }
+            NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew)
 
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": metadata.serverUrl])
         })
