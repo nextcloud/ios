@@ -96,13 +96,19 @@ struct TabButton: View {
                 .frame(maxWidth: .infinity)
             }
         })
-		.onTapGesture { 
-			// ios 15 fix: didn't tap on ios 15
-			action?()
-		}
         .frame(maxWidth: .infinity)
         .buttonStyle(CustomBackgroundOnPressButtonStyle(isDisabled: isDisabled))
         .disabled(isDisabled)
+		.complexModifier{ view in
+			// ios 15 fix: didn't tap on ios 15
+			if #available(iOS 16.0, *) {
+				view
+			} else {
+				view.onTapGesture {
+					action?()
+				}
+			}
+		}
     }
 }
 
