@@ -105,6 +105,8 @@ class NCNetworkingE2EEDelete: NSObject {
         //
         await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
 
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": [metadata.ocId], "error": NKError()])
+
         return NKError()
     }
 }

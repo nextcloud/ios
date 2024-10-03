@@ -371,15 +371,24 @@ extension NCNetworking {
             return
         }
 
-        if metadata.status == global.metadataStatusWaitCreateFolder {
-            let metadatas = database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@", metadata.account, metadata.serverUrl))
-            for metadata in metadatas {
-                database.deleteMetadataOcId(metadata.ocId)
-                utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+        if metadata.isDirectoryE2EE, NCNetworking.shared.isOnline {
+            #if !EXTENSION
+            Task {
+                return await NCNetworkingE2EEDelete().delete(metadata: metadata)
             }
-            return
+            #endif
+        } else {
+
+            if metadata.status == global.metadataStatusWaitCreateFolder {
+                let metadatas = database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@", metadata.account, metadata.serverUrl))
+                for metadata in metadatas {
+                    database.deleteMetadataOcId(metadata.ocId)
+                    utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+                }
+                return
+            }
+            self.database.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusWaitDelete)
         }
-        self.database.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusWaitDelete)
     }
 
     // MARK: - Rename
