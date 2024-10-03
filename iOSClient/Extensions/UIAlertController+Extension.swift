@@ -234,7 +234,7 @@ extension UIAlertController {
         let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel)
 
         alertController.addTextField { textField in
-            textField.text = metadata.fileName
+            textField.text = metadata.fileNameView
             textField.autocapitalizationType = .words
         }
 
