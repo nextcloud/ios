@@ -155,7 +155,7 @@ class NCNetworkingProcess {
         ///
         if let metadatasWaitCreateFolder = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitCreateFolder), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitCreateFolder.isEmpty {
             for metadata in metadatasWaitCreateFolder {
-                let error = await NCNetworking.shared.createFolderOffline(metadata: metadata)
+                let error = await NCNetworking.shared.createFolder(metadata: metadata)
                 if error != .success {
                     if metadata.sessionError.isEmpty {
                         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName

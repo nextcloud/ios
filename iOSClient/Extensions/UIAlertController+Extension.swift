@@ -35,6 +35,7 @@ extension UIAlertController {
     static func createFolder(serverUrl: String, account: String, markE2ee: Bool = false, sceneIdentifier: String? = nil, completion: ((_ error: NKError) -> Void)? = nil) -> UIAlertController {
         let alertController = UIAlertController(title: NSLocalizedString("_create_folder_", comment: ""), message: nil, preferredStyle: .alert)
         let session = NCSession.shared.getSession(account: account)
+        let isDirectoryEncrypted = NCUtilityFileSystem().isDirectoryE2EE(session: session, serverUrl: serverUrl)
 
         let okAction = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default, handler: { _ in
             guard let fileNameFolder = alertController.textFields?.first?.text else { return }
@@ -50,6 +51,12 @@ extension UIAlertController {
                         NCContentPresenter().showError(error: createFolderResults.error)
                     }
                 }
+            } else if isDirectoryEncrypted {
+                #if !EXTENSION
+                Task {
+                    await NCNetworkingE2EECreateFolder().createFolder(fileName: fileNameFolder, serverUrl: serverUrl, withPush: true, sceneIdentifier: sceneIdentifier, session: session)
+                }
+                #endif
             } else {
                 let metadataForCreateFolder = NCManageDatabase.shared.createMetadata(fileName: fileNameFolder,
                                                                                      fileNameView: fileNameFolder,
