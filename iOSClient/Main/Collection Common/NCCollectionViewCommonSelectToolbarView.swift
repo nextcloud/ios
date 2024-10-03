@@ -99,6 +99,16 @@ struct TabButton: View {
         .frame(maxWidth: .infinity)
         .buttonStyle(CustomBackgroundOnPressButtonStyle(isDisabled: isDisabled))
         .disabled(isDisabled)
+		.complexModifier{ view in
+			// ios 15 fix: didn't tap on ios 15
+			if #available(iOS 16.0, *) {
+				view
+			} else {
+				view.onTapGesture {
+					action?()
+				}
+			}
+		}
     }
 }
 
@@ -108,8 +118,8 @@ private struct IconWithText: View {
     var label: String
     
     var body: some View {
-        var iconWidth = CGFloat(sizeClass == .compact ? 28 : 34)
-        var iconHeight = iconWidth - 10
+		let iconWidth = CGFloat(sizeClass == .compact ? 28 : 34)
+		let iconHeight = iconWidth - 10
         Image(image)
             .resizable()
             .font(Font.system(.body).weight(.light))

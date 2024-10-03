@@ -421,9 +421,7 @@ struct UploadScanDocumentView: View {
                         }
                     }
                     .applyGlobalFormSectionStyle()
-                    .complexModifier { view in
-                        view.listRowSeparator(.hidden)
-                    }
+                    .listRowSeparator(.hidden)
 
                     Section {
                         VStack(spacing: 20) {
@@ -453,9 +451,6 @@ struct UploadScanDocumentView: View {
                         }
                     }
                     .applyGlobalFormSectionStyle()
-                    .complexModifier { view in
-                        view.listRowSeparator(.hidden)
-                    }
 
                     Section(header: Text(NSLocalizedString("_quality_image_title_", comment: ""))) {
                         VStack {
@@ -470,9 +465,7 @@ struct UploadScanDocumentView: View {
                             .frame(maxWidth: .infinity, minHeight: geo.size.height / 2)
                     }
                     .applyGlobalFormSectionStyle()
-                    .complexModifier { view in
-                        view.listRowSeparator(.hidden)
-                    }
+                    .listRowSeparator(.hidden)
                 }
                 HUDView(showHUD: $uploadScanDocument.showHUD, textLabel: NSLocalizedString("_wait_", comment: ""), image: "doc.badge.arrow.up")
                     .offset(y: uploadScanDocument.showHUD ? 5 : -200)

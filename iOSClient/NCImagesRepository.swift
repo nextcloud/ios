@@ -75,7 +75,7 @@ class NCImagesRepository: NSObject {
     }
     
     static var trash: UIImage {
-        UIImage(resource: .deleted)
+        UIImage(resource: .deleted).withRenderingMode(.alwaysTemplate)
     }
     
 	// menu
