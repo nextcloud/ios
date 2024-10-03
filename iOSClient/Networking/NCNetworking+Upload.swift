@@ -345,7 +345,9 @@ extension NCNetworking {
                                                         "error": error]
                     if metadata.isLivePhoto,
                        NCCapabilities.shared.getCapabilities(account: metadata.account).isLivePhotoServerAvailable {
-                        self.uploadLivePhoto(metadata: metadata, userInfo: userInfo)
+                        DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
+                            self.uploadLivePhoto(metadata: metadata, userInfo: userInfo)
+                        }
                     } else {
                         NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadedFile,
                                                                     object: nil,
