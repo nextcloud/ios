@@ -142,7 +142,9 @@ class NCRecent: NCCollectionViewCommon {
                                               showHiddenFiles: NCKeychain().showHiddenFiles,
                                               account: session.account) { task in
             self.dataSourceTask = task
-            self.collectionView.reloadData()
+            if self.dataSource.isEmpty() {
+                self.collectionView.reloadData()
+            }
         } completion: { _, files, _, error in
             if error == .success, let files {
                 self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in

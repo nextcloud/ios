@@ -67,7 +67,9 @@ class NCShares: NCCollectionViewCommon {
                 let serverUrlFileName = share.serverUrl + "/" + share.fileName
                 NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: session.account) { task in
                     self.dataSourceTask = task
-                    self.collectionView.reloadData()
+                    if self.dataSource.isEmpty() {
+                        self.collectionView.reloadData()
+                    }
                 } completion: { _, metadata, _ in
                     if let metadata {
                         self.database.addMetadata(metadata)
@@ -91,7 +93,9 @@ class NCShares: NCCollectionViewCommon {
 
         NextcloudKit.shared.readShares(parameters: NKShareParameter(), account: session.account) { task in
             self.dataSourceTask = task
-            self.collectionView.reloadData()
+            if self.dataSource.isEmpty() {
+                self.collectionView.reloadData()
+            }
         } completion: { account, shares, _, error in
             if error == .success {
                 self.database.deleteTableShare(account: account)

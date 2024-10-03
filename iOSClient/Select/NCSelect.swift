@@ -482,7 +482,9 @@ extension NCSelect {
 
         NCNetworking.shared.readFolder(serverUrl: serverUrl, account: session.account, queue: .main) { task in
             self.dataSourceTask = task
-            self.collectionView.reloadData()
+            if self.dataSource.isEmpty() {
+                self.collectionView.reloadData()
+            }
         } completion: { _, _, _, _ in
             let results = self.database.getResultsMetadatasPredicate(predicate, layoutForView: NCDBLayoutForView())
 
