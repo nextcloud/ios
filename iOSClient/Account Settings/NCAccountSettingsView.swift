@@ -42,7 +42,7 @@ struct NCAccountSettingsView: View {
                   Section {
                     if let activeAccount = model.activeAccount {
                         let userStatus = model.getUserStatus()
-                        AccountView(account: activeAccount, userStatus: userStatus) .listRowSeparator(.hidden)
+                        AccountView(account: activeAccount, userStatus: userStatus).listRowSeparator(.hidden)
                         PersonalDataView(account: activeAccount)
                     }
                     changeAliasSection
@@ -224,14 +224,13 @@ extension NCAccountSettingsView {
         }, label: {
             
             HStack {
-                Image(uiImage: NCImagesRepository.signOut)
+                Image(uiImage: NCImagesRepository.trash)
                     .resizable()
                     .scaledToFit()
-                    .font(Font.system(.body).weight(.light))
                     .frame(width: 20, height: 20)
                     .padding(.trailing, 10)
                     .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
-                Text(NSLocalizedString("_sign_out_of_all_accounts_", tableName: nil, bundle: Bundle.main, value: "Sign out of all accounts", comment: ""))
+                Text(NSLocalizedString("_remove_local_account_", comment: ""))
                     .lineLimit(1)
                     .truncationMode(.middle)
                     .foregroundStyle(Color(NCBrandColor.shared.textColor))
@@ -239,9 +238,9 @@ extension NCAccountSettingsView {
             }
             .font(.system(size: 16))
         })
-        .alert(NSLocalizedString("_want_sign_out_of_all_accounts_", tableName: nil, bundle: Bundle.main, value: "Do you want to sign out of all accounts?", comment: ""), isPresented: $showDeleteAccountAlert) {
-            Button(NSLocalizedString("_sign_out_of_all_accounts_", tableName: nil, bundle: Bundle.main, value: "Sign out of all accounts", comment: ""), role: .destructive) {
-                model.deleteAllAccounts()
+        .alert(NSLocalizedString("_want_delete_account_", comment: ""), isPresented: $showDeleteAccountAlert) {
+            Button(NSLocalizedString("_remove_local_account_", comment: ""), role: .destructive) {
+                model.deleteAccount()
             }
             Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel) { }
         }

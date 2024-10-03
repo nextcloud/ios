@@ -74,8 +74,8 @@ class NCImagesRepository: NSObject {
             colors: [NCBrandColor.shared.iconImageColor])
     }
     
-    static var signOut: UIImage {
-        UIImage(resource: .signOut)
+    static var trash: UIImage {
+        UIImage(resource: .deleted)
     }
     
 	// menu
