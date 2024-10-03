@@ -40,6 +40,9 @@ extension UIAlertController {
         let okAction = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default, handler: { _ in
             guard let fileNameFolder = alertController.textFields?.first?.text else { return }
             if markE2ee {
+                if NCNetworking.shared.isOffline {
+                    return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_offline_not_allowed_"))
+                }
                 Task {
                     let createFolderResults = await NCNetworking.shared.createFolder(serverUrlFileName: serverUrl + "/" + fileNameFolder, account: session.account)
                     if createFolderResults.error == .success {
@@ -52,6 +55,9 @@ extension UIAlertController {
                     }
                 }
             } else if isDirectoryEncrypted {
+                if NCNetworking.shared.isOffline {
+                    return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_offline_not_allowed_"))
+                }
                 #if !EXTENSION
                 Task {
                     await NCNetworkingE2EECreateFolder().createFolder(fileName: fileNameFolder, serverUrl: serverUrl, withPush: true, sceneIdentifier: sceneIdentifier, session: session)
