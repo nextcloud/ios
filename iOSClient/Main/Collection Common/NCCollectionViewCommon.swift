@@ -236,6 +236,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NotificationCenter.default.addObserver(self, selector: #selector(closeRichWorkspaceWebView), name: NSNotification.Name(rawValue: global.notificationCenterCloseRichWorkspaceWebView), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(changeStatusFolderE2EE(_:)), name: NSNotification.Name(rawValue: global.notificationCenterChangeStatusFolderE2EE), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadAvatar(_:)), name: NSNotification.Name(rawValue: global.notificationCenterReloadAvatar), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(changeLayout(_:)), name: NSNotification.Name(rawValue: global.notificationCenterChangeLayout), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: global.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: global.notificationCenterMoveFile), object: nil)
@@ -275,6 +276,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterCloseRichWorkspaceWebView), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterChangeStatusFolderE2EE), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterReloadAvatar), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterChangeLayout), object: nil)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterDeleteFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterMoveFile), object: nil)
@@ -347,6 +349,37 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @objc func changeTheming(_ notification: NSNotification) {
         collectionView.reloadData()
+    }
+
+    @objc func changeLayout(_ notification: NSNotification) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let account = userInfo["account"] as? String,
+              let serverUrl = userInfo["serverUrl"] as? String,
+              let layout = userInfo["layout"] as? String,
+              account == session.account,
+              serverUrl == self.serverUrl,
+              let layoutForView = database.getLayoutForView(account: account, key: layoutKey, serverUrl: serverUrl)
+        else { return }
+
+        layoutForView.layout = layout
+        self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
+        self.layoutType = layout
+
+        (self.collectionView.collectionViewLayout as? NCMediaLayout)?.invalidate()
+        self.collectionView.reloadData()
+
+        switch layout {
+        case global.layoutList:
+            self.collectionView.setCollectionViewLayout(self.listLayout, animated: true)
+        case global.layoutGrid:
+            self.collectionView.setCollectionViewLayout(self.gridLayout, animated: true)
+        case global.layoutPhotoSquare, global.layoutPhotoRatio:
+            self.collectionView.setCollectionViewLayout(self.mediaLayout, animated: true)
+        default:
+            break
+        }
+
+        self.setNavigationRightItems()
     }
 
     @objc func reloadDataSource(_ notification: NSNotification) {
@@ -669,49 +702,39 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
 
             let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: utility.loadImage(named: "list.bullet"), state: layoutForView.layout == global.layoutList ? .on : .off) { _ in
-                layoutForView.layout = self.global.layoutList
-                self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
-                self.layoutType = self.global.layoutList
 
-                self.collectionView.reloadData()
-                self.collectionView.setCollectionViewLayout(self.listLayout, animated: true)
-
-                self.setNavigationRightItems()
+                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
+                                                            object: nil,
+                                                            userInfo: ["account": self.session.account,
+                                                                       "serverUrl": self.serverUrl,
+                                                                       "layout": self.global.layoutList])
             }
 
             let grid = UIAction(title: NSLocalizedString("_icons_", comment: ""), image: utility.loadImage(named: "square.grid.2x2"), state: layoutForView.layout == global.layoutGrid ? .on : .off) { _ in
-                layoutForView.layout = self.global.layoutGrid
-                self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
-                self.layoutType = self.global.layoutGrid
 
-                self.collectionView.reloadData()
-                self.collectionView.setCollectionViewLayout(self.gridLayout, animated: true)
-
-                self.setNavigationRightItems()
+                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
+                                                            object: nil,
+                                                            userInfo: ["account": self.session.account,
+                                                                       "serverUrl": self.serverUrl,
+                                                                       "layout": self.global.layoutGrid])
             }
 
             let mediaSquare = UIAction(title: NSLocalizedString("_media_square_", comment: ""), image: utility.loadImage(named: "square.grid.3x3"), state: layoutForView.layout == global.layoutPhotoSquare ? .on : .off) { _ in
-                layoutForView.layout = self.global.layoutPhotoSquare
-                self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
-                self.layoutType = self.global.layoutPhotoSquare
 
-                (self.collectionView.collectionViewLayout as? NCMediaLayout)?.invalidate()
-                self.collectionView.reloadData()
-                self.collectionView.setCollectionViewLayout(self.mediaLayout, animated: true)
-
-                self.setNavigationRightItems()
+                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
+                                                            object: nil,
+                                                            userInfo: ["account": self.session.account,
+                                                                       "serverUrl": self.serverUrl,
+                                                                       "layout": self.global.layoutPhotoSquare])
             }
 
             let mediaRatio = UIAction(title: NSLocalizedString("_media_ratio_", comment: ""), image: utility.loadImage(named: "rectangle.grid.3x2"), state: layoutForView.layout == self.global.layoutPhotoRatio ? .on : .off) { _ in
-                layoutForView.layout = self.global.layoutPhotoRatio
-                self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
-                self.layoutType = self.global.layoutPhotoRatio
 
-                (self.collectionView.collectionViewLayout as? NCMediaLayout)?.invalidate()
-                self.collectionView.reloadData()
-                self.collectionView.setCollectionViewLayout(self.mediaLayout, animated: true)
-
-                self.setNavigationRightItems()
+                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
+                                                            object: nil,
+                                                            userInfo: ["account": self.session.account,
+                                                                       "serverUrl": self.serverUrl,
+                                                                       "layout": self.global.layoutPhotoRatio])
             }
 
             let viewStyleSubmenu = UIMenu(title: "", options: .displayInline, children: [list, grid, mediaSquare, mediaRatio])

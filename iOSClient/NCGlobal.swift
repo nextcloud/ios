@@ -293,6 +293,7 @@ class NCGlobal: NSObject {
     let notificationCenterCloseRichWorkspaceWebView             = "closeRichWorkspaceWebView"
     let notificationCenterReloadAvatar                          = "reloadAvatar"
     let notificationCenterClearCache                            = "clearCache"
+    let notificationCenterChangeLayout                          = "changeLayout"                    // userInfo: account, serverUrl, layout
 
     let notificationCenterReloadDataSource                      = "reloadDataSource"                // userInfo: serverUrl?
     let notificationCenterGetServerData                         = "getServerData"                   // userInfo: serverUrl?
