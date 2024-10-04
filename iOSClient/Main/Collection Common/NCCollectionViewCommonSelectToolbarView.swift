@@ -105,7 +105,9 @@ struct TabButton: View {
 				view
 			} else {
 				view.onTapGesture {
-					action?()
+					if !isDisabled {
+						action?()
+					}
 				}
 			}
 		}
