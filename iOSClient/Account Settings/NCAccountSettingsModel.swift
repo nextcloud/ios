@@ -97,7 +97,7 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
 
 	private func refetchAccountsInfo() {
 		var indexActiveAccount = 0
-		let accounts = NCManageDatabase.shared.getAllAccount()
+		let accounts = getAllAccountsOrderByEmail()
 		var activeAccount = NCManageDatabase.shared.getActiveAccount()
 		var alias = ""
 
@@ -114,6 +114,11 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
 		self.activeAccount = activeAccount
 		self.alias = alias
 	}
+    
+    private func getAllAccountsOrderByEmail() -> [tableAccount] {
+        NCManageDatabase.shared.getAllAccountOrderByEmail()
+
+    }
 	
     /// Func to get the user display name + alias
     func getUserName() -> String {
@@ -127,10 +132,11 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
 
     /// Func to set alias
     func setAlias(_ value: String) {
-        guard let activeAccount, activeAccount.account == NCManageDatabase.shared.getActiveAccount()?.account else { return }
+        guard let activeAccount else { return }
 		NCManageDatabase.shared.setAccountAlias(activeAccount.account, alias: alias) {
 			[weak self] in
-			self?.refetchAccountsInfo()
+            guard let self = self else { return }
+            self.accounts = self.getAllAccountsOrderByEmail()
 		}
     }
 
@@ -191,7 +197,7 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     func deleteAccount() {
         if let activeAccount {
             appDelegate.deleteAccount(activeAccount.account)
-            if let account = NCManageDatabase.shared.getAllAccount().first?.account {
+            if let account = getAllAccountsOrderByEmail().first?.account {
                 appDelegate.changeAccount(account, userProfile: nil) {
                     onViewAppear()
                 }
