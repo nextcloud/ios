@@ -11,6 +11,8 @@ import SwiftUI
 // MARK: - Primary
 struct ButtonStylePrimary: ButtonStyle {
 	@Environment(\.isEnabled) private var isEnabled: Bool
+    
+    var maxWidth: CGFloat? = nil
 	
 	private func foregroundColor(for configuration: Configuration) -> Color {
 		isEnabled ? Color(.Button.Primary.Text.normal): Color(.Button.Primary.Text.disabled)
@@ -26,7 +28,7 @@ struct ButtonStylePrimary: ButtonStyle {
 	func makeBody(configuration: Configuration) -> some View {
 		configuration.label
 			.font(CommonButtonConstants.defaultFont)
-			.frame(idealWidth: CommonButtonConstants.defaultWidth,
+			.frame(maxWidth: maxWidth,
                    minHeight: CommonButtonConstants.defaultHeight)
             .padding([.leading, .trailing], 24)
 			.foregroundStyle(foregroundColor(for: configuration))
@@ -49,6 +51,8 @@ extension ButtonStyle where Self == ButtonStylePrimary {
 // MARK: - Secondary
 struct ButtonStyleSecondary: ButtonStyle {
 	@Environment(\.isEnabled) private var isEnabled: Bool
+    
+    var maxWidth: CGFloat? = nil
 	
 	private func foregroundColor(for configuration: Configuration) -> Color {
 		if isEnabled {
@@ -68,7 +72,7 @@ struct ButtonStyleSecondary: ButtonStyle {
 	func makeBody(configuration: Configuration) -> some View {
 		configuration.label
 			.font(CommonButtonConstants.defaultFont)
-			.frame(idealWidth: CommonButtonConstants.defaultWidth, 
+			.frame(maxWidth: maxWidth,
                    minHeight: CommonButtonConstants.defaultHeight)
             .padding([.leading, .trailing], 24)
 			.foregroundStyle(foregroundColor(for: configuration))

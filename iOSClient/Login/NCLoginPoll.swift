@@ -67,14 +67,15 @@ struct NCLoginPoll: View {
 						dismiss()
 					}
 					.disabled(loginManager.isLoading || cancelButtonDisabled)
-					.buttonStyle(.secondary)
+                    .buttonStyle(ButtonStyleSecondary(maxWidth: .infinity))
 					
 					Button(NSLocalizedString("_retry_", comment: "")) {
 						loginManager.openLoginInBrowser()
 					}
-					.buttonStyle(.primary)
+                    .buttonStyle(ButtonStylePrimary(maxWidth: .infinity))
                     
 				}
+                .frame(width: 210)
 				.padding(.bottom, size.height * 0.15)
                 .environment(\.colorScheme, .dark)
 			}
