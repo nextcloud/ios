@@ -79,10 +79,10 @@ class NCCreateFormUploadConflict: UIViewController {
         tableView.allowsSelection = false
         tableView.tableFooterView = UIView()
 
-        view.backgroundColor = .systemGroupedBackground
-        tableView.backgroundColor = .systemGroupedBackground
-        viewSwitch.backgroundColor = .systemGroupedBackground
-        viewButton.backgroundColor = .systemGroupedBackground
+        view.backgroundColor = NCBrandColor.shared.appBackgroundColor
+        tableView.backgroundColor = NCBrandColor.shared.appBackgroundColor
+        viewSwitch.backgroundColor = NCBrandColor.shared.appBackgroundColor
+        viewButton.backgroundColor = NCBrandColor.shared.appBackgroundColor
 
         tableView.register(UINib(nibName: "NCCreateFormUploadConflictCell", bundle: nil), forCellReuseIdentifier: "Cell")
 
@@ -298,8 +298,6 @@ extension NCCreateFormUploadConflict: UITableViewDataSource {
         if let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? NCCreateFormUploadConflictCell {
 
             cell.backgroundColor = tableView.backgroundColor
-            cell.switchNewFile.onTintColor = NCBrandColor.shared.brandElement
-            cell.switchAlreadyExistingFile.onTintColor = NCBrandColor.shared.brandElement
 
             let metadataNewFile = tableMetadata.init(value: metadatasUploadInConflict[indexPath.row])
 

@@ -192,16 +192,6 @@ class NCMedia: UIViewController {
         }
     }
 
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        if self.traitCollection.userInterfaceStyle == .dark {
-            return .lightContent
-        } else if isTop {
-            return .darkContent
-        } else {
-            return .lightContent
-        }
-    }
-
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
 
