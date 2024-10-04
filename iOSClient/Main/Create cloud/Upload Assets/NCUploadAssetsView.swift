@@ -117,6 +117,7 @@ struct NCUploadAssetsView: View {
                             }
                         }
                     }
+                    .applyGlobalFormSectionStyle()
 
                     Section {
                         Toggle(isOn: $model.useAutoUploadFolder, label: {
@@ -159,6 +160,7 @@ struct NCUploadAssetsView: View {
                             }
                         }
                     }
+                    .applyGlobalFormSectionStyle()
 
                     Button(NSLocalizedString("_save_", comment: "")) {
                         if model.useAutoUploadFolder, model.useAutoUploadSubFolder {
@@ -177,7 +179,7 @@ struct NCUploadAssetsView: View {
                     }
                     .frame(maxWidth: .infinity)
                     .buttonStyle(.primary)
-                    .listRowBackground(Color(UIColor.systemGroupedBackground))
+                    .listRowBackground(Color.clear)
                     .disabled(model.uploadInProgress)
                     .hiddenConditionally(isHidden: model.hiddenSave)
                 }
@@ -194,6 +196,7 @@ struct NCUploadAssetsView: View {
                     .offset(y: model.showHUD ? 5 : -200)
                     .animation(.easeOut, value: model.showHUD)
             }
+            .applyGlobalFormStyle()
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .sheet(isPresented: $showSelect) {
