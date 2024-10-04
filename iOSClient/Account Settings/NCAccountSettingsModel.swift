@@ -127,8 +127,8 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
 
     /// Func to set alias
     func setAlias(_ value: String) {
-        guard let activeAccount else { return }
-		NCManageDatabase.shared.setAccountAlias(activeAccount.account, alias: alias) { 
+        guard let activeAccount, activeAccount.account == NCManageDatabase.shared.getActiveAccount()?.account else { return }
+		NCManageDatabase.shared.setAccountAlias(activeAccount.account, alias: alias) {
 			[weak self] in
 			self?.refetchAccountsInfo()
 		}
