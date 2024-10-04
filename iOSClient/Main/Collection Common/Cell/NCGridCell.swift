@@ -179,7 +179,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         buttonMore.isHidden = status
     }
 
-    func selected(_ status: Bool, isEditMode: Bool, account: String) {
+    func selected(_ status: Bool, isEditMode: Bool) {
         if isEditMode {
             buttonMore.isHidden = true
             accessibilityCustomActions = nil

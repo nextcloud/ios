@@ -294,8 +294,6 @@ class NCBrandColor: NSObject {
             // THEMING COLOR TEXT
             self.themingColorText[account] = customerText
         }
-
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming, userInfo: ["account": account])
     }
 
     public func getTheming(account: String?) -> UIColor {

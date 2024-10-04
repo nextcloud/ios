@@ -66,8 +66,8 @@ extension NCShareExtension: NCAccountRequestDelegate {
         self.account = account
 
         // COLORS
-        // Colors
         NCBrandColor.shared.settingThemingColor(account: account)
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming, userInfo: ["account": account])
 
         // NETWORKING
         NextcloudKit.shared.setup(delegate: NCNetworking.shared)

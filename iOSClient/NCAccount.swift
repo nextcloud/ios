@@ -88,6 +88,7 @@ class NCAccount: NSObject {
         }
         /// Color
         NCBrandColor.shared.settingThemingColor(account: account)
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming, userInfo: ["account": account])
 
         /// Notification
         if let controller {

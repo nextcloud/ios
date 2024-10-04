@@ -103,6 +103,13 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.fileStatusImage?.image = utility.loadImage(named: "play.circle", colors: NCBrandColor.shared.iconImageMultiColors)
         }
 
+        /// Edit mode
+        if fileSelect.contains(metadata.ocId) {
+            cell.selected(true, isEditMode: isEditMode)
+        } else {
+            cell.selected(false, isEditMode: isEditMode)
+        }
+
         if width < 100 {
             cell.hideButtonMore(true)
             cell.hideImageStatus(true)
@@ -391,10 +398,10 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         // Edit mode
         if fileSelect.contains(metadata.ocId) {
-            cell.selected(true, isEditMode: isEditMode, account: metadata.account)
+            cell.selected(true, isEditMode: isEditMode)
             a11yValues.append(NSLocalizedString("_selected_", comment: ""))
         } else {
-            cell.selected(false, isEditMode: isEditMode, account: metadata.account)
+            cell.selected(false, isEditMode: isEditMode)
         }
 
         // Accessibility

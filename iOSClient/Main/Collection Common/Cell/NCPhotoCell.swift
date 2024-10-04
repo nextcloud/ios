@@ -121,7 +121,7 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
         imageStatus.isHidden = status
     }
 
-    func selected(_ status: Bool, isEditMode: Bool, account: String) {
+    func selected(_ status: Bool, isEditMode: Bool) {
         if status {
             imageSelect.isHidden = false
             imageVisualEffect.isHidden = false

@@ -167,11 +167,7 @@ class NCService: NSObject {
 
     private func requestServerCapabilities(account: String) {
         NextcloudKit.shared.getCapabilities(account: account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, data, error in
-            guard error == .success, let data else {
-                NCBrandColor.shared.settingThemingColor(account: account)
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming, userInfo: ["account": account])
-                return
-            }
+            guard error == .success, let data else { return }
 
             data.printJson()
 
