@@ -360,6 +360,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               serverUrl == self.serverUrl
         else { return }
 
+        if self.layoutForView?.layout == layoutForView.layout {
+            self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
+            self.reloadDataSource()
+            return
+        }
+
         self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
         layoutForView.layout = layoutForView.layout
         self.layoutType = layoutForView.layout
