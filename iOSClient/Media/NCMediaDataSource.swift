@@ -39,7 +39,7 @@ extension NCMedia {
     func collectionViewReloadData() {
         DispatchQueue.main.async {
             self.refreshControl.endRefreshing()
-            self.layout.invalidate()
+          //  self.layout.invalidate()
             self.collectionView.reloadData()
             self.setTitleDate()
         }

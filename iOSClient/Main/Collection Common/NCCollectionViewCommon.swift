@@ -355,26 +355,33 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard let userInfo = notification.userInfo as NSDictionary?,
               let account = userInfo["account"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
-              let layout = userInfo["layout"] as? String,
+              let layoutForView = userInfo["layoutForView"] as? NCDBLayoutForView,
               account == session.account,
-              serverUrl == self.serverUrl,
-              let layoutForView = database.getLayoutForView(account: account, key: layoutKey, serverUrl: serverUrl)
+              serverUrl == self.serverUrl
         else { return }
 
-        layoutForView.layout = layout
         self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
-        self.layoutType = layout
+        layoutForView.layout = layoutForView.layout
+        self.layoutType = layoutForView.layout
 
-        (self.collectionView.collectionViewLayout as? NCMediaLayout)?.invalidate()
         self.collectionView.reloadData()
 
-        switch layout {
+        switch layoutForView.layout {
         case global.layoutList:
+
             self.collectionView.setCollectionViewLayout(self.listLayout, animated: true)
+            self.collectionView.collectionViewLayout.invalidateLayout()
+
         case global.layoutGrid:
+
             self.collectionView.setCollectionViewLayout(self.gridLayout, animated: true)
+            self.collectionView.collectionViewLayout.invalidateLayout()
+
         case global.layoutPhotoSquare, global.layoutPhotoRatio:
+
             self.collectionView.setCollectionViewLayout(self.mediaLayout, animated: true)
+            self.collectionView.collectionViewLayout.invalidateLayout()
+
         default:
             break
         }
@@ -686,15 +693,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         func createMenuActions() -> [UIMenuElement] {
             guard let layoutForView = database.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl) else { return [] }
 
-            func saveLayout(_ layoutForView: NCDBLayoutForView) {
-                database.setLayoutForView(layoutForView: layoutForView)
-
-                (self.collectionView.collectionViewLayout as? NCMediaLayout)?.invalidate()
-                self.collectionView.reloadData()
-
-                setNavigationRightItems()
-            }
-
             let select = UIAction(title: NSLocalizedString("_select_", comment: ""),
                                   image: utility.loadImage(named: "checkmark.circle"),
                                   attributes: (self.dataSource.isEmpty() || NCNetworking.shared.isOffline) ? .disabled : []) { _ in
@@ -703,38 +701,46 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
             let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: utility.loadImage(named: "list.bullet"), state: layoutForView.layout == global.layoutList ? .on : .off) { _ in
 
+                layoutForView.layout = self.global.layoutList
+
                 NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
                                                             object: nil,
                                                             userInfo: ["account": self.session.account,
                                                                        "serverUrl": self.serverUrl,
-                                                                       "layout": self.global.layoutList])
+                                                                       "layoutForView": layoutForView])
             }
 
             let grid = UIAction(title: NSLocalizedString("_icons_", comment: ""), image: utility.loadImage(named: "square.grid.2x2"), state: layoutForView.layout == global.layoutGrid ? .on : .off) { _ in
 
+                layoutForView.layout = self.global.layoutGrid
+
                 NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
                                                             object: nil,
                                                             userInfo: ["account": self.session.account,
                                                                        "serverUrl": self.serverUrl,
-                                                                       "layout": self.global.layoutGrid])
+                                                                       "layoutForView": layoutForView])
             }
 
             let mediaSquare = UIAction(title: NSLocalizedString("_media_square_", comment: ""), image: utility.loadImage(named: "square.grid.3x3"), state: layoutForView.layout == global.layoutPhotoSquare ? .on : .off) { _ in
 
+                layoutForView.layout = self.global.layoutPhotoSquare
+
                 NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
                                                             object: nil,
                                                             userInfo: ["account": self.session.account,
                                                                        "serverUrl": self.serverUrl,
-                                                                       "layout": self.global.layoutPhotoSquare])
+                                                                       "layoutForView": layoutForView])
             }
 
             let mediaRatio = UIAction(title: NSLocalizedString("_media_ratio_", comment: ""), image: utility.loadImage(named: "rectangle.grid.3x2"), state: layoutForView.layout == self.global.layoutPhotoRatio ? .on : .off) { _ in
 
+                layoutForView.layout = self.global.layoutPhotoRatio
+
                 NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
                                                             object: nil,
                                                             userInfo: ["account": self.session.account,
                                                                        "serverUrl": self.serverUrl,
-                                                                       "layout": self.global.layoutPhotoRatio])
+                                                                       "layoutForView": layoutForView])
             }
 
             let viewStyleSubmenu = UIMenu(title: "", options: .displayInline, children: [list, grid, mediaSquare, mediaRatio])
@@ -746,30 +752,45 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             let isSize = layoutForView.sort == "size"
 
             let byName = UIAction(title: NSLocalizedString("_name_", comment: ""), image: isName ? ascendingChevronImage : nil, state: isName ? .on : .off) { _ in
+
                 if isName { // repeated press
                     layoutForView.ascending = !layoutForView.ascending
                 }
-
                 layoutForView.sort = "fileName"
-                saveLayout(layoutForView)
+
+                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
+                                                            object: nil,
+                                                            userInfo: ["account": self.session.account,
+                                                                       "serverUrl": self.serverUrl,
+                                                                       "layoutForView": layoutForView])
             }
 
             let byNewest = UIAction(title: NSLocalizedString("_date_", comment: ""), image: isDate ? ascendingChevronImage : nil, state: isDate ? .on : .off) { _ in
+
                 if isDate { // repeated press
                     layoutForView.ascending = !layoutForView.ascending
                 }
-
                 layoutForView.sort = "date"
-                saveLayout(layoutForView)
+
+                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
+                                                            object: nil,
+                                                            userInfo: ["account": self.session.account,
+                                                                       "serverUrl": self.serverUrl,
+                                                                       "layoutForView": layoutForView])
             }
 
             let byLargest = UIAction(title: NSLocalizedString("_size_", comment: ""), image: isSize ? ascendingChevronImage : nil, state: isSize ? .on : .off) { _ in
+
                 if isSize { // repeated press
                     layoutForView.ascending = !layoutForView.ascending
                 }
-
                 layoutForView.sort = "size"
-                saveLayout(layoutForView)
+
+                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
+                                                            object: nil,
+                                                            userInfo: ["account": self.session.account,
+                                                                       "serverUrl": self.serverUrl,
+                                                                       "layoutForView": layoutForView])
             }
 
             let sortSubmenu = UIMenu(title: NSLocalizedString("_order_by_", comment: ""), options: .displayInline, children: [byName, byNewest, byLargest])
@@ -777,24 +798,29 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             let foldersOnTop = UIAction(title: NSLocalizedString("_directory_on_top_no_", comment: ""), image: utility.loadImage(named: "folder"), state: layoutForView.directoryOnTop ? .on : .off) { _ in
 
                 layoutForView.directoryOnTop = !layoutForView.directoryOnTop
-                saveLayout(layoutForView)
+
+                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
+                                                            object: nil,
+                                                            userInfo: ["account": self.session.account,
+                                                                       "serverUrl": self.serverUrl,
+                                                                       "layoutForView": layoutForView])
             }
 
             let personalFilesOnly = NCKeychain().getPersonalFilesOnly(account: session.account)
             let personalFilesOnlyAction = UIAction(title: NSLocalizedString("_personal_files_only_", comment: ""), image: utility.loadImage(named: "folder.badge.person.crop", colors: NCBrandColor.shared.iconImageMultiColors), state: personalFilesOnly ? .on : .off) { _ in
+
                 NCKeychain().setPersonalFilesOnly(account: self.session.account, value: !personalFilesOnly)
 
-                (self.collectionView.collectionViewLayout as? NCMediaLayout)?.invalidate()
                 self.reloadDataSource()
+                self.setNavigationRightItems()
             }
 
             let showDescriptionKeychain = NCKeychain().showDescription
             let showDescription = UIAction(title: NSLocalizedString("_show_description_", comment: ""), image: utility.loadImage(named: "list.dash.header.rectangle"), attributes: richWorkspaceText == nil ? .disabled : [], state: showDescriptionKeychain && richWorkspaceText != nil ? .on : .off) { _ in
+
                 NCKeychain().showDescription = !showDescriptionKeychain
 
-                (self.collectionView.collectionViewLayout as? NCMediaLayout)?.invalidate()
                 self.collectionView.reloadData()
-
                 self.setNavigationRightItems()
             }
             showDescription.subtitle = richWorkspaceText == nil ? NSLocalizedString("_no_description_available_", comment: "") : ""

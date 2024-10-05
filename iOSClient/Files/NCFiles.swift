@@ -170,7 +170,7 @@ class NCFiles: NCCollectionViewCommon {
                         self.richWorkspaceText = tableDirectory?.richWorkspace
 
                         if reloadDataSource {
-                            (self.collectionView.collectionViewLayout as? NCMediaLayout)?.invalidate()
+                           // (self.collectionView.collectionViewLayout as? NCMediaLayout)?.invalidate()
                             self.reloadDataSource()
                         } else if self.dataSource.isEmpty() {
                             self.collectionView.reloadData()

@@ -95,7 +95,6 @@ public class NCMediaLayout: UICollectionViewLayout {
     }
     public var frameWidth: Float = 0
     public var itemWidth: Float = 0
-    public var oldFrameWidth: CGFloat = 0
 
     // MARK: - Private Properties
     private weak var delegate: NCMediaLayoutDelegate? {
@@ -114,10 +113,8 @@ public class NCMediaLayout: UICollectionViewLayout {
 
         guard let numberOfSections = collectionView?.numberOfSections,
               let collectionView = collectionView,
-              let delegate = delegate,
-              collectionView.frame.size.width != oldFrameWidth else { return }
+              let delegate = delegate else { return }
 
-        oldFrameWidth = collectionView.frame.size.width
         columnCount = delegate.getColumnCount()
         (delegate as? NCMedia)?.buildMediaPhotoVideo(columnCount: columnCount)
 
@@ -327,9 +324,5 @@ extension NCMediaLayout {
         if oldValue != newValue {
             invalidateLayout()
         }
-    }
-
-    func invalidate() {
-        oldFrameWidth = 0
     }
 }
