@@ -368,23 +368,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         switch layoutForView.layout {
         case global.layoutList:
-
             self.collectionView.setCollectionViewLayout(self.listLayout, animated: true)
-            self.collectionView.collectionViewLayout.invalidateLayout()
-
         case global.layoutGrid:
-
             self.collectionView.setCollectionViewLayout(self.gridLayout, animated: true)
-            self.collectionView.collectionViewLayout.invalidateLayout()
-
         case global.layoutPhotoSquare, global.layoutPhotoRatio:
-
             self.collectionView.setCollectionViewLayout(self.mediaLayout, animated: true)
-            self.collectionView.collectionViewLayout.invalidateLayout()
-
         default:
             break
         }
+
+        self.collectionView.collectionViewLayout.invalidateLayout()
 
         self.setNavigationRightItems()
     }
