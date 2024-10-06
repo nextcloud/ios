@@ -348,7 +348,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func changeTheming(_ notification: NSNotification) {
-        collectionView.reloadData()
+        self.reloadDataSource()
     }
 
     @objc func changeLayout(_ notification: NSNotification) {
