@@ -31,7 +31,7 @@ class NCCollectionViewDataSource: NSObject {
     private var sectionsValue: [String] = []
     private var providers: [NKSearchProvider]?
     private var searchResults: [NKSearchResult]?
-    private var results: Results<tableMetadata>?
+    public var results: Results<tableMetadata>?
     private var metadatas: [tableMetadata] = []
     private var metadatasForSection: [NCMetadataForSection] = []
     private var layoutForView: NCDBLayoutForView?
@@ -280,6 +280,33 @@ class NCCollectionViewDataSource: NSObject {
         }
 
         return nil
+    }
+
+    func updateMetadataIndexPath(metadatas: [tableMetadata], dataSourceResults: Results<tableMetadata>?, completion: @escaping (_ update: Bool) -> Void) {
+        var updated: Bool = false
+        var counter: Int = 0
+        let validMetadatas = dataSourceResults?.freeze().filter { !$0.isInvalidated }
+
+        DispatchQueue.global().async {
+            for metadata in metadatas {
+                let indexPath = IndexPath(row: counter, section: 0)
+                if indexPath.row < validMetadatas?.count ?? 0 {
+                    let etag = validMetadatas?[indexPath.row].etag
+                    if etag != metadata.etag {
+                        updated = true
+                    }
+                } else {
+                    updated = true
+                }
+
+                self.metadataIndexPath[indexPath] = tableMetadata(value: metadata)
+                counter += 1
+            }
+
+            DispatchQueue.main.async {
+                return completion(updated)
+            }
+        }
     }
 
     // MARK: -
