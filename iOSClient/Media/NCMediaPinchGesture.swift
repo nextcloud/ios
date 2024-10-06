@@ -42,8 +42,10 @@ extension NCMedia {
                 self.currentScale = 1.0
 
                 UIView.transition(with: self.collectionView, duration: 0.20, options: .transitionCrossDissolve) {
-                    // self.layout.invalidate()
+
                     self.collectionView.reloadData()
+                    self.collectionView.collectionViewLayout.invalidateLayout()
+
                 } completion: { _ in
                     self.setTitleDate()
 
