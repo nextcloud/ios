@@ -1025,17 +1025,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func reloadDataSource() {
         guard !session.account.isEmpty, !self.isSearchingMode else { return }
 
-        /*
-        let animator = UIViewPropertyAnimator(duration: 0.3, curve: .easeInOut) {
-            self.collectionView?.collectionViewLayout.invalidateLayout()
-
-        }
-        animator.startAnimation()
-        */
-
         self.collectionView?.reloadData()
         self.refreshControl.endRefreshing()
-        self.setNavigationRightItems()
     }
 
     func getServerData() {
