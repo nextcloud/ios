@@ -370,7 +370,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         layoutForView.layout = layoutForView.layout
         self.layoutType = layoutForView.layout
 
-        self.collectionView.reloadData()
+        self.reloadDataSource()
 
         switch layoutForView.layout {
         case global.layoutList:
@@ -819,7 +819,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
                 NCKeychain().showDescription = !showDescriptionKeychain
 
-                self.collectionView.reloadData()
+                self.reloadDataSource()
                 self.setNavigationRightItems()
             }
             showDescription.subtitle = richWorkspaceText == nil ? NSLocalizedString("_no_description_available_", comment: "") : ""
@@ -901,7 +901,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         isSearchingMode = true
         self.providers?.removeAll()
         self.dataSource.removeAll()
-        self.collectionView.reloadData()
+        self.reloadDataSource()
         // TIP
         dismissTip()
     }
@@ -1046,12 +1046,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         self.dataSource.removeAll()
         self.refreshControl.beginRefreshing()
-        self.collectionView.reloadData()
+        self.reloadDataSource()
 
         if NCCapabilities.shared.getCapabilities(account: session.account).capabilityServerVersionMajor >= global.nextcloudVersion20 {
             NCNetworking.shared.unifiedSearchFiles(literal: literalSearch, account: session.account) { task in
                 self.dataSourceTask = task
-                self.collectionView.reloadData()
+                self.reloadDataSource()
             } providers: { _, searchProviders in
                 self.providers = searchProviders
                 self.searchResults = []
@@ -1061,16 +1061,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 NCNetworking.shared.unifiedSearchQueue.addOperation(NCCollectionViewUnifiedSearch(collectionViewCommon: self, metadatas: metadatas, searchResult: searchResult))
             } completion: { _, _ in
                 self.refreshControl.endRefreshing()
-                self.collectionView.reloadData()
+                self.reloadDataSource()
             }
         } else {
             NCNetworking.shared.searchFiles(literal: literalSearch, account: session.account) { task in
                 self.dataSourceTask = task
-                self.collectionView.reloadData()
+                self.reloadDataSource()
             } completion: { metadatas, error in
                 DispatchQueue.main.async {
                     self.refreshControl.endRefreshing()
-                    self.collectionView.reloadData()
+                    self.reloadDataSource()
                 }
                 guard let metadatas, error == .success, self.isSearchingMode else { return }
                 let ocId = metadatas.map { $0.ocId }
@@ -1089,7 +1089,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         NCNetworking.shared.unifiedSearchFilesProvider(id: lastSearchResult.id, term: term, limit: 5, cursor: cursor, account: session.account) { task in
             self.dataSourceTask = task
-            self.collectionView.reloadData()
+            self.reloadDataSource()
         } completion: { _, searchResult, metadatas, error in
             if error != .success {
                 NCContentPresenter().showError(error: error)
