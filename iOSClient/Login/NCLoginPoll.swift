@@ -109,33 +109,41 @@ private class LoginManager: ObservableObject {
     @Published var isLoading = false
     @Published var account = ""
 
-    init() {
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: UIApplication.didBecomeActiveNotification, object: nil)
-    }
-
-    @objc func applicationDidBecomeActive(_ notification: NSNotification) {
-        poll()
-    }
+    var timer: DispatchSourceTimer?
 
     func configure(loginFlowV2Token: String, loginFlowV2Endpoint: String, loginFlowV2Login: String) {
         self.loginFlowV2Token = loginFlowV2Token
         self.loginFlowV2Endpoint = loginFlowV2Endpoint
         self.loginFlowV2Login = loginFlowV2Login
-    }
 
+        poll()
+    }
+    
     func poll() {
-        let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
-        NextcloudKit.shared.getLoginFlowV2Poll(token: self.loginFlowV2Token, endpoint: self.loginFlowV2Endpoint) { server, loginName, appPassword, _, error in
-            if error == .success, let urlBase = server, let user = loginName, let appPassword {
-                self.isLoading = true
-                NCAccount().createAccount(urlBase: urlBase, user: user, password: appPassword, controller: controller) { account, error in
-                    if error == .success {
-                        self.account = account
-                        self.pollFinished = true
+        let queue = DispatchQueue.global(qos: .background)
+        timer = DispatchSource.makeTimerSource(queue: queue)
+
+        guard let timer = timer else { return }
+
+        timer.schedule(deadline: .now(), repeating: .seconds(1), leeway: .seconds(1))
+        timer.setEventHandler(handler: {
+            DispatchQueue.main.async {
+                let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
+                NextcloudKit.shared.getLoginFlowV2Poll(token: self.loginFlowV2Token, endpoint: self.loginFlowV2Endpoint) { server, loginName, appPassword, _, error in
+                    if error == .success, let urlBase = server, let user = loginName, let appPassword {
+                        self.isLoading = true
+                        NCAccount().createAccount(urlBase: urlBase, user: user, password: appPassword, controller: controller) { account, error in
+                            if error == .success {
+                                self.account = account
+                                self.pollFinished = true
+                            }
+                        }
                     }
                 }
             }
-        }
+        })
+
+        timer.resume()
     }
 
     func openLoginInBrowser() {
