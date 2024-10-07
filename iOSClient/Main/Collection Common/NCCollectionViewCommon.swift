@@ -240,6 +240,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             collectionView?.collectionViewLayout = mediaLayout
             self.layoutType = global.layoutPhotoSquare
         }
+
+        collectionView.reloadData()
     }
 
     override func viewDidAppear(_ animated: Bool) {
