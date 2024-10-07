@@ -67,13 +67,22 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         cell.ocId = metadata.ocId
         cell.ocIdTransfer = metadata.ocIdTransfer
+        cell.hideButtonMore(true)
+        cell.hideImageStatus(true)
 
         /// Image
         ///
         if let image = NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
+
             cell.filePreviewImageView?.image = image
             cell.filePreviewImageView?.contentMode = .scaleAspectFill
+
         } else {
+
+            if isPinchGestureActive || ext == global.previewExt512 || ext == global.previewExt1024 {
+                cell.filePreviewImageView?.image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext)
+            }
+
             DispatchQueue.global(qos: .userInteractive).async {
                 let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext)
                 if let image {
@@ -82,7 +91,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                         cell.filePreviewImageView?.image = image
                         cell.filePreviewImageView?.contentMode = .scaleAspectFill
                     }
-                } else {
+                } else if !metadata.hasPreview {
                     DispatchQueue.main.async {
                         cell.filePreviewImageView?.contentMode = .scaleAspectFit
                         if metadata.iconName.isEmpty {
@@ -110,10 +119,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.selected(false, isEditMode: isEditMode)
         }
 
-        if width < 100 {
-            cell.hideButtonMore(true)
-            cell.hideImageStatus(true)
-        } else {
+        if width > 100 && cell.filePreviewImageView?.image != nil {
             cell.hideButtonMore(false)
             cell.hideImageStatus(false)
         }

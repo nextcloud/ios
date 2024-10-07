@@ -135,6 +135,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         return totalItems == 0
     }
 
+    var isPinchGestureActive: Bool {
+        return pinchGesture.state == .began || pinchGesture.state == .changed
+    }
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
