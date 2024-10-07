@@ -108,7 +108,7 @@ class NCImageCache: NSObject {
 
     // MARK: - MEDIA -
 
-    func createMediaCache(session: NCSession.Session) {
+    func cachingMedia(session: NCSession.Session) {
         var cost: Int = 0
 
         if let metadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: getMediaPredicate(filterLivePhotoFile: true, session: session, showOnlyImages: false, showOnlyVideos: false), sortedByKeyPath: "date", freeze: true)?.prefix(countLimit) {
