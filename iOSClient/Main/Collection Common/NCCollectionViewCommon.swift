@@ -135,6 +135,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         return totalItems == 0
     }
 
+    var numberOfItemsInAllSections: Int {
+        var totalItems = 0
+        for section in 0..<self.collectionView.numberOfSections {
+            totalItems += self.collectionView.numberOfItems(inSection: section)
+        }
+        return totalItems
+    }
+
     var isPinchGestureActive: Bool {
         return pinchGesture.state == .began || pinchGesture.state == .changed
     }

@@ -140,7 +140,7 @@ class NCFiles: NCCollectionViewCommon {
         let metadatas = Array(results.freeze())
 
         self.dataSource.caching(metadatas: metadatas, dataSourceMetadatas: dataSourceMetadatas) { updated in
-            if updated || self.isNumberOfItemsInAllSectionsNull {
+            if updated || self.isNumberOfItemsInAllSectionsNull || self.numberOfItemsInAllSections != metadatas.count {
                 super.reloadDataSource()
             }
         }
