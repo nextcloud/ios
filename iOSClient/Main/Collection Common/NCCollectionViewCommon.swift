@@ -385,7 +385,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         layoutForView.layout = layoutForView.layout
         self.layoutType = layoutForView.layout
 
-        self.reloadDataSource()
+        collectionView.reloadData()
 
         switch layoutForView.layout {
         case global.layoutList:
