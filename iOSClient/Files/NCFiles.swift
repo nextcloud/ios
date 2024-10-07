@@ -122,7 +122,7 @@ class NCFiles: NCCollectionViewCommon {
     override func reloadDataSource() {
         var predicate = self.defaultPredicate
         let predicateDirectory = NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, self.serverUrl)
-        let dataSourceResults = self.dataSource.results
+        let dataSourceMetadatas = self.dataSource.getMetadatas()
 
         if NCKeychain().getPersonalFilesOnly(account: session.account) {
             predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND (ownerId == %@ || ownerId == '') AND mountType == '' AND NOT (status IN %@)", session.account, self.serverUrl, session.userId, global.metadataStatusHideInView)
@@ -136,7 +136,7 @@ class NCFiles: NCCollectionViewCommon {
 
         if let results {
             let metadatas = Array(results.freeze())
-            self.dataSource.updateMetadataIndexPath(metadatas: metadatas, dataSourceResults: dataSourceResults) { updated in
+            self.dataSource.updateMetadataIndexPath(metadatas: metadatas, dataSourceMetadatas: dataSourceMetadatas) { updated in
                 if updated || self.isNumberOfItemsInAllSectionsNull {
                     super.reloadDataSource()
                 }
