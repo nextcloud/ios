@@ -175,8 +175,9 @@ class NCService: NSObject {
             guard let capability = self.database.setCapabilities(account: account, data: data) else { return }
 
             // Theming
-            NCBrandColor.shared.settingThemingColor(account: account)
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming, userInfo: ["account": account])
+            if NCBrandColor.shared.settingThemingColor(account: account) {
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming, userInfo: ["account": account])
+            }
 
             // Text direct editor detail
             if capability.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion18 {

@@ -35,7 +35,7 @@ class NCCollectionViewDataSource: NSObject {
     private var metadatas: [tableMetadata] = []
     private var metadatasForSection: [NCMetadataForSection] = []
     private var layoutForView: NCDBLayoutForView?
-    private var metadataIndexPath: [IndexPath: tableMetadata] = [:]
+    private var metadataIndexPath = ThreadSafeDictionary<IndexPath, tableMetadata>()
 
     override init() { super.init() }
 
@@ -48,7 +48,7 @@ class NCCollectionViewDataSource: NSObject {
 
         self.results = results
         if let results {
-            self.metadatas = Array(results)
+            self.metadatas = Array(results.freeze())
         } else {
             self.metadatas = []
         }
@@ -177,26 +177,12 @@ class NCCollectionViewDataSource: NSObject {
 
     // MARK: -
 
-    func getResults() -> Results<tableMetadata>? {
-        return results
-    }
-
-    func isMetadatasValid() -> Bool {
-        let validMetadatas = metadatas.filter { !$0.isInvalidated }
-
-        return validMetadatas.count == self.metadatas.count
-    }
-
-    func getResultMetadatas() -> [tableMetadata] {
-        let validMetadatas = metadatas.filter { !$0.isInvalidated }
-
-        return validMetadatas
+    func getMetadatas() -> [tableMetadata] {
+        return self.metadatas
     }
 
     func isEmpty() -> Bool {
-        let validMetadatas = metadatas.filter { !$0.isInvalidated }
-
-        return validMetadatas.isEmpty
+        return self.metadatas.isEmpty
     }
 
     func getIndexPathMetadata(ocId: String) -> IndexPath? {
@@ -280,6 +266,32 @@ class NCCollectionViewDataSource: NSObject {
         }
 
         return nil
+    }
+
+    func updateMetadataIndexPath(metadatas: [tableMetadata], dataSourceMetadatas: [tableMetadata], completion: @escaping (_ update: Bool) -> Void) {
+        var counter: Int = 0
+        var updated: Bool = dataSourceMetadatas.isEmpty
+
+        DispatchQueue.global().async {
+            for metadata in metadatas {
+                let indexPath = IndexPath(row: counter, section: 0)
+                if indexPath.row < dataSourceMetadatas.count {
+                    let etag = dataSourceMetadatas[indexPath.row].etag
+                    if etag != metadata.etag {
+                        updated = true
+                    }
+                } else {
+                    updated = true
+                }
+
+                self.metadataIndexPath[indexPath] = tableMetadata(value: metadata)
+                counter += 1
+            }
+
+            DispatchQueue.main.async {
+                return completion(updated)
+            }
+        }
     }
 
     // MARK: -

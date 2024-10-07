@@ -27,13 +27,13 @@ import NextcloudKit
 
 extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
     func selectAll() {
-        if !fileSelect.isEmpty, self.dataSource.getResultMetadatas().count == fileSelect.count {
+        if !fileSelect.isEmpty, self.dataSource.getMetadatas().count == fileSelect.count {
             fileSelect = []
         } else {
-            fileSelect = self.dataSource.getResultMetadatas().compactMap({ $0.ocId })
+            fileSelect = self.dataSource.getMetadatas().compactMap({ $0.ocId })
         }
         tabBarSelect.update(fileSelect: fileSelect, metadatas: getSelectedMetadatas(), userId: session.userId)
-        collectionView.reloadData()
+        self.reloadDataSource()
     }
 
     func delete() {
@@ -135,6 +135,6 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
         navigationController?.interactivePopGestureRecognizer?.isEnabled = !editMode
         navigationItem.hidesBackButton = editMode
         searchController(enabled: !editMode)
-        collectionView.reloadData()
+        self.reloadDataSource()
     }
 }

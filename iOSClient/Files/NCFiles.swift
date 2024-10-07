@@ -23,6 +23,7 @@
 
 import UIKit
 import NextcloudKit
+import RealmSwift
 
 class NCFiles: NCCollectionViewCommon {
     internal var isRoot: Bool = true
@@ -77,6 +78,7 @@ class NCFiles: NCCollectionViewCommon {
                 self.titleCurrentFolder = self.getNavigationTitle()
                 self.setNavigationLeftItems()
 
+                self.dataSource.removeAll()
                 self.reloadDataSource()
                 self.getServerData()
             }
@@ -120,6 +122,7 @@ class NCFiles: NCCollectionViewCommon {
     override func reloadDataSource() {
         var predicate = self.defaultPredicate
         let predicateDirectory = NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, self.serverUrl)
+        let dataSourceMetadatas = self.dataSource.getMetadatas()
 
         if NCKeychain().getPersonalFilesOnly(account: session.account) {
             predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND (ownerId == %@ || ownerId == '') AND mountType == '' AND NOT (status IN %@)", session.account, self.serverUrl, session.userId, global.metadataStatusHideInView)
@@ -131,7 +134,16 @@ class NCFiles: NCCollectionViewCommon {
         let results = self.database.getResultsMetadatasPredicate(predicate, layoutForView: layoutForView)
         self.dataSource = NCCollectionViewDataSource(results: results, layoutForView: layoutForView)
 
-        super.reloadDataSource()
+        if let results {
+            let metadatas = Array(results.freeze())
+            self.dataSource.updateMetadataIndexPath(metadatas: metadatas, dataSourceMetadatas: dataSourceMetadatas) { updated in
+                if updated || self.isNumberOfItemsInAllSectionsNull {
+                    super.reloadDataSource()
+                }
+            }
+        } else {
+            super.reloadDataSource()
+        }
     }
 
     override func getServerData() {
@@ -168,16 +180,13 @@ class NCFiles: NCCollectionViewCommon {
                         }
 
                         self.richWorkspaceText = tableDirectory?.richWorkspace
-
-                        if reloadDataSource {
-                           // (self.collectionView.collectionViewLayout as? NCMediaLayout)?.invalidate()
-                            self.reloadDataSource()
-                        } else if self.dataSource.isEmpty() {
-                            self.collectionView.reloadData()
-                        }
-                    } else if self.dataSource.isEmpty() {
-                        self.collectionView.reloadData()
                     }
+
+                    if reloadDataSource || self.isNumberOfItemsInAllSectionsNull {
+                        self.reloadDataSource()
+                    }
+
+                    self.refreshControl.endRefreshing()
                 }
             }
         }

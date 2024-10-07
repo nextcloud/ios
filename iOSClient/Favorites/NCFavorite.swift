@@ -83,6 +83,7 @@ class NCFavorite: NCCollectionViewCommon {
                 }
                 self.reloadDataSource()
             }
+            self.refreshControl.endRefreshing()
         }
     }
 }
