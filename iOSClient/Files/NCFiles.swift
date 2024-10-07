@@ -134,15 +134,15 @@ class NCFiles: NCCollectionViewCommon {
         let results = self.database.getResultsMetadatasPredicate(predicate, layoutForView: layoutForView)
         self.dataSource = NCCollectionViewDataSource(results: results, layoutForView: layoutForView)
 
-        if let results {
-            let metadatas = Array(results.freeze())
-            self.dataSource.caching(metadatas: metadatas, dataSourceMetadatas: dataSourceMetadatas) { updated in
-                if updated || self.isNumberOfItemsInAllSectionsNull {
-                    super.reloadDataSource()
-                }
+        guard let results else {
+            return super.reloadDataSource()
+        }
+        let metadatas = Array(results.freeze())
+
+        self.dataSource.caching(metadatas: metadatas, dataSourceMetadatas: dataSourceMetadatas) { updated in
+            if updated || self.isNumberOfItemsInAllSectionsNull {
+                super.reloadDataSource()
             }
-        } else {
-            super.reloadDataSource()
         }
     }
 
