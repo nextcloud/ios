@@ -82,6 +82,8 @@ class NCNetworkingProcess {
                 guard !self.hasRun, NCNetworking.shared.isOnline else { return }
                 self.hasRun = true
 
+                /// Keep screen awake
+                ///
                 Task {
                     let tasks = await NCNetworking.shared.getAllDataTask()
                     let hasSynchronizationTask = tasks.contains { $0.taskDescription == NCGlobal.shared.taskDescriptionSynchronization }
