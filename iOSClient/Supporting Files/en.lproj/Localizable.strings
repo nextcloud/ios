@@ -213,7 +213,7 @@
 "_copy_failed_"             = "Copy failed";
 "_certificate_installed_"   = "Certificate installed";
 "_remove_local_account_"    = "Remove local account";
-"_want_delete_account_"     = "Do you want to remove local account";
+"_want_delete_account_"     = "Do you want to remove local account?";
 "_prevent_http_redirection_"= "The redirection in HTTP is not permitted";
 "_pdf_vertical_"            = "PDF vertical display";
 "_pdf_horizontal_"          = "PDF horizontal display";
