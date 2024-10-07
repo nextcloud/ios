@@ -35,7 +35,7 @@ class NCCollectionViewDataSource: NSObject {
     private var metadatas: [tableMetadata] = []
     private var metadatasForSection: [NCMetadataForSection] = []
     private var layoutForView: NCDBLayoutForView?
-    private var metadataIndexPath: [IndexPath: tableMetadata] = [:]
+    private var metadataIndexPath = ThreadSafeDictionary<IndexPath, tableMetadata>()
 
     override init() { super.init() }
 
