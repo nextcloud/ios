@@ -137,7 +137,7 @@ class NCFiles: NCCollectionViewCommon {
         if let results {
             let metadatas = Array(results.freeze())
             self.dataSource.updateMetadataIndexPath(metadatas: metadatas, dataSourceResults: dataSourceResults) { updated in
-                if updated {
+                if updated || self.isNumberOfItemsInAllSectionsNull {
                     super.reloadDataSource()
                 }
             }
@@ -180,15 +180,12 @@ class NCFiles: NCCollectionViewCommon {
                         }
 
                         self.richWorkspaceText = tableDirectory?.richWorkspace
-
-                        if reloadDataSource {
-                            self.reloadDataSource()
-                        } else if self.dataSource.isEmpty() {
-                            self.collectionView.reloadData()
-                        }
-                    } else if self.dataSource.isEmpty() {
-                        self.collectionView.reloadData()
                     }
+
+                    if reloadDataSource || self.isNumberOfItemsInAllSectionsNull {
+                        self.reloadDataSource()
+                    }
+
                     self.refreshControl.endRefreshing()
                 }
             }

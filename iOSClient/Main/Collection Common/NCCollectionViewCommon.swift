@@ -127,6 +127,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         return predicate
     }
 
+    var isNumberOfItemsInAllSectionsNull: Bool {
+        var totalItems = 0
+        for section in 0..<self.collectionView.numberOfSections {
+            totalItems += self.collectionView.numberOfItems(inSection: section)
+        }
+        return totalItems == 0
+    }
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -172,6 +180,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
             self.database.cleanEtagDirectory(serverUrl: self.serverUrl, account: self.session.account)
+            self.dataSource.removeAll()
             self.getServerData()
         }
 
