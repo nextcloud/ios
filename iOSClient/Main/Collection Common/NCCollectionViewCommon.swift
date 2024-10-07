@@ -1030,8 +1030,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                           options: .transitionCrossDissolve,
                           animations: { self.collectionView.reloadData() },
                           completion: nil)
-
-        self.refreshControl.endRefreshing()
     }
 
     func getServerData() {

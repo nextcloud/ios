@@ -78,6 +78,7 @@ class NCFiles: NCCollectionViewCommon {
                 self.titleCurrentFolder = self.getNavigationTitle()
                 self.setNavigationLeftItems()
 
+                self.dataSource.removeAll()
                 self.reloadDataSource()
                 self.getServerData()
             }
@@ -188,6 +189,7 @@ class NCFiles: NCCollectionViewCommon {
                     } else if self.dataSource.isEmpty() {
                         self.collectionView.reloadData()
                     }
+                    self.refreshControl.endRefreshing()
                 }
             }
         }
