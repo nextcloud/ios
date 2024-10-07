@@ -33,7 +33,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     @IBOutlet weak var baseUrlTextField: UITextField!
     @IBOutlet weak var loginAddressDetail: UILabel!
     @IBOutlet weak var loginButton: UIButton!
-    @IBOutlet weak var loginImage: UIImageView!
     @IBOutlet weak var qrCode: UIButton!
     @IBOutlet weak var certificate: UIButton!
     @IBOutlet weak var enforceServersButton: UIButton!
@@ -102,18 +101,12 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         loginAddressDetail.textColor = textColor
         loginAddressDetail.text = String.localizedStringWithFormat(NSLocalizedString("_login_address_detail_", comment: ""), NCBrandOptions.shared.brand)
 
-        // Login Image
-        loginImage.image = UIImage(named: "arrow.right")?.image(color: textColor, size: 100)
-
         // brand
         if NCBrandOptions.shared.disable_request_login_url {
             baseUrlTextField.isEnabled = false
             baseUrlTextField.isUserInteractionEnabled = false
             baseUrlTextField.alpha = 0.5
         }
-
-        // qrcode
-//        qrCode.setImage(UIImage(systemName: "qrcode.viewfinder")?.image(color: textColor, size: 100), for: .normal)
 
         // certificate
         certificate.setImage(UIImage(named: "certificate")?.image(color: textColor, size: 100), for: .normal)
@@ -188,7 +181,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             enforceServersButton.layer.cornerRadius = 10
             enforceServersButton.menu = .init(title: NSLocalizedString("_servers_", comment: ""), children: actions)
             enforceServersButton.showsMenuAsPrimaryAction = true
-
             enforceServersButton.configuration?.titleTextAttributesTransformer =
                UIConfigurationTextAttributesTransformer { incoming in
                  var outgoing = incoming
