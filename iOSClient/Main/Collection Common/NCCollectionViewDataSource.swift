@@ -27,6 +27,7 @@ import RealmSwift
 
 class NCCollectionViewDataSource: NSObject {
     private let utilityFileSystem = NCUtilityFileSystem()
+    private let utility = NCUtility()
     private let global = NCGlobal.shared
     private var sectionsValue: [String] = []
     private var providers: [NKSearchProvider]?
@@ -268,7 +269,7 @@ class NCCollectionViewDataSource: NSObject {
         return nil
     }
 
-    func updateMetadataIndexPath(metadatas: [tableMetadata], dataSourceMetadatas: [tableMetadata], completion: @escaping (_ update: Bool) -> Void) {
+    func caching(metadatas: [tableMetadata], dataSourceMetadatas: [tableMetadata], completion: @escaping (_ update: Bool) -> Void) {
         var counter: Int = 0
         var updated: Bool = dataSourceMetadatas.isEmpty
 
@@ -285,6 +286,13 @@ class NCCollectionViewDataSource: NSObject {
                 }
 
                 self.metadataIndexPath[indexPath] = tableMetadata(value: metadata)
+                /// caching preview
+                if metadata.isImageOrVideo,
+                   NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256) == nil,
+                   let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256) {
+                    NCImageCache.shared.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: self.global.previewExt256, cost: counter)
+                }
+
                 counter += 1
             }
 

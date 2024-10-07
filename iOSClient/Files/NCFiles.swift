@@ -136,7 +136,7 @@ class NCFiles: NCCollectionViewCommon {
 
         if let results {
             let metadatas = Array(results.freeze())
-            self.dataSource.updateMetadataIndexPath(metadatas: metadatas, dataSourceMetadatas: dataSourceMetadatas) { updated in
+            self.dataSource.caching(metadatas: metadatas, dataSourceMetadatas: dataSourceMetadatas) { updated in
                 if updated || self.isNumberOfItemsInAllSectionsNull {
                     super.reloadDataSource()
                 }
