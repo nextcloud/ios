@@ -135,6 +135,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         return totalItems == 0
     }
 
+    var isPinchGestureActive: Bool {
+        return pinchGesture.state == .began || pinchGesture.state == .changed
+    }
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -236,6 +240,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             collectionView?.collectionViewLayout = mediaLayout
             self.layoutType = global.layoutPhotoSquare
         }
+
+        collectionView.reloadData()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -379,7 +385,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         layoutForView.layout = layoutForView.layout
         self.layoutType = layoutForView.layout
 
-        self.reloadDataSource()
+        collectionView.reloadData()
 
         switch layoutForView.layout {
         case global.layoutList:

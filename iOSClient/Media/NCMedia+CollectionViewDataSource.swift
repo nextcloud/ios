@@ -104,7 +104,6 @@ extension NCMedia: UICollectionViewDataSource {
         let ext = global.getSizeExtension(column: self.numberOfColumns)
         let imageCache = imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext)
 
-        cell.backgroundColor = .secondarySystemBackground
         cell.imageItem.image = imageCache
         cell.date = metadata.date as Date
         cell.ocId = metadata.ocId

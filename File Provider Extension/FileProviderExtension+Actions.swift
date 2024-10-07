@@ -135,8 +135,7 @@ extension FileProviderExtension {
     }
 
     override func renameItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, toName itemName: String, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
-        guard let metadata = providerUtility.getTableMetadataFromItemIdentifier(itemIdentifier),
-              let directoryTable = self.database.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
+        guard let metadata = providerUtility.getTableMetadataFromItemIdentifier(itemIdentifier) else {
             return completionHandler(nil, NSFileProviderError(.noSuchItem))
         }
         let fileNameFrom = metadata.fileNameView
@@ -144,21 +143,14 @@ extension FileProviderExtension {
         let fileNamePathTo = metadata.serverUrl + "/" + itemName
         let ocId = metadata.ocId
 
-        NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNamePathFrom, serverUrlFileNameDestination: fileNamePathTo, overwrite: false, account: metadata.account) { account, error in
+        NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNamePathFrom, serverUrlFileNameDestination: fileNamePathTo, overwrite: false, account: metadata.account) { _, error in
             if error == .success {
-                // Rename metadata
+
                 self.database.renameMetadata(fileNameNew: itemName, ocId: ocId)
                 self.database.setMetadataServeUrlFileNameStatusNormal(ocId: ocId)
 
                 guard let metadata = self.database.getMetadataFromOcId(ocId) else {
                     return completionHandler(nil, NSFileProviderError(.noSuchItem))
-                }
-                if metadata.directory {
-                    self.database.setDirectory(serverUrl: fileNamePathFrom, serverUrlTo: fileNamePathTo, encrypted: directoryTable.e2eEncrypted, account: account)
-                } else {
-                    let itemIdentifier = self.providerUtility.getItemIdentifier(metadata: metadata)
-                    self.providerUtility.moveFile(self.utilityFileSystem.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: fileNameFrom), toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: itemName))
-                    self.database.setLocalFile(ocId: ocId, fileName: itemName)
                 }
 
                 guard let parentItemIdentifier = self.providerUtility.getParentItemIdentifier(metadata: metadata) else {
