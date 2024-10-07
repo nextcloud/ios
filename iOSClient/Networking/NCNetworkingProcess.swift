@@ -87,10 +87,10 @@ class NCNetworkingProcess {
                     let hasSynchronizationTask = tasks.contains { $0.taskDescription == NCGlobal.shared.taskDescriptionSynchronization }
                     let resultsTransfer = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status IN %@", self.global.metadataStatusInTransfer))
 
-                    if resultsTransfer == nil && !hasSynchronizationTask {
-                        // No tranfer, disable
+                    if resultsTransfer.isEmptyOrNil && !hasSynchronizationTask {
+                        ScreenAwakeManager.shared.mode = .off
                     } else {
-                        // transfer enable
+                        ScreenAwakeManager.shared.mode = NCKeychain().screenAwakeMode
                     }
                 }
 
