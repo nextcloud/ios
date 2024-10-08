@@ -277,15 +277,7 @@ class NCCollectionViewDataSource: NSObject {
             for metadata in metadatas {
                 let indexPath = IndexPath(row: counter, section: 0)
                 if indexPath.row < dataSourceMetadatas.count {
-                    let etag = dataSourceMetadatas[indexPath.row].etag
-                    let favorite = dataSourceMetadatas[indexPath.row].favorite
-                    let fileNameView = dataSourceMetadatas[indexPath.row].fileNameView
-                    let fileName = dataSourceMetadatas[indexPath.row].fileName
-
-                    if etag != metadata.etag ||
-                       favorite != metadata.favorite ||
-                       fileNameView != metadata.fileNameView ||
-                       fileName != metadata.fileName {
+                    if !metadata.isEqual(dataSourceMetadatas[indexPath.row]) {
                         updated = true
                     }
                 } else {
