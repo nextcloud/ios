@@ -1731,7 +1731,6 @@
 		F7CE8AFB1DC1F8D8009CAE48 /* Share.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = Share.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F7CEE5FE2BA9A5C9003EFD89 /* NCTrashGridCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCTrashGridCell.xib; sourceTree = "<group>"; };
 		F7CEE5FF2BA9A5C9003EFD89 /* NCTrashGridCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCTrashGridCell.swift; sourceTree = "<group>"; };
-		F7CF16A22A4D7C7A000FF107 /* NCMoreUserCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCMoreUserCell.xib; sourceTree = "<group>"; };
 		F7D1611F23CF19E30039EBBF /* NCViewerRichWorkspace.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCViewerRichWorkspace.storyboard; sourceTree = "<group>"; };
 		F7D1C4AB2C9484FD00EC6D44 /* NCMedia+CollectionViewDataSourcePrefetching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCMedia+CollectionViewDataSourcePrefetching.swift"; sourceTree = "<group>"; };
 		F7D2C772246470CA008513AE /* XLForm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XLForm.framework; path = Carthage/Build/iOS/XLForm.framework; sourceTree = "<group>"; };
@@ -2071,14 +2070,6 @@
 				C0046CDB2A17B98400D87C9D /* NextcloudUITests */,
 			);
 			path = Tests;
-			sourceTree = "<group>";
-		};
-		F33AAF982A601465006ECCBD /* Recovered References */ = {
-			isa = PBXGroup;
-			children = (
-				F7CF16A22A4D7C7A000FF107 /* NCMoreUserCell.xib */,
-			);
-			name = "Recovered References";
 			sourceTree = "<group>";
 		};
 		F37208762BAB4B4B006B5430 /* Common */ = {
@@ -3147,7 +3138,6 @@
 				F70716E32987F81500E72C1D /* File Provider Extension UI.appex */,
 				C04E2F202A17BB4D001BAD85 /* NextcloudIntegrationTests.xctest */,
 				C0046CDA2A17B98400D87C9D /* NextcloudUITests.xctest */,
-				F33AAF982A601465006ECCBD /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};

@@ -1110,8 +1110,9 @@
 "_poll_desc_"                    = "Please complete the log in process in your browser";
 
 // MARK: File name validator
-"_file_name_validator_error_ends_with_space_period_" = "Name ends with a space or a period.";
+"_file_name_validator_error_ends_with_space_period_" = "Name must not contain spaces at the beginning or end.";
 "_file_name_validator_error_reserved_name_" = "\"%@\" is a forbidden name.";
 "_file_name_validator_error_forbidden_file_extension_" = "\".%@\" is a forbidden file extension.";
 "_file_name_validator_error_invalid_character_" = "Name contains an invalid character: \"%@\".";
+"_file_name_validator_error_space_" = "Name must not contain spaces at the beginning or end.";
 "_please_rename_file_"      = "Please rename the file or folder.";
