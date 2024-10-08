@@ -1048,11 +1048,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     @objc func reloadDataSource() {
         guard !session.account.isEmpty, !self.isSearchingMode else { return }
 
-        UIView.transition(with: self.collectionView,
-                          duration: 0.20,
-                          options: .transitionCrossDissolve,
-                          animations: { self.collectionView.reloadData() },
-                          completion: nil)
+        DispatchQueue.main.async {
+            UIView.transition(with: self.collectionView,
+                              duration: 0.20,
+                              options: .transitionCrossDissolve,
+                              animations: { self.collectionView.reloadData() },
+                              completion: nil)
+        }
     }
 
     func getServerData() {
