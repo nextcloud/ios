@@ -929,7 +929,7 @@ class NCOperationDeleteFileOrFolder: ConcurrentOperation, @unchecked Sendable {
                     self.database.deleteDirectoryAndSubDirectory(serverUrl: NCUtilityFileSystem().stringAppendServerUrl(self.metadata.serverUrl, addFileName: self.metadata.fileName), account: self.metadata.account)
                 }
             } else {
-                self.database.setMetadataStatus(ocId: self.ocId, status: self.global.metadataStatusNormal )
+                self.database.setMetadataStatus(ocId: self.ocId, status: self.global.metadataStatusNormal)
             }
 
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": [self.ocId], "error": error])
