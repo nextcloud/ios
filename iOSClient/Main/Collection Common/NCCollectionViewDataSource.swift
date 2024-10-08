@@ -280,7 +280,12 @@ class NCCollectionViewDataSource: NSObject {
                     let etag = dataSourceMetadatas[indexPath.row].etag
                     let favorite = dataSourceMetadatas[indexPath.row].favorite
                     let fileNameView = dataSourceMetadatas[indexPath.row].fileNameView
-                    if etag != metadata.etag || favorite != metadata.favorite || fileNameView != metadata.fileNameView {
+                    let fileName = dataSourceMetadatas[indexPath.row].fileName
+
+                    if etag != metadata.etag ||
+                       favorite != metadata.favorite ||
+                       fileNameView != metadata.fileNameView ||
+                       fileName != metadata.fileName {
                         updated = true
                     }
                 } else {
@@ -288,7 +293,9 @@ class NCCollectionViewDataSource: NSObject {
                 }
 
                 self.metadataIndexPath[indexPath] = tableMetadata(value: metadata)
+
                 /// caching preview
+                /// 
                 if metadata.isImageOrVideo,
                    NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256) == nil,
                    let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256) {
