@@ -31,10 +31,11 @@ class NCNetworkingProcess {
 
     private let utilityFileSystem = NCUtilityFileSystem()
     private let database = NCManageDatabase.shared
+    private let global = NCGlobal.shared
+    private let networking = NCNetworking.shared
     private var notificationToken: NotificationToken?
     private var hasRun: Bool = false
     private let lockQueue = DispatchQueue(label: "com.nextcloud.networkingprocess.lockqueue")
-    private let global = NCGlobal.shared
     private var timerProcess: Timer?
 
     private init() {
@@ -55,7 +56,7 @@ class NCNetworkingProcess {
                         guard let self else { return }
 
                         self.lockQueue.sync {
-                            guard !self.hasRun, NCNetworking.shared.isOnline else { return }
+                            guard !self.hasRun, self.networking.isOnline else { return }
                             self.hasRun = true
 
                             Task { [weak self] in
@@ -79,13 +80,13 @@ class NCNetworkingProcess {
         self.timerProcess = Timer.scheduledTimer(withTimeInterval: 3, repeats: true, block: { _ in
 
             self.lockQueue.sync {
-                guard !self.hasRun, NCNetworking.shared.isOnline else { return }
+                guard !self.hasRun, self.networking.isOnline else { return }
                 self.hasRun = true
 
                 /// Keep screen awake
                 ///
                 Task {
-                    let tasks = await NCNetworking.shared.getAllDataTask()
+                    let tasks = await self.networking.getAllDataTask()
                     let hasSynchronizationTask = tasks.contains { $0.taskDescription == NCGlobal.shared.taskDescriptionSynchronization }
                     let resultsTransfer = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status IN %@", self.global.metadataStatusInTransfer))
 
@@ -138,16 +139,37 @@ class NCNetworkingProcess {
         let metadatasDownloading = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusDownloading))
         let metadatasUploading = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusUploading))
         let metadatasUploadError: [tableMetadata] = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusUploadError), sortedByKeyPath: "sessionDate", ascending: true) ?? []
-        let isWiFi = NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi
+        let isWiFi = networking.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi
         var counterDownloading = metadatasDownloading.count
         var counterUploading = metadatasUploading.count
+
+        /// ------------------------ FAVORITE
+        ///
+        if let metadatasWaitFavorite = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitFavorite), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitFavorite.isEmpty {
+            for metadata in metadatasWaitFavorite {
+                let session = NCSession.Session(account: metadata.account, urlBase: metadata.urlBase, user: metadata.user, userId: metadata.userId)
+                let fileName = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
+                let error = await networking.setFavorite(fileName: fileName, favorite: metadata.favorite, account: metadata.account)
+                if error != .success {
+                    database.setMetadataStatus(ocId: metadata.ocId, status: global.metadataStatusNormal)
+                } else {
+                    let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+                    let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: true, account: metadata.account)
+                    if results.error == .success, let file = results.files?.first {
+                        database.setMetadataFavorite(ocId: file.ocId, favorite: file.favorite, status: global.metadataStatusNormal)
+                    }
+                }
+            }
+
+            return (counterDownloading, counterUploading, metadatasWaitFavorite.count)
+        }
 
         /// ------------------------ DELETE
         ///
         if let metadatasWaitDelete = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitDelete), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitDelete.isEmpty {
             for metadata in metadatasWaitDelete {
-                if NCNetworking.shared.deleteFileOrFolderQueue.operations.filter({ ($0 as? NCOperationDeleteFileOrFolder)?.ocId == metadata.ocId }).isEmpty {
-                    NCNetworking.shared.deleteFileOrFolderQueue.addOperation(NCOperationDeleteFileOrFolder(metadata: metadata))
+                if networking.deleteFileOrFolderQueue.operations.filter({ ($0 as? NCOperationDeleteFileOrFolder)?.ocId == metadata.ocId }).isEmpty {
+                    networking.deleteFileOrFolderQueue.addOperation(NCOperationDeleteFileOrFolder(metadata: metadata))
                 }
             }
             return (counterDownloading, counterUploading, metadatasWaitDelete.count)
@@ -157,7 +179,7 @@ class NCNetworkingProcess {
         ///
         if let metadatasWaitCreateFolder = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitCreateFolder), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitCreateFolder.isEmpty {
             for metadata in metadatasWaitCreateFolder {
-                let error = await NCNetworking.shared.createFolder(metadata: metadata)
+                let error = await networking.createFolder(metadata: metadata)
                 if error != .success {
                     if metadata.sessionError.isEmpty {
                         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
@@ -175,7 +197,7 @@ class NCNetworkingProcess {
             for metadata in metadatasWaitRename {
                 let serverUrlFileNameSource = metadata.serveUrlFileName
                 let serverUrlFileNameDestination = metadata.serverUrl + "/" + metadata.fileName
-                let result = await NCNetworking.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: false, account: metadata.account)
+                let result = await networking.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: false, account: metadata.account)
                 if result.error == .success {
                     database.setMetadataServeUrlFileNameStatusNormal(ocId: metadata.ocId)
                 } else {
@@ -189,13 +211,13 @@ class NCNetworkingProcess {
         /// ------------------------ DOWNLOAD
         ///
         let limitDownload = maxConcurrentOperationDownload - counterDownloading
-        let metadatasWaitDownload = self.database.getMetadatas(predicate: NSPredicate(format: "session == %@ AND status == %d", NCNetworking.shared.sessionDownloadBackground, global.metadataStatusWaitDownload), numItems: limitDownload, sorted: "sessionDate", ascending: true)
+        let metadatasWaitDownload = self.database.getMetadatas(predicate: NSPredicate(format: "session == %@ AND status == %d", networking.sessionDownloadBackground, global.metadataStatusWaitDownload), numItems: limitDownload, sorted: "sessionDate", ascending: true)
         for metadata in metadatasWaitDownload where counterDownloading < maxConcurrentOperationDownload {
             counterDownloading += 1
-            NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
+            networking.download(metadata: metadata, withNotificationProgressTask: true)
         }
         if counterDownloading == 0 {
-            let metadatasDownloadError: [tableMetadata] = self.database.getMetadatas(predicate: NSPredicate(format: "session == %@ AND status == %d", NCNetworking.shared.sessionDownloadBackground, global.metadataStatusDownloadError), sortedByKeyPath: "sessionDate", ascending: true) ?? []
+            let metadatasDownloadError: [tableMetadata] = self.database.getMetadatas(predicate: NSPredicate(format: "session == %@ AND status == %d", networking.sessionDownloadBackground, global.metadataStatusDownloadError), sortedByKeyPath: "sessionDate", ascending: true) ?? []
             for metadata in metadatasDownloadError {
                 // Verify COUNTER ERROR
                 if let transfer = NCTransferProgress.shared.get(ocIdTransfer: metadata.ocIdTransfer),
@@ -248,7 +270,7 @@ class NCNetworkingProcess {
                     /// isE2EE
                     let isInDirectoryE2EE = metadata.isDirectoryE2EE
                     /// NO WiFi
-                    if !isWiFi && metadata.session == NCNetworking.shared.sessionUploadBackgroundWWan { continue }
+                    if !isWiFi && metadata.session == networking.sessionUploadBackgroundWWan { continue }
                     if applicationState != .active && (isInDirectoryE2EE || metadata.chunk > 0) { continue }
                     if let metadata = self.database.setMetadataStatus(ocId: metadata.ocId, status: global.metadataStatusUploading) {
                         /// find controller
@@ -268,7 +290,7 @@ class NCNetworkingProcess {
                             }
                         }
 
-                        NCNetworking.shared.upload(metadata: metadata, controller: controller)
+                        networking.upload(metadata: metadata, controller: controller)
                         if isInDirectoryE2EE || metadata.chunk > 0 {
                             maxConcurrentOperationUpload = 1
                         }
@@ -292,14 +314,14 @@ class NCNetworkingProcess {
                     NextcloudKit.shared.getUserProfile(account: metadata.account) { _, userProfile, _, error in
                         if error == .success, let userProfile, userProfile.quotaFree > 0, userProfile.quotaFree > metadata.size {
                             self.database.setMetadataSession(ocId: metadata.ocId,
-                                                             session: NCNetworking.shared.sessionUploadBackground,
+                                                             session: self.networking.sessionUploadBackground,
                                                              sessionError: "",
                                                              status: self.global.metadataStatusWaitUpload)
                         }
                     }
                 } else {
                     self.database.setMetadataSession(ocId: metadata.ocId,
-                                                     session: NCNetworking.shared.sessionUploadBackground,
+                                                     session: self.networking.sessionUploadBackground,
                                                      sessionError: "",
                                                      status: global.metadataStatusWaitUpload)
                 }
@@ -323,7 +345,7 @@ class NCNetworkingProcess {
     func refreshProcessingTask() async -> (counterDownloading: Int, counterUploading: Int, counterWebDAV: Int) {
         await withCheckedContinuation { continuation in
             self.lockQueue.sync {
-                guard !self.hasRun, NCNetworking.shared.isOnline else { return }
+                guard !self.hasRun, networking.isOnline else { return }
                 self.hasRun = true
 
                 Task { [weak self] in

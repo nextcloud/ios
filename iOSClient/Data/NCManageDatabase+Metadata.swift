@@ -845,6 +845,19 @@ extension NCManageDatabase {
         }
     }
 
+    func setMetadataFavorite(ocId: String, favorite: Bool, status: Int) {
+        do {
+            let realm = try Realm()
+            try realm.write {
+                let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
+                result?.favorite = favorite
+                result?.status = status
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
+        }
+    }
+
     // MARK: - GetMetadata
 
     func getMetadata(predicate: NSPredicate) -> tableMetadata? {

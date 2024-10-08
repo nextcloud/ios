@@ -139,6 +139,14 @@ extension NCNetworking {
         })
     }
 
+    func setFavorite(fileName: String, favorite: Bool, account: String) async -> NKError {
+        await withUnsafeContinuation({ continuation in
+            NextcloudKit.shared.setFavorite(fileName: fileName, favorite: favorite, account: account) { _, error in
+                continuation.resume(returning: error)
+            }
+        })
+    }
+
     func readFileOrFolder(serverUrlFileName: String,
                           depth: String,
                           showHiddenFiles: Bool = true,

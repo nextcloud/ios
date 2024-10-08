@@ -278,7 +278,9 @@ class NCCollectionViewDataSource: NSObject {
                 let indexPath = IndexPath(row: counter, section: 0)
                 if indexPath.row < dataSourceMetadatas.count {
                     let etag = dataSourceMetadatas[indexPath.row].etag
-                    if etag != metadata.etag {
+                    let favorite = dataSourceMetadatas[indexPath.row].favorite
+                    let fileNameView = dataSourceMetadatas[indexPath.row].fileNameView
+                    if etag != metadata.etag || favorite != metadata.favorite || fileNameView != metadata.fileNameView {
                         updated = true
                     }
                 } else {

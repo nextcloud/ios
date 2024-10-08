@@ -538,34 +538,9 @@ extension NCNetworking {
 
     func favoriteMetadata(_ metadata: tableMetadata,
                           completion: @escaping (_ error: NKError) -> Void) {
-        if let metadataLive = self.database.getMetadataLivePhoto(metadata: metadata) {
-            favoriteMetadataPlain(metadataLive) { error in
-                if error == .success {
-                    self.favoriteMetadataPlain(metadata, completion: completion)
-                } else {
-                    completion(error)
-                }
-            }
-        } else {
-            favoriteMetadataPlain(metadata, completion: completion)
-        }
-    }
+        self.database.setMetadataFavorite(ocId: metadata.ocId, favorite: !metadata.favorite, status: global.metadataStatusWaitFavorite)
 
-    private func favoriteMetadataPlain(_ metadata: tableMetadata,
-                                       completion: @escaping (_ error: NKError) -> Void) {
-        let session = NCSession.Session(account: metadata.account, urlBase: metadata.urlBase, user: metadata.user, userId: metadata.userId)
-        let fileName = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
-        let favorite = !metadata.favorite
-        let ocId = metadata.ocId
-
-        NextcloudKit.shared.setFavorite(fileName: fileName, favorite: favorite, account: metadata.account) { _, error in
-            if error == .success {
-                metadata.favorite = favorite
-                self.database.addMetadata(metadata)
-                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterFavoriteFile, userInfo: ["ocId": ocId, "serverUrl": metadata.serverUrl])
-            }
-            completion(error)
-        }
+        NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterFavoriteFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl])
     }
 
     // MARK: - Lock Files
