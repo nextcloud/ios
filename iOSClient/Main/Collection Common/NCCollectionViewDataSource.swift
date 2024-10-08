@@ -23,26 +23,37 @@
 
 import UIKit
 import NextcloudKit
+import RealmSwift
 
 class NCCollectionViewDataSource: NSObject {
     private let utilityFileSystem = NCUtilityFileSystem()
+    private let utility = NCUtility()
     private let global = NCGlobal.shared
     private var sectionsValue: [String] = []
     private var providers: [NKSearchProvider]?
     private var searchResults: [NKSearchResult]?
+    private var results: Results<tableMetadata>?
     private var metadatas: [tableMetadata] = []
     private var metadatasForSection: [NCMetadataForSection] = []
     private var layoutForView: NCDBLayoutForView?
+    private var metadataIndexPath = ThreadSafeDictionary<IndexPath, tableMetadata>()
 
     override init() { super.init() }
 
-    init(metadatas: [tableMetadata],
+    init(results: Results<tableMetadata>?,
          layoutForView: NCDBLayoutForView? = nil,
          providers: [NKSearchProvider]? = nil,
          searchResults: [NKSearchResult]? = nil) {
         super.init()
+        removeAll()
 
-        self.metadatas = metadatas
+        self.results = results
+        if let results {
+            self.metadatas = Array(results.freeze())
+        } else {
+            self.metadatas = []
+        }
+
         self.layoutForView = layoutForView
         /// unified search
         self.providers = providers
@@ -56,7 +67,9 @@ class NCCollectionViewDataSource: NSObject {
     // MARK: -
 
     func removeAll() {
-        self.metadatas = []
+        self.metadatas.removeAll()
+        self.metadataIndexPath.removeAll()
+        self.results = nil
 
         self.metadatasForSection.removeAll()
         self.sectionsValue.removeAll()
@@ -165,16 +178,12 @@ class NCCollectionViewDataSource: NSObject {
 
     // MARK: -
 
-    func getResultMetadatas() -> [tableMetadata] {
-        let validMetadatas = metadatas.filter { !$0.isInvalidated }
-
-        return validMetadatas
+    func getMetadatas() -> [tableMetadata] {
+        return self.metadatas
     }
 
     func isEmpty() -> Bool {
-        let validMetadatas = metadatas.filter { !$0.isInvalidated }
-
-        return validMetadatas.isEmpty
+        return self.metadatas.isEmpty
     }
 
     func getIndexPathMetadata(ocId: String) -> IndexPath? {
@@ -229,22 +238,6 @@ class NCCollectionViewDataSource: NSObject {
         return (directories.count, files.count, size)
     }
 
-    func getMetadata(indexPath: IndexPath) -> tableMetadata? {
-        let validMetadatas = metadatas.filter { !$0.isInvalidated }
-
-        if !metadatasForSection.isEmpty, indexPath.section < metadatasForSection.count {
-            if let metadataForSection = getMetadataForSection(indexPath.section),
-               indexPath.row < metadataForSection.metadatas.count,
-               !metadataForSection.metadatas[indexPath.row].isInvalidated {
-                return tableMetadata(value: metadataForSection.metadatas[indexPath.row])
-            }
-        } else if indexPath.row < validMetadatas.count {
-            return tableMetadata(value: validMetadatas[indexPath.row])
-        }
-
-        return nil
-    }
-
     func getResultMetadata(indexPath: IndexPath) -> tableMetadata? {
         let validMetadatas = metadatas.filter { !$0.isInvalidated }
 
@@ -255,16 +248,58 @@ class NCCollectionViewDataSource: NSObject {
         return nil
     }
 
-    func getMetadatas(indexPaths: [IndexPath]) -> [tableMetadata] {
-        var metadatas: [tableMetadata] = []
-        let validMetadatas = self.metadatas.filter { !$0.isInvalidated }
-
-        for indexPath in indexPaths {
-            if indexPath.row < validMetadatas.count {
-                metadatas.append(tableMetadata(value: validMetadatas[indexPath.row]))
+    func getMetadata(indexPath: IndexPath) -> tableMetadata? {
+        if !metadatasForSection.isEmpty, indexPath.section < metadatasForSection.count {
+            if let metadataForSection = getMetadataForSection(indexPath.section),
+               indexPath.row < metadataForSection.metadatas.count,
+               !metadataForSection.metadatas[indexPath.row].isInvalidated {
+                return tableMetadata(value: metadataForSection.metadatas[indexPath.row])
+            }
+        } else if indexPath.row < self.metadatas.count {
+            if let metadata = metadataIndexPath[indexPath] {
+                return metadata
+            } else {
+                let validMetadatas = self.metadatas.filter { !$0.isInvalidated }
+                let metadata = tableMetadata(value: validMetadatas[indexPath.row])
+                metadataIndexPath[indexPath] = metadata
+                return metadata
             }
         }
-        return metadatas
+
+        return nil
+    }
+
+    func caching(metadatas: [tableMetadata], dataSourceMetadatas: [tableMetadata], completion: @escaping (_ update: Bool) -> Void) {
+        var counter: Int = 0
+        var updated: Bool = dataSourceMetadatas.isEmpty
+
+        DispatchQueue.global().async {
+            for metadata in metadatas {
+                let indexPath = IndexPath(row: counter, section: 0)
+                if indexPath.row < dataSourceMetadatas.count {
+                    let etag = dataSourceMetadatas[indexPath.row].etag
+                    if etag != metadata.etag {
+                        updated = true
+                    }
+                } else {
+                    updated = true
+                }
+
+                self.metadataIndexPath[indexPath] = tableMetadata(value: metadata)
+                /// caching preview
+                if metadata.isImageOrVideo,
+                   NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256) == nil,
+                   let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256) {
+                    NCImageCache.shared.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: self.global.previewExt256, cost: counter)
+                }
+
+                counter += 1
+            }
+
+            DispatchQueue.main.async {
+                return completion(updated)
+            }
+        }
     }
 
     // MARK: -

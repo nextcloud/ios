@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23094" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="dark"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23084"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -18,7 +18,7 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="5Ci-V1-hf5" userLabel="imageItem">
-                        <rect key="frame" x="0.0" y="0.0" width="400" height="400"/>
+                        <rect key="frame" x="-1" y="-1" width="402" height="402"/>
                     </imageView>
                     <visualEffectView hidden="YES" contentMode="scaleAspectFill" translatesAutoresizingMaskIntoConstraints="NO" id="bQY-LA-65a" userLabel="VisualEffect">
                         <rect key="frame" x="0.0" y="0.0" width="400" height="400"/>
@@ -58,6 +58,7 @@
                     </button>
                 </subviews>
             </view>
+            <color key="backgroundColor" systemColor="secondarySystemBackgroundColor"/>
             <constraints>
                 <constraint firstAttribute="bottom" secondItem="PfR-89-FqQ" secondAttribute="bottom" constant="8" id="0XY-5K-ZuW"/>
                 <constraint firstItem="DHy-Up-3Bh" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" constant="5" id="1T3-8p-uIW"/>
@@ -65,13 +66,13 @@
                 <constraint firstItem="bQY-LA-65a" firstAttribute="top" secondItem="vf1-Kf-9uL" secondAttribute="top" id="A1R-of-6Ra"/>
                 <constraint firstItem="DHy-Up-3Bh" firstAttribute="top" secondItem="vf1-Kf-9uL" secondAttribute="top" constant="5" id="ESV-qE-tbO"/>
                 <constraint firstAttribute="bottom" secondItem="bQY-LA-65a" secondAttribute="bottom" id="ET1-N7-SQl"/>
-                <constraint firstItem="5Ci-V1-hf5" firstAttribute="top" secondItem="vf1-Kf-9uL" secondAttribute="top" id="Ouj-ZD-UFm"/>
+                <constraint firstItem="5Ci-V1-hf5" firstAttribute="top" secondItem="vf1-Kf-9uL" secondAttribute="top" constant="-1" id="Ouj-ZD-UFm"/>
                 <constraint firstItem="bQY-LA-65a" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" id="Q47-7m-Z2O"/>
-                <constraint firstAttribute="trailing" secondItem="5Ci-V1-hf5" secondAttribute="trailing" id="cHT-cP-NN6"/>
-                <constraint firstAttribute="bottom" secondItem="5Ci-V1-hf5" secondAttribute="bottom" id="eEC-eB-alE"/>
+                <constraint firstAttribute="trailing" secondItem="5Ci-V1-hf5" secondAttribute="trailing" constant="-1" id="cHT-cP-NN6"/>
+                <constraint firstAttribute="bottom" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="-1" id="eEC-eB-alE"/>
                 <constraint firstAttribute="trailing" secondItem="PfR-89-FqQ" secondAttribute="trailing" constant="5" id="eUy-Xa-jTG"/>
                 <constraint firstAttribute="trailing" secondItem="bQY-LA-65a" secondAttribute="trailing" id="q1v-Cn-HZf"/>
-                <constraint firstItem="5Ci-V1-hf5" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" id="qT3-WD-iTV"/>
+                <constraint firstItem="5Ci-V1-hf5" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" constant="-1" id="qT3-WD-iTV"/>
                 <constraint firstItem="a0p-rj-jnV" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" constant="5" id="vjD-yv-602"/>
             </constraints>
             <size key="customSize" width="416" height="524"/>
@@ -87,8 +88,11 @@
     </objects>
     <resources>
         <image name="ellipsis" catalog="system" width="128" height="37"/>
+        <systemColor name="secondarySystemBackgroundColor">
+            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
         <systemColor name="systemGray2Color">
-            <color red="0.68235294120000001" green="0.68235294120000001" blue="0.69803921570000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

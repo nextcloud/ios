@@ -66,6 +66,18 @@ struct NCDisplayView: View {
                 }
             }
             .font(.system(size: 16))
+
+            Section(header: Text(NSLocalizedString("_additional_options_", comment: ""))) {
+
+                Picker(NSLocalizedString("_keep_screen_awake_", comment: ""),
+                       selection: $model.screenAwakeState) {
+                    Text(NSLocalizedString("_off_", comment: "")).tag(AwakeMode.off)
+                    Text(NSLocalizedString("_on_", comment: "")).tag(AwakeMode.on)
+                    Text(NSLocalizedString("_while_charging_", comment: "")).tag(AwakeMode.whileCharging)
+                }
+                       .frame(height: 50)
+            }
+            .pickerStyle(.menu)
         }
         .navigationBarTitle(NSLocalizedString("_display_", comment: ""))
         .defaultViewModifier(model)

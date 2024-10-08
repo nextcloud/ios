@@ -400,8 +400,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         NCNetworking.shared.cancelAllTask()
 
-        URLCache.shared.memoryCapacity = 0
-        URLCache.shared.diskCapacity = 0
+        URLCache.shared.removeAllCachedResponses()
 
         utilityFileSystem.removeGroupDirectoryProviderStorage()
         utilityFileSystem.removeGroupApplicationSupport()

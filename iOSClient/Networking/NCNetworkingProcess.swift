@@ -82,15 +82,17 @@ class NCNetworkingProcess {
                 guard !self.hasRun, NCNetworking.shared.isOnline else { return }
                 self.hasRun = true
 
+                /// Keep screen awake
+                ///
                 Task {
                     let tasks = await NCNetworking.shared.getAllDataTask()
                     let hasSynchronizationTask = tasks.contains { $0.taskDescription == NCGlobal.shared.taskDescriptionSynchronization }
                     let resultsTransfer = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status IN %@", self.global.metadataStatusInTransfer))
 
-                    if resultsTransfer == nil && !hasSynchronizationTask {
-                        // No tranfer, disable
+                    if resultsTransfer.isEmptyOrNil && !hasSynchronizationTask {
+                        ScreenAwakeManager.shared.mode = .off
                     } else {
-                        // transfer enable
+                        ScreenAwakeManager.shared.mode = NCKeychain().screenAwakeMode
                     }
                 }
 
@@ -128,7 +130,7 @@ class NCNetworkingProcess {
     }
 
     @discardableResult
-    private func start() async -> (counterDownloading: Int, counterUploading: Int) {
+    private func start() async -> (counterDownloading: Int, counterUploading: Int, counterWebDAV: Int) {
         let applicationState = await checkApplicationState()
         let maxConcurrentOperationDownload = NCBrandOptions.shared.maxConcurrentOperationDownload
         var maxConcurrentOperationUpload = NCBrandOptions.shared.maxConcurrentOperationUpload
@@ -142,29 +144,46 @@ class NCNetworkingProcess {
 
         /// ------------------------ DELETE
         ///
-        if let metadatasDelete = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitDelete), sortedByKeyPath: "serverUrl", ascending: true) {
-            for metadata in metadatasDelete {
+        if let metadatasWaitDelete = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitDelete), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitDelete.isEmpty {
+            for metadata in metadatasWaitDelete {
                 if NCNetworking.shared.deleteFileOrFolderQueue.operations.filter({ ($0 as? NCOperationDeleteFileOrFolder)?.ocId == metadata.ocId }).isEmpty {
                     NCNetworking.shared.deleteFileOrFolderQueue.addOperation(NCOperationDeleteFileOrFolder(metadata: metadata))
                 }
-                return (counterDownloading, counterUploading)
             }
+            return (counterDownloading, counterUploading, metadatasWaitDelete.count)
         }
 
-        /// ------------------------ FOLDER
+        /// ------------------------ CREATE FOLDER
         ///
-        if let metadatasWaitCreateFolder = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitCreateFolder), sortedByKeyPath: "serverUrl", ascending: true) {
+        if let metadatasWaitCreateFolder = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitCreateFolder), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitCreateFolder.isEmpty {
             for metadata in metadatasWaitCreateFolder {
-                let error = await NCNetworking.shared.createFolderOffline(metadata: metadata)
+                let error = await NCNetworking.shared.createFolder(metadata: metadata)
                 if error != .success {
                     if metadata.sessionError.isEmpty {
                         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-                        let message = String(format: NSLocalizedString("_offlinefolder_error_", comment: ""), serverUrlFileName)
+                        let message = String(format: NSLocalizedString("_create_folder_error_", comment: ""), serverUrlFileName)
                         NCContentPresenter().messageNotification(message, error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
                     }
-                    return (counterDownloading, counterUploading)
+                    return (counterDownloading, counterUploading, metadatasWaitCreateFolder.count)
                 }
             }
+        }
+
+        /// ------------------------ RENAME
+        ///
+        if let metadatasWaitRename = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitRename), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitRename.isEmpty {
+            for metadata in metadatasWaitRename {
+                let serverUrlFileNameSource = metadata.serveUrlFileName
+                let serverUrlFileNameDestination = metadata.serverUrl + "/" + metadata.fileName
+                let result = await NCNetworking.shared.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: false, account: metadata.account)
+                if result.error == .success {
+                    database.setMetadataServeUrlFileNameStatusNormal(ocId: metadata.ocId)
+                } else {
+                    database.restoreMetadataFileName(ocId: metadata.ocId)
+                }
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRenameFile, userInfo: ["serverUrl": metadata.serverUrl, "account": metadata.account, "error": result.error])
+            }
+            return (counterDownloading, counterUploading, metadatasWaitRename.count)
         }
 
         /// ------------------------ DOWNLOAD
@@ -195,13 +214,13 @@ class NCNetworkingProcess {
         /// E2EE - only one for time
         for metadata in metadatasUploading.unique(map: { $0.serverUrl }) {
             if metadata.isDirectoryE2EE {
-                return (counterDownloading, counterUploading)
+                return (counterDownloading, counterUploading, 0)
             }
         }
 
         /// CHUNK - only one for time
         if !metadatasUploading.filter({ $0.chunk > 0 }).isEmpty {
-            return (counterDownloading, counterUploading)
+            return (counterDownloading, counterUploading, 0)
         }
 
         for sessionSelector in sessionUploadSelectors where counterUploading < maxConcurrentOperationUpload {
@@ -287,7 +306,7 @@ class NCNetworkingProcess {
             }
         }
 
-        return (counterDownloading, counterUploading)
+        return (counterDownloading, counterUploading, 0)
     }
 
     private func checkApplicationState() async -> UIApplication.State {
@@ -301,7 +320,7 @@ class NCNetworkingProcess {
 
     // MARK: - Public
 
-    func refreshProcessingTask() async -> (counterDownloading: Int, counterUploading: Int) {
+    func refreshProcessingTask() async -> (counterDownloading: Int, counterUploading: Int, counterWebDAV: Int) {
         await withCheckedContinuation { continuation in
             self.lockQueue.sync {
                 guard !self.hasRun, NCNetworking.shared.isOnline else { return }

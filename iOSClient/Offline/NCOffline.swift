@@ -23,6 +23,7 @@
 
 import UIKit
 import NextcloudKit
+import RealmSwift
 
 class NCOffline: NCCollectionViewCommon {
 
@@ -44,16 +45,15 @@ class NCOffline: NCCollectionViewCommon {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+
         reloadDataSource()
     }
 
-    // MARK: - DataSource + NC Endpoint
+    // MARK: - DataSource
 
-    override func queryDB() {
-        super.queryDB()
+    override func reloadDataSource() {
         var ocIds: [String] = []
-        var metadatas: [tableMetadata] = []
-        self.dataSource.removeAll()
+        var results: Results<tableMetadata>?
 
         if self.serverUrl.isEmpty {
             if let directories = self.database.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", session.account), sorted: "serverUrl", ascending: true) {
@@ -65,18 +65,13 @@ class NCOffline: NCCollectionViewCommon {
             for file in files {
                 ocIds.append(file.ocId)
             }
-            if let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@", session.account, ocIds)) {
-                metadatas = Array(results)
-            }
+            results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@", session.account, ocIds))
         } else {
-            metadatas = self.database.getResultsMetadatasPredicate(self.defaultPredicate, layoutForView: layoutForView)
+            results = self.database.getResultsMetadatasPredicate(self.defaultPredicate, layoutForView: layoutForView)
         }
 
-        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView)
-    }
+        self.dataSource = NCCollectionViewDataSource(results: results, layoutForView: layoutForView)
 
-    override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
-        super.reloadDataSourceNetwork(withQueryDB: withQueryDB)
-        reloadDataSource()
+        super.reloadDataSource()
     }
 }

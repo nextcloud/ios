@@ -157,15 +157,18 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
         self.navigationItem.title = titleCurrentFolder
 
-        reloadDataSourceNetwork()
+        reloadDataSource()
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
-        coordinator.animate(alongsideTransition: nil) { _ in
-            self.collectionView?.collectionViewLayout.invalidateLayout()
-        }
+        coordinator.animate(alongsideTransition: { _ in
+            let animator = UIViewPropertyAnimator(duration: 0.3, curve: .easeInOut) {
+                self.collectionView?.collectionViewLayout.invalidateLayout()
+            }
+            animator.startAnimation()
+        })
     }
 
     func presentationControllerDidDismiss( _ presentationController: UIPresentationController) {
@@ -374,7 +377,7 @@ extension NCSelect: UICollectionViewDataSource {
         cell.backgroundView = nil
         cell.hideButtonMore(true)
         cell.hideButtonShare(true)
-        cell.selected(false, isEditMode: false, account: metadata.account)
+        cell.selected(false, isEditMode: false)
 
         // Live Photo
         if metadata.isLivePhoto {
@@ -458,7 +461,7 @@ extension NCSelect: UICollectionViewDelegateFlowLayout {
 // MARK: -
 
 extension NCSelect {
-    func reloadDataSourceNetwork() {
+    func reloadDataSource() {
         var predicate = NSPredicate()
 
         if includeDirectoryE2EEncryption {
@@ -479,11 +482,13 @@ extension NCSelect {
 
         NCNetworking.shared.readFolder(serverUrl: serverUrl, account: session.account, queue: .main) { task in
             self.dataSourceTask = task
-            self.collectionView.reloadData()
+            if self.dataSource.isEmpty() {
+                self.collectionView.reloadData()
+            }
         } completion: { _, _, _, _ in
-            let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: NCDBLayoutForView())
+            let results = self.database.getResultsMetadatasPredicate(predicate, layoutForView: NCDBLayoutForView())
 
-            self.dataSource = NCCollectionViewDataSource(metadatas: metadatas)
+            self.dataSource = NCCollectionViewDataSource(results: results)
             self.collectionView.reloadData()
 
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": self.serverUrl])

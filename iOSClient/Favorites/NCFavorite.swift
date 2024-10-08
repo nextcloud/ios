@@ -44,41 +44,46 @@ class NCFavorite: NCCollectionViewCommon {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        if self.dataSource.isEmpty() {
-            reloadDataSource()
-        }
-        reloadDataSourceNetwork()
+        reloadDataSource()
     }
 
-    // MARK: - DataSource + NC Endpoint
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
 
-    override func queryDB() {
-        super.queryDB()
+        getServerData()
+    }
+
+    // MARK: - DataSource
+
+    override func reloadDataSource() {
         var predicate = self.defaultPredicate
 
         if self.serverUrl.isEmpty {
            predicate = NSPredicate(format: "account == %@ AND favorite == true", session.account)
         }
 
-        let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: layoutForView)
-        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView)
+        let results = self.database.getResultsMetadatasPredicate(predicate, layoutForView: layoutForView)
+        self.dataSource = NCCollectionViewDataSource(results: results, layoutForView: layoutForView)
+
+        super.reloadDataSource()
     }
 
-    override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
-        super.reloadDataSourceNetwork()
+    override func getServerData() {
+        super.getServerData()
 
         NextcloudKit.shared.listingFavorites(showHiddenFiles: NCKeychain().showHiddenFiles, account: session.account) { task in
             self.dataSourceTask = task
-            self.collectionView.reloadData()
+            if self.dataSource.isEmpty() {
+                self.collectionView.reloadData()
+            }
         } completion: { account, files, _, error in
             if error == .success, let files {
                 self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
                     self.database.updateMetadatasFavorite(account: account, metadatas: metadatas)
-                    self.reloadDataSource()
                 }
-            } else {
-                self.reloadDataSource(withQueryDB: withQueryDB)
+                self.reloadDataSource()
             }
+            self.refreshControl.endRefreshing()
         }
     }
 }

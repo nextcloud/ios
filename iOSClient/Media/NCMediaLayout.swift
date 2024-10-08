@@ -293,7 +293,7 @@ public class NCMediaLayout: UICollectionViewLayout {
 }
 
 // MARK: - Private Methods
-private extension NCMediaLayout {
+extension NCMediaLayout {
     func shortestColumnIndex() -> Int {
         var index: Int = 0
         var shortestHeight = MAXFLOAT

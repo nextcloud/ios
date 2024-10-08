@@ -26,18 +26,19 @@ import UIKit
 
 extension NCCollectionViewCommon: UICollectionViewDataSourcePrefetching {
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
-        guard !isSearchingMode, !imageCache.isLoadingCache else { return }
-
         let ext = global.getSizeExtension(column: self.numberOfColumns)
-        let metadatas = self.dataSource.getMetadatas(indexPaths: indexPaths)
+        guard !isSearchingMode,
+              imageCache.allowExtensions(ext: ext)
+        else { return }
         let cost = indexPaths.first?.row ?? 0
 
-        DispatchQueue.global(qos: .userInteractive).async {
-            for metadata in metadatas where metadata.isImageOrVideo {
-                if self.imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) == nil,
-                   let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
-                    self.imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext, cost: cost)
-                }
+        for indexPath in indexPaths {
+            if let metadata = self.dataSource.getMetadata(indexPath: indexPath),
+               metadata.isImageOrVideo,
+               self.imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext) == nil,
+               let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
+
+                self.imageCache.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: ext, cost: cost)
             }
         }
     }

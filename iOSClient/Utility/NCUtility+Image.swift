@@ -125,14 +125,14 @@ extension NCUtility {
     func createImageFileFrom(metadata: tableMetadata) {
         if metadata.classFile != NKCommon.TypeClassFile.image.rawValue, metadata.classFile != NKCommon.TypeClassFile.video.rawValue { return }
         var image: UIImage?
-        let fileNamePath1024 = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+        let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
 
         if image == nil {
             if metadata.classFile == NKCommon.TypeClassFile.image.rawValue {
-                image = UIImage(contentsOfFile: fileNamePath1024)
+                image = UIImage(contentsOfFile: fileNamePath)
             } else if metadata.classFile == NKCommon.TypeClassFile.video.rawValue {
                 let videoPath = NSTemporaryDirectory() + "tempvideo.mp4"
-                utilityFileSystem.linkItem(atPath: fileNamePath1024, toPath: videoPath)
+                utilityFileSystem.linkItem(atPath: fileNamePath, toPath: videoPath)
                 image = imageFromVideo(url: URL(fileURLWithPath: videoPath), at: 0)
             }
         }
@@ -158,9 +158,9 @@ extension NCUtility {
     }
 
     private func createImageStandard(ocId: String, etag: String, image: UIImage) {
-        let ext = [global.previewExt512, global.previewExt256]
-        let size = [global.size512, global.size256]
-        let compressionQuality = [0.6, 0.7]
+        let ext = [global.previewExt1024, global.previewExt512, global.previewExt256]
+        let size = [global.size1024, global.size512, global.size256]
+        let compressionQuality = [0.5, 0.6, 0.7]
 
         for i in 0..<ext.count {
             if !utilityFileSystem.fileProviderStorageImageExists(ocId, etag: etag, ext: ext[i]),

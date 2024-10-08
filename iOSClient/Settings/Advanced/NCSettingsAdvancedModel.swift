@@ -135,8 +135,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
         // Cancel all networking tasks
         NCNetworking.shared.cancelAllTask()
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            URLCache.shared.memoryCapacity = 0
-            URLCache.shared.diskCapacity = 0
+            URLCache.shared.removeAllCachedResponses()
 
             NCManageDatabase.shared.clearDatabase()
 

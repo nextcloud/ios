@@ -23,11 +23,13 @@
 
 import UIKit
 import NextcloudKit
+import RealmSwift
 
 class NCFiles: NCCollectionViewCommon {
     internal var isRoot: Bool = true
     internal var fileNameBlink: String?
     internal var fileNameOpen: String?
+    internal var matadatasHash: String = ""
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -76,8 +78,9 @@ class NCFiles: NCCollectionViewCommon {
                 self.titleCurrentFolder = self.getNavigationTitle()
                 self.setNavigationLeftItems()
 
+                self.dataSource.removeAll()
                 self.reloadDataSource()
-                self.reloadDataSourceNetwork()
+                self.getServerData()
             }
         }
     }
@@ -89,10 +92,7 @@ class NCFiles: NCCollectionViewCommon {
         }
         super.viewWillAppear(animated)
 
-        if self.dataSource.isEmpty() {
-            reloadDataSource(withQueryDB: true)
-        }
-        reloadDataSourceNetwork(withQueryDB: true)
+        reloadDataSource()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -104,6 +104,10 @@ class NCFiles: NCCollectionViewCommon {
             self.fileNameBlink = nil
             self.fileNameOpen = nil
         }
+
+        if !isSearchingMode {
+            getServerData()
+        }
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -113,14 +117,12 @@ class NCFiles: NCCollectionViewCommon {
         fileNameOpen = nil
     }
 
-    // MARK: - DataSource + NC Endpoint
+    // MARK: - DataSource
 
-    override func queryDB() {
-        super.queryDB()
-        self.dataSource.removeAll()
-
+    override func reloadDataSource() {
         var predicate = self.defaultPredicate
         let predicateDirectory = NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, self.serverUrl)
+        let dataSourceMetadatas = self.dataSource.getMetadatas()
 
         if NCKeychain().getPersonalFilesOnly(account: session.account) {
             predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND (ownerId == %@ || ownerId == '') AND mountType == '' AND NOT (status IN %@)", session.account, self.serverUrl, session.userId, global.metadataStatusHideInView)
@@ -129,11 +131,24 @@ class NCFiles: NCCollectionViewCommon {
         self.metadataFolder = database.getMetadataFolder(session: session, serverUrl: self.serverUrl)
         self.richWorkspaceText = database.getTableDirectory(predicate: predicateDirectory)?.richWorkspace
 
-        let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: layoutForView)
-        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView)
+        let results = self.database.getResultsMetadatasPredicate(predicate, layoutForView: layoutForView)
+        self.dataSource = NCCollectionViewDataSource(results: results, layoutForView: layoutForView)
+
+        guard let results else {
+            return super.reloadDataSource()
+        }
+        let metadatas = Array(results.freeze())
+
+        self.dataSource.caching(metadatas: metadatas, dataSourceMetadatas: dataSourceMetadatas) { updated in
+            if updated || self.isNumberOfItemsInAllSectionsNull || self.numberOfItemsInAllSections != metadatas.count {
+                super.reloadDataSource()
+            }
+        }
     }
 
-    override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
+    override func getServerData() {
+        super.getServerData()
+
         if UIApplication.shared.applicationState == .background {
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Files not reload datasource network with the application in background")
             return
@@ -151,14 +166,11 @@ class NCFiles: NCCollectionViewCommon {
                     return true
                 }
             }
-
             return false
         }
 
-        super.reloadDataSourceNetwork()
-
-        networkReadFolder { tableDirectory, metadatas, reloadDataSource, error in
-            DispatchQueue.main.async {
+        DispatchQueue.global().async {
+            self.networkReadFolder { tableDirectory, metadatas, reloadDataSource, error in
                 if error == .success {
                     for metadata in metadatas ?? [] where !metadata.directory && downloadMetadata(metadata) {
                         if NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
@@ -167,23 +179,27 @@ class NCFiles: NCCollectionViewCommon {
                     }
 
                     self.richWorkspaceText = tableDirectory?.richWorkspace
+                }
 
-                    if reloadDataSource {
-                        self.reloadDataSource()
-                    }
-                } else {
-                    self.reloadDataSource(withQueryDB: withQueryDB)
+                if reloadDataSource || self.isNumberOfItemsInAllSectionsNull {
+                    self.reloadDataSource()
+                }
+
+                DispatchQueue.main.async {
+                    self.refreshControl.endRefreshing()
                 }
             }
         }
     }
 
-    private func networkReadFolder(completion: @escaping (_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ reloadDataSource: Bool, _ error: NKError) -> Void) {
+    private func networkReadFolder(completion: @escaping (_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ isEtagChanged: Bool, _ error: NKError) -> Void) {
         var tableDirectory: tableDirectory?
 
         NCNetworking.shared.readFile(serverUrlFileName: serverUrl, account: session.account) { task in
             self.dataSourceTask = task
-            self.collectionView.reloadData()
+            if self.dataSource.isEmpty() {
+                self.collectionView.reloadData()
+            }
         } completion: { account, metadata, error in
             guard error == .success, let metadata else {
                 return completion(nil, nil, false, error)
@@ -197,14 +213,15 @@ class NCFiles: NCCollectionViewCommon {
                                            account: metadata.account,
                                            queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue) { task in
                 self.dataSourceTask = task
-                self.collectionView.reloadData()
+                if self.dataSource.isEmpty() {
+                    self.collectionView.reloadData()
+                }
             } completion: { account, metadataFolder, metadatas, error in
                 guard error == .success else {
                     return completion(tableDirectory, nil, false, error)
                 }
                 self.metadataFolder = metadataFolder
 
-                /// E2EE
                 guard let metadataFolder = metadataFolder,
                       metadataFolder.e2eEncrypted,
                       NCKeychain().isEndToEndEnabled(account: account),
@@ -212,6 +229,7 @@ class NCFiles: NCCollectionViewCommon {
                     return completion(tableDirectory, metadatas, true, error)
                 }
 
+                /// E2EE
                 let lock = self.database.getE2ETokenLock(account: account, serverUrl: self.serverUrl)
                 NCNetworkingE2EE().getMetadata(fileId: metadataFolder.ocId, e2eToken: lock?.e2eToken, account: account) { account, version, e2eMetadata, signature, _, error in
 
@@ -229,10 +247,7 @@ class NCFiles: NCCollectionViewCommon {
                                         NCContentPresenter().showError(error: error)
                                     }
                                     NCActivityIndicator.shared.stop()
-                                    self.reloadDataSource()
                                 }
-                            } else {
-                                self.reloadDataSource()
                             }
                         } else {
                             // Client Diagnostic

@@ -42,24 +42,33 @@ class NCRecent: NCCollectionViewCommon {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        reloadDataSourceNetwork()
+
+        reloadDataSource()
     }
 
-    // MARK: - DataSource + NC Endpoint
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
 
-    override func queryDB() {
-        super.queryDB()
-        let metadatas = self.database.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND fileName != '.'", session.account), sortedByKeyPath: "date", ascending: false, arraySlice: 200)
+        getServerData()
+    }
+
+    // MARK: - DataSource
+
+    override func reloadDataSource() {
+        let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND fileName != '.'", session.account), sortedByKeyPath: "date", ascending: false)
 
         layoutForView?.sort = "date"
         layoutForView?.ascending = false
         layoutForView?.directoryOnTop = false
 
-        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView)
+        self.dataSource = NCCollectionViewDataSource(results: results, layoutForView: layoutForView)
+
+        super.reloadDataSource()
     }
 
-    override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
-        super.reloadDataSourceNetwork()
+    override func getServerData() {
+        super.getServerData()
+
         let requestBodyRecent =
         """
         <?xml version=\"1.0\"?>
@@ -110,7 +119,7 @@ class NCRecent: NCCollectionViewCommon {
         <d:orderby>
             <d:order>
                 <d:prop>
-                    <d:getlastmodified/>
+        /Users/marinofaggiana/Developer/ios/iOSClient/Assistant                 <d:getlastmodified/>
                 </d:prop>
                 <d:descending/>
             </d:order>
@@ -133,7 +142,9 @@ class NCRecent: NCCollectionViewCommon {
                                               showHiddenFiles: NCKeychain().showHiddenFiles,
                                               account: session.account) { task in
             self.dataSourceTask = task
-            self.collectionView.reloadData()
+            if self.dataSource.isEmpty() {
+                self.collectionView.reloadData()
+            }
         } completion: { _, files, _, error in
             if error == .success, let files {
                 self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
@@ -141,9 +152,8 @@ class NCRecent: NCCollectionViewCommon {
                     self.database.addMetadatas(metadatas)
                     self.reloadDataSource()
                 }
-            } else {
-                self.reloadDataSource(withQueryDB: withQueryDB)
             }
+            self.refreshControl.endRefreshing()
         }
     }
 }

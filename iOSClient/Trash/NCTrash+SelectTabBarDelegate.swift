@@ -29,7 +29,6 @@ extension NCTrash: NCTrashSelectTabBarDelegate {
             self.database.setLayoutForView(account: session.account, key: layoutKey, serverUrl: "", layout: layoutForView?.layout)
 
             self.collectionView.reloadData()
-            self.collectionView.collectionViewLayout.invalidateLayout()
             self.collectionView.setCollectionViewLayout(self.listLayout, animated: true)
         }
     }
@@ -40,7 +39,6 @@ extension NCTrash: NCTrashSelectTabBarDelegate {
             self.database.setLayoutForView(account: session.account, key: layoutKey, serverUrl: "", layout: layoutForView?.layout)
 
             self.collectionView.reloadData()
-            self.collectionView.collectionViewLayout.invalidateLayout()
             self.collectionView.setCollectionViewLayout(self.gridLayout, animated: true)
         }
     }

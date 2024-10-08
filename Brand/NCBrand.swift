@@ -221,9 +221,13 @@ class NCBrandColor: NSObject {
         userColors = generateColors()
     }
 
-    func settingThemingColor(account: String) {
+    @discardableResult
+    func settingThemingColor(account: String) -> Bool {
         let darker: CGFloat = 30    // %
         let lighter: CGFloat = 30   // %
+        var colorThemingColor: UIColor?
+        var colorThemingColorElement: UIColor?
+        var colorThemingColorText: UIColor?
 
         if NCBrandOptions.shared.use_themingColor {
             let themingColor = NCCapabilities.shared.getCapabilities(account: account).capabilityThemingColor
@@ -233,12 +237,12 @@ class NCBrandColor: NSObject {
             // THEMING COLOR
             if themingColor.first == "#" {
                 if let color = UIColor(hex: themingColor) {
-                    self.themingColor[account] = color
+                    colorThemingColor = color
                 } else {
-                    self.themingColor[account] = customer
+                    colorThemingColor = customer
                 }
             } else {
-                self.themingColor[account] = customer
+                colorThemingColor = customer
             }
 
             // THEMING COLOR ELEMENT (control isTooLight / isTooDark)
@@ -246,56 +250,65 @@ class NCBrandColor: NSObject {
                 if let color = UIColor(hex: themingColorElement) {
                     if color.isTooLight() {
                         if let color = color.darker(by: darker) {
-                            self.themingColorElement[account] = color
+                            colorThemingColorElement = color
                         }
                     } else if color.isTooDark() {
                         if let color = color.lighter(by: lighter) {
-                            self.themingColorElement[account] = color
+                            colorThemingColorElement = color
                         }
                     } else {
-                        self.themingColorElement[account] = color
+                        colorThemingColorElement = color
                     }
                 } else {
-                    self.themingColorElement[account] = customer
+                    colorThemingColorElement = customer
                 }
             } else {
-                self.themingColorElement[account] = customer
+                colorThemingColorElement = customer
             }
 
             // THEMING COLOR TEXT
             if themingColorText.first == "#" {
                 if let color = UIColor(hex: themingColorText) {
-                    self.themingColorText[account] = color
+                    colorThemingColorText = color
                 } else {
-                    self.themingColorText[account] = .white
+                    colorThemingColorText = .white
                 }
             } else {
-                self.themingColorText[account] = .white
+                colorThemingColorText = .white
             }
 
         } else {
 
             // THEMING COLOR
-            self.themingColor[account] = customer
+            colorThemingColor = customer
 
             // THEMING COLOR ELEMENT (control isTooLight / isTooDark)
             if self.customer.isTooLight() {
                 if let color = customer.darker(by: darker) {
-                    self.themingColorElement[account] = color
+                    colorThemingColorElement = color
                 }
             } else if customer.isTooDark() {
                 if let color = customer.lighter(by: lighter) {
-                    self.themingColorElement[account] = color
+                    colorThemingColorElement = color
                 }
             } else {
-                self.themingColorElement[account] = customer
+                colorThemingColorElement = customer
             }
 
             // THEMING COLOR TEXT
-            self.themingColorText[account] = customerText
+            colorThemingColorText = customerText
         }
 
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming, userInfo: ["account": account])
+        if self.themingColor[account] != colorThemingColor || self.themingColorElement[account] != colorThemingColorElement || self.themingColorText[account] != colorThemingColorText {
+
+            self.themingColor[account] = colorThemingColor
+            self.themingColorElement[account] = colorThemingColorElement
+            self.themingColorText[account] = colorThemingColorText
+
+            return true
+        }
+
+        return false
     }
 
     public func getTheming(account: String?) -> UIColor {

@@ -68,6 +68,13 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation, @unchecked Sendabl
                                 filePreviewImageView.layer.borderWidth = 0.2
                                 filePreviewImageView.layer.borderColor = UIColor.systemGray3.cgColor
                             }
+
+                            if let photoCell = (cell as? NCPhotoCell),
+                               photoCell.bounds.size.width > 100 {
+                                    cell.hideButtonMore(false)
+                                    cell.hideImageStatus(false)
+                            }
+
                             UIView.transition(with: filePreviewImageView,
                                               duration: 0.75,
                                               options: .transitionCrossDissolve,

@@ -53,7 +53,7 @@ protocol NCCellProtocol {
     func hideLabelSubinfo(_ status: Bool)
     func hideButtonShare(_ status: Bool)
     func hideButtonMore(_ status: Bool)
-    func selected(_ status: Bool, isEditMode: Bool, account: String)
+    func selected(_ status: Bool, isEditMode: Bool)
     func setAccessibility(label: String, value: String)
     func setTags(tags: [String])
     func setIconOutlines()
@@ -129,7 +129,7 @@ extension NCCellProtocol {
     func hideLabelSubinfo(_ status: Bool) {}
     func hideButtonShare(_ status: Bool) {}
     func hideButtonMore(_ status: Bool) {}
-    func selected(_ status: Bool, isEditMode: Bool, account: String) {}
+    func selected(_ status: Bool, isEditMode: Bool) {}
     func setAccessibility(label: String, value: String) {}
     func setTags(tags: [String]) {}
     func setIconOutlines() {}

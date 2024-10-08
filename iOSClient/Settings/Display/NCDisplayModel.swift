@@ -16,6 +16,14 @@ class NCDisplayModel: ObservableObject, ViewOnAppearHandling {
     @Published var controller: NCMainTabBarController?
     /// State variable for enabling the automatic appreance
     @Published var appearanceAutomatic: Bool = false
+
+    /// State variable for keeping the screen on or off during file transfering 
+    @Published var screenAwakeState = AwakeMode.off {
+        didSet {
+            keychain.screenAwakeMode = screenAwakeState
+        }
+    }
+
     /// Get session
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: controller)
@@ -30,6 +38,7 @@ class NCDisplayModel: ObservableObject, ViewOnAppearHandling {
     /// Triggered when the view appears.
     func onViewAppear() {
         appearanceAutomatic = keychain.appearanceAutomatic
+        screenAwakeState = keychain.screenAwakeMode
     }
 
     // MARK: - All functions

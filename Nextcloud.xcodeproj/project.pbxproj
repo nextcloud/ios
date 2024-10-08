@@ -160,6 +160,14 @@
 		F3BB464D2A39ADCC00461F6E /* NCMoreAppSuggestionsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F3BB464C2A39ADCC00461F6E /* NCMoreAppSuggestionsCell.xib */; };
 		F3BB46522A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46512A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift */; };
 		F3BB46542A3A1E9D00461F6E /* CCCellMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */; };
+		F3E173B02C9AF637006D177A /* ScreenAwakeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E173AF2C9AF637006D177A /* ScreenAwakeManager.swift */; };
+		F3E173C02C9B1067006D177A /* AwakeMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E173BF2C9B1067006D177A /* AwakeMode.swift */; };
+		F3E173C12C9B1067006D177A /* AwakeMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E173BF2C9B1067006D177A /* AwakeMode.swift */; };
+		F3E173C22C9B1067006D177A /* AwakeMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E173BF2C9B1067006D177A /* AwakeMode.swift */; };
+		F3E173C32C9B1067006D177A /* AwakeMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E173BF2C9B1067006D177A /* AwakeMode.swift */; };
+		F3E173C42C9B1067006D177A /* AwakeMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E173BF2C9B1067006D177A /* AwakeMode.swift */; };
+		F3E173C52C9B1067006D177A /* AwakeMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E173BF2C9B1067006D177A /* AwakeMode.swift */; };
+		F3E173C62C9B1067006D177A /* AwakeMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E173BF2C9B1067006D177A /* AwakeMode.swift */; };
 		F3EF2E0C2BFCF3810025EF46 /* NCLoginPoll.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EF2E0B2BFCF3810025EF46 /* NCLoginPoll.swift */; };
 		F3F0419B2B9F7E6700D5155F /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F3F0419A2B9F7E6700D5155F /* RealmSwift */; };
 		F3F0419D2B9F7E6E00D5155F /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F3F0419C2B9F7E6E00D5155F /* RealmSwift */; };
@@ -1210,6 +1218,8 @@
 		F3BB464C2A39ADCC00461F6E /* NCMoreAppSuggestionsCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCMoreAppSuggestionsCell.xib; sourceTree = "<group>"; };
 		F3BB46512A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMoreAppSuggestionsCell.swift; sourceTree = "<group>"; };
 		F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCCellMore.swift; sourceTree = "<group>"; };
+		F3E173AF2C9AF637006D177A /* ScreenAwakeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenAwakeManager.swift; sourceTree = "<group>"; };
+		F3E173BF2C9B1067006D177A /* AwakeMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AwakeMode.swift; sourceTree = "<group>"; };
 		F3EF2E0B2BFCF3810025EF46 /* NCLoginPoll.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCLoginPoll.swift; sourceTree = "<group>"; };
 		F700222B1EC479840080073F /* Custom.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Custom.xcassets; sourceTree = "<group>"; };
 		F700510022DF63AC003A3356 /* NCShare.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCShare.storyboard; sourceTree = "<group>"; };
@@ -2118,6 +2128,15 @@
 			path = Cells;
 			sourceTree = "<group>";
 		};
+		F3E173BE2C9B1057006D177A /* ScreenAwakeManager */ = {
+			isa = PBXGroup;
+			children = (
+				F3E173AF2C9AF637006D177A /* ScreenAwakeManager.swift */,
+				F3E173BF2C9B1067006D177A /* AwakeMode.swift */,
+			);
+			path = ScreenAwakeManager;
+			sourceTree = "<group>";
+		};
 		F70211F31BAC56E9003FC03E /* Main */ = {
 			isa = PBXGroup;
 			children = (
@@ -2810,6 +2829,7 @@
 		F7BFFA991A24D7BB0044ED85 /* Utility */ = {
 			isa = PBXGroup;
 			children = (
+				F3E173BE2C9B1057006D177A /* ScreenAwakeManager */,
 				F702F2FC25EE5D2C008F8E80 /* NYMnemonic */,
 				F7D4BF2B2CA2E8D800A5E746 /* TOPasscodeViewController */,
 				F76D364528A4F8BF00214537 /* NCActivityIndicator.swift */,
@@ -4006,6 +4026,7 @@
 				F702F2D225EE5B5C008F8E80 /* NCGlobal.swift in Sources */,
 				F7707689263A896A00A1BA94 /* UIImage+Extension.swift in Sources */,
 				F72FD3BA297ED49A00075D28 /* NCManageDatabase+E2EE.swift in Sources */,
+				F3E173C62C9B1067006D177A /* AwakeMode.swift in Sources */,
 				F73EF7DD2B0226080087E6E9 /* NCManageDatabase+Tip.swift in Sources */,
 				F73EF7ED2B0226B90087E6E9 /* NCManageDatabase+UserStatus.swift in Sources */,
 				F7E98C1927E0D0FC001F9F19 /* NCManageDatabase+Video.swift in Sources */,
@@ -4135,6 +4156,7 @@
 				F73EF7B42B0224350087E6E9 /* NCManageDatabase+DirectEditing.swift in Sources */,
 				F7490E8229882C80009DCE94 /* NCManageDatabase+E2EE.swift in Sources */,
 				F7490E7829882C28009DCE94 /* NCUtility.swift in Sources */,
+				F3E173C52C9B1067006D177A /* AwakeMode.swift in Sources */,
 				F71433E62C778FFB00E20B5A /* NotificationCenter+MainThread.swift in Sources */,
 				F33918C92C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift in Sources */,
 				F7490E7F29882C73009DCE94 /* NCManageDatabase+Activity.swift in Sources */,
@@ -4228,6 +4250,7 @@
 				F749B64D297B0CBB00087535 /* NCManageDatabase+Share.swift in Sources */,
 				F72FD3B8297ED49A00075D28 /* NCManageDatabase+E2EE.swift in Sources */,
 				F7A76DC8256A71CD00119AB3 /* UIImage+Extension.swift in Sources */,
+				F3E173C32C9B1067006D177A /* AwakeMode.swift in Sources */,
 				F711A4E52AF9310500095DD8 /* NCUtility+Image.swift in Sources */,
 				F73EF7AA2B0223900087E6E9 /* NCManageDatabase+Comments.swift in Sources */,
 				F763D2A02A249C4500A3C901 /* NCManageDatabase+Capabilities.swift in Sources */,
@@ -4337,6 +4360,7 @@
 				F78302FF28B4C45000B84583 /* NCUtilityFileSystem.swift in Sources */,
 				F73EF7B82B0224AB0087E6E9 /* NCManageDatabase+ExternalSites.swift in Sources */,
 				F73EF7C02B02250B0087E6E9 /* NCManageDatabase+GPS.swift in Sources */,
+				F3E173C12C9B1067006D177A /* AwakeMode.swift in Sources */,
 				F73EF7B02B0224350087E6E9 /* NCManageDatabase+DirectEditing.swift in Sources */,
 				F75DD766290ABB25002EB562 /* Intent.intentdefinition in Sources */,
 				F7D68FCD28CB9051009139F3 /* NCManageDatabase+DashboardWidget.swift in Sources */,
@@ -4376,6 +4400,7 @@
 				F7327E382B73AEDE00A462C7 /* NCNetworking+LivePhoto.swift in Sources */,
 				F771E3D320E2392D00AFB62D /* FileProviderExtension.swift in Sources */,
 				F771E3D520E2392D00AFB62D /* FileProviderItem.swift in Sources */,
+				F3E173C42C9B1067006D177A /* AwakeMode.swift in Sources */,
 				AF4BF616275629E20081CEEF /* NCManageDatabase+Account.swift in Sources */,
 				F343A4B72A1E084300DDA874 /* PHAsset+Extension.swift in Sources */,
 				F7434B3620E23FE000417916 /* NCManageDatabase.swift in Sources */,
@@ -4621,6 +4646,7 @@
 				F73EF7DF2B02266D0087E6E9 /* NCManageDatabase+Trash.swift in Sources */,
 				F79B646026CA661600838ACA /* UIControl+Extension.swift in Sources */,
 				F768823E2C0DD305001CF441 /* LazyView.swift in Sources */,
+				F3E173B02C9AF637006D177A /* ScreenAwakeManager.swift in Sources */,
 				F7CA212D25F1333300826ABB /* NCAccountRequest.swift in Sources */,
 				F747EB0D2C4AC1FF00F959A8 /* NCCollectionViewCommon+CollectionViewDelegateFlowLayout.swift in Sources */,
 				F765F73125237E3F00391DBE /* NCRecent.swift in Sources */,
@@ -4723,6 +4749,7 @@
 				AF2D7C7E2742559100ADF566 /* NCShareUserCell.swift in Sources */,
 				F74DE14325135B6800917068 /* NCTransfers.swift in Sources */,
 				AF4BF614275629E20081CEEF /* NCManageDatabase+Account.swift in Sources */,
+				F3E173C02C9B1067006D177A /* AwakeMode.swift in Sources */,
 				F711A4DC2AF92CAE00095DD8 /* NCUtility+Date.swift in Sources */,
 				AF4BF61E27562B3F0081CEEF /* NCManageDatabase+Activity.swift in Sources */,
 			);
@@ -4768,6 +4795,7 @@
 				F72FD3B7297ED49A00075D28 /* NCManageDatabase+E2EE.swift in Sources */,
 				F7A8D74128F18254008BBE1C /* UIColor+Extension.swift in Sources */,
 				F73EF7D92B0226080087E6E9 /* NCManageDatabase+Tip.swift in Sources */,
+				F3E173C22C9B1067006D177A /* AwakeMode.swift in Sources */,
 				F7864ACE2A78FE73004870E0 /* NCManageDatabase+LocalFile.swift in Sources */,
 				F7B769AA2B7A0B2000C1AAEB /* NCManageDatabase+Metadata+Session.swift in Sources */,
 				F7A8D74028F18212008BBE1C /* UIImage+Extension.swift in Sources */,
@@ -5520,6 +5548,7 @@
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/iOSClient/Nextcloud-Bridging-Header.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
+				_EXPERIMENTAL_SWIFT_EXPLICIT_MODULES = YES;
 			};
 			name = Debug;
 		};
@@ -5542,6 +5571,7 @@
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/iOSClient/Nextcloud-Bridging-Header.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
+				_EXPERIMENTAL_SWIFT_EXPLICIT_MODULES = YES;
 			};
 			name = Release;
 		};
@@ -5652,7 +5682,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 21;
+				CURRENT_PROJECT_VERSION = 25;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -5718,7 +5748,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 21;
+				CURRENT_PROJECT_VERSION = 25;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;

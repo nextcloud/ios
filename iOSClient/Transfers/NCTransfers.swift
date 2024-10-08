@@ -63,6 +63,18 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
     // MARK: - NotificationCenter
 
+    override func deleteFile(_ notification: NSNotification) {
+        reloadDataSource()
+    }
+
+    override func renameFile(_ notification: NSNotification) {
+        reloadDataSource()
+    }
+
+    override func createFolder(_ notification: NSNotification) {
+        reloadDataSource()
+    }
+
     override func downloadStartFile(_ notification: NSNotification) {
         reloadDataSource()
     }
@@ -227,12 +239,16 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
             cell.labelStatus.text = NSLocalizedString("_status_wait_upload_", comment: "") + user
             cell.labelInfo.text = ""
         case NCGlobal.shared.metadataStatusWaitCreateFolder:
-            cell.fileStatusImage?.image = utility.loadImage(named: "exclamationmark.arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.fileStatusImage?.image = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
             cell.labelStatus.text = NSLocalizedString("_status_wait_create_folder_", comment: "") + user
             cell.labelInfo.text = ""
         case NCGlobal.shared.metadataStatusWaitDelete:
             cell.fileStatusImage?.image = utility.loadImage(named: "trash.circle", colors: NCBrandColor.shared.iconImageMultiColors)
             cell.labelStatus.text = NSLocalizedString("_status_wait_delete_", comment: "") + user
+            cell.labelInfo.text = ""
+        case NCGlobal.shared.metadataStatusWaitRename:
+            cell.fileStatusImage?.image = utility.loadImage(named: "a.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.labelStatus.text = NSLocalizedString("_status_wait_rename_", comment: "") + user
             cell.labelInfo.text = ""
         case NCGlobal.shared.metadataStatusDownloading:
             if #available(iOS 17.0, *) {
@@ -278,26 +294,19 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         return cell
     }
 
-    // MARK: - DataSource + NC Endpoint
+    // MARK: - DataSource
 
-    override func queryDB() {
-        super.queryDB()
-        self.dataSource.removeAll()
-
-        if let metadatas = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal), sortedByKeyPath: "sessionDate", ascending: true) {
-            self.dataSource = NCCollectionViewDataSource(metadatas: Array(metadatas), layoutForView: layoutForView)
+    override func reloadDataSource() {
+        if let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal), sortedByKeyPath: "sessionDate", ascending: true) {
+            self.dataSource = NCCollectionViewDataSource(results: results, layoutForView: layoutForView)
+        } else {
+            self.dataSource.removeAll()
         }
 
         if self.dataSource.isEmpty() {
             NCTransferProgress.shared.removeAll()
         }
-    }
 
-    override func reloadDataSource(withQueryDB: Bool = true) {
-        super.reloadDataSource(withQueryDB: withQueryDB)
-    }
-
-    override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
-        super.reloadDataSource(withQueryDB: true)
+        super.reloadDataSource()
     }
 }

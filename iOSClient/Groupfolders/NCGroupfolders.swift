@@ -44,34 +44,41 @@ class NCGroupfolders: NCCollectionViewCommon {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        if self.dataSource.isEmpty() {
-            reloadDataSource()
-        }
-        reloadDataSourceNetwork()
+        reloadDataSource()
     }
 
-    // MARK: - DataSource + NC Endpoint
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
 
-    override func queryDB() {
-        super.queryDB()
-        var metadatas: [tableMetadata] = []
+        getServerData()
+    }
+
+    // MARK: - DataSource
+
+    override func reloadDataSource() {
+        var results: Results<tableMetadata>?
 
         if self.serverUrl.isEmpty {
-            metadatas = database.getResultsMetadatasFromGroupfolders(session: session)
+            results = database.getResultsMetadatasFromGroupfolders(session: session)
         } else {
-            metadatas = self.database.getResultsMetadatasPredicate(self.defaultPredicate, layoutForView: layoutForView)
+            results = self.database.getResultsMetadatasPredicate(self.defaultPredicate, layoutForView: layoutForView)
         }
 
-        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView)
+        self.dataSource = NCCollectionViewDataSource(results: results, layoutForView: layoutForView)
+
+        super.reloadDataSource()
     }
 
-    override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
-        super.reloadDataSourceNetwork()
+    override func getServerData() {
+        super.getServerData()
+
         let homeServerUrl = utilityFileSystem.getHomeServer(session: session)
 
         NextcloudKit.shared.getGroupfolders(account: session.account) { task in
             self.dataSourceTask = task
-            self.collectionView.reloadData()
+            if self.dataSource.isEmpty() {
+                self.collectionView.reloadData()
+            }
         } completion: { account, results, _, error in
             if error == .success, let groupfolders = results {
                 self.database.addGroupfolders(account: account, groupfolders: groupfolders)
@@ -79,21 +86,19 @@ class NCGroupfolders: NCCollectionViewCommon {
                     for groupfolder in groupfolders {
                         let mountPoint = groupfolder.mountPoint.hasPrefix("/") ? groupfolder.mountPoint : "/" + groupfolder.mountPoint
                         let serverUrlFileName = homeServerUrl + mountPoint
-                        if self.database.getMetadataFromDirectory(account: account, serverUrl: serverUrlFileName) {
-                            let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles, account: account)
-                            if results.error == .success, let file = results.files?.first {
-                                let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
-                                let metadata = self.database.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
-                                self.database.addMetadata(metadata)
-                                self.database.addDirectory(e2eEncrypted: isDirectoryE2EE, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
-                            }
+                        let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles, account: account)
+
+                        if results.error == .success, let file = results.files?.first {
+                            let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
+                            let metadata = self.database.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
+                            self.database.addMetadata(metadata)
+                            self.database.addDirectory(e2eEncrypted: isDirectoryE2EE, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
                         }
                     }
                     self.reloadDataSource()
                 }
-            } else {
-                self.reloadDataSource(withQueryDB: withQueryDB)
             }
+            self.refreshControl.endRefreshing()
         }
     }
 }

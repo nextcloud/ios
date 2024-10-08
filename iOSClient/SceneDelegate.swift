@@ -68,7 +68,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 DispatchQueue.global(qos: .utility).async {
                     if NCImageCache.shared.cache.count == 0 {
                         let session = NCSession.shared.getSession(account: activeTableAccount.account)
-                        NCImageCache.shared.createMediaCache(session: session)
+                        NCImageCache.shared.cachingMedia(session: session)
                     }
                 }
             }
@@ -118,7 +118,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRichdocumentGrabFocus)
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSourceNetwork, second: 2)
     }
 
     func sceneDidBecomeActive(_ scene: UIScene) {

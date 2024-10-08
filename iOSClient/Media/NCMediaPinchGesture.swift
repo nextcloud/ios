@@ -42,9 +42,11 @@ extension NCMedia {
                 self.currentScale = 1.0
 
                 UIView.transition(with: self.collectionView, duration: 0.20, options: .transitionCrossDissolve) {
+
                     self.collectionView.reloadData()
+                    self.collectionView.collectionViewLayout.invalidateLayout()
+
                 } completion: { _ in
-                    self.setTitleDate()
 
                     if let layoutForView = self.database.getLayoutForView(account: self.session.account, key: self.global.layoutViewMedia, serverUrl: "") {
                         layoutForView.columnPhoto = self.numberOfColumns
@@ -83,6 +85,7 @@ extension NCMedia {
             UIView.animate(withDuration: 0.30) {
                 self.currentScale = 1.0
                 self.collectionView.transform = .identity
+                self.setTitleDate()
             }
         default:
             break

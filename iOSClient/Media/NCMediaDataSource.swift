@@ -38,8 +38,8 @@ extension NCMedia {
 
     func collectionViewReloadData() {
         DispatchQueue.main.async {
-            self.refreshControl.endRefreshing()
             self.collectionView.reloadData()
+            self.refreshControl.endRefreshing()
             self.setTitleDate()
         }
     }
@@ -126,11 +126,14 @@ extension NCMedia {
                         self.collectionViewReloadData()
                     }
 
-                    DispatchQueue.global(qos: .userInteractive).async {
+                    DispatchQueue.global().async {
                         self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
                             let metadatas = metadatas.filter { metadata in
-                                let tableMetadata = self.database.getMetadataFromOcId(metadata.ocId)
-                                return tableMetadata?.status == self.global.metadataStatusNormal
+                                if let tableMetadata = self.database.getMetadataFromOcId(metadata.ocId) {
+                                    return tableMetadata.status == self.global.metadataStatusNormal
+                                } else {
+                                    return true
+                                }
                             }
                             self.database.addMetadatas(metadatas)
 
@@ -140,7 +143,7 @@ extension NCMedia {
 
                             DispatchQueue.main.async {
                                 if let firstCellDate, let lastCellDate, self.isViewActived {
-                                    DispatchQueue.global(qos: .background).async {
+                                    DispatchQueue.global().async {
                                         let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [ NSPredicate(format: "date >= %@ AND date =< %@", lastCellDate as NSDate, firstCellDate as NSDate), self.imageCache.getMediaPredicate(filterLivePhotoFile: false, session: session, showOnlyImages: self.showOnlyImages, showOnlyVideos: self.showOnlyVideos)])
 
                                         if let resultsMetadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: predicate) {

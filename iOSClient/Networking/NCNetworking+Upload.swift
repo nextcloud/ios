@@ -303,7 +303,7 @@ extension NCNetworking {
 #if !EXTENSION
             isApplicationStateActive = UIApplication.shared.applicationState == .active
 #endif
-            DispatchQueue.global(qos: .userInteractive).async {
+            DispatchQueue.global().async {
                 let selector = metadata.sessionSelector
 
                 if error == .success, let ocId = ocId, size == metadata.size {
@@ -345,7 +345,9 @@ extension NCNetworking {
                                                         "error": error]
                     if metadata.isLivePhoto,
                        NCCapabilities.shared.getCapabilities(account: metadata.account).isLivePhotoServerAvailable {
-                        self.uploadLivePhoto(metadata: metadata, userInfo: userInfo)
+                        DispatchQueue.global().asyncAfter(deadline: .now() + 1) {
+                            self.uploadLivePhoto(metadata: metadata, userInfo: userInfo)
+                        }
                     } else {
                         NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadedFile,
                                                                     object: nil,
@@ -475,7 +477,7 @@ extension NCNetworking {
             return delegate.uploadProgress(progress, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected, fileName: fileName, serverUrl: serverUrl, session: session, task: task)
         }
 
-        DispatchQueue.global(qos: .userInteractive).async {
+        DispatchQueue.global().async {
             if let metadata = self.database.getResultMetadataFromFileName(fileName, serverUrl: serverUrl, sessionTaskIdentifier: task.taskIdentifier) {
                 NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterProgressTask,
                                                             object: nil,

@@ -62,6 +62,14 @@ extension NCNetworking {
             return
         }
 
+        /// RENAME
+        ///
+        if metadata.status == global.metadataStatusWaitRename {
+            database.restoreMetadataFileName(ocId: metadata.ocId)
+            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
+            return
+        }
+
         /// DIRECTORY
         ///
         if metadata.status == global.metadataStatusWaitCreateFolder {
@@ -125,7 +133,7 @@ extension NCNetworking {
     }
 
     func cancelAllWaitTask() {
-        let metadatas = database.getMetadatas(predicate: NSPredicate(format: "status IN %@", [global.metadataStatusWaitCreateFolder, global.metadataStatusWaitDelete]))
+        let metadatas = database.getMetadatas(predicate: NSPredicate(format: "status IN %@", [global.metadataStatusWaitCreateFolder, global.metadataStatusWaitDelete, global.metadataStatusWaitRename]))
         for metadata in metadatas {
             if metadata.status == global.metadataStatusWaitDelete {
                 database.setMetadataStatus(ocId: metadata.ocId, status: global.metadataStatusNormal)
@@ -135,6 +143,8 @@ extension NCNetworking {
                     database.deleteMetadataOcId(metadata.ocId)
                     utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
                 }
+            } else if metadata.status == global.metadataStatusWaitRename {
+                database.restoreMetadataFileName(ocId: metadata.ocId)
             }
         }
         NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)

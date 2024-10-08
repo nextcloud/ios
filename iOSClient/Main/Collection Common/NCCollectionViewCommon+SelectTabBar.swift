@@ -27,13 +27,13 @@ import NextcloudKit
 
 extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
     func selectAll() {
-        if !fileSelect.isEmpty, self.dataSource.getResultMetadatas().count == fileSelect.count {
+        if !fileSelect.isEmpty, self.dataSource.getMetadatas().count == fileSelect.count {
             fileSelect = []
         } else {
-            fileSelect = self.dataSource.getResultMetadatas().compactMap({ $0.ocId })
+            fileSelect = self.dataSource.getMetadatas().compactMap({ $0.ocId })
         }
         tabBarSelect.update(fileSelect: fileSelect, metadatas: getSelectedMetadatas(), userId: session.userId)
-        collectionView.reloadData()
+        self.reloadDataSource()
     }
 
     func delete() {
@@ -44,11 +44,8 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
         let canDeleteServer = metadatas.allSatisfy { !$0.lock }
 
         if canDeleteServer {
-            let copyMetadatas = metadatas
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .destructive) { _ in
-                for metadata in copyMetadatas {
-                    NCNetworking.shared.deleteMetadata(metadata)
-                }
+                NCNetworking.shared.deleteMetadatas(metadatas, sceneIdentifier: self.controller?.sceneIdentifier)
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
                 self.setEditMode(false)
             })
@@ -138,6 +135,6 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
         navigationController?.interactivePopGestureRecognizer?.isEnabled = !editMode
         navigationItem.hidesBackButton = editMode
         searchController(enabled: !editMode)
-        collectionView.reloadData()
+        self.reloadDataSource()
     }
 }
