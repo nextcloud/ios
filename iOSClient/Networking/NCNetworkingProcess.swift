@@ -163,8 +163,6 @@ class NCNetworkingProcess {
                     }
                 }
             }
-
-            return (counterDownloading, counterUploading, metadatasWaitFavorite.count)
         }
 
         /// ------------------------ DELETE
@@ -208,7 +206,6 @@ class NCNetworkingProcess {
                 }
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRenameFile, userInfo: ["serverUrl": metadata.serverUrl, "account": metadata.account, "error": result.error])
             }
-            return (counterDownloading, counterUploading, metadatasWaitRename.count)
         }
 
         /// ------------------------ DOWNLOAD
