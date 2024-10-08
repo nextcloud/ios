@@ -6046,7 +6046,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/nextcloud/NextcloudKit";
 			requirement = {
-				branch = "wcf-fix";
+				branch = develop;
 				kind = branch;
 			};
 		};
