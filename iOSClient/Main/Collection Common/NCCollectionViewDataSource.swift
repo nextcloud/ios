@@ -277,8 +277,7 @@ class NCCollectionViewDataSource: NSObject {
             for metadata in metadatas {
                 let indexPath = IndexPath(row: counter, section: 0)
                 if indexPath.row < dataSourceMetadatas.count {
-                    let etag = dataSourceMetadatas[indexPath.row].etag
-                    if etag != metadata.etag {
+                    if !metadata.isEqual(dataSourceMetadatas[indexPath.row]) {
                         updated = true
                     }
                 } else {
@@ -286,7 +285,9 @@ class NCCollectionViewDataSource: NSObject {
                 }
 
                 self.metadataIndexPath[indexPath] = tableMetadata(value: metadata)
+
                 /// caching preview
+                /// 
                 if metadata.isImageOrVideo,
                    NCImageCache.shared.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256) == nil,
                    let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: self.global.previewExt256) {
