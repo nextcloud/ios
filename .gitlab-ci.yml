@@ -7,8 +7,6 @@ variables:
   beta_configuration: "Beta"
   archive_path: "${outputDirPath}/${scheme}"
   export_method: "ad-hoc"
-  exportOptionsPath: "./exportOptionsAdHoc.plist"
-
 
 stages:
 - build

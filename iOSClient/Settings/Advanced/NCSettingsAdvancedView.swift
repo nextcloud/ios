@@ -53,7 +53,7 @@ struct NCSettingsAdvancedView: View {
                        .font(.system(size: 16))
                }
             }, footer: {
-                Text(NSLocalizedString("_filenamemask_footer_", comment: ""))
+                Text(NSLocalizedString("_filenamemask_footer_", comment: "")).listRowBackground(Color.clear)
             }).applyGlobalFormSectionStyle()
             /// Most Compatible & Enable Live Photo
             Section(content: {
@@ -121,7 +121,6 @@ struct NCSettingsAdvancedView: View {
                         HStack {
 							Image(.Settings.folderGear)
                                 .resizable()
-								.renderingMode(.template)
                                 .scaledToFit()
                                 .frame(width: 20, height: 20)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
@@ -145,10 +144,9 @@ struct NCSettingsAdvancedView: View {
                         model.clearLogFile()
                     }, label: {
                         HStack {
-                            Image(systemName: "xmark")
+							Image(.Settings.xmark)
                                 .resizable()
                                 .scaledToFit()
-								.font(.settingsIconsFont)
                                 .frame(width: 15, height: 20)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             Text(NSLocalizedString("_clear_log_", comment: ""))
@@ -160,7 +158,7 @@ struct NCSettingsAdvancedView: View {
                         Button(NSLocalizedString("OK", comment: ""), role: .cancel) { }
                     }
                 }, header: {
-                    Text(NSLocalizedString("_diagnostics_", comment: ""))
+                    Text(NSLocalizedString("_diagnostics_", comment: "")).listRowBackground(Color.clear)
                 }, footer: { }).applyGlobalFormSectionStyle()
                 /// Set Log Level() & Capabilities
                 if model.isAdminGroup {
@@ -169,10 +167,9 @@ struct NCSettingsAdvancedView: View {
                             NCCapabilitiesView(model: NCCapabilitiesModel())
                         }) {
                             HStack {
-                                Image(systemName: "list.bullet")
+								Image(.Settings.bulletlist)
                                     .resizable()
                                     .scaledToFit()
-									.font(.settingsIconsFont)
                                     .frame(width: 20, height: 20)
                                     .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                                 Text(NSLocalizedString("_capabilities_", comment: ""))
@@ -180,9 +177,9 @@ struct NCSettingsAdvancedView: View {
                             .font(.system(size: 16))
                         }
                     }, header: {
-                        Text(NSLocalizedString("_capabilities_", comment: ""))
+                        Text(NSLocalizedString("_capabilities_", comment: "")).listRowBackground(Color.clear)
                     }, footer: {
-                        Text(NSLocalizedString("_capabilities_footer_", comment: ""))
+                        Text(NSLocalizedString("_capabilities_footer_", comment: "")).listRowBackground(Color.clear)
                     }).applyGlobalFormSectionStyle()
                 }
             }
@@ -202,10 +199,9 @@ struct NCSettingsAdvancedView: View {
                     showCacheAlert.toggle()
                 }, label: {
                     HStack {
-                        Image(systemName: "xmark")
+						Image(.Settings.xmark)
                             .resizable()
                             .scaledToFit()
-							.font(.settingsIconsFont)
                             .frame(width: 15, height: 20)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_clear_cache_", comment: ""))
@@ -220,11 +216,11 @@ struct NCSettingsAdvancedView: View {
                     Button(NSLocalizedString("_cancel_", comment: ""), role: .cancel) { }
                 }
             }, header: {
-                Text(NSLocalizedString("_delete_files_desc_", comment: ""))
+                Text(NSLocalizedString("_delete_files_desc_", comment: "")).listRowBackground(Color.clear)
             }, footer: {
                 Text(model.footerTitle)
                     .font(.system(size: 12))
-                    .multilineTextAlignment(.leading)
+                    .multilineTextAlignment(.leading).listRowBackground(Color.clear)
             }).applyGlobalFormSectionStyle()
             /// Reset Application
             Section(content: {
@@ -232,12 +228,11 @@ struct NCSettingsAdvancedView: View {
                     showExitAlert.toggle()
                 }, label: {
                     HStack {
-                        Image(systemName: "xmark")
+						Image(.Settings.xmark)
                             .resizable()
                             .scaledToFit()
-							.font(.settingsIconsFont)
                             .frame(width: 15, height: 20)
-                            .foregroundColor(Color(UIColor.systemRed))
+							.foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_exit_", comment: ""))
                             .foregroundColor(Color(UIColor.systemRed))
                     }
@@ -257,6 +252,7 @@ struct NCSettingsAdvancedView: View {
                 Text("\n\n")
                )
                     .font(.system(size: 12))
+                    .listRowBackground(Color.clear)
                     .multilineTextAlignment(.leading)
             }).applyGlobalFormSectionStyle()
         }

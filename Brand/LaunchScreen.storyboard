@@ -29,7 +29,7 @@
                                 </constraints>
                             </imageView>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" red="0.0078431372549019607" green="0.062745098039215685" blue="0.16862745098039217" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="HQ1-PE-oGQ" firstAttribute="height" secondItem="Ze5-6b-2t3" secondAttribute="height" id="0hA-tq-FUq"/>
                             <constraint firstItem="HQ1-PE-oGQ" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="Ed2-UF-yRc"/>
@@ -60,6 +60,6 @@
     </scenes>
     <resources>
         <image name="gradientBackground" width="320" height="568"/>
-        <image name="logo" width="159" height="22"/>
+        <image name="logo" width="1449" height="200"/>
     </resources>
 </document>

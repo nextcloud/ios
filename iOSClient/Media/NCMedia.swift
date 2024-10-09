@@ -83,7 +83,6 @@ class NCMedia: UIViewController {
         collectionView.register(UINib(nibName: "NCGridMediaCell", bundle: nil), forCellWithReuseIdentifier: "gridCell")
         collectionView.alwaysBounceVertical = true
         collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 50, right: 0)
-        collectionView.backgroundColor = .systemBackground
         collectionView.prefetchDataSource = self
         collectionView.dragInteractionEnabled = true
         collectionView.dragDelegate = self
@@ -190,16 +189,6 @@ class NCMedia: UIViewController {
                     $0.cancel()
                 }
             }
-        }
-    }
-
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        if self.traitCollection.userInterfaceStyle == .dark {
-            return .lightContent
-        } else if isTop {
-            return .darkContent
-        } else {
-            return .lightContent
         }
     }
 

@@ -55,26 +55,26 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        view.backgroundColor = .secondarySystemGroupedBackground
+        view.backgroundColor = NCBrandColor.shared.formRowBackgroundColor
         navigationController?.navigationBar.tintColor = NCBrandColor.shared.iconImageColor
         navigationItem.title = NSLocalizedString("_scanned_images_", comment: "")
 
         collectionViewSource.dragInteractionEnabled = true
         collectionViewSource.dragDelegate = self
         collectionViewSource.dropDelegate = self
-        collectionViewSource.backgroundColor = .secondarySystemGroupedBackground
+        collectionViewSource.backgroundColor = NCBrandColor.shared.formRowBackgroundColor
 
         collectionViewDestination.dragInteractionEnabled = true
         collectionViewDestination.dropDelegate = self
         collectionViewDestination.dragDelegate = self
         collectionViewDestination.reorderingCadence = .fast // default value - .immediate
-        collectionViewDestination.backgroundColor = .secondarySystemGroupedBackground
+        collectionViewDestination.backgroundColor = NCBrandColor.shared.formRowBackgroundColor
 
         cancel.title = NSLocalizedString("_cancel_", comment: "")
         save.title = NSLocalizedString("_save_", comment: "")
 
         labelTitlePDFzone.text = NSLocalizedString("_scan_label_document_zone_", comment: "")
-        labelTitlePDFzone.backgroundColor = .systemGray6
+        labelTitlePDFzone.backgroundColor = NCBrandColor.shared.formBackgroundColor
         labelTitlePDFzone.textColor = NCBrandColor.shared.textColor
 
         segmentControlFilter.setTitle(NSLocalizedString("_filter_document_", comment: ""), forSegmentAt: 0)

@@ -178,6 +178,17 @@ extension NCManageDatabase {
         }
         return []
     }
+    
+    func getAllAccountOrderByEmail() -> [tableAccount] {
+        do {
+            let realm = try Realm()
+            let results = realm.objects(tableAccount.self).sorted(byKeyPath: "email", ascending: true)
+            return Array(results.map { tableAccount.init(value: $0) })
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
+        }
+        return []
+    }
 
     func getAccountAutoUploadFileName() -> String {
         do {

@@ -47,10 +47,8 @@ struct NCSettingsView: View {
                 }) {
                     HStack {
                         Image(.Settings.camera)
-                            .renderingMode(.template)
                             .resizable()
                             .scaledToFit()
-							.font(.settingsIconsFont)
                             .frame(width: 20, height: 20)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_settings_autoupload_", comment: ""))
@@ -67,7 +65,6 @@ struct NCSettingsView: View {
 						lockImage(isLocked: model.isLockActive)
                             .resizable()
                             .scaledToFit()
-							.font(.settingsIconsFont)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             .frame(width: 20, height: 20)
                         Text(model.isLockActive ? NSLocalizedString("_lock_active_", comment: "") : NSLocalizedString("_lock_not_active_", comment: ""))
@@ -93,10 +90,11 @@ struct NCSettingsView: View {
                         model.updateResetWrongAttemptsSetting()
                     }
             }, header: {
-                Text(NSLocalizedString("_privacy_", comment: ""))
+                Text(NSLocalizedString("_privacy_", comment: "")).listRowBackground(Color.clear)
             }, footer: {
                 Text(String(format: NSLocalizedString("_reset_wrong_passcode_desc_", comment: ""), NCBrandOptions.shared.resetAppPasscodeAttempts))
                     .font(.system(size: 12))
+                    .listRowBackground(Color.clear)
                     .lineSpacing(1)
             }).applyGlobalFormSectionStyle()
             /// Calender & Contacts
@@ -108,7 +106,6 @@ struct NCSettingsView: View {
                         HStack {
 							Image(.Settings.calendarUser)
                                 .resizable()
-								.renderingMode(.template)
                                 .scaledToFit()
                                 .frame(width: 23, height: 20)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
@@ -126,7 +123,7 @@ struct NCSettingsView: View {
                         Spacer()
                         Text(NSLocalizedString("_calendar_contacts_footer_", comment: ""))
                             .font(.system(size: 12))
-                    }
+                    }.listRowBackground(Color.clear)
 
                 }).applyGlobalFormSectionStyle()
             }
@@ -140,7 +137,6 @@ struct NCSettingsView: View {
                     HStack {
 						Image(.Settings.gear)
                             .resizable()
-							.renderingMode(.template)
                             .scaledToFit()
                             .frame(width: 20, height: 20)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
@@ -158,7 +154,6 @@ struct NCSettingsView: View {
                     HStack {
 						Image(.Settings.handshake)
                             .resizable()
-                            .renderingMode(.template)
 							.scaledToFit()
                             .frame(width: 25, height: 20)
 							.foregroundColor(Color(NCBrandColor.shared.iconImageColor))
@@ -177,7 +172,6 @@ struct NCSettingsView: View {
                     HStack {
 						Image(.Settings.shieldHalved)
                             .resizable()
-							.renderingMode(.template)
                             .scaledToFit()
                             .frame(width: 20, height: 20)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
@@ -196,7 +190,6 @@ struct NCSettingsView: View {
                     HStack {
 						Image(.Settings.github)
                             .resizable()
-                            .renderingMode(.template)
                             .frame(width: 20, height: 20)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_source_code_", comment: ""))
@@ -211,7 +204,7 @@ struct NCSettingsView: View {
             /// `Watermark` Section
             Section(content: {
             }, footer: {
-                Text(model.footerApp + model.footerServer)
+                Text(model.footerApp + model.footerServer).listRowBackground(Color.clear)
             }).applyGlobalFormSectionStyle()
         }
         .navigationBarTitle(NSLocalizedString("_settings_", comment: ""))
@@ -255,12 +248,6 @@ struct E2EESection: View {
             }
         })
     }
-}
-
-extension Font {
-	static var settingsIconsFont: Font {
-		return Font(UIFont.settingsIconsFont)
-	}
 }
 
 #Preview {

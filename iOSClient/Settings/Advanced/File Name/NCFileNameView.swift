@@ -86,18 +86,18 @@ struct NCFileNameView: View {
                     .font(.system(size: 16))
                     .foregroundColor(Color(UIColor.lightGray))
             }, header: {
-                Text(NSLocalizedString("_filename_", comment: ""))
+                Text(NSLocalizedString("_filename_", comment: "")).listRowBackground(Color.clear)
             }, footer: {
-                Text(String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM, MMM, DD, YY, YYYY, HH, hh, mm, ss, ampm"))
+                Text(String(format: NSLocalizedString("_preview_filename_", comment: ""), "MM, MMM, DD, YY, YYYY, HH, hh, mm, ss, ampm")).listRowBackground(Color.clear)
             }).applyGlobalFormSectionStyle()
         } else {
             Section(content: {
                 Text("IMG_0001.JPG")
                     .foregroundColor(Color(UIColor.lightGray))
             }, header: {
-                Text(NSLocalizedString("_filename_", comment: ""))
+                Text(NSLocalizedString("_filename_", comment: "")).listRowBackground(Color.clear)
             }, footer: {
-                Text(NSLocalizedString("_default_preview_filename_footer_", comment: ""))
+                Text(NSLocalizedString("_default_preview_filename_footer_", comment: "")).listRowBackground(Color.clear)
             }).applyGlobalFormSectionStyle()
         }
 

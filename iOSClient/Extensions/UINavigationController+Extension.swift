@@ -32,15 +32,16 @@ extension UINavigationController {
     }
 
     func setNavigationBarAppearance() {
-
         navigationBar.tintColor = NCBrandColor.shared.iconImageColor
-
+        
         let standardAppearance = UINavigationBarAppearance()
         standardAppearance.configureWithOpaqueBackground()
-		standardAppearance.backgroundColor = NCBrandColor.shared.appBackgroundColor
+        standardAppearance.backgroundColor = NCBrandColor.shared.appBackgroundColor
         standardAppearance.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.shared.textColor]
         standardAppearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.shared.textColor]
+        standardAppearance.shadowColor = .clear
         navigationBar.standardAppearance = standardAppearance
+        navigationBar.scrollEdgeAppearance = standardAppearance
     }
 
     func setGroupAppearance() {

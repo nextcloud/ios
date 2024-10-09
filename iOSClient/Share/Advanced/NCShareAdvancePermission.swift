@@ -154,6 +154,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
             noteCell.detailTextLabel?.numberOfLines = 0
             return noteCell
         }
+        cell.backgroundColor = NCBrandColor.shared.formRowBackgroundColor
         if let cell = cell as? NCShareDateCell { cell.onReload = tableView.reloadData }
         return cell
     }

@@ -22,6 +22,8 @@ import UIKit
 
 #if BETA
         capabilitiesGroup = "group.de.strato.ionos.easystorage.beta"
+#elseif APPSTORE
+        capabilitiesGroup = "group.de.ionos.easystorage"
 #else
         capabilitiesGroup = "group.com.viseven.ionos.easystorage"
 #endif

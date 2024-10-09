@@ -1114,6 +1114,3 @@
 "_previous_" = "Previous";
 "_storage_used_"                 = "Storage used";
 "_used_of_space_"                = "%@ of %@ used";
-
-"_sign_out_of_all_accounts_"      = "Sign out of all accounts";
-"_want_sign_out_of_all_accounts_" = "Do you want to sign out of all accounts?";
