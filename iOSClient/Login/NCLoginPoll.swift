@@ -75,7 +75,7 @@ struct NCLoginPoll: View {
                     .buttonStyle(ButtonStylePrimary(maxWidth: .infinity))
                     
 				}
-                .frame(width: 210)
+                .frame(width: 250)
 				.padding(.bottom, size.height * 0.15)
                 .environment(\.colorScheme, .dark)
 			}
