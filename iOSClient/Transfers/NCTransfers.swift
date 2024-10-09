@@ -313,4 +313,8 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
         super.reloadDataSource()
     }
+
+    override func getServerData() {
+        reloadDataSource()
+    }
 }

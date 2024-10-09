@@ -74,4 +74,8 @@ class NCOffline: NCCollectionViewCommon {
 
         super.reloadDataSource()
     }
+
+    override func getServerData() {
+        reloadDataSource()
+    }
 }

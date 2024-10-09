@@ -1056,6 +1056,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                               completion: nil)
 
             self.setNavigationRightItems()
+            self.refreshControl.endRefreshing()
         }
     }
 
