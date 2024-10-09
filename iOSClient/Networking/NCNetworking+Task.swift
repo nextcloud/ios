@@ -54,6 +54,14 @@ extension NCNetworking {
 
     func cancelTask(metadata: tableMetadata) {
 
+        /// FAVORITE
+        ///
+        if metadata.status == global.metadataStatusWaitFavorite {
+            database.setMetadataStatus(ocId: metadata.ocId, status: global.metadataStatusNormal)
+            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
+            return
+        }
+
         /// DELETE
         ///
         if metadata.status == global.metadataStatusWaitDelete {
@@ -70,7 +78,7 @@ extension NCNetworking {
             return
         }
 
-        /// DIRECTORY
+        /// CREATE FOLDER
         ///
         if metadata.status == global.metadataStatusWaitCreateFolder {
             let metadatas = database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND status != 0", metadata.account, metadata.serverUrl))
@@ -133,19 +141,9 @@ extension NCNetworking {
     }
 
     func cancelAllWaitTask() {
-        let metadatas = database.getMetadatas(predicate: NSPredicate(format: "status IN %@", [global.metadataStatusWaitCreateFolder, global.metadataStatusWaitDelete, global.metadataStatusWaitRename]))
+        let metadatas = database.getMetadatas(predicate: NSPredicate(format: "status IN %@", global.metadataStatusWaitWebDav))
         for metadata in metadatas {
-            if metadata.status == global.metadataStatusWaitDelete {
-                database.setMetadataStatus(ocId: metadata.ocId, status: global.metadataStatusNormal)
-            } else if metadata.status == global.metadataStatusWaitCreateFolder {
-                let metadatas = database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND status != 0", metadata.account, metadata.serverUrl))
-                for metadata in metadatas {
-                    database.deleteMetadataOcId(metadata.ocId)
-                    utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-                }
-            } else if metadata.status == global.metadataStatusWaitRename {
-                database.restoreMetadataFileName(ocId: metadata.ocId)
-            }
+            cancelTask(metadata: metadata)
         }
         NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
     }
