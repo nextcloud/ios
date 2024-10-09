@@ -486,8 +486,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if error != .success {
             NCContentPresenter().showError(error: error)
         }
-
-        reloadDataSource()
     }
 
     @objc func createFolder(_ notification: NSNotification) {
@@ -514,6 +512,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func favoriteFile(_ notification: NSNotification) {
+        /*
         if self is NCFavorite {
             return reloadDataSource()
         }
@@ -524,6 +523,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         else { return }
 
         reloadDataSource()
+        */
     }
 
     @objc func downloadStartFile(_ notification: NSNotification) {
