@@ -179,11 +179,11 @@ class NCFiles: NCCollectionViewCommon {
                     self.richWorkspaceText = tableDirectory?.richWorkspace
                 }
 
-                if reloadDataSource || self.isNumberOfItemsInAllSectionsNull {
-                    self.reloadDataSource()
-                }
-
                 DispatchQueue.main.async {
+                    if reloadDataSource || self.isNumberOfItemsInAllSectionsNull {
+                        self.reloadDataSource()
+                    }
+
                     self.refreshControl.endRefreshing()
                 }
             }
