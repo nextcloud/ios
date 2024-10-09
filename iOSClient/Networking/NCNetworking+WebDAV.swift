@@ -418,9 +418,8 @@ extension NCNetworking {
 
         for metadata in metadatasPlain {
             let permission = NCUtility().permissionsContainsString(metadata.permissions, permissions: NCPermissions().permissionCanDelete)
-            if !metadata.permissions.isEmpty && permission == false {
-                NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_delete_file_"))
-                return
+            if (!metadata.permissions.isEmpty && permission == false) || metadata.status != global.metadataStatusNormal {
+                return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_delete_file_"))
             }
 
             if metadata.status == global.metadataStatusWaitCreateFolder {
@@ -439,9 +438,9 @@ extension NCNetworking {
 
     func renameMetadata(_ metadata: tableMetadata, fileNameNew: String) {
         let permission = utility.permissionsContainsString(metadata.permissions, permissions: NCPermissions().permissionCanRename)
-        if !metadata.permissions.isEmpty && permission == false {
-            NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_"))
-            return
+        if (!metadata.permissions.isEmpty && permission == false) ||
+            (metadata.status != global.metadataStatusNormal && metadata.status != global.metadataStatusWaitRename) {
+            return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_"))
         }
 
         if metadata.isDirectoryE2EE {
@@ -538,6 +537,10 @@ extension NCNetworking {
 
     func favoriteMetadata(_ metadata: tableMetadata,
                           completion: @escaping (_ error: NKError) -> Void) {
+        if metadata.status != global.metadataStatusNormal && metadata.status != global.metadataStatusWaitFavorite {
+            return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_favorite_file_"))
+        }
+
         self.database.setMetadataFavorite(ocId: metadata.ocId, favorite: !metadata.favorite, status: global.metadataStatusWaitFavorite)
 
         NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterFavoriteFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl])

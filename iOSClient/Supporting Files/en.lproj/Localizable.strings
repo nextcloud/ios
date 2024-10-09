@@ -129,6 +129,7 @@
 "_no_permission_add_file_"  = "You don't have permission to add files";
 "_no_permission_delete_file_" = "You don't have permission to delete files";
 "_no_permission_modify_file_" = "You don't have permission to modify files";
+"_no_permission_favorite_file_" = "You don't have permission to add the file to your favorites";
 "_request_upload_new_ver_"  = "The file has been modified, do you want to upload the new version?";
 "_add_folder_info_"         = "Add folder info";
 "_back_"                    = "Back";
