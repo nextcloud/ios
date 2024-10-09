@@ -287,7 +287,6 @@ class NCNetworkingProcess {
 
     private func metadataStatusWaitWebDav() async -> Bool {
         var returnValue: Bool = false
-        var serverUrls: Set<String> = []
 
         /// ------------------------ FAVORITE
         ///
@@ -296,9 +295,11 @@ class NCNetworkingProcess {
                 let session = NCSession.Session(account: metadata.account, urlBase: metadata.urlBase, user: metadata.user, userId: metadata.userId)
                 let fileName = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
                 let error = await networking.setFavorite(fileName: fileName, favorite: metadata.favorite, account: metadata.account)
+                database.setMetadataStatus(ocId: metadata.ocId, status: global.metadataStatusNormal)
+
                 if error == .success {
-                    database.setMetadataStatus(ocId: metadata.ocId, status: global.metadataStatusNormal)
-                    serverUrls.insert(metadata.serverUrl)
+                    NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterFavoriteFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl])
+
                 } else {
                     let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
                     let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: true, account: metadata.account)
@@ -331,8 +332,6 @@ class NCNetworkingProcess {
                 }
 
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRenameFile, userInfo: ["serverUrl": metadata.serverUrl, "account": metadata.account, "error": result.error])
-
-                serverUrls.insert(metadata.serverUrl)
             }
         }
 
@@ -361,10 +360,6 @@ class NCNetworkingProcess {
                     returnValue = true
                 }
             }
-        }
-
-        for serverUrl in serverUrls {
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": serverUrl])
         }
 
         return returnValue
