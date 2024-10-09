@@ -143,11 +143,12 @@ class NCNetworkingProcess {
         var counterDownloading = metadatasDownloading.count
         var counterUploading = metadatasUploading.count
 
-        /// --------------- WEBDAV
+        /// ------------------------ WEBDAV
         ///
         let metadatas = database.getMetadatas(predicate: NSPredicate(format: "status IN %@", global.metadataStatusWaitWebDav))
         if !metadatas.isEmpty {
-            if await metadataStatusWaitWebDav() {
+            let stop = await metadataStatusWaitWebDav()
+            if stop {
                 return (counterDownloading, counterUploading)
             }
         }
@@ -297,6 +298,7 @@ class NCNetworkingProcess {
                 let error = await networking.setFavorite(fileName: fileName, favorite: metadata.favorite, account: metadata.account)
                 if error == .success {
                     database.setMetadataStatus(ocId: metadata.ocId, status: global.metadataStatusNormal)
+                    serverUrls.insert(metadata.serverUrl)
                 } else {
                     let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
                     let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: true, account: metadata.account)
@@ -307,7 +309,6 @@ class NCNetworkingProcess {
                         NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterGetServerData, userInfo: ["serverUrl": metadata.serverUrl])
                     }
                 }
-                serverUrls.insert(metadata.serverUrl)
             }
         }
 
@@ -328,6 +329,16 @@ class NCNetworkingProcess {
             }
         }
 
+        /// ------------------------ DELETE
+        ///
+        if let metadatasWaitDelete = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitDelete), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitDelete.isEmpty {
+            for metadata in metadatasWaitDelete {
+                if networking.deleteFileOrFolderQueue.operations.filter({ ($0 as? NCOperationDeleteFileOrFolder)?.ocId == metadata.ocId }).isEmpty {
+                    networking.deleteFileOrFolderQueue.addOperation(NCOperationDeleteFileOrFolder(metadata: metadata))
+                }
+            }
+        }
+
         /// ------------------------ CREATE FOLDER
         ///
         if let metadatasWaitCreateFolder = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitCreateFolder), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitCreateFolder.isEmpty {
@@ -340,17 +351,6 @@ class NCNetworkingProcess {
                         NCContentPresenter().messageNotification(message, error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
                     }
                     returnValue = true
-                }
-                serverUrls.insert(metadata.serverUrl)
-            }
-        }
-
-        /// ------------------------ DELETE
-        ///
-        if let metadatasWaitDelete = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitDelete), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitDelete.isEmpty {
-            for metadata in metadatasWaitDelete {
-                if networking.deleteFileOrFolderQueue.operations.filter({ ($0 as? NCOperationDeleteFileOrFolder)?.ocId == metadata.ocId }).isEmpty {
-                    networking.deleteFileOrFolderQueue.addOperation(NCOperationDeleteFileOrFolder(metadata: metadata))
                 }
             }
         }
