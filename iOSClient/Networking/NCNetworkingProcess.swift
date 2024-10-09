@@ -302,10 +302,14 @@ class NCNetworkingProcess {
                 } else {
                     let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
                     let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: true, account: metadata.account)
+
                     if results.error == .success, let file = results.files?.first {
                         database.setMetadataFavorite(ocId: file.ocId, favorite: file.favorite, status: global.metadataStatusNormal)
+
                         NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterFavoriteFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl])
+
                     } else {
+
                         NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterGetServerData, userInfo: ["serverUrl": metadata.serverUrl])
                     }
                 }
@@ -319,12 +323,15 @@ class NCNetworkingProcess {
                 let serverUrlFileNameSource = metadata.serveUrlFileName
                 let serverUrlFileNameDestination = metadata.serverUrl + "/" + metadata.fileName
                 let result = await networking.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: false, account: metadata.account)
+
                 if result.error == .success {
                     database.setMetadataServeUrlFileNameStatusNormal(ocId: metadata.ocId)
                 } else {
                     database.restoreMetadataFileName(ocId: metadata.ocId)
                 }
+
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRenameFile, userInfo: ["serverUrl": metadata.serverUrl, "account": metadata.account, "error": result.error])
+
                 serverUrls.insert(metadata.serverUrl)
             }
         }
@@ -344,6 +351,7 @@ class NCNetworkingProcess {
         if let metadatasWaitCreateFolder = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitCreateFolder), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitCreateFolder.isEmpty {
             for metadata in metadatasWaitCreateFolder {
                 let error = await networking.createFolder(metadata: metadata)
+
                 if error != .success {
                     if metadata.sessionError.isEmpty {
                         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
