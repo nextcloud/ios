@@ -303,6 +303,14 @@ class NCCollectionViewDataSource: NSObject {
         }
     }
 
+    func removeImageCache() {
+        DispatchQueue.global().async {
+            for metadata in self.metadatas {
+                NCImageCache.shared.removeImageCache(ocIdPlusEtag: metadata.ocId + metadata.etag)
+            }
+        }
+    }
+
     // MARK: -
 
     internal func isSameNumbersOfSections(numberOfSections: Int) -> Bool {
