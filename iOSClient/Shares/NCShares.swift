@@ -89,8 +89,6 @@ class NCShares: NCCollectionViewCommon {
     }
 
     override func getServerData() {
-        super.getServerData()
-
         NextcloudKit.shared.readShares(parameters: NKShareParameter(), account: session.account) { task in
             self.dataSourceTask = task
             if self.dataSource.isEmpty() {

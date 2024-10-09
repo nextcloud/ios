@@ -69,8 +69,6 @@ class NCFavorite: NCCollectionViewCommon {
     }
 
     override func getServerData() {
-        super.getServerData()
-
         NextcloudKit.shared.listingFavorites(showHiddenFiles: NCKeychain().showHiddenFiles, account: session.account) { task in
             self.dataSourceTask = task
             if self.dataSource.isEmpty() {

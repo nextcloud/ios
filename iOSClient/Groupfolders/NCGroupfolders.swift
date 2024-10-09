@@ -70,8 +70,6 @@ class NCGroupfolders: NCCollectionViewCommon {
     }
 
     override func getServerData() {
-        super.getServerData()
-
         let homeServerUrl = utilityFileSystem.getHomeServer(session: session)
 
         NextcloudKit.shared.getGroupfolders(account: session.account) { task in

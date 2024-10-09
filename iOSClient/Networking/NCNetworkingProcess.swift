@@ -131,7 +131,7 @@ class NCNetworkingProcess {
     }
 
     @discardableResult
-    private func start() async -> (counterDownloading: Int, counterUploading: Int, counterWebDAV: Int) {
+    private func start() async -> (counterDownloading: Int, counterUploading: Int) {
         let applicationState = await checkApplicationState()
         let maxConcurrentOperationDownload = NCBrandOptions.shared.maxConcurrentOperationDownload
         var maxConcurrentOperationUpload = NCBrandOptions.shared.maxConcurrentOperationUpload
@@ -143,68 +143,13 @@ class NCNetworkingProcess {
         var counterDownloading = metadatasDownloading.count
         var counterUploading = metadatasUploading.count
 
-        /// ------------------------ FAVORITE
+        /// ------------------------ WEBDAV
         ///
-        if let metadatasWaitFavorite = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitFavorite), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitFavorite.isEmpty {
-            for metadata in metadatasWaitFavorite {
-                let session = NCSession.Session(account: metadata.account, urlBase: metadata.urlBase, user: metadata.user, userId: metadata.userId)
-                let fileName = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
-                let error = await networking.setFavorite(fileName: fileName, favorite: metadata.favorite, account: metadata.account)
-                if error == .success {
-                    database.setMetadataStatus(ocId: metadata.ocId, status: global.metadataStatusNormal)
-                } else {
-                    let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-                    let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: true, account: metadata.account)
-                    if results.error == .success, let file = results.files?.first {
-                        database.setMetadataFavorite(ocId: file.ocId, favorite: file.favorite, status: global.metadataStatusNormal)
-                        NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterFavoriteFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl])
-                    } else {
-                        NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterGetServerData, userInfo: ["serverUrl": metadata.serverUrl])
-                    }
-                }
-            }
-        }
-
-        /// ------------------------ DELETE
-        ///
-        if let metadatasWaitDelete = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitDelete), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitDelete.isEmpty {
-            for metadata in metadatasWaitDelete {
-                if networking.deleteFileOrFolderQueue.operations.filter({ ($0 as? NCOperationDeleteFileOrFolder)?.ocId == metadata.ocId }).isEmpty {
-                    networking.deleteFileOrFolderQueue.addOperation(NCOperationDeleteFileOrFolder(metadata: metadata))
-                }
-            }
-            return (counterDownloading, counterUploading, metadatasWaitDelete.count)
-        }
-
-        /// ------------------------ CREATE FOLDER
-        ///
-        if let metadatasWaitCreateFolder = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitCreateFolder), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitCreateFolder.isEmpty {
-            for metadata in metadatasWaitCreateFolder {
-                let error = await networking.createFolder(metadata: metadata)
-                if error != .success {
-                    if metadata.sessionError.isEmpty {
-                        let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-                        let message = String(format: NSLocalizedString("_create_folder_error_", comment: ""), serverUrlFileName)
-                        NCContentPresenter().messageNotification(message, error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
-                    }
-                    return (counterDownloading, counterUploading, metadatasWaitCreateFolder.count)
-                }
-            }
-        }
-
-        /// ------------------------ RENAME
-        ///
-        if let metadatasWaitRename = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitRename), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitRename.isEmpty {
-            for metadata in metadatasWaitRename {
-                let serverUrlFileNameSource = metadata.serveUrlFileName
-                let serverUrlFileNameDestination = metadata.serverUrl + "/" + metadata.fileName
-                let result = await networking.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: false, account: metadata.account)
-                if result.error == .success {
-                    database.setMetadataServeUrlFileNameStatusNormal(ocId: metadata.ocId)
-                } else {
-                    database.restoreMetadataFileName(ocId: metadata.ocId)
-                }
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRenameFile, userInfo: ["serverUrl": metadata.serverUrl, "account": metadata.account, "error": result.error])
+        let metadatas = database.getMetadatas(predicate: NSPredicate(format: "status IN %@", global.metadataStatusWaitWebDav))
+        if !metadatas.isEmpty {
+            let stop = await metadataStatusWaitWebDav()
+            if stop {
+                return (counterDownloading, counterUploading)
             }
         }
 
@@ -236,13 +181,13 @@ class NCNetworkingProcess {
         /// E2EE - only one for time
         for metadata in metadatasUploading.unique(map: { $0.serverUrl }) {
             if metadata.isDirectoryE2EE {
-                return (counterDownloading, counterUploading, 0)
+                return (counterDownloading, counterUploading)
             }
         }
 
         /// CHUNK - only one for time
         if !metadatasUploading.filter({ $0.chunk > 0 }).isEmpty {
-            return (counterDownloading, counterUploading, 0)
+            return (counterDownloading, counterUploading)
         }
 
         for sessionSelector in sessionUploadSelectors where counterUploading < maxConcurrentOperationUpload {
@@ -328,7 +273,7 @@ class NCNetworkingProcess {
             }
         }
 
-        return (counterDownloading, counterUploading, 0)
+        return (counterDownloading, counterUploading)
     }
 
     private func checkApplicationState() async -> UIApplication.State {
@@ -340,9 +285,92 @@ class NCNetworkingProcess {
         }
     }
 
+    private func metadataStatusWaitWebDav() async -> Bool {
+        var returnValue: Bool = false
+
+        /// ------------------------ FAVORITE
+        ///
+        if let metadatasWaitFavorite = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitFavorite), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitFavorite.isEmpty {
+            for metadata in metadatasWaitFavorite {
+                let session = NCSession.Session(account: metadata.account, urlBase: metadata.urlBase, user: metadata.user, userId: metadata.userId)
+                let fileName = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
+                let error = await networking.setFavorite(fileName: fileName, favorite: metadata.favorite, account: metadata.account)
+
+                if error == .success {
+                    database.setMetadataStatus(ocId: metadata.ocId, status: global.metadataStatusNormal)
+
+                    NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterFavoriteFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl])
+
+                } else {
+                    database.setMetadataFavorite(ocId: metadata.ocId, favorite: !metadata.favorite, status: global.metadataStatusNormal)
+
+                    let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+                    let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: true, account: metadata.account)
+
+                    if results.error == .success, let file = results.files?.first {
+                        database.setMetadataFavorite(ocId: file.ocId, favorite: file.favorite, status: global.metadataStatusNormal)
+
+                        NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterFavoriteFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl])
+
+                    } else {
+
+                        NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterGetServerData, userInfo: ["serverUrl": metadata.serverUrl])
+                    }
+                }
+            }
+        }
+
+        /// ------------------------ RENAME
+        ///
+        if let metadatasWaitRename = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitRename), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitRename.isEmpty {
+            for metadata in metadatasWaitRename {
+                let serverUrlFileNameSource = metadata.serveUrlFileName
+                let serverUrlFileNameDestination = metadata.serverUrl + "/" + metadata.fileName
+                let result = await networking.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: false, account: metadata.account)
+
+                if result.error == .success {
+                    database.setMetadataServeUrlFileNameStatusNormal(ocId: metadata.ocId)
+                } else {
+                    database.restoreMetadataFileName(ocId: metadata.ocId)
+                }
+
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterRenameFile, userInfo: ["serverUrl": metadata.serverUrl, "account": metadata.account, "error": result.error])
+            }
+        }
+
+        /// ------------------------ DELETE
+        ///
+        if let metadatasWaitDelete = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitDelete), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitDelete.isEmpty {
+            for metadata in metadatasWaitDelete {
+                if networking.deleteFileOrFolderQueue.operations.filter({ ($0 as? NCOperationDeleteFileOrFolder)?.ocId == metadata.ocId }).isEmpty {
+                    networking.deleteFileOrFolderQueue.addOperation(NCOperationDeleteFileOrFolder(metadata: metadata))
+                }
+            }
+        }
+
+        /// ------------------------ CREATE FOLDER
+        ///
+        if let metadatasWaitCreateFolder = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitCreateFolder), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitCreateFolder.isEmpty {
+            for metadata in metadatasWaitCreateFolder {
+                let error = await networking.createFolder(metadata: metadata)
+
+                if error != .success {
+                    if metadata.sessionError.isEmpty {
+                        let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+                        let message = String(format: NSLocalizedString("_create_folder_error_", comment: ""), serverUrlFileName)
+                        NCContentPresenter().messageNotification(message, error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
+                    }
+                    returnValue = true
+                }
+            }
+        }
+
+        return returnValue
+    }
+
     // MARK: - Public
 
-    func refreshProcessingTask() async -> (counterDownloading: Int, counterUploading: Int, counterWebDAV: Int) {
+    func refreshProcessingTask() async -> (counterDownloading: Int, counterUploading: Int) {
         await withCheckedContinuation { continuation in
             self.lockQueue.sync {
                 guard !self.hasRun, networking.isOnline else { return }
