@@ -418,7 +418,7 @@ extension NCNetworking {
 
         for metadata in metadatasPlain {
             let permission = NCUtility().permissionsContainsString(metadata.permissions, permissions: NCPermissions().permissionCanDelete)
-            if (!metadata.permissions.isEmpty && permission == false) || metadata.status != global.metadataStatusNormal {
+            if (!metadata.permissions.isEmpty && permission == false) || (metadata.status != global.metadataStatusNormal) {
                 return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_delete_file_"))
             }
 
@@ -509,28 +509,15 @@ extension NCNetworking {
 
     // MARK: - Copy
 
-    func copyMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> NKError {
-        if let metadataLive = self.database.getMetadataLivePhoto(metadata: metadata), metadata.isNotFlaggedAsLivePhotoByServer {
-            let error = await copyMetadataPlain(metadataLive, serverUrlTo: serverUrlTo, overwrite: overwrite)
-            if error == .success {
-                return await copyMetadataPlain(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite)
-            } else {
-                return error
-            }
-        }
-        return await copyMetadataPlain(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite)
-    }
-
-    private func copyMetadataPlain(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> NKError {
+    func copyMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) {
         let permission = utility.permissionsContainsString(metadata.permissions, permissions: NCPermissions().permissionCanRename)
-        if !metadata.permissions.isEmpty && !permission {
-            return NKError(errorCode: self.global.errorInternalError, errorDescription: "_no_permission_modify_file_")
-        }
-        let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
-        let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
 
-        let result = await copyFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account)
-        return result.error
+        if (!metadata.permissions.isEmpty && !permission) ||
+            (metadata.status != global.metadataStatusNormal && metadata.status != global.metadataStatusWaitCopy) {
+            return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_"))
+        }
+
+        self.database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: serverUrlTo, overwrite: overwrite, status: NCGlobal.shared.metadataStatusWaitCopy)
     }
 
     // MARK: - Favorite

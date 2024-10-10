@@ -288,6 +288,26 @@ class NCNetworkingProcess {
     private func metadataStatusWaitWebDav() async -> Bool {
         var returnValue: Bool = false
 
+        /// ------------------------ COPY
+        ///
+        if let metadatasWaitCopy = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitCopy), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitCopy.isEmpty {
+            for metadata in metadatasWaitCopy {
+                let serverUrlTo = metadata.serverUrlTo
+                let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
+                let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
+
+                let result = await networking.copyFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: metadata.overwrite, account: metadata.account)
+
+                database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: "", overwrite: false, status: global.metadataStatusNormal)
+
+                if result.error == .success {
+                    NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterGetServerData, userInfo: ["serverUrl": serverUrlTo])
+                } else {
+                    NCContentPresenter().showError(error: result.error)
+                }
+            }
+        }
+
         /// ------------------------ FAVORITE
         ///
         if let metadatasWaitFavorite = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitFavorite), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitFavorite.isEmpty {

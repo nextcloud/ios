@@ -611,6 +611,8 @@
 "_status_wait_delete_"          = "Waiting to delete";
 "_status_wait_rename_"          = "Waiting to rename";
 "_status_wait_favorite_"        = "Waiting to change favorite";
+"_status_wait_copy_"            = "Waiting to copy";
+"_status_wait_move_"            = "Waiting to move";
 "_status_in_upload_"            = "In upload";
 "_status_uploading_"            = "Uploading";
 "_status_upload_error_"         = "Error, waiting to upload";

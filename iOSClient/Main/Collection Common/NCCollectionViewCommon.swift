@@ -467,11 +467,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @objc func copyFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let error = userInfo["error"] as? NKError else { return }
-
-        if error != .success {
-            NCContentPresenter().showError(error: error)
-        }
+              let serverUrl = userInfo["serverUrl"] as? String,
+              let account = userInfo["account"] as? String,
+              account == session.account,
+              serverUrl == self.serverUrl else { return }
 
         reloadDataSource()
     }

@@ -305,8 +305,7 @@ extension NCCollectionViewCommon {
         //
         // COPY - MOVE
         //
-        if NCNetworking.shared.isOnline,
-           metadata.isCopyableMovable {
+        if metadata.isCopyableMovable {
             actions.append(.moveOrCopyAction(selectedMetadatas: [metadata], viewController: self, order: 130))
         }
 

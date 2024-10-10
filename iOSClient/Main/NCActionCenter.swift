@@ -550,17 +550,14 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool, session: NCSession.Session) {
         if let serverUrl, !items.isEmpty {
             if copy {
-                Task {
-                    var error = NKError()
-                    var ocId: [String] = []
-                    for case let metadata as tableMetadata in items where error == .success {
-                        error = await NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
-                        if error == .success {
-                            ocId.append(metadata.ocId)
-                        }
-                    }
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyFile, userInfo: ["ocId": ocId, "error": error])
+                var metadataServerUrl: String = ""
+                var metadataAccount: String = ""
+                for case let metadata as tableMetadata in items {
+                    metadataServerUrl = metadata.serverUrl
+                    metadataAccount = metadata.account
+                    NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
                 }
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyFile, userInfo: ["serverUrl": metadataServerUrl, "account": metadataAccount, "dragdrop": false])
             } else {
                 Task {
                     var error = NKError()

@@ -101,6 +101,7 @@ class tableMetadata: Object {
     @objc public var lockOwnerDisplayName = ""
     @objc public var lockTime: Date?
     @objc public var lockTimeOut: Date?
+    @objc dynamic var overwrite: Bool = false
     @objc dynamic var path = ""
     @objc dynamic var permissions = ""
     @objc dynamic var placePhotos: String?
@@ -111,6 +112,7 @@ class tableMetadata: Object {
     @objc dynamic var sceneIdentifier: String?
     @objc dynamic var serverUrl = ""
     @objc dynamic var serveUrlFileName = ""
+    @objc dynamic var serverUrlTo = ""
     @objc dynamic var session = ""
     @objc dynamic var sessionDate: Date?
     @objc dynamic var sessionError = ""
@@ -851,6 +853,20 @@ extension NCManageDatabase {
             try realm.write {
                 let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
                 result?.favorite = favorite
+                result?.status = status
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
+        }
+    }
+
+    func setMetadataCopyMove(ocId: String, serverUrlTo: String, overwrite: Bool, status: Int) {
+        do {
+            let realm = try Realm()
+            try realm.write {
+                let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
+                result?.serverUrlTo = serverUrlTo
+                result?.overwrite = overwrite
                 result?.status = status
             }
         } catch let error {

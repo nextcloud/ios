@@ -62,6 +62,22 @@ extension NCNetworking {
             return
         }
 
+        /// COPY
+        ///
+        if metadata.status == global.metadataStatusWaitCopy {
+            database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: "", overwrite: false, status: global.metadataStatusNormal)
+            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
+            return
+        }
+
+        /// MOVE
+        ///
+        if metadata.status == global.metadataStatusWaitMove {
+            database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: "", overwrite: false, status: global.metadataStatusNormal)
+            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
+            return
+        }
+
         /// DELETE
         ///
         if metadata.status == global.metadataStatusWaitDelete {

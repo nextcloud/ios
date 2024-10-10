@@ -346,19 +346,22 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.fileStatusImage?.image = utility.loadImage(named: "play.circle", colors: NCBrandColor.shared.iconImageMultiColors)
         }
         switch metadata.status {
-        case NCGlobal.shared.metadataStatusWaitDownload:
-            cell.fileStatusImage?.image = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
-        case NCGlobal.shared.metadataStatusWaitUpload:
-            cell.fileStatusImage?.image = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
         case NCGlobal.shared.metadataStatusWaitCreateFolder:
+            cell.fileStatusImage?.image = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
+        case NCGlobal.shared.metadataStatusWaitFavorite:
+            cell.fileStatusImage?.image = utility.loadImage(named: "star.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+        case NCGlobal.shared.metadataStatusWaitCopy:
+            cell.fileStatusImage?.image = utility.loadImage(named: "c.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.fileInfoLabel?.text = NSLocalizedString("_status_wait_copy_", comment: "")
+        case NCGlobal.shared.metadataStatusWaitMove:
+            cell.fileStatusImage?.image = utility.loadImage(named: "m.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+        case NCGlobal.shared.metadataStatusWaitRename:
+            cell.fileStatusImage?.image = utility.loadImage(named: "a.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+        case NCGlobal.shared.metadataStatusWaitDownload:
             cell.fileStatusImage?.image = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
         case NCGlobal.shared.metadataStatusDownloading:
             if #available(iOS 17.0, *) {
                 cell.fileStatusImage?.image = utility.loadImage(named: "arrowshape.down.circle", colors: NCBrandColor.shared.iconImageMultiColors)
-            }
-        case NCGlobal.shared.metadataStatusUploading:
-            if #available(iOS 17.0, *) {
-                cell.fileStatusImage?.image = utility.loadImage(named: "arrowshape.up.circle", colors: NCBrandColor.shared.iconImageMultiColors)
             }
         case NCGlobal.shared.metadataStatusDownloadError, NCGlobal.shared.metadataStatusUploadError:
             cell.fileStatusImage?.image = utility.loadImage(named: "exclamationmark.circle", colors: NCBrandColor.shared.iconImageMultiColors)

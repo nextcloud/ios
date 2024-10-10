@@ -274,12 +274,14 @@ class NCGlobal: NSObject {
     let metadataStatusWaitDelete: Int           = 11
     let metadataStatusWaitRename: Int           = 12
     let metadataStatusWaitFavorite: Int         = 13
+    let metadataStatusWaitCopy: Int             = 14
+    let metadataStatusWaitMove: Int             = 15
 
     let metadataStatusInTransfer                = [-1, -2, 1, 2]
     let metadataStatusFileDown                  = [-1, -2, -3]
     let metadataStatusHideInView                = [1, 2, 3, 11]
-    let metadataStatusObserve                   = [-1, 1, 10, 11, 12, 13]
-    let metadataStatusWaitWebDav                = [10, 11, 12, 13]
+    let metadataStatusObserve                   = [-1, 1, 10, 11, 12, 13, 14, 15]
+    let metadataStatusWaitWebDav                = [10, 11, 12, 13, 14, 15]
 
     // Auto upload subfolder granularity
     //
@@ -319,7 +321,7 @@ class NCGlobal: NSObject {
     let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId, serverUrl, account, withPush, sceneIdentifier
     let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: [ocId], error
     let notificationCenterMoveFile                              = "moveFile"                        // userInfo: [ocId], error, dragdrop
-    let notificationCenterCopyFile                              = "copyFile"                        // userInfo: [ocId], error, dragdrop
+    let notificationCenterCopyFile                              = "copyFile"                        // userInfo: serverUrl, account, dragdrop
     let notificationCenterRenameFile                            = "renameFile"                      // userInfo: serverUrl, account, error
     let notificationCenterFavoriteFile                          = "favoriteFile"                    // userInfo: ocId, serverUrl
     let notificationCenterFileExists                            = "fileExists"                      // userInfo: ocId, fileExists
