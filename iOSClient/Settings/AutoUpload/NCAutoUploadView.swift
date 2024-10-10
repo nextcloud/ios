@@ -113,6 +113,15 @@ struct NCAutoUploadView: View {
                 }
                 .font(.system(size: 16))
         })
+        /// Only upload favorites if desired
+        Section(content: {
+            Toggle(NSLocalizedString("_autoupload_favorites_", comment: ""), isOn: $model.autoUploadFavoritesOnly)
+                .tint(Color(NCBrandColor.shared.brandElement))
+                .onChange(of: model.autoUploadFavoritesOnly) { newValue in
+                    model.handleAutoUploadFavoritesOnlyChange(newValue: newValue)
+                }
+                .font(.system(size: 16))
+        })
         /// Auto Upload create subfolder
         Section(content: {
             Toggle(NSLocalizedString("_autoupload_create_subfolder_", comment: ""), isOn: $model.autoUploadCreateSubfolder)
