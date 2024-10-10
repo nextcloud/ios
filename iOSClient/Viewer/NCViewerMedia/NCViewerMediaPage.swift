@@ -130,8 +130,6 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(pageViewController.disableSwipeGesture), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDisableSwipeGesture), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(copyMoveFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCopyMoveFile), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(downloadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
@@ -163,8 +161,6 @@ class NCViewerMediaPage: UIViewController {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDisableSwipeGesture), object: nil)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterCopyMoveFile), object: nil)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterProgressTask), object: nil)
@@ -395,31 +391,6 @@ class NCViewerMediaPage: UIViewController {
         }
 
         self.viewUnload()
-    }
-
-    @objc func copyMoveFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? [String],
-              let type = userInfo["type"] as? String else { return }
-
-        // deleteFile(notification)
-    }
-
-    @objc func renameFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String
-        else { return }
-
-        // Stop media
-        if let ncplayer = currentViewController.ncplayer, ncplayer.isPlay() {
-            ncplayer.playerPause()
-        }
-
-        if currentIndex == ocIds.firstIndex(where: { $0 == ocId}), let metadata = database.getMetadataFromOcId(ocId) {
-            navigationItem.title = metadata.fileNameView
-            currentViewController.metadata = metadata
-            self.currentViewController.metadata = metadata
-        }
     }
 
     @objc func applicationDidBecomeActive(_ notification: NSNotification) {

@@ -456,8 +456,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard let userInfo = notification.userInfo as NSDictionary?,
               let serverUrl = userInfo["serverUrl"] as? String,
               let account = userInfo["account"] as? String,
-              let type = userInfo["type"] as? String,
-              let ocId = userInfo["ocId"] as? [String],
               account == session.account,
               serverUrl == self.serverUrl else { return }
 

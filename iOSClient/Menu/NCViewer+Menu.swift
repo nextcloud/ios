@@ -145,28 +145,6 @@ extension NCViewer {
         }
 
         //
-        // RENAME
-        //
-        if !webView, metadata.isRenameable {
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_rename_", comment: ""),
-                    icon: utility.loadImage(named: "text.cursor", colors: [NCBrandColor.shared.iconImageColor]),
-                    action: { _ in
-                        controller.present(UIAlertController.renameFile(metadata: metadata), animated: true)
-                    }
-                )
-            )
-        }
-
-        //
-        // COPY - MOVE
-        //
-        if !webView, metadata.isCopyableMovable {
-            actions.append(.moveOrCopyAction(selectedMetadatas: [metadata], viewController: controller))
-        }
-
-        //
         // DOWNLOAD FULL RESOLUTION
         //
         if !webView, metadata.session.isEmpty, !self.utilityFileSystem.fileProviderStorageExists(metadata) {
@@ -202,7 +180,7 @@ extension NCViewer {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_go_to_page_", comment: ""),
-                    icon: utility.loadImage(named: "book.pages", colors: [NCBrandColor.shared.iconImageColor]),
+                    icon: utility.loadImage(named: "number.circle", colors: [NCBrandColor.shared.iconImageColor]),
                     action: { _ in
                         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMenuGotToPageInPDF)
                     }
