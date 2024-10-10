@@ -295,10 +295,11 @@ class NCNetworkingProcess {
                 let serverUrlTo = metadata.serverUrlTo
                 let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
                 let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
+                let overwrite = (metadata.boolService as? NSString)?.boolValue ?? false
 
-                let result = await networking.copyFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: metadata.boolService, account: metadata.account)
+                let result = await networking.copyFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account)
 
-                database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: "", overwrite: false, status: global.metadataStatusNormal)
+                database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: "", overwrite: nil, status: global.metadataStatusNormal)
 
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["serverUrl": metadata.serverUrl, "serverUrlTo": serverUrlTo, "account": metadata.account, "dragdrop": false, "type": "copy"])
 
@@ -319,10 +320,11 @@ class NCNetworkingProcess {
                 let serverUrlTo = metadata.serverUrlTo
                 let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
                 let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
+                let overwrite = (metadata.boolService as? NSString)?.boolValue ?? false
 
-                let result = await networking.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: metadata.boolService, account: metadata.account)
+                let result = await networking.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account)
 
-                database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: "", overwrite: false, status: global.metadataStatusNormal)
+                database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: "", overwrite: nil, status: global.metadataStatusNormal)
 
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["serverUrl": metadata.serverUrl, "serverUrlTo": serverUrlTo, "account": metadata.account, "dragdrop": false, "type": "move"])
 
@@ -364,25 +366,13 @@ class NCNetworkingProcess {
                 let error = await networking.setFavorite(fileName: fileName, favorite: metadata.favorite, account: metadata.account)
 
                 if error == .success {
-                    database.setMetadataStatus(ocId: metadata.ocId, status: global.metadataStatusNormal)
-
-                    NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterFavoriteFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl])
+                    database.setMetadataFavorite(ocId: metadata.ocId, favorite: nil, saveOldFavorite: nil, status: global.metadataStatusNormal)
 
                 } else {
-                    database.setMetadataFavorite(ocId: metadata.ocId, favorite: !metadata.favorite, status: global.metadataStatusNormal)
+                    let favorite = (metadata.boolService as? NSString)?.boolValue ?? false
+                    database.setMetadataFavorite(ocId: metadata.ocId, favorite: favorite, saveOldFavorite: nil, status: global.metadataStatusNormal)
 
-                    let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-                    let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: true, account: metadata.account)
-
-                    if results.error == .success, let file = results.files?.first {
-                        database.setMetadataFavorite(ocId: file.ocId, favorite: file.favorite, status: global.metadataStatusNormal)
-
-                        NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterFavoriteFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl])
-
-                    } else {
-
-                        NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterGetServerData, userInfo: ["serverUrl": metadata.serverUrl])
-                    }
+                    NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterFavoriteFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl])
                 }
             }
         }

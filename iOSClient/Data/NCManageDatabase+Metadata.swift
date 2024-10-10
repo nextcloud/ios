@@ -61,7 +61,7 @@ class tableMetadata: Object {
 
     @objc dynamic var account = ""
     @objc dynamic var assetLocalIdentifier = ""
-    @objc dynamic var boolService: Bool = false
+    @objc dynamic var boolService: String?
     @objc dynamic var checksums = ""
     @objc dynamic var chunk: Int = 0
     @objc dynamic var classFile = ""
@@ -848,12 +848,15 @@ extension NCManageDatabase {
         }
     }
 
-    func setMetadataFavorite(ocId: String, favorite: Bool, status: Int) {
+    func setMetadataFavorite(ocId: String, favorite: Bool?, saveOldFavorite: String?, status: Int) {
         do {
             let realm = try Realm()
             try realm.write {
                 let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
-                result?.favorite = favorite
+                if let favorite {
+                    result?.favorite = favorite
+                }
+                result?.boolService = saveOldFavorite
                 result?.status = status
             }
         } catch let error {
@@ -861,7 +864,7 @@ extension NCManageDatabase {
         }
     }
 
-    func setMetadataCopyMove(ocId: String, serverUrlTo: String, overwrite: Bool, status: Int) {
+    func setMetadataCopyMove(ocId: String, serverUrlTo: String, overwrite: String?, status: Int) {
         do {
             let realm = try Realm()
             try realm.write {

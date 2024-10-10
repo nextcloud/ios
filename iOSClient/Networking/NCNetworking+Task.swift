@@ -57,7 +57,8 @@ extension NCNetworking {
         /// FAVORITE
         ///
         if metadata.status == global.metadataStatusWaitFavorite {
-            database.setMetadataStatus(ocId: metadata.ocId, status: global.metadataStatusNormal)
+            let favorite = (metadata.boolService as? NSString)?.boolValue ?? false
+            database.setMetadataFavorite(ocId: metadata.ocId, favorite: favorite, saveOldFavorite: nil, status: global.metadataStatusNormal)
             NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
             return
         }
@@ -65,7 +66,7 @@ extension NCNetworking {
         /// COPY
         ///
         if metadata.status == global.metadataStatusWaitCopy {
-            database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: "", overwrite: false, status: global.metadataStatusNormal)
+            database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: "", overwrite: nil, status: global.metadataStatusNormal)
             NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
             return
         }
@@ -73,7 +74,7 @@ extension NCNetworking {
         /// MOVE
         ///
         if metadata.status == global.metadataStatusWaitMove {
-            database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: "", overwrite: false, status: global.metadataStatusNormal)
+            database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: "", overwrite: nil, status: global.metadataStatusNormal)
             NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
             return
         }
