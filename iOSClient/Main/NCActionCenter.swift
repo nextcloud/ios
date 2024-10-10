@@ -561,7 +561,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                     NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
                 }
 
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["ocId": ocId, "serverUrl": metadataServerUrl, "serverUrlTo": serverUrl, "account": metadataAccount, "dragdrop": false, "type": "copy"])
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["ocId": ocId, "serverUrl": metadataServerUrl, "account": metadataAccount, "dragdrop": false, "type": "copy"])
             } else if move {
                 var metadataServerUrl: String = ""
                 var metadataAccount: String = ""
@@ -574,7 +574,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                     NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
                 }
 
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["ocId": ocId, "serverUrl": metadataServerUrl, "serverUrlTo": serverUrl, "account": metadataAccount, "dragdrop": false, "type": "move"])
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["ocId": ocId, "serverUrl": metadataServerUrl, "account": metadataAccount, "dragdrop": false, "type": "move"])
             }
         }
     }

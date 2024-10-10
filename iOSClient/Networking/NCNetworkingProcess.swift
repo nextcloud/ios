@@ -301,7 +301,7 @@ class NCNetworkingProcess {
 
                 database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: "", overwrite: nil, status: global.metadataStatusNormal)
 
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["serverUrl": metadata.serverUrl, "serverUrlTo": serverUrlTo, "account": metadata.account, "dragdrop": false, "type": "copy"])
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["serverUrl": metadata.serverUrl, "account": metadata.account, "dragdrop": false, "type": "copy"])
 
                 if result.error == .success {
 
@@ -326,7 +326,7 @@ class NCNetworkingProcess {
 
                 database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: "", overwrite: nil, status: global.metadataStatusNormal)
 
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["serverUrl": metadata.serverUrl, "serverUrlTo": serverUrlTo, "account": metadata.account, "dragdrop": false, "type": "move"])
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["serverUrl": metadata.serverUrl, "account": metadata.account, "dragdrop": false, "type": "move"])
 
                 if result.error == .success {
                     if metadata.directory {
@@ -334,20 +334,20 @@ class NCNetworkingProcess {
                     } else {
                         do {
                             try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+                        } catch { }
+                        self.database.deleteVideo(metadata: metadata)
+                        self.database.deleteMetadataOcId(metadata.ocId)
+                        self.database.deleteLocalFileOcId(metadata.ocId)
+                        // LIVE PHOTO
+                        if let metadataLive = self.database.getMetadataLivePhoto(metadata: metadata) {
+                            do {
+                                try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId))
                             } catch { }
-                            self.database.deleteVideo(metadata: metadata)
-                            self.database.deleteMetadataOcId(metadata.ocId)
-                            self.database.deleteLocalFileOcId(metadata.ocId)
-                            // LIVE PHOTO
-                            if let metadataLive = self.database.getMetadataLivePhoto(metadata: metadata) {
-                                do {
-                                    try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId))
-                                } catch { }
-                                self.database.deleteVideo(metadata: metadataLive)
-                                self.database.deleteMetadataOcId(metadataLive.ocId)
-                                self.database.deleteLocalFileOcId(metadataLive.ocId)
-                            }
+                            self.database.deleteVideo(metadata: metadataLive)
+                            self.database.deleteMetadataOcId(metadataLive.ocId)
+                            self.database.deleteLocalFileOcId(metadataLive.ocId)
                         }
+                    }
 
                     NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterGetServerData, userInfo: ["serverUrl": serverUrlTo])
 
