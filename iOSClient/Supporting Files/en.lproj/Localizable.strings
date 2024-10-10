@@ -390,6 +390,7 @@
 "_autoupload_background_"           = "Auto upload in the background";
 "_autoupload_photos_"               = "Auto upload photos";
 "_autoupload_videos_"               = "Auto upload videos";
+"_autoupload_favorites_"            = "Upload favorites only";
 "_autoupload_description_"          = "New photos/videos will be automatically uploaded to your server.";
 "_autoupload_description_background_"  = "This option requires the use of GPS to trigger the detection of new photos/videos in the camera roll once the location changes significantly";
 "_autoupload_background_title_"     = "Limitations";

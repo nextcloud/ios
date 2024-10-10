@@ -42,6 +42,8 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     @Published var autoUploadVideo: Bool = false
     /// A state variable that indicates whether auto upload for videos is enabled or not
     @Published var autoUploadWWAnVideo: Bool = false
+    /// A state variable that indicates whether only assets marked as favorites should be uploaded
+    @Published var autoUploadFavoritesOnly: Bool = false
     /// A state variable that indicates whether auto upload for full resolution photos is enabled or not
     @Published var autoUploadFull: Bool = false
     /// A state variable that indicates whether auto upload creates subfolders based on date or not
@@ -148,6 +150,10 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     /// Updates the auto-upload video over WWAN setting.
     func handleAutoUploadWWAnVideoChange(newValue: Bool) {
         updateAccountProperty(\.autoUploadWWAnVideo, value: newValue)
+    }
+    
+    func handleAutoUploadFavoritesOnlyChange(newValue: Bool) {
+        updateAccountProperty(\.autoUploadFavoritesOnly, value: newValue)
     }
 
     /// Updates the auto-upload full content setting.
