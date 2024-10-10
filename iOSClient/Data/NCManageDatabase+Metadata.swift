@@ -49,6 +49,7 @@ class tableMetadata: Object {
            self.latitude == object.latitude,
            self.longitude == object.longitude,
            self.altitude == object.altitude,
+           self.status == object.status,
            Array(self.tags).elementsEqual(Array(object.tags)),
            Array(self.shareType).elementsEqual(Array(object.shareType)),
            Array(self.sharePermissionsCloudMesh).elementsEqual(Array(object.sharePermissionsCloudMesh)) {

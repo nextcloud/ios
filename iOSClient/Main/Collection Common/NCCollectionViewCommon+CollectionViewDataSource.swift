@@ -348,6 +348,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         switch metadata.status {
         case NCGlobal.shared.metadataStatusWaitCreateFolder:
             cell.fileStatusImage?.image = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.fileInfoLabel?.text = NSLocalizedString("_status_wait_create_folder_", comment: "")
         case NCGlobal.shared.metadataStatusWaitFavorite:
             cell.fileStatusImage?.image = utility.loadImage(named: "star.circle", colors: NCBrandColor.shared.iconImageMultiColors)
         case NCGlobal.shared.metadataStatusWaitCopy:
