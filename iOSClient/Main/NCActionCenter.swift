@@ -559,7 +559,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                     NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
                 }
 
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyFile, userInfo: ["serverUrl": metadataServerUrl, "account": metadataAccount, "dragdrop": false])
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["serverUrl": metadataServerUrl, "account": metadataAccount, "dragdrop": false])
             } else {
                 var metadataServerUrl: String = ""
                 var metadataAccount: String = ""
@@ -570,7 +570,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                     NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
                 }
 
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMoveFile, userInfo: ["serverUrl": metadataServerUrl, "account": metadataAccount, "dragdrop": false])
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["serverUrl": metadataServerUrl, "account": metadataAccount, "dragdrop": false])
             }
         }
     }

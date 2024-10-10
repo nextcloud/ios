@@ -132,14 +132,14 @@ class NCDragDrop: NSObject {
     func copyFile(metadatas: [tableMetadata], serverUrl: String) {
         for metadata in metadatas {
             NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: false)
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyFile, userInfo: ["serverUrlTo": serverUrl, "account": metadata.account, "dragdrop": true])
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["serverUrlTo": serverUrl, "account": metadata.account, "dragdrop": true])
         }
     }
 
     func moveFile(metadatas: [tableMetadata], serverUrl: String) {
         for metadata in metadatas {
             NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: false)
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMoveFile, userInfo: ["serverUrlTo": serverUrl, "account": metadata.account, "dragdrop": true])
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["serverUrlTo": serverUrl, "account": metadata.account, "dragdrop": true])
         }
     }
 }
