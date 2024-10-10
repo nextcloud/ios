@@ -295,6 +295,8 @@ class NCMedia: UIViewController {
 
     @objc func copyMoveFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
+              let type = userInfo["type"] as? String,
+              let ocId = userInfo["ocId"] as? [String],
               let dragDrop = userInfo["dragdrop"] as? Bool, dragDrop else { return }
 
         setEditMode(false)

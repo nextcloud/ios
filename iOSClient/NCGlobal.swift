@@ -320,7 +320,7 @@ class NCGlobal: NSObject {
 
     let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId, serverUrl, account, withPush, sceneIdentifier
     let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: [ocId], error
-    let notificationCenterCopyMoveFile                          = "copyMoveFile"                    // userInfo: serverUrl, account, dragdrop
+    let notificationCenterCopyMoveFile                          = "copyMoveFile"                    // userInfo: [ocId] serverUrl, serverUrlTo, account, dragdrop, type (copy, move)
     let notificationCenterRenameFile                            = "renameFile"                      // userInfo: serverUrl, account, error
     let notificationCenterFavoriteFile                          = "favoriteFile"                    // userInfo: ocId, serverUrl
     let notificationCenterFileExists                            = "fileExists"                      // userInfo: ocId, fileExists

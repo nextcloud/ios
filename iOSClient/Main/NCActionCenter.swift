@@ -552,25 +552,29 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             if copy {
                 var metadataServerUrl: String = ""
                 var metadataAccount: String = ""
+                var ocId: [String] = []
 
                 for case let metadata as tableMetadata in items {
                     metadataServerUrl = metadata.serverUrl
                     metadataAccount = metadata.account
+                    ocId.append(metadata.ocId)
                     NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
                 }
 
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["serverUrl": metadataServerUrl, "account": metadataAccount, "dragdrop": false])
-            } else {
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["ocId": ocId, "serverUrl": metadataServerUrl, "serverUrlTo": serverUrl, "account": metadataAccount, "dragdrop": false, "type": "copy"])
+            } else if move {
                 var metadataServerUrl: String = ""
                 var metadataAccount: String = ""
+                var ocId: [String] = []
 
                 for case let metadata as tableMetadata in items {
                     metadataServerUrl = metadata.serverUrl
                     metadataAccount = metadata.account
+                    ocId.append(metadata.ocId)
                     NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
                 }
 
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["serverUrl": metadataServerUrl, "account": metadataAccount, "dragdrop": false])
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["ocId": ocId, "serverUrl": metadataServerUrl, "serverUrlTo": serverUrl, "account": metadataAccount, "dragdrop": false, "type": "move"])
             }
         }
     }

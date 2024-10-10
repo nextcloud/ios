@@ -296,11 +296,11 @@ class NCNetworkingProcess {
                 let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
                 let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
 
-                let result = await networking.copyFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: metadata.overwrite, account: metadata.account)
+                let result = await networking.copyFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: metadata.boolService, account: metadata.account)
 
                 database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: "", overwrite: false, status: global.metadataStatusNormal)
 
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMoveFile, userInfo: ["serverUrl": metadata.serverUrl, "account": metadata.account, "dragdrop": false])
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["serverUrl": metadata.serverUrl, "serverUrlTo": serverUrlTo, "account": metadata.account, "dragdrop": false, "type": "copy"])
 
                 if result.error == .success {
 
@@ -320,13 +320,12 @@ class NCNetworkingProcess {
                 let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
                 let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
 
-                let result = await networking.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: metadata.overwrite, account: metadata.account)
+                let result = await networking.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: metadata.boolService, account: metadata.account)
 
                 database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: "", overwrite: false, status: global.metadataStatusNormal)
 
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMoveFile, userInfo: ["serverUrl": metadata.serverUrl, "account": metadata.account, "dragdrop": false])
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["serverUrl": metadata.serverUrl, "serverUrlTo": serverUrlTo, "account": metadata.account, "dragdrop": false, "type": "move"])
 
-                
                 if result.error == .success {
                     if metadata.directory {
                         self.database.deleteDirectoryAndSubDirectory(serverUrl: utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: result.account)
