@@ -75,6 +75,10 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         reloadDataSource()
     }
 
+    override func copyMoveFile(_ notification: NSNotification) {
+        reloadDataSource()
+    }
+
     override func downloadStartFile(_ notification: NSNotification) {
         reloadDataSource()
     }

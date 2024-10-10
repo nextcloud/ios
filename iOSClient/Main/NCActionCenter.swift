@@ -555,26 +555,43 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
                 var ocId: [String] = []
 
                 for case let metadata as tableMetadata in items {
+                    if metadata.status != NCGlobal.shared.metadataStatusNormal, metadata.status != NCGlobal.shared.metadataStatusWaitCopy {
+                        continue
+                    }
+
                     metadataServerUrl = metadata.serverUrl
                     metadataAccount = metadata.account
+
                     ocId.append(metadata.ocId)
+
                     NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
                 }
 
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["ocId": ocId, "serverUrl": metadataServerUrl, "account": metadataAccount, "dragdrop": false, "type": "copy"])
+                if !ocId.isEmpty {
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["ocId": ocId, "serverUrl": metadataServerUrl, "account": metadataAccount, "dragdrop": false, "type": "copy"])
+                }
+
             } else if move {
                 var metadataServerUrl: String = ""
                 var metadataAccount: String = ""
                 var ocId: [String] = []
 
                 for case let metadata as tableMetadata in items {
+                    if metadata.status != NCGlobal.shared.metadataStatusNormal, metadata.status != NCGlobal.shared.metadataStatusWaitMove {
+                        continue
+                    }
+
                     metadataServerUrl = metadata.serverUrl
                     metadataAccount = metadata.account
+
                     ocId.append(metadata.ocId)
+
                     NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
                 }
 
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["ocId": ocId, "serverUrl": metadataServerUrl, "account": metadataAccount, "dragdrop": false, "type": "move"])
+                if !ocId.isEmpty {
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["ocId": ocId, "serverUrl": metadataServerUrl, "account": metadataAccount, "dragdrop": false, "type": "move"])
+                }
             }
         }
     }
