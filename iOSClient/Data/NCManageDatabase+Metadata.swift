@@ -49,6 +49,7 @@ class tableMetadata: Object {
            self.latitude == object.latitude,
            self.longitude == object.longitude,
            self.altitude == object.altitude,
+           self.status == object.status,
            Array(self.tags).elementsEqual(Array(object.tags)),
            Array(self.shareType).elementsEqual(Array(object.shareType)),
            Array(self.sharePermissionsCloudMesh).elementsEqual(Array(object.sharePermissionsCloudMesh)) {
@@ -111,6 +112,7 @@ class tableMetadata: Object {
     @objc dynamic var sceneIdentifier: String?
     @objc dynamic var serverUrl = ""
     @objc dynamic var serveUrlFileName = ""
+    @objc dynamic var serverUrlTo = ""
     @objc dynamic var session = ""
     @objc dynamic var sessionDate: Date?
     @objc dynamic var sessionError = ""
@@ -121,6 +123,7 @@ class tableMetadata: Object {
     let shareType = List<Int>()
     @objc dynamic var size: Int64 = 0
     @objc dynamic var status: Int = 0
+    @objc dynamic var storeFlag: String?
     @objc dynamic var subline: String?
     let tags = List<String>()
     @objc dynamic var trashbinFileName = ""
@@ -393,7 +396,7 @@ extension NCManageDatabase {
         metadata.richWorkspace = file.richWorkspace
         metadata.resourceType = file.resourceType
         metadata.serverUrl = file.serverUrl
-        metadata.serveUrlFileName = file.serverUrl +  "/" + file.fileName
+        metadata.serveUrlFileName = file.serverUrl + "/" + file.fileName
         metadata.sharePermissionsCollaborationServices = file.sharePermissionsCollaborationServices
         for element in file.sharePermissionsCloudMesh {
             metadata.sharePermissionsCloudMesh.append(element)
@@ -845,12 +848,29 @@ extension NCManageDatabase {
         }
     }
 
-    func setMetadataFavorite(ocId: String, favorite: Bool, status: Int) {
+    func setMetadataFavorite(ocId: String, favorite: Bool?, saveOldFavorite: String?, status: Int) {
         do {
             let realm = try Realm()
             try realm.write {
                 let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
-                result?.favorite = favorite
+                if let favorite {
+                    result?.favorite = favorite
+                }
+                result?.storeFlag = saveOldFavorite
+                result?.status = status
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
+        }
+    }
+
+    func setMetadataCopyMove(ocId: String, serverUrlTo: String, overwrite: String?, status: Int) {
+        do {
+            let realm = try Realm()
+            try realm.write {
+                let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
+                result?.serverUrlTo = serverUrlTo
+                result?.storeFlag = overwrite
                 result?.status = status
             }
         } catch let error {

@@ -550,28 +550,47 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
     func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool, session: NCSession.Session) {
         if let serverUrl, !items.isEmpty {
             if copy {
-                Task {
-                    var error = NKError()
-                    var ocId: [String] = []
-                    for case let metadata as tableMetadata in items where error == .success {
-                        error = await NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
-                        if error == .success {
-                            ocId.append(metadata.ocId)
-                        }
+                var metadataServerUrl: String = ""
+                var metadataAccount: String = ""
+                var ocId: [String] = []
+
+                for case let metadata as tableMetadata in items {
+                    if metadata.status != NCGlobal.shared.metadataStatusNormal, metadata.status != NCGlobal.shared.metadataStatusWaitCopy {
+                        continue
                     }
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyFile, userInfo: ["ocId": ocId, "error": error])
+
+                    metadataServerUrl = metadata.serverUrl
+                    metadataAccount = metadata.account
+
+                    ocId.append(metadata.ocId)
+
+                    NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
                 }
-            } else {
-                Task {
-                    var error = NKError()
-                    var ocId: [String] = []
-                    for case let metadata as tableMetadata in items where error == .success {
-                        error = await NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
-                        if error == .success {
-                            ocId.append(metadata.ocId)
-                        }
+
+                if !ocId.isEmpty {
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["ocId": ocId, "serverUrl": metadataServerUrl, "account": metadataAccount, "dragdrop": false, "type": "copy"])
+                }
+
+            } else if move {
+                var metadataServerUrl: String = ""
+                var metadataAccount: String = ""
+                var ocId: [String] = []
+
+                for case let metadata as tableMetadata in items {
+                    if metadata.status != NCGlobal.shared.metadataStatusNormal, metadata.status != NCGlobal.shared.metadataStatusWaitMove {
+                        continue
                     }
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMoveFile, userInfo: ["ocId": ocId, "error": error])
+
+                    metadataServerUrl = metadata.serverUrl
+                    metadataAccount = metadata.account
+
+                    ocId.append(metadata.ocId)
+
+                    NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
+                }
+
+                if !ocId.isEmpty {
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["ocId": ocId, "serverUrl": metadataServerUrl, "account": metadataAccount, "dragdrop": false, "type": "move"])
                 }
             }
         }

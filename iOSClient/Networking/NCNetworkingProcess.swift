@@ -288,6 +288,75 @@ class NCNetworkingProcess {
     private func metadataStatusWaitWebDav() async -> Bool {
         var returnValue: Bool = false
 
+        /// ------------------------ COPY
+        ///
+        if let metadatasWaitCopy = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitCopy), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitCopy.isEmpty {
+            for metadata in metadatasWaitCopy {
+                let serverUrlTo = metadata.serverUrlTo
+                let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
+                let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
+                let overwrite = (metadata.storeFlag as? NSString)?.boolValue ?? false
+
+                let result = await networking.copyFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account)
+
+                database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: "", overwrite: nil, status: global.metadataStatusNormal)
+
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["serverUrl": metadata.serverUrl, "account": metadata.account, "dragdrop": false, "type": "copy"])
+
+                if result.error == .success {
+
+                    NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterGetServerData, userInfo: ["serverUrl": serverUrlTo])
+
+                } else {
+                    NCContentPresenter().showError(error: result.error)
+                }
+            }
+        }
+
+        /// ------------------------ MOVE
+        ///
+        if let metadatasWaitMove = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitMove), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitMove.isEmpty {
+            for metadata in metadatasWaitMove {
+                let serverUrlTo = metadata.serverUrlTo
+                let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
+                let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
+                let overwrite = (metadata.storeFlag as? NSString)?.boolValue ?? false
+
+                let result = await networking.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account)
+
+                database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: "", overwrite: nil, status: global.metadataStatusNormal)
+
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["serverUrl": metadata.serverUrl, "account": metadata.account, "dragdrop": false, "type": "move"])
+
+                if result.error == .success {
+                    if metadata.directory {
+                        self.database.deleteDirectoryAndSubDirectory(serverUrl: utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: result.account)
+                    } else {
+                        do {
+                            try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+                        } catch { }
+                        self.database.deleteVideo(metadata: metadata)
+                        self.database.deleteMetadataOcId(metadata.ocId)
+                        self.database.deleteLocalFileOcId(metadata.ocId)
+                        // LIVE PHOTO
+                        if let metadataLive = self.database.getMetadataLivePhoto(metadata: metadata) {
+                            do {
+                                try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId))
+                            } catch { }
+                            self.database.deleteVideo(metadata: metadataLive)
+                            self.database.deleteMetadataOcId(metadataLive.ocId)
+                            self.database.deleteLocalFileOcId(metadataLive.ocId)
+                        }
+                    }
+
+                    NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterGetServerData, userInfo: ["serverUrl": serverUrlTo])
+
+                } else {
+                    NCContentPresenter().showError(error: result.error)
+                }
+            }
+        }
+
         /// ------------------------ FAVORITE
         ///
         if let metadatasWaitFavorite = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitFavorite), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitFavorite.isEmpty {
@@ -297,25 +366,13 @@ class NCNetworkingProcess {
                 let error = await networking.setFavorite(fileName: fileName, favorite: metadata.favorite, account: metadata.account)
 
                 if error == .success {
-                    database.setMetadataStatus(ocId: metadata.ocId, status: global.metadataStatusNormal)
-
-                    NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterFavoriteFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl])
+                    database.setMetadataFavorite(ocId: metadata.ocId, favorite: nil, saveOldFavorite: nil, status: global.metadataStatusNormal)
 
                 } else {
-                    database.setMetadataFavorite(ocId: metadata.ocId, favorite: !metadata.favorite, status: global.metadataStatusNormal)
+                    let favorite = (metadata.storeFlag as? NSString)?.boolValue ?? false
+                    database.setMetadataFavorite(ocId: metadata.ocId, favorite: favorite, saveOldFavorite: nil, status: global.metadataStatusNormal)
 
-                    let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-                    let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: true, account: metadata.account)
-
-                    if results.error == .success, let file = results.files?.first {
-                        database.setMetadataFavorite(ocId: file.ocId, favorite: file.favorite, status: global.metadataStatusNormal)
-
-                        NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterFavoriteFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl])
-
-                    } else {
-
-                        NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterGetServerData, userInfo: ["serverUrl": metadata.serverUrl])
-                    }
+                    NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterFavoriteFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl])
                 }
             }
         }

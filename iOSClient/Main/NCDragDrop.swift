@@ -130,30 +130,16 @@ class NCDragDrop: NSObject {
     }
 
     func copyFile(metadatas: [tableMetadata], serverUrl: String) {
-        Task {
-            let error = NKError()
-            var ocId: [String] = []
-            for metadata in metadatas where error == .success {
-                let error = await NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: false)
-                if error == .success {
-                    ocId.append(metadata.ocId)
-                }
-            }
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyFile, userInfo: ["ocId": ocId, "error": error, "dragdrop": true])
+        for metadata in metadatas {
+            NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: false)
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["ocId": [metadata.ocId], "serverUrl": metadata.serverUrl, "account": metadata.account, "dragdrop": true, "type": "copy"])
         }
     }
 
     func moveFile(metadatas: [tableMetadata], serverUrl: String) {
-        Task {
-            var error = NKError()
-            var ocId: [String] = []
-            for metadata in metadatas where error == .success {
-                error = await NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: false)
-                if error == .success {
-                    ocId.append(metadata.ocId)
-                }
-            }
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMoveFile, userInfo: ["ocId": ocId, "error": error, "dragdrop": true])
+        for metadata in metadatas {
+            NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: false)
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["ocId": [metadata.ocId], "serverUrl": metadata.serverUrl, "account": metadata.account, "dragdrop": true, "type": "move"])
         }
     }
 }
