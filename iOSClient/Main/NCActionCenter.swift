@@ -552,24 +552,25 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             if copy {
                 var metadataServerUrl: String = ""
                 var metadataAccount: String = ""
+
                 for case let metadata as tableMetadata in items {
                     metadataServerUrl = metadata.serverUrl
                     metadataAccount = metadata.account
                     NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
                 }
+
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyFile, userInfo: ["serverUrl": metadataServerUrl, "account": metadataAccount, "dragdrop": false])
             } else {
-                Task {
-                    var error = NKError()
-                    var ocId: [String] = []
-                    for case let metadata as tableMetadata in items where error == .success {
-                        error = await NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
-                        if error == .success {
-                            ocId.append(metadata.ocId)
-                        }
-                    }
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMoveFile, userInfo: ["ocId": ocId, "error": error])
+                var metadataServerUrl: String = ""
+                var metadataAccount: String = ""
+
+                for case let metadata as tableMetadata in items {
+                    metadataServerUrl = metadata.serverUrl
+                    metadataAccount = metadata.account
+                    NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: overwrite)
                 }
+
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMoveFile, userInfo: ["serverUrl": metadataServerUrl, "account": metadataAccount, "dragdrop": false])
             }
         }
     }

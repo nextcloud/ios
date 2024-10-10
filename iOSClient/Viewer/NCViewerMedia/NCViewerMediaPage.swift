@@ -398,7 +398,7 @@ class NCViewerMediaPage: UIViewController {
     }
 
     @objc func moveFile(_ notification: NSNotification) {
-        deleteFile(notification)
+        // deleteFile(notification)
     }
 
     @objc func renameFile(_ notification: NSNotification) {

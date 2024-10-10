@@ -462,49 +462,15 @@ extension NCNetworking {
 
     // MARK: - Move
 
-    func moveMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> NKError {
-        if let metadataLive = self.database.getMetadataLivePhoto(metadata: metadata), metadata.isNotFlaggedAsLivePhotoByServer {
-            let error = await moveMetadataPlain(metadataLive, serverUrlTo: serverUrlTo, overwrite: overwrite)
-            if error == .success {
-                return await moveMetadataPlain(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite)
-            } else {
-                return error
-            }
-        }
-        return await moveMetadataPlain(metadata, serverUrlTo: serverUrlTo, overwrite: overwrite)
-    }
-
-    private func moveMetadataPlain(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) async -> NKError {
+    func moveMetadata(_ metadata: tableMetadata, serverUrlTo: String, overwrite: Bool) {
         let permission = utility.permissionsContainsString(metadata.permissions, permissions: NCPermissions().permissionCanRename)
-        if !metadata.permissions.isEmpty && !permission {
-            return NKError(errorCode: self.global.errorInternalError, errorDescription: "_no_permission_modify_file_")
-        }
-        let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
-        let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
 
-        let result = await moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account)
-        if result.error == .success {
-            if metadata.directory {
-                self.database.deleteDirectoryAndSubDirectory(serverUrl: utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: result.account)
-            } else {
-                do {
-                    try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-                } catch { }
-                self.database.deleteVideo(metadata: metadata)
-                self.database.deleteMetadataOcId(metadata.ocId)
-                self.database.deleteLocalFileOcId(metadata.ocId)
-                // LIVE PHOTO SERVER
-                if let metadataLive = self.database.getMetadataLivePhoto(metadata: metadata), metadataLive.isFlaggedAsLivePhotoByServer {
-                    do {
-                        try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId))
-                    } catch { }
-                    self.database.deleteVideo(metadata: metadataLive)
-                    self.database.deleteMetadataOcId(metadataLive.ocId)
-                    self.database.deleteLocalFileOcId(metadataLive.ocId)
-                }
-            }
+        if (!metadata.permissions.isEmpty && !permission) ||
+            (metadata.status != global.metadataStatusNormal && metadata.status != global.metadataStatusWaitMove) {
+            return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_modify_file_"))
         }
-        return result.error
+
+        self.database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: serverUrlTo, overwrite: overwrite, status: NCGlobal.shared.metadataStatusWaitMove)
     }
 
     // MARK: - Copy
