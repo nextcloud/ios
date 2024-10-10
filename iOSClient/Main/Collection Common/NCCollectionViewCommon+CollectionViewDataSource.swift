@@ -351,13 +351,16 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.fileInfoLabel?.text = NSLocalizedString("_status_wait_create_folder_", comment: "")
         case NCGlobal.shared.metadataStatusWaitFavorite:
             cell.fileStatusImage?.image = utility.loadImage(named: "star.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.fileInfoLabel?.text = NSLocalizedString("_status_wait_favorite_", comment: "")
         case NCGlobal.shared.metadataStatusWaitCopy:
             cell.fileStatusImage?.image = utility.loadImage(named: "c.circle", colors: NCBrandColor.shared.iconImageMultiColors)
             cell.fileInfoLabel?.text = NSLocalizedString("_status_wait_copy_", comment: "")
         case NCGlobal.shared.metadataStatusWaitMove:
             cell.fileStatusImage?.image = utility.loadImage(named: "m.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.fileInfoLabel?.text = NSLocalizedString("_status_wait_move_", comment: "")
         case NCGlobal.shared.metadataStatusWaitRename:
             cell.fileStatusImage?.image = utility.loadImage(named: "a.circle", colors: NCBrandColor.shared.iconImageMultiColors)
+            cell.fileInfoLabel?.text = NSLocalizedString("_status_wait_rename_", comment: "")
         case NCGlobal.shared.metadataStatusWaitDownload:
             cell.fileStatusImage?.image = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: NCBrandColor.shared.iconImageMultiColors)
         case NCGlobal.shared.metadataStatusDownloading:
