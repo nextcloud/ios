@@ -61,7 +61,6 @@ class tableMetadata: Object {
 
     @objc dynamic var account = ""
     @objc dynamic var assetLocalIdentifier = ""
-    @objc dynamic var boolService: String?
     @objc dynamic var checksums = ""
     @objc dynamic var chunk: Int = 0
     @objc dynamic var classFile = ""
@@ -124,6 +123,7 @@ class tableMetadata: Object {
     let shareType = List<Int>()
     @objc dynamic var size: Int64 = 0
     @objc dynamic var status: Int = 0
+    @objc dynamic var storeFlag: String?
     @objc dynamic var subline: String?
     let tags = List<String>()
     @objc dynamic var trashbinFileName = ""
@@ -396,7 +396,7 @@ extension NCManageDatabase {
         metadata.richWorkspace = file.richWorkspace
         metadata.resourceType = file.resourceType
         metadata.serverUrl = file.serverUrl
-        metadata.serveUrlFileName = file.serverUrl +  "/" + file.fileName
+        metadata.serveUrlFileName = file.serverUrl + "/" + file.fileName
         metadata.sharePermissionsCollaborationServices = file.sharePermissionsCollaborationServices
         for element in file.sharePermissionsCloudMesh {
             metadata.sharePermissionsCloudMesh.append(element)
@@ -856,7 +856,7 @@ extension NCManageDatabase {
                 if let favorite {
                     result?.favorite = favorite
                 }
-                result?.boolService = saveOldFavorite
+                result?.storeFlag = saveOldFavorite
                 result?.status = status
             }
         } catch let error {
@@ -870,7 +870,7 @@ extension NCManageDatabase {
             try realm.write {
                 let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
                 result?.serverUrlTo = serverUrlTo
-                result?.boolService = overwrite
+                result?.storeFlag = overwrite
                 result?.status = status
             }
         } catch let error {

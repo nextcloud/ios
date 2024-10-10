@@ -57,7 +57,7 @@ extension NCNetworking {
         /// FAVORITE
         ///
         if metadata.status == global.metadataStatusWaitFavorite {
-            let favorite = (metadata.boolService as? NSString)?.boolValue ?? false
+            let favorite = (metadata.storeFlag as? NSString)?.boolValue ?? false
             database.setMetadataFavorite(ocId: metadata.ocId, favorite: favorite, saveOldFavorite: nil, status: global.metadataStatusNormal)
             NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
             return

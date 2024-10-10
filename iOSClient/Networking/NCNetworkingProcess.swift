@@ -295,7 +295,7 @@ class NCNetworkingProcess {
                 let serverUrlTo = metadata.serverUrlTo
                 let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
                 let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
-                let overwrite = (metadata.boolService as? NSString)?.boolValue ?? false
+                let overwrite = (metadata.storeFlag as? NSString)?.boolValue ?? false
 
                 let result = await networking.copyFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account)
 
@@ -320,7 +320,7 @@ class NCNetworkingProcess {
                 let serverUrlTo = metadata.serverUrlTo
                 let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
                 let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
-                let overwrite = (metadata.boolService as? NSString)?.boolValue ?? false
+                let overwrite = (metadata.storeFlag as? NSString)?.boolValue ?? false
 
                 let result = await networking.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account)
 
@@ -369,7 +369,7 @@ class NCNetworkingProcess {
                     database.setMetadataFavorite(ocId: metadata.ocId, favorite: nil, saveOldFavorite: nil, status: global.metadataStatusNormal)
 
                 } else {
-                    let favorite = (metadata.boolService as? NSString)?.boolValue ?? false
+                    let favorite = (metadata.storeFlag as? NSString)?.boolValue ?? false
                     database.setMetadataFavorite(ocId: metadata.ocId, favorite: favorite, saveOldFavorite: nil, status: global.metadataStatusNormal)
 
                     NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterFavoriteFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl])
