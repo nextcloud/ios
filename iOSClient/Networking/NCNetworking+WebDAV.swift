@@ -358,6 +358,7 @@ extension NCNetworking {
             #endif
         } else {
             deleteLocalFile(metadata: metadata)
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": metadata.serverUrl, "clearDataSource": true])
         }
 
         return .success
@@ -512,7 +513,7 @@ extension NCNetworking {
             self.readFile(serverUrlFileName: metadata.serverUrl + "/" + metadata.fileName, account: metadata.account) { _, metadata, error in
                 guard error == .success, let metadata = metadata else { return }
                 self.database.addMetadata(metadata)
-                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
+                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource, userInfo: ["serverUrl": metadata.serverUrl, "clearDataSource": true])
             }
         }
     }
