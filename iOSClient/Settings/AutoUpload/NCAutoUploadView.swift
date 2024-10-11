@@ -116,7 +116,7 @@ struct NCAutoUploadView: View {
         /// Only upload favorites if desired
         Section(content: {
             Toggle(NSLocalizedString("_autoupload_favorites_", comment: ""), isOn: $model.autoUploadFavoritesOnly)
-                .tint(Color(NCBrandColor.shared.brandElement))
+                .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                 .onChange(of: model.autoUploadFavoritesOnly) { newValue in
                     model.handleAutoUploadFavoritesOnlyChange(newValue: newValue)
                 }
