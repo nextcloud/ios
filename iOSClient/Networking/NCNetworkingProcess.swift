@@ -100,6 +100,7 @@ class NCNetworkingProcess {
                 guard let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal)) else { return }
 
                 if results.isEmpty {
+
                     /// Remove Photo CameraRoll
                     ///
                     if NCKeychain().removePhotoCameraRoll,
