@@ -80,7 +80,10 @@ class NCNetworkingProcess {
         self.timerProcess = Timer.scheduledTimer(withTimeInterval: 3, repeats: true, block: { _ in
 
             self.lockQueue.sync {
-                guard !self.hasRun, self.networking.isOnline else { return }
+                guard !self.hasRun,
+                      self.networking.isOnline,
+                      let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal))?.freeze()
+                else { return }
                 self.hasRun = true
 
                 /// Keep screen awake
@@ -88,18 +91,17 @@ class NCNetworkingProcess {
                 Task {
                     let tasks = await self.networking.getAllDataTask()
                     let hasSynchronizationTask = tasks.contains { $0.taskDescription == NCGlobal.shared.taskDescriptionSynchronization }
-                    let resultsTransfer = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status IN %@", self.global.metadataStatusInTransfer))
+                    let resultsTransfer = results.filter { self.global.metadataStatusInTransfer.contains($0.status) }
 
-                    if resultsTransfer.isEmptyOrNil && !hasSynchronizationTask {
+                    if resultsTransfer.isEmpty && !hasSynchronizationTask {
                         ScreenAwakeManager.shared.mode = .off
                     } else {
                         ScreenAwakeManager.shared.mode = NCKeychain().screenAwakeMode
                     }
                 }
 
-                guard let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal)) else { return }
-
                 if results.isEmpty {
+
                     /// Remove Photo CameraRoll
                     ///
                     if NCKeychain().removePhotoCameraRoll,
@@ -426,6 +428,18 @@ class NCNetworkingProcess {
     }
 
     // MARK: - Public
+
+    func startProcess() {
+        startTimer()
+        startObserveTableMetadata()
+    }
+
+    func stopProcess() {
+        timerProcess?.invalidate()
+        timerProcess = nil
+        notificationToken?.invalidate()
+        notificationToken = nil
+    }
 
     func refreshProcessingTask() async -> (counterDownloading: Int, counterUploading: Int) {
         await withCheckedContinuation { continuation in

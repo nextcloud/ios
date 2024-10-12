@@ -35,6 +35,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     let global = NCGlobal.shared
     let utility = NCUtility()
     let utilityFileSystem = NCUtilityFileSystem()
+    let imageCache = NCImageCache.shared
+    var dataSource = NCCollectionViewDataSource()
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     var pinchGesture: UIPinchGestureRecognizer = UIPinchGestureRecognizer()
 
@@ -47,8 +49,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var isEditMode = false
     var fileSelect: [String] = []
     var metadataFolder: tableMetadata?
-    var dataSource = NCCollectionViewDataSource()
-    let imageCache = NCImageCache.shared
     var richWorkspaceText: String?
     var sectionFirstHeader: NCSectionFirstHeader?
     var sectionFirstHeaderEmptyData: NCSectionFirstHeaderEmptyData?
@@ -412,11 +412,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func reloadDataSource(_ notification: NSNotification) {
-        if let userInfo = notification.userInfo as NSDictionary?,
-           let serverUrl = userInfo["serverUrl"] as? String {
+        guard let userInfo = notification.userInfo as NSDictionary? else { return }
+
+        if let serverUrl = userInfo["serverUrl"] as? String {
             if serverUrl != self.serverUrl {
                 return
             }
+        }
+
+        if let clearDataSource = userInfo["clearDataSource"] as? Bool, clearDataSource {
+            self.dataSource.removeAll()
         }
 
         reloadDataSource()
