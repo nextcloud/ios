@@ -317,11 +317,15 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
         UserDefaults.standard.set(data, forKey: key)
     }
 
-    func removeAllKeyUserDefaultsData(account: String) {
+    func removeAllKeyUserDefaultsData(account: String?) {
         let userDefaults = UserDefaults.standard
 
         for key in userDefaults.dictionaryRepresentation().keys {
-            if key.hasPrefix(account) {
+            if let account {
+                if key.hasPrefix(account) {
+                    userDefaults.removeObject(forKey: key)
+                }
+            } else {
                 userDefaults.removeObject(forKey: key)
             }
         }
