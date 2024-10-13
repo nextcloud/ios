@@ -266,7 +266,7 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
                                                               completion: @escaping (_ error: NKError) -> Void) {
         guard let host = URL(string: NCBrandOptions.shared.pushNotificationServerProxy)?.host else { return }
 
-        NextcloudKit.shared.checkServer(serverUrl: NCBrandOptions.shared.pushNotificationServerProxy) { error in
+        NextcloudKit.shared.checkServer(serverUrl: NCBrandOptions.shared.pushNotificationServerProxy) { _, error in
             guard error == .success else {
                 completion(.success)
                 return
