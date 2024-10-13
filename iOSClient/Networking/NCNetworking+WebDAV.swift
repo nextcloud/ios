@@ -41,10 +41,13 @@ extension NCNetworking {
                                              account: account,
                                              options: NKRequestOptions(queue: queue)) { task in
             taskHandler(task)
-        } completion: { account, files, _, error in
+        } completion: { account, files, responseData, error in
             guard error == .success, let files else {
                 return completion(account, nil, nil, error)
             }
+            let iss = self.isResponseDataChanged(account: account, responseData: responseData)
+
+
 
             self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: true) { metadataFolder, metadatas in
                 self.database.addMetadata(metadataFolder)

@@ -302,17 +302,29 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
 
     // MARK: - User Default Data Request
 
-    func isResponseDataChanged(account: String, responseData: AFDataResponse<Data?>?) -> Bool {
-        guard let request = responseData?.request, let data = responseData?.data else { return true }
-        let key = account + "|" + (request.url?.absoluteString ?? "") + "|" + (request.httpMethod ?? "")
+    func isResponseDataChanged<T>(account: String, responseData: AFDataResponse<T>?) -> Bool {
+        guard let responseData,
+              let request = responseData.request else { return true }
+        let key = getResponseDataKey(account: account, request: request)
         let retrievedData = UserDefaults.standard.data(forKey: key)
 
-        return retrievedData != data
+        switch responseData.result {
+        case .success(let data):
+            // Controlla se `T` è opzionale e gestisci il dato di conseguenza
+            if let data = data as? Data {
+                return retrievedData != data
+            } else {
+                return true
+            }
+        case .failure(let error):
+            print("Errore: \(error.localizedDescription)")
+            return true
+        }
     }
 
     func setResponseData(account: String, responseData: AFDataResponse<Data?>?) {
         guard let request = responseData?.request, let data = responseData?.data else { return }
-        let key = account + "|" + (request.url?.absoluteString ?? "") + "|" + (request.httpMethod ?? "")
+        let key = getResponseDataKey(account: account, request: request)
 
         UserDefaults.standard.set(data, forKey: key)
     }
@@ -329,5 +341,12 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
                 userDefaults.removeObject(forKey: key)
             }
         }
+    }
+
+    private func getResponseDataKey(account: String, request: URLRequest) -> String {
+        let depth = request.allHTTPHeaderFields?["Depth"] ?? "none"
+        let key = account + "|" + (request.url?.absoluteString ?? "") + "|Depth=\(depth)|" + (request.httpMethod ?? "")
+
+        return key
     }
 }

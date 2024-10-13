@@ -168,7 +168,7 @@ class NCFiles: NCCollectionViewCommon {
         }
 
         DispatchQueue.global().async {
-            self.networkReadFolder { tableDirectory, metadatas, reloadDataSource, error in
+            self.networkReadFolder { tableDirectory, metadatas, isChanged, error in
                 if error == .success {
                     for metadata in metadatas ?? [] where !metadata.directory && downloadMetadata(metadata) {
                         if NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
@@ -180,7 +180,7 @@ class NCFiles: NCCollectionViewCommon {
                 }
 
                 DispatchQueue.main.async {
-                    if reloadDataSource || self.isNumberOfItemsInAllSectionsNull {
+                    if isChanged || self.isNumberOfItemsInAllSectionsNull {
                         self.reloadDataSource()
                     }
 
@@ -190,7 +190,7 @@ class NCFiles: NCCollectionViewCommon {
         }
     }
 
-    private func networkReadFolder(completion: @escaping (_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ isEtagChanged: Bool, _ error: NKError) -> Void) {
+    private func networkReadFolder(completion: @escaping (_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ isChanged: Bool, _ error: NKError) -> Void) {
         var tableDirectory: tableDirectory?
 
         NCNetworking.shared.readFile(serverUrlFileName: serverUrl, account: session.account) { task in
