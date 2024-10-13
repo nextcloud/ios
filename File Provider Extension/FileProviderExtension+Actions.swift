@@ -33,7 +33,7 @@ extension FileProviderExtension {
         let directoryName = utilityFileSystem.createFileName(directoryName, serverUrl: tableDirectory.serverUrl, account: fileProviderData.shared.session.account)
         let serverUrlFileName = tableDirectory.serverUrl + "/" + directoryName
 
-        NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName, account: fileProviderData.shared.session.account) { _, ocId, _, error in
+        NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName, account: fileProviderData.shared.session.account) { _, ocId, _, _, error in
             if error == .success {
                 NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles, account: fileProviderData.shared.session.account) { _, files, _, error in
                     if error == .success, let file = files?.first {
@@ -69,7 +69,7 @@ extension FileProviderExtension {
         let serverUrl = metadata.serverUrl
         let fileName = metadata.fileName
 
-        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: metadata.account) { account, error in
+        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: metadata.account) { account, _, error in
             if error == .success {
                 let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(itemIdentifier.rawValue)
 
@@ -112,7 +112,7 @@ extension FileProviderExtension {
         }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: true, account: metadataFrom.account) { account, error in
+            NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: true, account: metadataFrom.account) { account, _, error in
                 if error == .success {
                     if metadataFrom.directory {
                         self.database.deleteDirectoryAndSubDirectory(serverUrl: serverUrlFrom, account: account)
@@ -143,7 +143,7 @@ extension FileProviderExtension {
         let fileNamePathTo = metadata.serverUrl + "/" + itemName
         let ocId = metadata.ocId
 
-        NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNamePathFrom, serverUrlFileNameDestination: fileNamePathTo, overwrite: false, account: metadata.account) { _, error in
+        NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNamePathFrom, serverUrlFileNameDestination: fileNamePathTo, overwrite: false, account: metadata.account) { _, _, error in
             if error == .success {
 
                 self.database.renameMetadata(fileNameNew: itemName, ocId: ocId)
@@ -184,7 +184,7 @@ extension FileProviderExtension {
 
         if (favorite == true && metadata.favorite == false) || (favorite == false && metadata.favorite == true) {
             let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: fileProviderData.shared.session)
-            NextcloudKit.shared.setFavorite(fileName: fileNamePath, favorite: favorite, account: metadata.account) { _, error in
+            NextcloudKit.shared.setFavorite(fileName: fileNamePath, favorite: favorite, account: metadata.account) { _, _, error in
                 if error == .success {
                     guard let metadata = self.database.getMetadataFromOcId(ocId) else {
                         return completionHandler(nil, NSFileProviderError(.noSuchItem))

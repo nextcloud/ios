@@ -168,7 +168,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
     let titleImage = imagetmp
 
     let options = NKRequestOptions(timeout: 90, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-    NextcloudKit.shared.getDashboardWidgetsApplication(id, account: activeTableAccount.account, options: options) { account, results, data, error in
+    NextcloudKit.shared.getDashboardWidgetsApplication(id, account: activeTableAccount.account, options: options) { account, results, responseData, error in
         Task {
             var datas = [DashboardData]()
             var numberItems = 0
@@ -227,6 +227,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
                                     } else {
                                         let (_, data, error) = await NCNetworking.shared.downloadPreview(url: url, account: activeTableAccount.account)
                                         if error == .success,
+                                           let data = responseData?.data,
                                            let image = convertDataToImage(data: data, size: NCGlobal.shared.size256, fileNameToWrite: fileName) {
                                             icon = image
                                         }
