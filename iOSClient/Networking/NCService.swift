@@ -174,8 +174,8 @@ class NCService: NSObject {
             if NCNetworking.shared.isResponseDataChanged(account: account, responseData: presponseData) {
                 NCNetworking.shared.setResponseData(account: account, responseData: presponseData)
                 self.database.addCapabilitiesJSon(data, account: account)
-
             }
+
             guard let capability = self.database.setCapabilities(account: account, data: data) else { return }
 
             // Theming
