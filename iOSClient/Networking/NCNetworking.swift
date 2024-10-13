@@ -302,18 +302,19 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
 
     // MARK: - User Default Data Request
 
-    func getKeyUserDefaultsData(account: String, responseData: AFDataResponse<Data?>?) -> String? {
-        guard let request = responseData?.request else { return nil }
+    func isResponseDataChanged(account: String, responseData: AFDataResponse<Data?>?) -> Bool {
+        guard let request = responseData?.request, let data = responseData?.data else { return true }
+        let key = account + "|" + (request.url?.absoluteString ?? "") + "|" + (request.httpMethod ?? "")
+        let retrievedData = UserDefaults.standard.data(forKey: key)
+
+        return retrievedData != data
+    }
+
+    func setResponseData(account: String, responseData: AFDataResponse<Data?>?) {
+        guard let request = responseData?.request, let data = responseData?.data else { return }
         let key = account + "|" + (request.url?.absoluteString ?? "") + "|" + (request.httpMethod ?? "")
 
-        /*
-        print(presponseData.response?.allHeaderFields)
-        print(presponseData.request?.url)
-        print(presponseData.request?.httpMethod)
-        print(presponseData.request?.allHTTPHeaderFields?["Authorization"])
-        */
-
-        return key
+        UserDefaults.standard.set(data, forKey: key)
     }
 
     func removeAllKeyUserDefaultsData(account: String) {
