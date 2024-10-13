@@ -299,4 +299,30 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
     private func getActiveAccountCertificate(account: String) {
         (self.p12Data, self.p12Password) = NCKeychain().getClientCertificate(account: account)
     }
+
+    // MARK: - User Default Data Request
+
+    func getKeyUserDefaultsData(account: String, responseData: AFDataResponse<Data?>?) -> String? {
+        guard let request = responseData?.request else { return nil }
+        let key = account + "|" + (request.url?.absoluteString ?? "") + "|" + (request.httpMethod ?? "")
+
+        /*
+        print(presponseData.response?.allHeaderFields)
+        print(presponseData.request?.url)
+        print(presponseData.request?.httpMethod)
+        print(presponseData.request?.allHTTPHeaderFields?["Authorization"])
+        */
+
+        return key
+    }
+
+    func removeAllKeyUserDefaultsData(account: String) {
+        let userDefaults = UserDefaults.standard
+
+        for key in userDefaults.dictionaryRepresentation().keys {
+            if key.hasPrefix(account) {
+                userDefaults.removeObject(forKey: key)
+            }
+        }
+    }
 }
