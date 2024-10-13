@@ -45,9 +45,7 @@ extension NCNetworking {
             guard error == .success, let files else {
                 return completion(account, nil, nil, error)
             }
-            let iss = self.isResponseDataChanged(account: account, responseData: responseData)
-
-
+            let isResponseDataChanged = self.isResponseDataChanged(account: account, responseData: responseData)
 
             self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: true) { metadataFolder, metadatas in
                 self.database.addMetadata(metadataFolder)
