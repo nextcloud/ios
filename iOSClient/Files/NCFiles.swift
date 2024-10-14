@@ -169,20 +169,21 @@ class NCFiles: NCCollectionViewCommon {
 
         DispatchQueue.global().async {
             self.networkReadFolder { metadatas, isChanged, error in
-                if error == .success {
-                    for metadata in metadatas ?? [] where !metadata.directory && downloadMetadata(metadata) {
-                        if NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
-                            NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile))
-                        }
-                    }
-                }
-
                 DispatchQueue.main.async {
                     if isChanged || self.isNumberOfItemsInAllSectionsNull {
                         self.reloadDataSource()
                     }
 
                     self.refreshControl.endRefreshing()
+                }
+
+                if error == .success {
+                    let metadatas: [tableMetadata] = metadatas ?? self.dataSource.getMetadatas()
+                    for metadata in metadatas where !metadata.directory && downloadMetadata(metadata) {
+                        if NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
+                            NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile))
+                        }
+                    }
                 }
             }
         }
