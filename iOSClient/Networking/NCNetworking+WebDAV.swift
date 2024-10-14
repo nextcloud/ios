@@ -36,6 +36,22 @@ extension NCNetworking {
                     queue: DispatchQueue,
                     taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
                     completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ isResponseDataChanged: Bool, _ error: NKError) -> Void) {
+
+        func storeFolder(_ metadataFolder: tableMetadata?) {
+            guard let metadataFolder else { return }
+
+            self.database.addMetadata(metadataFolder)
+            self.database.addDirectory(e2eEncrypted: metadataFolder.e2eEncrypted,
+                                       favorite: metadataFolder.favorite,
+                                       ocId: metadataFolder.ocId,
+                                       fileId: metadataFolder.fileId,
+                                       etag: metadataFolder.etag,
+                                       permissions: metadataFolder.permissions,
+                                       richWorkspace: metadataFolder.richWorkspace,
+                                       serverUrl: serverUrl,
+                                       account: metadataFolder.account)
+        }
+
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
                                              depth: "1",
                                              showHiddenFiles: NCKeychain().showHiddenFiles,
@@ -49,22 +65,13 @@ extension NCNetworking {
             if checkResponseDataChanged {
                 if !self.isResponseDataChanged(account: account, responseData: responseData) {
                     let metadataFolder = self.database.getMetadataDirectoryFrom(files: files)
+                    storeFolder(metadataFolder)
                     return completion(account, metadataFolder, nil, false, error)
                 }
             }
 
             self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: true) { metadataFolder, metadatas in
-                self.database.addMetadata(metadataFolder)
-                self.database.addDirectory(e2eEncrypted: metadataFolder.e2eEncrypted,
-                                           favorite: metadataFolder.favorite,
-                                           ocId: metadataFolder.ocId,
-                                           fileId: metadataFolder.fileId,
-                                           etag: metadataFolder.etag,
-                                           permissions: metadataFolder.permissions,
-                                           richWorkspace: metadataFolder.richWorkspace,
-                                           serverUrl: serverUrl,
-                                           account: metadataFolder.account)
-
+                storeFolder(metadataFolder)
                 self.database.updateMetadatasFiles(metadatas, serverUrl: serverUrl, account: account)
                 completion(account, metadataFolder, metadatas, true, error)
             }

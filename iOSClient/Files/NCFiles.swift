@@ -190,8 +190,6 @@ class NCFiles: NCCollectionViewCommon {
     }
 
     private func networkReadFolder(completion: @escaping (_ metadatas: [tableMetadata]?, _ isChanged: Bool, _ error: NKError) -> Void) {
-        var checkResponseDataChanged = false
-
         NCNetworking.shared.readFile(serverUrlFileName: serverUrl, account: session.account) { task in
             self.dataSourceTask = task
             if self.dataSource.isEmpty() {
@@ -207,8 +205,6 @@ class NCFiles: NCCollectionViewCommon {
                 return completion(nil, false, NKError())
             }
 
-            let checkResponseDataChanged = (tableDirectory?.etag.isEmpty ?? true) || metadata.e2eEncrypted
-
             NCNetworking.shared.readFolder(serverUrl: self.serverUrl,
                                            account: metadata.account,
                                            checkResponseDataChanged: true,
@@ -222,12 +218,15 @@ class NCFiles: NCCollectionViewCommon {
                 guard error == .success else {
                     return completion(nil, false, error)
                 }
+                /// Updata folder
+                if let metadataFolder {
+                    self.metadataFolder = metadataFolder
+                    self.richWorkspaceText = metadataFolder.richWorkspace
+                }
                 /// check Response Data Changed
                 if !isResponseDataChanged {
                     return completion(nil, false, error)
                 }
-                self.metadataFolder = metadataFolder
-                self.richWorkspaceText = metadataFolder?.richWorkspace
 
                 guard let metadataFolder = metadataFolder,
                       metadataFolder.e2eEncrypted,
