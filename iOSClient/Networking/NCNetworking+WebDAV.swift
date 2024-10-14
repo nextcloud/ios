@@ -32,6 +32,7 @@ extension NCNetworking {
 
     func readFolder(serverUrl: String,
                     account: String,
+                    checkResponseDataChanged: Bool,
                     queue: DispatchQueue,
                     taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
                     completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ error: NKError) -> Void) {
