@@ -189,7 +189,7 @@ class NCFiles: NCCollectionViewCommon {
         }
     }
 
-    private func networkReadFolder(completion: @escaping (_ metadatas: [tableMetadata]?, _ isChanged: Bool, _ error: NKError) -> Void) {
+    private func networkReadFolder(completion: @escaping (_ metadatas: [tableMetadata]?, _ isDataChanged: Bool, _ error: NKError) -> Void) {
         NCNetworking.shared.readFile(serverUrlFileName: serverUrl, account: session.account) { task in
             self.dataSourceTask = task
             if self.dataSource.isEmpty() {
@@ -213,7 +213,7 @@ class NCFiles: NCCollectionViewCommon {
                 if self.dataSource.isEmpty() {
                     self.collectionView.reloadData()
                 }
-            } completion: { account, metadataFolder, metadatas, isResponseDataChanged, error in
+            } completion: { account, metadataFolder, metadatas, isDataChanged, error in
                 /// Error
                 guard error == .success else {
                     return completion(nil, false, error)
@@ -224,7 +224,7 @@ class NCFiles: NCCollectionViewCommon {
                     self.richWorkspaceText = metadataFolder.richWorkspace
                 }
                 /// check Response Data Changed
-                if !isResponseDataChanged {
+                if !isDataChanged {
                     return completion(nil, false, error)
                 }
 

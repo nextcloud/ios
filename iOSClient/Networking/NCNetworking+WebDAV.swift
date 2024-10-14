@@ -35,7 +35,7 @@ extension NCNetworking {
                     checkResponseDataChanged: Bool,
                     queue: DispatchQueue,
                     taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
-                    completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ isResponseDataChanged: Bool, _ error: NKError) -> Void) {
+                    completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ isDataChanged: Bool, _ error: NKError) -> Void) {
 
         func storeFolder(_ metadataFolder: tableMetadata?) {
             guard let metadataFolder else { return }
