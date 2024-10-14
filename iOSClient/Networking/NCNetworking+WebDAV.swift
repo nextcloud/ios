@@ -47,7 +47,7 @@ extension NCNetworking {
                 return completion(account, nil, nil, false, error)
             }
             if checkResponseDataChanged {
-                if self.isResponseDataChanged(account: account, responseData: responseData) {
+                if !self.isResponseDataChanged(account: account, responseData: responseData) {
                     return completion(account, nil, nil, true, error)
                 }
             }
