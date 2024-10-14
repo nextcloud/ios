@@ -139,6 +139,8 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
 
             NCManageDatabase.shared.clearDatabase()
 
+            NCNetworking.shared.removeAllKeyUserDefaultsData(account: nil)
+
             let ufs = NCUtilityFileSystem()
             ufs.removeGroupDirectoryProviderStorage()
             ufs.removeGroupLibraryDirectory()

@@ -172,7 +172,6 @@ class NCService: NSObject {
             data.printJson()
 
             if NCNetworking.shared.isResponseDataChanged(account: account, responseData: presponseData) {
-                NCNetworking.shared.setResponseData(account: account, responseData: presponseData)
                 self.database.addCapabilitiesJSon(data, account: account)
             }
 
