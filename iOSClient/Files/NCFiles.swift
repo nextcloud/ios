@@ -206,7 +206,7 @@ class NCFiles: NCCollectionViewCommon {
 
             NCNetworking.shared.readFolder(serverUrl: self.serverUrl,
                                            account: metadata.account,
-                                           checkResponseDataChanged: false,
+                                           checkResponseDataChanged: true,
                                            queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue) { task in
                 self.dataSourceTask = task
                 if self.dataSource.isEmpty() {

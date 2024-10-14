@@ -310,8 +310,11 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
 
         switch responseData.result {
         case .success(let data):
-            // Controlla se `T` è opzionale e gestisci il dato di conseguenza
             if let data = data as? Data {
+                if retrievedData != data, let request = responseData.request {
+                    let key = getResponseDataKey(account: account, request: request)
+                    UserDefaults.standard.set(data, forKey: key)
+                }
                 return retrievedData != data
             } else {
                 return true
@@ -320,13 +323,6 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
             print("Errore: \(error.localizedDescription)")
             return true
         }
-    }
-
-    func setResponseData(account: String, responseData: AFDataResponse<Data?>?) {
-        guard let request = responseData?.request, let data = responseData?.data else { return }
-        let key = getResponseDataKey(account: account, request: request)
-
-        UserDefaults.standard.set(data, forKey: key)
     }
 
     func removeAllKeyUserDefaultsData(account: String?) {
