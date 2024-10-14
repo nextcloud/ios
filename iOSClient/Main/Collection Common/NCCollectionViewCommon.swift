@@ -411,16 +411,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func reloadDataSource(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary? else { return }
-
-        if let serverUrl = userInfo["serverUrl"] as? String {
-            if serverUrl != self.serverUrl {
-                return
+        if let userInfo = notification.userInfo as? NSDictionary {
+            if let serverUrl = userInfo["serverUrl"] as? String {
+                if serverUrl != self.serverUrl {
+                    return
+                }
             }
-        }
 
-        if let clearDataSource = userInfo["clearDataSource"] as? Bool, clearDataSource {
-            self.dataSource.removeAll()
+            if let clearDataSource = userInfo["clearDataSource"] as? Bool, clearDataSource {
+                self.dataSource.removeAll()
+            }
         }
 
         reloadDataSource()
