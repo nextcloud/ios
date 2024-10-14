@@ -196,6 +196,7 @@ class NCFiles: NCCollectionViewCommon {
                 self.collectionView.reloadData()
             }
         } completion: { account, metadata, error in
+            let isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(session: self.session, serverUrl: self.serverUrl)
             guard error == .success, let metadata else {
                 return completion(nil, false, error)
             }
@@ -204,10 +205,15 @@ class NCFiles: NCCollectionViewCommon {
             guard tableDirectory?.etag != metadata.etag || metadata.e2eEncrypted else {
                 return completion(nil, false, NKError())
             }
+            /// Check Response DataC hanged
+            var checkResponseDataChanged = true
+            if tableDirectory?.etag.isEmpty ?? true || isDirectoryE2EE {
+                checkResponseDataChanged = false
+            }
 
             NCNetworking.shared.readFolder(serverUrl: self.serverUrl,
                                            account: metadata.account,
-                                           checkResponseDataChanged: true,
+                                           checkResponseDataChanged: checkResponseDataChanged,
                                            queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue) { task in
                 self.dataSourceTask = task
                 if self.dataSource.isEmpty() {
@@ -228,8 +234,8 @@ class NCFiles: NCCollectionViewCommon {
                     return completion(nil, false, error)
                 }
 
-                guard let metadataFolder = metadataFolder,
-                      metadataFolder.e2eEncrypted,
+                guard let metadataFolder,
+                      isDirectoryE2EE,
                       NCKeychain().isEndToEndEnabled(account: account),
                       !NCNetworkingE2EE().isInUpload(account: account, serverUrl: self.serverUrl) else {
                     return completion(metadatas, true, error)

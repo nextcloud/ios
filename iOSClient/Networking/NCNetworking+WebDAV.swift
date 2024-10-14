@@ -62,12 +62,12 @@ extension NCNetworking {
             guard error == .success, let files else {
                 return completion(account, nil, nil, false, error)
             }
-            if checkResponseDataChanged {
-                if !self.isResponseDataChanged(account: account, responseData: responseData) {
-                    let metadataFolder = self.database.getMetadataDirectoryFrom(files: files)
-                    storeFolder(metadataFolder)
-                    return completion(account, metadataFolder, nil, false, error)
-                }
+
+            let isResponseDataChanged = self.isResponseDataChanged(account: account, responseData: responseData)
+            if checkResponseDataChanged, !isResponseDataChanged {
+                let metadataFolder = self.database.getMetadataDirectoryFrom(files: files)
+                storeFolder(metadataFolder)
+                return completion(account, metadataFolder, nil, false, error)
             }
 
             self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: true) { metadataFolder, metadatas in
