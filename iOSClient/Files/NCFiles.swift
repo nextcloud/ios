@@ -170,11 +170,11 @@ class NCFiles: NCCollectionViewCommon {
         DispatchQueue.global().async {
             self.networkReadFolder { metadatas, isChanged, error in
                 DispatchQueue.main.async {
+                    self.refreshControl.endRefreshing()
+
                     if isChanged || self.isNumberOfItemsInAllSectionsNull {
                         self.reloadDataSource()
                     }
-
-                    self.refreshControl.endRefreshing()
                 }
 
                 if error == .success {
@@ -200,9 +200,9 @@ class NCFiles: NCCollectionViewCommon {
             guard error == .success, let metadata else {
                 return completion(nil, false, error)
             }
-            /// Check change eTag or E2EE
+            /// Check change eTag or E2EE  or DataSource empty
             let tableDirectory = self.database.setDirectory(serverUrl: self.serverUrl, richWorkspace: metadata.richWorkspace, account: account)
-            guard tableDirectory?.etag != metadata.etag || metadata.e2eEncrypted else {
+            guard tableDirectory?.etag != metadata.etag || metadata.e2eEncrypted || self.dataSource.isEmpty() else {
                 return completion(nil, false, NKError())
             }
             /// Check Response DataC hanged
