@@ -35,7 +35,7 @@ extension NCNetworking {
                     checkResponseDataChanged: Bool,
                     queue: DispatchQueue,
                     taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
-                    completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ error: NKError) -> Void) {
+                    completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ isResponseDataChanged: Bool, _ error: NKError) -> Void) {
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
                                              depth: "1",
                                              showHiddenFiles: NCKeychain().showHiddenFiles,
@@ -44,9 +44,13 @@ extension NCNetworking {
             taskHandler(task)
         } completion: { account, files, responseData, error in
             guard error == .success, let files else {
-                return completion(account, nil, nil, error)
+                return completion(account, nil, nil, false, error)
             }
-            let isResponseDataChanged = self.isResponseDataChanged(account: account, responseData: responseData)
+            if checkResponseDataChanged {
+                if self.isResponseDataChanged(account: account, responseData: responseData) {
+                    return completion(account, nil, nil, true, error)
+                }
+            }
 
             self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: true) { metadataFolder, metadatas in
                 self.database.addMetadata(metadataFolder)
@@ -61,7 +65,7 @@ extension NCNetworking {
                                            account: metadataFolder.account)
 
                 self.database.updateMetadatasFiles(metadatas, serverUrl: serverUrl, account: account)
-                completion(account, metadataFolder, metadatas, error)
+                completion(account, metadataFolder, metadatas, true, error)
             }
         }
     }

@@ -168,15 +168,13 @@ class NCFiles: NCCollectionViewCommon {
         }
 
         DispatchQueue.global().async {
-            self.networkReadFolder { tableDirectory, metadatas, isChanged, error in
+            self.networkReadFolder { metadatas, isChanged, error in
                 if error == .success {
                     for metadata in metadatas ?? [] where !metadata.directory && downloadMetadata(metadata) {
                         if NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
                             NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile))
                         }
                     }
-
-                    self.richWorkspaceText = tableDirectory?.richWorkspace
                 }
 
                 DispatchQueue.main.async {
@@ -190,8 +188,7 @@ class NCFiles: NCCollectionViewCommon {
         }
     }
 
-    private func networkReadFolder(completion: @escaping (_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ isChanged: Bool, _ error: NKError) -> Void) {
-        var tableDirectory: tableDirectory?
+    private func networkReadFolder(completion: @escaping (_ metadatas: [tableMetadata]?, _ isChanged: Bool, _ error: NKError) -> Void) {
 
         NCNetworking.shared.readFile(serverUrlFileName: serverUrl, account: session.account) { task in
             self.dataSourceTask = task
@@ -200,11 +197,11 @@ class NCFiles: NCCollectionViewCommon {
             }
         } completion: { account, metadata, error in
             guard error == .success, let metadata else {
-                return completion(nil, nil, false, error)
+                return completion(nil, false, error)
             }
-            tableDirectory = self.database.setDirectory(serverUrl: self.serverUrl, richWorkspace: metadata.richWorkspace, account: account)
-            guard tableDirectory?.etag != metadata.etag || metadata.e2eEncrypted else {
-                return completion(tableDirectory, nil, false, NKError())
+            /// Check change eTag or E2EE
+            guard self.database.setDirectory(serverUrl: self.serverUrl, richWorkspace: metadata.richWorkspace, account: account)?.etag != metadata.etag || metadata.e2eEncrypted else {
+                return completion(nil, false, NKError())
             }
 
             NCNetworking.shared.readFolder(serverUrl: self.serverUrl,
@@ -215,17 +212,23 @@ class NCFiles: NCCollectionViewCommon {
                 if self.dataSource.isEmpty() {
                     self.collectionView.reloadData()
                 }
-            } completion: { account, metadataFolder, metadatas, error in
+            } completion: { account, metadataFolder, metadatas, isResponseDataChanged, error in
+                /// Error
                 guard error == .success else {
-                    return completion(tableDirectory, nil, false, error)
+                    return completion(nil, false, error)
+                }
+                /// check Response Data Changed
+                if !isResponseDataChanged {
+                    return completion(nil, false, error)
                 }
                 self.metadataFolder = metadataFolder
+                self.richWorkspaceText = metadataFolder?.richWorkspace
 
                 guard let metadataFolder = metadataFolder,
                       metadataFolder.e2eEncrypted,
                       NCKeychain().isEndToEndEnabled(account: account),
                       !NCNetworkingE2EE().isInUpload(account: account, serverUrl: self.serverUrl) else {
-                    return completion(tableDirectory, metadatas, true, error)
+                    return completion(metadatas, true, error)
                 }
 
                 /// E2EE
@@ -265,7 +268,7 @@ class NCFiles: NCCollectionViewCommon {
                     } else {
                         NCContentPresenter().showError(error: NKError(errorCode: NCGlobal.shared.errorE2EEKeyDecodeMetadata, errorDescription: "_e2e_error_"))
                     }
-                    completion(tableDirectory, metadatas, true, error)
+                    completion(metadatas, true, error)
                 }
             }
         }
