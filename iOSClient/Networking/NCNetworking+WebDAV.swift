@@ -686,10 +686,8 @@ extension NCNetworking {
             completion(userBaseUrl.account, NKError())
         }
 
-        NextcloudKit.shared.unifiedSearch(term: literal, timeout: 30, timeoutProvider: 90, account: userBaseUrl.account) { _ in
-            // example filter
-            // ["calendar", "files", "fulltextsearch"].contains(provider.id)
-            return true
+        NextcloudKit.shared.unifiedSearch(term: literal, timeout: 30, timeoutProvider: 90, account: userBaseUrl.account) { provider in
+            ["files"].contains(provider.id)
         } request: { request in
             if let request = request {
                 self.requestsUnifiedSearch.append(request)
