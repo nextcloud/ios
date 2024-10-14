@@ -266,7 +266,7 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
                                                               completion: @escaping (_ error: NKError) -> Void) {
         guard let host = URL(string: NCBrandOptions.shared.pushNotificationServerProxy)?.host else { return }
 
-        NextcloudKit.shared.checkServer(serverUrl: NCBrandOptions.shared.pushNotificationServerProxy) { error in
+        NextcloudKit.shared.checkServer(serverUrl: NCBrandOptions.shared.pushNotificationServerProxy) { _, error in
             guard error == .success else {
                 completion(.success)
                 return
@@ -298,5 +298,55 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
 
     private func getActiveAccountCertificate(account: String) {
         (self.p12Data, self.p12Password) = NCKeychain().getClientCertificate(account: account)
+    }
+
+    // MARK: - User Default Data Request
+
+    func isResponseDataChanged<T>(account: String, responseData: AFDataResponse<T>?) -> Bool {
+        guard let responseData,
+              let request = responseData.request else { return true }
+        let key = getResponseDataKey(account: account, request: request)
+        let retrievedData = UserDefaults.standard.data(forKey: key)
+
+        switch responseData.result {
+        case .success(let data):
+            // Controlla se `T` è opzionale e gestisci il dato di conseguenza
+            if let data = data as? Data {
+                return retrievedData != data
+            } else {
+                return true
+            }
+        case .failure(let error):
+            print("Errore: \(error.localizedDescription)")
+            return true
+        }
+    }
+
+    func setResponseData(account: String, responseData: AFDataResponse<Data?>?) {
+        guard let request = responseData?.request, let data = responseData?.data else { return }
+        let key = getResponseDataKey(account: account, request: request)
+
+        UserDefaults.standard.set(data, forKey: key)
+    }
+
+    func removeAllKeyUserDefaultsData(account: String?) {
+        let userDefaults = UserDefaults.standard
+
+        for key in userDefaults.dictionaryRepresentation().keys {
+            if let account {
+                if key.hasPrefix(account) {
+                    userDefaults.removeObject(forKey: key)
+                }
+            } else {
+                userDefaults.removeObject(forKey: key)
+            }
+        }
+    }
+
+    private func getResponseDataKey(account: String, request: URLRequest) -> String {
+        let depth = request.allHTTPHeaderFields?["Depth"] ?? "none"
+        let key = account + "|" + (request.url?.absoluteString ?? "") + "|Depth=\(depth)|" + (request.httpMethod ?? "")
+
+        return key
     }
 }

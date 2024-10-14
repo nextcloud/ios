@@ -41,10 +41,11 @@ extension NCNetworking {
                                              account: account,
                                              options: NKRequestOptions(queue: queue)) { task in
             taskHandler(task)
-        } completion: { account, files, _, error in
+        } completion: { account, files, responseData, error in
             guard error == .success, let files else {
                 return completion(account, nil, nil, error)
             }
+            let isResponseDataChanged = self.isResponseDataChanged(account: account, responseData: responseData)
 
             self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: true) { metadataFolder, metadatas in
                 self.database.addMetadata(metadataFolder)
@@ -211,7 +212,7 @@ extension NCNetworking {
         }
 
         let fileNameFolderUrl = serverUrl + "/" + fileNameFolder
-        NextcloudKit.shared.createFolder(serverUrlFileName: fileNameFolderUrl, account: session.account) { account, _, _, error in
+        NextcloudKit.shared.createFolder(serverUrlFileName: fileNameFolderUrl, account: session.account) { account, _, _, _, error in
             self.readFile(serverUrlFileName: fileNameFolderUrl, account: account) { account, metadataFolder, error in
 
                 /// metadataStatusWaitCreateFolder
@@ -503,7 +504,7 @@ extension NCNetworking {
     // MARK: - Lock Files
 
     func lockUnlockFile(_ metadata: tableMetadata, shoulLock: Bool) {
-        NextcloudKit.shared.lockUnlockFile(serverUrlFileName: metadata.serverUrl + "/" + metadata.fileName, shouldLock: shoulLock, account: metadata.account) { _, error in
+        NextcloudKit.shared.lockUnlockFile(serverUrlFileName: metadata.serverUrl + "/" + metadata.fileName, shouldLock: shoulLock, account: metadata.account) { _, _, error in
             // 0: lock was successful; 412: lock did not change, no error, refresh
             guard error == .success || error.errorCode == self.global.errorPreconditionFailed else {
                 let error = NKError(errorCode: error.errorCode, errorDescription: "_files_lock_error_")
@@ -784,7 +785,7 @@ class NCOperationDownloadAvatar: ConcurrentOperation, @unchecked Sendable {
                                            avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
                                            etag: self.etag,
                                            account: account,
-                                           options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, image, _, etag, error in
+                                           options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, image, _, etag, _, error in
 
             if error == .success, let image {
                 NCManageDatabase.shared.addAvatar(fileName: self.fileName, etag: etag ?? "")
@@ -867,7 +868,7 @@ class NCOperationDeleteFileOrFolder: ConcurrentOperation, @unchecked Sendable {
 
         NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: self.metadata.serverUrl + "/" + self.metadata.fileName,
                                                account: self.metadata.account,
-                                               options: options) { _, error in
+                                               options: options) { _, _, error in
 
             if error == .success || error.errorCode == NCGlobal.shared.errorResourceNotFound {
                 do {

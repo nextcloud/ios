@@ -72,7 +72,7 @@ class NCPushNotification {
                 let userAgent = String(format: "%@  (Strict VoIP)", NCBrandOptions.shared.getUserAgent())
                 let options = NKRequestOptions(customUserAgent: userAgent)
 
-                NextcloudKit.shared.subscribingPushProxy(proxyServerUrl: proxyServerPath, pushToken: self.pushKitToken, deviceIdentifier: deviceIdentifier, signature: signature, publicKey: publicKey, account: account, options: options) { account, error in
+                NextcloudKit.shared.subscribingPushProxy(proxyServerUrl: proxyServerPath, pushToken: self.pushKitToken, deviceIdentifier: deviceIdentifier, signature: signature, publicKey: publicKey, account: account, options: options) { account, _, error in
                     if error == .success {
                         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Subscribed to Push Notification server & proxy successfully")
                         self.keychain.setPushNotificationToken(account: account, token: self.pushKitToken)
@@ -90,13 +90,13 @@ class NCPushNotification {
               let signature = keychain.getPushNotificationDeviceIdentifierSignature(account: account),
               let publicKey = keychain.getPushNotificationSubscribingPublicKey(account: account) else { return }
 
-        NextcloudKit.shared.unsubscribingPushNotification(serverUrl: urlBase, account: account) { _, error in
+        NextcloudKit.shared.unsubscribingPushNotification(serverUrl: urlBase, account: account) { _, _, error in
             if error == .success {
                 let proxyServerPath = NCBrandOptions.shared.pushNotificationServerProxy
                 let userAgent = String(format: "%@  (Strict VoIP)", NCBrandOptions.shared.getUserAgent())
                 let options = NKRequestOptions(customUserAgent: userAgent)
 
-                NextcloudKit.shared.unsubscribingPushProxy(proxyServerUrl: proxyServerPath, deviceIdentifier: deviceIdentifier, signature: signature, publicKey: publicKey, account: account, options: options) { account, error in
+                NextcloudKit.shared.unsubscribingPushProxy(proxyServerUrl: proxyServerPath, deviceIdentifier: deviceIdentifier, signature: signature, publicKey: publicKey, account: account, options: options) { account, _, error in
                     if error == .success {
                         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Unsubscribed to Push Notification server & proxy successfully")
                         self.keychain.setPushNotificationPublicKey(account: account, data: nil)

@@ -24,6 +24,7 @@
 import Foundation
 import UIKit
 import NextcloudKit
+import Alamofire
 
 class NCCreateDocument: NSObject {
     let utility = NCUtility()
@@ -162,18 +163,18 @@ class NCCreateDocument: NSObject {
 
     // MARK: - NextcloudKit async/await
 
-    func textGetListOfTemplates(account: String, options: NKRequestOptions = NKRequestOptions()) async -> (account: String, templates: [NKEditorTemplates]?, data: Data?, error: NKError) {
+    func textGetListOfTemplates(account: String, options: NKRequestOptions = NKRequestOptions()) async -> (account: String, templates: [NKEditorTemplates]?, responseData: AFDataResponse<Data>?, error: NKError) {
         await withUnsafeContinuation({ continuation in
-            NextcloudKit.shared.NCTextGetListOfTemplates(account: account) { account, templates, data, error in
-                continuation.resume(returning: (account: account, templates: templates, data: data, error: error))
+            NextcloudKit.shared.NCTextGetListOfTemplates(account: account) { account, templates, responseData, error in
+                continuation.resume(returning: (account: account, templates: templates, responseData: responseData, error: error))
             }
         })
     }
 
-    func getTemplatesRichdocuments(typeTemplate: String, account: String, options: NKRequestOptions = NKRequestOptions()) async -> (account: String, templates: [NKRichdocumentsTemplate]?, data: Data?, error: NKError) {
+    func getTemplatesRichdocuments(typeTemplate: String, account: String, options: NKRequestOptions = NKRequestOptions()) async -> (account: String, templates: [NKRichdocumentsTemplate]?, responseData: AFDataResponse<Data>?, error: NKError) {
         await withUnsafeContinuation({ continuation in
-            NextcloudKit.shared.getTemplatesRichdocuments(typeTemplate: typeTemplate, account: account, options: options) { account, templates, data, error in
-                continuation.resume(returning: (account: account, templates: templates, data: data, error: error))
+            NextcloudKit.shared.getTemplatesRichdocuments(typeTemplate: typeTemplate, account: account, options: options) { account, templates, responseData, error in
+                continuation.resume(returning: (account: account, templates: templates, responseData: responseData, error: error))
             }
         })
     }

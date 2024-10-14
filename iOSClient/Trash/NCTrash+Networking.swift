@@ -47,7 +47,7 @@ extension NCTrash {
         let fileNameFrom = resultTableTrash.filePath + resultTableTrash.fileName
         let fileNameTo = session.urlBase + "/remote.php/dav/trashbin/" + session.userId + "/restore/" + resultTableTrash.fileName
 
-        NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: true, account: session.account) { account, error in
+        NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: true, account: session.account) { account, _, error in
             guard error == .success else {
                 NCContentPresenter().showError(error: error)
                 return
@@ -60,7 +60,7 @@ extension NCTrash {
     func emptyTrash() {
         let serverUrlFileName = session.urlBase + "/remote.php/dav/trashbin/" + session.userId + "/trash"
 
-        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: session.account) { account, error in
+        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: session.account) { account, _, error in
             guard error == .success else {
                 NCContentPresenter().showError(error: error)
                 return
@@ -74,7 +74,7 @@ extension NCTrash {
         guard let resultTableTrash = self.database.getResultTrashItem(fileId: fileId, account: session.account) else { return }
         let serverUrlFileName = resultTableTrash.filePath + resultTableTrash.fileName
 
-        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: session.account) { account, error in
+        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: session.account) { account, _, error in
             guard error == .success else {
                 NCContentPresenter().showError(error: error)
                 return
@@ -101,8 +101,8 @@ class NCOperationDownloadThumbnailTrash: ConcurrentOperation, @unchecked Sendabl
     override func start() {
         guard !isCancelled else { return self.finish() }
 
-        NextcloudKit.shared.downloadTrashPreview(fileId: fileId, account: account) { _, data, _, _, error in
-            if error == .success, let data {
+        NextcloudKit.shared.downloadTrashPreview(fileId: fileId, account: account) { _, _, _, responseData, error in
+            if error == .success, let data = responseData?.data {
                 NCUtility().createImageFileFrom(data: data, ocId: self.fileId, etag: self.fileName)
 
                 for case let cell as NCTrashCellProtocol in self.collectionView.visibleCells where cell.objectId == self.fileId {

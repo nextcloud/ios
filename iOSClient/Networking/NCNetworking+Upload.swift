@@ -110,7 +110,7 @@ extension NCNetworking {
                     start: @escaping () -> Void = { },
                     requestHandler: @escaping (_ request: UploadRequest) -> Void = { _ in },
                     progressHandler: @escaping (_ totalBytesExpected: Int64, _ totalBytes: Int64, _ fractionCompleted: Double) -> Void = { _, _, _ in },
-                    completion: @escaping (_ account: String, _ ocId: String?, _ etag: String?, _ date: Date?, _ size: Int64, _ allHeaderFields: [AnyHashable: Any]?, _ afError: AFError?, _ error: NKError) -> Void) {
+                    completion: @escaping (_ account: String, _ ocId: String?, _ etag: String?, _ date: Date?, _ size: Int64, _ responseData: AFDataResponse<Data?>?, _ afError: AFError?, _ error: NKError) -> Void) {
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let options = NKRequestOptions(customHeader: customHeaders, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
@@ -147,7 +147,7 @@ extension NCNetworking {
                                                                    "totalBytes": NSNumber(value: progress.totalUnitCount),
                                                                    "totalBytesExpected": NSNumber(value: progress.completedUnitCount)])
             progressHandler(progress.completedUnitCount, progress.totalUnitCount, progress.fractionCompleted)
-        }) { account, ocId, etag, date, size, allHeaderFields, afError, error in
+        }) { account, ocId, etag, date, size, responseData, afError, error in
             var error = error
             if withUploadComplete {
                 if afError?.isExplicitlyCancelledError ?? false {
@@ -155,7 +155,7 @@ extension NCNetworking {
                 }
                 self.uploadComplete(metadata: metadata, ocId: ocId, etag: etag, date: date, size: size, error: error)
             }
-            completion(account, ocId, etag, date, size, allHeaderFields, afError, error)
+            completion(account, ocId, etag, date, size, responseData, afError, error)
         }
     }
 
