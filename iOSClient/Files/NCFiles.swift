@@ -190,6 +190,7 @@ class NCFiles: NCCollectionViewCommon {
     }
 
     private func networkReadFolder(completion: @escaping (_ metadatas: [tableMetadata]?, _ isChanged: Bool, _ error: NKError) -> Void) {
+        var checkResponseDataChanged = false
 
         NCNetworking.shared.readFile(serverUrlFileName: serverUrl, account: session.account) { task in
             self.dataSourceTask = task
@@ -201,9 +202,12 @@ class NCFiles: NCCollectionViewCommon {
                 return completion(nil, false, error)
             }
             /// Check change eTag or E2EE
-            guard self.database.setDirectory(serverUrl: self.serverUrl, richWorkspace: metadata.richWorkspace, account: account)?.etag != metadata.etag || metadata.e2eEncrypted else {
+            let tableDirectory = self.database.setDirectory(serverUrl: self.serverUrl, richWorkspace: metadata.richWorkspace, account: account)
+            guard tableDirectory?.etag != metadata.etag || metadata.e2eEncrypted else {
                 return completion(nil, false, NKError())
             }
+
+            let checkResponseDataChanged = (tableDirectory?.etag.isEmpty ?? true) || metadata.e2eEncrypted
 
             NCNetworking.shared.readFolder(serverUrl: self.serverUrl,
                                            account: metadata.account,

@@ -48,7 +48,8 @@ extension NCNetworking {
             }
             if checkResponseDataChanged {
                 if !self.isResponseDataChanged(account: account, responseData: responseData) {
-                    return completion(account, nil, nil, false, error)
+                    let metadataFolder = self.database.getMetadataDirectoryFrom(files: files)
+                    return completion(account, metadataFolder, nil, false, error)
                 }
             }
 

@@ -470,6 +470,14 @@ extension NCManageDatabase {
         completion(metadataFolder, metadatas)
     }
 
+    func getMetadataDirectoryFrom(files: [NKFile]) -> tableMetadata? {
+        guard let file = files.first else { return nil }
+        let isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(file: file)
+        let metadata = convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
+
+        return metadata
+    }
+
     func convertFilesToMetadatas(_ files: [NKFile], useFirstAsMetadataFolder: Bool) async -> (metadataFolder: tableMetadata, metadatas: [tableMetadata]) {
         await withUnsafeContinuation({ continuation in
             convertFilesToMetadatas(files, useFirstAsMetadataFolder: useFirstAsMetadataFolder) { metadataFolder, metadatas in
