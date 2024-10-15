@@ -307,6 +307,7 @@ class NCNetworkingProcess {
 
                 if result.error == .success {
 
+                    NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterGetServerData, userInfo: ["serverUrl": metadata.serverUrl])
                     NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterGetServerData, userInfo: ["serverUrl": serverUrlTo])
 
                 } else {
@@ -351,6 +352,7 @@ class NCNetworkingProcess {
                         }
                     }
 
+                    NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterGetServerData, userInfo: ["serverUrl": metadata.serverUrl])
                     NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterGetServerData, userInfo: ["serverUrl": serverUrlTo])
 
                 } else {

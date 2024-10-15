@@ -198,60 +198,52 @@ extension NCNetworking {
             }
 #endif
         } else {
-            createFolderPlain(fileName: fileName, serverUrl: serverUrl, overwrite: overwrite, withPush: withPush, metadata: metadata, sceneIdentifier: sceneIdentifier, session: session, completion: completion)
-        }
-    }
+            var fileNameFolder = utility.removeForbiddenCharacters(fileName)
 
-    private func createFolderPlain(fileName: String,
-                                   serverUrl: String,
-                                   overwrite: Bool,
-                                   withPush: Bool,
-                                   metadata: tableMetadata?,
-                                   sceneIdentifier: String?,
-                                   session: NCSession.Session,
-                                   completion: @escaping (_ error: NKError) -> Void) {
-        var fileNameFolder = utility.removeForbiddenCharacters(fileName)
+            if fileName != fileNameFolder {
+                let errorDescription = String(format: NSLocalizedString("_forbidden_characters_", comment: ""), self.global.forbiddenCharacters.joined(separator: " "))
+                let error = NKError(errorCode: self.global.errorConflict, errorDescription: errorDescription)
+                return completion(error)
+            }
 
-        if fileName != fileNameFolder {
-            let errorDescription = String(format: NSLocalizedString("_forbidden_characters_", comment: ""), self.global.forbiddenCharacters.joined(separator: " "))
-            let error = NKError(errorCode: self.global.errorConflict, errorDescription: errorDescription)
-            return completion(error)
-        }
-        if !overwrite {
-            fileNameFolder = utilityFileSystem.createFileName(fileNameFolder, serverUrl: serverUrl, account: session.account)
-        }
-        if fileNameFolder.isEmpty {
-            return completion(.success)
-        }
+            if !overwrite {
+                fileNameFolder = utilityFileSystem.createFileName(fileNameFolder, serverUrl: serverUrl, account: session.account)
+            }
 
-        let fileNameFolderUrl = serverUrl + "/" + fileNameFolder
-        NextcloudKit.shared.createFolder(serverUrlFileName: fileNameFolderUrl, account: session.account) { account, _, _, _, error in
-            self.readFile(serverUrlFileName: fileNameFolderUrl, account: account) { account, metadataFolder, error in
+            if fileNameFolder.isEmpty {
+                return completion(.success)
+            }
 
-                /// metadataStatusWaitCreateFolder
-                ///
-                if let metadata, metadata.status == self.global.metadataStatusWaitCreateFolder {
-                    if error == .success {
-                        self.database.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@ AND serverUrl == %@", metadata.account, metadata.fileName, metadata.serverUrl))
-                    } else {
-                        self.database.setMetadataSession(ocId: metadata.ocId, sessionError: error.errorDescription)
+            let fileNameFolderUrl = serverUrl + "/" + fileNameFolder
+
+            NextcloudKit.shared.createFolder(serverUrlFileName: fileNameFolderUrl, account: session.account) { account, _, _, _, error in
+                self.readFile(serverUrlFileName: fileNameFolderUrl, account: account) { account, metadataFolder, error in
+
+                    /// metadataStatusWaitCreateFolder
+                    ///
+                    if let metadata, metadata.status == self.global.metadataStatusWaitCreateFolder {
+                        if error == .success {
+                            self.database.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@ AND serverUrl == %@", metadata.account, metadata.fileName, metadata.serverUrl))
+                        } else {
+                            self.database.setMetadataSession(ocId: metadata.ocId, sessionError: error.errorDescription)
+                        }
                     }
+
+                    if error == .success, let metadataFolder {
+                        self.database.addMetadata(metadataFolder)
+                        self.database.addDirectory(e2eEncrypted: metadataFolder.e2eEncrypted,
+                                                   favorite: metadataFolder.favorite,
+                                                   ocId: metadataFolder.ocId,
+                                                   fileId: metadataFolder.fileId,
+                                                   permissions: metadataFolder.permissions,
+                                                   serverUrl: fileNameFolderUrl,
+                                                   account: account)
+
+                        NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterCreateFolder, userInfo: ["ocId": metadataFolder.ocId, "serverUrl": metadataFolder.serverUrl, "account": metadataFolder.account, "withPush": withPush, "sceneIdentifier": sceneIdentifier as Any])
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": serverUrl])
+                    }
+                    completion(error)
                 }
-
-                if error == .success, let metadataFolder {
-                    self.database.addMetadata(metadataFolder)
-                    self.database.addDirectory(e2eEncrypted: metadataFolder.e2eEncrypted,
-                                                favorite: metadataFolder.favorite,
-                                                ocId: metadataFolder.ocId,
-                                                fileId: metadataFolder.fileId,
-                                                permissions: metadataFolder.permissions,
-                                                serverUrl: fileNameFolderUrl,
-                                                account: account)
-
-                    NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterCreateFolder, userInfo: ["ocId": metadataFolder.ocId, "serverUrl": metadataFolder.serverUrl, "account": metadataFolder.account, "withPush": withPush, "sceneIdentifier": sceneIdentifier as Any])
-
-                }
-                completion(error)
             }
         }
     }
