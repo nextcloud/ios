@@ -103,6 +103,17 @@ class NCMainTabBar: UITabBar {
         self.addSubview(backgroundView)
     }
 
+	private func setupSizeClasses() {
+		if #available(iOS 17.0, *) {
+			traitOverrides.horizontalSizeClass = .compact
+		}
+	}
+
+	override var traitCollection: UITraitCollection {
+		guard UIDevice.current.userInterfaceIdiom == .pad else { return super.traitCollection }
+		return UITraitCollection(traitsFrom: [super.traitCollection, UITraitCollection(horizontalSizeClass: .compact)])
+	}
+	
     private func createPath() -> CGPath {
 
         let height: CGFloat = 28

@@ -10,6 +10,7 @@
 		0F08D6B92C94270600136502 /* ButtonStyleGuide.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F08D6B82C94270600136502 /* ButtonStyleGuide.swift */; };
 		0F08D6BB2C94275600136502 /* CircleItemSpinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F08D6BA2C94275600136502 /* CircleItemSpinner.swift */; };
 		0F5090CE2C786F04009348D9 /* FileActionsHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F5090CD2C786F04009348D9 /* FileActionsHeader.swift */; };
+		0F8615AC2CBE6AC20056B4F2 /* UITabBarGuideline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F8615AB2CBE6AC20056B4F2 /* UITabBarGuideline.swift */; };
 		0F8B9A5B2C7887F60041C17D /* FileActionsHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0F8B9A5A2C7887F60041C17D /* FileActionsHeader.xib */; };
 		0F9F524F2C8F46D7004717E0 /* AppScreenConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F9F524E2C8F46D7004717E0 /* AppScreenConstants.swift */; };
 		2C1D5D7623E2DE3300334ABB /* NCManageDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7BAADB51ED5A87C00B7EAD4 /* NCManageDatabase.swift */; };
@@ -1115,6 +1116,7 @@
 		0F08D6B82C94270600136502 /* ButtonStyleGuide.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonStyleGuide.swift; sourceTree = "<group>"; };
 		0F08D6BA2C94275600136502 /* CircleItemSpinner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircleItemSpinner.swift; sourceTree = "<group>"; };
 		0F5090CD2C786F04009348D9 /* FileActionsHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileActionsHeader.swift; sourceTree = "<group>"; };
+		0F8615AB2CBE6AC20056B4F2 /* UITabBarGuideline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UITabBarGuideline.swift; sourceTree = "<group>"; };
 		0F8B9A5A2C7887F60041C17D /* FileActionsHeader.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileActionsHeader.xib; sourceTree = "<group>"; };
 		0F9F524E2C8F46D7004717E0 /* AppScreenConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppScreenConstants.swift; sourceTree = "<group>"; };
 		2C33C47F23E2C475005F963B /* Notification Service Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Notification Service Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -2136,6 +2138,7 @@
 				F75B0ABC244C4DBB00E58DCA /* NCActionCenter.swift */,
 				F7B934FD2BDCFE1E002B2FC9 /* NCDragDrop.swift */,
 				F7682FDF23C36B0500983A04 /* NCMainTabBar.swift */,
+				0F8615AB2CBE6AC20056B4F2 /* UITabBarGuideline.swift */,
 				F794E13C2BBBFF2E003693D7 /* NCMainTabBarController.swift */,
 				F737DA9C2B7B893C0063BAFC /* NCPasscode.swift */,
 				F77444F7222816D5000D5EB0 /* NCPickerViewController.swift */,
@@ -4518,6 +4521,7 @@
 				F7381EE1218218C9000B1560 /* NCOffline.swift in Sources */,
 				F751247C2C42919C00E63DB8 /* NCPhotoCell.swift in Sources */,
 				F7A509252C26BD5D00326106 /* NCCreateDocument.swift in Sources */,
+				0F8615AC2CBE6AC20056B4F2 /* UITabBarGuideline.swift in Sources */,
 				F7FA80002C0F4F3B0072FC60 /* NCUploadAssetsModel.swift in Sources */,
 				F719D9E2288D396100762E33 /* NCColorPicker.swift in Sources */,
 				F73EF7DF2B02266D0087E6E9 /* NCManageDatabase+Trash.swift in Sources */,
