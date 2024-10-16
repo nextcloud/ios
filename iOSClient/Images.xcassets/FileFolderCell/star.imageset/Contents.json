@@ -1,15 +1,12 @@
 {
   "images" : [
     {
-      "filename" : "round_check.png",
+      "filename" : "star.png",
       "idiom" : "universal"
     }
   ],
   "info" : {
     "author" : "xcode",
     "version" : 1
-  },
-  "properties" : {
-    "preserves-vector-representation" : true
   }
 }

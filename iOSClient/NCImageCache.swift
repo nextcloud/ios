@@ -274,7 +274,7 @@ class NCImageCache: NSObject {
         images.favorite = NCImagesRepository.favorite
         images.livePhoto = NCImagesRepository.livePhoto
         images.offlineFlag = utility.loadImage(named: "arrow.down.circle.fill", colors: [NCBrandColor.shared.brandElement])
-        images.local = UIImage(resource: .local).withTintColor(NCBrandColor.shared.brandElement)
+        images.local = UIImage(resource: .local)
 
         images.checkedYes = UIImage(named: "FileSelection/list_item_selected")
         images.checkedNo =  UIImage(named: "FileSelection/list_item_deselected")
