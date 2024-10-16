@@ -207,7 +207,7 @@ class NCUserStatus: UIViewController {
         self.invisibleButton.layer.borderWidth = 0
         self.invisibleButton.layer.borderColor = nil
 
-        NextcloudKit.shared.setUserStatus(status: "online", account: account) { _, error in
+        NextcloudKit.shared.setUserStatus(status: "online", account: account) { _, _, error in
             self.dismissIfError(error)
         }
     }
@@ -222,7 +222,7 @@ class NCUserStatus: UIViewController {
         self.invisibleButton.layer.borderWidth = 0
         self.invisibleButton.layer.borderColor = nil
 
-        NextcloudKit.shared.setUserStatus(status: "away", account: account) { _, error in
+        NextcloudKit.shared.setUserStatus(status: "away", account: account) { _, _, error in
             self.dismissIfError(error)
         }
     }
@@ -237,7 +237,7 @@ class NCUserStatus: UIViewController {
         self.invisibleButton.layer.borderWidth = 0
         self.invisibleButton.layer.borderColor = nil
 
-        NextcloudKit.shared.setUserStatus(status: "dnd", account: account) { _, error in
+        NextcloudKit.shared.setUserStatus(status: "dnd", account: account) { _, _, error in
             self.dismissIfError(error)
         }
     }
@@ -252,7 +252,7 @@ class NCUserStatus: UIViewController {
         self.invisibleButton.layer.borderWidth = self.borderWidthButton
         self.invisibleButton.layer.borderColor = self.borderColorButton
 
-        NextcloudKit.shared.setUserStatus(status: "invisible", account: account) { _, error in
+        NextcloudKit.shared.setUserStatus(status: "invisible", account: account) { _, _, error in
             self.dismissIfError(error)
         }
     }
@@ -303,7 +303,7 @@ class NCUserStatus: UIViewController {
     }
 
     @IBAction func actionClearStatusMessage(_ sender: UIButton) {
-        NextcloudKit.shared.clearMessage(account: account) { _, error in
+        NextcloudKit.shared.clearMessage(account: account) { _, _, error in
             if error != .success {
                 NCContentPresenter().showError(error: error)
             }
@@ -315,7 +315,7 @@ class NCUserStatus: UIViewController {
     @IBAction func actionSetStatusMessage(_ sender: UIButton) {
         guard let message = statusMessageTextField.text else { return }
 
-        NextcloudKit.shared.setCustomMessageUserDefined(statusIcon: statusMessageEmojiTextField.text, message: message, clearAt: clearAtTimestamp, account: account) { _, error in
+        NextcloudKit.shared.setCustomMessageUserDefined(statusIcon: statusMessageEmojiTextField.text, message: message, clearAt: clearAtTimestamp, account: account) { _, _, error in
             if error != .success {
                 NCContentPresenter().showError(error: error)
             }
@@ -519,7 +519,7 @@ extension NCUserStatus: UITableViewDelegate {
         let status = statusPredefinedStatuses[indexPath.row]
 
         if let messageId = status.id {
-            NextcloudKit.shared.setCustomMessagePredefined(messageId: messageId, clearAt: 0, account: account) { _, error in
+            NextcloudKit.shared.setCustomMessagePredefined(messageId: messageId, clearAt: 0, account: account) { _, _, error in
                 cell.isSelected = false
 
                 if error == .success {

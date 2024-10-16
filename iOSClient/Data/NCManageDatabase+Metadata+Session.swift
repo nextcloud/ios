@@ -164,6 +164,12 @@ extension NCManageDatabase {
             try realm.write {
                 result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
                 result?.status = status
+
+                if status == NCGlobal.shared.metadataStatusNormal {
+                    result?.sessionDate = nil
+                } else {
+                    result?.sessionDate = Date()
+                }
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")

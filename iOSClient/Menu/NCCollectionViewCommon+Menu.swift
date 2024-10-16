@@ -180,7 +180,7 @@ extension NCCollectionViewCommon {
                     icon: utility.loadImage(named: "lock", colors: [NCBrandColor.shared.iconImageColor]),
                     order: 30,
                     action: { _ in
-                        NextcloudKit.shared.markE2EEFolder(fileId: metadata.fileId, delete: true, account: metadata.account) { _, error in
+                        NextcloudKit.shared.markE2EEFolder(fileId: metadata.fileId, delete: true, account: metadata.account) { _, _, error in
                             if error == .success {
                                 self.database.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, serverUrl))
                                 self.database.setDirectory(serverUrl: serverUrl, encrypted: false, account: metadata.account)

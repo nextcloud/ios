@@ -32,34 +32,48 @@ extension NCNetworking {
 
     func readFolder(serverUrl: String,
                     account: String,
+                    checkResponseDataChanged: Bool,
                     queue: DispatchQueue,
                     taskHandler: @escaping (_ task: URLSessionTask) -> Void = { _ in },
-                    completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ error: NKError) -> Void) {
+                    completion: @escaping (_ account: String, _ metadataFolder: tableMetadata?, _ metadatas: [tableMetadata]?, _ isDataChanged: Bool, _ error: NKError) -> Void) {
+
+        func storeFolder(_ metadataFolder: tableMetadata?) {
+            guard let metadataFolder else { return }
+
+            self.database.addMetadata(metadataFolder)
+            self.database.addDirectory(e2eEncrypted: metadataFolder.e2eEncrypted,
+                                       favorite: metadataFolder.favorite,
+                                       ocId: metadataFolder.ocId,
+                                       fileId: metadataFolder.fileId,
+                                       etag: metadataFolder.etag,
+                                       permissions: metadataFolder.permissions,
+                                       richWorkspace: metadataFolder.richWorkspace,
+                                       serverUrl: serverUrl,
+                                       account: metadataFolder.account)
+        }
+
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
                                              depth: "1",
                                              showHiddenFiles: NCKeychain().showHiddenFiles,
                                              account: account,
                                              options: NKRequestOptions(queue: queue)) { task in
             taskHandler(task)
-        } completion: { account, files, _, error in
+        } completion: { account, files, responseData, error in
             guard error == .success, let files else {
-                return completion(account, nil, nil, error)
+                return completion(account, nil, nil, false, error)
+            }
+
+            let isResponseDataChanged = self.isResponseDataChanged(account: account, responseData: responseData)
+            if checkResponseDataChanged, !isResponseDataChanged {
+                let metadataFolder = self.database.getMetadataDirectoryFrom(files: files)
+                storeFolder(metadataFolder)
+                return completion(account, metadataFolder, nil, false, error)
             }
 
             self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: true) { metadataFolder, metadatas in
-                self.database.addMetadata(metadataFolder)
-                self.database.addDirectory(e2eEncrypted: metadataFolder.e2eEncrypted,
-                                           favorite: metadataFolder.favorite,
-                                           ocId: metadataFolder.ocId,
-                                           fileId: metadataFolder.fileId,
-                                           etag: metadataFolder.etag,
-                                           permissions: metadataFolder.permissions,
-                                           richWorkspace: metadataFolder.richWorkspace,
-                                           serverUrl: serverUrl,
-                                           account: metadataFolder.account)
-
+                storeFolder(metadataFolder)
                 self.database.updateMetadatasFiles(metadatas, serverUrl: serverUrl, account: account)
-                completion(account, metadataFolder, metadatas, error)
+                completion(account, metadataFolder, metadatas, true, error)
             }
         }
     }
@@ -184,60 +198,52 @@ extension NCNetworking {
             }
 #endif
         } else {
-            createFolderPlain(fileName: fileName, serverUrl: serverUrl, overwrite: overwrite, withPush: withPush, metadata: metadata, sceneIdentifier: sceneIdentifier, session: session, completion: completion)
-        }
-    }
+            var fileNameFolder = utility.removeForbiddenCharacters(fileName)
 
-    private func createFolderPlain(fileName: String,
-                                   serverUrl: String,
-                                   overwrite: Bool,
-                                   withPush: Bool,
-                                   metadata: tableMetadata?,
-                                   sceneIdentifier: String?,
-                                   session: NCSession.Session,
-                                   completion: @escaping (_ error: NKError) -> Void) {
-        var fileNameFolder = utility.removeForbiddenCharacters(fileName)
+            if fileName != fileNameFolder {
+                let errorDescription = String(format: NSLocalizedString("_forbidden_characters_", comment: ""), self.global.forbiddenCharacters.joined(separator: " "))
+                let error = NKError(errorCode: self.global.errorConflict, errorDescription: errorDescription)
+                return completion(error)
+            }
 
-        if fileName != fileNameFolder {
-            let errorDescription = String(format: NSLocalizedString("_forbidden_characters_", comment: ""), self.global.forbiddenCharacters.joined(separator: " "))
-            let error = NKError(errorCode: self.global.errorConflict, errorDescription: errorDescription)
-            return completion(error)
-        }
-        if !overwrite {
-            fileNameFolder = utilityFileSystem.createFileName(fileNameFolder, serverUrl: serverUrl, account: session.account)
-        }
-        if fileNameFolder.isEmpty {
-            return completion(.success)
-        }
+            if !overwrite {
+                fileNameFolder = utilityFileSystem.createFileName(fileNameFolder, serverUrl: serverUrl, account: session.account)
+            }
 
-        let fileNameFolderUrl = serverUrl + "/" + fileNameFolder
-        NextcloudKit.shared.createFolder(serverUrlFileName: fileNameFolderUrl, account: session.account) { account, _, _, error in
-            self.readFile(serverUrlFileName: fileNameFolderUrl, account: account) { account, metadataFolder, error in
+            if fileNameFolder.isEmpty {
+                return completion(.success)
+            }
 
-                /// metadataStatusWaitCreateFolder
-                ///
-                if let metadata, metadata.status == self.global.metadataStatusWaitCreateFolder {
-                    if error == .success {
-                        self.database.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@ AND serverUrl == %@", metadata.account, metadata.fileName, metadata.serverUrl))
-                    } else {
-                        self.database.setMetadataSession(ocId: metadata.ocId, sessionError: error.errorDescription)
+            let fileNameFolderUrl = serverUrl + "/" + fileNameFolder
+
+            NextcloudKit.shared.createFolder(serverUrlFileName: fileNameFolderUrl, account: session.account) { account, _, _, _, error in
+                self.readFile(serverUrlFileName: fileNameFolderUrl, account: account) { account, metadataFolder, error in
+
+                    /// metadataStatusWaitCreateFolder
+                    ///
+                    if let metadata, metadata.status == self.global.metadataStatusWaitCreateFolder {
+                        if error == .success {
+                            self.database.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@ AND serverUrl == %@", metadata.account, metadata.fileName, metadata.serverUrl))
+                        } else {
+                            self.database.setMetadataSession(ocId: metadata.ocId, sessionError: error.errorDescription)
+                        }
                     }
+
+                    if error == .success, let metadataFolder {
+                        self.database.addMetadata(metadataFolder)
+                        self.database.addDirectory(e2eEncrypted: metadataFolder.e2eEncrypted,
+                                                   favorite: metadataFolder.favorite,
+                                                   ocId: metadataFolder.ocId,
+                                                   fileId: metadataFolder.fileId,
+                                                   permissions: metadataFolder.permissions,
+                                                   serverUrl: fileNameFolderUrl,
+                                                   account: account)
+
+                        NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterCreateFolder, userInfo: ["ocId": metadataFolder.ocId, "serverUrl": metadataFolder.serverUrl, "account": metadataFolder.account, "withPush": withPush, "sceneIdentifier": sceneIdentifier as Any])
+                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": serverUrl])
+                    }
+                    completion(error)
                 }
-
-                if error == .success, let metadataFolder {
-                    self.database.addMetadata(metadataFolder)
-                    self.database.addDirectory(e2eEncrypted: metadataFolder.e2eEncrypted,
-                                                favorite: metadataFolder.favorite,
-                                                ocId: metadataFolder.ocId,
-                                                fileId: metadataFolder.fileId,
-                                                permissions: metadataFolder.permissions,
-                                                serverUrl: fileNameFolderUrl,
-                                                account: account)
-
-                    NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterCreateFolder, userInfo: ["ocId": metadataFolder.ocId, "serverUrl": metadataFolder.serverUrl, "account": metadataFolder.account, "withPush": withPush, "sceneIdentifier": sceneIdentifier as Any])
-
-                }
-                completion(error)
             }
         }
     }
@@ -503,7 +509,7 @@ extension NCNetworking {
     // MARK: - Lock Files
 
     func lockUnlockFile(_ metadata: tableMetadata, shoulLock: Bool) {
-        NextcloudKit.shared.lockUnlockFile(serverUrlFileName: metadata.serverUrl + "/" + metadata.fileName, shouldLock: shoulLock, account: metadata.account) { _, error in
+        NextcloudKit.shared.lockUnlockFile(serverUrlFileName: metadata.serverUrl + "/" + metadata.fileName, shouldLock: shoulLock, account: metadata.account) { _, _, error in
             // 0: lock was successful; 412: lock did not change, no error, refresh
             guard error == .success || error.errorCode == self.global.errorPreconditionFailed else {
                 let error = NKError(errorCode: error.errorCode, errorDescription: "_files_lock_error_")
@@ -784,7 +790,7 @@ class NCOperationDownloadAvatar: ConcurrentOperation, @unchecked Sendable {
                                            avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
                                            etag: self.etag,
                                            account: account,
-                                           options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, image, _, etag, error in
+                                           options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, image, _, etag, _, error in
 
             if error == .success, let image {
                 NCManageDatabase.shared.addAvatar(fileName: self.fileName, etag: etag ?? "")
@@ -867,7 +873,7 @@ class NCOperationDeleteFileOrFolder: ConcurrentOperation, @unchecked Sendable {
 
         NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: self.metadata.serverUrl + "/" + self.metadata.fileName,
                                                account: self.metadata.account,
-                                               options: options) { _, error in
+                                               options: options) { _, _, error in
 
             if error == .success || error.errorCode == NCGlobal.shared.errorResourceNotFound {
                 do {

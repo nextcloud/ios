@@ -209,12 +209,12 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                             NextcloudKit.shared.download(serverUrlFileName: url, fileNameLocalPath: fileNameLocalPath, account: self.metadata.account, requestHandler: { _ in
                             }, taskHandler: { _ in
                             }, progressHandler: { _ in
-                            }, completionHandler: { account, _, _, _, allHeaderFields, _, error in
+                            }, completionHandler: { account, _, _, _, responseData, _, error in
                                 NCActivityIndicator.shared.stop()
                                 if error == .success && account == self.metadata.account {
                                     var item = fileNameLocalPath
 
-                                    if let allHeaderFields = allHeaderFields {
+                                    if let allHeaderFields = responseData?.response?.allHeaderFields {
                                         if let disposition = allHeaderFields["Content-Disposition"] as? String {
                                             let components = disposition.components(separatedBy: "filename=")
                                             if let filename = components.last?.replacingOccurrences(of: "\"", with: "") {

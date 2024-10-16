@@ -316,8 +316,8 @@ class NCViewerMedia: UIViewController {
             self.image = image
             self.imageVideoContainer.image = self.image
         } else {
-            NextcloudKit.shared.downloadPreview(fileId: metadata.fileId, account: metadata.account, options: NKRequestOptions(queue: .main)) { _, data, _, _, etag, error in
-                if error == .success, let data {
+            NextcloudKit.shared.downloadPreview(fileId: metadata.fileId, account: metadata.account, options: NKRequestOptions(queue: .main)) { _, _, _, etag, responseData, error in
+                if error == .success, let data = responseData?.data {
                     self.database.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
                     let image = UIImage(data: data)
                     self.image = image

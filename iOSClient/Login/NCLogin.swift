@@ -326,7 +326,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     func isUrlValid(url: String, user: String? = nil) {
         loginButton.isEnabled = false
-        NextcloudKit.shared.getServerStatus(serverUrl: url) { serverInfoResult in
+        NextcloudKit.shared.getServerStatus(serverUrl: url) { _, serverInfoResult in
             switch serverInfoResult {
             case .success(let serverInfo):
                 if let host = URL(string: url)?.host {
@@ -387,7 +387,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 let urlBase = valueArray[2].replacingOccurrences(of: "server:", with: "")
                 let serverUrl = urlBase + "/remote.php/dav"
                 loginButton.isEnabled = false
-                NextcloudKit.shared.checkServer(serverUrl: serverUrl) { error in
+                NextcloudKit.shared.checkServer(serverUrl: serverUrl) { _, error in
                     self.loginButton.isEnabled = true
                     if error == .success {
                         self.createAccount(urlBase: urlBase, user: user, password: password)

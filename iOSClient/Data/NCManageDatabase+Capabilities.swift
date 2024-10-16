@@ -287,7 +287,7 @@ extension NCManageDatabase {
             let ocs: Ocs
         }
 
-        if let data = data {
+        if let data {
             jsonData = data
         } else {
             do {

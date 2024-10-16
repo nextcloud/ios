@@ -159,7 +159,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
                 sizeImage: NCGlobal.shared.avatarSize,
                 avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
                 etag: etag,
-                account: metadata.account) { _, imageAvatar, _, etag, error in
+                account: metadata.account) { _, imageAvatar, _, etag, _, error in
                     if error == .success, let etag = etag, let imageAvatar = imageAvatar {
                         self.database.addAvatar(fileName: fileName, etag: etag)
                         self.sharedWithYouByImage.image = imageAvatar

@@ -183,7 +183,7 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
                 fileNameLocalPath: NCUtilityFileSystem().directoryUserData + "/" + fileName,
                 sizeImage: NCGlobal.shared.avatarSize,
                 avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
-                etag: etag, account: session.account) { _, imageAvatar, _, etag, error in
+                etag: etag, account: session.account) { _, imageAvatar, _, etag, _, error in
                     if error == .success, let etag = etag, let imageAvatar = imageAvatar {
                         NCManageDatabase.shared.addAvatar(fileName: fileName, etag: etag)
                         self.imageItem.image = imageAvatar

@@ -470,6 +470,14 @@ extension NCManageDatabase {
         completion(metadataFolder, metadatas)
     }
 
+    func getMetadataDirectoryFrom(files: [NKFile]) -> tableMetadata? {
+        guard let file = files.first else { return nil }
+        let isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(file: file)
+        let metadata = convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
+
+        return metadata
+    }
+
     func convertFilesToMetadatas(_ files: [NKFile], useFirstAsMetadataFolder: Bool) async -> (metadataFolder: tableMetadata, metadatas: [tableMetadata]) {
         await withUnsafeContinuation({ continuation in
             convertFilesToMetadatas(files, useFirstAsMetadataFolder: useFirstAsMetadataFolder) { metadataFolder, metadatas in
@@ -635,6 +643,12 @@ extension NCManageDatabase {
                     result.classFile = resultsType.classFile
                     result.status = status
 
+                    if status == NCGlobal.shared.metadataStatusNormal {
+                        result.sessionDate = nil
+                    } else {
+                        result.sessionDate = Date()
+                    }
+
                     if result.directory,
                        let resultDirectory = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", result.account, directoryServerUrl).first {
                         let serverUrlTo = self.utilityFileSystem.stringAppendServerUrl(result.serverUrl, addFileName: fileNameNew)
@@ -683,6 +697,7 @@ extension NCManageDatabase {
                     result.fileName = fileName
                     result.fileNameView = fileName
                     result.status = NCGlobal.shared.metadataStatusNormal
+                    result.sessionDate = nil
 
                     if result.directory,
                        let resultDirectory = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", result.account, directoryServerUrl).first {
@@ -723,6 +738,7 @@ extension NCManageDatabase {
                 if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
                     result.serveUrlFileName = self.utilityFileSystem.stringAppendServerUrl(result.serverUrl, addFileName: result.fileName)
                     result.status = NCGlobal.shared.metadataStatusNormal
+                    result.sessionDate = nil
                 }
             }
         } catch let error {
@@ -858,6 +874,12 @@ extension NCManageDatabase {
                 }
                 result?.storeFlag = saveOldFavorite
                 result?.status = status
+
+                if status == NCGlobal.shared.metadataStatusNormal {
+                    result?.sessionDate = nil
+                } else {
+                    result?.sessionDate = Date()
+                }
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
@@ -872,6 +894,12 @@ extension NCManageDatabase {
                 result?.serverUrlTo = serverUrlTo
                 result?.storeFlag = overwrite
                 result?.status = status
+
+                if status == NCGlobal.shared.metadataStatusNormal {
+                    result?.sessionDate = nil
+                } else {
+                    result?.sessionDate = Date()
+                }
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")

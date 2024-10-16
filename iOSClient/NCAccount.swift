@@ -127,6 +127,8 @@ class NCAccount: NSObject {
         NCKeychain().setPassword(account: account, password: nil)
         NCKeychain().clearAllKeysEndToEnd(account: account)
         NCKeychain().clearAllKeysPushNotification(account: account)
+        /// Remove User Default Data
+        NCNetworking.shared.removeAllKeyUserDefaultsData(account: account)
     }
 
     func deleteAllAccounts() {

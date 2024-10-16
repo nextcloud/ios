@@ -22,6 +22,7 @@
 import Foundation
 import UIKit
 import NextcloudKit
+import Alamofire
 
 class NCNetworkingE2EE: NSObject {
     let database = NCManageDatabase.shared
@@ -54,7 +55,7 @@ class NCNetworkingE2EE: NSObject {
     func getMetadata(fileId: String,
                      e2eToken: String?,
                      account: String,
-                     completion: @escaping (_ account: String, _ version: String?, _ e2eMetadata: String?, _ signature: String?, _ data: Data?, _ error: NKError) -> Void) {
+                     completion: @escaping (_ account: String, _ version: String?, _ e2eMetadata: String?, _ signature: String?, _ responseData: AFDataResponse<Data>?, _ error: NKError) -> Void) {
         switch NCCapabilities.shared.getCapabilities(account: account).capabilityE2EEApiVersion {
         case NCGlobal.shared.e2eeVersionV11, NCGlobal.shared.e2eeVersionV12:
             NextcloudKit.shared.getE2EEMetadata(fileId: fileId, e2eToken: e2eToken, account: account, options: NKRequestOptions(version: e2EEApiVersion1)) { account, e2eMetadata, signature, data, error in
@@ -81,10 +82,10 @@ class NCNetworkingE2EE: NSObject {
 
     func getMetadata(fileId: String,
                      e2eToken: String?,
-                     account: String) async -> (account: String, version: String?, e2eMetadata: String?, signature: String?, data: Data?, error: NKError) {
+                     account: String) async -> (account: String, version: String?, e2eMetadata: String?, signature: String?, responseData: AFDataResponse<Data>?, error: NKError) {
         await withUnsafeContinuation({ continuation in
-            getMetadata(fileId: fileId, e2eToken: e2eToken, account: account) { account, version, e2eMetadata, signature, data, error in
-                continuation.resume(returning: (account: account, version: version, e2eMetadata: e2eMetadata, signature: signature, data: data, error: error))
+            getMetadata(fileId: fileId, e2eToken: e2eToken, account: account) { account, version, e2eMetadata, signature, responseData, error in
+                continuation.resume(returning: (account: account, version: version, e2eMetadata: e2eMetadata, signature: signature, responseData: responseData, error: error))
             }
         })
     }
