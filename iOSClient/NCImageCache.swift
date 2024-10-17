@@ -66,11 +66,43 @@ class NCImageCache: NSObject {
         }
 
         NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil) { _ in
+#if !EXTENSION
+            var files: [NCFiles] = []
+            var cost: Int = 0
+
             if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount(),
                NCImageCache.shared.cache.count == 0 {
                 let session = NCSession.shared.getSession(account: activeTableAccount.account)
-                NCImageCache.shared.cachingMedia(session: session)
+
+                for mainTabBarController in SceneManager.shared.getControllers() {
+                    if let currentVC = mainTabBarController.selectedViewController as? UINavigationController,
+                       let file = currentVC.visibleViewController as? NCFiles {
+                        files.append(file)
+                    }
+                }
+
+                /// MEDIA
+                if let metadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: self.getMediaPredicate(filterLivePhotoFile: true, session: session, showOnlyImages: false, showOnlyVideos: false), sortedByKeyPath: "date", freeze: true)?.prefix(self.countLimit) {
+
+                    self.cache.removeAllValues()
+                    self.isLoadingCache = true
+
+                    metadatas.forEach { metadata in
+                        if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt256) {
+                            self.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: NCGlobal.shared.previewExt256, cost: cost)
+                            cost += 1
+                        }
+                    }
+
+                    self.isLoadingCache = false
+                }
+
+                /// FILE
+                for file in files where !file.serverUrl.isEmpty {
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": file.serverUrl])
+                }
             }
+#endif
         }
     }
 
@@ -119,27 +151,6 @@ class NCImageCache: NSObject {
     }
 
     // MARK: - MEDIA -
-
-    func cachingMedia(session: NCSession.Session) {
-        DispatchQueue.global(qos: .utility).async {
-            var cost: Int = 0
-
-            if let metadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: self.getMediaPredicate(filterLivePhotoFile: true, session: session, showOnlyImages: false, showOnlyVideos: false), sortedByKeyPath: "date", freeze: true)?.prefix(self.countLimit) {
-
-                self.cache.removeAllValues()
-                self.isLoadingCache = true
-
-                metadatas.forEach { metadata in
-                    if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt256) {
-                        self.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: NCGlobal.shared.previewExt256, cost: cost)
-                        cost += 1
-                    }
-                }
-
-                self.isLoadingCache = false
-            }
-        }
-    }
 
     func getMediaPredicate(filterLivePhotoFile: Bool, session: NCSession.Session, showOnlyImages: Bool, showOnlyVideos: Bool) -> NSPredicate {
             guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else { return NSPredicate() }
