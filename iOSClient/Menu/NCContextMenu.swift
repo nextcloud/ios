@@ -162,7 +162,6 @@ class NCContextMenu: NSObject {
                 alertStyle = .alert
             }
             let alertController = UIAlertController(title: nil, message: nil, preferredStyle: alertStyle)
-            alertController.view.backgroundColor = NCBrandColor.shared.appBackgroundColor
             alertController.addAction(UIAlertAction(title: NSLocalizedString(titleDeleteConfirmFile, comment: ""), style: .destructive) { _ in
                 Task {
                     var ocId: [String] = []
