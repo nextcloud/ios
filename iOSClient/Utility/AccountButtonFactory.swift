@@ -30,7 +30,7 @@ class AccountButtonFactory {
     
     func createAccountButton() -> UIBarButtonItem {
         let activeAccount = NCManageDatabase.shared.getActiveAccount()
-        let image = utility.loadUserImage(for: appDelegate.user, displayName: activeAccount?.displayName, userBaseUrl: appDelegate)
+        let image = utility.userImage
         let accountButton = AccountSwitcherButton(type: .custom)
         let accounts = NCManageDatabase.shared.getAllAccountOrderAlias()
         

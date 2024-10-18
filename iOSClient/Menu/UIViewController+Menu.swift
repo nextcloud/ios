@@ -69,10 +69,7 @@ extension UIViewController {
 
             let personHeader = NCMenuAction(
                 title: card.displayName,
-                icon: NCUtility().loadUserImage(
-                    for: userId,
-                       displayName: card.displayName,
-                       userBaseUrl: appDelegate),
+                icon: NCUtility().userImage,
                 action: nil)
 
             let actions = card.actions.map { action -> NCMenuAction in

@@ -86,7 +86,7 @@ extension NCCollectionViewCommon {
 
         if metadata.lock {
             var lockOwnerName = metadata.lockOwnerDisplayName.isEmpty ? metadata.lockOwner : metadata.lockOwnerDisplayName
-            var lockIcon = utility.loadUserImage(for: metadata.lockOwner, displayName: lockOwnerName, userBaseUrl: metadata)
+            var lockIcon = utility.userImage
             if metadata.lockOwnerType != 0 {
                 lockOwnerName += " app"
                 if !metadata.lockOwnerEditor.isEmpty, let appIcon = UIImage(named: metadata.lockOwnerEditor) {

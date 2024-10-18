@@ -339,7 +339,7 @@ struct SwitchAccountRowView: View {
 
     var body: some View {
         let userName = account.alias.isEmpty ? account.displayName : account.alias
-        let userAvatar = NCUtility().loadUserImage(for: account.user, displayName: account.displayName, userBaseUrl: account)
+        let userAvatar = NCUtility().userImage
         
         HStack {
             Image(uiImage: UIImage(resource:.accountCheckmark))

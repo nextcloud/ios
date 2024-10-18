@@ -170,10 +170,7 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
             centerTitle.constant = 0
         }
 
-        imageItem.image = utility.loadUserImage(
-            for: sharee.shareWith,
-               displayName: nil,
-               userBaseUrl: userBaseUrl)
+        imageItem.image = utility.userImage
 
         let fileName = userBaseUrl.userBaseUrl + "-" + sharee.shareWith + ".png"
         if NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) == nil {

@@ -139,10 +139,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         searchFieldTopConstraint.constant = 45
         sharedWithYouByView.isHidden = false
         sharedWithYouByLabel.text = NSLocalizedString("_shared_with_you_by_", comment: "") + " " + metadata.ownerDisplayName
-        sharedWithYouByImage.image = utility.loadUserImage(
-            for: metadata.ownerId,
-            displayName: metadata.ownerDisplayName,
-            userBaseUrl: appDelegate)
+        sharedWithYouByImage.image = utility.userImage
         sharedWithYouByLabel.accessibilityHint = NSLocalizedString("_show_profile_", comment: "")
 
         let shareAction = UITapGestureRecognizer(target: self, action: #selector(openShareProfile))

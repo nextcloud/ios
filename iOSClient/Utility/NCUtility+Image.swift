@@ -82,9 +82,9 @@ extension NCUtility {
         }
     }
 
-    func loadUserImage(for user: String, displayName: String?, userBaseUrl: NCUserBaseUrl) -> UIImage {
+	var userImage: UIImage {
 		UIImage(resource: .userButtonIcon)
-    }
+	}
 	
     func imageFromVideo(url: URL, at time: TimeInterval) -> UIImage? {
         let asset = AVURLAsset(url: url)
