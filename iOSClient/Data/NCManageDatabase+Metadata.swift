@@ -189,6 +189,10 @@ extension tableMetadata {
     var isImage: Bool {
         return classFile == NKCommon.TypeClassFile.image.rawValue
     }
+    
+    var isURL: Bool {
+        return classFile == NKCommon.TypeClassFile.url.rawValue
+    }
 
     var isSavebleAsImage: Bool {
         classFile == NKCommon.TypeClassFile.image.rawValue && contentType != "image/svg+xml"
