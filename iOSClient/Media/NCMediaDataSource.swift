@@ -74,12 +74,7 @@ extension NCMedia {
             }
 
             if let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) }), !distant {
-                /* TEST
-                if let cell = visibleCells.first as? NCMediaCell {
-                    let indexPath = collectionView.indexPath(for: cell)
-                    print("")
-                }
-                */
+
                 firstCellDate = (visibleCells.first as? NCMediaCell)?.date
                 if firstCellDate == self.dataSource.metadatas.first?.date {
                     lessDate = Date.distantFuture
@@ -166,6 +161,7 @@ extension NCMedia {
 
                 } else {
                     NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(error.errorCode) " + error.errorDescription)
+                    self.collectionViewReloadData()
                 }
 
                 DispatchQueue.main.async {
