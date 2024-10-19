@@ -67,6 +67,7 @@ struct NCDisplayView: View {
             }
             .font(.system(size: 16))
 
+            /*
             Section(header: Text(NSLocalizedString("_additional_options_", comment: ""))) {
 
                 Picker(NSLocalizedString("_keep_screen_awake_", comment: ""),
@@ -78,6 +79,7 @@ struct NCDisplayView: View {
                        .frame(height: 50)
             }
             .pickerStyle(.menu)
+            */
         }
         .navigationBarTitle(NSLocalizedString("_display_", comment: ""))
         .defaultViewModifier(model)
