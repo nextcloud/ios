@@ -49,22 +49,27 @@ class NCShareAccounts: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        titleLabel.text = NSLocalizedString("_account_select_to_add_", comment: "")
-
-        tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 1))
-        tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
-
-        view.backgroundColor = .secondarySystemBackground
-        tableView.backgroundColor = .secondarySystemBackground
+        setupUI()
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        let visibleCells = tableView.visibleCells
-        if visibleCells.count == accounts.count {
-            tableView.isScrollEnabled = false
-        }
+        adjustTableViewScroll()
+    }
+
+    // MARK: - UI Setup
+
+    private func setupUI() {
+        titleLabel.text = NSLocalizedString("_account_select_to_add_", comment: "")
+        tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 1))
+        tableView.separatorStyle = .none
+        view.backgroundColor = .secondarySystemBackground
+        tableView.backgroundColor = .secondarySystemBackground
+    }
+
+    private func adjustTableViewScroll() {
+        tableView.isScrollEnabled = tableView.visibleCells.count < accounts.count
     }
 }
 
@@ -75,7 +80,6 @@ extension NCShareAccounts: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-
         dismiss(animated: true) {
             let account = self.accounts[indexPath.row]
             self.delegate?.selected(url: account.url, user: account.user)
@@ -90,10 +94,15 @@ extension NCShareAccounts: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
         cell.backgroundColor = tableView.backgroundColor
 
+        configureCell(cell, at: indexPath)
+
+        return cell
+    }
+
+    private func configureCell(_ cell: UITableViewCell, at indexPath: IndexPath) {
         let avatarImage = cell.viewWithTag(10) as? UIImageView
         let userLabel = cell.viewWithTag(20) as? UILabel
         let urlLabel = cell.viewWithTag(30) as? UILabel
@@ -103,17 +112,16 @@ extension NCShareAccounts: UITableViewDataSource {
 
         let account = accounts[indexPath.row]
 
-        if let image = account.image {
-            avatarImage?.image = image
-        }
-
-        if let name = account.name, !name.isEmpty {
-            userLabel?.text = name.uppercased() + " (\(account.user))"
-        } else {
-            userLabel?.text = account.user.uppercased()
-        }
+        avatarImage?.image = account.image
+        userLabel?.text = accountDisplayName(for: account)
         urlLabel?.text = (URL(string: account.url)?.host ?? "")
+    }
 
-        return cell
+    private func accountDisplayName(for account: NKShareAccounts.DataAccounts) -> String {
+        if let name = account.name, !name.isEmpty {
+            return name.uppercased() + " (\(account.user))"
+        } else {
+            return account.user.uppercased()
+        }
     }
 }
