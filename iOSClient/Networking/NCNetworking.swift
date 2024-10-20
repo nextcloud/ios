@@ -164,6 +164,8 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
 #endif
     }
 
+    func request<Value>(_ request: Alamofire.DataRequest, didParseResponse response: Alamofire.AFDataResponse<Value>) { }
+
     // MARK: -
 
     func cancelAllQueue() {
