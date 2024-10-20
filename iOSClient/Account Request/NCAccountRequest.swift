@@ -1,26 +1,3 @@
-//
-//  NCAccountRequest.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 26/02/21.
-//  Copyright © 2021 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-
 import UIKit
 import NextcloudKit
 
@@ -41,8 +18,9 @@ class NCAccountRequest: UIViewController {
     public var enableAddAccount: Bool = false
     public var dismissDidEnterBackground: Bool = false
     public weak var delegate: NCAccountRequestDelegate?
+
     let utility = NCUtility()
-    private var timer: Timer?
+    private weak var timer: Timer?
     private var time: Float = 0
     private let secondsAutoDismiss: Float = 3
 
@@ -51,40 +29,44 @@ class NCAccountRequest: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        titleLabel.text = NSLocalizedString("_account_select_", comment: "")
-        tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 1))
-        tableView.separatorStyle = UITableViewCell.SeparatorStyle.none
-
-        view.backgroundColor = .secondarySystemBackground
-        tableView.backgroundColor = .secondarySystemBackground
-
-        progressView.trackTintColor = .clear
-        progressView.progress = 1
-        if enableTimerProgress {
-            progressView.isHidden = false
-        } else {
-            progressView.isHidden = true
-        }
-
-        NotificationCenter.default.addObserver(self, selector: #selector(startTimer), name: UIApplication.didBecomeActiveNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
+        setupUI()
+        setupObservers()
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        let visibleCells = tableView.visibleCells
-        var numAccounts = accounts.count
-        if enableAddAccount { numAccounts += 1 }
-        if visibleCells.count == numAccounts {
-            tableView.isScrollEnabled = false
-        }
+        adjustTableViewScroll()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
-        timer?.invalidate()
+        invalidateTimer()
+    }
+
+    // MARK: - Setup Functions
+
+    private func setupUI() {
+        titleLabel.text = NSLocalizedString("_account_select_", comment: "")
+        tableView.tableFooterView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.frame.size.width, height: 1))
+        tableView.separatorStyle = .none
+        view.backgroundColor = .secondarySystemBackground
+        tableView.backgroundColor = .secondarySystemBackground
+
+        progressView.trackTintColor = .clear
+        progressView.progress = 1
+        progressView.isHidden = !enableTimerProgress
+    }
+
+    private func setupObservers() {
+        NotificationCenter.default.addObserver(self, selector: #selector(startTimer), name: UIApplication.didBecomeActiveNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
+    }
+
+    private func adjustTableViewScroll() {
+        let numAccounts = enableAddAccount ? accounts.count + 1 : accounts.count
+        tableView.isScrollEnabled = tableView.visibleCells.count < numAccounts
     }
 
     // MARK: - NotificationCenter
@@ -95,17 +77,23 @@ class NCAccountRequest: UIViewController {
         }
     }
 
-    // MARK: - Progress
+    // MARK: - Timer Functions
 
     @objc func startTimer() {
-        if enableTimerProgress {
-            time = 0
-            timer?.invalidate()
-            timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(updateProgress), userInfo: nil, repeats: true)
-            progressView?.isHidden = false
-        } else {
-            progressView?.isHidden = true
+        guard enableTimerProgress else {
+            progressView.isHidden = true
+            return
         }
+
+        time = 0
+        invalidateTimer()
+        timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(updateProgress), userInfo: nil, repeats: true)
+        progressView.isHidden = false
+    }
+
+    private func invalidateTimer() {
+        timer?.invalidate()
+        timer = nil
     }
 
     @objc func updateProgress() {
@@ -120,7 +108,7 @@ class NCAccountRequest: UIViewController {
 
 extension NCAccountRequest: UITableViewDelegate {
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        timer?.invalidate()
+        invalidateTimer()
         progressView.progress = 0
     }
 
@@ -147,16 +135,19 @@ extension NCAccountRequest: UITableViewDelegate {
 
 extension NCAccountRequest: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if enableAddAccount {
-            return accounts.count + 1
-        } else {
-            return accounts.count
-        }
+        return enableAddAccount ? accounts.count + 1 : accounts.count
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
         cell.backgroundColor = tableView.backgroundColor
+
+        configureCell(cell, at: indexPath)
+
+        return cell
+    }
+
+    private func configureCell(_ cell: UITableViewCell, at indexPath: IndexPath) {
         let avatarImage = cell.viewWithTag(10) as? UIImageView
         let userLabel = cell.viewWithTag(20) as? UILabel
         let urlLabel = cell.viewWithTag(30) as? UILabel
@@ -166,36 +157,19 @@ extension NCAccountRequest: UITableViewDataSource {
         urlLabel?.text = ""
 
         if indexPath.row == accounts.count {
-
             avatarImage?.image = utility.loadImage(named: "plus", colors: [.systemBlue])
             avatarImage?.contentMode = .center
             userLabel?.text = NSLocalizedString("_add_account_", comment: "")
             userLabel?.textColor = .systemBlue
             userLabel?.font = UIFont.systemFont(ofSize: 15)
-
         } else {
-
             let account = accounts[indexPath.row]
+            avatarImage?.image = utility.loadUserImage(for: account.user, displayName: account.displayName, userBaseUrl: account)
+            
+            userLabel?.text = account.alias.isEmpty ? account.user.uppercased() : account.alias.uppercased()
+            urlLabel?.text = account.alias.isEmpty ? (URL(string: account.urlBase)?.host ?? "") : nil
 
-            avatarImage?.image = utility.loadUserImage(
-                for: account.user,
-                   displayName: account.displayName,
-                   userBaseUrl: account)
-
-            if account.alias.isEmpty {
-                userLabel?.text = account.user.uppercased()
-                urlLabel?.text = (URL(string: account.urlBase)?.host ?? "")
-            } else {
-                userLabel?.text = account.alias.uppercased()
-            }
-
-            if account.active {
-                activeImage?.image = utility.loadImage(named: "checkmark", colors: [.systemBlue])
-            } else {
-                activeImage?.image = nil
-            }
+            activeImage?.image = account.active ? utility.loadImage(named: "checkmark", colors: [.systemBlue]) : nil
         }
-
-        return cell
     }
 }
