@@ -73,25 +73,31 @@ class NCActivity: UIViewController, NCSharePagingContent {
     }
 
     func setupComments() {
-        // Display Name & Quota
+    // Display Name & Quota
         guard let activeAccount = NCManageDatabase.shared.getActiveAccount(), height > 0 else {
             return
         }
 
         tableView.register(UINib(nibName: "NCShareCommentsCell", bundle: nil), forCellReuseIdentifier: "cell")
-        commentView = Bundle.main.loadNibNamed("NCActivityCommentView", owner: self, options: nil)?.first as? NCActivityCommentView
-        commentView?.setup(urlBase: appDelegate, account: activeAccount) { newComment in
-            guard let newComment = newComment, !newComment.isEmpty, let metadata = self.metadata else { return }
-            NextcloudKit.shared.putComments(fileId: metadata.fileId, message: newComment, account: self.appDelegate.account) { _, error in
-                if error == .success {
-                    self.commentView?.newCommentField.text?.removeAll()
-                    self.loadComments()
-                } else {
-                    NCContentPresenter().showError(error: error)
+        
+        if let commentView = Bundle.main.loadNibNamed("NCActivityCommentView", owner: self, options: nil)?.first as? NCActivityCommentView {
+            self.commentView = commentView
+            commentView.setup(urlBase: appDelegate, account: activeAccount) { [weak self] newComment in
+                guard let self = self else { return }
+                guard let newComment = newComment, !newComment.isEmpty, let metadata = self.metadata else { return }
+    
+                NextcloudKit.shared.putComments(fileId: metadata.fileId, message: newComment, account: self.appDelegate.account) { _, error in
+                    if error == .success {
+                        self.commentView?.newCommentField.text?.removeAll()
+                        self.loadComments()
+                    } else {
+                        NCContentPresenter().showError(error: error)
+                    }
                 }
             }
         }
     }
+
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
