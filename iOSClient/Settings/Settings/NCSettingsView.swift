@@ -239,23 +239,25 @@ struct NCSettingsView: View {
                 .sheet(isPresented: $showBrowser) {
                     NCBrowserWebView(urlBase: URL(string: NCBrandOptions.shared.privacy)!, browserTitle: NSLocalizedString("_privacy_legal_", comment: ""))
                 }
-                /// Source Code
-                Button(action: {
-                    showSourceCode.toggle()
-                }, label: {
-                    HStack {
-                        Image("gitHub")
-                            .resizable()
-                            .renderingMode(.template)
-                            .frame(width: 25, height: 25)
-                            .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
-                        Text(NSLocalizedString("_source_code_", comment: ""))
+                /// Source Code Nextcloud App
+                if !NCBrandOptions.shared.disable_show_more_nextcloud_apps_in_settings {
+                    Button(action: {
+                        showSourceCode.toggle()
+                    }, label: {
+                        HStack {
+                            Image("gitHub")
+                                .resizable()
+                                .renderingMode(.template)
+                                .frame(width: 25, height: 25)
+                                .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
+                            Text(NSLocalizedString("_source_code_", comment: ""))
+                        }
+                        .font(.system(size: 16))
+                    })
+                    .tint(Color(NCBrandColor.shared.textColor))
+                    .sheet(isPresented: $showSourceCode) {
+                        NCBrowserWebView(urlBase: URL(string: NCBrandOptions.shared.sourceCode)!, browserTitle: NSLocalizedString("_source_code_", comment: ""))
                     }
-                    .font(.system(size: 16))
-                })
-                .tint(Color(NCBrandColor.shared.textColor))
-                .sheet(isPresented: $showSourceCode) {
-                    NCBrowserWebView(urlBase: URL(string: NCBrandOptions.shared.sourceCode)!, browserTitle: NSLocalizedString("_source_code_", comment: ""))
                 }
             })
             /// `Watermark` Section
