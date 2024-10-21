@@ -39,6 +39,7 @@ class tableAccount: Object {
     @objc dynamic var autoUploadFull: Bool = false
     @objc dynamic var autoUploadImage: Bool = false
     @objc dynamic var autoUploadVideo: Bool = false
+    @objc dynamic var autoUploadFavoritesOnly: Bool = false
     @objc dynamic var autoUploadWWAnPhoto: Bool = false
     @objc dynamic var autoUploadWWAnVideo: Bool = false
     @objc dynamic var backend = ""
