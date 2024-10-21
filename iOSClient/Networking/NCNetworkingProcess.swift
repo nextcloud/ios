@@ -54,8 +54,8 @@ class NCNetworkingProcess {
                 case .update(_, _, let insertions, let modifications):
                     if insertions.count > 0 || modifications.count > 0 {
                         guard let self else { return }
-
-                        self.lockQueue.sync {
+                        self.startTimer()
+                        self.lockQueue.async {
                             guard !self.hasRun, self.networking.isOnline else { return }
                             self.hasRun = true
 
@@ -79,7 +79,7 @@ class NCNetworkingProcess {
         self.timerProcess?.invalidate()
         self.timerProcess = Timer.scheduledTimer(withTimeInterval: 3, repeats: true, block: { _ in
 
-            self.lockQueue.sync {
+            self.lockQueue.async {
                 guard !self.hasRun,
                       self.networking.isOnline,
                       let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal))?.freeze()
