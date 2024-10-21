@@ -240,7 +240,7 @@ struct NCSettingsView: View {
                     NCBrowserWebView(urlBase: URL(string: NCBrandOptions.shared.privacy)!, browserTitle: NSLocalizedString("_privacy_legal_", comment: ""))
                 }
                 /// Source Code Nextcloud App
-                if !NCBrandOptions.shared.disable_show_more_nextcloud_apps_in_settings {
+                if !NCBrandOptions.shared.disable_source_code_in_settings {
                     Button(action: {
                         showSourceCode.toggle()
                     }, label: {
