@@ -165,7 +165,7 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
     }
 
     func request<Value>(_ request: Alamofire.DataRequest, didParseResponse response: Alamofire.AFDataResponse<Value>) {
-        /// RESPONSE ERROR
+        /// GLOBAL RESPONSE ERROR
         if let statusCode = response.response?.statusCode {
             switch statusCode {
             case NCGlobal.shared.errorMaintenance:
