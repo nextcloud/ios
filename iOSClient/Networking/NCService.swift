@@ -95,8 +95,6 @@ class NCService: NSObject {
         switch await NCNetworking.shared.getServerStatus(serverUrl: serverUrl, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) {
         case .success(let serverInfo):
             if serverInfo.maintenance {
-                let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_maintenance_mode_")
-                NCContentPresenter().showWarning(error: error, priority: .max)
                 return false
             } else if serverInfo.productName.lowercased().contains("owncloud") {
                 let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_warning_owncloud_")
