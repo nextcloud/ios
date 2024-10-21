@@ -60,6 +60,7 @@ class NCViewerNextcloudText: UIViewController, WKNavigationDelegate, WKScriptMes
         webView = WKWebView(frame: CGRect.zero, configuration: config)
         webView.navigationDelegate = self
         webView.uiDelegate = self
+        webView.scrollView.isScrollEnabled = false
         view.addSubview(webView)
 
         webView.translatesAutoresizingMaskIntoConstraints = false
