@@ -285,15 +285,32 @@ extension NCShareExtension {
         guard !filesName.isEmpty else { return showAlert(description: "_files_no_files_") }
 
         counterUploaded = 0
-        uploadStarted = true
         uploadErrors = []
+
+        if filesName.count == 1 {
+            let fileName = filesName[0]
+            let newFileName = FileAutoRenamer.shared.rename(filesName[0], account: session.account)
+
+            if fileName != newFileName {
+                renameFile(oldName: fileName, newName: newFileName, account: session.account)
+            }
+
+            if let fileNameError = FileNameValidator.shared.checkFileName(newFileName, account: session.account) {
+                //                present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))") { [self] in
+                showRenameFileDialog(named: fileName, account: account) // Add message to this dialog
+                return
+
+                //                }, animated: true)
+            }
+
+        }
 
         var conflicts: [tableMetadata] = []
         for fileName in filesName {
             if let fileNameError = FileNameValidator.shared.checkFileName(fileName, account: session.account) {
-                present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
-
-                continue
+                present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))") {
+                    self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
+                }, animated: true)
             }
 
             let ocId = NSUUID().uuidString
@@ -330,6 +347,7 @@ extension NCShareExtension {
             conflict.delegate = self
             self.present(conflict, animated: true, completion: nil)
         } else {
+            uploadStarted = true
             upload()
         }
     }

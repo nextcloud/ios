@@ -262,10 +262,10 @@ extension UIAlertController {
         return alertController
     }
 
-    static func warning(title: String? = nil, message: String? = nil) -> UIAlertController {
+    static func warning(title: String? = nil, message: String? = nil, completion: @escaping () -> Void = {}) -> UIAlertController {
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
 
-        let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default)
+        let okAction = UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default) { _ in completion() }
 
         alertController.addAction(okAction)
 
