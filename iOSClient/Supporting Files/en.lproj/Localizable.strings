@@ -1008,6 +1008,9 @@
 "_while_charging_"          = "While charging";
 "_additional_options_"      = "Additional options";
 "_keep_screen_awake_"       = "Keep screen awake while transferring files";
+"_error_not_found_"         = "The requested resource could not be found";
+"_error_conflict_"          = "The request could not be completed due to a conflict with the current state of the resource";
+"_error_precondition_"      = "The server does not meet one of the preconditions that the requester";
 
 // Video
 "_select_trace_"            = "Select the trace";
