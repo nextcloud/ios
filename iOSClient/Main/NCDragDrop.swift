@@ -60,6 +60,7 @@ class NCDragDrop: NSObject {
         var metadatas: [tableMetadata] = []
         DragDropHover.shared.cleanPushDragDropHover()
         DragDropHover.shared.sourceMetadatas = nil
+        let count = coordinator.session.items.count
 
         for item in coordinator.session.items {
             if item.itemProvider.hasItemConformingToTypeIdentifier(NCGlobal.shared.metadataOcIdDataRepresentation) {
@@ -82,10 +83,36 @@ class NCDragDrop: NSObject {
                         if let destinationMetadata = DragDropHover.shared.destinationMetadata, destinationMetadata.directory {
                             serverUrl = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
                         }
-                        self.uploadFile(url: url, serverUrl: serverUrl, controller: controller)
+                        self.uploadFile(url: url, serverUrl: serverUrl, controller: controller, isSingleFile: count  == 1)
                     }
                 }
             }
+        }
+
+        var invalidNameIndexes: [Int] = []
+        let session = NCSession.shared.getSession(controller: controller)
+
+        for (index, metadata) in metadatas.enumerated() {
+            if let fileNameError = FileNameValidator.shared.checkFileName(metadata.fileName, account: session.account) {
+                if metadatas.count == 1 {
+                    let alert = UIAlertController.renameFile(fileName: metadata.fileName, account: session.account) { newFileName in
+                        metadatas[index].fileName = newFileName
+                        metadatas[index].fileNameView = newFileName
+
+//                        return metadatas
+                    }
+
+                    controller?.present(alert, animated: true)
+                    return nil
+                } else {
+                    controller?.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
+                    invalidNameIndexes.append(index)
+                }
+            }
+        }
+
+        for index in invalidNameIndexes.reversed() {
+            metadatas.remove(at: index)
         }
 
         if metadatas.isEmpty {
@@ -95,19 +122,56 @@ class NCDragDrop: NSObject {
         }
     }
 
-    func uploadFile(url: URL, serverUrl: String, controller: NCMainTabBarController?) {
+    func uploadFile(url: URL, serverUrl: String, controller: NCMainTabBarController?, isSingleFile: Bool) {
         do {
             let data = try Data(contentsOf: url)
             Task {
                 let ocId = NSUUID().uuidString
                 let session = NCSession.shared.getSession(controller: controller)
                 let fileName = await NCNetworking.shared.createFileName(fileNameBase: url.lastPathComponent, account: session.account, serverUrl: serverUrl)
-                let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
+                let newFileName = FileAutoRenamer.shared.rename(fileName, account: session.account)
+                let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: newFileName)
+
+
+                if let fileNameError = FileNameValidator.shared.checkFileName(newFileName, account: session.account) {
+                    if isSingleFile {
+                        let alert = await UIAlertController.renameFile(fileName: newFileName, account: session.account) { newFileName in
+                            try? data.write(to: URL(fileURLWithPath: fileNamePath))
+
+                            DispatchQueue.main.async {
+                                let metadataForUpload = self.database.createMetadata(fileName: newFileName,
+                                                                                      fileNameView: newFileName,
+                                                                                      ocId: ocId,
+                                                                                      serverUrl: serverUrl,
+                                                                                      url: "",
+                                                                                      contentType: "",
+                                                                                      session: session,
+                                                                                      sceneIdentifier: controller?.sceneIdentifier)
+
+                                metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
+                                metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
+                                metadataForUpload.size = self.utilityFileSystem.getFileSize(filePath: fileNamePath)
+                                metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
+                                metadataForUpload.sessionDate = Date()
+
+                                self.database.addMetadata(metadataForUpload)
+                            }
+
+                        }
+
+                        await controller?.present(alert, animated: true)
+                        return
+                    } else {
+                        await controller?.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
+                    }
+
+                    return
+                }
 
                 try data.write(to: URL(fileURLWithPath: fileNamePath))
 
-                let metadataForUpload = await database.createMetadata(fileName: fileName,
-                                                                      fileNameView: fileName,
+                let metadataForUpload = await database.createMetadata(fileName: newFileName,
+                                                                      fileNameView: newFileName,
                                                                       ocId: ocId,
                                                                       serverUrl: serverUrl,
                                                                       url: "",
