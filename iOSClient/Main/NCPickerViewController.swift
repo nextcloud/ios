@@ -135,9 +135,9 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
         let session = NCSession.shared.getSession(controller: self.controller)
         if isViewerMedia,
-            let urlIn = urls.first,
-            let url = self.copySecurityScopedResource(url: urlIn, urlOut: FileManager.default.temporaryDirectory.appendingPathComponent(urlIn.lastPathComponent)),
-            let viewController = self.viewController {
+           let urlIn = urls.first,
+           let url = self.copySecurityScopedResource(url: urlIn, urlOut: FileManager.default.temporaryDirectory.appendingPathComponent(urlIn.lastPathComponent)),
+           let viewController = self.viewController {
             let ocId = NSUUID().uuidString
             let fileName = url.lastPathComponent
             let metadata = database.createMetadata(fileName: fileName,
@@ -154,7 +154,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
             }
 
             if let fileNameError = FileNameValidator.shared.checkFileName(metadata.fileNameView, account: self.controller.account) {
-                controller.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
+                self.controller.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
             } else {
                 database.addMetadata(metadata)
                 NCViewer().view(viewController: viewController, metadata: metadata)
@@ -167,26 +167,22 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
 
             for urlIn in urls {
                 let ocId = NSUUID().uuidString
-
                 let fileName = urlIn.lastPathComponent
-                let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
+                let newFileName = FileAutoRenamer.shared.rename(fileName, account: session.account)
+
+                let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: newFileName)
                 let urlOut = URL(fileURLWithPath: toPath)
 
                 guard self.copySecurityScopedResource(url: urlIn, urlOut: urlOut) != nil else { continue }
 
-                let metadataForUpload = database.createMetadata(fileName: fileName,
-                                                                fileNameView: fileName,
+                let metadataForUpload = database.createMetadata(fileName: newFileName,
+                                                                fileNameView: newFileName,
                                                                 ocId: ocId,
                                                                 serverUrl: serverUrl,
                                                                 url: "",
                                                                 contentType: "",
                                                                 session: session,
                                                                 sceneIdentifier: self.controller.sceneIdentifier)
-
-                if let fileNameError = FileNameValidator.shared.checkFileName(metadataForUpload.fileNameView, account: self.controller.account) {
-                    controller.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
-                    continue
-                }
 
                 metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
                 metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
@@ -199,6 +195,31 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                 } else {
                     metadatas.append(metadataForUpload)
                 }
+            }
+
+            var invalidNameIndexes: [Int] = []
+
+            for (index, metadata) in metadatas.enumerated() {
+                if let fileNameError = FileNameValidator.shared.checkFileName(metadata.fileName, account: session.account) {
+                    if metadatas.count == 1 {
+                        let alert = UIAlertController.renameFile(fileName: metadata.fileName, account: session.account) { newFileName in
+                            metadatas[index].fileName = newFileName
+                            metadatas[index].fileNameView = newFileName
+
+                            NCNetworkingProcess.shared.createProcessUploads(metadatas: metadatas)
+                        }
+
+                        self.controller.present(alert, animated: true)
+                        return
+                    } else {
+                        self.controller.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
+                        invalidNameIndexes.append(index)
+                    }
+                }
+            }
+
+            for index in invalidNameIndexes.reversed() {
+                metadatas.remove(at: index)
             }
 
             NCNetworkingProcess.shared.createProcessUploads(metadatas: metadatas)

@@ -300,7 +300,7 @@ extension NCShareExtension {
 
             if let fileNameError = FileNameValidator.shared.checkFileName(newFileName, account: session.account) {
                 if filesName.count == 1 {
-                    showRenameFileDialog(named: fileName, account: account) // Add message to this dialog
+                    showRenameFileDialog(named: fileName, account: account)
                     return
                 } else {
                     present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))") {
