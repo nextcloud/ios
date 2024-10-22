@@ -57,7 +57,24 @@ extension NCNetworking {
         /// FAVORITE
         ///
         if metadata.status == global.metadataStatusWaitFavorite {
-            database.setMetadataStatus(ocId: metadata.ocId, status: global.metadataStatusNormal)
+            let favorite = (metadata.storeFlag as? NSString)?.boolValue ?? false
+            database.setMetadataFavorite(ocId: metadata.ocId, favorite: favorite, saveOldFavorite: nil, status: global.metadataStatusNormal)
+            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
+            return
+        }
+
+        /// COPY
+        ///
+        if metadata.status == global.metadataStatusWaitCopy {
+            database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: "", overwrite: nil, status: global.metadataStatusNormal)
+            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
+            return
+        }
+
+        /// MOVE
+        ///
+        if metadata.status == global.metadataStatusWaitMove {
+            database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: "", overwrite: nil, status: global.metadataStatusNormal)
             NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource)
             return
         }

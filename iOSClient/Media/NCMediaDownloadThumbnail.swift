@@ -24,6 +24,7 @@
 import UIKit
 import NextcloudKit
 import Queuer
+import Alamofire
 
 class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
     var metadata: NCMediaDataSource.Metadata
@@ -49,8 +50,8 @@ class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
         NextcloudKit.shared.downloadPreview(fileId: tableMetadata.fileId,
                                             etag: etagResource,
                                             account: self.session.account,
-                                            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, data, _, _, etag, error in
-            if error == .success, let data {
+                                            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, _, _, etag, responseData, error in
+            if error == .success, let data = responseData?.data {
 
                 self.media.filesExists.append(self.metadata.ocId)
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)

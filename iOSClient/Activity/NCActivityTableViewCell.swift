@@ -26,6 +26,7 @@ import UIKit
 import NextcloudKit
 import FloatingPanel
 import Queuer
+import Alamofire
 
 class NCActivityCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var imageView: UIImageView!
@@ -219,8 +220,8 @@ class NCOperationDownloadThumbnailActivity: ConcurrentOperation, @unchecked Send
         guard !isCancelled else { return self.finish() }
 
         NextcloudKit.shared.downloadPreview(fileId: fileId,
-                                            account: account) { _, data, _, _, _, error in
-            if error == .success, let data, let collectionView = self.collectionView {
+                                            account: account) { _, _, _, _, responseData, error in
+            if error == .success, let data = responseData?.data, let collectionView = self.collectionView {
                 for case let cell as NCActivityCollectionViewCell in collectionView.visibleCells {
                     if self.fileId == cell.fileId {
                         UIView.transition(with: cell.imageView,

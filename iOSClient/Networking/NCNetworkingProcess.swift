@@ -54,8 +54,8 @@ class NCNetworkingProcess {
                 case .update(_, _, let insertions, let modifications):
                     if insertions.count > 0 || modifications.count > 0 {
                         guard let self else { return }
-
-                        self.lockQueue.sync {
+                        self.startTimer()
+                        self.lockQueue.async {
                             guard !self.hasRun, self.networking.isOnline else { return }
                             self.hasRun = true
 
@@ -79,27 +79,31 @@ class NCNetworkingProcess {
         self.timerProcess?.invalidate()
         self.timerProcess = Timer.scheduledTimer(withTimeInterval: 3, repeats: true, block: { _ in
 
-            self.lockQueue.sync {
-                guard !self.hasRun, self.networking.isOnline else { return }
+            self.lockQueue.async {
+                guard !self.hasRun,
+                      self.networking.isOnline,
+                      let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal))?.freeze()
+                else { return }
                 self.hasRun = true
 
                 /// Keep screen awake
                 ///
+                /*
                 Task {
                     let tasks = await self.networking.getAllDataTask()
                     let hasSynchronizationTask = tasks.contains { $0.taskDescription == NCGlobal.shared.taskDescriptionSynchronization }
-                    let resultsTransfer = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status IN %@", self.global.metadataStatusInTransfer))
+                    let resultsTransfer = results.filter { self.global.metadataStatusInTransfer.contains($0.status) }
 
-                    if resultsTransfer.isEmptyOrNil && !hasSynchronizationTask {
+                    if resultsTransfer.isEmpty && !hasSynchronizationTask {
                         ScreenAwakeManager.shared.mode = .off
                     } else {
                         ScreenAwakeManager.shared.mode = NCKeychain().screenAwakeMode
                     }
                 }
-
-                guard let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal)) else { return }
+                */
 
                 if results.isEmpty {
+
                     /// Remove Photo CameraRoll
                     ///
                     if NCKeychain().removePhotoCameraRoll,
@@ -288,6 +292,77 @@ class NCNetworkingProcess {
     private func metadataStatusWaitWebDav() async -> Bool {
         var returnValue: Bool = false
 
+        /// ------------------------ COPY
+        ///
+        if let metadatasWaitCopy = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitCopy), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitCopy.isEmpty {
+            for metadata in metadatasWaitCopy {
+                let serverUrlTo = metadata.serverUrlTo
+                let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
+                let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
+                let overwrite = (metadata.storeFlag as? NSString)?.boolValue ?? false
+
+                let result = await networking.copyFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account)
+
+                database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: "", overwrite: nil, status: global.metadataStatusNormal)
+
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["serverUrl": metadata.serverUrl, "account": metadata.account, "dragdrop": false, "type": "copy"])
+
+                if result.error == .success {
+
+                    NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterGetServerData, userInfo: ["serverUrl": metadata.serverUrl])
+                    NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterGetServerData, userInfo: ["serverUrl": serverUrlTo])
+
+                } else {
+                    NCContentPresenter().showError(error: result.error)
+                }
+            }
+        }
+
+        /// ------------------------ MOVE
+        ///
+        if let metadatasWaitMove = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitMove), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitMove.isEmpty {
+            for metadata in metadatasWaitMove {
+                let serverUrlTo = metadata.serverUrlTo
+                let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
+                let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
+                let overwrite = (metadata.storeFlag as? NSString)?.boolValue ?? false
+
+                let result = await networking.moveFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account)
+
+                database.setMetadataCopyMove(ocId: metadata.ocId, serverUrlTo: "", overwrite: nil, status: global.metadataStatusNormal)
+
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["serverUrl": metadata.serverUrl, "account": metadata.account, "dragdrop": false, "type": "move"])
+
+                if result.error == .success {
+                    if metadata.directory {
+                        self.database.deleteDirectoryAndSubDirectory(serverUrl: utilityFileSystem.stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: result.account)
+                    } else {
+                        do {
+                            try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
+                        } catch { }
+                        self.database.deleteVideo(metadata: metadata)
+                        self.database.deleteMetadataOcId(metadata.ocId)
+                        self.database.deleteLocalFileOcId(metadata.ocId)
+                        // LIVE PHOTO
+                        if let metadataLive = self.database.getMetadataLivePhoto(metadata: metadata) {
+                            do {
+                                try FileManager.default.removeItem(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadataLive.ocId))
+                            } catch { }
+                            self.database.deleteVideo(metadata: metadataLive)
+                            self.database.deleteMetadataOcId(metadataLive.ocId)
+                            self.database.deleteLocalFileOcId(metadataLive.ocId)
+                        }
+                    }
+
+                    NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterGetServerData, userInfo: ["serverUrl": metadata.serverUrl])
+                    NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterGetServerData, userInfo: ["serverUrl": serverUrlTo])
+
+                } else {
+                    NCContentPresenter().showError(error: result.error)
+                }
+            }
+        }
+
         /// ------------------------ FAVORITE
         ///
         if let metadatasWaitFavorite = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitFavorite), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitFavorite.isEmpty {
@@ -297,26 +372,13 @@ class NCNetworkingProcess {
                 let error = await networking.setFavorite(fileName: fileName, favorite: metadata.favorite, account: metadata.account)
 
                 if error == .success {
-                    database.setMetadataStatus(ocId: metadata.ocId, status: global.metadataStatusNormal)
-
-                    NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterFavoriteFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl])
-
+                    database.setMetadataFavorite(ocId: metadata.ocId, favorite: nil, saveOldFavorite: nil, status: global.metadataStatusNormal)
                 } else {
-                    database.setMetadataFavorite(ocId: metadata.ocId, favorite: !metadata.favorite, status: global.metadataStatusNormal)
-
-                    let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-                    let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: true, account: metadata.account)
-
-                    if results.error == .success, let file = results.files?.first {
-                        database.setMetadataFavorite(ocId: file.ocId, favorite: file.favorite, status: global.metadataStatusNormal)
-
-                        NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterFavoriteFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl])
-
-                    } else {
-
-                        NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterGetServerData, userInfo: ["serverUrl": metadata.serverUrl])
-                    }
+                    let favorite = (metadata.storeFlag as? NSString)?.boolValue ?? false
+                    database.setMetadataFavorite(ocId: metadata.ocId, favorite: favorite, saveOldFavorite: nil, status: global.metadataStatusNormal)
                 }
+
+                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterFavoriteFile, userInfo: ["ocId": metadata.ocId, "serverUrl": metadata.serverUrl])
             }
         }
 
@@ -369,6 +431,18 @@ class NCNetworkingProcess {
     }
 
     // MARK: - Public
+
+    func startProcess() {
+        startTimer()
+        startObserveTableMetadata()
+    }
+
+    func stopProcess() {
+        timerProcess?.invalidate()
+        timerProcess = nil
+        notificationToken?.invalidate()
+        notificationToken = nil
+    }
 
     func refreshProcessingTask() async -> (counterDownloading: Int, counterUploading: Int) {
         await withCheckedContinuation { continuation in

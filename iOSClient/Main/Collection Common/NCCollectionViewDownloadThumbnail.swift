@@ -51,9 +51,9 @@ class NCCollectionViewDownloadThumbnail: ConcurrentOperation, @unchecked Sendabl
         NextcloudKit.shared.downloadPreview(fileId: metadata.fileId,
                                             etag: etagResource,
                                             account: self.metadata.account,
-                                            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, data, _, _, etag, error in
+                                            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, _, _, etag, responseData, error in
 
-            if error == .success, let data, let collectionView = self.collectionView {
+            if error == .success, let data = responseData?.data, let collectionView = self.collectionView {
 
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
                 NCUtility().createImageFileFrom(data: data, metadata: self.metadata)

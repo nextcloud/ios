@@ -188,9 +188,7 @@ class NCMedia: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: global.notificationCenterMoveFile), object: nil)
-
-        NotificationCenter.default.addObserver(self, selector: #selector(copyFile(_:)), name: NSNotification.Name(rawValue: global.notificationCenterCopyFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(copyMoveFile(_:)), name: NSNotification.Name(rawValue: global.notificationCenterCopyMoveFile), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(enterForeground(_:)), name: UIApplication.willEnterForegroundNotification, object: nil)
 
@@ -201,9 +199,7 @@ class NCMedia: UIViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterCopyFile), object: nil)
-
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterMoveFile), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterCopyMoveFile), object: nil)
 
         NotificationCenter.default.removeObserver(self, name: UIApplication.willEnterForegroundNotification, object: nil)
 
@@ -297,31 +293,10 @@ class NCMedia: UIViewController {
         }
     }
 
-    @objc func moveFile(_ notification: NSNotification) {
+    @objc func copyMoveFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let error = userInfo["error"] as? NKError,
-              let dragDrop = userInfo["dragdrop"] as? Bool, dragDrop else { return }
-
-        if error != .success {
-            NCContentPresenter().showError(error: error)
-        }
-
-        setEditMode(false)
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            self.loadDataSource()
-            self.searchMediaUI()
-        }
-    }
-
-    @objc func copyFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let error = userInfo["error"] as? NKError,
-              let dragDrop = userInfo["dragdrop"] as? Bool, dragDrop else { return }
-
-        if error != .success {
-            NCContentPresenter().showError(error: error)
-        }
+              let dragDrop = userInfo["dragdrop"] as? Bool,
+              dragDrop else { return }
 
         setEditMode(false)
 

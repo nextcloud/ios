@@ -49,7 +49,61 @@ class NCImageCache: NSObject {
         countLimit = calculateMaxImages(percentage: 5.0, imageSizeKB: 30.0) // 5% of cache = 20
         NextcloudKit.shared.nkCommonInstance.writeLog("Counter cache image: \(countLimit)")
 
-        NotificationCenter.default.addObserver(self, selector: #selector(handleMemoryWarning), name: LRUCacheMemoryWarningNotification, object: nil)
+        NotificationCenter.default.addObserver(forName: LRUCacheMemoryWarningNotification, object: nil, queue: nil) { _ in
+            self.cache.removeAllValues()
+            self.countLimit = self.countLimit - 500
+            if self.countLimit <= 0 { self.countLimit = 100 }
+            self.cache = LRUCache<String, UIImage>(countLimit: self.countLimit)
+    #if DEBUG
+            NCContentPresenter().messageNotification("Cache image memory warning \(self.countLimit)", error: .success, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
+    #endif
+        }
+
+        NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { _ in
+            autoreleasepool {
+                self.cache.removeAllValues()
+            }
+        }
+
+        NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil) { _ in
+#if !EXTENSION
+            var files: [NCFiles] = []
+            var cost: Int = 0
+
+            if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount(),
+               NCImageCache.shared.cache.count == 0 {
+                let session = NCSession.shared.getSession(account: activeTableAccount.account)
+
+                for mainTabBarController in SceneManager.shared.getControllers() {
+                    if let currentVC = mainTabBarController.selectedViewController as? UINavigationController,
+                       let file = currentVC.visibleViewController as? NCFiles {
+                        files.append(file)
+                    }
+                }
+
+                /// MEDIA
+                if let metadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: self.getMediaPredicate(filterLivePhotoFile: true, session: session, showOnlyImages: false, showOnlyVideos: false), sortedByKeyPath: "date", freeze: true)?.prefix(self.countLimit) {
+
+                    self.cache.removeAllValues()
+                    self.isLoadingCache = true
+
+                    metadatas.forEach { metadata in
+                        if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt256) {
+                            self.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: NCGlobal.shared.previewExt256, cost: cost)
+                            cost += 1
+                        }
+                    }
+
+                    self.isLoadingCache = false
+                }
+
+                /// FILE
+                for file in files where !file.serverUrl.isEmpty {
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": file.serverUrl])
+                }
+            }
+#endif
+        }
     }
 
     deinit {
@@ -63,16 +117,6 @@ class NCImageCache: NSObject {
         let maxImages = Int(cacheSizeBytes / imageSizeBytes)
 
         return maxImages
-    }
-
-    @objc func handleMemoryWarning() {
-        cache.removeAllValues()
-        countLimit = countLimit - 500
-        if countLimit <= 0 { countLimit = 100 }
-        self.cache = LRUCache<String, UIImage>(countLimit: countLimit)
-#if DEBUG
-        NCContentPresenter().messageNotification("Cache image memory warning \(countLimit)", error: .success, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
-#endif
     }
 
     func allowExtensions(ext: String) -> Bool {
@@ -107,25 +151,6 @@ class NCImageCache: NSObject {
     }
 
     // MARK: - MEDIA -
-
-    func cachingMedia(session: NCSession.Session) {
-        var cost: Int = 0
-
-        if let metadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: getMediaPredicate(filterLivePhotoFile: true, session: session, showOnlyImages: false, showOnlyVideos: false), sortedByKeyPath: "date", freeze: true)?.prefix(countLimit) {
-
-            cache.removeAllValues()
-            isLoadingCache = true
-
-            metadatas.forEach { metadata in
-                if let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt256) {
-                    addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: NCGlobal.shared.previewExt256, cost: cost)
-                    cost += 1
-                }
-            }
-
-            isLoadingCache = false
-        }
-    }
 
     func getMediaPredicate(filterLivePhotoFile: Bool, session: NCSession.Session, showOnlyImages: Bool, showOnlyVideos: Bool) -> NSPredicate {
             guard let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else { return NSPredicate() }

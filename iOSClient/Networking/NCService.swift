@@ -95,8 +95,6 @@ class NCService: NSObject {
         switch await NCNetworking.shared.getServerStatus(serverUrl: serverUrl, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) {
         case .success(let serverInfo):
             if serverInfo.maintenance {
-                let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_maintenance_mode_")
-                NCContentPresenter().showWarning(error: error, priority: .max)
                 return false
             } else if serverInfo.productName.lowercased().contains("owncloud") {
                 let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_warning_owncloud_")
@@ -155,7 +153,7 @@ class NCService: NSObject {
                                            avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
                                            etag: etag,
                                            account: account,
-                                           options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, _, _, etag, error in
+                                           options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, _, _, etag, _, error in
             if let etag = etag, error == .success {
                 self.database.addAvatar(fileName: fileName, etag: etag)
             } else if error.errorCode == NCGlobal.shared.errorNotModified {
@@ -166,12 +164,15 @@ class NCService: NSObject {
     }
 
     private func requestServerCapabilities(account: String) {
-        NextcloudKit.shared.getCapabilities(account: account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, data, error in
-            guard error == .success, let data else { return }
+        NextcloudKit.shared.getCapabilities(account: account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, presponseData, error in
+            guard error == .success, let data = presponseData?.data else { return }
 
             data.printJson()
 
-            self.database.addCapabilitiesJSon(data, account: account)
+            if NCNetworking.shared.isResponseDataChanged(account: account, responseData: presponseData) {
+                self.database.addCapabilitiesJSon(data, account: account)
+            }
+
             guard let capability = self.database.setCapabilities(account: account, data: data) else { return }
 
             // Theming
@@ -350,7 +351,7 @@ class NCService: NSObject {
             let issues = Issues(syncConflicts: syncConflicts, virusDetected: virusDetected, e2eeErrors: e2eeErrors, problems: problems)
             let data = try JSONEncoder().encode(issues)
             data.printJson()
-            NextcloudKit.shared.sendClientDiagnosticsRemoteOperation(data: data, account: account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, error in
+            NextcloudKit.shared.sendClientDiagnosticsRemoteOperation(data: data, account: account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, _, error in
                 if error == .success {
                     self.database.deleteDiagnostics(account: account, ids: ids)
                 }

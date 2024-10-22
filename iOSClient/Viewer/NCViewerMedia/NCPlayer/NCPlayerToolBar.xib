@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23094" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina5_9" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21678"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23084"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -54,18 +54,18 @@
                     </constraints>
                 </view>
                 <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" alignment="center" spacing="30" translatesAutoresizingMaskIntoConstraints="NO" id="ncM-9U-phl" userLabel="Player Top Tool Bar">
-                    <rect key="frame" x="125.33333333333334" y="390" width="124.33333333333334" height="32.333333333333314"/>
+                    <rect key="frame" x="125.33333333333334" y="389.66666666666669" width="124.33333333333334" height="32.666666666666686"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="xja-nq-uD3">
-                            <rect key="frame" x="5.0000000000000142" y="4.9999999999999982" width="19.666666666666668" height="22.333333333333329"/>
+                            <rect key="frame" x="5.0000000000000142" y="5.0000000000000018" width="19.666666666666668" height="22.666666666666671"/>
                             <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                            <state key="normal" image="gobackward.10" catalog="system"/>
+                            <state key="normal" image="10.arrow.trianglehead.counterclockwise" catalog="system"/>
                             <connections>
                                 <action selector="tapBack:" destination="iN0-l3-epB" eventType="touchUpInside" id="dam-FU-7fD"/>
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qo0-x8-OfL">
-                            <rect key="frame" x="54.666666666666671" y="5" width="15" height="22"/>
+                            <rect key="frame" x="54.666666666666671" y="5.3333333333333144" width="15" height="22"/>
                             <fontDescription key="fontDescription" type="system" pointSize="18"/>
                             <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                             <state key="normal" image="play.fill" catalog="system"/>
@@ -74,9 +74,9 @@
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5Zd-By-Fko">
-                            <rect key="frame" x="99.666666666666671" y="4.9999999999999982" width="19.666666666666671" height="22.333333333333329"/>
+                            <rect key="frame" x="99.666666666666671" y="5.0000000000000018" width="19.666666666666671" height="22.666666666666671"/>
                             <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                            <state key="normal" image="goforward.10" catalog="system"/>
+                            <state key="normal" image="10.arrow.trianglehead.clockwise" catalog="system"/>
                             <connections>
                                 <action selector="tapForward:" destination="iN0-l3-epB" eventType="touchUpInside" id="MAM-Kd-NXu"/>
                             </connections>
@@ -158,11 +158,11 @@
         </view>
     </objects>
     <resources>
+        <image name="10.arrow.trianglehead.clockwise" catalog="system" width="119" height="128"/>
+        <image name="10.arrow.trianglehead.counterclockwise" catalog="system" width="119" height="128"/>
         <image name="arrow.up.left.and.arrow.down.right" catalog="system" width="128" height="115"/>
         <image name="captions.bubble" catalog="system" width="128" height="110"/>
-        <image name="gobackward.10" catalog="system" width="119" height="128"/>
-        <image name="goforward.10" catalog="system" width="119" height="128"/>
-        <image name="play.fill" catalog="system" width="117" height="128"/>
+        <image name="play.fill" catalog="system" width="120" height="128"/>
         <image name="repeat" catalog="system" width="128" height="98"/>
         <image name="speaker.zzz" catalog="system" width="128" height="83"/>
     </resources>

@@ -318,9 +318,14 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     }
 
     func imageTapped(with index: Int, sender: Any) {
+        guard index < self.itemsSource.count else {
+            return collectionViewSource.reloadData()
+        }
         let fileName = self.itemsSource[index]
         let fileNamePath = utilityFileSystem.directoryScan + "/" + fileName
-        guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNamePath)), let image = UIImage(data: data) else { return }
+        guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNamePath)), let image = UIImage(data: data) else {
+            return collectionViewSource.reloadData()
+        }
 
         imagesDestination.append(image)
         itemsDestination.append(fileName)

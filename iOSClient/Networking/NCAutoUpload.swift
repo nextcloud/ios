@@ -237,15 +237,15 @@ class NCAutoUpload: NSObject {
             fetchOptions.predicate = predicate
             let assets: PHFetchResult<PHAsset> = PHAsset.fetchAssets(in: assetCollection, options: fetchOptions)
 
-            if selector == NCGlobal.shared.selectorUploadAutoUpload {
-                let idAssets = self.database.getPhotoLibraryIdAsset(image: tableAccount.autoUploadImage, video: tableAccount.autoUploadVideo, account: account)
+            if selector == NCGlobal.shared.selectorUploadAutoUpload,
+               let idAssets = self.database.getPhotoLibraryIdAsset(image: tableAccount.autoUploadImage, video: tableAccount.autoUploadVideo, account: account) {
                 assets.enumerateObjects { asset, _, _ in
                     var creationDateString = ""
                     if let creationDate = asset.creationDate {
                         creationDateString = String(describing: creationDate)
                     }
                     let idAsset = account + asset.localIdentifier + creationDateString
-                    if !(idAssets?.contains(idAsset) ?? false) {
+                    if !idAssets.contains(idAsset) {
                         newAssets.append(asset)
                     }
                 }

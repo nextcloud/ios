@@ -35,6 +35,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     let global = NCGlobal.shared
     let utility = NCUtility()
     let utilityFileSystem = NCUtilityFileSystem()
+    let imageCache = NCImageCache.shared
+    var dataSource = NCCollectionViewDataSource()
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     var pinchGesture: UIPinchGestureRecognizer = UIPinchGestureRecognizer()
 
@@ -47,8 +49,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var isEditMode = false
     var fileSelect: [String] = []
     var metadataFolder: tableMetadata?
-    var dataSource = NCCollectionViewDataSource()
-    let imageCache = NCImageCache.shared
     var richWorkspaceText: String?
     var sectionFirstHeader: NCSectionFirstHeader?
     var sectionFirstHeaderEmptyData: NCSectionFirstHeaderEmptyData?
@@ -191,7 +191,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
-            self.database.cleanEtagDirectory(serverUrl: self.serverUrl, account: self.session.account)
             self.dataSource.removeAll()
             self.getServerData()
         }
@@ -262,8 +261,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NotificationCenter.default.addObserver(self, selector: #selector(changeLayout(_:)), name: NSNotification.Name(rawValue: global.notificationCenterChangeLayout), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: global.notificationCenterDeleteFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: global.notificationCenterMoveFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(copyFile(_:)), name: NSNotification.Name(rawValue: global.notificationCenterCopyFile), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(copyMoveFile(_:)), name: NSNotification.Name(rawValue: global.notificationCenterCopyMoveFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: global.notificationCenterRenameFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(createFolder(_:)), name: NSNotification.Name(rawValue: global.notificationCenterCreateFolder), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(favoriteFile(_:)), name: NSNotification.Name(rawValue: global.notificationCenterFavoriteFile), object: nil)
@@ -302,8 +300,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterChangeLayout), object: nil)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterDeleteFile), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterMoveFile), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterCopyFile), object: nil)
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterCopyMoveFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterRenameFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterCreateFolder), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterFavoriteFile), object: nil)
@@ -414,10 +411,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     @objc func reloadDataSource(_ notification: NSNotification) {
-        if let userInfo = notification.userInfo as NSDictionary?,
-           let serverUrl = userInfo["serverUrl"] as? String {
-            if serverUrl != self.serverUrl {
-                return
+        if let userInfo = notification.userInfo as? NSDictionary {
+            if let serverUrl = userInfo["serverUrl"] as? String {
+                if serverUrl != self.serverUrl {
+                    return
+                }
+            }
+
+            if let clearDataSource = userInfo["clearDataSource"] as? Bool, clearDataSource {
+                self.dataSource.removeAll()
             }
         }
 
@@ -454,24 +456,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         reloadDataSource()
     }
 
-    @objc func moveFile(_ notification: NSNotification) {
+    @objc func copyMoveFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let error = userInfo["error"] as? NKError else { return }
-
-        if error != .success {
-            NCContentPresenter().showError(error: error)
-        }
-
-        reloadDataSource()
-    }
-
-    @objc func copyFile(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let error = userInfo["error"] as? NKError else { return }
-
-        if error != .success {
-            NCContentPresenter().showError(error: error)
-        }
+              let serverUrl = userInfo["serverUrl"] as? String,
+              let account = userInfo["account"] as? String,
+              account == session.account,
+              serverUrl == self.serverUrl else { return }
 
         reloadDataSource()
     }

@@ -74,6 +74,7 @@ extension UIAlertController {
                                                                                      session: session,
                                                                                      sceneIdentifier: sceneIdentifier)
                 metadataForCreateFolder.status = NCGlobal.shared.metadataStatusWaitCreateFolder
+                metadataForCreateFolder.sessionDate = Date()
                 NCManageDatabase.shared.addMetadata(metadataForCreateFolder)
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": metadataForCreateFolder.ocId, "serverUrl": metadataForCreateFolder.serverUrl, "account": metadataForCreateFolder.account, "withPush": true, "sceneIdentifier": sceneIdentifier as Any])
             }

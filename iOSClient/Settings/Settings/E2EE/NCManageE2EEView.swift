@@ -149,7 +149,7 @@ struct NCManageE2EEView: View {
             }
             .contentShape(Rectangle())
             .onTapGesture {
-                NextcloudKit.shared.deleteE2EECertificate(account: model.session.account) { _, error in
+                NextcloudKit.shared.deleteE2EECertificate(account: model.session.account) { _, _, error in
                     if error == .success {
                         NCContentPresenter().messageNotification("E2E delete certificate", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .success)
                     } else {
@@ -172,7 +172,7 @@ struct NCManageE2EEView: View {
             }
             .contentShape(Rectangle())
             .onTapGesture {
-                NextcloudKit.shared.deleteE2EEPrivateKey(account: model.session.account) { _, error in
+                NextcloudKit.shared.deleteE2EEPrivateKey(account: model.session.account) { _, _, error in
                     if error == .success {
                         NCContentPresenter().messageNotification("E2E delete privateKey", error: error, delay: NCGlobal.shared.dismissAfterSecond, type: .success)
                     } else {

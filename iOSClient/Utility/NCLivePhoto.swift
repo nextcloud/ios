@@ -12,6 +12,7 @@ import MobileCoreServices
 import Photos
 import NextcloudKit
 import UniformTypeIdentifiers
+import Alamofire
 
 class NCLivePhoto {
 
@@ -466,10 +467,10 @@ extension NCLivePhoto {
     func setLivephoto(serverUrlfileNamePath: String,
                       livePhotoFile: String,
                       account: String,
-                      options: NKRequestOptions = NKRequestOptions()) async -> (account: String, error: NKError) {
+                      options: NKRequestOptions = NKRequestOptions()) async -> (account: String, responseData: AFDataResponse<Data?>?, error: NKError) {
         await withUnsafeContinuation({ continuation in
-            NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: livePhotoFile, account: account, options: options) { account, error in
-                continuation.resume(returning: (account: account, error: error))
+            NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: livePhotoFile, account: account, options: options) { account, responseData, error in
+                continuation.resume(returning: (account: account, responseData: responseData,error: error))
             }
         })
     }

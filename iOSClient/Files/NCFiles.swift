@@ -168,63 +168,77 @@ class NCFiles: NCCollectionViewCommon {
         }
 
         DispatchQueue.global().async {
-            self.networkReadFolder { tableDirectory, metadatas, reloadDataSource, error in
+            self.networkReadFolder { metadatas, isChanged, error in
+                DispatchQueue.main.async {
+                    self.refreshControl.endRefreshing()
+
+                    if isChanged || self.isNumberOfItemsInAllSectionsNull {
+                        self.reloadDataSource()
+                    }
+                }
+
                 if error == .success {
-                    for metadata in metadatas ?? [] where !metadata.directory && downloadMetadata(metadata) {
+                    let metadatas: [tableMetadata] = metadatas ?? self.dataSource.getMetadatas()
+                    for metadata in metadatas where !metadata.directory && downloadMetadata(metadata) {
                         if NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
                             NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile))
                         }
                     }
-
-                    self.richWorkspaceText = tableDirectory?.richWorkspace
-                }
-
-                DispatchQueue.main.async {
-                    if reloadDataSource || self.isNumberOfItemsInAllSectionsNull {
-                        self.reloadDataSource()
-                    }
-
-                    self.refreshControl.endRefreshing()
                 }
             }
         }
     }
 
-    private func networkReadFolder(completion: @escaping (_ tableDirectory: tableDirectory?, _ metadatas: [tableMetadata]?, _ isEtagChanged: Bool, _ error: NKError) -> Void) {
-        var tableDirectory: tableDirectory?
-
+    private func networkReadFolder(completion: @escaping (_ metadatas: [tableMetadata]?, _ isDataChanged: Bool, _ error: NKError) -> Void) {
         NCNetworking.shared.readFile(serverUrlFileName: serverUrl, account: session.account) { task in
             self.dataSourceTask = task
             if self.dataSource.isEmpty() {
                 self.collectionView.reloadData()
             }
         } completion: { account, metadata, error in
+            let isDirectoryE2EE = NCUtilityFileSystem().isDirectoryE2EE(session: self.session, serverUrl: self.serverUrl)
             guard error == .success, let metadata else {
-                return completion(nil, nil, false, error)
+                return completion(nil, false, error)
             }
-            tableDirectory = self.database.setDirectory(serverUrl: self.serverUrl, richWorkspace: metadata.richWorkspace, account: account)
-            guard tableDirectory?.etag != metadata.etag || metadata.e2eEncrypted else {
-                return completion(tableDirectory, nil, false, NKError())
+            /// Check change eTag or E2EE  or DataSource empty
+            let tableDirectory = self.database.setDirectory(serverUrl: self.serverUrl, richWorkspace: metadata.richWorkspace, account: account)
+            guard tableDirectory?.etag != metadata.etag || metadata.e2eEncrypted || self.dataSource.isEmpty() else {
+                return completion(nil, false, NKError())
+            }
+            /// Check Response DataC hanged
+            var checkResponseDataChanged = true
+            if tableDirectory?.etag.isEmpty ?? true || isDirectoryE2EE {
+                checkResponseDataChanged = false
             }
 
             NCNetworking.shared.readFolder(serverUrl: self.serverUrl,
                                            account: metadata.account,
+                                           checkResponseDataChanged: checkResponseDataChanged,
                                            queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue) { task in
                 self.dataSourceTask = task
                 if self.dataSource.isEmpty() {
                     self.collectionView.reloadData()
                 }
-            } completion: { account, metadataFolder, metadatas, error in
+            } completion: { account, metadataFolder, metadatas, isDataChanged, error in
+                /// Error
                 guard error == .success else {
-                    return completion(tableDirectory, nil, false, error)
+                    return completion(nil, false, error)
                 }
-                self.metadataFolder = metadataFolder
+                /// Updata folder
+                if let metadataFolder {
+                    self.metadataFolder = metadataFolder
+                    self.richWorkspaceText = metadataFolder.richWorkspace
+                }
+                /// check Response Data Changed
+                if !isDataChanged {
+                    return completion(nil, false, error)
+                }
 
-                guard let metadataFolder = metadataFolder,
-                      metadataFolder.e2eEncrypted,
+                guard let metadataFolder,
+                      isDirectoryE2EE,
                       NCKeychain().isEndToEndEnabled(account: account),
                       !NCNetworkingE2EE().isInUpload(account: account, serverUrl: self.serverUrl) else {
-                    return completion(tableDirectory, metadatas, true, error)
+                    return completion(metadatas, true, error)
                 }
 
                 /// E2EE
@@ -264,7 +278,7 @@ class NCFiles: NCCollectionViewCommon {
                     } else {
                         NCContentPresenter().showError(error: NKError(errorCode: NCGlobal.shared.errorE2EEKeyDecodeMetadata, errorDescription: "_e2e_error_"))
                     }
-                    completion(tableDirectory, metadatas, true, error)
+                    completion(metadatas, true, error)
                 }
             }
         }

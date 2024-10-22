@@ -24,6 +24,7 @@
 import UIKit
 import FileProvider
 import NextcloudKit
+import Alamofire
 
 extension FileProviderExtension {
     override func fetchThumbnails(for itemIdentifiers: [NSFileProviderItemIdentifier], requestedSize size: CGSize, perThumbnailCompletionHandler: @escaping (NSFileProviderItemIdentifier, Data?, Error?) -> Void, completionHandler: @escaping (Error?) -> Void) -> Progress {
@@ -42,8 +43,8 @@ extension FileProviderExtension {
                                                 height: Int(size.height),
                                                 etag: metadata.etag,
                                                 account: metadata.account) { _ in
-            } completion: { _, data, _, _, _, error in
-                if error == .success, let data {
+            } completion: { _, _, _, _, responseData, error in
+                if error == .success, let data = responseData?.data {
                     perThumbnailCompletionHandler(itemIdentifier, data, nil)
                 } else {
                     perThumbnailCompletionHandler(itemIdentifier, nil, NSFileProviderError(.serverUnreachable))

@@ -64,13 +64,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 window?.makeKeyAndVisible()
                 /// Set the ACCOUNT
                 controller.account = activeTableAccount.account
-                /// Create media cache
-                DispatchQueue.global(qos: .utility).async {
-                    if NCImageCache.shared.cache.count == 0 {
-                        let session = NCSession.shared.getSession(account: activeTableAccount.account)
-                        NCImageCache.shared.cachingMedia(session: session)
-                    }
-                }
             }
         } else {
             NCKeychain().removeAll()

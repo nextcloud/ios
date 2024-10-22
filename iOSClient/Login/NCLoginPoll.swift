@@ -118,7 +118,7 @@ private class LoginManager: ObservableObject {
 
         poll()
     }
-    
+
     func poll() {
         let queue = DispatchQueue.global(qos: .background)
         timer = DispatchSource.makeTimerSource(queue: queue)

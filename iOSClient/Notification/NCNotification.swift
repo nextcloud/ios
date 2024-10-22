@@ -231,7 +231,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
 
     func tapRemove(with notification: NKNotifications) {
 
-        NextcloudKit.shared.setNotification(serverUrl: nil, idNotification: notification.idNotification, method: "DELETE", account: session.account) { _, error in
+        NextcloudKit.shared.setNotification(serverUrl: nil, idNotification: notification.idNotification, method: "DELETE", account: session.account) { _, _, error in
             if error == .success {
                 if let index = self.notifications
                     .firstIndex(where: { $0.idNotification == notification.idNotification }) {
@@ -263,7 +263,7 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
                 return
             }
 
-            NextcloudKit.shared.setNotification(serverUrl: serverUrl, idNotification: 0, method: method, account: session.account) { _, error in
+            NextcloudKit.shared.setNotification(serverUrl: serverUrl, idNotification: 0, method: method, account: session.account) { _, _, error in
                 if error == .success {
                     if let index = self.notifications.firstIndex(where: { $0.idNotification == notification.idNotification }) {
                         self.notifications.remove(at: index)

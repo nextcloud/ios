@@ -101,14 +101,15 @@ extension NCNetworking {
                                                                    "totalBytes": NSNumber(value: progress.totalUnitCount),
                                                                    "totalBytesExpected": NSNumber(value: progress.completedUnitCount)])
             progressHandler(progress)
-        }) { _, etag, date, length, allHeaderFields, afError, error in
+        }) { _, etag, date, length, responseData, afError, error in
             var error = error
             var dateLastModified: Date?
 
             // this delay was added because for small file the "taskHandler: { task" is not called, so this part of code is not executed
             NextcloudKit.shared.nkCommonInstance.backgroundQueue.asyncAfter(deadline: .now() + 0.5) {
                 if let downloadTask = downloadTask {
-                    if let header = allHeaderFields, let dateString = header["Last-Modified"] as? String {
+                    if let header = responseData?.response?.allHeaderFields,
+                       let dateString = header["Last-Modified"] as? String {
                         dateLastModified = NextcloudKit.shared.nkCommonInstance.convertDate(dateString, format: "EEE, dd MMM y HH:mm:ss zzz")
                     }
                     if afError?.isExplicitlyCancelledError ?? false {
