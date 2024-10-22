@@ -179,6 +179,10 @@ extension UIAlertController {
             textField.autocapitalizationType = .words
         }
 
+        let text = alertController.textFields?.first?.text ?? ""
+        let textCheck = FileNameValidator.shared.checkFileName(text, account: account)
+        alertController.message = textCheck?.error.localizedDescription
+
         // only allow saving if folder name exists
         NotificationCenter.default.addObserver(
             forName: UITextField.textDidBeginEditingNotification,
@@ -233,6 +237,10 @@ extension UIAlertController {
             textField.text = metadata.fileNameView
             textField.autocapitalizationType = .words
         }
+
+        let text = alertController.textFields?.first?.text ?? ""
+        let textCheck = FileNameValidator.shared.checkFileName(text, account: NCManageDatabase.shared.getActiveTableAccount()?.account)
+        alertController.message = textCheck?.error.localizedDescription
 
         // only allow saving if folder name exists
         NotificationCenter.default.addObserver(

@@ -286,33 +286,40 @@ extension NCShareExtension {
 
         counterUploaded = 0
         uploadErrors = []
+        var dismissAfterUpload = true
 
-        if filesName.count == 1 {
-            let fileName = filesName[0]
-            let newFileName = FileAutoRenamer.shared.rename(filesName[0], account: session.account)
+        var conflicts: [tableMetadata] = []
+        var invalidNameIndexes: [Int] = []
+
+        for (index, fileName) in filesName.enumerated() {
+            let newFileName = FileAutoRenamer.shared.rename(fileName, account: session.account)
 
             if fileName != newFileName {
                 renameFile(oldName: fileName, newName: newFileName, account: session.account)
             }
 
             if let fileNameError = FileNameValidator.shared.checkFileName(newFileName, account: session.account) {
-                //                present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))") { [self] in
-                showRenameFileDialog(named: fileName, account: account) // Add message to this dialog
-                return
+                if filesName.count == 1 {
+                    showRenameFileDialog(named: fileName, account: account) // Add message to this dialog
+                    return
+                } else {
+                    present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))") {
+                        self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
+                    }, animated: true)
 
-                //                }, animated: true)
+                    invalidNameIndexes.append(index)
+                    dismissAfterUpload = false
+                    continue
+                }
+
             }
-
         }
 
-        var conflicts: [tableMetadata] = []
-        for fileName in filesName {
-            if let fileNameError = FileNameValidator.shared.checkFileName(fileName, account: session.account) {
-                present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))") {
-                    self.extensionContext?.completeRequest(returningItems: self.extensionContext?.inputItems, completionHandler: nil)
-                }, animated: true)
-            }
+        for index in invalidNameIndexes.reversed() {
+            filesName.remove(at: index)
+        }
 
+        for fileName in filesName {
             let ocId = NSUUID().uuidString
             let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
             guard utilityFileSystem.copyFile(atPath: (NSTemporaryDirectory() + fileName), toPath: toPath) else { continue }
@@ -337,6 +344,8 @@ extension NCShareExtension {
             }
         }
 
+        tableView.reloadData()
+
         if !conflicts.isEmpty {
             guard let conflict = UIStoryboard(name: "NCCreateFormUploadConflict", bundle: nil).instantiateInitialViewController() as? NCCreateFormUploadConflict
             else { return }
@@ -348,13 +357,13 @@ extension NCShareExtension {
             self.present(conflict, animated: true, completion: nil)
         } else {
             uploadStarted = true
-            upload()
+            upload(dismissAfterUpload: dismissAfterUpload)
         }
     }
 
-    func upload() {
+    func upload(dismissAfterUpload: Bool = true) {
         guard uploadStarted else { return }
-        guard uploadMetadata.count > counterUploaded else { return DispatchQueue.main.async { self.finishedUploading() } }
+        guard uploadMetadata.count > counterUploaded else { return DispatchQueue.main.async { self.finishedUploading(dismissAfterUpload: dismissAfterUpload) } }
         let metadata = uploadMetadata[counterUploaded]
         let results = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: metadata.fileNameView, mimeType: metadata.contentType, directory: false, account: session.account)
 
@@ -392,7 +401,7 @@ extension NCShareExtension {
         }
     }
 
-    func finishedUploading() {
+    func finishedUploading(dismissAfterUpload: Bool = true) {
         uploadStarted = false
         if !uploadErrors.isEmpty {
             let fileList = "- " + uploadErrors.map({ $0.fileName }).joined(separator: "\n  - ")
