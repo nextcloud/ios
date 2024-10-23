@@ -141,11 +141,7 @@ class NCMedia: UIViewController {
         setNavigationRightItems()
         setNavigationLeftItems()
         updateHeadersView()
-        
-        if self.navigationController?.viewControllers.count == 1 {
-            let logo = UIImage(resource: .ionosEasyStorageLogo).withTintColor(UIColor(resource: .NavigationBar.logoTint))
-            navigationItem.titleView = UIImageView(image: logo)
-        }
+		setNavigationBarLogoIfNeeded()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -208,6 +204,12 @@ class NCMedia: UIViewController {
         timerSearchNewMedia?.invalidate()
         timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchMediaUI), userInfo: nil, repeats: false)
     }
+	
+	private func setNavigationBarLogoIfNeeded() {
+		if self.navigationController?.viewControllers.count == 1 {
+			setNavigationBarLogo()
+		}
+	}
     
     func updateHeadersView() {
         fileActionsHeader?.showViewModeButton(false)

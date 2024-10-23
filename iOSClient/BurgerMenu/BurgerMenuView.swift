@@ -38,7 +38,7 @@ struct BurgerMenuView: View {
                                                 leading: 0,
                                                 bottom: 8,
                                                 trailing: 0))
-                            .frame(height: 56)
+                            .frame(height: 54)
                         Button(action: {
                             viewModel.hideMenu()
                         }, label: {
