@@ -44,7 +44,9 @@ class NCShareHeader: UIView {
             imageView.isHidden = true
         } else {
             if metadata.directory {
-                imageView.image = metadata.e2eEncrypted ? NCImageCache.images.folderEncrypted : NCImageCache.images.folder
+                imageView.image = (metadata.e2eEncrypted ? UIImage(resource: .folderEncrypted) : UIImage(resource: .folder))
+                    .withTintColor(UIColor(resource: .Share.commonIconTint))
+                    .withRenderingMode(.alwaysOriginal)
             } else if !metadata.iconName.isEmpty {
                 imageView.image = NCUtility().loadImage(named: metadata.iconName, useTypeIconFile: true)
             } else {
