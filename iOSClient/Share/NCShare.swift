@@ -247,13 +247,14 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
         blurEffectView.frame = CGRect(x: 0, y: 0, width: 500, height: 20)
 
-        appearance.backgroundColor = NCBrandColor.shared.appBackgroundColor
+        appearance.backgroundColor = UIColor(resource: .Share.SearchUserCell.Background.normal)
+        appearance.selectionBackgroundColor = UIColor(resource: .Share.SearchUserCell.Background.pressed)
         appearance.cornerRadius = 10
         appearance.shadowColor = .black
         appearance.shadowOpacity = 0.2
         appearance.shadowRadius = 30
         appearance.animationduration = 0.25
-        appearance.textColor = .darkGray
+        appearance.textColor = UIColor(resource: .Share.SearchUserCell.title)
 
         for sharee in sharees {
             var label = sharee.label
@@ -268,7 +269,6 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         dropDown.width = searchField.bounds.width - 20
         dropDown.direction = .bottom
 
-        dropDown.textColor = UIColor(resource: .Share.searchUserCellTitle)
         dropDown.cellNib = UINib(nibName: "NCSearchUserDropDownCell", bundle: nil)
         dropDown.customCellConfiguration = { (index: Index, _, cell: DropDownCell) -> Void in
             guard let cell = cell as? NCSearchUserDropDownCell else { return }
