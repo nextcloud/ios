@@ -6,9 +6,7 @@
 //  Copyright © 2024 Marino Faggiana. All rights reserved.
 //
 
-import Foundation
 import NextcloudKit
-import UIKit
 
 extension FileNameValidator {
     private func setup(account: String?) {

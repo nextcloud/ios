@@ -382,7 +382,6 @@ struct UploadScanDocumentView: View {
                                         footer = fileNameError.errorDescription
                                     } else {
                                         footer = ""
-
                                     }
                                 }
                         }
