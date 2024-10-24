@@ -19,6 +19,7 @@ class NCImagesRepository: NSObject {
         case share = "menu.share"
         case unshare = "unshare"
         case trash = "trash_icon"
+		case delete = "delete"
         case rename = "rename"
         case viewInFolder = "viewInFolder"
         case moveOrCopy = "moveOrCopy"
@@ -98,6 +99,10 @@ class NCImagesRepository: NSObject {
     static var menuIconTrash: UIImage {
         menuIcon(ImageName.trash)
     }
+	
+	static var menuIconDelete: UIImage {
+		menuIcon(ImageName.delete)
+	}
     
     static var menuIconRename: UIImage {
         menuIcon(ImageName.rename)

@@ -36,7 +36,7 @@ class NCMenu: UITableViewController {
 
     var actions = [NCMenuAction]()
     var menuColor: UIColor = NCBrandColor.shared.appBackgroundColor
-    var textColor = NCBrandColor.shared.textColor
+    var textColor = NCBrandColor.shared.fileMenuTextColor
 
     static func makeNCMenu(with actions: [NCMenuAction], menuColor: UIColor, textColor: UIColor) -> NCMenu? {
         let menuViewController = UIStoryboard(name: "NCMenu", bundle: nil).instantiateInitialViewController() as? NCMenu

@@ -25,23 +25,23 @@
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" tag="1" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="RV0-3K-eSN">
-                                            <rect key="frame" x="16" y="20" width="28" height="20"/>
+                                            <rect key="frame" x="16" y="20" width="20" height="20"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="20" id="7je-2C-oH0"/>
-                                                <constraint firstAttribute="width" constant="28" id="gxY-bI-V0v"/>
+                                                <constraint firstAttribute="width" constant="20" id="gxY-bI-V0v"/>
                                             </constraints>
                                         </imageView>
                                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="2" translatesAutoresizingMaskIntoConstraints="NO" id="6vv-IO-HJM">
-                                            <rect key="frame" x="56" y="17" width="330" height="26"/>
+                                            <rect key="frame" x="48" y="17" width="338" height="26"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" tag="2" contentMode="left" horizontalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="A8f-xF-j3i">
-                                                    <rect key="frame" x="0.0" y="0.0" width="330" height="20.5"/>
+                                                    <rect key="frame" x="0.0" y="0.0" width="338" height="20.5"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <label opaque="NO" userInteractionEnabled="NO" tag="3" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SjQ-O4-Clh">
-                                                    <rect key="frame" x="0.0" y="22.5" width="330" height="3.5"/>
+                                                    <rect key="frame" x="0.0" y="22.5" width="338" height="3.5"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <color key="textColor" systemColor="secondaryLabelColor"/>
                                                     <nil key="highlightedColor"/>

@@ -103,7 +103,7 @@ extension NCMenuAction {
 		var isDestructive = true
         var titleDelete = NSLocalizedString("_delete_", comment: "")
         var message = NSLocalizedString("_want_delete_", comment: "")
-        var icon = NCImagesRepository.menuIconTrash
+        var icon = NCImagesRepository.menuIconDelete
         let permissions = NCPermissions()
 
         if selectedMetadatas.count > 1 {

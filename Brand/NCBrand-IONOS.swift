@@ -67,6 +67,10 @@ class NCBrandColorIONOS: NCBrandColor {
 	override var fileMenuSeparatorColor: UIColor {
 		UIColor(named: "ListCell/Separator") ?? super.fileMenuSeparatorColor
 	}
+	
+	override var fileMenuTextColor: UIColor {
+		UIColor(named: "FileMenu/Text") ?? super.fileMenuTextColor
+	}
     
     override var formSeparatorColor: UIColor {
         UIColor(named: "formSeparator") ?? super.formSeparatorColor

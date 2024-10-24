@@ -179,6 +179,10 @@ class NCBrandColor: NSObject {
 	var fileMenuSeparatorColor: UIColor {
 		.separator
 	}
+	
+	var fileMenuTextColor: UIColor {
+		.label
+	}
     
     var formSeparatorColor: UIColor {
         .separator
