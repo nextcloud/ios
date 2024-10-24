@@ -35,13 +35,15 @@ final class FilesIntegrationTests: BaseIntegrationXCTestCase {
         let folderName = "TestFolder\(randomInt)"
         let serverUrl = "\(TestConstants.server)/remote.php/dav/files/\(TestConstants.username)"
         let serverUrlFileName = "\(serverUrl)/\(folderName)"
-        let domain = NCDomain.Domain(account: TestConstants.account, urlBase: TestConstants.server, user: TestConstants.username, userId: TestConstants.username, sceneIdentifier: "")
+
+        NCSession.shared.appendSession(account: TestConstants.account, urlBase: TestConstants.server, user: TestConstants.username, userId: TestConstants.username)
+        let session = NCSession.shared.getSession(account: TestConstants.account)
 
         NextcloudKit.shared.setup(delegate: NCNetworking.shared)
-        NextcloudKit.shared.appendAccount(TestConstants.account, urlBase: TestConstants.server, user: TestConstants.username, userId: TestConstants.username, password: appToken, userAgent: userAgent, nextcloudVersion: 0, groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+        NextcloudKit.shared.appendSession(account: TestConstants.account, urlBase: TestConstants.server, user: TestConstants.username, userId: TestConstants.username, password: appToken, userAgent: userAgent, nextcloudVersion: 0, groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
         // Test creating folder
-        NCNetworking.shared.createFolder(fileName: folderName, serverUrl: serverUrl, overwrite: true, withPush: true, sceneIdentifier: nil, domain: domain) { error in
+        NCNetworking.shared.createFolder(fileName: folderName, serverUrl: serverUrl, overwrite: true, withPush: true, metadata: nil, sceneIdentifier: nil, session: session ) { error in
 
             XCTAssertEqual(NKError.success.errorCode, error.errorCode)
             XCTAssertEqual(NKError.success.errorDescription, error.errorDescription)
@@ -49,7 +51,8 @@ final class FilesIntegrationTests: BaseIntegrationXCTestCase {
             Thread.sleep(forTimeInterval: 1)
 
             // Test reading folder, should exist
-            NCNetworking.shared.readFolder(serverUrl: serverUrlFileName, account: TestConstants.username) { account, metadataFolder, _, _, _, _ in
+            NCNetworking.shared.readFolder(serverUrl: serverUrlFileName, account: TestConstants.username, checkResponseDataChanged: false, queue: .main) { account, metadataFolder, _, _, _ in
+
                 XCTAssertEqual(TestConstants.account, account)
                 XCTAssertEqual(NKError.success.errorCode, error.errorCode)
                 XCTAssertEqual(NKError.success.errorDescription, error.errorDescription)
@@ -63,7 +66,7 @@ final class FilesIntegrationTests: BaseIntegrationXCTestCase {
 
                 Task {
                     // Test deleting folder
-                    await _ = NCNetworking.shared.deleteMetadata(metadataFolder!)
+                    await _ = NCNetworking.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: TestConstants.account)
 
                     XCTAssertEqual(NKError.success.errorCode, error.errorCode)
                     XCTAssertEqual(NKError.success.errorDescription, error.errorDescription)
@@ -71,7 +74,7 @@ final class FilesIntegrationTests: BaseIntegrationXCTestCase {
                     try await Task.sleep(for: .seconds(1))
 
                     // Test reading folder, should NOT exist
-                    NCNetworking.shared.readFolder(serverUrl: serverUrlFileName, account: TestConstants.username) { account, metadataFolder, _, _, _, _ in
+                    NCNetworking.shared.readFolder(serverUrl: serverUrlFileName, account: TestConstants.username, checkResponseDataChanged: false, queue: .main) { account, metadataFolder, _, _, _ in
 
                         defer { expectation.fulfill() }
 
