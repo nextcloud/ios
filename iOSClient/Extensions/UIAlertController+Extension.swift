@@ -213,11 +213,7 @@ extension UIAlertController {
     }
 
     static func renameFile(metadata: tableMetadata) -> UIAlertController {
-        let alertController = UIAlertController(title: NSLocalizedString("_rename_", comment: ""), message: nil, preferredStyle: .alert)
-
-        let okAction = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default, handler: { _ in
-            guard let fileNameNew = alertController.textFields?.first?.text else { return }
-
+        renameFile(fileName: metadata.fileNameView, account: metadata.account) { fileNameNew in
             // verify if already exists
             if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameNew)) != nil {
                 NCContentPresenter().showError(error: NKError(errorCode: 0, errorDescription: "_rename_already_exists_"))
@@ -227,48 +223,7 @@ extension UIAlertController {
             NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew)
 
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": metadata.serverUrl])
-        })
-
-        // text field is initially empty, no action
-        okAction.isEnabled = false
-        let cancelAction = UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel)
-
-        alertController.addTextField { textField in
-            textField.text = metadata.fileNameView
-            textField.autocapitalizationType = .words
         }
-
-        let text = alertController.textFields?.first?.text ?? ""
-        let textCheck = FileNameValidator.shared.checkFileName(text, account: NCManageDatabase.shared.getActiveTableAccount()?.account)
-        alertController.message = textCheck?.error.localizedDescription
-
-        // only allow saving if folder name exists
-        NotificationCenter.default.addObserver(
-            forName: UITextField.textDidBeginEditingNotification,
-            object: alertController.textFields?.first,
-            queue: .main) { _ in
-                guard let textField = alertController.textFields?.first else { return }
-
-                if let start = textField.position(from: textField.beginningOfDocument, offset: 0),
-                   let end = textField.position(from: start, offset: textField.text?.withRemovedFileExtension.count ?? 0) {
-                    textField.selectedTextRange = textField.textRange(from: start, to: end)
-                }
-            }
-
-        NotificationCenter.default.addObserver(
-            forName: UITextField.textDidChangeNotification,
-            object: alertController.textFields?.first,
-            queue: .main) { _ in
-                guard let text = alertController.textFields?.first?.text else { return }
-
-                let textCheck = FileNameValidator.shared.checkFileName(text, account: NCManageDatabase.shared.getActiveTableAccount()?.account)
-                okAction.isEnabled = textCheck?.error == nil && !text.isEmpty
-                alertController.message = textCheck?.error.localizedDescription
-            }
-
-        alertController.addAction(cancelAction)
-        alertController.addAction(okAction)
-        return alertController
     }
 
     static func warning(title: String? = nil, message: String? = nil, completion: @escaping () -> Void = {}) -> UIAlertController {
