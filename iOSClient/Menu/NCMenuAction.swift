@@ -41,13 +41,15 @@ class NCMenuAction {
     var action: ((_ menuAction: NCMenuAction) -> Void)?
     var rowHeight: CGFloat { self.title == NCMenuAction.seperatorIdentifier ? NCMenuAction.seperatorHeight : self.details != nil ? 76 : 56 }
     var order: Int = 0
+	var isHeader = false
 
-    init(title: String, boldTitle: Bool = false, destructive: Bool = false, details: String? = nil, icon: UIImage, order: Int = 0, action: ((_ menuAction: NCMenuAction) -> Void)?) {
+	init(title: String, boldTitle: Bool = false, destructive: Bool = false, details: String? = nil, icon: UIImage, isHeader: Bool = false, order: Int = 0, action: ((_ menuAction: NCMenuAction) -> Void)?) {
         self.title = title
         self.boldTitle = boldTitle
         self.destructive = destructive
         self.details = details
         self.icon = icon
+		self.isHeader = isHeader
         self.action = action
         self.selectable = false
         self.order = order

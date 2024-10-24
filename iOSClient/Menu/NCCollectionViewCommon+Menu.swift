@@ -61,6 +61,7 @@ extension NCCollectionViewCommon {
                 title: metadata.fileNameView,
                 boldTitle: true,
                 icon: iconHeader,
+				isHeader: true,
                 order: 0,
                 action: nil
             )
