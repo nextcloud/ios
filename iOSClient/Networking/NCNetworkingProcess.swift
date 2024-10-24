@@ -182,6 +182,11 @@ class NCNetworkingProcess {
         /// ------------------------ UPLOAD
         ///
 
+        /// In background max 2 upload otherwise iOS Termination Reason: RUNNINGBOARD 0xdead10cc
+        if applicationState == .background {
+            maxConcurrentOperationUpload = 2
+        }
+
         /// E2EE - only one for time
         for metadata in metadatasUploading.unique(map: { $0.serverUrl }) {
             if metadata.isDirectoryE2EE {

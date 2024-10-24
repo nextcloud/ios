@@ -92,6 +92,9 @@ struct NCLoginPoll: View {
                 loginManager.openLoginInBrowser()
             }
         }
+        .onDisappear {
+            loginManager.onDisappear()
+        }
         .interactiveDismissDisabled()
     }
 }
@@ -144,6 +147,10 @@ private class LoginManager: ObservableObject {
         })
 
         timer.resume()
+    }
+
+    func onDisappear() {
+        timer?.cancel()
     }
 
     func openLoginInBrowser() {
