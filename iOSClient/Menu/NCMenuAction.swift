@@ -100,6 +100,7 @@ extension NCMenuAction {
 
     /// Delete files either from cache or from Nextcloud
     static func deleteAction(selectedMetadatas: [tableMetadata], indexPaths: [IndexPath], metadataFolder: tableMetadata? = nil, viewController: UIViewController, order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
+		var isDestructive = true
         var titleDelete = NSLocalizedString("_delete_", comment: "")
         var message = NSLocalizedString("_want_delete_", comment: "")
         var icon = NCImagesRepository.menuIconTrash
@@ -112,6 +113,7 @@ extension NCMenuAction {
                 titleDelete = NSLocalizedString("_leave_share_", comment: "")
                 message = NSLocalizedString("_want_leave_share_", comment: "")
                 icon = NCImagesRepository.menuIconUnshare
+				isDestructive = false
             } else if metadata.directory {
                 titleDelete = NSLocalizedString("_delete_folder_", comment: "")
             } else {
@@ -124,6 +126,7 @@ extension NCMenuAction {
                 if isShare || isMounted {
                     titleDelete = NSLocalizedString("_leave_share_", comment: "")
                     icon = NCImagesRepository.menuIconUnshare
+					isDestructive = false
                 }
             }
         } // else: no metadata selected
@@ -137,6 +140,7 @@ extension NCMenuAction {
 
         return NCMenuAction(
             title: titleDelete,
+			destructive: isDestructive,
             icon: icon,
             order: order,
             action: { _ in

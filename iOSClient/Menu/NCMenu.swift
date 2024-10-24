@@ -78,12 +78,16 @@ class NCMenu: UITableViewController {
         let action = actions[indexPath.row]
         guard action.title != NCMenuAction.seperatorIdentifier else {
             let cell = UITableViewCell()
-            cell.backgroundColor = .separator
+			cell.backgroundColor = NCBrandColor.shared.fileMenuSeparatorColor
             return cell
         }
         let cell = tableView.dequeueReusableCell(withIdentifier: "menuActionCell", for: indexPath)
         cell.tintColor = NCBrandColor.shared.customer
         cell.backgroundColor = menuColor
+		
+		cell.selectedBackgroundView = UIView()
+		cell.selectedBackgroundView?.backgroundColor =  NCBrandColor.shared.fileMenuSelectedRowColor
+		
         let actionIconView = cell.viewWithTag(1) as? UIImageView
         let actionNameLabel = cell.viewWithTag(2) as? UILabel
         let actionDetailLabel = cell.viewWithTag(3) as? UILabel
@@ -108,16 +112,17 @@ class NCMenu: UITableViewController {
             actionNameLabel?.lineBreakMode = .byTruncatingMiddle
 
             if action.boldTitle {
-                actionNameLabel?.font = .systemFont(ofSize: 18, weight: .medium)
+                actionNameLabel?.font = .systemFont(ofSize: 16, weight: .medium)
             } else {
-                actionNameLabel?.font = .systemFont(ofSize: 18, weight: .regular)
+                actionNameLabel?.font = .systemFont(ofSize: 16, weight: .regular)
             }
         }
 
         if action.destructive {
             actionIconView?.image = actionIconView?.image?.withRenderingMode(.alwaysTemplate)
-            actionIconView?.tintColor = .red
-            actionNameLabel?.textColor = .red
+			let color = NCBrandColor.shared.fileMenuDestructiveColor
+			actionIconView?.tintColor = color
+            actionNameLabel?.textColor = color
         }
         
         if (action.selectable && action.selected) {

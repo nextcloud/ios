@@ -51,6 +51,22 @@ class NCBrandColorIONOS: NCBrandColor {
     override var formRowBackgroundColor: UIColor {
         UIColor(named: "AppBackground/FormRow") ?? super.formRowBackgroundColor
     }
+	
+	override var fileMenuBackgroundColor: UIColor {
+		UIColor(named: "FileMenu/Background") ?? super.formRowBackgroundColor
+	}
+	
+	override var fileMenuSelectedRowColor: UIColor {
+		UIColor(named: "FileMenu/SelectedRow") ?? super.formRowBackgroundColor
+	}
+	
+	override var fileMenuDestructiveColor: UIColor {
+		UIColor(named: "FileMenu/DestructiveAction") ?? super.fileMenuDestructiveColor
+	}
+	
+	override var fileMenuSeparatorColor: UIColor {
+		UIColor(named: "ListCell/Separator") ?? super.fileMenuSeparatorColor
+	}
     
     override var formSeparatorColor: UIColor {
         UIColor(named: "formSeparator") ?? super.formSeparatorColor
