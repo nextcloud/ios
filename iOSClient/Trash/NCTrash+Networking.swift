@@ -26,14 +26,14 @@ import RealmSwift
 
 extension NCTrash {
     @objc func loadListingTrash() {
-        NextcloudKit.shared.listingTrash(filename: filename, showHiddenFiles: false, account: appDelegate.account) { task in
+        NextcloudKit.shared.listingTrash(filename: filename, showHiddenFiles: false, account: session.account) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()
         } completion: { account, items, _, error in
             self.refreshControl.endRefreshing()
-            if account == self.appDelegate.account {
-                NCManageDatabase.shared.deleteTrash(filePath: self.getFilePath(), account: account)
-                NCManageDatabase.shared.addTrash(account: account, items: items)
+            if let items {
+                self.database.deleteTrash(filePath: self.getFilePath(), account: account)
+                self.database.addTrash(account: account, items: items)
             }
             self.reloadDataSource()
             if error != .success {
@@ -43,89 +43,76 @@ extension NCTrash {
     }
 
     func restoreItem(with fileId: String) {
-        guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: fileId, account: appDelegate.account) else { return }
-        let fileNameFrom = tableTrash.filePath + tableTrash.fileName
-        let fileNameTo = appDelegate.urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav + "/trashbin/" + appDelegate.userId + "/restore/" + tableTrash.fileName
+        guard let resultTableTrash = self.database.getResultTrashItem(fileId: fileId, account: session.account) else { return }
+        let fileNameFrom = resultTableTrash.filePath + resultTableTrash.fileName
+        let fileNameTo = session.urlBase + "/remote.php/dav/trashbin/" + session.userId + "/restore/" + resultTableTrash.fileName
 
-        NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: true, account: appDelegate.account) { account, error in
-            guard error == .success, account == self.appDelegate.account else {
+        NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: true, account: session.account) { account, _, error in
+            guard error == .success else {
                 NCContentPresenter().showError(error: error)
                 return
             }
-            NCManageDatabase.shared.deleteTrash(fileId: fileId, account: account)
+            self.database.deleteTrash(fileId: fileId, account: account)
             self.reloadDataSource()
         }
     }
 
     func emptyTrash() {
-        let serverUrlFileName = appDelegate.urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav + "/trashbin/" + appDelegate.userId + "/trash"
+        let serverUrlFileName = session.urlBase + "/remote.php/dav/trashbin/" + session.userId + "/trash"
 
-        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: appDelegate.account) { account, error in
-            guard error == .success, account == self.appDelegate.account else {
+        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: session.account) { account, _, error in
+            guard error == .success else {
                 NCContentPresenter().showError(error: error)
                 return
             }
-            NCManageDatabase.shared.deleteTrash(fileId: nil, account: self.appDelegate.account)
+            self.database.deleteTrash(fileId: nil, account: account)
             self.reloadDataSource()
         }
     }
 
     func deleteItem(with fileId: String) {
-        guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: fileId, account: appDelegate.account) else { return }
-        let serverUrlFileName = tableTrash.filePath + tableTrash.fileName
+        guard let resultTableTrash = self.database.getResultTrashItem(fileId: fileId, account: session.account) else { return }
+        let serverUrlFileName = resultTableTrash.filePath + resultTableTrash.fileName
 
-        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: appDelegate.account) { account, error in
-            guard error == .success, account == self.appDelegate.account else {
+        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: session.account) { account, _, error in
+            guard error == .success else {
                 NCContentPresenter().showError(error: error)
                 return
             }
-            NCManageDatabase.shared.deleteTrash(fileId: fileId, account: account)
+            self.database.deleteTrash(fileId: fileId, account: account)
             self.reloadDataSource()
         }
     }
 }
 
-class NCOperationDownloadThumbnailTrash: ConcurrentOperation {
-
-    var tableTrash: tableTrash
+class NCOperationDownloadThumbnailTrash: ConcurrentOperation, @unchecked Sendable {
     var fileId: String
-    var collectionView: UICollectionView?
-    var cell: NCTrashCellProtocol?
+    var fileName: String
+    var collectionView: UICollectionView
     var account: String
 
-    init(tableTrash: tableTrash, fileId: String, account: String, cell: NCTrashCellProtocol?, collectionView: UICollectionView?) {
-        self.tableTrash = tableTrash
+    init(fileId: String, fileName: String, account: String, collectionView: UICollectionView) {
         self.fileId = fileId
+        self.fileName = fileName
         self.account = account
-        self.cell = cell
         self.collectionView = collectionView
     }
 
     override func start() {
         guard !isCancelled else { return self.finish() }
-        let fileNamePreviewLocalPath = NCUtilityFileSystem().getDirectoryProviderStoragePreviewOcId(tableTrash.fileId, etag: tableTrash.fileName)
-        let fileNameIconLocalPath = NCUtilityFileSystem().getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)
 
-        NextcloudKit.shared.downloadTrashPreview(fileId: tableTrash.fileId,
-                                                 fileNamePreviewLocalPath: fileNamePreviewLocalPath,
-                                                 fileNameIconLocalPath: fileNameIconLocalPath,
-                                                 widthPreview: NCGlobal.shared.sizePreview,
-                                                 heightPreview: NCGlobal.shared.sizePreview,
-                                                 sizeIcon: NCGlobal.shared.sizeIcon,
-                                                 account: account,
-                                                 options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, imagePreview, _, _, _, error in
+        NextcloudKit.shared.downloadTrashPreview(fileId: fileId, account: account) { _, _, _, responseData, error in
+            if error == .success, let data = responseData?.data {
+                NCUtility().createImageFileFrom(data: data, ocId: self.fileId, etag: self.fileName)
 
-            if error == .success, let imagePreview = imagePreview {
-                DispatchQueue.main.async {
-                    if self.fileId == self.cell?.objectId, let imageView = self.cell?.imageItem {
-                        UIView.transition(with: imageView,
-                                          duration: 0.75,
-                                          options: .transitionCrossDissolve,
-                                          animations: { imageView.image = imagePreview },
-                                          completion: nil)
-                    } else {
-                        self.collectionView?.reloadData()
-                    }
+                for case let cell as NCTrashCellProtocol in self.collectionView.visibleCells where cell.objectId == self.fileId {
+                    cell.imageItem?.contentMode = .scaleAspectFill
+
+                    UIView.transition(with: cell.imageItem,
+                                      duration: 0.75,
+                                      options: .transitionCrossDissolve,
+                                      animations: { cell.imageItem.image = UIImage(data: data) },
+                                      completion: nil)
                 }
             }
             self.finish()

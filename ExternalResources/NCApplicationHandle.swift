@@ -53,7 +53,7 @@ class NCApplicationHandle: NSObject {
 
     // class: NCCollectionViewCommon (+Menu)
     // func: toggleMenu(metadata: tableMetadata, imageIcon: UIImage?)
-    func addCollectionViewCommonMenu(metadata: tableMetadata, imageIcon: UIImage?, actions: inout [NCMenuAction]) {
+    func addCollectionViewCommonMenu(metadata: tableMetadata, image: UIImage?, actions: inout [NCMenuAction]) {
     }
 
     // class: NCMore

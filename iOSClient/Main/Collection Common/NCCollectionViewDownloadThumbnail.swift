@@ -27,56 +27,61 @@ import Queuer
 import NextcloudKit
 import RealmSwift
 
-class NCCollectionViewDownloadThumbnail: ConcurrentOperation {
+class NCCollectionViewDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
     var metadata: tableMetadata
-    var cell: NCCellProtocol?
     var collectionView: UICollectionView?
-    var fileNamePreviewLocalPath: String
-    var fileNameIconLocalPath: String
+    var ext = ""
     let utilityFileSystem = NCUtilityFileSystem()
+    let utility = NCUtility()
 
-    init(metadata: tableMetadata, cell: NCCellProtocol?, collectionView: UICollectionView?) {
+    init(metadata: tableMetadata, collectionView: UICollectionView?, ext: String) {
         self.metadata = tableMetadata.init(value: metadata)
-        self.cell = cell
         self.collectionView = collectionView
-        self.fileNamePreviewLocalPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
-        self.fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
+        self.ext = ext
     }
 
     override func start() {
         guard !isCancelled else { return self.finish() }
         var etagResource: String?
-        let sizePreview = NCUtility().getSizePreview(width: metadata.width, height: metadata.height)
 
-        if FileManager.default.fileExists(atPath: fileNameIconLocalPath) && FileManager.default.fileExists(atPath: fileNamePreviewLocalPath) {
+        if utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag) {
             etagResource = metadata.etagResource
         }
 
         NextcloudKit.shared.downloadPreview(fileId: metadata.fileId,
-                                            fileNamePreviewLocalPath: fileNamePreviewLocalPath,
-                                            fileNameIconLocalPath: fileNameIconLocalPath,
-                                            widthPreview: Int(sizePreview.width),
-                                            heightPreview: Int(sizePreview.height),
-                                            sizeIcon: NCGlobal.shared.sizeIcon,
                                             etag: etagResource,
                                             account: self.metadata.account,
-                                            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, _, imageIcon, _, etag, error in
-            if error == .success, let imageIcon {
+                                            options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, _, _, etag, responseData, error in
+
+            if error == .success, let data = responseData?.data, let collectionView = self.collectionView {
+
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
+                NCUtility().createImageFileFrom(data: data, metadata: self.metadata)
+                let image = self.utility.getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: self.ext)
+
                 DispatchQueue.main.async {
-                    if self.metadata.ocId == self.cell?.fileObjectId, let filePreviewImageView = self.cell?.filePreviewImageView {
-                        self.cell?.filePreviewImageView?.contentMode = .scaleAspectFill
-                        if self.metadata.hasPreviewBorder {
-                            self.cell?.filePreviewImageView?.layer.borderWidth = 0.2
-                            self.cell?.filePreviewImageView?.layer.borderColor = UIColor.systemGray3.cgColor
+                    for case let cell as NCCellProtocol in collectionView.visibleCells where cell.fileOcId == self.metadata.ocId {
+                        if let filePreviewImageView = cell.filePreviewImageView {
+                            filePreviewImageView.contentMode = .scaleAspectFill
+
+                            if self.metadata.hasPreviewBorder {
+                                filePreviewImageView.layer.borderWidth = 0.2
+                                filePreviewImageView.layer.borderColor = UIColor.systemGray3.cgColor
+                            }
+
+                            if let photoCell = (cell as? NCPhotoCell),
+                               photoCell.bounds.size.width > 100 {
+                                    cell.hideButtonMore(false)
+                                    cell.hideImageStatus(false)
+                            }
+
+                            UIView.transition(with: filePreviewImageView,
+                                              duration: 0.75,
+                                              options: .transitionCrossDissolve,
+                                              animations: { filePreviewImageView.image = image },
+                                              completion: nil)
+                            break
                         }
-                        UIView.transition(with: filePreviewImageView,
-                                          duration: 0.75,
-                                          options: .transitionCrossDissolve,
-                                          animations: { filePreviewImageView.image = imageIcon },
-                                          completion: nil)
-                    } else {
-                        self.collectionView?.reloadData()
                     }
                 }
             }

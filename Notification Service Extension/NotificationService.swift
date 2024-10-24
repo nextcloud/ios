@@ -36,8 +36,7 @@ class NotificationService: UNNotificationServiceExtension {
             bestAttemptContent.body = "Nextcloud notification"
             do {
                 if let message = bestAttemptContent.userInfo["subject"] as? String {
-                    let tableAccounts = NCManageDatabase.shared.getAllAccount()
-                    for tableAccount in tableAccounts {
+                    for tableAccount in NCManageDatabase.shared.getAllTableAccount() {
                         guard let privateKey = NCKeychain().getPushNotificationPrivateKey(account: tableAccount.account),
                               let decryptedMessage = NCPushNotificationEncryption.shared().decryptPushNotification(message, withDevicePrivateKey: privateKey),
                               let data = decryptedMessage.data(using: .utf8) else {

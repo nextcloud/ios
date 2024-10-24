@@ -28,7 +28,7 @@ class FileProviderDomain: NSObject {
         NSFileProviderManager.getDomainsWithCompletionHandler { fileProviderDomain, error in
             var domains: [String] = []
             let pathRelativeToDocumentStorage = NSFileProviderManager.default.documentStorageURL.absoluteString
-            let accounts = NCManageDatabase.shared.getAllAccount()
+            let tableAccounts = NCManageDatabase.shared.getAllTableAccount()
 
             for domain in fileProviderDomain {
                 domains.append(domain.identifier.rawValue)
@@ -37,10 +37,10 @@ class FileProviderDomain: NSObject {
             // Delete
             for domain in domains {
                 var domainFound = false
-                for account in accounts {
-                    guard let urlBase = NSURL(string: account.urlBase) else { continue }
+                for tableAccount in tableAccounts {
+                    guard let urlBase = NSURL(string: tableAccount.urlBase) else { continue }
                     guard let host = urlBase.host else { continue }
-                    let accountDomain = account.userId + " (" + host + ")"
+                    let accountDomain = tableAccount.userId + " (" + host + ")"
                     if domain == accountDomain {
                         domainFound = true
                         break
@@ -57,11 +57,11 @@ class FileProviderDomain: NSObject {
             }
 
             // Add
-            for account in accounts {
+            for tableAccount in tableAccounts {
                 var domainFound = false
-                guard let urlBase = NSURL(string: account.urlBase) else { continue }
+                guard let urlBase = NSURL(string: tableAccount.urlBase) else { continue }
                 guard let host = urlBase.host else { continue }
-                let accountDomain = account.userId + " (" + host + ")"
+                let accountDomain = tableAccount.userId + " (" + host + ")"
                 for domain in domains {
                     if domain == accountDomain {
                         domainFound = true

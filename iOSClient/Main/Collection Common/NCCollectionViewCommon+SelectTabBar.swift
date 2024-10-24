@@ -27,13 +27,13 @@ import NextcloudKit
 
 extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
     func selectAll() {
-        if !selectOcId.isEmpty, dataSource.getMetadataSourceForAllSections().count == selectOcId.count {
-            selectOcId = []
+        if !fileSelect.isEmpty, self.dataSource.getMetadatas().count == fileSelect.count {
+            fileSelect = []
         } else {
-            selectOcId = dataSource.getMetadataSourceForAllSections().compactMap({ $0.ocId })
+            fileSelect = self.dataSource.getMetadatas().compactMap({ $0.ocId })
         }
-        tabBarSelect.update(selectOcId: selectOcId, metadatas: getSelectedMetadatas(), userId: appDelegate.userId)
-        collectionView.reloadData()
+        tabBarSelect.update(fileSelect: fileSelect, metadatas: getSelectedMetadatas(), userId: session.userId)
+        self.reloadDataSource()
     }
 
     func delete() {
@@ -44,19 +44,9 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
         let canDeleteServer = metadatas.allSatisfy { !$0.lock }
 
         if canDeleteServer {
-            let copyMetadatas = metadatas
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .destructive) { _ in
-                Task {
-                    var error = NKError()
-                    var ocId: [String] = []
-                    for metadata in copyMetadatas where error == .success {
-                        error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
-                        if error == .success {
-                            ocId.append(metadata.ocId)
-                        }
-                    }
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "onlyLocalCache": false, "error": error])
-                }
+                NCNetworking.shared.deleteMetadatas(metadatas, sceneIdentifier: self.controller?.sceneIdentifier)
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
                 self.setEditMode(false)
             })
         }
@@ -68,17 +58,14 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
                 var error = NKError()
                 var ocId: [String] = []
                 for metadata in copyMetadatas where error == .success {
-                    error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true)
+                    error = await NCNetworking.shared.deleteCache(metadata, sceneIdentifier: self.controller?.sceneIdentifier)
                     if error == .success {
                         ocId.append(metadata.ocId)
                     }
                 }
-                if error != .success {
-                    NCContentPresenter().showError(error: error)
-                }
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "onlyLocalCache": true, "error": error])
-                self.setEditMode(false)
+                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "error": error])
             }
+            self.setEditMode(false)
         })
 
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { (_: UIAlertAction) in })
@@ -88,13 +75,13 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
     func move() {
         let metadatas = getSelectedMetadatas()
 
-        NCActionCenter.shared.openSelectView(items: metadatas, controller: self.tabBarController as? NCMainTabBarController)
+        NCActionCenter.shared.openSelectView(items: metadatas, controller: self.controller)
         setEditMode(false)
     }
 
     func share() {
         let metadatas = getSelectedMetadatas()
-        NCActionCenter.shared.openActivityViewController(selectedMetadata: metadatas, controller: self.tabBarController as? NCMainTabBarController)
+        NCActionCenter.shared.openActivityViewController(selectedMetadata: metadatas, controller: self.controller)
         setEditMode(false)
     }
 
@@ -127,8 +114,8 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
 
     func getSelectedMetadatas() -> [tableMetadata] {
         var selectedMetadatas: [tableMetadata] = []
-        for ocId in selectOcId {
-            guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else { continue }
+        for ocId in fileSelect {
+            guard let metadata = database.getMetadataFromOcId(ocId) else { continue }
             selectedMetadatas.append(metadata)
         }
         return selectedMetadatas
@@ -136,7 +123,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
 
     func setEditMode(_ editMode: Bool) {
         isEditMode = editMode
-        selectOcId.removeAll()
+        fileSelect.removeAll()
 
         if editMode {
             navigationItem.leftBarButtonItems = nil
@@ -148,6 +135,6 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
         navigationController?.interactivePopGestureRecognizer?.isEnabled = !editMode
         navigationItem.hidesBackButton = editMode
         searchController(enabled: !editMode)
-        collectionView.reloadData()
+        self.reloadDataSource()
     }
 }

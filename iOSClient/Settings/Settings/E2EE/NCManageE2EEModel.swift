@@ -24,20 +24,25 @@
 import UIKit
 import SwiftUI
 import NextcloudKit
-import TOPasscodeViewController
 import LocalAuthentication
 
 class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEndInitializeDelegate, TOPasscodeViewControllerDelegate {
     let endToEndInitialize = NCEndToEndInitialize()
-    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     var passcodeType = ""
 
-    @Published var controller: UITabBarController?
+    @Published var controller: NCMainTabBarController?
     @Published var isEndToEndEnabled: Bool = false
     @Published var statusOfService: String = NSLocalizedString("_status_in_progress_", comment: "")
     @Published var navigateBack: Bool = false
+    /// Get session
+    var session: NCSession.Session {
+        NCSession.shared.getSession(controller: controller)
+    }
+    var capabilities: NCCapabilities.Capabilities {
+        NCCapabilities.shared.getCapabilities(account: session.account)
+    }
 
-    init(controller: UITabBarController?) {
+    init(controller: NCMainTabBarController?) {
         super.init()
         self.controller = controller
         endToEndInitialize.delegate = self
@@ -46,12 +51,12 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
 
     /// Triggered when the view appears.
     func onViewAppear() {
-        if NCGlobal.shared.capabilityE2EEEnabled && NCGlobal.shared.e2eeVersions.contains(NCGlobal.shared.capabilityE2EEApiVersion) {
-            isEndToEndEnabled = NCKeychain().isEndToEndEnabled(account: appDelegate.account)
+        if capabilities.capabilityE2EEEnabled && NCGlobal.shared.e2eeVersions.contains(capabilities.capabilityE2EEApiVersion) {
+            isEndToEndEnabled = NCKeychain().isEndToEndEnabled(account: session.account)
             if isEndToEndEnabled {
                 statusOfService = NSLocalizedString("_status_e2ee_configured_", comment: "")
             } else {
-                endToEndInitialize.statusOfService { error in
+                endToEndInitialize.statusOfService(session: session) { error in
                     if error == .success {
                         self.statusOfService = NSLocalizedString("_status_e2ee_on_server_", comment: "")
                     } else {
@@ -99,9 +104,9 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
     @objc func correctPasscode() {
         switch self.passcodeType {
         case "startE2E":
-            endToEndInitialize.initEndToEndEncryption(viewController: controller, metadata: nil)
+            endToEndInitialize.initEndToEndEncryption(controller: controller, metadata: nil)
         case "readPassphrase":
-            if let e2ePassphrase = NCKeychain().getEndToEndPassphrase(account: appDelegate.account) {
+            if let e2ePassphrase = NCKeychain().getEndToEndPassphrase(account: session.account) {
                 print("[INFO]Passphrase: " + e2ePassphrase)
                 let message = "\n" + NSLocalizedString("_e2e_settings_the_passphrase_is_", comment: "") + "\n\n\n" + e2ePassphrase
                 let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
@@ -114,8 +119,8 @@ class NCManageE2EE: NSObject, ObservableObject, ViewOnAppearHandling, NCEndToEnd
         case "removeLocallyEncryption":
             let alertController = UIAlertController(title: NSLocalizedString("_e2e_settings_remove_", comment: ""), message: NSLocalizedString("_e2e_settings_remove_message_", comment: ""), preferredStyle: .alert)
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_", comment: ""), style: .default, handler: { _ in
-                NCKeychain().clearAllKeysEndToEnd(account: self.appDelegate.account)
-                self.isEndToEndEnabled = NCKeychain().isEndToEndEnabled(account: self.appDelegate.account)
+                NCKeychain().clearAllKeysEndToEnd(account: self.session.account)
+                self.isEndToEndEnabled = NCKeychain().isEndToEndEnabled(account: self.session.account)
             }))
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .default, handler: { _ in }))
             controller?.present(alertController, animated: true)

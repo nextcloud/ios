@@ -27,13 +27,13 @@ import EasyTipView
 
 extension NCCollectionViewCommon: EasyTipViewDelegate {
     func showTip() {
-        guard !appDelegate.account.isEmpty,
+        guard !session.account.isEmpty,
               self is NCFiles,
               self.view.window != nil,
               !NCBrandOptions.shared.disable_multiaccount,
-              self.serverUrl == utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId),
+              self.serverUrl == utilityFileSystem.getHomeServer(session: session),
               let view = self.navigationItem.leftBarButtonItem?.customView,
-              !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest) else { return }
+              !database.tipExists(global.tipNCCollectionViewCommonAccountRequest) else { return }
         var preferences = EasyTipView.Preferences()
 
         preferences.drawing.foregroundColor = .white
@@ -55,14 +55,14 @@ extension NCCollectionViewCommon: EasyTipViewDelegate {
     }
 
     func easyTipViewDidTap(_ tipView: EasyTipView) {
-        NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest)
+        database.addTip(global.tipNCCollectionViewCommonAccountRequest)
     }
 
     func easyTipViewDidDismiss(_ tipView: EasyTipView) { }
 
     func dismissTip() {
-        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest) {
-            NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCCollectionViewCommonAccountRequest)
+        if !database.tipExists(global.tipNCCollectionViewCommonAccountRequest) {
+            database.addTip(global.tipNCCollectionViewCommonAccountRequest)
         }
         appDelegate.tipView?.dismiss()
         appDelegate.tipView = nil

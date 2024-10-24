@@ -22,18 +22,16 @@
 //
 
 import UIKit
-import JGProgressHUD
 import NextcloudKit
 import Alamofire
 
 extension NCNetworking {
-
     func synchronization(account: String,
                          serverUrl: String,
                          add: Bool,
-                         completion: @escaping (_ errorCode: Int, _ items: Int) -> Void = { _, _ in }) {
+                         completion: @escaping (_ errorCode: Int, _ num: Int) -> Void = { _, _ in }) {
         let startDate = Date()
-        let options = NKRequestOptions(timeout: 120, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+        let options = NKRequestOptions(timeout: 120, taskDescription: NCGlobal.shared.taskDescriptionSynchronization, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl,
                                              depth: "infinity",
@@ -45,22 +43,26 @@ extension NCNetworking {
             var metadatasSynchronizationOffline: [tableMetadata] = []
 
             if !add {
-                if NCManageDatabase.shared.getResultMetadata(predicate: NSPredicate(format: "account == %@ AND sessionSelector == %@ AND (status == %d OR status == %d)", account, NCGlobal.shared.selectorSynchronizationOffline, NCGlobal.shared.metadataStatusWaitDownload, NCGlobal.shared.metadataStatusDownloading)) != nil { return }
+                if self.database.getResultMetadata(predicate: NSPredicate(format: "account == %@ AND sessionSelector == %@ AND (status == %d OR status == %d)",
+                                                                          account,
+                                                                          self.global.selectorSynchronizationOffline,
+                                                                          self.global.metadataStatusWaitDownload,
+                                                                          self.global.metadataStatusDownloading)) != nil { return }
             }
 
-            if error == .success {
+            if error == .success, let files {
                 for file in files {
                     if file.directory {
-                        metadatasDirectory.append(NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: false))
+                        metadatasDirectory.append(self.database.convertFileToMetadata(file, isDirectoryE2EE: false))
                     } else if self.isSynchronizable(ocId: file.ocId, fileName: file.fileName, etag: file.etag) {
-                        metadatasSynchronizationOffline.append(NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: false))
+                        metadatasSynchronizationOffline.append(self.database.convertFileToMetadata(file, isDirectoryE2EE: false))
                     }
                 }
-                NCManageDatabase.shared.addMetadatas(metadatasDirectory)
-                NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: metadatasSynchronizationOffline,
-                                                                          session: NCNetworking.shared.sessionDownloadBackground,
-                                                                          selector: NCGlobal.shared.selectorSynchronizationOffline)
-                NCManageDatabase.shared.setDirectorySynchronizationDate(serverUrl: serverUrl, account: account)
+                self.database.addMetadatas(metadatasDirectory)
+                self.database.setMetadatasSessionInWaitDownload(metadatas: metadatasSynchronizationOffline,
+                                                                session: self.sessionDownloadBackground,
+                                                                selector: self.global.selectorSynchronizationOffline)
+                self.database.setDirectorySynchronizationDate(serverUrl: serverUrl, account: account)
                 let diffDate = Date().timeIntervalSinceReferenceDate - startDate.timeIntervalSinceReferenceDate
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Synchronization \(serverUrl) in \(diffDate)")
                 completion(0, metadatasSynchronizationOffline.count)
@@ -72,20 +74,20 @@ extension NCNetworking {
     }
 
     @discardableResult
-    func synchronization(account: String, serverUrl: String, add: Bool) async -> (errorCode: Int, items: Int) {
+    func synchronization(account: String, serverUrl: String, add: Bool) async -> (errorCode: Int, num: Int) {
         await withUnsafeContinuation({ continuation in
-            synchronization(account: account, serverUrl: serverUrl, add: add) { errorCode, items in
-                continuation.resume(returning: (errorCode, items))
+            synchronization(account: account, serverUrl: serverUrl, add: add) { errorCode, num in
+                continuation.resume(returning: (errorCode, num))
             }
         })
     }
 
     func isSynchronizable(ocId: String, fileName: String, etag: String) -> Bool {
-        if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId),
-           (metadata.status == NCGlobal.shared.metadataStatusDownloading || metadata.status == NCGlobal.shared.metadataStatusWaitDownload) {
+        if let metadata = self.database.getMetadataFromOcId(ocId),
+           (metadata.status == self.global.metadataStatusDownloading || metadata.status == self.global.metadataStatusWaitDownload) {
             return false
         }
-        let localFile = NCManageDatabase.shared.getResultsTableLocalFile(predicate: NSPredicate(format: "ocId == %@", ocId))?.first
+        let localFile = self.database.getResultsTableLocalFile(predicate: NSPredicate(format: "ocId == %@", ocId))?.first
         if localFile?.etag != etag || NCUtilityFileSystem().fileProviderStorageSize(ocId, fileNameView: fileName) == 0 {
             return true
         } else {

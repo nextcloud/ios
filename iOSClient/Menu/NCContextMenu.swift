@@ -22,38 +22,24 @@
 //
 
 import Foundation
+import UIKit
 import Alamofire
 import NextcloudKit
-import JGProgressHUD
 
 class NCContextMenu: NSObject {
-
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
+    let database = NCManageDatabase.shared
 
     func viewMenu(ocId: String, viewController: UIViewController, image: UIImage?) -> UIMenu {
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId),
+        guard let metadata = self.database.getMetadataFromOcId(ocId),
               let sceneIdentifier = (viewController.tabBarController as? NCMainTabBarController)?.sceneIdentifier else { return UIMenu() }
         var downloadRequest: DownloadRequest?
         var titleDeleteConfirmFile = NSLocalizedString("_delete_file_", comment: "")
-        let metadataMOV = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata)
+        let metadataMOV = self.database.getMetadataLivePhoto(metadata: metadata)
+        let hud = NCHud(viewController.view)
 
         if metadata.directory { titleDeleteConfirmFile = NSLocalizedString("_delete_folder_", comment: "") }
-
-        let hud = JGProgressHUD()
-        hud.indicatorView = JGProgressHUDRingIndicatorView()
-        hud.textLabel.text = NSLocalizedString("_downloading_", comment: "")
-        hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
-        hud.detailTextLabel.textColor = NCBrandColor.shared.iconImageColor2
-        if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
-            indicatorView.ringWidth = 1.5
-            indicatorView.ringColor = NCBrandColor.shared.brandElement
-        }
-        hud.tapOnHUDViewBlock = { _ in
-            if let request = downloadRequest {
-                request.cancel()
-            }
-        }
 
         // MENU ITEMS
 
@@ -76,33 +62,37 @@ class NCContextMenu: NSObject {
         let share = UIAction(title: NSLocalizedString("_share_", comment: ""),
                              image: utility.loadImage(named: "square.and.arrow.up") ) { _ in
             if self.utilityFileSystem.fileProviderStorageExists(metadata) {
-                NotificationCenter.default.post(
-                    name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
-                    object: nil,
-                    userInfo: ["ocId": metadata.ocId,
-                               "selector": NCGlobal.shared.selectorOpenIn,
-                               "error": NKError(),
-                               "account": metadata.account])
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile,
+                                                            object: nil,
+                                                            userInfo: ["ocId": metadata.ocId,
+                                                                       "ocIdTransfer": metadata.ocIdTransfer,
+                                                                       "session": metadata.session,
+                                                                       "selector": NCGlobal.shared.selectorOpenIn,
+                                                                       "error": NKError(),
+                                                                       "account": metadata.account],
+                                                            second: 0.5)
             } else {
-                guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                               session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                                                               selector: NCGlobal.shared.selectorOpenIn,
-                                                                                               sceneIdentifier: sceneIdentifier) else { return }
-                hud.show(in: viewController.view)
+                guard let metadata = self.database.setMetadatasSessionInWaitDownload(metadatas: [metadata],
+                                                                                     session: NCNetworking.shared.sessionDownload,
+                                                                                     selector: NCGlobal.shared.selectorOpenIn,
+                                                                                     sceneIdentifier: sceneIdentifier) else { return }
+
+                hud.initHudRing(text: NSLocalizedString("_downloading_", comment: ""), tapToCancelDetailText: true) {
+                    if let request = downloadRequest {
+                        request.cancel()
+                    }
+                }
+
                 NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
                 } requestHandler: { request in
                     downloadRequest = request
                 } progressHandler: { progress in
-                    hud.progress = Float(progress.fractionCompleted)
+                    hud.progress(progress.fractionCompleted)
                 } completion: { afError, error in
-                    DispatchQueue.main.async {
-                        if error == .success || afError?.isExplicitlyCancelledError ?? false {
-                            hud.dismiss()
-                        } else {
-                            hud.indicatorView = JGProgressHUDErrorIndicatorView()
-                            hud.textLabel.text = error.description
-                            hud.dismiss(afterDelay: NCGlobal.shared.dismissAfterSecond)
-                        }
+                    if error == .success || afError?.isExplicitlyCancelledError ?? false {
+                        hud.success()
+                    } else {
+                        hud.error(text: error.description)
                     }
                 }
             }
@@ -113,8 +103,7 @@ class NCContextMenu: NSObject {
             NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil, sceneIdentifier: sceneIdentifier)
         }
 
-        let livePhotoSave = UIAction(title: NSLocalizedString("_livephoto_save_", comment: ""),
-                                     image: utility.loadImage(named: "livephoto")) { _ in
+        let livePhotoSave = UIAction(title: NSLocalizedString("_livephoto_save_", comment: ""), image: utility.loadImage(named: "livephoto")) { _ in
             if let metadataMOV = metadataMOV {
                 NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, hudView: viewController.view))
             }
@@ -123,33 +112,37 @@ class NCContextMenu: NSObject {
         let modify = UIAction(title: NSLocalizedString("_modify_", comment: ""),
                               image: utility.loadImage(named: "pencil.tip.crop.circle")) { _ in
             if self.utilityFileSystem.fileProviderStorageExists(metadata) {
-                NotificationCenter.default.post(
-                    name: Notification.Name(rawValue: NCGlobal.shared.notificationCenterDownloadedFile),
-                    object: nil,
-                    userInfo: ["ocId": metadata.ocId,
-                               "selector": NCGlobal.shared.selectorLoadFileQuickLook,
-                               "error": NKError(),
-                               "account": metadata.account])
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDownloadedFile,
+                                                            object: nil,
+                                                            userInfo: ["ocId": metadata.ocId,
+                                                                       "ocIdTransfer": metadata.ocIdTransfer,
+                                                                       "session": metadata.session,
+                                                                       "selector": NCGlobal.shared.selectorLoadFileQuickLook,
+                                                                       "error": NKError(),
+                                                                       "account": metadata.account],
+                                                            second: 0.5)
             } else {
-                guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                               session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                                                               selector: NCGlobal.shared.selectorLoadFileQuickLook,
-                                                                                               sceneIdentifier: sceneIdentifier) else { return }
-                hud.show(in: viewController.view)
+                guard let metadata = self.database.setMetadatasSessionInWaitDownload(metadatas: [metadata],
+                                                                                     session: NCNetworking.shared.sessionDownload,
+                                                                                     selector: NCGlobal.shared.selectorLoadFileQuickLook,
+                                                                                     sceneIdentifier: sceneIdentifier) else { return }
+
+                hud.initHudRing(text: NSLocalizedString("_downloading_", comment: "")) {
+                    if let request = downloadRequest {
+                        request.cancel()
+                    }
+                }
+
                 NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
                 } requestHandler: { request in
                     downloadRequest = request
                 } progressHandler: { progress in
-                    hud.progress = Float(progress.fractionCompleted)
+                    hud.progress(progress.fractionCompleted)
                 } completion: { afError, error in
-                    DispatchQueue.main.async {
-                        if error == .success || afError?.isExplicitlyCancelledError ?? false {
-                            hud.dismiss()
-                        } else {
-                            hud.indicatorView = JGProgressHUDErrorIndicatorView()
-                            hud.textLabel.text = error.description
-                            hud.dismiss(afterDelay: NCGlobal.shared.dismissAfterSecond)
-                        }
+                    if error == .success || afError?.isExplicitlyCancelledError ?? false {
+                        hud.success()
+                    } else {
+                        hud.error(text: error.description)
                     }
                 }
             }
@@ -164,16 +157,8 @@ class NCContextMenu: NSObject {
             }
             let alertController = UIAlertController(title: nil, message: nil, preferredStyle: alertStyle)
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_delete_file_", comment: ""), style: .destructive) { _ in
-                Task {
-                    var ocId: [String] = []
-                    let error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
-                    if error == .success {
-                        ocId.append(metadata.ocId)
-                    } else {
-                        NCContentPresenter().showError(error: error)
-                    }
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "onlyLocalCache": false, "error": error])
-                }
+                NCNetworking.shared.deleteMetadatas([metadata], sceneIdentifier: sceneIdentifier)
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
             })
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { _ in })
             viewController.present(alertController, animated: true, completion: nil)
@@ -183,13 +168,11 @@ class NCContextMenu: NSObject {
                                           image: utility.loadImage(named: "trash"), attributes: .destructive) { _ in
             Task {
                 var ocId: [String] = []
-                let error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: true)
+                let error = await NCNetworking.shared.deleteCache(metadata, sceneIdentifier: sceneIdentifier)
                 if error == .success {
                     ocId.append(metadata.ocId)
-                } else {
-                    NCContentPresenter().showError(error: error)
                 }
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "onlyLocalCache": true, "error": error])
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocId, "error": error])
             }
         }
 
@@ -202,56 +185,57 @@ class NCContextMenu: NSObject {
 
         var menu: [UIMenuElement] = []
 
-        if metadata.directory {
-
-            if metadata.isDirectoryE2EE || metadata.e2eEncrypted {
-                menu.append(favorite)
-            } else {
-                menu.append(favorite)
-                menu.append(deleteConfirmFile)
-            }
-            return UIMenu(title: "", children: [detail, UIMenu(title: "", options: .displayInline, children: menu)])
-
-        } else {
-
-            if metadata.lock {
-                menu.append(favorite)
-                if metadata.isDocumentViewableOnly {
-                    //
+        if NCNetworking.shared.isOnline {
+            if metadata.directory {
+                if metadata.isDirectoryE2EE || metadata.e2eEncrypted {
+                    menu.append(favorite)
                 } else {
-                    menu.append(share)
-                    if NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) != nil {
-                        menu.append(livePhotoSave)
-                    }
-                }
-            } else {
-                menu.append(favorite)
-                if metadata.isDocumentViewableOnly {
-                    if viewController is NCMedia {
-                        menu.append(viewInFolder)
-                    }
-                } else {
-                    menu.append(share)
-                    if NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) != nil {
-                        menu.append(livePhotoSave)
-                    }
-
-                    if viewController is NCMedia {
-                        menu.append(viewInFolder)
-                    }
-
-                    // MODIFY WITH QUICK LOOK
-                    if metadata.isModifiableWithQuickLook {
-                        menu.append(modify)
-                    }
-                }
-                if viewController is NCMedia {
+                    menu.append(favorite)
                     menu.append(deleteConfirmFile)
-                } else {
-                    menu.append(deleteSubMenu)
                 }
+                return UIMenu(title: "", children: [detail, UIMenu(title: "", options: .displayInline, children: menu)])
+            } else {
+                if metadata.lock {
+                    menu.append(favorite)
+                    if metadata.isDocumentViewableOnly {
+                        //
+                    } else {
+                        menu.append(share)
+                        if self.database.getMetadataLivePhoto(metadata: metadata) != nil {
+                            menu.append(livePhotoSave)
+                        }
+                    }
+                } else {
+                    menu.append(favorite)
+                    if metadata.isDocumentViewableOnly {
+                        if viewController is NCMedia {
+                            menu.append(viewInFolder)
+                        }
+                    } else {
+                        menu.append(share)
+                        if self.database.getMetadataLivePhoto(metadata: metadata) != nil {
+                            menu.append(livePhotoSave)
+                        }
+
+                        if viewController is NCMedia {
+                            menu.append(viewInFolder)
+                        }
+
+                        // MODIFY WITH QUICK LOOK
+                        if metadata.isModifiableWithQuickLook {
+                            menu.append(modify)
+                        }
+                    }
+                    if viewController is NCMedia {
+                        menu.append(deleteConfirmFile)
+                    } else {
+                        menu.append(deleteSubMenu)
+                    }
+                }
+                return UIMenu(title: "", children: [detail, UIMenu(title: "", options: .displayInline, children: menu)])
             }
-            return UIMenu(title: "", children: [detail, UIMenu(title: "", options: .displayInline, children: menu)])
+        } else {
+            return UIMenu()
         }
     }
 }

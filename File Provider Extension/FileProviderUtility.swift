@@ -26,15 +26,16 @@ import UIKit
 class fileProviderUtility: NSObject {
     let fileManager = FileManager()
     let utilityFileSystem = NCUtilityFileSystem()
+    let database = NCManageDatabase.shared
 
     func getAccountFromItemIdentifier(_ itemIdentifier: NSFileProviderItemIdentifier) -> String? {
         let ocId = itemIdentifier.rawValue
-        return NCManageDatabase.shared.getMetadataFromOcId(ocId)?.account
+        return self.database.getMetadataFromOcId(ocId)?.account
     }
 
     func getTableMetadataFromItemIdentifier(_ itemIdentifier: NSFileProviderItemIdentifier) -> tableMetadata? {
         let ocId = itemIdentifier.rawValue
-        return NCManageDatabase.shared.getMetadataFromOcId(ocId)
+        return self.database.getMetadataFromOcId(ocId)
     }
 
     func getItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier {
@@ -42,13 +43,13 @@ class fileProviderUtility: NSObject {
     }
 
     func getParentItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier? {
-        let homeServerUrl = utilityFileSystem.getHomeServer(urlBase: metadata.urlBase, userId: metadata.userId)
-        if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
+        let homeServerUrl = utilityFileSystem.getHomeServer(session: fileProviderData.shared.session)
+        if let directory = self.database.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
             if directory.serverUrl == homeServerUrl {
                 return NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue)
             } else {
                 // get the metadata.ocId of parent Directory
-                if let metadata = NCManageDatabase.shared.getMetadataFromOcId(directory.ocId) {
+                if let metadata = self.database.getMetadataFromOcId(directory.ocId) {
                     let identifier = getItemIdentifier(metadata: metadata)
                     return identifier
                 }
@@ -65,7 +66,7 @@ class fileProviderUtility: NSObject {
             guard let metadata = getTableMetadataFromItemIdentifier(parentItemIdentifier) else { return nil }
             predicate = NSPredicate(format: "ocId == %@", metadata.ocId)
         }
-        guard let directory = NCManageDatabase.shared.getTableDirectory(predicate: predicate) else { return nil }
+        guard let directory = self.database.getTableDirectory(predicate: predicate) else { return nil }
         return directory
     }
 

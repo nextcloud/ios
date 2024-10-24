@@ -28,7 +28,7 @@ import SVGKit
 import NextcloudKit
 
 extension UIViewController {
-    fileprivate func handleProfileAction(_ action: NKHovercard.Action, for userId: String) {
+    fileprivate func handleProfileAction(_ action: NKHovercard.Action, for userId: String, session: NCSession.Session) {
         switch action.appId {
         case "email":
             guard
@@ -44,8 +44,7 @@ extension UIViewController {
 
         case "spreed":
             guard
-                let appDelegate = UIApplication.shared.delegate as? AppDelegate,
-                let talkUrl = URL(string: "nextcloudtalk://open-conversation?server=\(appDelegate.urlBase)&user=\(appDelegate.userId)&withUser=\(userId)"),
+                let talkUrl = URL(string: "nextcloudtalk://open-conversation?server=\(session.urlBase)&user=\(session.userId)&withUser=\(userId)"),
                 UIApplication.shared.canOpenURL(talkUrl)
             else { fallthrough /* default: open web link in browser */ }
             UIApplication.shared.open(talkUrl)
@@ -60,19 +59,15 @@ extension UIViewController {
         }
     }
 
-    func showProfileMenu(userId: String) {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
-        guard NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion23 else { return }
+    func showProfileMenu(userId: String, session: NCSession.Session) {
+        guard NCCapabilities.shared.getCapabilities(account: session.account).capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion23 else { return }
 
-        NextcloudKit.shared.getHovercard(for: userId, account: appDelegate.account) { account, card, _, _ in
-            guard let card = card, account == appDelegate.account else { return }
+        NextcloudKit.shared.getHovercard(for: userId, account: session.account) { account, card, _, _ in
+            guard let card = card, account == session.account else { return }
 
             let personHeader = NCMenuAction(
                 title: card.displayName,
-                icon: NCUtility().loadUserImage(
-                    for: userId,
-                       displayName: card.displayName,
-                       userBaseUrl: appDelegate),
+                icon: NCUtility().loadUserImage(for: userId, displayName: card.displayName, urlBase: session.urlBase),
                 action: nil)
 
             let actions = card.actions.map { action -> NCMenuAction in
@@ -85,7 +80,7 @@ extension UIViewController {
                 return NCMenuAction(
                     title: action.title,
                     icon: image,
-                    action: { _ in self.handleProfileAction(action, for: userId) })
+                    action: { _ in self.handleProfileAction(action, for: userId, session: session) })
             }
 
             let allActions = [personHeader] + actions
@@ -126,7 +121,7 @@ extension UIViewController {
     }
 }
 
-extension UIViewController: MFMailComposeViewControllerDelegate {
+extension UIViewController: @retroactive MFMailComposeViewControllerDelegate {
     public func mailComposeController(_ controller: MFMailComposeViewController, didFinishWith result: MFMailComposeResult, error: Error?) {
         controller.dismiss(animated: true)
     }

@@ -58,7 +58,7 @@ let userAgent: String = {
     // BRAND ONLY
     @objc public var use_AppConfig: Bool = false                                                // Don't touch me !!
 
-    // Options
+    // Use server theming color
     @objc public var use_themingColor: Bool = true
 
     var disable_intro: Bool = false
@@ -71,6 +71,10 @@ let userAgent: String = {
     var disable_mobileconfig: Bool = false
     var disable_show_more_nextcloud_apps_in_settings: Bool = false
     var doNotAskPasscodeAtStartup: Bool = false
+    var disable_source_code_in_settings: Bool = false
+
+    // (name: "Name 1", url: "https://cloud.nextcloud.com"),(name: "Name 2", url: "https://cloud.nextcloud.com")
+    var enforce_servers: [(name: String, url: String)] = []
 
     // Internal option behaviour
     var cleanUpDay: Int = 0                                                        // Set default "Delete, in the cache, all files older than" possible days value are: 0, 1, 7, 30, 90, 180, 365
@@ -127,26 +131,22 @@ class NCBrandColor: NSObject {
         return instance
     }()
 
-    // Color
+    /// This is rewrited from customet theme, default is Nextcloud color
+    ///
     let customer: UIColor = UIColor(red: 0.0 / 255.0, green: 130.0 / 255.0, blue: 201.0 / 255.0, alpha: 1.0)         // BLU NC : #0082c9
     var customerText: UIColor = .white
 
-    var brand: UIColor                                                                                         // don't touch me
-    var brandElement: UIColor                                                                                  // don't touch me
-    var brandText: UIColor                                                                                     // don't touch me
-
-    let nextcloud: UIColor = UIColor(red: 0.0 / 255.0, green: 130.0 / 255.0, blue: 201.0 / 255.0, alpha: 1.0)
-    let yellowFavorite: UIColor = UIColor(red: 248.0 / 255.0, green: 205.0 / 255.0, blue: 70.0 / 255.0, alpha: 1.0)
+    // INTERNAL DEFINE COLORS
+    private var themingColor = ThreadSafeDictionary<String, UIColor>()
+    private var themingColorElement = ThreadSafeDictionary<String, UIColor>()
+    private var themingColorText = ThreadSafeDictionary<String, UIColor>()
 
     var userColors: [CGColor] = []
-    var themingColor: String = ""
-    var themingColorElement: String = ""
-    var themingColorText: String = ""
-
+    let nextcloud: UIColor = UIColor(red: 0.0 / 255.0, green: 130.0 / 255.0, blue: 201.0 / 255.0, alpha: 1.0)
+    let yellowFavorite: UIColor = UIColor(red: 248.0 / 255.0, green: 205.0 / 255.0, blue: 70.0 / 255.0, alpha: 1.0)
     let iconImageColor: UIColor = .label
     let iconImageColor2: UIColor = .secondaryLabel
     let iconImageMultiColors: [UIColor] = [.secondaryLabel, .label]
-
     let textColor: UIColor = .label
     let textColor2: UIColor = .secondaryLabel
 
@@ -174,110 +174,7 @@ class NCBrandColor: NSObject {
         }
     }
 
-    override init() {
-        brand = customer
-        brandElement = customer
-        brandText = customerText
-    }
-
-    func createUserColors() {
-        userColors = generateColors()
-    }
-
-    func settingThemingColor(account: String) {
-        let darker: CGFloat = 30    // %
-        let lighter: CGFloat = 30   // %
-
-        if NCBrandOptions.shared.use_themingColor {
-            self.themingColor = NCGlobal.shared.capabilityThemingColor
-            self.themingColorElement = NCGlobal.shared.capabilityThemingColorElement
-            self.themingColorText = NCGlobal.shared.capabilityThemingColorText
-
-            // COLOR
-            if themingColor.first == "#" {
-                if let color = UIColor(hex: themingColor) {
-                    brand = color
-                } else {
-                    brand = customer
-                }
-            } else {
-                brand = customer
-            }
-
-            // COLOR TEXT
-            if themingColorText.first == "#" {
-                if let color = UIColor(hex: themingColorText) {
-                    brandText = color
-                } else {
-                    brandText = customerText
-                }
-            } else {
-                brandText = customerText
-            }
-
-            // COLOR ELEMENT
-            if themingColorElement.first == "#" {
-                if let color = UIColor(hex: themingColorElement) {
-                    brandElement = color
-                } else {
-                    brandElement = brand
-                }
-            } else {
-                brandElement = brand
-            }
-
-            if brandElement.isTooLight() {
-                if let color = brandElement.darker(by: darker) {
-                    brandElement = color
-                }
-            } else if brandElement.isTooDark() {
-                if let color = brandElement.lighter(by: lighter) {
-                    brandElement = color
-                }
-            }
-
-        } else {
-
-            if self.customer.isTooLight() {
-                if let color = customer.darker(by: darker) {
-                    brandElement = color
-                }
-            } else if customer.isTooDark() {
-                if let color = customer.lighter(by: lighter) {
-                    brandElement = color
-                }
-            } else {
-                brandElement = customer
-            }
-
-            brand = customer
-            brandText = customerText
-        }
-    }
-
-    private func stepCalc(steps: Int, color1: CGColor, color2: CGColor) -> [CGFloat] {
-        var step = [CGFloat](repeating: 0, count: 3)
-
-        step[0] = (color2.components![0] - color1.components![0]) / CGFloat(steps)
-        step[1] = (color2.components![1] - color1.components![1]) / CGFloat(steps)
-        step[2] = (color2.components![2] - color1.components![2]) / CGFloat(steps)
-        return step
-    }
-
-    private func mixPalette(steps: Int, color1: CGColor, color2: CGColor) -> [CGColor] {
-        var palette = [color1]
-        let step = stepCalc(steps: steps, color1: color1, color2: color2)
-        let c1Components = color1.components!
-
-        for i in 1 ..< steps {
-            let r = c1Components[0] + step[0] * CGFloat(i)
-            let g = c1Components[1] + step[1] * CGFloat(i)
-            let b = c1Components[2] + step[2] * CGFloat(i)
-
-            palette.append(UIColor(red: r, green: g, blue: b, alpha: 1).cgColor)
-        }
-        return palette
-    }
+    override init() { }
 
     /**
      Generate colors from the official nextcloud color.
@@ -285,15 +182,154 @@ class NCBrandColor: NSObject {
      if `step` = 6,
      3 colors \* 6 will result in 18 generated colors
      */
-    func generateColors(steps: Int = 6) -> [CGColor] {
-        let red = UIColor(red: 182 / 255, green: 70 / 255, blue: 157 / 255, alpha: 1).cgColor
-        let yellow = UIColor(red: 221 / 255, green: 203 / 255, blue: 85 / 255, alpha: 1).cgColor
-        let blue = UIColor(red: 0 / 255, green: 130 / 255, blue: 201 / 255, alpha: 1).cgColor
+    func createUserColors() {
+        func generateColors(steps: Int = 6) -> [CGColor] {
+            func stepCalc(steps: Int, color1: CGColor, color2: CGColor) -> [CGFloat] {
+                var step = [CGFloat](repeating: 0, count: 3)
 
-        let palette1 = mixPalette(steps: steps, color1: red, color2: yellow)
-        let palette2 = mixPalette(steps: steps, color1: yellow, color2: blue)
-        let palette3 = mixPalette(steps: steps, color1: blue, color2: red)
+                step[0] = (color2.components![0] - color1.components![0]) / CGFloat(steps)
+                step[1] = (color2.components![1] - color1.components![1]) / CGFloat(steps)
+                step[2] = (color2.components![2] - color1.components![2]) / CGFloat(steps)
+                return step
+            }
 
-        return palette1 + palette2 + palette3
+            func mixPalette(steps: Int, color1: CGColor, color2: CGColor) -> [CGColor] {
+                var palette = [color1]
+                let step = stepCalc(steps: steps, color1: color1, color2: color2)
+                let c1Components = color1.components!
+
+                for i in 1 ..< steps {
+                    let r = c1Components[0] + step[0] * CGFloat(i)
+                    let g = c1Components[1] + step[1] * CGFloat(i)
+                    let b = c1Components[2] + step[2] * CGFloat(i)
+
+                    palette.append(UIColor(red: r, green: g, blue: b, alpha: 1).cgColor)
+                }
+                return palette
+            }
+
+            let red = UIColor(red: 182 / 255, green: 70 / 255, blue: 157 / 255, alpha: 1).cgColor
+            let yellow = UIColor(red: 221 / 255, green: 203 / 255, blue: 85 / 255, alpha: 1).cgColor
+            let blue = UIColor(red: 0 / 255, green: 130 / 255, blue: 201 / 255, alpha: 1).cgColor
+
+            let palette1 = mixPalette(steps: steps, color1: red, color2: yellow)
+            let palette2 = mixPalette(steps: steps, color1: yellow, color2: blue)
+            let palette3 = mixPalette(steps: steps, color1: blue, color2: red)
+
+            return palette1 + palette2 + palette3
+        }
+
+        userColors = generateColors()
+    }
+
+    @discardableResult
+    func settingThemingColor(account: String) -> Bool {
+        let darker: CGFloat = 30    // %
+        let lighter: CGFloat = 30   // %
+        var colorThemingColor: UIColor?
+        var colorThemingColorElement: UIColor?
+        var colorThemingColorText: UIColor?
+
+        if NCBrandOptions.shared.use_themingColor {
+            let themingColor = NCCapabilities.shared.getCapabilities(account: account).capabilityThemingColor
+            let themingColorElement = NCCapabilities.shared.getCapabilities(account: account).capabilityThemingColorElement
+            let themingColorText = NCCapabilities.shared.getCapabilities(account: account).capabilityThemingColorText
+
+            // THEMING COLOR
+            if themingColor.first == "#" {
+                if let color = UIColor(hex: themingColor) {
+                    colorThemingColor = color
+                } else {
+                    colorThemingColor = customer
+                }
+            } else {
+                colorThemingColor = customer
+            }
+
+            // THEMING COLOR ELEMENT (control isTooLight / isTooDark)
+            if themingColorElement.first == "#" {
+                if let color = UIColor(hex: themingColorElement) {
+                    if color.isTooLight() {
+                        if let color = color.darker(by: darker) {
+                            colorThemingColorElement = color
+                        }
+                    } else if color.isTooDark() {
+                        if let color = color.lighter(by: lighter) {
+                            colorThemingColorElement = color
+                        }
+                    } else {
+                        colorThemingColorElement = color
+                    }
+                } else {
+                    colorThemingColorElement = customer
+                }
+            } else {
+                colorThemingColorElement = customer
+            }
+
+            // THEMING COLOR TEXT
+            if themingColorText.first == "#" {
+                if let color = UIColor(hex: themingColorText) {
+                    colorThemingColorText = color
+                } else {
+                    colorThemingColorText = .white
+                }
+            } else {
+                colorThemingColorText = .white
+            }
+
+        } else {
+
+            // THEMING COLOR
+            colorThemingColor = customer
+
+            // THEMING COLOR ELEMENT (control isTooLight / isTooDark)
+            if self.customer.isTooLight() {
+                if let color = customer.darker(by: darker) {
+                    colorThemingColorElement = color
+                }
+            } else if customer.isTooDark() {
+                if let color = customer.lighter(by: lighter) {
+                    colorThemingColorElement = color
+                }
+            } else {
+                colorThemingColorElement = customer
+            }
+
+            // THEMING COLOR TEXT
+            colorThemingColorText = customerText
+        }
+
+        if self.themingColor[account] != colorThemingColor || self.themingColorElement[account] != colorThemingColorElement || self.themingColorText[account] != colorThemingColorText {
+
+            self.themingColor[account] = colorThemingColor
+            self.themingColorElement[account] = colorThemingColorElement
+            self.themingColorText[account] = colorThemingColorText
+
+            return true
+        }
+
+        return false
+    }
+
+    public func getTheming(account: String?) -> UIColor {
+        if let account, let color = self.themingColor[account] {
+            return color
+        }
+        return customer
+    }
+
+    public func getElement(account: String?) -> UIColor {
+        if let account, let color = self.themingColorElement[account] {
+            return color
+        }
+        return customer
+    }
+
+    public func getText(account: String?) -> UIColor {
+        if let account, let color = self.themingColorText[account] {
+            return color
+        }
+        return .white
     }
 }

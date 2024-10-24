@@ -129,7 +129,7 @@ class NCColorPicker: UIViewController {
         systemIndigoButton.layer.cornerRadius = 5
         systemIndigoButton.layer.masksToBounds = true
 
-        defaultButton.backgroundColor = NCBrandColor.shared.brandElement
+        defaultButton.backgroundColor = NCBrandColor.shared.customer
         defaultButton.layer.cornerRadius = 5
         defaultButton.layer.masksToBounds = true
     }
@@ -214,7 +214,7 @@ class NCColorPicker: UIViewController {
             let serverUrl = metadata.serverUrl + "/" + metadata.fileName
             NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, colorFolder: hexColor, metadata: metadata)
             self.dismiss(animated: true)
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": metadata.serverUrl, "clearDataSource": true])
         }
         self.dismiss(animated: true)
     }

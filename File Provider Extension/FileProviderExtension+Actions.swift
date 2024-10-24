@@ -27,23 +27,23 @@ import NextcloudKit
 
 extension FileProviderExtension {
     override func createDirectory(withName directoryName: String, inParentItemIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
-        guard let tableDirectory = providerUtility.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: fileProviderData.shared.account, homeServerUrl: fileProviderData.shared.homeServerUrl) else {
+        guard let tableDirectory = providerUtility.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: fileProviderData.shared.session.account, homeServerUrl: utilityFileSystem.getHomeServer(session: fileProviderData.shared.session)) else {
             return completionHandler(nil, NSFileProviderError(.noSuchItem))
         }
-        let directoryName = utilityFileSystem.createFileName(directoryName, serverUrl: tableDirectory.serverUrl, account: fileProviderData.shared.account)
+        let directoryName = utilityFileSystem.createFileName(directoryName, serverUrl: tableDirectory.serverUrl, account: fileProviderData.shared.session.account)
         let serverUrlFileName = tableDirectory.serverUrl + "/" + directoryName
 
-        NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName, account: fileProviderData.shared.account) { _, ocId, _, error in
+        NextcloudKit.shared.createFolder(serverUrlFileName: serverUrlFileName, account: fileProviderData.shared.session.account) { _, ocId, _, _, error in
             if error == .success {
-                NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles, account: fileProviderData.shared.account) { _, files, _, error in
-                    if error == .success, let file = files.first {
+                NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles, account: fileProviderData.shared.session.account) { _, files, _, error in
+                    if error == .success, let file = files?.first {
                         let isDirectoryEncrypted = self.utilityFileSystem.isDirectoryE2EE(file: file)
-                        let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryEncrypted)
+                        let metadata = self.database.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryEncrypted)
 
-                        NCManageDatabase.shared.addDirectory(e2eEncrypted: false, favorite: false, ocId: ocId!, fileId: metadata.fileId, etag: metadata.etag, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
-                        NCManageDatabase.shared.addMetadata(metadata)
+                        self.database.addDirectory(e2eEncrypted: false, favorite: false, ocId: ocId!, fileId: metadata.fileId, etag: metadata.etag, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
+                        self.database.addMetadata(metadata)
 
-                        guard let metadataInsert = NCManageDatabase.shared.getMetadataFromOcId(ocId!),
+                        guard let metadataInsert = self.database.getMetadataFromOcId(ocId!),
                               let parentItemIdentifier = self.providerUtility.getParentItemIdentifier(metadata: metadataInsert) else {
                             return completionHandler(nil, NSFileProviderError(.noSuchItem))
                         }
@@ -69,7 +69,7 @@ extension FileProviderExtension {
         let serverUrl = metadata.serverUrl
         let fileName = metadata.fileName
 
-        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: metadata.account) { account, error in
+        NextcloudKit.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: metadata.account) { account, _, error in
             if error == .success {
                 let fileNamePath = self.utilityFileSystem.getDirectoryProviderStorageOcId(itemIdentifier.rawValue)
 
@@ -81,11 +81,11 @@ extension FileProviderExtension {
 
                 if isDirectory {
                     let dirForDelete = self.utilityFileSystem.stringAppendServerUrl(serverUrl, addFileName: fileName)
-                    NCManageDatabase.shared.deleteDirectoryAndSubDirectory(serverUrl: dirForDelete, account: account)
+                    self.database.deleteDirectoryAndSubDirectory(serverUrl: dirForDelete, account: account)
                 }
 
-                NCManageDatabase.shared.deleteMetadata(predicate: NSPredicate(format: "ocId == %@", ocId))
-                NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", ocId))
+                self.database.deleteMetadataOcId(ocId)
+                self.database.deleteLocalFileOcId(ocId)
                 completionHandler(nil)
             } else {
                 completionHandler(NSFileProviderError(.serverUnreachable))
@@ -101,38 +101,41 @@ extension FileProviderExtension {
         let ocIdFrom = metadataFrom.ocId
         let serverUrlFrom = metadataFrom.serverUrl
         let fileNameFrom = serverUrlFrom + "/" + itemFrom.filename
-        guard let tableDirectoryTo = providerUtility.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: fileProviderData.shared.account, homeServerUrl: fileProviderData.shared.homeServerUrl) else {
+
+        guard let tableDirectoryTo = providerUtility.getTableDirectoryFromParentItemIdentifier(parentItemIdentifier, account: fileProviderData.shared.session.account, homeServerUrl: utilityFileSystem.getHomeServer(session: fileProviderData.shared.session)) else {
             return completionHandler(nil, NSFileProviderError(.noSuchItem))
         }
         let serverUrlTo = tableDirectoryTo.serverUrl
-        let fileNameTo = serverUrlTo + "/" + itemFrom.filename
+        var fileNameTo = serverUrlTo + "/" + itemFrom.filename
+        if let newName {
+            fileNameTo = serverUrlTo + "/" + newName
+        }
 
-        NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: false, account: metadataFrom.account) { account, error in
-            if error == .success {
-                if metadataFrom.directory {
-                    NCManageDatabase.shared.deleteDirectoryAndSubDirectory(serverUrl: serverUrlFrom, account: account)
-                    NCManageDatabase.shared.renameDirectory(ocId: ocIdFrom, serverUrl: serverUrlTo)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNameFrom, serverUrlFileNameDestination: fileNameTo, overwrite: true, account: metadataFrom.account) { account, _, error in
+                if error == .success {
+                    if metadataFrom.directory {
+                        self.database.deleteDirectoryAndSubDirectory(serverUrl: serverUrlFrom, account: account)
+                        self.database.renameDirectory(ocId: ocIdFrom, serverUrl: serverUrlTo)
+                    }
+                    self.database.moveMetadata(ocId: ocIdFrom, serverUrlTo: serverUrlTo)
+
+                    guard let metadata = self.database.getMetadataFromOcId(ocIdFrom) else {
+                        return completionHandler(nil, NSFileProviderError(.noSuchItem))
+
+                    }
+                    let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
+
+                    completionHandler(item, nil)
+                } else {
+                    completionHandler(nil, NSFileProviderError(.noSuchItem, userInfo: [NSLocalizedDescriptionKey: error.errorDescription, NSLocalizedFailureReasonErrorKey: ""]))
                 }
-                NCManageDatabase.shared.moveMetadata(ocId: ocIdFrom, serverUrlTo: serverUrlTo)
-
-                guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocIdFrom) else {
-                    return completionHandler(nil, NSFileProviderError(.noSuchItem))
-
-                }
-                let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier)
-
-                completionHandler(item, nil)
-            } else if error.errorCode == NCGlobal.shared.errorBadRequest {
-                completionHandler(nil, NSFileProviderError(.noSuchItem, userInfo: [NSLocalizedDescriptionKey: error.errorDescription, NSLocalizedFailureReasonErrorKey: ""]))
-            } else {
-                completionHandler(nil, NSFileProviderError(.serverUnreachable))
             }
         }
     }
 
     override func renameItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, toName itemName: String, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
-        guard let metadata = providerUtility.getTableMetadataFromItemIdentifier(itemIdentifier),
-              let directoryTable = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
+        guard let metadata = providerUtility.getTableMetadataFromItemIdentifier(itemIdentifier) else {
             return completionHandler(nil, NSFileProviderError(.noSuchItem))
         }
         let fileNameFrom = metadata.fileNameView
@@ -140,22 +143,14 @@ extension FileProviderExtension {
         let fileNamePathTo = metadata.serverUrl + "/" + itemName
         let ocId = metadata.ocId
 
-        NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNamePathFrom, serverUrlFileNameDestination: fileNamePathTo, overwrite: false, account: metadata.account) { account, error in
+        NextcloudKit.shared.moveFileOrFolder(serverUrlFileNameSource: fileNamePathFrom, serverUrlFileNameDestination: fileNamePathTo, overwrite: false, account: metadata.account) { _, _, error in
             if error == .success {
-                // Rename metadata
-                NCManageDatabase.shared.renameMetadata(fileNameTo: itemName, ocId: ocId)
 
-                guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else {
+                self.database.renameMetadata(fileNameNew: itemName, ocId: ocId)
+                self.database.setMetadataServeUrlFileNameStatusNormal(ocId: ocId)
+
+                guard let metadata = self.database.getMetadataFromOcId(ocId) else {
                     return completionHandler(nil, NSFileProviderError(.noSuchItem))
-                }
-                if metadata.directory {
-                    NCManageDatabase.shared.setDirectory(serverUrl: fileNamePathFrom, serverUrlTo: fileNamePathTo, encrypted: directoryTable.e2eEncrypted, account: account)
-                } else {
-                    let itemIdentifier = self.providerUtility.getItemIdentifier(metadata: metadata)
-                    self.providerUtility.moveFile(self.utilityFileSystem.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: fileNameFrom), toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(itemIdentifier.rawValue, fileNameView: itemName))
-                    self.providerUtility.moveFile(self.utilityFileSystem.getDirectoryProviderStoragePreviewOcId(itemIdentifier.rawValue, etag: metadata.etag), toPath: self.utilityFileSystem.getDirectoryProviderStoragePreviewOcId(itemIdentifier.rawValue, etag: metadata.etag))
-                    self.providerUtility.moveFile(self.utilityFileSystem.getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, etag: metadata.etag), toPath: self.utilityFileSystem.getDirectoryProviderStorageIconOcId(itemIdentifier.rawValue, etag: metadata.etag))
-                    NCManageDatabase.shared.setLocalFile(ocId: ocId, fileName: itemName)
                 }
 
                 guard let parentItemIdentifier = self.providerUtility.getParentItemIdentifier(metadata: metadata) else {
@@ -163,7 +158,7 @@ extension FileProviderExtension {
                 }
                 let item = FileProviderItem(metadata: tableMetadata.init(value: metadata), parentItemIdentifier: parentItemIdentifier)
                 completionHandler(item, nil)
-            } else if error.errorCode == NCGlobal.shared.errorBadRequest  {
+            } else if error.errorCode == NCGlobal.shared.errorBadRequest {
                 completionHandler(nil, NSFileProviderError(.noSuchItem, userInfo: [NSLocalizedDescriptionKey: error.errorDescription, NSLocalizedFailureReasonErrorKey: ""]))
             } else {
                 completionHandler(nil, NSFileProviderError(.serverUnreachable))
@@ -188,20 +183,20 @@ extension FileProviderExtension {
         }
 
         if (favorite == true && metadata.favorite == false) || (favorite == false && metadata.favorite == true) {
-            let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId)
-            NextcloudKit.shared.setFavorite(fileName: fileNamePath, favorite: favorite, account: metadata.account) { _, error in
+            let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: fileProviderData.shared.session)
+            NextcloudKit.shared.setFavorite(fileName: fileNamePath, favorite: favorite, account: metadata.account) { _, _, error in
                 if error == .success {
-                    guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else {
+                    guard let metadata = self.database.getMetadataFromOcId(ocId) else {
                         return completionHandler(nil, NSFileProviderError(.noSuchItem))
                     }
                     // Change DB
                     metadata.favorite = favorite
-                    NCManageDatabase.shared.addMetadata(metadata)
+                    self.database.addMetadata(metadata)
                     /// SIGNAL
                     let item = fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .workingSet)
                     completionHandler(item, nil)
                 } else {
-                    guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) else {
+                    guard let metadata = self.database.getMetadataFromOcId(ocId) else {
                         return completionHandler(nil, NSFileProviderError(.noSuchItem))
                     }
                     // Errore, remove from listFavoriteIdentifierRank
@@ -221,7 +216,7 @@ extension FileProviderExtension {
         let ocId = metadataForTag.ocId
         let account = metadataForTag.account
 
-        NCManageDatabase.shared.addTag(ocId, tagIOS: tagData, account: account)
+        self.database.addTag(ocId, tagIOS: tagData, account: account)
         /// SIGNAL WORKINGSET
         let item = fileProviderData.shared.signalEnumerator(ocId: ocId, type: .workingSet)
         completionHandler(item, nil)

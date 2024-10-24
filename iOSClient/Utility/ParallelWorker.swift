@@ -21,8 +21,8 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+import Foundation
 import UIKit
-import JGProgressHUD
 
 /// Object to execute multiple tasks in parallel like uploading or downloading.
 /// - Can display a progress indicator with status message
@@ -32,7 +32,7 @@ class ParallelWorker {
     let queue = DispatchQueue(label: "ParallelWorker")
     let semaphore: DispatchSemaphore
     let titleKey: String
-    var hud: JGProgressHUD?
+    var hud = NCHud()
     var totalTasks: Int?
     var completedTasks = 0
     var isCancelled = false
@@ -43,35 +43,17 @@ class ParallelWorker {
     ///   - titleKey: Localized String key, used for the status. Default: *Please Wait...*
     ///   - totalTasks: Number of total tasks, if known
     ///   - hudView: The parent view or current view which should present the progress indicator. If `nil`, no progress indicator will be shown.
-    init(n: Int, titleKey: String?, totalTasks: Int?, hudView: UIView?) {
+    init(n: Int, titleKey: String?, totalTasks: Int?, controller: NCMainTabBarController?) {
         semaphore = DispatchSemaphore(value: n)
         self.totalTasks = totalTasks
         self.titleKey = titleKey ?? "_wait_"
-        guard let hudView = hudView else { return }
 
-        DispatchQueue.main.async {
-            let hud = JGProgressHUD()
-            hud.indicatorView = JGProgressHUDRingIndicatorView()
-            if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
-                indicatorView.ringWidth = 1.5
-                indicatorView.ringColor = NCBrandColor.shared.brandElement
-            }
-            hud.textLabel.text = NSLocalizedString(self.titleKey, comment: "")
-            hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
-            hud.detailTextLabel.textColor = NCBrandColor.shared.iconImageColor2
-            hud.show(in: hudView)
-            hud.tapOnHUDViewBlock = { hud in
-                self.isCancelled = true
-                // Cancel all download / upload
-                for uploadRequest in NCNetworking.shared.uploadRequest {
-                    uploadRequest.value.cancel()
-                }
-                for downloadRequest in NCNetworking.shared.downloadRequest {
-                    downloadRequest.value.cancel()
-                }
-                hud.dismiss()
-            }
-            self.hud = hud
+        hud.initHudRing(view: controller?.view,
+                        text: NSLocalizedString(self.titleKey, comment: ""),
+                        tapToCancelDetailText: true) {
+            self.isCancelled = true
+            NCNetworking.shared.cancelUploadTasks()
+            NCNetworking.shared.cancelDownloadTasks()
         }
     }
 
@@ -84,9 +66,7 @@ class ParallelWorker {
             guard !self.isCancelled else { return self.completionGroup.leave() }
             task {
                 self.completedTasks += 1
-                DispatchQueue.main.async {
-                    self.hud?.textLabel.text = "\(NSLocalizedString(self.titleKey, comment: ""))"
-                }
+                self.hud.setText(text: "\(NSLocalizedString(self.titleKey, comment: ""))")
                 self.semaphore.signal()
                 self.completionGroup.leave()
             }
@@ -98,7 +78,7 @@ class ParallelWorker {
     func completeWork(completion: (() -> Void)? = nil) {
         completionGroup.notify(queue: .main) {
             guard !self.isCancelled else { return }
-            self.hud?.dismiss()
+            self.hud.dismiss()
             completion?()
         }
     }

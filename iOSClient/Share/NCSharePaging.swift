@@ -33,7 +33,6 @@ protocol NCSharePagingContent {
 }
 
 class NCSharePaging: UIViewController {
-
     private let pagingViewController = NCShareHeaderViewController()
     private weak var appDelegate = UIApplication.shared.delegate as? AppDelegate
     private var currentVC: NCSharePagingContent?
@@ -63,9 +62,9 @@ class NCSharePaging: UIViewController {
         pagingViewController.backgroundColor = .systemBackground
         pagingViewController.menuBackgroundColor = .systemBackground
         pagingViewController.selectedBackgroundColor = .systemBackground
-        pagingViewController.indicatorColor = NCBrandColor.shared.brandElement
+        pagingViewController.indicatorColor = NCBrandColor.shared.getElement(account: metadata.account)
         pagingViewController.textColor = NCBrandColor.shared.textColor
-        pagingViewController.selectedTextColor = NCBrandColor.shared.brandElement
+        pagingViewController.selectedTextColor = NCBrandColor.shared.getElement(account: metadata.account)
 
         // Pagination
         addChild(pagingViewController)
@@ -110,7 +109,7 @@ class NCSharePaging: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if NCGlobal.shared.disableSharesView {
+        if NCCapabilities.shared.disableSharesView(account: metadata.account) {
             self.dismiss(animated: false, completion: nil)
         }
 
@@ -121,7 +120,7 @@ class NCSharePaging: UIViewController {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": metadata.serverUrl])
     }
 
     deinit {
@@ -193,6 +192,7 @@ extension NCSharePaging: PagingViewControllerDataSource {
             viewController.didSelectItemEnable = false
             viewController.metadata = metadata
             viewController.objectType = "files"
+            viewController.account = metadata.account
             return viewController
         } else if pages[index] == .sharing {
             guard let viewController = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "sharing") as? NCShare else {

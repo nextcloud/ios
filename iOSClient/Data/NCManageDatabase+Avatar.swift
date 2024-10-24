@@ -104,8 +104,9 @@ extension NCManageDatabase {
         return image
     }
 
-    func getImageAvatarLoaded(fileName: String) -> UIImage? {
+    func getImageAvatarLoaded(fileName: String) -> (image: UIImage?, tableAvatar: tableAvatar?) {
         let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileName
+        let image = UIImage(contentsOfFile: fileNameLocalPath)
 
         do {
             let realm = try Realm()
@@ -113,16 +114,13 @@ extension NCManageDatabase {
             let result = realm.objects(tableAvatar.self).filter("fileName == %@", fileName).first
             if result == nil {
                 utilityFileSystem.removeFile(atPath: fileNameLocalPath)
-                return nil
-            } else if result?.loaded == false {
-                return nil
             }
-            return UIImage(contentsOfFile: fileNameLocalPath)
+            return (image, result)
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
 
         utilityFileSystem.removeFile(atPath: fileNameLocalPath)
-        return nil
+        return (nil, nil)
     }
 }

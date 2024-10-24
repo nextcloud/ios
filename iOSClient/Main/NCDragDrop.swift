@@ -26,17 +26,17 @@ import UniformTypeIdentifiers
 import NextcloudKit
 
 class NCDragDrop: NSObject {
-    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
+    let database = NCManageDatabase.shared
 
-    func performDrag(metadata: tableMetadata? = nil, selectOcId: [String]? = nil) -> [UIDragItem] {
+    func performDrag(metadata: tableMetadata? = nil, fileSelect: [String]? = nil) -> [UIDragItem] {
         var metadatas: [tableMetadata] = []
 
         if let metadata, metadata.status == 0, !metadata.isDirectoryE2EE, !metadata.e2eEncrypted {
             metadatas.append(metadata)
-        } else if let selectOcId {
-            for ocId in selectOcId {
-                if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId), metadata.status == 0, !metadata.isDirectoryE2EE, !metadata.e2eEncrypted {
+        } else if let fileSelect {
+            for ocId in fileSelect {
+                if let metadata = database.getMetadataFromOcId(ocId), metadata.status == 0, !metadata.isDirectoryE2EE, !metadata.e2eEncrypted {
                     metadatas.append(metadata)
                 }
             }
@@ -55,7 +55,7 @@ class NCDragDrop: NSObject {
         return dragItems
     }
 
-    func performDrop(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator, serverUrl: String, isImageVideo: Bool) -> [tableMetadata]? {
+    func performDrop(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator, serverUrl: String, isImageVideo: Bool, controller: NCMainTabBarController?) -> [tableMetadata]? {
         var serverUrl = serverUrl
         var metadatas: [tableMetadata] = []
         DragDropHover.shared.cleanPushDragDropHover()
@@ -66,10 +66,10 @@ class NCDragDrop: NSObject {
                 let semaphore = DispatchSemaphore(value: 0)
                 item.itemProvider.loadDataRepresentation(forTypeIdentifier: NCGlobal.shared.metadataOcIdDataRepresentation) { data, error in
                     if error == nil, let data, let ocId = String(data: data, encoding: .utf8),
-                       let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
+                       let metadata = self.database.getMetadataFromOcId(ocId) {
                         if !isImageVideo {
                             metadatas.append(metadata)
-                        } else if isImageVideo, (metadata.isImage || metadata.isVideo) {
+                        } else if isImageVideo, (metadata.isImageOrVideo) {
                             metadatas.append(metadata)
                         }
                     }
@@ -82,7 +82,7 @@ class NCDragDrop: NSObject {
                         if let destinationMetadata = DragDropHover.shared.destinationMetadata, destinationMetadata.directory {
                             serverUrl = destinationMetadata.serverUrl + "/" + destinationMetadata.fileName
                         }
-                        self.uploadFile(url: url, serverUrl: serverUrl)
+                        self.uploadFile(url: url, serverUrl: serverUrl, controller: controller)
                     }
                 }
             }
@@ -95,23 +95,33 @@ class NCDragDrop: NSObject {
         }
     }
 
-    func uploadFile(url: URL, serverUrl: String) {
+    func uploadFile(url: URL, serverUrl: String, controller: NCMainTabBarController?) {
         do {
             let data = try Data(contentsOf: url)
             Task {
                 let ocId = NSUUID().uuidString
-                let fileName = await NCNetworking.shared.createFileName(fileNameBase: url.lastPathComponent, account: appDelegate.account, serverUrl: serverUrl)
+                let session = NCSession.shared.getSession(controller: controller)
+                let fileName = await NCNetworking.shared.createFileName(fileNameBase: url.lastPathComponent, account: session.account, serverUrl: serverUrl)
                 let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
 
                 try data.write(to: URL(fileURLWithPath: fileNamePath))
-                let metadataForUpload = await NCManageDatabase.shared.createMetadata(account: appDelegate.account, user: appDelegate.user, userId: appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: ocId, serverUrl: serverUrl, urlBase: self.appDelegate.urlBase, url: "", contentType: "")
+
+                let metadataForUpload = await database.createMetadata(fileName: fileName,
+                                                                      fileNameView: fileName,
+                                                                      ocId: ocId,
+                                                                      serverUrl: serverUrl,
+                                                                      url: "",
+                                                                      contentType: "",
+                                                                      session: session,
+                                                                      sceneIdentifier: controller?.sceneIdentifier)
+
                 metadataForUpload.session = NCNetworking.shared.sessionUploadBackground
                 metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
                 metadataForUpload.size = utilityFileSystem.getFileSize(filePath: fileNamePath)
                 metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
                 metadataForUpload.sessionDate = Date()
 
-                NCManageDatabase.shared.addMetadata(metadataForUpload)
+                database.addMetadata(metadataForUpload)
             }
         } catch {
             NCContentPresenter().showError(error: NKError(error: error))
@@ -120,36 +130,16 @@ class NCDragDrop: NSObject {
     }
 
     func copyFile(metadatas: [tableMetadata], serverUrl: String) {
-        Task {
-            let error = NKError()
-            var ocId: [String] = []
-            for metadata in metadatas where error == .success {
-                let error = await NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: false)
-                if error == .success {
-                    ocId.append(metadata.ocId)
-                }
-            }
-            if error != .success {
-                NCContentPresenter().showError(error: error)
-            }
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyFile, userInfo: ["ocId": ocId, "error": error, "dragdrop": true])
+        for metadata in metadatas {
+            NCNetworking.shared.copyMetadata(metadata, serverUrlTo: serverUrl, overwrite: false)
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["ocId": [metadata.ocId], "serverUrl": metadata.serverUrl, "account": metadata.account, "dragdrop": true, "type": "copy"])
         }
     }
 
     func moveFile(metadatas: [tableMetadata], serverUrl: String) {
-        Task {
-            var error = NKError()
-            var ocId: [String] = []
-            for metadata in metadatas where error == .success {
-                error = await NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: false)
-                if error == .success {
-                    ocId.append(metadata.ocId)
-                }
-            }
-            if error != .success {
-                NCContentPresenter().showError(error: error)
-            }
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterMoveFile, userInfo: ["ocId": ocId, "error": error, "dragdrop": true])
+        for metadata in metadatas {
+            NCNetworking.shared.moveMetadata(metadata, serverUrlTo: serverUrl, overwrite: false)
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCopyMoveFile, userInfo: ["ocId": [metadata.ocId], "serverUrl": metadata.serverUrl, "account": metadata.account, "dragdrop": true, "type": "move"])
         }
     }
 }

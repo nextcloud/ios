@@ -22,11 +22,12 @@
 //
 
 import Foundation
+import UIKit
 import Queuer
 import NextcloudKit
 import RealmSwift
 
-class NCCollectionViewUnifiedSearch: ConcurrentOperation {
+class NCCollectionViewUnifiedSearch: ConcurrentOperation, @unchecked Sendable {
     var collectionViewCommon: NCCollectionViewCommon
     var metadatas: [tableMetadata]
     var searchResult: NKSearchResult

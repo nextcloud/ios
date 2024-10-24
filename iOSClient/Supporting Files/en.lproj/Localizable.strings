@@ -129,6 +129,7 @@
 "_no_permission_add_file_"  = "You don't have permission to add files";
 "_no_permission_delete_file_" = "You don't have permission to delete files";
 "_no_permission_modify_file_" = "You don't have permission to modify files";
+"_no_permission_favorite_file_" = "You don't have permission to add the file to your favorites";
 "_request_upload_new_ver_"  = "The file has been modified, do you want to upload the new version?";
 "_add_folder_info_"         = "Add folder info";
 "_back_"                    = "Back";
@@ -161,6 +162,7 @@
 "_maximum_"                 = "Maximum";
 "_error_occurred_"          = "An error occurred, please try again";
 "_retry_"                   = "Retry";
+"_images_"                  = "Images";
 
 /* MARK: Files lock */
 
@@ -212,7 +214,7 @@
 "_copy_failed_"             = "Copy failed";
 "_certificate_installed_"   = "Certificate installed";
 "_remove_local_account_"    = "Remove local account";
-"_want_delete_account_"     = "Do you want to remove local account";
+"_want_delete_account_"     = "Do you want to remove local account?";
 "_prevent_http_redirection_"= "The redirection in HTTP is not permitted";
 "_pdf_vertical_"            = "PDF vertical display";
 "_pdf_horizontal_"          = "PDF horizontal display";
@@ -473,7 +475,6 @@
 "_access_photo_location_not_enabled_"       = "Access to Photos and Location not enabled";
 "_access_photo_location_not_enabled_msg_"   = "Please go to \"Settings\" and turn on \"Photo Access\" and \"Location Services\"";
 "_tutorial_photo_view_"                     = "No photos or videos uploaded yet";
-"_create_full_upload_"                      = "Creating archive … May take a long time. During this process, keep the application active during the transfer as well.";
 "_error_createsubfolders_upload_"           = "Error creating subfolders";
 "_activate_autoupload_"                     = "Enable auto upload";
 "_remove_photo_CameraRoll_"                 = "Remove from camera roll";
@@ -605,10 +606,16 @@
 "_status_wait_download_"        = "Waiting for download";
 "_status_in_download_"          = "In download";
 "_status_downloading_"          = "Downloading";
-"_status_wait_upload_"          = "Waiting for upload";
+"_status_wait_upload_"          = "Waiting to upload";
+"_status_wait_create_folder_"   = "Waiting to create the folder";
+"_status_wait_delete_"          = "Waiting to delete";
+"_status_wait_rename_"          = "Waiting to rename";
+"_status_wait_favorite_"        = "Waiting to change favorite";
+"_status_wait_copy_"            = "Waiting to copy";
+"_status_wait_move_"            = "Waiting to move";
 "_status_in_upload_"            = "In upload";
 "_status_uploading_"            = "Uploading";
-"_status_upload_error_"         = "Error, waiting for upload";
+"_status_upload_error_"         = "Error, waiting to upload";
 "_select_media_folder_"         = "Set Media folder";
 "_media_viewimage_show_"        = "Show only images";
 "_media_viewvideo_show_"        = "Show only video";
@@ -625,6 +632,8 @@
 "_good_afternoon_"              = "Good afternoon";
 "_good_evening_"                = "Good evening";
 "_good_night_"                  = "Good night";
+"_servers_"                     = "Servers";
+"_select_server_"               = "Please select a server...";
 
 // MARK: Share
 
@@ -910,6 +919,7 @@
 "_enter_passphrase_"        = "Enter passphrase (12 words)";
 "_show_more_results_"       = "Show more results";
 "_waiting_for_"             = "Waiting for:";
+"_waiting_"                 = "Waiting …";
 "_reachable_wifi_"          = "network reachable via Wi-Fi or cable";
 "_password_not_present_"    = "Please re-insert your credentials.";
 "_copy_passphrase_"         = "Copy passphrase";
@@ -959,8 +969,8 @@
 "_creation_"                = "Creation";
 "_modified_"                = "Modified";
 "_group_folders_"           = "Group folders";
-"_play_from_files_"         = "Play movie by Files";
-"_play_from_url_"           = "Play movie by URL";
+"_play_from_files_"         = "Play movie from a file";
+"_play_from_url_"           = "Play movie from URL";
 "_valid_video_url_"         = "Insert a valid URL";
 "_deletion_progess_"        = "Deletion in progress";
 "_copying_progess_"         = "Copying in progress";
@@ -994,6 +1004,13 @@
 "_account_settings_"        = "Account settings";
 "_users_"                   = "Users";
 "_users_footer_"            = "Every time the app is reactivated, the account will be requested.";
+"_additional_view_options_" = "Additional view options";
+"_while_charging_"          = "While charging";
+"_additional_options_"      = "Additional options";
+"_keep_screen_awake_"       = "Keep screen awake while transferring files";
+"_error_not_found_"         = "The requested resource could not be found";
+"_error_conflict_"          = "The request could not be completed due to a conflict with the current state of the resource";
+"_error_precondition_"      = "The server does not meet one of the preconditions that the requester";
 
 // Video
 "_select_trace_"            = "Select the trace";
@@ -1016,8 +1033,16 @@
 "_user_"                    = "User";
 "_add_subtitle_"            = "Add an external subtitle";
 "_add_audio_"               = "Add an external audio";
-"_maintenance_mode_"        = "Server is currently in maintenance mode";
+"_server_maintenance_mode_" = "Server is currently in maintenance mode";
 "_upload_foreground_msg_"   = "Do not close %@ to complete the transfer …";
+"_upload_background_msg_"   = "Files upload in progress …";
+"_create_folder_error_"     = "An error has occurred while creating the folder:\n%@.\n\nPlease resolve the issue as soon as possible.\n\nAll uploads are suspended until the problem is resolved.\n";
+"_rename_file_error_"       = "An error has occurred while renaming the file:\n%@.";
+"_creating_dir_progress_"   = "Creating directories in progress … keep the application active";
+"_creating_db_photo_progress"   = "Creating photo archive in progress … keep the application active";
+"_account_unauthorized_"    = "Warning, %@, you are not authorized, your account has been deleted, if you have changed your password, re-authenticate.";
+"_folder_offline_desc_"     = "Even without an internet connection, you can organize your folders, create files. Once you're back online, your pending actions will automatically sync.";
+"_offline_not_allowed_"     = "This operation is not allowed in offline mode";
 
 // Tip
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails.";
@@ -1092,8 +1117,9 @@
 "_poll_desc_"                    = "Please complete the log in process in your browser";
 
 // MARK: File name validator
-"_file_name_validator_error_ends_with_space_period_" = "Name ends with a space or a period.";
+"_file_name_validator_error_ends_with_space_period_" = "Name must not contain spaces at the beginning or end.";
 "_file_name_validator_error_reserved_name_" = "\"%@\" is a forbidden name.";
 "_file_name_validator_error_forbidden_file_extension_" = "\".%@\" is a forbidden file extension.";
 "_file_name_validator_error_invalid_character_" = "Name contains an invalid character: \"%@\".";
+"_file_name_validator_error_space_" = "Name must not contain spaces at the beginning or end.";
 "_please_rename_file_"      = "Please rename the file or folder.";

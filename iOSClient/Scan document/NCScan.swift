@@ -24,6 +24,7 @@
 import UIKit
 import Photos
 import EasyTipView
+import SwiftUI
 
 class NCScan: UIViewController, NCScanCellCellDelegate {
 
@@ -37,6 +38,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     @IBOutlet weak var segmentControlFilter: UISegmentedControl!
 
     public var serverUrl: String?
+    public var controller: NCMainTabBarController!
 
     // Data Source for collectionViewSource
     internal var itemsSource: [String] = []
@@ -48,8 +50,11 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     internal let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     internal let utilityFileSystem = NCUtilityFileSystem()
     internal let utility = NCUtility()
+    internal let database = NCManageDatabase.shared
     internal var filter: NCGlobal.TypeFilterScanDocument = NCKeychain().typeFilterScanDocument
-
+    internal var session: NCSession.Session {
+        NCSession.shared.getSession(controller: controller)
+    }
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -148,8 +153,12 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
         for image in imagesDestination {
             images.append(filter(image: image)!)
         }
-        let serverUrl = self.serverUrl ?? utilityFileSystem.getHomeServer(urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-        let vc = NCHostingUploadScanDocumentView().makeShipDetailsUI(images: images, userBaseUrl: appDelegate, serverUrl: serverUrl)
+        let serverUrl = self.serverUrl ?? utilityFileSystem.getHomeServer(session: session)
+        let model = NCUploadScanDocument(images: images, serverUrl: serverUrl, controller: controller)
+        let details = UploadScanDocumentView(model: model)
+        let vc = UIHostingController(rootView: details)
+
+        vc.title = NSLocalizedString("_save_", comment: "")
 
         self.navigationController?.pushViewController(vc, animated: true)
     }
@@ -309,9 +318,14 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
     }
 
     func imageTapped(with index: Int, sender: Any) {
+        guard index < self.itemsSource.count else {
+            return collectionViewSource.reloadData()
+        }
         let fileName = self.itemsSource[index]
         let fileNamePath = utilityFileSystem.directoryScan + "/" + fileName
-        guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNamePath)), let image = UIImage(data: data) else { return }
+        guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNamePath)), let image = UIImage(data: data) else {
+            return collectionViewSource.reloadData()
+        }
 
         imagesDestination.append(image)
         itemsDestination.append(fileName)
@@ -321,7 +335,7 @@ class NCScan: UIViewController, NCScanCellCellDelegate {
 
 extension NCScan: EasyTipViewDelegate {
     func showTip() {
-        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCScanAddImage) {
+        if !self.database.tipExists(NCGlobal.shared.tipNCScanAddImage) {
             var preferences = EasyTipView.Preferences()
             preferences.drawing.foregroundColor = .white
             preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
@@ -343,14 +357,14 @@ extension NCScan: EasyTipViewDelegate {
     }
 
     func easyTipViewDidTap(_ tipView: EasyTipView) {
-        NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCScanAddImage)
+        self.database.addTip(NCGlobal.shared.tipNCScanAddImage)
     }
 
     func easyTipViewDidDismiss(_ tipView: EasyTipView) { }
 
     func dismissTip() {
-        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCScanAddImage) {
-            NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCScanAddImage)
+        if !self.database.tipExists(NCGlobal.shared.tipNCScanAddImage) {
+            self.database.addTip(NCGlobal.shared.tipNCScanAddImage)
         }
         appDelegate.tipView?.dismiss()
         appDelegate.tipView = nil

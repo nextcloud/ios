@@ -5,6 +5,7 @@
 //
 
 import Foundation
+import UIKit
 
 class ThreadSafeDictionary<V: Hashable, T>: Collection {
 

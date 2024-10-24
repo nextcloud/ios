@@ -66,10 +66,10 @@ class NCUserStatus: UIViewController {
     private var statusPredefinedStatuses: [NKUserStatus] = []
     private let utility = NCUtility()
     private var clearAtTimestamp: Double = 0     // Unix Timestamp representing the time to clear the status
-
     private let borderWidthButton: CGFloat = 1.5
-    private let borderColorButton: CGColor = NCBrandColor.shared.brandElement.cgColor
-    private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    private var borderColorButton: CGColor = NCBrandColor.shared.customer.cgColor
+
+    public var account: String = ""
 
     // MARK: - View Life Cycle
 
@@ -82,6 +82,7 @@ class NCUserStatus: UIViewController {
         view.backgroundColor = .systemBackground
         tableView.backgroundColor = .systemBackground
 
+        borderColorButton = NCBrandColor.shared.getElement(account: account).cgColor
         buttonCancel.image = utility.loadImage(named: "xmark", colors: [NCBrandColor.shared.iconImageColor])
 
         onlineButton.layer.cornerRadius = 10
@@ -163,9 +164,9 @@ class NCUserStatus: UIViewController {
 
         setStatusMessageButton.layer.cornerRadius = 20
         setStatusMessageButton.layer.masksToBounds = true
-        setStatusMessageButton.backgroundColor = NCBrandColor.shared.brandElement
+        setStatusMessageButton.backgroundColor = NCBrandColor.shared.getElement(account: account)
         setStatusMessageButton.setTitle(NSLocalizedString("_set_status_message_", comment: ""), for: .normal)
-        setStatusMessageButton.setTitleColor(NCBrandColor.shared.brandText, for: .normal)
+        setStatusMessageButton.setTitleColor(NCBrandColor.shared.getText(account: account), for: .normal)
 
         getStatus()
     }
@@ -173,7 +174,7 @@ class NCUserStatus: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        NextcloudKit.shared.getUserStatus(account: appDelegate.account) { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, _, _, error in
+        NextcloudKit.shared.getUserStatus(account: account) { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, _, _, error in
             if error == .success {
                 NCManageDatabase.shared.setAccountUserStatus(userStatusClearAt: clearAt, userStatusIcon: icon, userStatusMessage: message, userStatusMessageId: messageId, userStatusMessageIsPredefined: messageIsPredefined, userStatusStatus: status, userStatusStatusIsUserDefined: statusIsUserDefined, account: account)
             }
@@ -206,7 +207,7 @@ class NCUserStatus: UIViewController {
         self.invisibleButton.layer.borderWidth = 0
         self.invisibleButton.layer.borderColor = nil
 
-        NextcloudKit.shared.setUserStatus(status: "online", account: appDelegate.account) { _, error in
+        NextcloudKit.shared.setUserStatus(status: "online", account: account) { _, _, error in
             self.dismissIfError(error)
         }
     }
@@ -221,7 +222,7 @@ class NCUserStatus: UIViewController {
         self.invisibleButton.layer.borderWidth = 0
         self.invisibleButton.layer.borderColor = nil
 
-        NextcloudKit.shared.setUserStatus(status: "away", account: appDelegate.account) { _, error in
+        NextcloudKit.shared.setUserStatus(status: "away", account: account) { _, _, error in
             self.dismissIfError(error)
         }
     }
@@ -236,7 +237,7 @@ class NCUserStatus: UIViewController {
         self.invisibleButton.layer.borderWidth = 0
         self.invisibleButton.layer.borderColor = nil
 
-        NextcloudKit.shared.setUserStatus(status: "dnd", account: appDelegate.account) { _, error in
+        NextcloudKit.shared.setUserStatus(status: "dnd", account: account) { _, _, error in
             self.dismissIfError(error)
         }
     }
@@ -251,7 +252,7 @@ class NCUserStatus: UIViewController {
         self.invisibleButton.layer.borderWidth = self.borderWidthButton
         self.invisibleButton.layer.borderColor = self.borderColorButton
 
-        NextcloudKit.shared.setUserStatus(status: "invisible", account: appDelegate.account) { _, error in
+        NextcloudKit.shared.setUserStatus(status: "invisible", account: account) { _, _, error in
             self.dismissIfError(error)
         }
     }
@@ -302,7 +303,7 @@ class NCUserStatus: UIViewController {
     }
 
     @IBAction func actionClearStatusMessage(_ sender: UIButton) {
-        NextcloudKit.shared.clearMessage(account: appDelegate.account) { _, error in
+        NextcloudKit.shared.clearMessage(account: account) { _, _, error in
             if error != .success {
                 NCContentPresenter().showError(error: error)
             }
@@ -314,7 +315,7 @@ class NCUserStatus: UIViewController {
     @IBAction func actionSetStatusMessage(_ sender: UIButton) {
         guard let message = statusMessageTextField.text else { return }
 
-        NextcloudKit.shared.setCustomMessageUserDefined(statusIcon: statusMessageEmojiTextField.text, message: message, clearAt: clearAtTimestamp, account: appDelegate.account) { _, error in
+        NextcloudKit.shared.setCustomMessageUserDefined(statusIcon: statusMessageEmojiTextField.text, message: message, clearAt: clearAtTimestamp, account: account) { _, _, error in
             if error != .success {
                 NCContentPresenter().showError(error: error)
             }
@@ -326,7 +327,7 @@ class NCUserStatus: UIViewController {
     // MARK: - Networking
 
     func getStatus() {
-        NextcloudKit.shared.getUserStatus(account: appDelegate.account) { account, clearAt, icon, message, _, _, status, _, _, _, error in
+        NextcloudKit.shared.getUserStatus(account: account) { account, clearAt, icon, message, _, _, status, _, _, _, error in
             if error == .success || error.errorCode == NCGlobal.shared.errorResourceNotFound {
 
                 if icon != nil {
@@ -518,7 +519,7 @@ extension NCUserStatus: UITableViewDelegate {
         let status = statusPredefinedStatuses[indexPath.row]
 
         if let messageId = status.id {
-            NextcloudKit.shared.setCustomMessagePredefined(messageId: messageId, clearAt: 0, account: appDelegate.account) { _, error in
+            NextcloudKit.shared.setCustomMessagePredefined(messageId: messageId, clearAt: 0, account: account) { _, _, error in
                 cell.isSelected = false
 
                 if error == .success {
@@ -565,6 +566,7 @@ extension NCUserStatus: UITableViewDataSource {
 
 struct UserStatusView: UIViewControllerRepresentable {
     @Binding var showUserStatus: Bool
+    var account: String
 
     class Coordinator: NSObject {
         var parent: UserStatusView
@@ -577,6 +579,8 @@ struct UserStatusView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UINavigationController {
         let storyboard = UIStoryboard(name: "NCUserStatus", bundle: nil)
         let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController
+        let viewController = navigationController!.topViewController as? NCUserStatus
+        viewController?.account = account
         return navigationController!
     }
 

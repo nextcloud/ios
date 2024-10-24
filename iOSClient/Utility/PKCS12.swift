@@ -20,6 +20,7 @@
 //
 
 import Foundation
+import UIKit
 
 typealias UserCertificate = (data: Data, password: String)
 

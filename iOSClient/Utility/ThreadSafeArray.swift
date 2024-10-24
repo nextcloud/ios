@@ -23,6 +23,7 @@
 //
 
 import Foundation
+import UIKit
 
 /// A thread-safe array.
 public class ThreadSafeArray<Element> {

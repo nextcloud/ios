@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import UIKit
 import QuickLook
 import NextcloudKit
 
@@ -38,8 +39,7 @@ extension NCScan: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if collectionView == collectionViewSource {
-            guard let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "cell1", for: indexPath) as? NCScanCell) else { return NCScanCell() }
-
+            let cell = (collectionView.dequeueReusableCell(withReuseIdentifier: "cell1", for: indexPath) as? NCScanCell)!
             let fileNamePath = utilityFileSystem.directoryScan + "/" + itemsSource[indexPath.row]
             guard let data = try? Data(contentsOf: URL(fileURLWithPath: fileNamePath)), var image = UIImage(data: data) else { return cell }
             let imageWidthInPixels = image.size.width * image.scale

@@ -1,5 +1,5 @@
 //
-//  NCGridMediaCell.swift
+//  NCMediaCell.swift
 //  Nextcloud
 //
 //  Created by Marino Faggiana on 12/02/2019.
@@ -23,7 +23,7 @@
 
 import UIKit
 
-class NCGridMediaCell: UICollectionViewCell {
+class NCMediaCell: UICollectionViewCell {
 
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
@@ -31,8 +31,6 @@ class NCGridMediaCell: UICollectionViewCell {
     @IBOutlet weak var imageStatus: UIImageView!
 
     var ocId: String = ""
-    var user: String = ""
-    var indexPath = IndexPath()
     var date: Date?
 
     override func awakeFromNib() {
@@ -46,13 +44,10 @@ class NCGridMediaCell: UICollectionViewCell {
     }
 
     func initCell() {
-        imageItem.backgroundColor = .secondarySystemBackground
         imageStatus.image = nil
         imageItem.image = nil
         imageVisualEffect.alpha = 0.4
-        imageSelect.image = NCImageCache.images.checkedYes
-        imageVisualEffect.isHidden = true
-        imageSelect.isHidden = true
+        imageSelect.image = NCImageCache.shared.getImageCheckedYes()
     }
 
     func selected(_ status: Bool) {

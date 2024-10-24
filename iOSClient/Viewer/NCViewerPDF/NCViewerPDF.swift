@@ -25,7 +25,6 @@ import UIKit
 import PDFKit
 import EasyTipView
 import NextcloudKit
-import JGProgressHUD
 
 class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
@@ -73,7 +72,9 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         } else if let metadata = self.metadata {
             filePath = NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
             pdfDocument = PDFDocument(url: URL(fileURLWithPath: filePath))
-            navigationItem.rightBarButtonItem = UIBarButtonItem(image: NCImageCache.images.buttonMore, style: .plain, target: self, action: #selector(self.openMenuMore))
+            if NCNetworking.shared.isOnline {
+                navigationItem.rightBarButtonItem = UIBarButtonItem(image: NCImageCache.shared.getImageButtonMore(), style: .plain, target: self, action: #selector(self.openMenuMore))
+            }
         }
         defaultBackgroundColor = pdfView.backgroundColor
         view.backgroundColor = defaultBackgroundColor
@@ -120,8 +121,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
         NotificationCenter.default.addObserver(self, selector: #selector(favoriteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFavoriteFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(deleteFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(renameFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(moveFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(uploadStartFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadStartFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
@@ -136,8 +135,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterFavoriteFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterDeleteFile), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterRenameFile), object: nil)
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterMoveFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUploadedFile), object: nil)
 
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil)
@@ -283,7 +280,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     // MARK: - NotificationCenter
 
     @objc func uploadStartFile(_ notification: NSNotification) {
-
         guard let userInfo = notification.userInfo as NSDictionary?,
               let serverUrl = userInfo["serverUrl"] as? String,
               serverUrl == self.metadata?.serverUrl,
@@ -295,7 +291,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     }
 
     @objc func uploadedFile(_ notification: NSNotification) {
-
         guard let userInfo = notification.userInfo as NSDictionary?,
               let serverUrl = userInfo["serverUrl"] as? String,
               serverUrl == self.metadata?.serverUrl,
@@ -306,18 +301,15 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
             return
         }
 
-        DispatchQueue.main.async {
-            NCActivityIndicator.shared.stop()
-            if error == .success {
-                self.pdfDocument = PDFDocument(url: URL(fileURLWithPath: self.filePath))
-                self.pdfView.document = self.pdfDocument
-                self.pdfView.layoutDocumentView()
-            }
+        NCActivityIndicator.shared.stop()
+        if error == .success {
+            self.pdfDocument = PDFDocument(url: URL(fileURLWithPath: self.filePath))
+            self.pdfView.document = self.pdfDocument
+            self.pdfView.layoutDocumentView()
         }
     }
 
     @objc func favoriteFile(_ notification: NSNotification) {
-
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               ocId == self.metadata?.ocId,
@@ -328,8 +320,12 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     }
 
     @objc func deleteFile(_ notification: NSNotification) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let error = userInfo["error"] as? NKError else { return }
 
-        guard let userInfo = notification.userInfo as NSDictionary? else { return }
+        if error != .success {
+            NCContentPresenter().showError(error: error)
+        }
 
         if let ocId = userInfo["ocId"] as? [String],
            let ocId = ocId.first,
@@ -338,31 +334,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         }
     }
 
-    @objc func moveFile(_ notification: NSNotification) {
-
-        guard let userInfo = notification.userInfo as NSDictionary? else { return }
-
-        if let ocIds = userInfo["ocId"] as? [String],
-           let ocId = ocIds.first,
-           let metadataNew = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-            self.metadata = metadataNew
-        }
-    }
-
-    @objc func renameFile(_ notification: NSNotification) {
-
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let ocId = userInfo["ocId"] as? String,
-              ocId == self.metadata?.ocId,
-              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
-        else { return }
-
-        self.metadata = metadata
-        navigationItem.title = metadata.fileNameView
-    }
-
     @objc func searchText() {
-
         if let viewerPDFSearch = UIStoryboard(name: "NCViewerPDF", bundle: nil).instantiateViewController(withIdentifier: "NCViewerPDFSearch") as? NCViewerPDFSearch {
             viewerPDFSearch.delegate = self
             viewerPDFSearch.pdfDocument = pdfDocument
@@ -372,11 +344,10 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     }
 
     @objc func goToPage() {
-
         guard let pdfDocument = pdfView.document else { return }
-
         let alertMessage = NSString(format: NSLocalizedString("_this_document_has_%@_pages_", comment: "") as NSString, "\(pdfDocument.pageCount)") as String
         let alertController = UIAlertController(title: NSLocalizedString("_go_to_page_", comment: ""), message: alertMessage, preferredStyle: .alert)
+
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
 
         alertController.addTextField(configurationHandler: { textField in
@@ -396,19 +367,17 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     // MARK: - Action
 
     @objc func openMenuMore() {
-
         guard let metadata = self.metadata else { return }
         if imageIcon == nil {
             imageIcon = UIImage(named: "file_pdf")
         }
 
-        NCViewer().toggleMenu(viewController: self, metadata: metadata, webView: false, imageIcon: imageIcon)
+        NCViewer().toggleMenu(controller: (self.tabBarController as? NCMainTabBarController), metadata: metadata, webView: false, imageIcon: imageIcon)
     }
 
     // MARK: - Gesture Recognizer
 
     @objc func tapPdfView(_ recognizer: UITapGestureRecognizer) {
-
         if pdfThumbnailScrollView.isHidden {
             if navigationController?.isNavigationBarHidden ?? false {
                 navigationController?.setNavigationBarHidden(false, animated: true)
@@ -418,7 +387,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
         }
 
         UIView.animate(withDuration: 0.0, animations: {
-
             self.pdfContainerTopAnchor?.isActive = false
             if let barHidden = self.navigationController?.isNavigationBarHidden, barHidden {
                 self.pdfContainerTopAnchor = self.pdfContainer.topAnchor.constraint(equalTo: self.view.topAnchor)
@@ -433,14 +401,12 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     }
 
     @objc func gestureClosePdfThumbnail(_ recognizer: UIScreenEdgePanGestureRecognizer) {
-
         if recognizer.state == .recognized {
             closePdfThumbnail()
         }
     }
 
     @objc func gestureOpenPdfThumbnail(_ recognizer: UIScreenEdgePanGestureRecognizer) {
-
         guard let pdfDocument = pdfView.document, !pdfDocument.isLocked else { return }
         openPdfThumbnail()
     }
@@ -448,12 +414,11 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     // MARK: - OPEN / CLOSE Thumbnail
 
     func openPdfThumbnail() {
-
         self.dismissTip()
         self.pdfThumbnailScrollView.isHidden = false
         self.pdfThumbnailScrollViewWidthAnchor?.constant = thumbnailViewWidth + (window?.safeAreaInsets.right ?? 0)
-
         self.pdfThumbnailScrollViewTopAnchor?.isActive = false
+
         if let barHidden = self.navigationController?.isNavigationBarHidden, barHidden {
             self.pdfThumbnailScrollViewTopAnchor = self.pdfThumbnailScrollView.topAnchor.constraint(equalTo: self.view.topAnchor)
         } else {
@@ -469,16 +434,12 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     }
 
     func closePdfThumbnail() {
-
         guard !self.pdfThumbnailScrollView.isHidden else { return }
 
         UIView.animate(withDuration: animateDuration) {
-
             self.pdfThumbnailScrollViewTrailingAnchor?.constant = self.thumbnailViewWidth + (self.window?.safeAreaInsets.right ?? 0)
             self.pdfContainer.layoutIfNeeded()
-
         } completion: { _ in
-
             self.pdfThumbnailScrollView.isHidden = true
         }
     }
@@ -486,15 +447,12 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     // MARK: -
 
     @objc func handlePageChange() {
-
         guard let curPage = pdfView.currentPage?.pageRef?.pageNumber else { pageView.alpha = 0; return }
         guard let totalPages = pdfView.document?.pageCount else { return }
-
         let visibleRect = CGRect(x: pdfThumbnailScrollView.contentOffset.x, y: pdfThumbnailScrollView.contentOffset.y, width: pdfThumbnailScrollView.bounds.size.width, height: pdfThumbnailScrollView.bounds.size.height)
         let centerPoint = CGPoint(x: visibleRect.size.width / 2, y: visibleRect.size.height / 2)
         let currentPageY = CGFloat(curPage) * thumbnailViewHeight + CGFloat(curPage) * thumbnailPadding
         var gotoY = currentPageY - centerPoint.y
-
         let startY = visibleRect.origin.y < 0 ? 0 : (visibleRect.origin.y + thumbnailViewHeight)
         let endY = visibleRect.origin.y + visibleRect.height
 
@@ -520,7 +478,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     }
 
     func searchPdfSelection(_ pdfSelection: PDFSelection) {
-
         removeAllAnnotations()
 
         pdfSelection.pages.forEach { page in
@@ -536,7 +493,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     }
 
     private func selectPage(with label: String) {
-
         guard let pdf = pdfView.document else { return }
 
         if let pageNr = Int(label) {
@@ -555,7 +511,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
     }
 
     func removeAllAnnotations() {
-
         guard let document = pdfDocument else { return }
 
         for i in 0..<document.pageCount {
@@ -570,7 +525,6 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 }
 
 extension NCViewerPDF: UIGestureRecognizerDelegate {
-
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         return true
     }

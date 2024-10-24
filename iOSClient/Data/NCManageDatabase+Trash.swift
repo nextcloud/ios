@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import UIKit
 import RealmSwift
 import NextcloudKit
 
@@ -113,24 +114,22 @@ extension NCManageDatabase {
         }
     }
 
-    func getTrash(filePath: String, account: String) -> [tableTrash] {
+    func getResultsTrash(filePath: String, account: String) -> Results<tableTrash>? {
         do {
             let realm = try Realm()
             realm.refresh()
-            let results = realm.objects(tableTrash.self).filter("account == %@ AND filePath == %@", account, filePath).sorted(byKeyPath: "trashbinDeletionTime", ascending: false)
-            return Array(results.map { tableTrash.init(value: $0) })
+            return realm.objects(tableTrash.self).filter("account == %@ AND filePath == %@", account, filePath).sorted(byKeyPath: "trashbinDeletionTime", ascending: false)
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access to database: \(error)")
         }
-        return []
+        return nil
     }
 
-    func getTrashItem(fileId: String, account: String) -> tableTrash? {
+    func getResultTrashItem(fileId: String, account: String) -> tableTrash? {
         do {
             let realm = try Realm()
             realm.refresh()
-            guard let result = realm.objects(tableTrash.self).filter("account == %@ AND fileId == %@", account, fileId).first else { return nil }
-            return tableTrash.init(value: result)
+            return realm.objects(tableTrash.self).filter("account == %@ AND fileId == %@", account, fileId).first
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access to database: \(error)")
         }

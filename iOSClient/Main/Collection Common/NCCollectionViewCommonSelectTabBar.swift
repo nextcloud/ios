@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import UIKit
 import SwiftUI
 
 protocol NCCollectionViewCommonSelectTabBarDelegate: AnyObject {
@@ -89,9 +90,8 @@ class NCCollectionViewCommonSelectTabBar: ObservableObject {
         return hostingController.view.isHidden
     }
 
-    func update(selectOcId: [String], metadatas: [tableMetadata]? = nil, userId: String? = nil) {
+    func update(fileSelect: [String], metadatas: [tableMetadata]? = nil, userId: String? = nil) {
         if let metadatas {
-
             isAnyOffline = false
             canSetAsOffline = true
             isAnyDirectory = false
@@ -120,15 +120,17 @@ class NCCollectionViewCommonSelectTabBar: ObservableObject {
                 guard !isAnyOffline else { continue }
 
                 if metadata.directory,
-                   let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl + "/" + metadata.fileName)) {
+                   let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@",
+                                                                                                    metadata.account,
+                                                                                                    metadata.serverUrl + "/" + metadata.fileName)) {
                     isAnyOffline = directory.offline
                 } else if let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
                     isAnyOffline = localFile.offline
                 } // else: file is not offline, continue
             }
-            enableLock = !isAnyDirectory && canUnlock && !NCGlobal.shared.capabilityFilesLockVersion.isEmpty
+            enableLock = !isAnyDirectory && canUnlock && !NCCapabilities.shared.getCapabilities(account: controller?.account).capabilityFilesLockVersion.isEmpty
         }
-        isSelectedEmpty = selectOcId.isEmpty
+        isSelectedEmpty = fileSelect.isEmpty
     }
 }
 

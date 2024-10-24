@@ -39,6 +39,7 @@ struct NCSettingsView: View {
     @ObservedObject var model: NCSettingsModel
 
     var body: some View {
+        let capabilities = NCCapabilities.shared.getCapabilities(account: model.controller?.account)
         Form {
             /// `Auto Upload` Section
             Section(content: {
@@ -82,28 +83,28 @@ struct NCSettingsView: View {
                 }
                 /// Enable Touch ID
                 Toggle(NSLocalizedString("_enable_touch_face_id_", comment: ""), isOn: $model.enableTouchID)
-                    .tint(Color(NCBrandColor.shared.brandElement))
+                    .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                     .font(.system(size: 16))
                     .onChange(of: model.enableTouchID) { _ in
                         model.updateTouchIDSetting()
                     }
                 /// Lock no screen
                 Toggle(NSLocalizedString("_lock_protection_no_screen_", comment: ""), isOn: $model.lockScreen)
-                    .tint(Color(NCBrandColor.shared.brandElement))
+                    .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                     .font(.system(size: 16))
                     .onChange(of: model.lockScreen) { _ in
                         model.updateLockScreenSetting()
                     }
                 /// Privacy screen
                 Toggle(NSLocalizedString("_privacy_screen_", comment: ""), isOn: $model.privacyScreen)
-                    .tint(Color(NCBrandColor.shared.brandElement))
+                    .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                     .font(.system(size: 16))
                     .onChange(of: model.privacyScreen) { _ in
                         model.updatePrivacyScreenSetting()
                     }
                 /// Reset app wrong attempts
                 Toggle(NSLocalizedString("_reset_wrong_passcode_", comment: ""), isOn: $model.resetWrongAttempts)
-                    .tint(Color(NCBrandColor.shared.brandElement))
+                    .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                     .font(.system(size: 16))
                     .onChange(of: model.resetWrongAttempts) { _ in
                         model.updateResetWrongAttemptsSetting()
@@ -167,7 +168,7 @@ struct NCSettingsView: View {
             Section(content: {
                 Toggle(NSLocalizedString("_settings_account_request_", comment: ""), isOn: $model.accountRequest)
                     .font(.system(size: 16))
-                    .tint(Color(NCBrandColor.shared.brandElement))
+                    .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                     .onChange(of: model.accountRequest, perform: { _ in
                         model.updateAccountRequest()
                     })
@@ -179,7 +180,7 @@ struct NCSettingsView: View {
                     .lineSpacing(1)
             })
             /// E2EEncryption` Section
-            if NCGlobal.shared.capabilityE2EEEnabled && NCGlobal.shared.e2eeVersions.contains(NCGlobal.shared.capabilityE2EEApiVersion) {
+            if capabilities.capabilityE2EEEnabled && NCGlobal.shared.e2eeVersions.contains(capabilities.capabilityE2EEApiVersion) {
                 E2EESection(model: model)
             }
             /// `Advanced` Section
@@ -238,23 +239,25 @@ struct NCSettingsView: View {
                 .sheet(isPresented: $showBrowser) {
                     NCBrowserWebView(urlBase: URL(string: NCBrandOptions.shared.privacy)!, browserTitle: NSLocalizedString("_privacy_legal_", comment: ""))
                 }
-                /// Source Code
-                Button(action: {
-                    showSourceCode.toggle()
-                }, label: {
-                    HStack {
-                        Image("gitHub")
-                            .resizable()
-                            .renderingMode(.template)
-                            .frame(width: 25, height: 25)
-                            .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
-                        Text(NSLocalizedString("_source_code_", comment: ""))
+                /// Source Code Nextcloud App
+                if !NCBrandOptions.shared.disable_source_code_in_settings {
+                    Button(action: {
+                        showSourceCode.toggle()
+                    }, label: {
+                        HStack {
+                            Image("gitHub")
+                                .resizable()
+                                .renderingMode(.template)
+                                .frame(width: 25, height: 25)
+                                .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
+                            Text(NSLocalizedString("_source_code_", comment: ""))
+                        }
+                        .font(.system(size: 16))
+                    })
+                    .tint(Color(NCBrandColor.shared.textColor))
+                    .sheet(isPresented: $showSourceCode) {
+                        NCBrowserWebView(urlBase: URL(string: NCBrandOptions.shared.sourceCode)!, browserTitle: NSLocalizedString("_source_code_", comment: ""))
                     }
-                    .font(.system(size: 16))
-                })
-                .tint(Color(NCBrandColor.shared.textColor))
-                .sheet(isPresented: $showSourceCode) {
-                    NCBrowserWebView(urlBase: URL(string: NCBrandOptions.shared.sourceCode)!, browserTitle: NSLocalizedString("_source_code_", comment: ""))
                 }
             })
             /// `Watermark` Section

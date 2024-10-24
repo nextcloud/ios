@@ -12,6 +12,7 @@ import MobileCoreServices
 import Photos
 import NextcloudKit
 import UniformTypeIdentifiers
+import Alamofire
 
 class NCLivePhoto {
 
@@ -466,16 +467,16 @@ extension NCLivePhoto {
     func setLivephoto(serverUrlfileNamePath: String,
                       livePhotoFile: String,
                       account: String,
-                      options: NKRequestOptions = NKRequestOptions()) async -> (account: String, error: NKError) {
+                      options: NKRequestOptions = NKRequestOptions()) async -> (account: String, responseData: AFDataResponse<Data?>?, error: NKError) {
         await withUnsafeContinuation({ continuation in
-            NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: livePhotoFile, account: account, options: options) { account, error in
-                continuation.resume(returning: (account: account, error: error))
+            NextcloudKit.shared.setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: livePhotoFile, account: account, options: options) { account, responseData, error in
+                continuation.resume(returning: (account: account, responseData: responseData,error: error))
             }
         })
     }
 
     func setLivephotoUpload(metadata: tableMetadata) {
-        guard NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion28 else { return }
+        guard NCCapabilities.shared.getCapabilities(account: metadata.account).capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion28 else { return }
 
         livePhotoFile = metadata.livePhotoFile
         livePhotoFile2 = metadata.fileName
@@ -490,7 +491,12 @@ extension NCLivePhoto {
 
         guard metadata.isLivePhoto,
               !livePhotoFile.isEmpty,
-              let metadata2 = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND urlBase == %@ AND path == %@ AND fileName == %@ AND status == %d", metadata.account, metadata.urlBase, metadata.path, livePhotoFile, NCGlobal.shared.metadataStatusNormal)) else { return }
+              let metadata2 = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND urlBase == %@ AND path == %@ AND fileName == %@ AND status == %d", 
+                                                                                         metadata.account,
+                                                                                         metadata.urlBase,
+                                                                                         metadata.path,
+                                                                                         livePhotoFile,
+                                                                                         NCGlobal.shared.metadataStatusNormal)) else { return }
         let serverUrlfileNamePath1 = metadata.urlBase + metadata.path + metadata.fileName
         let serverUrlfileNamePath2 = metadata2.urlBase + metadata2.path + livePhotoFile
 
@@ -505,7 +511,7 @@ extension NCLivePhoto {
     }
 
     func setLivePhoto(metadata1: tableMetadata, metadata2: tableMetadata) {
-        guard NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion28,
+        guard NCCapabilities.shared.getCapabilities(account: metadata1.account).capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion28,
               (!metadata1.livePhotoFile.isEmpty && !metadata2.livePhotoFile.isEmpty) else { return }
 
         Task {

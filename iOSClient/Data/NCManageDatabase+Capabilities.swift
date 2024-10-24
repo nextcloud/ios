@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import UIKit
 import RealmSwift
 import NextcloudKit
 
@@ -62,7 +63,8 @@ extension NCManageDatabase {
         return nil
     }
 
-    func setCapabilities(account: String, data: Data? = nil) {
+    @discardableResult
+    func setCapabilities(account: String, data: Data? = nil) -> NCCapabilities.Capabilities? {
         let jsonData: Data?
 
         struct CapabilityNextcloud: Codable {
@@ -285,97 +287,108 @@ extension NCManageDatabase {
             let ocs: Ocs
         }
 
-        if let data = data {
+        if let data {
             jsonData = data
         } else {
             do {
                 let realm = try Realm()
                 guard let result = realm.objects(tableCapabilities.self).filter("account == %@", account).first,
                       let data = result.jsondata else {
-                    return
+                    return nil
                 }
                 jsonData = data
             } catch let error as NSError {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
-                return
+                return nil
             }
         }
-        guard let jsonData = jsonData else { return }
+        guard let jsonData = jsonData else {
+            return nil
+        }
 
         do {
-            let global = NCGlobal.shared
             let json = try JSONDecoder().decode(CapabilityNextcloud.self, from: jsonData)
             let data = json.ocs.data
+            let capabilities = NCCapabilities.Capabilities()
 
-            global.capabilityServerVersion = data.version.string
-            global.capabilityServerVersionMajor = data.version.major
+            capabilities.capabilityServerVersion = data.version.string
+            capabilities.capabilityServerVersionMajor = data.version.major
 
-            if global.capabilityServerVersionMajor > 0 {
-                NextcloudKit.shared.setup(nextcloudVersion: global.capabilityServerVersionMajor)
+            if capabilities.capabilityServerVersionMajor > 0 {
+                NextcloudKit.shared.updateSession(account: account, nextcloudVersion: capabilities.capabilityServerVersionMajor)
             }
 
-            global.capabilityFileSharingApiEnabled = data.capabilities.filessharing?.apienabled ?? false
-            global.capabilityFileSharingDefaultPermission = data.capabilities.filessharing?.defaultpermissions ?? 0
-            global.capabilityFileSharingPubPasswdEnforced = data.capabilities.filessharing?.ncpublic?.password?.enforced ?? false
-            global.capabilityFileSharingPubExpireDateEnforced = data.capabilities.filessharing?.ncpublic?.expiredate?.enforced ?? false
-            global.capabilityFileSharingPubExpireDateDays = data.capabilities.filessharing?.ncpublic?.expiredate?.days ?? 0
-            global.capabilityFileSharingInternalExpireDateEnforced = data.capabilities.filessharing?.ncpublic?.expiredateinternal?.enforced ?? false
-            global.capabilityFileSharingInternalExpireDateDays = data.capabilities.filessharing?.ncpublic?.expiredateinternal?.days ?? 0
-            global.capabilityFileSharingRemoteExpireDateEnforced = data.capabilities.filessharing?.ncpublic?.expiredateremote?.enforced ?? false
-            global.capabilityFileSharingRemoteExpireDateDays = data.capabilities.filessharing?.ncpublic?.expiredateremote?.days ?? 0
+            capabilities.capabilityFileSharingApiEnabled = data.capabilities.filessharing?.apienabled ?? false
+            capabilities.capabilityFileSharingDefaultPermission = data.capabilities.filessharing?.defaultpermissions ?? 0
+            capabilities.capabilityFileSharingPubPasswdEnforced = data.capabilities.filessharing?.ncpublic?.password?.enforced ?? false
+            capabilities.capabilityFileSharingPubExpireDateEnforced = data.capabilities.filessharing?.ncpublic?.expiredate?.enforced ?? false
+            capabilities.capabilityFileSharingPubExpireDateDays = data.capabilities.filessharing?.ncpublic?.expiredate?.days ?? 0
+            capabilities.capabilityFileSharingInternalExpireDateEnforced = data.capabilities.filessharing?.ncpublic?.expiredateinternal?.enforced ?? false
+            capabilities.capabilityFileSharingInternalExpireDateDays = data.capabilities.filessharing?.ncpublic?.expiredateinternal?.days ?? 0
+            capabilities.capabilityFileSharingRemoteExpireDateEnforced = data.capabilities.filessharing?.ncpublic?.expiredateremote?.enforced ?? false
+            capabilities.capabilityFileSharingRemoteExpireDateDays = data.capabilities.filessharing?.ncpublic?.expiredateremote?.days ?? 0
 
-            global.capabilityThemingColor = data.capabilities.theming?.color ?? ""
-            global.capabilityThemingColorElement = data.capabilities.theming?.colorelement ?? ""
-            global.capabilityThemingColorText = data.capabilities.theming?.colortext ?? ""
-            global.capabilityThemingName = data.capabilities.theming?.name ?? ""
-            global.capabilityThemingSlogan = data.capabilities.theming?.slogan ?? ""
+            capabilities.capabilityThemingColor = data.capabilities.theming?.color ?? ""
+            capabilities.capabilityThemingColorElement = data.capabilities.theming?.colorelement ?? ""
+            capabilities.capabilityThemingColorText = data.capabilities.theming?.colortext ?? ""
+            capabilities.capabilityThemingName = data.capabilities.theming?.name ?? ""
+            capabilities.capabilityThemingSlogan = data.capabilities.theming?.slogan ?? ""
 
-            global.capabilityE2EEEnabled = data.capabilities.endtoendencryption?.enabled ?? false
-            global.capabilityE2EEApiVersion = data.capabilities.endtoendencryption?.apiversion ?? ""
+            capabilities.capabilityE2EEEnabled = data.capabilities.endtoendencryption?.enabled ?? false
+            capabilities.capabilityE2EEApiVersion = data.capabilities.endtoendencryption?.apiversion ?? ""
 
-            global.capabilityRichDocumentsEnabled = json.ocs.data.capabilities.richdocuments?.directediting ?? false
-            global.capabilityRichDocumentsMimetypes.removeAll()
+            capabilities.capabilityRichDocumentsEnabled = json.ocs.data.capabilities.richdocuments?.directediting ?? false
+            capabilities.capabilityRichDocumentsMimetypes.removeAll()
             if let mimetypes = data.capabilities.richdocuments?.mimetypes {
                 for mimetype in mimetypes {
-                    global.capabilityRichDocumentsMimetypes.append(mimetype)
+                    capabilities.capabilityRichDocumentsMimetypes.append(mimetype)
                 }
             }
 
-            global.capabilityAssistantEnabled = data.capabilities.assistant?.enabled ?? false
+            capabilities.capabilityAssistantEnabled = data.capabilities.assistant?.enabled ?? false
 
-            global.capabilityActivity.removeAll()
+            capabilities.capabilityActivity.removeAll()
             if let activities = data.capabilities.activity?.apiv2 {
                 for activity in activities {
-                    global.capabilityActivity.append(activity)
+                    capabilities.capabilityActivity.append(activity)
                 }
             }
 
-            global.capabilityNotification.removeAll()
+            capabilities.capabilityNotification.removeAll()
             if let notifications = data.capabilities.notifications?.ocsendpoints {
                 for notification in notifications {
-                    global.capabilityNotification.append(notification)
+                    capabilities.capabilityNotification.append(notification)
                 }
             }
 
-            global.capabilityFilesUndelete = data.capabilities.files?.undelete ?? false
-            global.capabilityFilesLockVersion = data.capabilities.files?.locking ?? ""
-            global.capabilityFilesComments = data.capabilities.files?.comments ?? false
-            global.capabilityFilesBigfilechunking = data.capabilities.files?.bigfilechunking ?? false
+            capabilities.capabilityFilesUndelete = data.capabilities.files?.undelete ?? false
+            capabilities.capabilityFilesLockVersion = data.capabilities.files?.locking ?? ""
+            capabilities.capabilityFilesComments = data.capabilities.files?.comments ?? false
+            capabilities.capabilityFilesBigfilechunking = data.capabilities.files?.bigfilechunking ?? false
 
-            global.capabilityUserStatusEnabled = data.capabilities.userstatus?.enabled ?? false
+            capabilities.capabilityUserStatusEnabled = data.capabilities.userstatus?.enabled ?? false
             if data.capabilities.external != nil {
-                global.capabilityExternalSites = true
+                capabilities.capabilityExternalSites = true
             }
-            global.capabilityGroupfoldersEnabled = data.capabilities.groupfolders?.hasGroupFolders ?? false
-            global.capabilitySecurityGuardDiagnostics = data.capabilities.securityguard?.diagnostics ?? false
+            capabilities.capabilityGroupfoldersEnabled = data.capabilities.groupfolders?.hasGroupFolders ?? false
 
-            global.capabilityForbiddenFileNames = data.capabilities.files?.forbiddenFileNames ?? []
-            global.capabilityForbiddenFileNameBasenames = data.capabilities.files?.forbiddenFileNameBasenames ?? []
-            global.capabilityForbiddenFileNameCharacters = data.capabilities.files?.forbiddenFileNameCharacters ?? []
-            global.capabilityForbiddenFileNameExtensions = data.capabilities.files?.forbiddenFileNameExtensions ?? []
+            if capabilities.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion28 {
+                capabilities.isLivePhotoServerAvailable = true
+            }
+
+            capabilities.capabilitySecurityGuardDiagnostics = data.capabilities.securityguard?.diagnostics ?? false
+
+            capabilities.capabilityForbiddenFileNames = data.capabilities.files?.forbiddenFileNames ?? []
+            capabilities.capabilityForbiddenFileNameBasenames = data.capabilities.files?.forbiddenFileNameBasenames ?? []
+            capabilities.capabilityForbiddenFileNameCharacters = data.capabilities.files?.forbiddenFileNameCharacters ?? []
+            capabilities.capabilityForbiddenFileNameExtensions = data.capabilities.files?.forbiddenFileNameExtensions ?? []
+
+            NCCapabilities.shared.appendCapabilities(account: account, capabilities: capabilities)
+
+            return capabilities
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
-            return
+            return nil
         }
     }
 }

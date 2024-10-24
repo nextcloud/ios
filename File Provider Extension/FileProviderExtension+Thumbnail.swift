@@ -24,6 +24,7 @@
 import UIKit
 import FileProvider
 import NextcloudKit
+import Alamofire
 
 extension FileProviderExtension {
     override func fetchThumbnails(for itemIdentifiers: [NSFileProviderItemIdentifier], requestedSize size: CGSize, perThumbnailCompletionHandler: @escaping (NSFileProviderItemIdentifier, Data?, Error?) -> Void, completionHandler: @escaping (Error?) -> Void) -> Progress {
@@ -36,14 +37,14 @@ extension FileProviderExtension {
                 if counterProgress == progress.totalUnitCount { completionHandler(nil) }
                 continue
             }
-            let fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
 
-            NextcloudKit.shared.downloadPreview(fileId: metadata.fileId, widthPreview: Int(size.width), heightPreview: Int(size.height), etag: metadata.etag, account: metadata.account) { _ in
-            } completion: { _, data, error in
-                if error == .success, let data {
-                    do {
-                        try data.write(to: URL(fileURLWithPath: fileNameIconLocalPath), options: .atomic)
-                    } catch { }
+            NextcloudKit.shared.downloadPreview(fileId: metadata.fileId,
+                                                width: Int(size.width),
+                                                height: Int(size.height),
+                                                etag: metadata.etag,
+                                                account: metadata.account) { _ in
+            } completion: { _, _, _, _, responseData, error in
+                if error == .success, let data = responseData?.data {
                     perThumbnailCompletionHandler(itemIdentifier, data, nil)
                 } else {
                     perThumbnailCompletionHandler(itemIdentifier, nil, NSFileProviderError(.serverUnreachable))

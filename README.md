@@ -38,17 +38,9 @@ branch. Maybe start working on [starter issues](https://github.com/nextcloud/ios
 
 Easy starting points are also reviewing [pull requests](https://github.com/nextcloud/ios/pulls)
 
-### Xcode 15 Project Setup
+### Xcode 16 Project Setup
 
 #### Dependencies
-
-After forking a repository you have to build the dependencies. Dependencies are managed with Carthage version 0.38.0 or later. 
-Run
-
-```
-carthage update --use-xcframeworks --platform iOS
-```
-to fetch and compile the dependencies.
 
 In order to build the project in Xcode you will also need a file `GoogleService-Info.plist` at the root of the repository which contains the Firebase configuration. For development work you can use a mock version found [here](https://github.com/firebase/quickstart-ios/blob/master/mock-GoogleService-Info.plist).
 

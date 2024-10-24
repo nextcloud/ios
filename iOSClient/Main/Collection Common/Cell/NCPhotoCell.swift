@@ -28,56 +28,34 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
     @IBOutlet weak var imageItem: UIImageView!
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
+    @IBOutlet weak var buttonMore: UIButton!
     @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
-    @IBOutlet weak var labelTitle: UILabel!
-    @IBOutlet weak var imageItemBottom: NSLayoutConstraint!
 
-    var objectId = ""
-    var indexPath = IndexPath()
-    private var user = ""
+    var ocId = ""
+    var ocIdTransfer = ""
+    var user = ""
 
     weak var photoCellDelegate: NCPhotoCellDelegate?
-    var namedButtonMore = ""
 
-    var fileObjectId: String? {
-        get { return objectId }
-        set { objectId = newValue ?? "" }
+    var fileOcId: String? {
+        get { return ocId }
+        set { ocId = newValue ?? "" }
+    }
+    var fileOcIdTransfer: String? {
+        get { return ocIdTransfer }
+        set { ocIdTransfer = newValue ?? "" }
     }
     var filePreviewImageView: UIImageView? {
         get { return imageItem }
         set { imageItem = newValue }
     }
-    var filePreviewImageBottom: NSLayoutConstraint? {
-        get { return imageItemBottom }
-        set { imageItemBottom = newValue}
-    }
     var fileUser: String? {
         get { return user }
         set { user = newValue ?? "" }
     }
-    var fileTitleLabel: UILabel? {
-        get { return labelTitle }
-        set { labelTitle = newValue }
-    }
-    var fileInfoLabel: UILabel? {
-        get { return nil }
-        set { }
-    }
-    var fileSubinfoLabel: UILabel? {
-        get { return nil }
-        set { }
-    }
     var fileStatusImage: UIImageView? {
         get { return imageStatus }
         set { imageStatus = newValue }
-    }
-    var fileLocalImage: UIImageView? {
-        get { return nil }
-        set { }
-    }
-    var fileFavoriteImage: UIImageView? {
-        get { return nil }
-        set { }
     }
 
     override func awakeFromNib() {
@@ -95,11 +73,12 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
         accessibilityLabel = nil
         accessibilityValue = nil
 
+        imageItem.image = nil
+        imageSelect.isHidden = true
+        imageSelect.image = NCImageCache.shared.getImageCheckedYes()
+        imageStatus.image = nil
         imageVisualEffect.clipsToBounds = true
         imageVisualEffect.alpha = 0.5
-
-        imageSelect.isHidden = true
-        imageSelect.image = NCImageCache.images.checkedYes
 
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPress(gestureRecognizer:)))
         longPressedGesture.minimumPressDuration = 0.5
@@ -112,14 +91,41 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
         return nil
     }
 
+    @IBAction func touchUpInsideMore(_ sender: Any) {
+        photoCellDelegate?.tapMorePhotoItem(with: ocId, ocIdTransfer: ocIdTransfer, image: imageItem.image, sender: sender)
+    }
+
     @objc func longPress(gestureRecognizer: UILongPressGestureRecognizer) {
-        photoCellDelegate?.longPressGridItem(with: objectId, indexPath: indexPath, gestureRecognizer: gestureRecognizer)
+        photoCellDelegate?.longPressPhotoItem(with: ocId, ocIdTransfer: ocIdTransfer, gestureRecognizer: gestureRecognizer)
+    }
+
+    fileprivate func setA11yActions() {
+        self.accessibilityCustomActions = [
+            UIAccessibilityCustomAction(
+                name: NSLocalizedString("_more_", comment: ""),
+                target: self,
+                selector: #selector(touchUpInsideMore))
+        ]
+    }
+
+    func setButtonMore(image: UIImage) {
+        buttonMore.setImage(image, for: .normal)
+        setA11yActions()
+    }
+
+    func hideButtonMore(_ status: Bool) {
+        buttonMore.isHidden = status
+    }
+
+    func hideImageStatus(_ status: Bool) {
+        imageStatus.isHidden = status
     }
 
     func selected(_ status: Bool, isEditMode: Bool) {
         if status {
             imageSelect.isHidden = false
             imageVisualEffect.isHidden = false
+            imageSelect.image = NCImageCache.shared.getImageCheckedYes()
         } else {
             imageSelect.isHidden = true
             imageVisualEffect.isHidden = true
@@ -130,16 +136,9 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
         accessibilityLabel = label
         accessibilityValue = value
     }
-
-    func setIconOutlines() {
-        if imageStatus.image != nil {
-            imageStatus.makeCircularBackground(withColor: .systemBackground)
-        } else {
-            imageStatus.backgroundColor = .clear
-        }
-    }
 }
 
 protocol NCPhotoCellDelegate: AnyObject {
-    func longPressGridItem(with objectId: String, indexPath: IndexPath, gestureRecognizer: UILongPressGestureRecognizer)
+    func tapMorePhotoItem(with ocId: String, ocIdTransfer: String, image: UIImage?, sender: Any)
+    func longPressPhotoItem(with objectId: String, ocIdTransfer: String, gestureRecognizer: UILongPressGestureRecognizer)
 }

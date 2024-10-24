@@ -23,11 +23,11 @@
 
 import SwiftUI
 
-struct HUDView: View {
-
+struct NCHUDView: View {
     @Binding var showHUD: Bool
     @State var textLabel: String
     @State var image: String
+    @State var color: UIColor
 
     var body: some View {
         Button(action: {
@@ -40,7 +40,7 @@ struct HUDView: View {
                 .padding(.horizontal, 10)
                 .padding(14)
                 .background(
-                    Blur(style: .regular)
+                    Blur(style: .regular, color: color)
                         .clipShape(Capsule())
                         .shadow(color: Color(.black).opacity(0.22), radius: 12, x: 0, y: 5)
                     )
@@ -49,12 +49,12 @@ struct HUDView: View {
 }
 
 struct Blur: UIViewRepresentable {
-
     var style: UIBlurEffect.Style
+    var color: UIColor
 
     func makeUIView(context: Context) -> UIVisualEffectView {
         let effectView = UIVisualEffectView(effect: UIBlurEffect(style: style))
-        effectView.backgroundColor = NCBrandColor.shared.brandElement
+        effectView.backgroundColor = color
         return effectView
     }
 
@@ -64,8 +64,8 @@ struct Blur: UIViewRepresentable {
 }
 
 struct ContentView: View {
-
     @State private var showHUD = false
+    @State var color: UIColor
     @Namespace var hudAnimation
 
     func dismissHUDAfterTime() {
@@ -83,14 +83,10 @@ struct ContentView: View {
                     }
                     .navigationTitle("Content View")
                 }
-                HUDView(showHUD: $showHUD, textLabel: NSLocalizedString("_wait_", comment: ""), image: "doc.badge.arrow.up")
+                NCHUDView(showHUD: $showHUD, textLabel: NSLocalizedString("_wait_", comment: ""), image: "doc.badge.arrow.up", color: color)
                     .offset(y: showHUD ? (geo.size.height / 2) : -200)
                     .animation(.easeOut, value: showHUD)
             }
         }
     }
-}
-
-#Preview {
-    ContentView()
 }

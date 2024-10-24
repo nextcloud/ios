@@ -27,7 +27,7 @@ import RealmSwift
 
 /// Protocol for know when the Account Settings has dimissed
 protocol NCAccountSettingsModelDelegate: AnyObject {
-    func accountSettingsDidDismiss(tableAccount: tableAccount?)
+    func accountSettingsDidDismiss(tableAccount: tableAccount?, controller: NCMainTabBarController?)
 }
 
 /// A model that allows the user to configure the account
@@ -37,36 +37,34 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     /// Root View Controller
     var controller: NCMainTabBarController?
     /// All account
-    var accounts: [tableAccount] = []
+    var tblAccounts: [tableAccount] = []
     /// Delegate
     weak var delegate: NCAccountSettingsModelDelegate?
-    /// Timer change user
-    var timerChangeAccount: Timer?
     /// Token observe tableAccount
     var notificationToken: NotificationToken?
-    /// Account now active
-    @Published var activeAccount: tableAccount?
+    /// Account now
+    @Published var tblAccount: tableAccount?
     /// Index
     @Published var indexActiveAccount: Int = 0
     /// Current alias
     @Published var alias: String = ""
     /// Set true for dismiss the view
     @Published var dismissView = false
+    /// DB
+    let database = NCManageDatabase.shared
 
     /// Initialization code to set up the ViewModel with the active account
     init(controller: NCMainTabBarController?, delegate: NCAccountSettingsModelDelegate?) {
         self.controller = controller
         self.delegate = delegate
         if ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" {
-            NCManageDatabase.shared.previewCreateDB()
+            database.previewCreateDB()
         }
         onViewAppear()
         observeTableAccount()
     }
 
     deinit {
-        timerChangeAccount?.invalidate()
-        timerChangeAccount = nil
         notificationToken?.invalidate()
         notificationToken = nil
     }
@@ -96,45 +94,44 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     /// Triggered when the view appears.
     func onViewAppear() {
         var indexActiveAccount = 0
-        let accounts = NCManageDatabase.shared.getAllAccount()
-        var activeAccount = NCManageDatabase.shared.getActiveAccount()
+        let tableAccounts = database.getAllTableAccount()
         var alias = ""
 
-        for (index, account) in accounts.enumerated() {
+        for (index, account) in tableAccounts.enumerated() {
             if account.active {
-                activeAccount = account
+                tblAccount = account
                 indexActiveAccount = index
                 alias = account.alias
             }
         }
 
         self.indexActiveAccount = indexActiveAccount
-        self.accounts = accounts
-        self.activeAccount = activeAccount
+        self.tblAccounts = tableAccounts
+        self.tblAccount = tblAccount
         self.alias = alias
     }
 
     /// Func to get the user display name + alias
     func getUserName() -> String {
-        guard let activeAccount else { return "" }
+        guard let tblAccount else { return "" }
         if alias.isEmpty {
-            return activeAccount.displayName
+            return tblAccount.displayName
         } else {
-            return activeAccount.displayName + " (\(alias))"
+            return tblAccount.displayName + " (\(alias))"
         }
     }
 
     /// Func to set alias
     func setAlias(_ value: String) {
-        guard let activeAccount else { return }
-        NCManageDatabase.shared.setAccountAlias(activeAccount.account, alias: alias)
+        guard let tblAccount else { return }
+        database.setAccountAlias(tblAccount.account, alias: alias)
     }
 
     /// Function to update the user data
     func getUserStatus() -> (statusImage: UIImage?, statusMessage: String, descriptionMessage: String) {
-        guard let activeAccount else { return (UIImage(), "", "") }
-        if NCGlobal.shared.capabilityUserStatusEnabled,
-           let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", activeAccount.account)) {
+        guard let tblAccount else { return (UIImage(), "", "") }
+        if NCCapabilities.shared.getCapabilities(account: tblAccount.account).capabilityUserStatusEnabled,
+           let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", tblAccount.account)) {
             return NCUtility().getUserStatus(userIcon: tableAccount.userStatusIcon, userStatus: tableAccount.userStatusStatus, userMessage: tableAccount.userStatusMessage)
         }
         return (nil, "", "")
@@ -142,17 +139,18 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
 
     /// Is the user an Admin
     func isAdminGroup() -> Bool {
-        guard let activeAccount else { return false }
-        let groups = NCManageDatabase.shared.getAccountGroups(account: activeAccount.account)
+        guard let tblAccount else { return false }
+        let groups = database.getAccountGroups(account: tblAccount.account)
         return groups.contains(NCGlobal.shared.groupAdmin)
     }
 
     /// Function to know the height of "account" data
     func getTableViewHeight() -> CGFloat {
-        guard let activeAccount else { return 0 }
-        var height: CGFloat = NCGlobal.shared.capabilityUserStatusEnabled ? 190 : 220
-        if NCGlobal.shared.capabilityUserStatusEnabled,
-           let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", activeAccount.account)) {
+        guard let tblAccount else { return 0 }
+        let capabilities = NCCapabilities.shared.getCapabilities(account: tblAccount.account)
+        var height: CGFloat = capabilities.capabilityUserStatusEnabled ? 190 : 220
+        if capabilities.capabilityUserStatusEnabled,
+           let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", tblAccount.account)) {
             if !tableAccount.email.isEmpty { height += 30 }
             if !tableAccount.phone.isEmpty { height += 30 }
             if !tableAccount.address.isEmpty { height += 30 }
@@ -163,33 +161,23 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
 
     /// Function to change account after 1.5 sec of change
     func setAccount(account: String) {
-        if let tableAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)), self.activeAccount?.account != tableAccount.account {
-            self.activeAccount = tableAccount
+        if let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) {
+            self.tblAccount = tableAccount
             self.alias = tableAccount.alias
-            /// Change active account
-            timerChangeAccount?.invalidate()
-            timerChangeAccount = Timer.scheduledTimer(timeInterval: 1.5, target: self, selector: #selector(changeAccount), userInfo: nil, repeats: false)
-
-        }
-    }
-
-    @objc func changeAccount() {
-        if let activeAccount {
-            self.appDelegate.changeAccount(activeAccount.account, userProfile: nil) { }
         }
     }
 
     /// Function to delete the current account
     func deleteAccount() {
-        if let activeAccount {
-            appDelegate.deleteAccount(activeAccount.account)
-            if let account = NCManageDatabase.shared.getAllAccount().first?.account {
-                appDelegate.changeAccount(account, userProfile: nil) {
+        if let tblAccount {
+            NCAccount().deleteAccount(tblAccount.account)
+            if let account = database.getAllTableAccount().first?.account {
+                NCAccount().changeAccount(account, userProfile: nil, controller: self.controller) {
                     onViewAppear()
                 }
             } else {
                 dismissView = true
-                appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
+                appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
             }
         }
     }

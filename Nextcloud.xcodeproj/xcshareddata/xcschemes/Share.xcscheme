@@ -121,9 +121,9 @@
       allowLocationSimulation = "YES"
       launchAutomaticallySubstyle = "2">
       <RemoteRunnable
-         runnableDebuggingMode = "1"
+         runnableDebuggingMode = "0"
          BundleIdentifier = "it.twsweb.Nextcloud"
-         RemotePath = "/Users/marinofaggiana/Library/Developer/CoreSimulator/Devices/4DBB1715-4E24-4CE7-B67C-CA327B95130C/data/Containers/Bundle/Application/F427D7FF-1632-4BB9-ADEA-A094898BB6C7/Nextcloud.app">
+         RemotePath = "/var/containers/Bundle/Application/92F13FE8-7056-4509-8468-5856675AB1CA/Nextcloud.app">
       </RemoteRunnable>
       <MacroExpansion>
          <BuildableReference

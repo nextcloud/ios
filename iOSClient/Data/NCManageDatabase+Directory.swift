@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import UIKit
 import RealmSwift
 import NextcloudKit
 
@@ -102,7 +103,7 @@ extension NCManageDatabase {
             let results = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl BEGINSWITH %@", account, serverUrl)
             for result in results {
                 self.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", result.account, result.serverUrl))
-                self.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", result.ocId))
+                self.deleteLocalFileOcId(result.ocId)
             }
             try realm.write {
                 realm.delete(results)
@@ -136,19 +137,6 @@ extension NCManageDatabase {
                     directory.richWorkspace = richWorkspace
                 }
                 realm.add(directory, update: .all)
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
-        }
-    }
-
-    func cleanEtagDirectory(account: String, serverUrl: String) {
-        do {
-            let realm = try Realm()
-            try realm.write {
-                if let result = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl == %@", account, serverUrl).first {
-                    result.etag = ""
-                }
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")

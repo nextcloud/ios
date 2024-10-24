@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import UIKit
 
 class NCSettingsBundleHelper: NSObject {
 

@@ -35,7 +35,7 @@ struct DashboardWidgetProvider: IntentTimelineProvider {
         let datasPlaceholder = Array(dashboardDatasTest[0...dashboardItems])
         let title = "Dashboard"
         let titleImage = UIImage(named: "widget")!
-        return Entry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, isEmpty: false, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget")
+        return Entry(date: Date(), datas: datasPlaceholder, dashboard: nil, buttons: nil, isPlaceholder: true, isEmpty: false, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " widget", account: "")
     }
 
     func getSnapshot(for configuration: DashboardIntent, in context: Context, completion: @escaping (DashboardDataEntry) -> Void) {

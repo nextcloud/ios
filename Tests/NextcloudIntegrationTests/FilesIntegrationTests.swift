@@ -24,10 +24,9 @@ import NextcloudKit
 @testable import Nextcloud
 
 final class FilesIntegrationTests: BaseIntegrationXCTestCase {
-    private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
     override func setUp() {
-        appDelegate.deleteAllAccounts()
+        NCAccount().deleteAllAccounts()
     }
 
     func test_createReadDeleteFolder_withProperParams_shouldCreateReadDeleteFolder() throws {
@@ -36,11 +35,14 @@ final class FilesIntegrationTests: BaseIntegrationXCTestCase {
         let folderName = "TestFolder\(randomInt)"
         let serverUrl = "\(TestConstants.server)/remote.php/dav/files/\(TestConstants.username)"
         let serverUrlFileName = "\(serverUrl)/\(folderName)"
+        let domain = NCDomain.Domain(account: TestConstants.account, urlBase: TestConstants.server, user: TestConstants.username, userId: TestConstants.username, sceneIdentifier: "")
 
-        NextcloudKit.shared.setup(account: TestConstants.account, user: TestConstants.username, userId: TestConstants.username, password: appToken, urlBase: TestConstants.server, groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+        NextcloudKit.shared.setup(delegate: NCNetworking.shared)
+        NextcloudKit.shared.appendAccount(TestConstants.account, urlBase: TestConstants.server, user: TestConstants.username, userId: TestConstants.username, password: appToken, userAgent: userAgent, nextcloudVersion: 0, groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
         // Test creating folder
-        NCNetworking.shared.createFolder(fileName: folderName, serverUrl: serverUrl, account: TestConstants.account, urlBase: TestConstants.server, userId: TestConstants.username, withPush: true, sceneIdentifier: nil) { error in
+        NCNetworking.shared.createFolder(fileName: folderName, serverUrl: serverUrl, overwrite: true, withPush: true, sceneIdentifier: nil, domain: domain) { error in
+
             XCTAssertEqual(NKError.success.errorCode, error.errorCode)
             XCTAssertEqual(NKError.success.errorDescription, error.errorDescription)
 
@@ -61,7 +63,7 @@ final class FilesIntegrationTests: BaseIntegrationXCTestCase {
 
                 Task {
                     // Test deleting folder
-                    await _ = NCNetworking.shared.deleteMetadata(metadataFolder!, onlyLocalCache: false)
+                    await _ = NCNetworking.shared.deleteMetadata(metadataFolder!)
 
                     XCTAssertEqual(NKError.success.errorCode, error.errorCode)
                     XCTAssertEqual(NKError.success.errorDescription, error.errorDescription)

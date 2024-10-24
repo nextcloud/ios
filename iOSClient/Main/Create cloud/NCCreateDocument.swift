@@ -24,12 +24,14 @@
 import Foundation
 import UIKit
 import NextcloudKit
+import Alamofire
 
 class NCCreateDocument: NSObject {
-    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utility = NCUtility()
+    let database = NCManageDatabase.shared
 
-    func createDocument(controller: NCMainTabBarController, fileNamePath: String, fileName: String, editorId: String, creatorId: String? = nil, templateId: String) {
+    func createDocument(controller: NCMainTabBarController, fileNamePath: String, fileName: String, editorId: String, creatorId: String? = nil, templateId: String, account: String) {
+        let session = NCSession.shared.getSession(account: account)
         guard let viewController = controller.currentViewController() else { return }
         var UUID = NSUUID().uuidString
         UUID = "TEMP" + UUID.replacingOccurrences(of: "-", with: "")
@@ -43,33 +45,49 @@ class NCCreateDocument: NSObject {
                 options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentNCText())
             }
 
-            NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateId, account: appDelegate.account, options: options) { account, url, _, error in
-                guard error == .success, account == self.appDelegate.account, let url = url else {
-                    NCContentPresenter().showError(error: error)
-                    return
+            NextcloudKit.shared.NCTextCreateFile(fileNamePath: fileNamePath, editorId: editorId, creatorId: creatorId, templateId: templateId, account: account, options: options) { returnedAccount, url, _, error in
+                guard error == .success, let url else {
+                    return NCContentPresenter().showError(error: error)
                 }
-                let contentType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false).mimeType
-                let metadata = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: UUID, serverUrl: serverUrl, urlBase: self.appDelegate.urlBase, url: url, contentType: contentType)
+                if account == returnedAccount {
+                    let contentType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false, account: session.account).mimeType
+                    let metadata = self.database.createMetadata(fileName: fileName,
+                                                                fileNameView: fileName,
+                                                                ocId: UUID,
+                                                                serverUrl: serverUrl,
+                                                                url: url,
+                                                                contentType: contentType,
+                                                                session: session,
+                                                                sceneIdentifier: controller.sceneIdentifier)
 
-                NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+                    NCViewer().view(viewController: viewController, metadata: metadata)
+                }
             }
 
         } else if editorId == NCGlobal.shared.editorCollabora {
 
-            NextcloudKit.shared.createRichdocuments(path: fileNamePath, templateId: templateId, account: appDelegate.account) { account, url, _, error in
-                guard error == .success, account == self.appDelegate.account, let url = url else {
-                    NCContentPresenter().showError(error: error)
-                    return
+            NextcloudKit.shared.createRichdocuments(path: fileNamePath, templateId: templateId, account: account) { returnedAccount, url, _, error in
+                guard error == .success, let url else {
+                    return NCContentPresenter().showError(error: error)
                 }
-                let contentType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false).mimeType
-                let metadata = NCManageDatabase.shared.createMetadata(account: self.appDelegate.account, user: self.appDelegate.user, userId: self.appDelegate.userId, fileName: fileName, fileNameView: fileName, ocId: UUID, serverUrl: serverUrl, urlBase: self.appDelegate.urlBase, url: url, contentType: contentType)
+                if account == returnedAccount {
+                    let contentType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false, account: session.account).mimeType
+                    let metadata = self.database.createMetadata(fileName: fileName,
+                                                                fileNameView: fileName,
+                                                                ocId: UUID,
+                                                                serverUrl: serverUrl,
+                                                                url: url,
+                                                                contentType: contentType,
+                                                                session: session,
+                                                                sceneIdentifier: controller.sceneIdentifier)
 
-                NCViewer().view(viewController: viewController, metadata: metadata, metadatas: [metadata], imageIcon: nil)
+                    NCViewer().view(viewController: viewController, metadata: metadata)
+                }
             }
         }
     }
 
-    func getTemplate(editorId: String, templateId: String) async -> (templates: [NKEditorTemplates], selectedTemplate: NKEditorTemplates, ext: String) {
+    func getTemplate(editorId: String, templateId: String, account: String) async -> (templates: [NKEditorTemplates], selectedTemplate: NKEditorTemplates, ext: String) {
         var templates: [NKEditorTemplates] = []
         var selectedTemplate = NKEditorTemplates()
         var ext: String = ""
@@ -82,9 +100,9 @@ class NCCreateDocument: NSObject {
                 options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentNCText())
             }
 
-            let results = await textGetListOfTemplates(account:appDelegate.account, options: options)
-            if results.error == .success {
-                for template in results.templates {
+            let results = await textGetListOfTemplates(account: account, options: options)
+            if results.error == .success, let resultTemplates = results.templates {
+                for template in resultTemplates {
                     let temp = NKEditorTemplates()
                     temp.identifier = template.identifier
                     temp.ext = template.ext
@@ -120,7 +138,7 @@ class NCCreateDocument: NSObject {
         }
 
         if editorId == NCGlobal.shared.editorCollabora {
-            let results = await getTemplatesRichdocuments(typeTemplate: templateId, account: appDelegate.account)
+            let results = await getTemplatesRichdocuments(typeTemplate: templateId, account: account)
             if results.error == .success {
                 for template in results.templates! {
                     let temp = NKEditorTemplates()
@@ -145,20 +163,18 @@ class NCCreateDocument: NSObject {
 
     // MARK: - NextcloudKit async/await
 
-    func textGetListOfTemplates(account: String, options: NKRequestOptions = NKRequestOptions()) async -> (account: String, templates: [NKEditorTemplates], data: Data?, error: NKError) {
-
+    func textGetListOfTemplates(account: String, options: NKRequestOptions = NKRequestOptions()) async -> (account: String, templates: [NKEditorTemplates]?, responseData: AFDataResponse<Data>?, error: NKError) {
         await withUnsafeContinuation({ continuation in
-            NextcloudKit.shared.NCTextGetListOfTemplates(account: account) { account, templates, data, error in
-                continuation.resume(returning: (account: account, templates: templates, data: data, error: error))
+            NextcloudKit.shared.NCTextGetListOfTemplates(account: account) { account, templates, responseData, error in
+                continuation.resume(returning: (account: account, templates: templates, responseData: responseData, error: error))
             }
         })
     }
 
-    func getTemplatesRichdocuments(typeTemplate: String, account: String, options: NKRequestOptions = NKRequestOptions()) async -> (account: String, templates: [NKRichdocumentsTemplate]?, data: Data?, error: NKError) {
-
+    func getTemplatesRichdocuments(typeTemplate: String, account: String, options: NKRequestOptions = NKRequestOptions()) async -> (account: String, templates: [NKRichdocumentsTemplate]?, responseData: AFDataResponse<Data>?, error: NKError) {
         await withUnsafeContinuation({ continuation in
-            NextcloudKit.shared.getTemplatesRichdocuments(typeTemplate: typeTemplate, account: account, options: options) { account, templates, data, error in
-                continuation.resume(returning: (account: account, templates: templates, data: data, error: error))
+            NextcloudKit.shared.getTemplatesRichdocuments(typeTemplate: typeTemplate, account: account, options: options) { account, templates, responseData, error in
+                continuation.resume(returning: (account: account, templates: templates, responseData: responseData, error: error))
             }
         })
     }

@@ -29,16 +29,16 @@ extension NCShareExtension: NCAccountRequestDelegate {
     // MARK: - Account
 
     func showAccountPicker() {
-        let accounts = NCManageDatabase.shared.getAllAccountOrderAlias()
+        let accounts = self.database.getAllAccountOrderAlias()
         guard accounts.count > 1,
               let vcAccountRequest = UIStoryboard(name: "NCAccountRequest", bundle: nil).instantiateInitialViewController() as? NCAccountRequest else { return }
 
         // Only here change the active account
         for account in accounts {
-            account.active = account.account == self.activeAccount.account
+            account.active = account.account == session.account
         }
 
-        vcAccountRequest.activeAccount = self.activeAccount
+        vcAccountRequest.activeAccount = self.session.account
         vcAccountRequest.accounts = accounts.sorted { sorg, dest -> Bool in
             return sorg.active && !dest.active
         }
@@ -57,49 +57,37 @@ extension NCShareExtension: NCAccountRequestDelegate {
 
     func accountRequestAddAccount() { }
 
-    func accountRequestChangeAccount(account: String) {
-        guard let activeAccount = NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "account == %@", account)) else {
+    func accountRequestChangeAccount(account: String, controller: UIViewController?) {
+        guard let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
+              let capabilities = self.database.setCapabilities(account: account) else {
             cancel(with: NCShareExtensionError.noAccount)
             return
         }
-        self.activeAccount = activeAccount
-
-        // CAPABILITIES
-        NCManageDatabase.shared.setCapabilities(account: account)
+        self.account = account
 
         // COLORS
-        NCBrandColor.shared.settingThemingColor(account: activeAccount.account)
-        NCBrandColor.shared.createUserColors()
-        NCImageCache.shared.createImagesBrandCache()
+        NCBrandColor.shared.settingThemingColor(account: account)
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming, userInfo: ["account": account])
 
         // NETWORKING
-        NextcloudKit.shared.setup(
-            account: activeAccount.account,
-            user: activeAccount.user,
-            userId: activeAccount.userId,
-            password: NCKeychain().getPassword(account: activeAccount.account),
-            urlBase: activeAccount.urlBase,
-            userAgent: userAgent,
-            nextcloudVersion: 0,
-            delegate: NCNetworking.shared)
+        NextcloudKit.shared.setup(delegate: NCNetworking.shared)
+        NextcloudKit.shared.appendSession(account: tableAccount.account,
+                                          urlBase: tableAccount.urlBase,
+                                          user: tableAccount.user,
+                                          userId: tableAccount.userId,
+                                          password: NCKeychain().getPassword(account: tableAccount.account),
+                                          userAgent: userAgent,
+                                          nextcloudVersion: capabilities.capabilityServerVersionMajor,
+                                          groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
         // get auto upload folder
-        autoUploadFileName = NCManageDatabase.shared.getAccountAutoUploadFileName()
-        autoUploadDirectory = NCManageDatabase.shared.getAccountAutoUploadDirectory(urlBase: activeAccount.urlBase, userId: activeAccount.userId, account: activeAccount.account)
+        autoUploadFileName = self.database.getAccountAutoUploadFileName()
+        autoUploadDirectory = self.database.getAccountAutoUploadDirectory(session: session)
 
-        serverUrl = utilityFileSystem.getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId)
-
-        layoutForView = NCManageDatabase.shared.getLayoutForView(account: activeAccount.account, key: keyLayout, serverUrl: serverUrl)
+        serverUrl = utilityFileSystem.getHomeServer(session: session)
 
         reloadDatasource(withLoadFolder: true)
         setNavigationBar(navigationTitle: NCBrandOptions.shared.brand)
-
-        FileNameValidator.shared.setup(
-            forbiddenFileNames: NCGlobal.shared.capabilityForbiddenFileNames,
-            forbiddenFileNameBasenames: NCGlobal.shared.capabilityForbiddenFileNameBasenames,
-            forbiddenFileNameCharacters: NCGlobal.shared.capabilityForbiddenFileNameCharacters,
-            forbiddenFileNameExtensions: NCGlobal.shared.capabilityForbiddenFileNameExtensions
-        )
     }
 }
 
@@ -117,20 +105,8 @@ extension NCShareExtension: NCCreateFormUploadConflictDelegate {
 }
 
 extension NCShareExtension: NCShareCellDelegate {
-    func removeFile(named fileName: String) {
-        guard let index = self.filesName.firstIndex(of: fileName) else {
-            return showAlert(title: "_file_not_found_", description: fileName)
-        }
-        self.filesName.remove(at: index)
-        if self.filesName.isEmpty {
-            cancel(with: NCShareExtensionError.noFiles)
-        } else {
-            self.setCommandView()
-        }
-    }
-
-    func renameFile(named fileName: String) {
-        let alert = UIAlertController.renameFile(fileName: fileName) { [self] newFileName in
+    func renameFile(named fileName: String, account: String) {
+        let alert = UIAlertController.renameFile(fileName: fileName, account: account) { [self] newFileName in
             guard let fileIx = self.filesName.firstIndex(of: fileName),
                   !self.filesName.contains(newFileName),
                   utilityFileSystem.moveFile(atPath: (NSTemporaryDirectory() + fileName), toPath: (NSTemporaryDirectory() + newFileName)) else {
@@ -142,5 +118,17 @@ extension NCShareExtension: NCShareCellDelegate {
         }
 
         present(alert, animated: true)
+    }
+
+    func removeFile(named fileName: String) {
+        guard let index = self.filesName.firstIndex(of: fileName) else {
+            return showAlert(title: "_file_not_found_", description: fileName)
+        }
+        self.filesName.remove(at: index)
+        if self.filesName.isEmpty {
+            cancel(with: NCShareExtensionError.noFiles)
+        } else {
+            self.setCommandView()
+        }
     }
 }

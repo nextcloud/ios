@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import UIKit
 import SafariServices
 import SwiftUI
 
@@ -32,6 +33,7 @@ class NCMoreAppSuggestionsCell: BaseNCMoreCell {
     @IBOutlet weak var moreAppsView: UIStackView!
 
     static let reuseIdentifier = "NCMoreAppSuggestionsCell"
+    var controller: NCMainTabBarController?
 
     static func fromNib() -> UINib {
         return UINib(nibName: "NCMoreAppSuggestionsCell", bundle: nil)
@@ -46,14 +48,14 @@ class NCMoreAppSuggestionsCell: BaseNCMoreCell {
         notesView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(notesTapped)))
         moreAppsView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(moreAppsTapped)))
 
-        if !NCGlobal.shared.capabilityAssistantEnabled {
+        if !NCCapabilities.shared.getCapabilities(account: controller?.account).capabilityAssistantEnabled {
             assistantView.isHidden = true
         }
     }
 
     @objc func assistantTapped() {
         if let viewController = self.window?.rootViewController {
-            let assistant = NCAssistant().environmentObject(NCAssistantTask())
+            let assistant = NCAssistant().environmentObject(NCAssistantTask(controller: controller))
             let hostingController = UIHostingController(rootView: assistant)
             viewController.present(hostingController, animated: true, completion: nil)
         }

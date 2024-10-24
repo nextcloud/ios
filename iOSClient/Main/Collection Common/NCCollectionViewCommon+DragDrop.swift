@@ -22,16 +22,16 @@
 //
 
 import Foundation
+import UIKit
 import NextcloudKit
-import JGProgressHUD
 
 // MARK: - Drag
 
 extension NCCollectionViewCommon: UICollectionViewDragDelegate {
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
         if isEditMode {
-            return NCDragDrop().performDrag(selectOcId: selectOcId)
-        } else if let metadata = dataSource.cellForItemAt(indexPath: indexPath) {
+            return NCDragDrop().performDrag(fileSelect: fileSelect)
+        } else if let metadata = self.dataSource.getMetadata(indexPath: indexPath) {
             return NCDragDrop().performDrag(metadata: metadata)
         }
         return []
@@ -40,7 +40,7 @@ extension NCCollectionViewCommon: UICollectionViewDragDelegate {
     func collectionView(_ collectionView: UICollectionView, dragPreviewParametersForItemAt indexPath: IndexPath) -> UIDragPreviewParameters? {
         let previewParameters = UIDragPreviewParameters()
 
-        if layoutForView?.layout == NCGlobal.shared.layoutList,
+        if isLayoutList,
             let cell = collectionView.cellForItem(at: indexPath) as? NCListCell {
             let width = (collectionView.frame.width / 3) * 2
             previewParameters.visiblePath = UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: width, height: cell.frame.height), cornerRadius: 10)
@@ -66,8 +66,8 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
     func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
         var destinationMetadata: tableMetadata?
 
-        if let destinationIndexPath {
-            destinationMetadata = dataSource.cellForItemAt(indexPath: destinationIndexPath)
+        if let destinationIndexPath, let metadata = self.dataSource.getMetadata(indexPath: destinationIndexPath) {
+            destinationMetadata = metadata
         }
         DragDropHover.shared.destinationMetadata = destinationMetadata
 
@@ -81,7 +81,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
                 return UICollectionViewDropProposal(operation: .forbidden)
             }
         } else {
-            if serverUrl.isEmpty || NCUtilityFileSystem().isDirectoryE2EE(account: appDelegate.account, urlBase: appDelegate.urlBase, userId: appDelegate.userId, serverUrl: serverUrl) {
+            if serverUrl.isEmpty || NCUtilityFileSystem().isDirectoryE2EE(serverUrl: serverUrl, account: self.session.account) {
                 DragDropHover.shared.cleanPushDragDropHover()
                 return UICollectionViewDropProposal(operation: .forbidden)
             }
@@ -97,7 +97,7 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
                 if let destinationIndexPath,
                    DragDropHover.shared.pushIndexPath == destinationIndexPath,
                    DragDropHover.shared.pushCollectionView == collectionView,
-                   let metadata = self.dataSource.cellForItemAt(indexPath: destinationIndexPath),
+                   let metadata = self.dataSource.getMetadata(indexPath: destinationIndexPath),
                    metadata.directory {
                     DragDropHover.shared.cleanPushDragDropHover()
                     self.pushMetadata(metadata)
@@ -111,7 +111,12 @@ extension NCCollectionViewCommon: UICollectionViewDropDelegate {
         DragDropHover.shared.cleanPushDragDropHover()
         DragDropHover.shared.sourceMetadatas = nil
 
-        if let metadatas = NCDragDrop().performDrop(collectionView, performDropWith: coordinator, serverUrl: self.serverUrl, isImageVideo: false) {
+        if let metadatas = NCDragDrop().performDrop(collectionView, performDropWith: coordinator, serverUrl: self.serverUrl, isImageVideo: false, controller: self.controller) {
+            // TODO: NOT POSSIBLE DRAG DROP DIFFERENT ACCOUNT
+            if let metadata = metadatas.first,
+               metadata.account != self.session.account {
+                return
+            }
             DragDropHover.shared.sourceMetadatas = metadatas
             openMenu(collectionView: collectionView, location: coordinator.session.location(in: collectionView))
         }

@@ -23,19 +23,18 @@
 
 import UIKit
 import LocalAuthentication
-import TOPasscodeViewController
 
 public protocol NCPasscodeDelegate: AnyObject {
     func evaluatePolicy(_ passcodeViewController: TOPasscodeViewController, isCorrectCode: Bool)
     func passcodeReset(_ passcodeViewController: TOPasscodeViewController)
-    func requestedAccount(viewController: UIViewController?)
+    func requestedAccount(controller: UIViewController?)
 }
 
 // optional func
 public extension NCPasscodeDelegate {
     func evaluatePolicy(_ passcodeViewController: TOPasscodeViewController, isCorrectCode: Bool) {}
     func passcodeReset() {}
-    func requestedAccount(viewController: UIViewController?) {}
+    func requestedAccount(controller: UIViewController?) {}
 }
 
 class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
@@ -97,7 +96,7 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
                             NCKeychain().passcodeCounterFailReset = 0
                             self.delegate?.evaluatePolicy(passcodeViewController, isCorrectCode: true)
                             if NCKeychain().accountRequest {
-                                self.delegate?.requestedAccount(viewController: self.viewController)
+                                self.delegate?.requestedAccount(controller: self.viewController)
                             }
                         }
                     }
@@ -140,7 +139,7 @@ class NCPasscode: NSObject, TOPasscodeViewControllerDelegate {
                 NCKeychain().passcodeCounterFail = 0
                 NCKeychain().passcodeCounterFailReset = 0
                 if NCKeychain().accountRequest {
-                    self.delegate?.requestedAccount(viewController: self.viewController)
+                    self.delegate?.requestedAccount(controller: self.viewController)
                 }
             }
         }
