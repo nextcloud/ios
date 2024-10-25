@@ -120,7 +120,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         hidePrivacyProtectionWindow()
 
-        NCService().startRequestServicesServer(account: session.account, controller: controller)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            NCService().startRequestServicesServer(account: session.account, controller: controller)
+        }
 
         NCAutoUpload.shared.initAutoUpload(controller: nil, account: session.account) { num in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(num) uploads")

@@ -54,7 +54,7 @@ class NCNetworkingE2EEUpload: NSObject {
         }
         metadata.session = NCNetworking.shared.sessionUpload
         metadata.sessionError = ""
-        guard let result = self.database.addMetadata(metadata),
+        guard let result = self.database.createMetadata(metadata),
               let directory = self.database.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
             return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
         }
@@ -121,17 +121,16 @@ class NCNetworkingE2EEUpload: NSObject {
         let resultsLock = await networkingE2EE.lock(account: metadata.account, serverUrl: metadata.serverUrl)
         guard let e2eToken = resultsLock.e2eToken, let fileId = resultsLock.fileId, resultsLock.error == .success else {
             self.database.deleteMetadata(predicate: NSPredicate(format: "ocIdTransfer == %@", metadata.ocIdTransfer))
-            NotificationCenter.default.postOnMainThread(
-                name: NCGlobal.shared.notificationCenterUploadedFile,
-                object: nil,
-                userInfo: ["ocId": metadata.ocId,
-                           "ocIdTransfer": metadata.ocIdTransfer,
-                           "session": metadata.session,
-                           "serverUrl": metadata.serverUrl,
-                           "account": metadata.account,
-                           "fileName": metadata.fileName,
-                           "error": NKError(errorCode: NCGlobal.shared.errorE2EELock, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))],
-                second: 0.5)
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterUploadedFile,
+                                                        object: nil,
+                                                        userInfo: ["ocId": metadata.ocId,
+                                                                   "ocIdTransfer": metadata.ocIdTransfer,
+                                                                   "session": metadata.session,
+                                                                   "serverUrl": metadata.serverUrl,
+                                                                   "account": metadata.account,
+                                                                   "fileName": metadata.fileName,
+                                                                   "error": NKError(errorCode: NCGlobal.shared.errorE2EELock, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))],
+                                                        second: 0.5)
             return NKError(errorCode: NCGlobal.shared.errorE2EELock, errorDescription: NSLocalizedString("_e2e_error_", comment: ""))
         }
 

@@ -76,16 +76,6 @@ extension NCManageDatabase {
         }
     }
 
-    func addDirectory(directory: tableDirectory, metadata: tableMetadata) {
-        directory.account = metadata.account
-        directory.e2eEncrypted = metadata.e2eEncrypted
-        directory.favorite = metadata.favorite
-        directory.fileId = metadata.fileId
-        directory.ocId = metadata.ocId
-        directory.permissions = metadata.permissions
-        directory.richWorkspace = metadata.richWorkspace
-    }
-
     func deleteDirectoryAndSubDirectory(serverUrl: String, account: String) {
 #if !EXTENSION
         DispatchQueue.main.async {
@@ -216,9 +206,17 @@ extension NCManageDatabase {
                     result.offline = offline
                 } else {
                     let directory = tableDirectory()
+
+                    directory.account = metadata.account
                     directory.serverUrl = serverUrl
                     directory.offline = offline
-                    addDirectory(directory: directory, metadata: metadata)
+                    directory.e2eEncrypted = metadata.e2eEncrypted
+                    directory.favorite = metadata.favorite
+                    directory.fileId = metadata.fileId
+                    directory.ocId = metadata.ocId
+                    directory.permissions = metadata.permissions
+                    directory.richWorkspace = metadata.richWorkspace
+
                     realm.add(directory, update: .all)
                 }
             }
@@ -239,8 +237,7 @@ extension NCManageDatabase {
         }
     }
 
-    @discardableResult
-    func setDirectory(serverUrl: String, richWorkspace: String?, account: String) -> tableDirectory? {
+    func updateDirectoryRichWorkspace(_ richWorkspace: String?, account: String, serverUrl: String) {
         var result: tableDirectory?
 
         do {
@@ -252,15 +249,9 @@ extension NCManageDatabase {
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
-
-        if let result = result {
-            return tableDirectory.init(value: result)
-        } else {
-            return nil
-        }
     }
 
-    func setDirectory(serverUrl: String, colorFolder: String?, metadata: tableMetadata) {
+    func updateDirectoryColorFolder(_ colorFolder: String?, metadata: tableMetadata, serverUrl: String) {
         do {
             let realm = try Realm()
             try realm.write {
@@ -268,9 +259,17 @@ extension NCManageDatabase {
                     result.colorFolder = colorFolder
                 } else {
                     let directory = tableDirectory()
+
+                    directory.account = metadata.account
                     directory.serverUrl = serverUrl
                     directory.colorFolder = colorFolder
-                    addDirectory(directory: directory, metadata: metadata)
+                    directory.e2eEncrypted = metadata.e2eEncrypted
+                    directory.favorite = metadata.favorite
+                    directory.fileId = metadata.fileId
+                    directory.ocId = metadata.ocId
+                    directory.permissions = metadata.permissions
+                    directory.richWorkspace = metadata.richWorkspace
+
                     realm.add(directory)
                 }
             }

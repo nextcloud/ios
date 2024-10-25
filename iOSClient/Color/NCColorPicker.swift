@@ -212,7 +212,7 @@ class NCColorPicker: UIViewController {
     func updateColor(hexColor: String?) {
         if let metadata = metadata {
             let serverUrl = metadata.serverUrl + "/" + metadata.fileName
-            NCManageDatabase.shared.setDirectory(serverUrl: serverUrl, colorFolder: hexColor, metadata: metadata)
+            NCManageDatabase.shared.updateDirectoryColorFolder(hexColor, metadata: metadata, serverUrl: serverUrl)
             self.dismiss(animated: true)
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": metadata.serverUrl, "clearDataSource": true])
         }

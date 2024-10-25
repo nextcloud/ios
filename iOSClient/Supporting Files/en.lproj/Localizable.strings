@@ -969,8 +969,8 @@
 "_creation_"                = "Creation";
 "_modified_"                = "Modified";
 "_group_folders_"           = "Group folders";
-"_play_from_files_"         = "Play movie by Files";
-"_play_from_url_"           = "Play movie by URL";
+"_play_from_files_"         = "Play movie from a file";
+"_play_from_url_"           = "Play movie from URL";
 "_valid_video_url_"         = "Insert a valid URL";
 "_deletion_progess_"        = "Deletion in progress";
 "_copying_progess_"         = "Copying in progress";
