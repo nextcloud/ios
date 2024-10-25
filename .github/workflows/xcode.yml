@@ -13,9 +13,9 @@ on:
 
 env:
   PROJECT: Nextcloud.xcodeproj
-  DESTINATION: platform=iOS Simulator,name=iPhone 16
+  DESTINATION: platform=iOS Simulator,name=iPhone 15,OS=18.1
   SCHEME: Nextcloud
-  SERVER_BRANCH: stable30
+  SERVER_BRANCH: stable28
   PHP_VERSION: 8.2
 
 jobs:
@@ -37,7 +37,6 @@ jobs:
         -scheme "${{ env.SCHEME }}" \
         -destination "${{ env.DESTINATION }}" \
         -derivedDataPath "DerivedData" \
-        -allowProvisioningUpdates
         | xcbeautify --quieter
 
     - name: Upload test build
