@@ -74,6 +74,7 @@ class NCPlayer: NSObject {
         player.stop()
         print("deinit NCPlayer with ocId \(metadata.ocId)")
         NotificationCenter.default.removeObserver(self, name: UIApplication.didEnterBackgroundNotification, object: nil)
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterPlayerStoppedPlaying)
     }
 
     func openAVPlayer(url: URL, autoplay: Bool = false) {
@@ -166,7 +167,7 @@ class NCPlayer: NSObject {
 
     // MARK: -
 
-    func isPlay() -> Bool {
+    func isPlaying() -> Bool {
         return player.isPlaying
     }
 
@@ -201,7 +202,7 @@ class NCPlayer: NSObject {
     }
 
     func savePosition() {
-        guard metadata.isVideo, isPlay() else { return }
+        guard metadata.isVideo, isPlaying() else { return }
         self.database.addVideo(metadata: metadata, position: player.position)
     }
 
@@ -228,6 +229,9 @@ extension NCPlayer: VLCMediaPlayerDelegate {
         switch player.state {
         case .stopped:
             playerToolBar?.playButtonPlay()
+
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterPlayerStoppedPlaying)
+
             print("Played mode: STOPPED")
         case .opening:
             print("Played mode: OPENING")
@@ -273,8 +277,13 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             self.height = Int(size.height)
             playerToolBar.updateTopToolBar(videoSubTitlesIndexes: player.videoSubTitlesIndexes, audioTrackIndexes: player.audioTrackIndexes)
             self.database.addVideo(metadata: metadata, width: self.width, height: self.height, length: self.length)
+
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterPlayerIsPlaying)
+
             print("Played mode: PLAYING")
         case .paused:
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterPlayerStoppedPlaying)
+
             playerToolBar?.playButtonPlay()
             print("Played mode: PAUSED")
         default: break
