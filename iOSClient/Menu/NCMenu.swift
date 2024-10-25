@@ -92,11 +92,9 @@ class NCMenu: UITableViewController {
         let actionNameLabel = cell.viewWithTag(2) as? UILabel
         let actionDetailLabel = cell.viewWithTag(3) as? UILabel
 		
-		if action.isHeader {
-			let iconWidthHeight = 36.0
-			actionIconView?.widthAnchor.constraint(equalToConstant: iconWidthHeight).isActive = true
-			actionIconView?.heightAnchor.constraint(equalToConstant: iconWidthHeight).isActive = true
-		}
+		let iconWidthHeight = action.isHeader ? 36.0 : 20.0
+		actionIconView?.widthAnchor.constraint(equalToConstant: iconWidthHeight).isActive = true
+		actionIconView?.heightAnchor.constraint(equalToConstant: iconWidthHeight).isActive = true
 
         if action.action == nil {
             cell.selectionStyle = .none
