@@ -489,11 +489,7 @@ extension NCSelect {
                 self.collectionView.reloadData()
             }
         } completion: { _, _, _, _, _ in
-            var metadatas: [tableMetadata] = []
-
-            if let results = self.database.getResultsMetadatasPredicate(predicate, layoutForView: NCDBLayoutForView()) {
-                metadatas = Array(results.freeze())
-            }
+            let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: NCDBLayoutForView())
 
             self.dataSource = NCCollectionViewDataSource(metadatas: metadatas)
             self.collectionView.reloadData()

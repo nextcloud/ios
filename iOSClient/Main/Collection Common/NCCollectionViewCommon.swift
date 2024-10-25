@@ -1092,11 +1092,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 }
                 guard let metadatasSearch, error == .success, self.isSearchingMode else { return }
                 let ocId = metadatasSearch.map { $0.ocId }
-                var metadatas: [tableMetadata] = []
 
-                if let results = self.database.getResultsMetadatasPredicate(NSPredicate(format: "ocId IN %@", ocId), layoutForView: self.layoutForView) {
-                    metadatas = Array(results.freeze())
-                }
+                let metadatas = self.database.getResultsMetadatasPredicate(NSPredicate(format: "ocId IN %@", ocId), layoutForView: self.layoutForView)
 
                 self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: self.layoutForView, providers: self.providers, searchResults: self.searchResults)
             }

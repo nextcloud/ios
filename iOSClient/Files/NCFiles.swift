@@ -123,7 +123,6 @@ class NCFiles: NCCollectionViewCommon {
         var predicate = self.defaultPredicate
         let predicateDirectory = NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, self.serverUrl)
         let dataSourceMetadatas = self.dataSource.getMetadatas()
-        var metadatas: [tableMetadata] = []
 
         if NCKeychain().getPersonalFilesOnly(account: session.account) {
             predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND (ownerId == %@ || ownerId == '') AND mountType == '' AND NOT (status IN %@)", session.account, self.serverUrl, session.userId, global.metadataStatusHideInView)
@@ -132,9 +131,7 @@ class NCFiles: NCCollectionViewCommon {
         self.metadataFolder = database.getMetadataFolder(session: session, serverUrl: self.serverUrl)
         self.richWorkspaceText = database.getTableDirectory(predicate: predicateDirectory)?.richWorkspace
 
-        if let results = self.database.getResultsMetadatasPredicate(predicate, layoutForView: layoutForView) {
-            metadatas = Array(results.freeze())
-        }
+        let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: layoutForView)
 
         self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView)
 

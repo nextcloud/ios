@@ -28,11 +28,8 @@ import NextcloudKit
 
 extension NCShareExtension {
     @objc func reloadDatasource(withLoadFolder: Bool) {
-        var metadatas: [tableMetadata] = []
         let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", session.account, serverUrl)
-        if let results = self.database.getResultsMetadatasPredicate(predicate, layoutForView: NCDBLayoutForView()) {
-            metadatas = Array(results.freeze())
-        }
+        let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: NCDBLayoutForView())
 
         self.dataSource = NCCollectionViewDataSource(metadatas: metadatas)
 
