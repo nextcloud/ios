@@ -165,7 +165,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 if error == .success, let files {
                     self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: true) { metadataFolder, metadatas in
                         /// FOLDER
-                        self.database.createMetadata(metadataFolder)
+                        self.database.addMetadata(metadataFolder)
                         self.database.addDirectory(e2eEncrypted: metadataFolder.e2eEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, fileId: metadataFolder.fileId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, richWorkspace: metadataFolder.richWorkspace, serverUrl: serverUrl, account: metadataFolder.account)
                         /// FILES
                         self.database.deleteMetadata(predicate: predicate)

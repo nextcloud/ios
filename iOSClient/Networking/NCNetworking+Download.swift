@@ -67,7 +67,7 @@ extension NCNetworking {
         }
 
         if database.getMetadataFromOcId(metadata.ocId) == nil {
-            database.createMetadata(metadata)
+            database.addMetadata(metadata)
         }
 
         NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account, options: options, requestHandler: { request in
@@ -297,7 +297,7 @@ class NCOperationDownload: ConcurrentOperation, @unchecked Sendable {
         metadata.sessionTaskIdentifier = 0
         metadata.status = NCGlobal.shared.metadataStatusWaitDownload
 
-        NCManageDatabase.shared.createMetadata(metadata)
+        NCManageDatabase.shared.addMetadata(metadata)
 
         NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true) {
         } completion: { _, _ in

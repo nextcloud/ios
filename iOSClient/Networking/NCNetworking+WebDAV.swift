@@ -40,7 +40,7 @@ extension NCNetworking {
         func storeFolder(_ metadataFolder: tableMetadata?) {
             guard let metadataFolder else { return }
 
-            self.database.createMetadata(metadataFolder)
+            self.database.addMetadata(metadataFolder)
             self.database.addDirectory(e2eEncrypted: metadataFolder.e2eEncrypted,
                                        favorite: metadataFolder.favorite,
                                        ocId: metadataFolder.ocId,
@@ -230,7 +230,7 @@ extension NCNetworking {
                     }
 
                     if error == .success, let metadataFolder {
-                        self.database.createMetadata(metadataFolder)
+                        self.database.addMetadata(metadataFolder)
                         self.database.addDirectory(e2eEncrypted: metadataFolder.e2eEncrypted,
                                                    favorite: metadataFolder.favorite,
                                                    ocId: metadataFolder.ocId,
@@ -518,7 +518,7 @@ extension NCNetworking {
             }
             self.readFile(serverUrlFileName: metadata.serverUrl + "/" + metadata.fileName, account: metadata.account) { _, metadata, error in
                 guard error == .success, let metadata = metadata else { return }
-                self.database.createMetadata(metadata)
+                self.database.addMetadata(metadata)
                 NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterReloadDataSource, userInfo: ["serverUrl": metadata.serverUrl, "clearDataSource": true])
             }
         }
@@ -758,7 +758,7 @@ extension NCNetworking {
             defer { dispatchGroup?.leave() }
             guard let metadata = metadata else { return }
             let returnMetadata = tableMetadata.init(value: metadata)
-            self.database.createMetadata(metadata)
+            self.database.addMetadata(metadata)
             completion(account, returnMetadata, error)
         }
     }

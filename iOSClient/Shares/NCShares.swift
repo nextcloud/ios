@@ -72,7 +72,7 @@ class NCShares: NCCollectionViewCommon {
                     }
                 } completion: { _, metadata, _ in
                     if let metadata {
-                        self.database.createMetadata(metadata)
+                        self.database.addMetadata(metadata)
                         if !(ocId.contains { $0 == metadata.ocId }) {
                             ocId.append(metadata.ocId)
                         }

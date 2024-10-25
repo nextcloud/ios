@@ -62,8 +62,8 @@ class NCCameraRoll: NSObject {
                 metadataSource.session = NCNetworking.shared.sessionUpload
             }
             metadataSource.isExtractFile = true
-            if let metadata = self.database.createMetadata(metadataSource) {
-                metadatas.append(metadata)
+            if let metadata = self.database.addMetadata(metadataSource) {
+                metadatas.append(tableMetadata(value: metadata))
             }
             return completition(metadatas)
         }
@@ -76,8 +76,8 @@ class NCCameraRoll: NSObject {
                 let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadataSource.assetLocalIdentifier], options: nil)
                 if metadata.isLivePhoto, fetchAssets.count > 0 {
                     self.createMetadataLivePhoto(metadata: metadata, asset: fetchAssets.firstObject) { metadata in
-                        if let metadata, let metadata = self.database.createMetadata(metadata) {
-                            metadatas.append(metadata)
+                        if let metadata, let metadata = self.database.addMetadata(metadata) {
+                            metadatas.append(tableMetadata(value: metadata))
                         }
                         completition(metadatas)
                     }
@@ -126,8 +126,8 @@ class NCCameraRoll: NSObject {
                         metadata.session = NCNetworking.shared.sessionUpload
                     }
                     metadata.isExtractFile = true
-                    if let metadata = self.database.createMetadata(metadata) {
-                        metadataReturn = metadata
+                    if let metadata = self.database.addMetadata(metadata) {
+                        metadataReturn = tableMetadata(value: metadata)
                     }
                 }
                 completion(metadataReturn, fileNamePath, error)
@@ -288,8 +288,9 @@ class NCCameraRoll: NSObject {
                 metadataLivePhoto.creationDate = metadata.creationDate
                 metadataLivePhoto.date = metadata.date
                 metadataLivePhoto.uploadDate = metadata.uploadDate
-                if let metadata = self.database.createMetadata(metadataLivePhoto) {
-                    return completion(metadata)
+                if let metadata = self.database.addMetadata(metadataLivePhoto) {
+                    let returnMetadata = tableMetadata(value: metadata)
+                    return completion(returnMetadata)
                 }
                 completion(nil)
             }
