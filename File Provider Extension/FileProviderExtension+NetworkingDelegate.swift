@@ -68,7 +68,7 @@ extension FileProviderExtension: NCNetworkingDelegate {
                 metadata.sessionTaskIdentifier = 0
                 metadata.status = NCGlobal.shared.metadataStatusNormal
 
-                NCManageDatabase.shared.addMetadata(metadata)
+                NCManageDatabase.shared.createMetadata(metadata)
                 NCManageDatabase.shared.addLocalFile(metadata: metadata)
 
                 /// SIGNAL

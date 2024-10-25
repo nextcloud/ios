@@ -214,7 +214,7 @@ class FileProviderExtension: NSFileProviderExtension {
                 metadata.date = (date as? NSDate) ?? NSDate()
                 metadata.etag = etag ?? ""
                 self.database.addLocalFile(metadata: metadata)
-                self.database.addMetadata(metadata)
+                self.database.createMetadata(metadata)
                 completionHandler(nil)
             } else if error.errorCode == 200 {
                 self.database.setMetadataStatus(ocId: metadata.ocId, status: NCGlobal.shared.metadataStatusNormal)
@@ -222,7 +222,7 @@ class FileProviderExtension: NSFileProviderExtension {
             } else {
                 metadata.status = NCGlobal.shared.metadataStatusDownloadError
                 metadata.sessionError = error.errorDescription
-                self.database.addMetadata(metadata)
+                self.database.createMetadata(metadata)
                 completionHandler(NSFileProviderError(.noSuchItem))
             }
             /// SIGNAL
@@ -330,7 +330,7 @@ class FileProviderExtension: NSFileProviderExtension {
                 metadataForUpload.size = size
                 metadataForUpload.status = NCGlobal.shared.metadataStatusUploading
 
-                self.database.addMetadata(metadataForUpload)
+                self.database.createMetadata(metadataForUpload)
 
                 let serverUrlFileName = tableDirectory.serverUrl + "/" + fileName
                 let fileNameLocalPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocIdTransfer, fileNameView: fileName)

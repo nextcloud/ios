@@ -41,7 +41,7 @@ extension FileProviderExtension {
                         let metadata = self.database.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryEncrypted)
 
                         self.database.addDirectory(e2eEncrypted: false, favorite: false, ocId: ocId!, fileId: metadata.fileId, etag: metadata.etag, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
-                        self.database.addMetadata(metadata)
+                        self.database.createMetadata(metadata)
 
                         guard let metadataInsert = self.database.getMetadataFromOcId(ocId!),
                               let parentItemIdentifier = self.providerUtility.getParentItemIdentifier(metadata: metadataInsert) else {
@@ -191,7 +191,7 @@ extension FileProviderExtension {
                     }
                     // Change DB
                     metadata.favorite = favorite
-                    self.database.addMetadata(metadata)
+                    self.database.createMetadata(metadata)
                     /// SIGNAL
                     let item = fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .workingSet)
                     completionHandler(item, nil)

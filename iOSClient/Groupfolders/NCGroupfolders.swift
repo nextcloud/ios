@@ -89,7 +89,7 @@ class NCGroupfolders: NCCollectionViewCommon {
                         if results.error == .success, let file = results.files?.first {
                             let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
                             let metadata = self.database.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
-                            self.database.addMetadata(metadata)
+                            self.database.createMetadata(metadata)
                             self.database.addDirectory(e2eEncrypted: isDirectoryE2EE, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
                         }
                     }

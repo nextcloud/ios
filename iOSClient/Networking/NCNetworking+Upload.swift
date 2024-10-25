@@ -325,7 +325,7 @@ extension NCNetworking {
                     metadata.status = self.global.metadataStatusNormal
 
                     self.database.deleteMetadata(predicate: NSPredicate(format: "ocIdTransfer == %@", metadata.ocIdTransfer))
-                    self.database.addMetadata(metadata)
+                    self.database.createMetadata(metadata)
 
                     if selector == self.global.selectorUploadFileNODelete {
                         self.utilityFileSystem.moveFile(atPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer), toPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId))
