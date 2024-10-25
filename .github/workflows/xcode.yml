@@ -13,9 +13,9 @@ on:
 
 env:
   PROJECT: Nextcloud.xcodeproj
-  DESTINATION: platform=iOS Simulator,name=iPhone 15,OS=17.2
+  DESTINATION: platform=iOS Simulator,name=iPhone 16
   SCHEME: Nextcloud
-  SERVER_BRANCH: stable28
+  SERVER_BRANCH: stable30
   PHP_VERSION: 8.2
 
 jobs:
