@@ -21,7 +21,7 @@ env:
 jobs:
   build:
     name: Build
-    runs-on: macos-14
+    runs-on: macos-15-beta
     if: github.event.pull_request.draft == false
 
     steps:
@@ -33,7 +33,6 @@ jobs:
     - name: Build Nextcloud iOS
       run: |
         set -o pipefail && \
-        xcode-select -switch /Applications/Xcode_16.0.0.app
         xcodebuild build-for-testing \
         -scheme "${{ env.SCHEME }}" \
         -destination "${{ env.DESTINATION }}" \
