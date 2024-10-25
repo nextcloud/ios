@@ -37,10 +37,21 @@ class NCNetworkingProcess {
     private var hasRun: Bool = false
     private let lockQueue = DispatchQueue(label: "com.nextcloud.networkingprocess.lockqueue")
     private var timerProcess: Timer?
+    private var enableControllingScreenAwake = true
 
     private init() {
         self.startTimer()
         self.startObserveTableMetadata()
+
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayerIsPlaying), object: nil, queue: nil) { _ in
+
+            self.enableControllingScreenAwake = false
+        }
+
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayerStoppedPlaying), object: nil, queue: nil) { _ in
+
+            self.enableControllingScreenAwake = true
+        }
     }
 
     private func startObserveTableMetadata() {
@@ -85,21 +96,24 @@ class NCNetworkingProcess {
                       let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal))?.freeze()
                 else { return }
                 self.hasRun = true
-
+                
                 /// Keep screen awake
                 ///
                 Task {
                     let tasks = await self.networking.getAllDataTask()
                     let hasSynchronizationTask = tasks.contains { $0.taskDescription == NCGlobal.shared.taskDescriptionSynchronization }
                     let resultsTransfer = results.filter { self.global.metadataStatusInTransfer.contains($0.status) }
-
+                    
+                    
+                    if !self.enableControllingScreenAwake { return }
+                    
                     if resultsTransfer.isEmpty && !hasSynchronizationTask {
                         ScreenAwakeManager.shared.mode = .off
                     } else {
                         ScreenAwakeManager.shared.mode = NCKeychain().screenAwakeMode
                     }
                 }
-
+                
                 if results.isEmpty {
 
                     /// Remove Photo CameraRoll

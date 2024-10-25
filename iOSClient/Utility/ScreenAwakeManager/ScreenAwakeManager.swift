@@ -9,13 +9,6 @@
 // Modified from https://github.com/ochococo/Insomnia
 import UIKit
 
-/**
-
-    Sometimes you want your iPhone to stay active a little bit longer is it an import or just game interface.
-
-    This simple class aims to simplify the code and give you a well tested solution.
-
- */
 class ScreenAwakeManager {
     static let shared: ScreenAwakeManager = {
         let instance = ScreenAwakeManager()
