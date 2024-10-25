@@ -246,12 +246,16 @@ class NCAutoUpload: NSObject {
                     }
                     let idAsset = account + asset.localIdentifier + creationDateString
                     if !idAssets.contains(idAsset) {
-                        newAssets.append(asset)
+                        if ((asset.isFavorite && tableAccount.autoUploadFavoritesOnly) || !tableAccount.autoUploadFavoritesOnly) {
+                            newAssets.append(asset)
+                        }
                     }
                 }
             } else {
                 assets.enumerateObjects { asset, _, _ in
-                    newAssets.append(asset)
+                    if ((asset.isFavorite && tableAccount.autoUploadFavoritesOnly) || !tableAccount.autoUploadFavoritesOnly) {
+                        newAssets.append(asset)
+                    }
                 }
             }
             completion(newAssets)
