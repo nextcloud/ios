@@ -61,7 +61,7 @@ class NCBrandColorIONOS: NCBrandColor {
 	}
 	
 	override var fileMenuDestructiveColor: UIColor {
-		UIColor(named: "FileMenu/DestructiveAction") ?? super.fileMenuDestructiveColor
+		UIColor(named: "DestructiveAction") ?? super.fileMenuDestructiveColor
 	}
 	
 	override var fileMenuSeparatorColor: UIColor {
