@@ -37,6 +37,7 @@ jobs:
         -scheme "${{ env.SCHEME }}" \
         -destination "${{ env.DESTINATION }}" \
         -derivedDataPath "DerivedData" \
+        -allowProvisioningUpdates
         | xcbeautify --quieter
 
     - name: Upload test build
