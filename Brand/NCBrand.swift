@@ -163,26 +163,6 @@ class NCBrandColor: NSObject {
     var formRowBackgroundColor: UIColor {
         .secondarySystemGroupedBackground
     }
-	
-	var fileMenuBackgroundColor: UIColor {
-		.systemBackground
-	}
-	
-	var fileMenuSelectedRowColor: UIColor {
-		.secondarySystemGroupedBackground
-	}
-	
-	var fileMenuDestructiveColor: UIColor {
-		.red
-	}
-	
-	var fileMenuSeparatorColor: UIColor {
-		.separator
-	}
-	
-	var fileMenuTextColor: UIColor {
-		.label
-	}
     
     var formSeparatorColor: UIColor {
         .separator

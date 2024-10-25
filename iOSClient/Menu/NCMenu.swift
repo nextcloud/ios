@@ -36,7 +36,7 @@ class NCMenu: UITableViewController {
 
     var actions = [NCMenuAction]()
     var menuColor: UIColor = NCBrandColor.shared.appBackgroundColor
-    var textColor = NCBrandColor.shared.fileMenuTextColor
+	var textColor = UIColor(resource: .FileMenu.text)
 
     static func makeNCMenu(with actions: [NCMenuAction], menuColor: UIColor, textColor: UIColor) -> NCMenu? {
         let menuViewController = UIStoryboard(name: "NCMenu", bundle: nil).instantiateInitialViewController() as? NCMenu
@@ -78,7 +78,7 @@ class NCMenu: UITableViewController {
         let action = actions[indexPath.row]
         guard action.title != NCMenuAction.seperatorIdentifier else {
             let cell = UITableViewCell()
-			cell.backgroundColor = NCBrandColor.shared.fileMenuSeparatorColor
+			cell.backgroundColor = UIColor(resource: .ListCell.separator)
             return cell
         }
         let cell = tableView.dequeueReusableCell(withIdentifier: "menuActionCell", for: indexPath)
@@ -86,7 +86,7 @@ class NCMenu: UITableViewController {
         cell.backgroundColor = menuColor
 		
 		cell.selectedBackgroundView = UIView()
-		cell.selectedBackgroundView?.backgroundColor =  NCBrandColor.shared.fileMenuSelectedRowColor
+		cell.selectedBackgroundView?.backgroundColor =  UIColor(resource: .FileMenu.selectedRow)
 		
         let actionIconView = cell.viewWithTag(1) as? UIImageView
         let actionNameLabel = cell.viewWithTag(2) as? UILabel
@@ -126,7 +126,7 @@ class NCMenu: UITableViewController {
 
         if action.destructive {
             actionIconView?.image = actionIconView?.image?.withRenderingMode(.alwaysTemplate)
-			let color = NCBrandColor.shared.fileMenuDestructiveColor
+			let color = UIColor(resource: .destructiveAction)
 			actionIconView?.tintColor = color
             actionNameLabel?.textColor = color
         }
