@@ -33,6 +33,7 @@ jobs:
     - name: Build Nextcloud iOS
       run: |
         set -o pipefail && \
+        xcode-select -switch /Applications/Xcode_16.0.0.app
         xcodebuild build-for-testing \
         -scheme "${{ env.SCHEME }}" \
         -destination "${{ env.DESTINATION }}" \
