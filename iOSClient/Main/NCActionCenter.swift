@@ -224,7 +224,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
             } else if let file {
                 let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
                 let metadata = self.database.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
-                self.database.addMetadata(metadata)
+                self.database.createMetadata(metadata)
 
                 let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
                 let fileNameLocalPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)

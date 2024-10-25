@@ -175,7 +175,7 @@ extension NCMedia {
                                                             contentType: "",
                                                             session: self.session,
                                                             sceneIdentifier: self.controller?.sceneIdentifier)
-                self.database.addMetadata(metadata)
+                self.database.createMetadata(metadata)
                 NCViewer().view(viewController: self, metadata: metadata)
             }))
             self.present(alert, animated: true)
