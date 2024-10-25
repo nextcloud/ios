@@ -293,6 +293,12 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
 
         dropDown.show()
     }
+    
+    func showOKAlert(title: String?, message: String?) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
+        return present(alertController, animated: true)
+    }
 }
 
 // MARK: - UITableViewDelegate
