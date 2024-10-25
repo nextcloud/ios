@@ -214,8 +214,8 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         cell.fileOcId = metadata.ocId
         cell.fileOcIdTransfer = metadata.ocIdTransfer
         cell.fileUser = metadata.ownerId
-        cell.imageItem.image = imageCache.getImageFile()
-        cell.imageItem.backgroundColor = nil
+        cell.filePreviewImageView?.image = imageCache.getImageFile()
+        cell.filePreviewImageView?.backgroundColor = nil
         cell.labelTitle.text = metadata.fileNameView
         cell.labelTitle.textColor = NCBrandColor.shared.textColor
         let serverUrlHome = utilityFileSystem.getHomeServer(session: session)
@@ -226,9 +226,9 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
 
         /// Image item
         if !metadata.iconName.isEmpty {
-            cell.imageItem.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
+            cell.filePreviewImageView?.image = utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
         } else {
-            cell.imageItem.image = imageCache.getImageFile()
+            cell.filePreviewImageView?.image = imageCache.getImageFile()
         }
 
         /// Status and Info

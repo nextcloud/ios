@@ -970,8 +970,8 @@
 "_creation_"                = "Creation";
 "_modified_"                = "Modified";
 "_group_folders_"           = "Group folders";
-"_play_from_files_"         = "Play movie by Files";
-"_play_from_url_"           = "Play movie by URL";
+"_play_from_files_"         = "Play movie from a file";
+"_play_from_url_"           = "Play movie from URL";
 "_valid_video_url_"         = "Insert a valid URL";
 "_deletion_progess_"        = "Deletion in progress";
 "_copying_progess_"         = "Copying in progress";
@@ -1009,6 +1009,9 @@
 "_while_charging_"          = "While charging";
 "_additional_options_"      = "Additional options";
 "_keep_screen_awake_"       = "Keep screen awake while transferring files";
+"_error_not_found_"         = "The requested resource could not be found";
+"_error_conflict_"          = "The request could not be completed due to a conflict with the current state of the resource";
+"_error_precondition_"      = "The server does not meet one of the preconditions that the requester";
 
 // Video
 "_select_trace_"            = "Select the trace";
@@ -1031,7 +1034,7 @@
 "_user_"                    = "User";
 "_add_subtitle_"            = "Add an external subtitle";
 "_add_audio_"               = "Add an external audio";
-"_maintenance_mode_"        = "Server is currently in maintenance mode";
+"_server_maintenance_mode_" = "Server is currently in maintenance mode";
 "_upload_foreground_msg_"   = "Do not close %@ to complete the transfer …";
 "_upload_background_msg_"   = "Files upload in progress …";
 "_create_folder_error_"     = "An error has occurred while creating the folder:\n%@.\n\nPlease resolve the issue as soon as possible.\n\nAll uploads are suspended until the problem is resolved.\n";

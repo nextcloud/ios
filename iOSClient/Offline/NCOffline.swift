@@ -65,7 +65,7 @@ class NCOffline: NCCollectionViewCommon {
             for file in files {
                 ocIds.append(file.ocId)
             }
-            results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@", session.account, ocIds))
+            results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@ AND NOT (status IN %@)", session.account, ocIds, global.metadataStatusHideInView))
         } else {
             results = self.database.getResultsMetadatasPredicate(self.defaultPredicate, layoutForView: layoutForView)
         }

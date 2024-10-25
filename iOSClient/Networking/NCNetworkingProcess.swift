@@ -54,8 +54,8 @@ class NCNetworkingProcess {
                 case .update(_, _, let insertions, let modifications):
                     if insertions.count > 0 || modifications.count > 0 {
                         guard let self else { return }
-
-                        self.lockQueue.sync {
+                        self.startTimer()
+                        self.lockQueue.async {
                             guard !self.hasRun, self.networking.isOnline else { return }
                             self.hasRun = true
 
@@ -79,7 +79,7 @@ class NCNetworkingProcess {
         self.timerProcess?.invalidate()
         self.timerProcess = Timer.scheduledTimer(withTimeInterval: 3, repeats: true, block: { _ in
 
-            self.lockQueue.sync {
+            self.lockQueue.async {
                 guard !self.hasRun,
                       self.networking.isOnline,
                       let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal))?.freeze()
@@ -88,6 +88,7 @@ class NCNetworkingProcess {
 
                 /// Keep screen awake
                 ///
+                /*
                 Task {
                     let tasks = await self.networking.getAllDataTask()
                     let hasSynchronizationTask = tasks.contains { $0.taskDescription == NCGlobal.shared.taskDescriptionSynchronization }
@@ -99,6 +100,7 @@ class NCNetworkingProcess {
                         ScreenAwakeManager.shared.mode = NCKeychain().screenAwakeMode
                     }
                 }
+                */
 
                 if results.isEmpty {
 
@@ -179,6 +181,11 @@ class NCNetworkingProcess {
 
         /// ------------------------ UPLOAD
         ///
+
+        /// In background max 2 upload otherwise iOS Termination Reason: RUNNINGBOARD 0xdead10cc
+        if applicationState == .background {
+            maxConcurrentOperationUpload = 2
+        }
 
         /// E2EE - only one for time
         for metadata in metadatasUploading.unique(map: { $0.serverUrl }) {

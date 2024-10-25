@@ -161,6 +161,7 @@ extension NCMedia {
 
                 } else {
                     NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(error.errorCode) " + error.errorDescription)
+                    self.collectionViewReloadData()
                 }
 
                 DispatchQueue.main.async {

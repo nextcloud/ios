@@ -64,13 +64,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 window?.makeKeyAndVisible()
                 /// Set the ACCOUNT
                 controller.account = activeTableAccount.account
-                /// Create media cache
-                DispatchQueue.global(qos: .utility).async {
-                    if NCImageCache.shared.cache.count == 0 {
-                        let session = NCSession.shared.getSession(account: activeTableAccount.account)
-                        NCImageCache.shared.cachingMedia(session: session)
-                    }
-                }
             }
         } else {
             NCKeychain().removeAll()
@@ -127,7 +120,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         hidePrivacyProtectionWindow()
 
-        NCService().startRequestServicesServer(account: session.account, controller: controller)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            NCService().startRequestServicesServer(account: session.account, controller: controller)
+        }
 
         NCAutoUpload.shared.initAutoUpload(controller: nil, account: session.account) { num in
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(num) uploads")

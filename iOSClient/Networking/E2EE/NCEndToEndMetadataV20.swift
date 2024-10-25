@@ -99,7 +99,6 @@ extension NCEndToEndMetadata {
     // --------------------------------------------------------------------------------------------
 
     func encodeMetadataV20(serverUrl: String, ocIdServerUrl: String, addUserId: String?, addCertificate: String?, removeUserId: String?, session: NCSession.Session) -> (metadata: String?, signature: String?, counter: Int, error: NKError) {
-
         guard let directoryTop = utilityFileSystem.getDirectoryE2EETop(serverUrl: serverUrl, account: session.account), let certificate = NCKeychain().getEndToEndCertificate(account: session.account) else {
             return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_"))
         }
@@ -122,7 +121,6 @@ extension NCEndToEndMetadata {
         }
 
         if isDirectoryTop {
-
             guard var key = NCEndToEndEncryption.shared().generateKey() else {
                 return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_"))
             }
@@ -150,7 +148,6 @@ extension NCEndToEndMetadata {
             metadataKey = key.base64EncodedString()
 
         } else {
-
             guard let tableUserId = self.database.getE2EUser(account: session.account, ocIdServerUrl: directoryTop.ocId, userId: session.userId), let key = tableUserId.metadataKey else {
                 return (nil, nil, 0, NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_"))
             }
@@ -224,18 +221,14 @@ extension NCEndToEndMetadata {
     // --------------------------------------------------------------------------------------------
 
     func decodeMetadataV20(_ json: String, signature: String?, serverUrl: String, ocIdServerUrl: String, session: NCSession.Session) -> NKError {
-
         guard let data = json.data(using: .utf8),
               let directoryTop = utilityFileSystem.getDirectoryE2EETop(serverUrl: serverUrl, account: session.account) else {
             return NKError(errorCode: NCGlobal.shared.errorE2EEKeyDecodeMetadata, errorDescription: "_e2e_error_")
         }
-
         let isDirectoryTop = utilityFileSystem.isDirectoryE2EETop(account: session.account, serverUrl: serverUrl)
 
         func addE2eEncryption(fileNameIdentifier: String, filename: String, authenticationTag: String, key: String, initializationVector: String, metadataKey: String, mimetype: String) {
-
             if let metadata = self.database.getMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@", session.account, fileNameIdentifier)) {
-
                 let object = tableE2eEncryption.init(account: session.account, ocIdServerUrl: ocIdServerUrl, fileNameIdentifier: fileNameIdentifier)
 
                 object.authenticationTag = authenticationTag
@@ -265,7 +258,6 @@ extension NCEndToEndMetadata {
 
         do {
             let json = try JSONDecoder().decode(E2eeV20.self, from: data)
-
             let metadata = json.metadata
             let users = json.users
             let filesdrop = json.filedrop
@@ -299,10 +291,12 @@ extension NCEndToEndMetadata {
 
             // SIGNATURE CHECK
             //
-            if let signature {
+            if let signature, !signature.isEmpty {
                 if !verifySignature(account: session.account, signature: signature, userId: tableUser.userId, metadata: metadata, users: users, version: version, certificate: tableUser.certificate) {
                     return NKError(errorCode: NCGlobal.shared.errorE2EEKeyVerifySignature, errorDescription: "_e2e_error_")
                 }
+            } else {
+                return NKError(errorCode: NCGlobal.shared.errorE2EEKeyVerifySignature, errorDescription: "_e2e_error_")
             }
 
             // FILEDROP
@@ -337,7 +331,6 @@ extension NCEndToEndMetadata {
                   decryptedMetadata.isGzipped else {
                 return NKError(errorCode: NCGlobal.shared.errorE2EEKeyCiphertext, errorDescription: "_e2e_error_")
             }
-
             let data = try decryptedMetadata.gunzipped()
             if let jsonText = String(data: data, encoding: .utf8) { print(jsonText) }
             let jsonCiphertextMetadata = try JSONDecoder().decode(E2eeV20.Metadata.ciphertext.self, from: data)
@@ -419,13 +412,13 @@ extension NCEndToEndMetadata {
     // MARK: -
 
     func createSignature(metadata: E2eeV20.Metadata, users: [E2eeV20.Users]?, version: String, certificate: String, session: NCSession.Session) -> String? {
-
         guard let users else { return nil }
-
         var usersSignatureCodable: [E2eeV20Signature.Users] = []
+
         for user in users {
             usersSignatureCodable.append(E2eeV20Signature.Users(userId: user.userId, certificate: user.certificate, encryptedMetadataKey: user.encryptedMetadataKey))
         }
+
         let signatureCodable = E2eeV20Signature(metadata: E2eeV20Signature.Metadata(ciphertext: metadata.ciphertext, nonce: metadata.nonce, authenticationTag: metadata.authenticationTag), users: usersSignatureCodable, version: version)
 
         do {
@@ -446,7 +439,6 @@ extension NCEndToEndMetadata {
     }
 
     func verifySignature(account: String, signature: String, userId: String, metadata: E2eeV20.Metadata, users: [E2eeV20.Users]?, version: String, certificate: String) -> Bool {
-
         var signatureCodable: E2eeV20Signature?
         var certificates: [String] = []
 

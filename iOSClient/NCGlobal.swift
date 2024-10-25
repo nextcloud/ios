@@ -201,6 +201,7 @@ class NCGlobal: NSObject {
     let errorPreconditionFailed: Int            = 412
     let errorUnsupportedMediaType: Int          = 415
     let errorInternalServerError: Int           = 500
+    let errorMaintenance: Int                   = 503
     let errorQuota: Int                         = 507
     let errorUnauthorized997: Int               = 997
     let errorExplicitlyCancelled: Int           = -999

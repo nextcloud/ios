@@ -27,9 +27,11 @@ import UIKit
 extension NCCollectionViewCommon: UICollectionViewDataSourcePrefetching {
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
         let ext = global.getSizeExtension(column: self.numberOfColumns)
-        guard !isSearchingMode,
+        guard !(self is NCTransfers),
+              !isSearchingMode,
               imageCache.allowExtensions(ext: ext)
         else { return }
+
         let cost = indexPaths.first?.row ?? 0
 
         DispatchQueue.global().async {

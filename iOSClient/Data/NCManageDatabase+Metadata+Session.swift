@@ -124,13 +124,15 @@ extension NCManageDatabase {
             let realm = try Realm()
             try realm.write {
                 for metadata in metadatas {
-                    metadata.sceneIdentifier = nil
-                    metadata.session = ""
-                    metadata.sessionTaskIdentifier = 0
-                    metadata.sessionError = ""
-                    metadata.sessionSelector = ""
-                    metadata.sessionDate = nil
-                    metadata.status = NCGlobal.shared.metadataStatusNormal
+                    if let result = realm.objects(tableMetadata.self).filter("ocId == %@", metadata.ocId).first {
+                        result.sceneIdentifier = nil
+                        result.session = ""
+                        result.sessionTaskIdentifier = 0
+                        result.sessionError = ""
+                        result.sessionSelector = ""
+                        result.sessionDate = nil
+                        result.status = NCGlobal.shared.metadataStatusNormal
+                    }
                 }
             }
         } catch let error {
@@ -142,13 +144,15 @@ extension NCManageDatabase {
         do {
             let realm = try Realm()
             try realm.write {
-                metadata.sceneIdentifier = nil
-                metadata.session = ""
-                metadata.sessionTaskIdentifier = 0
-                metadata.sessionError = ""
-                metadata.sessionSelector = ""
-                metadata.sessionDate = nil
-                metadata.status = NCGlobal.shared.metadataStatusNormal
+                if let result = realm.objects(tableMetadata.self).filter("ocId == %@", metadata.ocId).first {
+                    result.sceneIdentifier = nil
+                    result.session = ""
+                    result.sessionTaskIdentifier = 0
+                    result.sessionError = ""
+                    result.sessionSelector = ""
+                    result.sessionDate = nil
+                    result.status = NCGlobal.shared.metadataStatusNormal
+                }
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")

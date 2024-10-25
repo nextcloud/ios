@@ -201,7 +201,8 @@ class NCFiles: NCCollectionViewCommon {
                 return completion(nil, false, error)
             }
             /// Check change eTag or E2EE  or DataSource empty
-            let tableDirectory = self.database.setDirectory(serverUrl: self.serverUrl, richWorkspace: metadata.richWorkspace, account: account)
+            self.database.updateDirectoryRichWorkspace(metadata.richWorkspace, account: account, serverUrl: self.serverUrl)
+            let tableDirectory = self.database.getTableDirectory(ocId: metadata.ocId)
             guard tableDirectory?.etag != metadata.etag || metadata.e2eEncrypted || self.dataSource.isEmpty() else {
                 return completion(nil, false, NKError())
             }
