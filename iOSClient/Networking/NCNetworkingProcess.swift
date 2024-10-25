@@ -88,7 +88,6 @@ class NCNetworkingProcess {
 
                 /// Keep screen awake
                 ///
-                /*
                 Task {
                     let tasks = await self.networking.getAllDataTask()
                     let hasSynchronizationTask = tasks.contains { $0.taskDescription == NCGlobal.shared.taskDescriptionSynchronization }
@@ -100,7 +99,6 @@ class NCNetworkingProcess {
                         ScreenAwakeManager.shared.mode = NCKeychain().screenAwakeMode
                     }
                 }
-                */
 
                 if results.isEmpty {
 
