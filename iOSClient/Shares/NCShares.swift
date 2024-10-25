@@ -57,6 +57,7 @@ class NCShares: NCCollectionViewCommon {
     override func reloadDataSource() {
         var ocId: [String] = []
         let sharess = self.database.getTableShares(account: session.account)
+        var metadatas: [tableMetadata] = []
 
         for share in sharess {
             if let result = self.database.getResultMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", session.account, share.serverUrl, share.fileName)) {
@@ -81,9 +82,11 @@ class NCShares: NCCollectionViewCommon {
             }
         }
 
-        let results = self.database.getResultsMetadatasPredicate(NSPredicate(format: "ocId IN %@", ocId), layoutForView: layoutForView)
+        if let results = self.database.getResultsMetadatasPredicate(NSPredicate(format: "ocId IN %@", ocId), layoutForView: layoutForView) {
+            metadatas = Array(results.freeze())
+        }
 
-        self.dataSource = NCCollectionViewDataSource(results: results, layoutForView: layoutForView)
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView)
 
         super.reloadDataSource()
     }

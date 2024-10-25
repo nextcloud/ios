@@ -582,6 +582,7 @@ extension NCManageDatabase {
     }
 
     func addMetadata(_ metadata: tableMetadata) {
+        let metadata = tableMetadata(value: metadata)
         do {
             let realm = try Realm()
             try realm.write {

@@ -32,7 +32,6 @@ class NCCollectionViewDataSource: NSObject {
     private var sectionsValue: [String] = []
     private var providers: [NKSearchProvider]?
     private var searchResults: [NKSearchResult]?
-    private var results: Results<tableMetadata>?
     private var metadatas: [tableMetadata] = []
     private var metadatasForSection: [NCMetadataForSection] = []
     private var layoutForView: NCDBLayoutForView?
@@ -40,20 +39,14 @@ class NCCollectionViewDataSource: NSObject {
 
     override init() { super.init() }
 
-    init(results: Results<tableMetadata>?,
+    init(metadatas: [tableMetadata],
          layoutForView: NCDBLayoutForView? = nil,
          providers: [NKSearchProvider]? = nil,
          searchResults: [NKSearchResult]? = nil) {
         super.init()
         removeAll()
 
-        self.results = results
-        if let results {
-            self.metadatas = Array(results.freeze())
-        } else {
-            self.metadatas = []
-        }
-
+        self.metadatas = metadatas
         self.layoutForView = layoutForView
         /// unified search
         self.providers = providers
@@ -69,7 +62,6 @@ class NCCollectionViewDataSource: NSObject {
     func removeAll() {
         self.metadatas.removeAll()
         self.metadataIndexPath.removeAll()
-        self.results = nil
 
         self.metadatasForSection.removeAll()
         self.sectionsValue.removeAll()
