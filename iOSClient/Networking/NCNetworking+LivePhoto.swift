@@ -35,7 +35,7 @@ extension NCNetworking {
                                                                           metadata.path,
                                                                           metadata.livePhotoFile)) else {
             metadata.livePhotoFile = ""
-            self.database.createMetadata(metadata)
+            self.database.addMetadata(metadata)
             return NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadedLivePhoto,
                                                                object: nil,
                                                                userInfo: aUserInfo,

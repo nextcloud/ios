@@ -276,7 +276,7 @@ extension NCEndToEndMetadata {
                                 metadata.iconName = results.iconName
                                 metadata.classFile = results.classFile
 
-                                self.database.createMetadata(metadata)
+                                self.database.addMetadata(metadata)
                             }
 
                         } catch let error {
@@ -334,7 +334,7 @@ extension NCEndToEndMetadata {
                                 metadata.iconName = results.iconName
                                 metadata.classFile = results.classFile
 
-                                self.database.createMetadata(metadata)
+                                self.database.addMetadata(metadata)
                             }
 
                         } catch let error {
@@ -451,7 +451,7 @@ extension NCEndToEndMetadata {
                                 metadata.iconName = results.iconName
                                 metadata.classFile = results.classFile
 
-                                self.database.createMetadata(metadata)
+                                self.database.addMetadata(metadata)
                             }
 
                         } catch let error {

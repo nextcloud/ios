@@ -564,7 +564,6 @@ extension NCManageDatabase {
 
     // MARK: - Set
 
-    @discardableResult
     func createMetadata(_ metadata: tableMetadata) -> tableMetadata? {
         do {
             let realm = try Realm()
@@ -580,6 +579,17 @@ extension NCManageDatabase {
         }
 
         return nil
+    }
+
+    func addMetadata(_ metadata: tableMetadata) {
+        do {
+            let realm = try Realm()
+            try realm.write {
+                realm.add(metadata, update: .all)
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
+        }
     }
 
     func addMetadatas(_ metadatas: [tableMetadata]) {

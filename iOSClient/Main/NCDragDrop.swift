@@ -121,7 +121,7 @@ class NCDragDrop: NSObject {
                 metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
                 metadataForUpload.sessionDate = Date()
 
-                database.createMetadata(metadataForUpload)
+                database.addMetadata(metadataForUpload)
             }
         } catch {
             NCContentPresenter().showError(error: NKError(error: error))
