@@ -59,7 +59,7 @@ class NCFavorite: NCCollectionViewCommon {
         var predicate = self.defaultPredicate
 
         if self.serverUrl.isEmpty {
-           predicate = NSPredicate(format: "account == %@ AND favorite == true", session.account)
+           predicate = NSPredicate(format: "account == %@ AND favorite == true AND NOT (status IN %@)", session.account, global.metadataStatusHideInView)
         }
 
         let results = self.database.getResultsMetadatasPredicate(predicate, layoutForView: layoutForView)

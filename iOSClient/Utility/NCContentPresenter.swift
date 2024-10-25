@@ -122,7 +122,8 @@ class NCContentPresenter: NSObject {
                     }
                 }
                 if error.errorDescription.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty { return }
-                let description = NSLocalizedString(error.errorDescription, comment: "")
+                var description = NSLocalizedString(error.errorDescription, comment: "")
+                description = description.replacingOccurrences(of: "\t", with: "\n")
                 self.flatTop(title: NSLocalizedString(title, comment: ""), description: description + responseMessage, delay: delay, type: type, priority: priority, dropEnqueuedEntries: dropEnqueuedEntries)
             }
         }
