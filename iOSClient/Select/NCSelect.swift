@@ -489,9 +489,9 @@ extension NCSelect {
                 self.collectionView.reloadData()
             }
         } completion: { _, _, _, _, _ in
-            let results = self.database.getResultsMetadatasPredicate(predicate, layoutForView: NCDBLayoutForView())
+            let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: NCDBLayoutForView())
 
-            self.dataSource = NCCollectionViewDataSource(results: results)
+            self.dataSource = NCCollectionViewDataSource(metadatas: metadatas)
             self.collectionView.reloadData()
 
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": self.serverUrl])
