@@ -96,24 +96,23 @@ class NCNetworkingProcess {
                       let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %d", self.global.metadataStatusNormal))?.freeze()
                 else { return }
                 self.hasRun = true
-                
+
                 /// Keep screen awake
                 ///
                 Task {
                     let tasks = await self.networking.getAllDataTask()
                     let hasSynchronizationTask = tasks.contains { $0.taskDescription == NCGlobal.shared.taskDescriptionSynchronization }
                     let resultsTransfer = results.filter { self.global.metadataStatusInTransfer.contains($0.status) }
-                    
-                    
+
                     if !self.enableControllingScreenAwake { return }
-                    
+
                     if resultsTransfer.isEmpty && !hasSynchronizationTask {
                         ScreenAwakeManager.shared.mode = .off
                     } else {
                         ScreenAwakeManager.shared.mode = NCKeychain().screenAwakeMode
                     }
                 }
-                
+
                 if results.isEmpty {
 
                     /// Remove Photo CameraRoll
@@ -315,8 +314,14 @@ class NCNetworkingProcess {
             for metadata in metadatasWaitCopy {
                 let serverUrlTo = metadata.serverUrlTo
                 let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
-                let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
+                var serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
                 let overwrite = (metadata.storeFlag as? NSString)?.boolValue ?? false
+
+                /// Within same folder
+                if metadata.serverUrl == serverUrlTo {
+                    let fileNameCopy = await NCNetworking.shared.createFileName(fileNameBase: metadata.fileName, account: metadata.account, serverUrl: metadata.serverUrl)
+                    serverUrlFileNameDestination = serverUrlTo + "/" + fileNameCopy
+                }
 
                 let result = await networking.copyFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account)
 
