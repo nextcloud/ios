@@ -153,7 +153,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     func handleAutoUploadWWAnVideoChange(newValue: Bool) {
         updateAccountProperty(\.autoUploadWWAnVideo, value: newValue)
     }
-    
+
     func handleAutoUploadFavoritesOnlyChange(newValue: Bool) {
         updateAccountProperty(\.autoUploadFavoritesOnly, value: newValue)
     }
