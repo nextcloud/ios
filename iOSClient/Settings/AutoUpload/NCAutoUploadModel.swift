@@ -80,6 +80,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
             autoUploadWWAnPhoto = tableAccount.autoUploadWWAnPhoto
             autoUploadVideo = tableAccount.autoUploadVideo
             autoUploadWWAnVideo = tableAccount.autoUploadWWAnVideo
+            autoUploadFavoritesOnly = tableAccount.autoUploadFavoritesOnly
             autoUploadFull = tableAccount.autoUploadFull
             autoUploadCreateSubfolder = tableAccount.autoUploadCreateSubfolder
             autoUploadSubfolderGranularity = Granularity(rawValue: tableAccount.autoUploadSubfolderGranularity) ?? .monthly
