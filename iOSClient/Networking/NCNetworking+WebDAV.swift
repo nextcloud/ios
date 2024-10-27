@@ -253,21 +253,18 @@ extension NCNetworking {
                       withPush: Bool,
                       sceneIdentifier: String? = nil,
                       hud: NCHud? = nil,
-                      session: NCSession.Session) -> Bool {
+                      session: NCSession.Session) async -> Bool {
         let autoUploadPath = self.database.getAccountAutoUploadPath(session: session)
         let serverUrlBase = self.database.getAccountAutoUploadDirectory(session: session)
         let fileNameBase = self.database.getAccountAutoUploadFileName()
         let autoUploadSubfolderGranularity = self.database.getAccountAutoUploadSubfolderGranularity()
 
-        func createFolder(fileName: String, serverUrl: String) -> Bool {
-            var result: Bool = false
-            let semaphore = DispatchSemaphore(value: 0)
-            self.createFolder(fileName: fileName, serverUrl: serverUrl, overwrite: true, withPush: withPush, metadata: nil, sceneIdentifier: sceneIdentifier, session: session) { error in
-                if error == .success { result = true }
-                semaphore.signal()
+        func createFolder(fileName: String, serverUrl: String) async -> Bool {
+            return await withCheckedContinuation { continuation in
+                self.createFolder(fileName: fileName, serverUrl: serverUrl, overwrite: true, withPush: withPush, metadata: nil, sceneIdentifier: sceneIdentifier, session: session) { error in
+                    continuation.resume(returning: error == .success)
+                }
             }
-            semaphore.wait()
-            return result
         }
 
         func createNameSubFolder() -> [String] {
@@ -283,7 +280,7 @@ extension NCNetworking {
             return Array(Set(datesSubFolder)).sorted()
         }
 
-        var result = createFolder(fileName: fileNameBase, serverUrl: serverUrlBase)
+        var result = await createFolder(fileName: fileNameBase, serverUrl: serverUrlBase)
 
         if useSubFolder && result {
             let folders = createNameSubFolder()
@@ -292,15 +289,15 @@ extension NCNetworking {
                 let subfolderArray = dateSubFolder.split(separator: "/")
                 let year = subfolderArray[0]
                 let serverUrlYear = autoUploadPath
-                result = createFolder(fileName: String(year), serverUrl: serverUrlYear)  // Year always present independently of preference value
+                result = await createFolder(fileName: String(year), serverUrl: serverUrlYear)  // Year always present independently of preference value
                 if result && autoUploadSubfolderGranularity >= self.global.subfolderGranularityMonthly {
                     let month = subfolderArray[1]
                     let serverUrlMonth = autoUploadPath + "/" + year
-                    result = createFolder(fileName: String(month), serverUrl: serverUrlMonth)
+                    result = await createFolder(fileName: String(month), serverUrl: serverUrlMonth)
                     if result && autoUploadSubfolderGranularity == self.global.subfolderGranularityDaily {
                         let day = subfolderArray[2]
                         let serverUrlDay = autoUploadPath + "/" + year + "/" + month
-                        result = createFolder(fileName: String(day), serverUrl: serverUrlDay)
+                        result = await createFolder(fileName: String(day), serverUrl: serverUrlDay)
                     }
                 }
                 if !result { break }

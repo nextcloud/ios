@@ -147,6 +147,14 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
         self.timer?.invalidate()
     }
 
+    func createProcessUploads(metadatas: [tableMetadata]) {
+        if !self.dismissView {
+            NCNetworkingProcess.shared.createProcessUploads(metadatas: metadatas) { _ in
+                self.dismissView = true
+            }
+        }
+    }
+
     func dismissCreateFormUploadConflict(metadatas: [tableMetadata]?) {
         guard let metadatas = metadatas else {
             self.showHUD = false
@@ -154,31 +162,32 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
             return
         }
 
-        func createProcessUploads() {
-            if !self.dismissView {
-                NCNetworkingProcess.shared.createProcessUploads(metadatas: metadatas, completion: { _ in
-                    self.dismissView = true
-                })
-            }
-        }
-
         if useAutoUploadFolder {
-            DispatchQueue.global().async {
+            Task {
                 let assets = self.assets.compactMap { $0.phAsset }
-                let result = NCNetworking.shared.createFolder(assets: assets, useSubFolder: self.useAutoUploadSubFolder, withPush: false, session: self.session)
-                DispatchQueue.main.async {
+                let result = await NCNetworking.shared.createFolder(
+                    assets: assets,
+                    useSubFolder: self.useAutoUploadSubFolder,
+                    withPush: false,
+                    session: self.session
+                )
+
+                await MainActor.run {
                     self.showHUD = false
                     self.uploadInProgress.toggle()
                     if result {
-                        createProcessUploads()
+                        self.createProcessUploads(metadatas: metadatas)
                     } else {
-                        let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_error_createsubfolders_upload_")
+                        let error = NKError(
+                            errorCode: NCGlobal.shared.errorInternalError,
+                            errorDescription: "_error_createsubfolders_upload_"
+                        )
                         NCContentPresenter().showError(error: error)
                     }
                 }
             }
         } else {
-            createProcessUploads()
+            self.createProcessUploads(metadatas: metadatas)
         }
     }
 
