@@ -155,6 +155,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         updateAccountProperty(\.autoUploadWWAnVideo, value: newValue)
     }
 
+    /// Updates the auto-upload favorite only.
     func handleAutoUploadFavoritesOnlyChange(newValue: Bool) {
         updateAccountProperty(\.autoUploadFavoritesOnly, value: newValue)
         if newValue {
