@@ -80,6 +80,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
             autoUploadWWAnPhoto = tableAccount.autoUploadWWAnPhoto
             autoUploadVideo = tableAccount.autoUploadVideo
             autoUploadWWAnVideo = tableAccount.autoUploadWWAnVideo
+            autoUploadFavoritesOnly = tableAccount.autoUploadFavoritesOnly
             autoUploadFull = tableAccount.autoUploadFull
             autoUploadCreateSubfolder = tableAccount.autoUploadCreateSubfolder
             autoUploadSubfolderGranularity = Granularity(rawValue: tableAccount.autoUploadSubfolderGranularity) ?? .monthly
@@ -156,6 +157,9 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
 
     func handleAutoUploadFavoritesOnlyChange(newValue: Bool) {
         updateAccountProperty(\.autoUploadFavoritesOnly, value: newValue)
+        if newValue {
+            NCAutoUpload.shared.alignPhotoLibrary(controller: controller, account: session.account)
+        }
     }
 
     /// Updates the auto-upload full content setting.
