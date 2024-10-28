@@ -292,13 +292,14 @@ class NCImageCache: NSObject {
         self.brandElementColor = brandElement
         let utility = NCUtility()
 
+        let folderGroup = UIImage(resource: .folderGroup)
         images.folderEncrypted = UIImage(named: "folderEncrypted")!.image(color: brandElement)
-        images.folderSharedWithMe = UIImage(named: "folder_shared_with_me")!.image(color: brandElement)
-        images.folderPublic = UIImage(named: "folder_public")!.image(color: brandElement)
-        images.folderGroup = UIImage(named: "folder_group")!.image(color: brandElement)
+        images.folderSharedWithMe = folderGroup
+        images.folderPublic = folderGroup
+        images.folderGroup = folderGroup
         images.folderExternal = UIImage(named: "folder_external")!.image(color: brandElement)
-        images.folderAutomaticUpload = UIImage(named: "folderAutomaticUpload")!.image(color: brandElement)
-        images.folder = UIImage(named: "folder")!.image(color: brandElement)
+        images.folderAutomaticUpload = UIImage(resource: .folderAutomaticUpload)
+        images.folder = UIImage(resource: .folder)
 
         images.iconContacts = utility.loadImage(named: "person.crop.rectangle.stack", colors: [NCBrandColor.shared.iconImageColor])
         images.iconTalk = UIImage(named: "talk-template")!.image(color: brandElement)
