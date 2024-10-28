@@ -181,11 +181,14 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
+              let withPush = userInfo["withPush"] as? Bool,
               serverUrl == self.serverUrl,
               let metadata = self.database.getMetadataFromOcId(ocId)
         else { return }
 
-        pushMetadata(metadata)
+        if withPush {
+            pushMetadata(metadata)
+        }
     }
 
     // MARK: ACTION
