@@ -91,11 +91,15 @@ extension NCManageDatabase {
         do {
             let realm = try Realm()
             let results = realm.objects(tableDirectory.self).filter("account == %@ AND serverUrl BEGINSWITH %@", account, serverUrl)
-            for result in results {
-                self.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", result.account, result.serverUrl))
-                self.deleteLocalFileOcId(result.ocId)
-            }
             try realm.write {
+                for result in results {
+                    let metadatas = realm.objects(tableMetadata.self).filter("account == %@ AND serverUrl == %@", account, result.serverUrl)
+                    for metadata in metadatas {
+                        let localFile = realm.objects(tableLocalFile.self).filter("ocId == %@", metadata.ocId)
+                        realm.delete(localFile)
+                    }
+                    realm.delete(metadatas)
+                }
                 realm.delete(results)
             }
         } catch let error {
