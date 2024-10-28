@@ -277,7 +277,7 @@ class NCPlayerToolBar: UIView {
     @IBAction func tapPlayerPause(_ sender: Any) {
         guard let ncplayer = ncplayer else { return }
 
-        if ncplayer.isPlay() {
+        if ncplayer.isPlaying() {
             ncplayer.playerPause()
         } else {
             ncplayer.playerPlay()

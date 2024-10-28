@@ -564,18 +564,33 @@ extension NCManageDatabase {
 
     // MARK: - Set
 
-    @discardableResult
-    func addMetadata(_ metadata: tableMetadata) -> tableMetadata? {
+    func createMetadata(_ metadata: tableMetadata) -> tableMetadata? {
         do {
             let realm = try Realm()
+            var managedMetadata: tableMetadata?
             try realm.write {
-                realm.add(tableMetadata(value: metadata), update: .all)
+                managedMetadata = realm.create(tableMetadata.self, value: metadata, update: .all)
+            }
+            if let managedMetadata {
+                return tableMetadata(value: managedMetadata)
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
-            return nil
         }
-        return tableMetadata(value: metadata)
+
+        return nil
+    }
+
+    func addMetadata(_ metadata: tableMetadata) {
+        let metadata = tableMetadata(value: metadata)
+        do {
+            let realm = try Realm()
+            try realm.write {
+                realm.add(metadata, update: .all)
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
+        }
     }
 
     func addMetadatas(_ metadatas: [tableMetadata]) {
@@ -1046,22 +1061,45 @@ extension NCManageDatabase {
 
     // MARK: - GetResult(s)Metadata
 
-    func getResultsMetadatasPredicate(_ predicate: NSPredicate, layoutForView: NCDBLayoutForView?) -> Results<tableMetadata>? {
+    func getResultsMetadatasPredicate(_ predicate: NSPredicate, layoutForView: NCDBLayoutForView?) -> [tableMetadata] {
         do {
             let realm = try Realm()
-            var results = realm.objects(tableMetadata.self).filter(predicate)
+            var results = realm.objects(tableMetadata.self).filter(predicate).freeze()
             if let layoutForView {
-                if layoutForView.directoryOnTop {
-                    results = results.sorted(byKeyPath: layoutForView.sort, ascending: layoutForView.ascending).sorted(byKeyPath: "directory", ascending: false).sorted(byKeyPath: "favorite", ascending: false)
+                if layoutForView.sort == "fileName" {
+                    let sortedResults = results.sorted {
+                        // 1. favorite order
+                        if $0.favorite == $1.favorite {
+                            // 2. directory order TOP
+                            if layoutForView.directoryOnTop {
+                                if $0.directory == $1.directory {
+                                    // 3. natural fileName
+                                    return $0.fileNameView.localizedStandardCompare($1.fileNameView) == .orderedAscending
+                                } else {
+                                    return $0.directory && !$1.directory
+                                }
+                            } else {
+                                return $0.fileNameView.localizedStandardCompare($1.fileNameView) == .orderedAscending
+                            }
+                        } else {
+                            return $0.favorite && !$1.favorite
+                        }
+                    }
+                    return sortedResults
                 } else {
-                    results = results.sorted(byKeyPath: layoutForView.sort, ascending: layoutForView.ascending).sorted(byKeyPath: "favorite", ascending: false)
+                    if layoutForView.directoryOnTop {
+                        results = results.sorted(byKeyPath: layoutForView.sort, ascending: layoutForView.ascending).sorted(byKeyPath: "directory", ascending: false).sorted(byKeyPath: "favorite", ascending: false)
+                    } else {
+                        results = results.sorted(byKeyPath: layoutForView.sort, ascending: layoutForView.ascending).sorted(byKeyPath: "favorite", ascending: false)
+                    }
                 }
             }
-            return results
+            return Array(results)
+
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
-        return nil
+        return []
     }
 
     func getResultsMetadatas(predicate: NSPredicate, sortedByKeyPath: String, ascending: Bool, arraySlice: Int) -> [tableMetadata] {
