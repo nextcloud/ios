@@ -122,12 +122,15 @@ class NCMenu: UITableViewController {
             }
         }
 
+		actionIconView?.image = actionIconView?.image?.withRenderingMode(.alwaysTemplate)
+		
         if action.destructive {
-            actionIconView?.image = actionIconView?.image?.withRenderingMode(.alwaysTemplate)
 			let color = UIColor(resource: .destructiveAction)
 			actionIconView?.tintColor = color
             actionNameLabel?.textColor = color
-        }
+		} else {
+			actionIconView?.tintColor = UIColor(resource: .FileMenu.icon)
+		}
         
         if (action.selectable && action.selected) {
             let checkmarkImage = UIImage(named: "checkmarkIcon")
