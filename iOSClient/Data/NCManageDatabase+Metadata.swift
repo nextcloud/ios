@@ -1074,12 +1074,12 @@ extension NCManageDatabase {
                             if layoutForView.directoryOnTop {
                                 if $0.directory == $1.directory {
                                     // 3. natural fileName
-                                    return $0.fileName.localizedStandardCompare($1.fileName) == .orderedAscending
+                                    return $0.fileNameView.localizedStandardCompare($1.fileNameView) == .orderedAscending
                                 } else {
                                     return $0.directory && !$1.directory
                                 }
                             } else {
-                                return $0.fileName.localizedStandardCompare($1.fileName) == .orderedAscending
+                                return $0.fileNameView.localizedStandardCompare($1.fileNameView) == .orderedAscending
                             }
                         } else {
                             return $0.favorite && !$1.favorite

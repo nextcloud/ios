@@ -308,6 +308,23 @@ class NCNetworkingProcess {
     private func metadataStatusWaitWebDav() async -> Bool {
         var returnValue: Bool = false
 
+        /// ------------------------ CREATE FOLDER
+        ///
+        if let metadatasWaitCreateFolder = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitCreateFolder), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitCreateFolder.isEmpty {
+            for metadata in metadatasWaitCreateFolder {
+                let error = await networking.createFolder(metadata: metadata)
+
+                if error != .success {
+                    if metadata.sessionError.isEmpty {
+                        let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+                        let message = String(format: NSLocalizedString("_create_folder_error_", comment: ""), serverUrlFileName)
+                        NCContentPresenter().messageNotification(message, error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
+                    }
+                    returnValue = true
+                }
+            }
+        }
+
         /// ------------------------ COPY
         ///
         if let metadatasWaitCopy = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitCopy), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitCopy.isEmpty {
@@ -428,23 +445,6 @@ class NCNetworkingProcess {
             for metadata in metadatasWaitDelete {
                 if networking.deleteFileOrFolderQueue.operations.filter({ ($0 as? NCOperationDeleteFileOrFolder)?.ocId == metadata.ocId }).isEmpty {
                     networking.deleteFileOrFolderQueue.addOperation(NCOperationDeleteFileOrFolder(metadata: metadata))
-                }
-            }
-        }
-
-        /// ------------------------ CREATE FOLDER
-        ///
-        if let metadatasWaitCreateFolder = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitCreateFolder), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitCreateFolder.isEmpty {
-            for metadata in metadatasWaitCreateFolder {
-                let error = await networking.createFolder(metadata: metadata)
-
-                if error != .success {
-                    if metadata.sessionError.isEmpty {
-                        let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-                        let message = String(format: NSLocalizedString("_create_folder_error_", comment: ""), serverUrlFileName)
-                        NCContentPresenter().messageNotification(message, error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
-                    }
-                    returnValue = true
                 }
             }
         }
