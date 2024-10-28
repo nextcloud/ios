@@ -157,6 +157,9 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
 
     func handleAutoUploadFavoritesOnlyChange(newValue: Bool) {
         updateAccountProperty(\.autoUploadFavoritesOnly, value: newValue)
+        if newValue {
+            NCAutoUpload.shared.alignPhotoLibrary(controller: controller, account: session.account)
+        }
     }
 
     /// Updates the auto-upload full content setting.
