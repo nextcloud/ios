@@ -112,6 +112,11 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         searchField.searchTextField.font = .systemFont(ofSize: 14)
         searchField.delegate = self
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.setNavigationBarAppearance()
+    }
 
     func makeNewLinkShare() {
         guard

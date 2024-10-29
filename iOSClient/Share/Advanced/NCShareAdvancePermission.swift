@@ -80,14 +80,14 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
         super.viewDidLoad()
         self.shareConfig = NCShareConfig(parentMetadata: metadata, share: share)
 
-        tableView.backgroundColor = NCBrandColor.shared.appBackgroundColor
+        tableView.backgroundColor = UIColor(resource: .Share.Advanced.background)
         tableView.separatorColor = UIColor(resource: .Share.Advanced.tableCellSeparator)
         tableView.estimatedRowHeight = tableView.rowHeight
         tableView.rowHeight = UITableView.automaticDimension
         
         self.setNavigationTitle()
         self.navigationItem.hidesBackButton = true
-        self.navigationController?.setNavigationBarAppearance()
+        self.navigationController?.setNavigationBarAppearance(backround: UIColor(resource: .Share.Advanced.background))
         
         // disbale pull to dimiss
         isModalInPresentation = true
