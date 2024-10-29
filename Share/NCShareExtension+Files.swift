@@ -50,7 +50,7 @@ extension NCShareExtension {
 
         self.serverUrl += "/" + metadata.fileName
         self.reloadDatasource(withLoadFolder: true)
-        self.setNavigationBar(navigationTitle: metadata.fileName)
+        self.setNavigationBar(navigationTitle: metadata.fileNameView)
     }
 
     func loadFolder() {
