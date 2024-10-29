@@ -181,11 +181,14 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
+              let withPush = userInfo["withPush"] as? Bool,
               serverUrl == self.serverUrl,
               let metadata = self.database.getMetadataFromOcId(ocId)
         else { return }
 
-        pushMetadata(metadata)
+        if withPush {
+            pushMetadata(metadata)
+        }
     }
 
     // MARK: ACTION
@@ -466,9 +469,9 @@ extension NCSelect {
 
         if includeDirectoryE2EEncryption {
             if includeImages {
-                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND (directory == true OR classFile == 'image')", session.account, serverUrl)
+                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND (directory == true OR classFile == 'image') AND NOT (status IN %@)", session.account, serverUrl, NCGlobal.shared.metadataStatusHideInView)
             } else {
-                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", session.account, serverUrl)
+                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true AND NOT (status IN %@)", session.account, serverUrl, NCGlobal.shared.metadataStatusHideInView)
             }
         } else {
             if includeImages {
@@ -476,7 +479,7 @@ extension NCSelect {
             } else if enableSelectFile {
                 predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND e2eEncrypted == false AND NOT (status IN %@)", session.account, serverUrl, NCGlobal.shared.metadataStatusHideInView)
             } else {
-                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND e2eEncrypted == false AND directory == true", session.account, serverUrl)
+                predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND e2eEncrypted == false AND directory == true AND NOT (status IN %@)", session.account, serverUrl, NCGlobal.shared.metadataStatusHideInView)
             }
         }
 
@@ -489,9 +492,9 @@ extension NCSelect {
                 self.collectionView.reloadData()
             }
         } completion: { _, _, _, _, _ in
-            let results = self.database.getResultsMetadatasPredicate(predicate, layoutForView: NCDBLayoutForView())
+            let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: NCDBLayoutForView())
 
-            self.dataSource = NCCollectionViewDataSource(results: results)
+            self.dataSource = NCCollectionViewDataSource(metadatas: metadatas)
             self.collectionView.reloadData()
 
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": self.serverUrl])

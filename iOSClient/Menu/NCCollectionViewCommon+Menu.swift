@@ -36,6 +36,8 @@ extension NCCollectionViewCommon {
               let sceneIdentifier = self.controller?.sceneIdentifier else {
             return
         }
+        let tableLocalFile = database.getResultsTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId))?.first
+        let fileExists = NCUtilityFileSystem().fileProviderStorageExists(metadata)
         var actions = [NCMenuAction]()
         let serverUrl = metadata.serverUrl + "/" + metadata.fileName
         var isOffline: Bool = false
@@ -230,8 +232,7 @@ extension NCCollectionViewCommon {
         //
         // SHARE
         //
-        if NCNetworking.shared.isOnline,
-           metadata.canShare {
+        if (NCNetworking.shared.isOnline || (tableLocalFile != nil && fileExists)) && metadata.canShare {
             actions.append(.share(selectedMetadatas: [metadata], controller: self.controller, order: 80))
         }
 

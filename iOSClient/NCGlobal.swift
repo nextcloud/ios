@@ -337,6 +337,9 @@ class NCGlobal: NSObject {
     let notificationCenterEnableSwipeGesture                    = "enableSwipeGesture"
     let notificationCenterDisableSwipeGesture                   = "disableSwipeGesture"
 
+    let notificationCenterPlayerIsPlaying                       = "playerIsPlaying"
+    let notificationCenterPlayerStoppedPlaying                  = "playerStoppedPlaying"
+
     // TIP
     //
     let tipNCViewerPDFThumbnail                                 = "tipncviewerpdfthumbnail"
