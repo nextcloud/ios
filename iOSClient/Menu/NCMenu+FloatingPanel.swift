@@ -55,7 +55,7 @@ class NCMenuFloatingPanelLayout: FloatingPanelLayout {
     }
 
     func backdropAlpha(for state: FloatingPanelState) -> CGFloat {
-        return 0.2
+        return 1
     }
 }
 
@@ -69,6 +69,7 @@ class NCMenuPanelController: FloatingPanelController {
         super.viewDidLoad()
 
         self.surfaceView.backgroundColor = NCBrandColor.shared.appBackgroundColor
+        self.backdropView.backgroundColor = UIColor(resource: .FileMenu.overlay)
         self.isRemovalInteractionEnabled = true
         self.backdropView.dismissalTapGestureRecognizer.isEnabled = true
         self.surfaceView.layer.cornerRadius = 16
