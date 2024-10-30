@@ -122,7 +122,9 @@ class NCMenu: UITableViewController {
             }
         }
 
-		actionIconView?.image = actionIconView?.image?.withRenderingMode(.alwaysTemplate)
+        if !action.isHeader {
+            actionIconView?.image = actionIconView?.image?.withRenderingMode(.alwaysTemplate)
+        }
 		
         if action.destructive {
 			let color = UIColor(resource: .destructiveAction)
