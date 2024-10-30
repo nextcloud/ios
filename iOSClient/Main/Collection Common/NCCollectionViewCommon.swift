@@ -1039,9 +1039,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - DataSource
 
     @objc func reloadDataSource() {
-        guard !session.account.isEmpty, !self.isSearchingMode else { return }
-
-        isDirectoryEncrypted = NCUtilityFileSystem().isDirectoryE2EE(session: session, serverUrl: serverUrl)
+        if isSearchingMode {
+            isDirectoryEncrypted = false
+        } else {
+            isDirectoryEncrypted = NCUtilityFileSystem().isDirectoryE2EE(session: session, serverUrl: serverUrl)
+        }
 
         DispatchQueue.main.async {
             UIView.transition(with: self.collectionView,
