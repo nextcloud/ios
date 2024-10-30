@@ -69,6 +69,10 @@ class NCMenuPanelController: FloatingPanelController {
         super.viewDidLoad()
 
         self.surfaceView.backgroundColor = NCBrandColor.shared.appBackgroundColor
+        
+        self.surfaceView.grabberHandleSize = .init(width: 72, height: 4)
+        self.surfaceView.grabberHandle.backgroundColor = UIColor(resource: .FileMenu.grabber)
+        
         self.backdropView.backgroundColor = UIColor(resource: .FileMenu.overlay)
         self.isRemovalInteractionEnabled = true
         self.backdropView.dismissalTapGestureRecognizer.isEnabled = true
