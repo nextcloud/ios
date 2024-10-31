@@ -213,7 +213,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
     }
 
     func createFolderButtonPressed(_ sender: UIButton) {
-        let alertController = UIAlertController.createFolder(serverUrl: serverUrl, account: session.account)
+        let alertController = UIAlertController.createFolder(serverUrl: serverUrl, session: session)
         self.present(alertController, animated: true, completion: nil)
     }
 

@@ -120,6 +120,10 @@ class NCFiles: NCCollectionViewCommon {
     // MARK: - DataSource
 
     override func reloadDataSource() {
+        guard !isSearchingMode else {
+            return super.reloadDataSource()
+        }
+
         var predicate = self.defaultPredicate
         let predicateDirectory = NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, self.serverUrl)
         let dataSourceMetadatas = self.dataSource.getMetadatas()
