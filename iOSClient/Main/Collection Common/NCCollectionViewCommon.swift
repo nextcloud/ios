@@ -1233,7 +1233,7 @@ extension NCCollectionViewCommon {
 	}
 	
 	private func setNavigationBarLogoIfNeeded() {
-		if self.navigationController?.viewControllers.count == 1 {
+		if  isCurrentScreenInMainTabBar() && self.navigationController?.viewControllers.count == 1 {
 			setNavigationBarLogo()
 		}
 	}
