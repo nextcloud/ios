@@ -1065,33 +1065,33 @@ extension NCManageDatabase {
         do {
             let realm = try Realm()
             var results = realm.objects(tableMetadata.self).filter(predicate).freeze()
-            if let layoutForView {
-                if layoutForView.sort == "fileName" {
-                    let sortedResults = results.sorted {
-                        // 1. favorite order
-                        if $0.favorite == $1.favorite {
-                            // 2. directory order TOP
-                            if layoutForView.directoryOnTop {
-                                if $0.directory == $1.directory {
-                                    // 3. natural fileName
-                                    return $0.fileNameView.localizedStandardCompare($1.fileNameView) == .orderedAscending
-                                } else {
-                                    return $0.directory && !$1.directory
-                                }
-                            } else {
+            let layout: NCDBLayoutForView = layoutForView ?? NCDBLayoutForView()
+
+            if layout.sort == "fileName" {
+                let sortedResults = results.sorted {
+                    // 1. favorite order
+                    if $0.favorite == $1.favorite {
+                        // 2. directory order TOP
+                        if layout.directoryOnTop {
+                            if $0.directory == $1.directory {
+                                // 3. natural fileName
                                 return $0.fileNameView.localizedStandardCompare($1.fileNameView) == .orderedAscending
+                            } else {
+                                return $0.directory && !$1.directory
                             }
                         } else {
-                            return $0.favorite && !$1.favorite
+                            return $0.fileNameView.localizedStandardCompare($1.fileNameView) == .orderedAscending
                         }
-                    }
-                    return sortedResults
-                } else {
-                    if layoutForView.directoryOnTop {
-                        results = results.sorted(byKeyPath: layoutForView.sort, ascending: layoutForView.ascending).sorted(byKeyPath: "directory", ascending: false).sorted(byKeyPath: "favorite", ascending: false)
                     } else {
-                        results = results.sorted(byKeyPath: layoutForView.sort, ascending: layoutForView.ascending).sorted(byKeyPath: "favorite", ascending: false)
+                        return $0.favorite && !$1.favorite
                     }
+                }
+                return sortedResults
+            } else {
+                if layout.directoryOnTop {
+                    results = results.sorted(byKeyPath: layout.sort, ascending: layout.ascending).sorted(byKeyPath: "favorite", ascending: false).sorted(byKeyPath: "directory", ascending: false)
+                } else {
+                    results = results.sorted(byKeyPath: layout.sort, ascending: layout.ascending).sorted(byKeyPath: "favorite", ascending: false)
                 }
             }
             return Array(results)

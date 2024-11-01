@@ -143,6 +143,13 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             }
         }
 
+        // E2EE create preview
+        if self.isDirectoryEncrypted,
+           metadata.isImageOrVideo,
+           !utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag) {
+            utility.createImageFileFrom(metadata: metadata)
+        }
+
         // LAYOUT PHOTO
         if isLayoutPhoto {
             if metadata.isImageOrVideo {
