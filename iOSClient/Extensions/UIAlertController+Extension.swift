@@ -206,14 +206,18 @@ extension UIAlertController {
                 let newExtension = text.fileExtension
 
                 let textCheck = FileNameValidator.shared.checkFileName(text, account: account)
+                let isFileHidden = FileNameValidator.shared.isFileHidden(text)
 
-                okAction.isEnabled = textCheck?.error == nil && !text.isEmpty
+                okAction.isEnabled = textCheck?.error == nil && !isFileHidden
 
                 var message = ""
                 var messageColor = UIColor.white
 
                 if let errorMessage = textCheck?.error.localizedDescription {
                     message = errorMessage
+                    messageColor = .red
+                } else if isFileHidden {
+                    message = NSLocalizedString("hidden_file_name_warning", comment: "")
                     messageColor = .red
                 } else if newExtension != oldExtension {
                     message = NSLocalizedString("_file_name_new_extension_", comment: "")
