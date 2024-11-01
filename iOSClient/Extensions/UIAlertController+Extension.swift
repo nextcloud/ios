@@ -179,6 +179,8 @@ extension UIAlertController {
             textField.autocapitalizationType = .words
         }
 
+        let oldExtension = fileName.fileExtension
+
         let text = alertController.textFields?.first?.text ?? ""
         let textCheck = FileNameValidator.shared.checkFileName(text, account: account)
         alertController.message = textCheck?.error.localizedDescription
@@ -201,10 +203,30 @@ extension UIAlertController {
             object: alertController.textFields?.first,
             queue: .main) { _ in
                 guard let text = alertController.textFields?.first?.text else { return }
+                let newExtension = text.fileExtension
+
+
 
                 let textCheck = FileNameValidator.shared.checkFileName(text, account: account)
+                
                 okAction.isEnabled = textCheck?.error == nil && !text.isEmpty
-                alertController.message = textCheck?.error.localizedDescription
+
+                var message = ""
+                var messageColor = UIColor.white
+//
+                if let errorMessage = textCheck?.error.localizedDescription {
+                    message = errorMessage
+                    messageColor = .red
+                } else if newExtension != oldExtension {
+                    message = "Changing the extension might cause this file to open in a different application"
+                }
+
+                let attributedString = NSAttributedString(string: message, attributes: [
+                    NSAttributedString.Key.font : UIFont.systemFont(ofSize: 15),
+                    NSAttributedString.Key.foregroundColor : messageColor
+                ])
+
+                alertController.setValue(attributedString, forKey: "attributedMessage")
             }
 
         alertController.addAction(cancelAction)
