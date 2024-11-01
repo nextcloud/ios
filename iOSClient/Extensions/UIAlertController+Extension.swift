@@ -190,25 +190,23 @@ extension UIAlertController {
                 guard let text = alertController.textFields?.first?.text else { return }
                 let newExtension = text.fileExtension
 
-
-
                 let textCheck = FileNameValidator.shared.checkFileName(text, account: account)
-                
+
                 okAction.isEnabled = textCheck?.error == nil && !text.isEmpty
 
                 var message = ""
                 var messageColor = UIColor.white
-//
+
                 if let errorMessage = textCheck?.error.localizedDescription {
                     message = errorMessage
                     messageColor = .red
                 } else if newExtension != oldExtension {
-                    message = "Changing the extension might cause this file to open in a different application"
+                    message = NSLocalizedString("_file_name_new_extension_", comment: "")
                 }
 
                 let attributedString = NSAttributedString(string: message, attributes: [
-                    NSAttributedString.Key.font : UIFont.systemFont(ofSize: 15),
-                    NSAttributedString.Key.foregroundColor : messageColor
+                    NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14),
+                    NSAttributedString.Key.foregroundColor: messageColor
                 ])
 
                 alertController.setValue(attributedString, forKey: "attributedMessage")

@@ -1123,4 +1123,5 @@
 "_file_name_validator_error_forbidden_file_extension_" = "\".%@\" is a forbidden file extension.";
 "_file_name_validator_error_invalid_character_" = "Name contains an invalid character: \"%@\".";
 "_file_name_validator_error_space_" = "Name must not contain spaces at the beginning or end.";
+"_file_name_new_extension_" = "Changing the extension might cause this file to open in a different application.";
 "_please_rename_file_"      = "Please rename the file or folder.";
