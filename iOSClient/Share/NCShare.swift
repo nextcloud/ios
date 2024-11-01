@@ -260,6 +260,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         appearance.shadowRadius = 30
         appearance.animationduration = 0.25
         appearance.textColor = UIColor(resource: .Share.SearchUserCell.title)
+		appearance.selectedTextColor = UIColor(resource: .Share.SearchUserCell.title)
 
         for sharee in sharees {
             var label = sharee.label
