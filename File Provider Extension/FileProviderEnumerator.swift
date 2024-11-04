@@ -40,7 +40,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             serverUrl = NCUtilityFileSystem().getHomeServer(session: fileProviderData.shared.session)
         } else {
             if let metadata = providerUtility.getTableMetadataFromItemIdentifier(enumeratedItemIdentifier),
-               let directorySource = self.database.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) {
+               let directorySource = self.database.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND NOT (status IN %@)", metadata.account, metadata.serverUrl, NCGlobal.shared.metadataStatusHideInFileExtension)) {
                 serverUrl = directorySource.serverUrl + "/" + metadata.fileName
 
             }
@@ -158,7 +158,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     }
 
     func fetchItemsForPage(serverUrl: String, pageNumber: Int, completionHandler: @escaping (_ metadatas: Results<tableMetadata>?) -> Void) {
-        let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.session.account, serverUrl)
+        let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND NOT (status IN %@)", fileProviderData.shared.session.account, serverUrl, NCGlobal.shared.metadataStatusHideInFileExtension)
 
         if pageNumber == 1 {
             NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: NCKeychain().showHiddenFiles, account: fileProviderData.shared.session.account) { _, files, _, error in

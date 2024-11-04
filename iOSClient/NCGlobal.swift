@@ -281,6 +281,7 @@ class NCGlobal: NSObject {
     let metadataStatusInTransfer                = [-1, -2, 1, 2]
     let metadataStatusFileDown                  = [-1, -2, -3]
     let metadataStatusHideInView                = [1, 2, 3, 11]
+    let metadataStatusHideInFileExtension       = [1, 2, 3, 10, 11]
     let metadataStatusObserve                   = [-1, 1, 10, 11, 12, 13, 14, 15]
     let metadataStatusWaitWebDav                = [10, 11, 12, 13, 14, 15]
 
