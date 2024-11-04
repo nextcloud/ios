@@ -202,7 +202,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
             for (index, metadata) in metadatas.enumerated() {
                 if let fileNameError = FileNameValidator.shared.checkFileName(metadata.fileName, account: session.account) {
                     if metadatas.count == 1 {
-                        let alert = UIAlertController.renameFile(fileName: metadata.fileName, account: session.account) { newFileName in
+                        let alert = UIAlertController.renameFile(metadata: metadata) { newFileName in
                             metadatas[index].fileName = newFileName
                             metadatas[index].fileNameView = newFileName
 

@@ -96,9 +96,28 @@ extension UIAlertController {
                 guard let text = alertController.textFields?.first?.text else { return }
                 let folderName = text.trimmingCharacters(in: .whitespaces)
 
+                let newExtension = text.fileExtension
+                let isFileHidden = FileNameValidator.shared.isFileHidden(text)
                 let textCheck = FileNameValidator.shared.checkFileName(folderName, account: account)
-                okAction.isEnabled = textCheck?.error == nil && !folderName.isEmpty
-                alertController.message = textCheck?.error.localizedDescription
+
+                okAction.isEnabled = !text.isEmpty && textCheck?.error == nil
+
+                var message = ""
+                var messageColor = UIColor.label
+
+                if let errorMessage = textCheck?.error.localizedDescription {
+                    message = errorMessage
+                    messageColor = .red
+                } else if isFileHidden {
+                    message = NSLocalizedString("hidden_file_name_warning", comment: "")
+                }
+
+                let attributedString = NSAttributedString(string: message, attributes: [
+                    NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14),
+                    NSAttributedString.Key.foregroundColor: messageColor
+                ])
+
+                alertController.setValue(attributedString, forKey: "attributedMessage")
             }
 
         alertController.addAction(cancelAction)
@@ -161,8 +180,8 @@ extension UIAlertController {
         return alertController
     }
 
-    static func renameFile(fileName: String, account: String, completion: @escaping (_ newFileName: String) -> Void) -> UIAlertController {
-        let alertController = UIAlertController(title: NSLocalizedString("_rename_", comment: ""), message: nil, preferredStyle: .alert)
+    static func renameFile(fileName: String, isDirectory: Bool = false, account: String, completion: @escaping (_ newFileName: String) -> Void) -> UIAlertController {
+        let alertController = UIAlertController(title: NSLocalizedString(isDirectory ? "_rename_folder_" : "_rename_file_", comment: ""), message: nil, preferredStyle: .alert)
 
         let okAction = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default, handler: { _ in
             guard let newFileName = alertController.textFields?.first?.text else { return }
@@ -183,7 +202,14 @@ extension UIAlertController {
 
         let text = alertController.textFields?.first?.text ?? ""
         let textCheck = FileNameValidator.shared.checkFileName(text, account: account)
-        alertController.message = textCheck?.error.localizedDescription
+        var message = textCheck?.error.localizedDescription ?? ""
+        var messageColor = UIColor.red
+
+        let attributedString = NSAttributedString(string: message, attributes: [
+            NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14),
+            NSAttributedString.Key.foregroundColor: messageColor
+        ])
+        alertController.setValue(attributedString, forKey: "attributedMessage")
 
         // only allow saving if folder name exists
         NotificationCenter.default.addObserver(
@@ -208,26 +234,25 @@ extension UIAlertController {
                 let textCheck = FileNameValidator.shared.checkFileName(text, account: account)
                 let isFileHidden = FileNameValidator.shared.isFileHidden(text)
 
-                okAction.isEnabled = textCheck?.error == nil && !isFileHidden
+                okAction.isEnabled = !text.isEmpty && textCheck?.error == nil
 
-                var message = ""
-                var messageColor = UIColor.white
+                message = ""
+                messageColor = UIColor.label
 
                 if let errorMessage = textCheck?.error.localizedDescription {
                     message = errorMessage
                     messageColor = .red
                 } else if isFileHidden {
                     message = NSLocalizedString("hidden_file_name_warning", comment: "")
-                    messageColor = .red
                 } else if newExtension != oldExtension {
                     message = NSLocalizedString("_file_name_new_extension_", comment: "")
                 }
+
 
                 let attributedString = NSAttributedString(string: message, attributes: [
                     NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14),
                     NSAttributedString.Key.foregroundColor: messageColor
                 ])
-
                 alertController.setValue(attributedString, forKey: "attributedMessage")
             }
 
@@ -236,8 +261,8 @@ extension UIAlertController {
         return alertController
     }
 
-    static func renameFile(metadata: tableMetadata) -> UIAlertController {
-        renameFile(fileName: metadata.fileNameView, account: metadata.account) { fileNameNew in
+    static func renameFile(metadata: tableMetadata, completion: @escaping (_ newFileName: String) -> Void = { _ in }) -> UIAlertController {
+        renameFile(fileName: metadata.fileNameView, isDirectory: metadata.isDirectory, account: metadata.account) { fileNameNew in
             // verify if already exists
             if NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", metadata.account, metadata.serverUrl, fileNameNew)) != nil {
                 NCContentPresenter().showError(error: NKError(errorCode: 0, errorDescription: "_rename_already_exists_"))
@@ -247,6 +272,8 @@ extension UIAlertController {
             NCNetworking.shared.renameMetadata(metadata, fileNameNew: fileNameNew)
 
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": metadata.serverUrl])
+
+            completion(fileNameNew)
         }
     }
 
