@@ -28,10 +28,11 @@ import NextcloudKit
 
 extension NCShareExtension {
     @objc func reloadDatasource(withLoadFolder: Bool) {
+        let layoutForView = NCManageDatabase.shared.getLayoutForView(account: session.account, key: keyLayout, serverUrl: serverUrl) ?? NCDBLayoutForView()
         let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", session.account, serverUrl)
-        let results = self.database.getResultsMetadatasPredicate(predicate, layoutForView: NCDBLayoutForView())
+        let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: layoutForView)
 
-        self.dataSource = NCCollectionViewDataSource(results: results)
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas)
 
         if withLoadFolder {
             loadFolder()
@@ -49,7 +50,7 @@ extension NCShareExtension {
 
         self.serverUrl += "/" + metadata.fileName
         self.reloadDatasource(withLoadFolder: true)
-        self.setNavigationBar(navigationTitle: metadata.fileName)
+        self.setNavigationBar(navigationTitle: metadata.fileNameView)
     }
 
     func loadFolder() {

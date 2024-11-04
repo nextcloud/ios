@@ -55,13 +55,17 @@ class NCRecent: NCCollectionViewCommon {
     // MARK: - DataSource
 
     override func reloadDataSource() {
-        let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND fileName != '.'", session.account), sortedByKeyPath: "date", ascending: false)
+        var metadatas: [tableMetadata] = []
+
+        if let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND fileName != '.'", session.account), sortedByKeyPath: "date", ascending: false) {
+            metadatas = Array(results.freeze())
+        }
 
         layoutForView?.sort = "date"
         layoutForView?.ascending = false
         layoutForView?.directoryOnTop = false
 
-        self.dataSource = NCCollectionViewDataSource(results: results, layoutForView: layoutForView)
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView)
 
         super.reloadDataSource()
     }

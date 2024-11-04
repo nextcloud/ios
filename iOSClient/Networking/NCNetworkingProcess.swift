@@ -37,10 +37,21 @@ class NCNetworkingProcess {
     private var hasRun: Bool = false
     private let lockQueue = DispatchQueue(label: "com.nextcloud.networkingprocess.lockqueue")
     private var timerProcess: Timer?
+    private var enableControllingScreenAwake = true
 
     private init() {
         self.startTimer()
         self.startObserveTableMetadata()
+
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayerIsPlaying), object: nil, queue: nil) { _ in
+
+            self.enableControllingScreenAwake = false
+        }
+
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayerStoppedPlaying), object: nil, queue: nil) { _ in
+
+            self.enableControllingScreenAwake = true
+        }
     }
 
     private func startObserveTableMetadata() {
@@ -88,11 +99,12 @@ class NCNetworkingProcess {
 
                 /// Keep screen awake
                 ///
-                /*
                 Task {
                     let tasks = await self.networking.getAllDataTask()
                     let hasSynchronizationTask = tasks.contains { $0.taskDescription == NCGlobal.shared.taskDescriptionSynchronization }
                     let resultsTransfer = results.filter { self.global.metadataStatusInTransfer.contains($0.status) }
+
+                    if !self.enableControllingScreenAwake { return }
 
                     if resultsTransfer.isEmpty && !hasSynchronizationTask {
                         ScreenAwakeManager.shared.mode = .off
@@ -100,7 +112,6 @@ class NCNetworkingProcess {
                         ScreenAwakeManager.shared.mode = NCKeychain().screenAwakeMode
                     }
                 }
-                */
 
                 if results.isEmpty {
 
@@ -297,14 +308,37 @@ class NCNetworkingProcess {
     private func metadataStatusWaitWebDav() async -> Bool {
         var returnValue: Bool = false
 
+        /// ------------------------ CREATE FOLDER
+        ///
+        if let metadatasWaitCreateFolder = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitCreateFolder), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitCreateFolder.isEmpty {
+            for metadata in metadatasWaitCreateFolder {
+                let error = await networking.createFolder(metadata: metadata)
+
+                if error != .success {
+                    if metadata.sessionError.isEmpty {
+                        let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+                        let message = String(format: NSLocalizedString("_create_folder_error_", comment: ""), serverUrlFileName)
+                        NCContentPresenter().messageNotification(message, error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
+                    }
+                    returnValue = true
+                }
+            }
+        }
+
         /// ------------------------ COPY
         ///
         if let metadatasWaitCopy = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitCopy), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitCopy.isEmpty {
             for metadata in metadatasWaitCopy {
                 let serverUrlTo = metadata.serverUrlTo
                 let serverUrlFileNameSource = metadata.serverUrl + "/" + metadata.fileName
-                let serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
+                var serverUrlFileNameDestination = serverUrlTo + "/" + metadata.fileName
                 let overwrite = (metadata.storeFlag as? NSString)?.boolValue ?? false
+
+                /// Within same folder
+                if metadata.serverUrl == serverUrlTo {
+                    let fileNameCopy = await NCNetworking.shared.createFileName(fileNameBase: metadata.fileName, account: metadata.account, serverUrl: metadata.serverUrl)
+                    serverUrlFileNameDestination = serverUrlTo + "/" + fileNameCopy
+                }
 
                 let result = await networking.copyFileOrFolder(serverUrlFileNameSource: serverUrlFileNameSource, serverUrlFileNameDestination: serverUrlFileNameDestination, overwrite: overwrite, account: metadata.account)
 
@@ -411,23 +445,6 @@ class NCNetworkingProcess {
             for metadata in metadatasWaitDelete {
                 if networking.deleteFileOrFolderQueue.operations.filter({ ($0 as? NCOperationDeleteFileOrFolder)?.ocId == metadata.ocId }).isEmpty {
                     networking.deleteFileOrFolderQueue.addOperation(NCOperationDeleteFileOrFolder(metadata: metadata))
-                }
-            }
-        }
-
-        /// ------------------------ CREATE FOLDER
-        ///
-        if let metadatasWaitCreateFolder = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusWaitCreateFolder), sortedByKeyPath: "serverUrl", ascending: true), !metadatasWaitCreateFolder.isEmpty {
-            for metadata in metadatasWaitCreateFolder {
-                let error = await networking.createFolder(metadata: metadata)
-
-                if error != .success {
-                    if metadata.sessionError.isEmpty {
-                        let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
-                        let message = String(format: NSLocalizedString("_create_folder_error_", comment: ""), serverUrlFileName)
-                        NCContentPresenter().messageNotification(message, error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
-                    }
-                    returnValue = true
                 }
             }
         }

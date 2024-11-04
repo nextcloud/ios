@@ -53,7 +53,7 @@ class NCOffline: NCCollectionViewCommon {
 
     override func reloadDataSource() {
         var ocIds: [String] = []
-        var results: Results<tableMetadata>?
+        var metadatas: [tableMetadata] = []
 
         if self.serverUrl.isEmpty {
             if let directories = self.database.getTablesDirectory(predicate: NSPredicate(format: "account == %@ AND offline == true", session.account), sorted: "serverUrl", ascending: true) {
@@ -65,12 +65,14 @@ class NCOffline: NCCollectionViewCommon {
             for file in files {
                 ocIds.append(file.ocId)
             }
-            results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@", session.account, ocIds))
+            if let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "account == %@ AND ocId IN %@ AND NOT (status IN %@)", session.account, ocIds, global.metadataStatusHideInView)) {
+                metadatas = Array(results.freeze())
+            }
         } else {
-            results = self.database.getResultsMetadatasPredicate(self.defaultPredicate, layoutForView: layoutForView)
+            metadatas = self.database.getResultsMetadatasPredicate(self.defaultPredicate, layoutForView: layoutForView)
         }
 
-        self.dataSource = NCCollectionViewDataSource(results: results, layoutForView: layoutForView)
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView)
 
         super.reloadDataSource()
     }

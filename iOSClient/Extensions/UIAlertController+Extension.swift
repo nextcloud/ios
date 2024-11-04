@@ -32,9 +32,8 @@ extension UIAlertController {
     ///   - urlBase: UrlBase object
     ///   - completion: If not` nil` it overrides the default behavior which shows an error using `NCContentPresenter`
     /// - Returns: The presentable alert controller
-    static func createFolder(serverUrl: String, account: String, markE2ee: Bool = false, sceneIdentifier: String? = nil, completion: ((_ error: NKError) -> Void)? = nil) -> UIAlertController {
+    static func createFolder(serverUrl: String, session: NCSession.Session, markE2ee: Bool = false, sceneIdentifier: String? = nil, completion: ((_ error: NKError) -> Void)? = nil) -> UIAlertController {
         let alertController = UIAlertController(title: NSLocalizedString("_create_folder_", comment: ""), message: nil, preferredStyle: .alert)
-        let session = NCSession.shared.getSession(account: account)
         let isDirectoryEncrypted = NCUtilityFileSystem().isDirectoryE2EE(session: session, serverUrl: serverUrl)
 
         let okAction = UIAlertAction(title: NSLocalizedString("_save_", comment: ""), style: .default, handler: { _ in
@@ -96,7 +95,7 @@ extension UIAlertController {
                 guard let text = alertController.textFields?.first?.text else { return }
                 let folderName = text.trimmingCharacters(in: .whitespaces)
 
-                let textCheck = FileNameValidator.shared.checkFileName(folderName, account: account)
+                let textCheck = FileNameValidator.shared.checkFileName(folderName, account: session.account)
                 okAction.isEnabled = textCheck?.error == nil && !folderName.isEmpty
                 alertController.message = textCheck?.error.localizedDescription
             }

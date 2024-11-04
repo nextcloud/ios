@@ -68,7 +68,7 @@ import MarkdownKit
         NCNetworking.shared.readFile(serverUrlFileName: self.serverUrl, account: session.account, queue: .main) { _ in
         } completion: { account, metadata, error in
             if error == .success, let metadata {
-                NCManageDatabase.shared.setDirectory(serverUrl: self.serverUrl, richWorkspace: metadata.richWorkspace, account: account)
+                NCManageDatabase.shared.updateDirectoryRichWorkspace(metadata.richWorkspace, account: account, serverUrl: self.serverUrl)
                 if self.richWorkspaceText != metadata.richWorkspace, metadata.richWorkspace != nil {
                     self.delegate?.richWorkspaceText = self.richWorkspaceText
                     self.richWorkspaceText = metadata.richWorkspace!
