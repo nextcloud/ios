@@ -10,8 +10,9 @@ import UIKit
 
 class UITabBarGuideline {
 	static let padItemWidth: CGFloat = 100
+	static let defaultTabItemsCount = 4
 	
-	static func padItemsSpacing(for viewWidth: CGFloat, itemsCount: Int) -> CGFloat {
+	static func padItemsSpacing(for viewWidth: CGFloat, itemsCount: Int = defaultTabItemsCount) -> CGFloat {
 		let itemsCountFloat = CGFloat(itemsCount)
 		return ((viewWidth - UITabBarGuideline.padItemWidth * itemsCountFloat) / (itemsCountFloat + 1)) / 1.5
 	}
@@ -30,9 +31,11 @@ extension NCMainTabBar {
 		if !UIDevice.current.hasComplexSaveArea {
 			let tabBarAppearance = UITabBarAppearance()
 			tabBarAppearance.configureWithOpaqueBackground()
-			NCMainTabBar.appearance().standardAppearance = tabBarAppearance
-			NCMainTabBar.appearance().scrollEdgeAppearance = tabBarAppearance
-			
+						
+			setTabBarItemColors(tabBarAppearance.stackedLayoutAppearance)
+			setTabBarItemColors(tabBarAppearance.inlineLayoutAppearance)
+			setTabBarItemColors(tabBarAppearance.compactInlineLayoutAppearance)
+
 			let stackedLayoutOffset = UITabBarGuideline.tabbarItemTitleStackedLayoutOffset
 			tabBarAppearance.stackedLayoutAppearance.selected.titlePositionAdjustment = stackedLayoutOffset
 			tabBarAppearance.stackedLayoutAppearance.normal.titlePositionAdjustment = stackedLayoutOffset
@@ -40,16 +43,41 @@ extension NCMainTabBar {
 			let compactInlineLayoutOffset = UITabBarGuideline.tabbarItemTitleCompactInlineLayoutOffset
 			tabBarAppearance.compactInlineLayoutAppearance.selected.titlePositionAdjustment = compactInlineLayoutOffset
 			tabBarAppearance.compactInlineLayoutAppearance.normal.titlePositionAdjustment = compactInlineLayoutOffset
+			
+			if UIDevice.current.userInterfaceIdiom == .pad {
+				tabBarAppearance.stackedItemPositioning = .centered
+				if let windowWidth = UIDevice.current.mainWindow?.bounds.width {
+					tabBarAppearance.stackedItemSpacing = UITabBarGuideline.padItemsSpacing(for: windowWidth)
+				}
+			}
+			
+			let appearance = NCMainTabBar.appearance()
+			appearance.standardAppearance = tabBarAppearance
+			appearance.scrollEdgeAppearance = tabBarAppearance
 		}
+	}
+	
+	private static func setTabBarItemColors(_ itemAppearance: UITabBarItemAppearance) {
+		let normalColor = UIColor(resource: .Tabbar.inactiveItem)
+		let selectedColor = UIColor(resource: .Tabbar.activeItem)
+		
+		itemAppearance.normal.iconColor = normalColor
+		itemAppearance.normal.titleTextAttributes = [NSAttributedString.Key.foregroundColor: normalColor]
+   
+		itemAppearance.selected.iconColor = selectedColor
+		itemAppearance.selected.titleTextAttributes = [NSAttributedString.Key.foregroundColor: selectedColor]
 	}
 }
 
 extension UIDevice {
-	var hasComplexSaveArea: Bool {
+	var mainWindow: UIWindow? {
 		let scenes = UIApplication.shared.connectedScenes
 		let windowScene = scenes.first as? UIWindowScene
-		guard let window = windowScene?.windows.first else { return false }
-		
+		return windowScene?.windows.first
+	}
+	
+	var hasComplexSaveArea: Bool {
+		guard let window = mainWindow else { return false }
 		return (window.safeAreaInsets.top + window.safeAreaInsets.left) > 20
 	}
 }
