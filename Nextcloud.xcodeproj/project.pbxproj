@@ -6062,7 +6062,7 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/nextcloud/NextcloudKit";
 			requirement = {
-				branch = "auto-rename";
+				branch = develop;
 				kind = branch;
 			};
 		};
