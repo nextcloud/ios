@@ -211,7 +211,7 @@ class NCViewerMedia: UIViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
-        if let ncplayer = ncplayer, ncplayer.isPlay() {
+        if let ncplayer = ncplayer, ncplayer.isPlaying() {
             ncplayer.playerPause()
         }
     }
