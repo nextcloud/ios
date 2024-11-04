@@ -88,6 +88,32 @@ class NCDragDrop: NSObject {
             }
         }
 
+        var invalidNameIndexes: [Int] = []
+        let session = NCSession.shared.getSession(controller: controller)
+
+        for (index, metadata) in metadatas.enumerated() {
+            if let fileNameError = FileNameValidator.shared.checkFileName(metadata.fileName, account: session.account) {
+                if metadatas.count == 1 {
+                    let alert = UIAlertController.renameFile(fileName: metadata.fileName, account: session.account) { newFileName in
+                        metadatas[index].fileName = newFileName
+                        metadatas[index].fileNameView = newFileName
+
+//                        return metadatas
+                    }
+
+                    controller?.present(alert, animated: true)
+                    return nil
+                } else {
+                    controller?.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
+                    invalidNameIndexes.append(index)
+                }
+            }
+        }
+
+        for index in invalidNameIndexes.reversed() {
+            metadatas.remove(at: index)
+        }
+
         if metadatas.isEmpty {
             return nil
         } else {
@@ -101,8 +127,15 @@ class NCDragDrop: NSObject {
             Task {
                 let ocId = NSUUID().uuidString
                 let session = NCSession.shared.getSession(controller: controller)
-                let fileName = await NCNetworking.shared.createFileName(fileNameBase: url.lastPathComponent, account: session.account, serverUrl: serverUrl)
-                let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: fileName)
+                let newFileName = FileAutoRenamer.shared.rename(url.lastPathComponent, account: session.account)
+                let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: newFileName)
+
+                if let fileNameError = FileNameValidator.shared.checkFileName(newFileName, account: session.account) {
+                    await controller?.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
+                    return
+                }
+
+                let fileName = await NCNetworking.shared.createFileName(fileNameBase: newFileName, account: session.account, serverUrl: serverUrl)
 
                 try data.write(to: URL(fileURLWithPath: fileNamePath))
 
