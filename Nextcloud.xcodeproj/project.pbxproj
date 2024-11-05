@@ -5239,10 +5239,7 @@
 				MARKETING_VERSION = 5.5.5;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-v";
-				OTHER_LDFLAGS = (
-					"-D",
-					BETA,
-				);
+				OTHER_SWIFT_FLAGS = "-D BETA";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) NC";
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -5267,7 +5264,6 @@
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/Brand/Beta/iOSClient.plist";
-				OTHER_SWIFT_FLAGS = "-D BETA";
 				PRODUCT_BUNDLE_IDENTIFIER = de.strato.ionos.easystorage.beta;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "Ad Hoc Easy Storage Beta";
@@ -5303,7 +5299,6 @@
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Nextcloud. All rights reserved.";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				OTHER_SWIFT_FLAGS = "-D BETA";
 				PRODUCT_BUNDLE_IDENTIFIER = de.strato.ionos.easystorage.beta.Widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "Ad Hoc Easy Storage Beta Widget";
@@ -5402,7 +5397,6 @@
 					EXTENSION_FILE_PROVIDER_EXTENSION,
 				);
 				INFOPLIST_FILE = "$(SRCROOT)/Brand/Beta/File_Provider_Extension.plist";
-				OTHER_SWIFT_FLAGS = "-D BETA";
 				PRODUCT_BUNDLE_IDENTIFIER = "de.strato.ionos.easystorage.beta.File-Provider-Extension";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "Ad Hoc Easy Storage Beta File-Provider-Extension";
@@ -5431,7 +5425,6 @@
 				INFOPLIST_KEY_CFBundleDisplayName = "File Provider Extension UI";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				OTHER_SWIFT_FLAGS = "-D BETA";
 				PRODUCT_BUNDLE_IDENTIFIER = "de.strato.ionos.easystorage.beta.File-Provider-Extension-UI";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "Ad Hoc Easy Storage Beta File-Provider-Extension-U";
@@ -5631,10 +5624,7 @@
 				MARKETING_VERSION = 5.5.5;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-v";
-				OTHER_LDFLAGS = (
-					"-D",
-					APPSTORE,
-				);
+				OTHER_SWIFT_FLAGS = "-D APPSTORE";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) NC";
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -5659,7 +5649,6 @@
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				INFOPLIST_FILE = "$(SRCROOT)/Brand/AppStore/iOSClient.plist";
-				OTHER_SWIFT_FLAGS = "-D APPSTORE";
 				PRODUCT_BUNDLE_IDENTIFIER = de.ionos.easystorage;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -5695,7 +5684,6 @@
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Nextcloud. All rights reserved.";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				OTHER_SWIFT_FLAGS = "-D APPSTORE";
 				PRODUCT_BUNDLE_IDENTIFIER = de.ionos.easystorage.Widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -6371,7 +6359,6 @@
 				MARKETING_VERSION = 5.5.5;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-v";
-				OTHER_LDFLAGS = "";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) NC DEBUG";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -6435,7 +6422,6 @@
 				MARKETING_VERSION = 5.5.5;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-v";
-				OTHER_LDFLAGS = "";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) NC";
 				SWIFT_COMPILATION_MODE = wholemodule;
