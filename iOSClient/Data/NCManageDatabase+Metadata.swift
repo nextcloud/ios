@@ -253,6 +253,10 @@ extension tableMetadata {
         status == NCGlobal.shared.metadataStatusWaitUpload || status == NCGlobal.shared.metadataStatusUploading
     }
 
+    var isDirectory: Bool {
+        directory
+    }
+
     @objc var isDirectoryE2EE: Bool {
         let session = NCSession.Session(account: account, urlBase: urlBase, user: user, userId: userId)
         return NCUtilityFileSystem().isDirectoryE2EE(session: session, serverUrl: serverUrl)
