@@ -48,7 +48,7 @@ jobs:
 
   test:
     name: Test
-    runs-on: macos-14
+    runs-on: macos-15
     needs: [build]
 
     if: github.event.pull_request.draft == false
