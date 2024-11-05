@@ -47,6 +47,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var backgroundImageView = UIImageView()
     var serverUrl: String = ""
     var isEditMode = false
+    var isDirectoryEncrypted = false
     var fileSelect: [String] = []
     var metadataFolder: tableMetadata?
     var richWorkspaceText: String?
@@ -711,6 +712,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                                   image: utility.loadImage(named: "checkmark.circle"),
                                   attributes: (self.dataSource.isEmpty() || NCNetworking.shared.isOffline) ? .disabled : []) { _ in
                 self.setEditMode(true)
+                self.collectionView.reloadData()
             }
 
             let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: utility.loadImage(named: "list.bullet"), state: layoutForView.layout == global.layoutList ? .on : .off) { _ in
@@ -825,7 +827,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
                 NCKeychain().setPersonalFilesOnly(account: self.session.account, value: !personalFilesOnly)
 
-                self.reloadDataSource()
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": self.serverUrl, "clearDataSource": true])
                 self.setNavigationRightItems()
             }
 
@@ -834,7 +836,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
                 NCKeychain().showDescription = !showDescriptionKeychain
 
-                self.reloadDataSource()
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": self.serverUrl, "clearDataSource": true])
                 self.setNavigationRightItems()
             }
             showDescription.subtitle = richWorkspaceText == nil ? NSLocalizedString("_no_description_available_", comment: "") : ""
@@ -857,6 +859,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             tabBarSelect.show()
             let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) {
                 self.setEditMode(false)
+                self.collectionView.reloadData()
             }
             navigationItem.rightBarButtonItems = [select]
         } else if navigationItem.rightBarButtonItems == nil || (!isEditMode && !tabBarSelect.isHidden()) {
@@ -1038,7 +1041,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - DataSource
 
     @objc func reloadDataSource() {
-        guard !session.account.isEmpty, !self.isSearchingMode else { return }
+        if isSearchingMode {
+            isDirectoryEncrypted = false
+        } else {
+            isDirectoryEncrypted = NCUtilityFileSystem().isDirectoryE2EE(session: session, serverUrl: serverUrl)
+        }
 
         DispatchQueue.main.async {
             UIView.transition(with: self.collectionView,

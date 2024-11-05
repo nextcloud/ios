@@ -335,7 +335,7 @@ class NCViewerMediaPage: UIViewController {
 
         if metadata.isAudioOrVideo, let ncplayer = self.currentViewController.ncplayer {
             let url = URL(fileURLWithPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView))
-            if ncplayer.isPlay() {
+            if ncplayer.isPlaying() {
                 ncplayer.playerPause()
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     ncplayer.openAVPlayer(url: url)
@@ -386,7 +386,7 @@ class NCViewerMediaPage: UIViewController {
             NCContentPresenter().showError(error: error)
         }
 
-        if let ncplayer = currentViewController.ncplayer, ncplayer.isPlay() {
+        if let ncplayer = currentViewController.ncplayer, ncplayer.isPlaying() {
             ncplayer.playerPause()
         }
 
@@ -410,7 +410,7 @@ class NCViewerMediaPage: UIViewController {
         MPRemoteCommandCenter.shared().playCommand.isEnabled = true
         playCommand = MPRemoteCommandCenter.shared().playCommand.addTarget { _ in
 
-            if !ncplayer.isPlay() {
+            if !ncplayer.isPlaying() {
                 ncplayer.playerPlay()
                 return .success
             }
@@ -421,7 +421,7 @@ class NCViewerMediaPage: UIViewController {
         MPRemoteCommandCenter.shared().pauseCommand.isEnabled = true
         pauseCommand = MPRemoteCommandCenter.shared().pauseCommand.addTarget { _ in
 
-            if ncplayer.isPlay() {
+            if ncplayer.isPlaying() {
                 ncplayer.playerPause()
                 return .success
             }

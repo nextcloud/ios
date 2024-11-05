@@ -291,6 +291,13 @@ extension NCEndToEndMetadata {
 
             // SIGNATURE CHECK
             //
+            if let signature {
+                if !verifySignature(account: session.account, signature: signature, userId: tableUser.userId, metadata: metadata, users: users, version: version, certificate: tableUser.certificate) {
+                    return NKError(errorCode: NCGlobal.shared.errorE2EEKeyVerifySignature, errorDescription: "_e2e_error_")
+                }
+            }
+
+            /*
             if let signature, !signature.isEmpty {
                 if !verifySignature(account: session.account, signature: signature, userId: tableUser.userId, metadata: metadata, users: users, version: version, certificate: tableUser.certificate) {
                     return NKError(errorCode: NCGlobal.shared.errorE2EEKeyVerifySignature, errorDescription: "_e2e_error_")
@@ -298,6 +305,7 @@ extension NCEndToEndMetadata {
             } else {
                 return NKError(errorCode: NCGlobal.shared.errorE2EEKeyVerifySignature, errorDescription: "_e2e_error_")
             }
+            */
 
             // FILEDROP
             //

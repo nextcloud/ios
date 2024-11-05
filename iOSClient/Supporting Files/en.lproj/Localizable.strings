@@ -392,6 +392,7 @@
 "_autoupload_background_"           = "Auto upload in the background";
 "_autoupload_photos_"               = "Auto upload photos";
 "_autoupload_videos_"               = "Auto upload videos";
+"_autoupload_favorites_"            = "Auto upload favorites only";
 "_autoupload_description_"          = "New photos/videos will be automatically uploaded to your server.";
 "_autoupload_description_background_"  = "This option requires the use of GPS to trigger the detection of new photos/videos in the camera roll once the location changes significantly";
 "_autoupload_background_title_"     = "Limitations";
@@ -1007,7 +1008,7 @@
 "_additional_view_options_" = "Additional view options";
 "_while_charging_"          = "While charging";
 "_additional_options_"      = "Additional options";
-"_keep_screen_awake_"       = "Keep screen awake while transferring files";
+"_keep_screen_awake_"       = "Keep screen awake\nwhile transferring files";
 "_error_not_found_"         = "The requested resource could not be found";
 "_error_conflict_"          = "The request could not be completed due to a conflict with the current state of the resource";
 "_error_precondition_"      = "The server does not meet one of the preconditions that the requester";
@@ -1122,4 +1123,6 @@
 "_file_name_validator_error_forbidden_file_extension_" = "\".%@\" is a forbidden file extension.";
 "_file_name_validator_error_invalid_character_" = "Name contains an invalid character: \"%@\".";
 "_file_name_validator_error_space_" = "Name must not contain spaces at the beginning or end.";
-"_please_rename_file_"      = "Please rename the file or folder.";
+"_file_name_new_extension_" = "Changing the extension might cause this file to open in a different application.";
+"_please_rename_file_" = "Please rename the file or folder.";
+"hidden_file_name_warning" = "Name will result in a hidden file.";

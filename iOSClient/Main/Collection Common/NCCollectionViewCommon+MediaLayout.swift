@@ -74,9 +74,14 @@ extension NCCollectionViewCommon: NCMediaLayoutDelegate {
 
             if metadata.imageSize != CGSize.zero {
                 return metadata.imageSize
-            } else {
-                return CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
+            } else if metadata.classFile == NKCommon.TypeClassFile.document.rawValue {
+                let ext = NCGlobal.shared.getSizeExtension(column: self.numberOfColumns)
+                if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
+                    return image.size
+                }
             }
+
+            return CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
         }
     }
 }

@@ -32,11 +32,7 @@ class NCService: NSObject {
     // MARK: -
 
     public func startRequestServicesServer(account: String, controller: NCMainTabBarController?) {
-        guard !account.isEmpty,
-              UIApplication.shared.applicationState != .background else {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Service not start request service server with the application in background")
-            return
-        }
+        guard !account.isEmpty, UIApplication.shared.applicationState == .active else { return }
 
         Task(priority: .background) {
             self.database.clearAllAvatarLoaded()

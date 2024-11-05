@@ -33,7 +33,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
             fileSelect = self.dataSource.getMetadatas().compactMap({ $0.ocId })
         }
         tabBarSelect.update(fileSelect: fileSelect, metadatas: getSelectedMetadatas(), userId: session.userId)
-        self.reloadDataSource()
+        self.collectionView.reloadData()
     }
 
     func delete() {
@@ -135,6 +135,6 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
         navigationController?.interactivePopGestureRecognizer?.isEnabled = !editMode
         navigationItem.hidesBackButton = editMode
         searchController(enabled: !editMode)
-        self.reloadDataSource()
+        self.collectionView.reloadData()
     }
 }
