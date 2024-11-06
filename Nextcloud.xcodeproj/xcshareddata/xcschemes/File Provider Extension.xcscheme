@@ -109,7 +109,7 @@
       </Testables>
    </TestAction>
    <LaunchAction
-      buildConfiguration = "Beta"
+      buildConfiguration = "Debug"
       selectedDebuggerIdentifier = ""
       selectedLauncherIdentifier = "Xcode.IDEFoundation.Launcher.PosixSpawn"
       launchStyle = "0"
