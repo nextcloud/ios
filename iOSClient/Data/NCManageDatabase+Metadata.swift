@@ -1073,18 +1073,19 @@ extension NCManageDatabase {
 
             if layout.sort == "fileName" {
                 let sortedResults = results.sorted {
+                    let ordered = layout.ascending ? ComparisonResult.orderedAscending : ComparisonResult.orderedDescending
                     // 1. favorite order
                     if $0.favorite == $1.favorite {
                         // 2. directory order TOP
                         if layout.directoryOnTop {
                             if $0.directory == $1.directory {
                                 // 3. natural fileName
-                                return $0.fileNameView.localizedStandardCompare($1.fileNameView) == .orderedAscending
+                                return $0.fileNameView.localizedStandardCompare($1.fileNameView) == ordered
                             } else {
                                 return $0.directory && !$1.directory
                             }
                         } else {
-                            return $0.fileNameView.localizedStandardCompare($1.fileNameView) == .orderedAscending
+                            return $0.fileNameView.localizedStandardCompare($1.fileNameView) == ordered
                         }
                     } else {
                         return $0.favorite && !$1.favorite
