@@ -13,7 +13,7 @@ on:
 
 env:
   PROJECT: Nextcloud.xcodeproj
-  DESTINATION: platform=iOS Simulator,name=iPhone 15,OS=17.2
+  DESTINATION: platform=iOS Simulator,name=iPhone 16,OS=18.1
   SCHEME: Nextcloud
   SERVER_BRANCH: stable28
   PHP_VERSION: 8.2
@@ -21,24 +21,11 @@ env:
 jobs:
   build:
     name: Build
-    runs-on: macos-13
+    runs-on: macos-15
     if: github.event.pull_request.draft == false
 
     steps:
     - uses: actions/checkout@v4
-
-    - name: Restore Carhage Cache
-      uses: actions/cache@v3
-      id: carthage-cache
-      with:
-        path: Carthage
-        key: ${{ runner.os }}-carthage-${{ hashFiles('**/Cartfile.resolved') }}
-        restore-keys: |
-          ${{ runner.os }}-carthage-
-
-    - name: Carthage
-      if: steps.carthage-cache.outputs.cache-hit != 'true'
-      run: carthage bootstrap --use-xcframeworks --platform iOS
 
     - name: Download GoogleService-Info.plist
       run: wget "https://raw.githubusercontent.com/firebase/quickstart-ios/master/mock-GoogleService-Info.plist" -O GoogleService-Info.plist
@@ -61,7 +48,7 @@ jobs:
 
   test:
     name: Test
-    runs-on: macos-13
+    runs-on: macos-15
     needs: [build]
 
     if: github.event.pull_request.draft == false
