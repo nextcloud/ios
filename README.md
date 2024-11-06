@@ -81,7 +81,7 @@ Do you want to try the latest version in development of Nextcloud iOS ? Simple, 
 There are currently no preresquites for unit testing that need to be done. Mock everything that's not needed. 
 
 ### Integration tests:
-To run integration tests, we need a docker instance of a Nextcloud test server.
+To run integration tests, you need a docker instance of a Nextcloud test server. [This](https://github.com/szaimen/nextcloud-easy-test) is a good start.
 
 1. In `TestConstants.swift` you must specify your instance credentials. App Token is automatically generated.
 
