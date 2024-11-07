@@ -83,6 +83,26 @@ struct NCAutoUploadView: View {
         }, footer: {
             Text("\(NSLocalizedString("_autoupload_current_folder_", comment: "")): \(model.returnPath())")
         })
+
+        Section(content: {
+            Button(action: {
+                model.autoUploadFolder.toggle()
+            }, label: {
+                HStack {
+                    Image(systemName: "folder")
+                        .resizable()
+                        .scaledToFit()
+                        .font(Font.system(.body).weight(.light))
+                        .frame(width: 25, height: 25)
+                        .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
+                    Text(NSLocalizedString("_autoupload_select_folder_", comment: ""))
+                }
+                .font(.system(size: 16))
+            })
+            .tint(Color(UIColor.label))
+        }, footer: {
+            Text("\(NSLocalizedString("_autoupload_from_", comment: "")): \(model.returnPath())")
+        })
         /// Auto Upload Photo
         Section(content: {
             Toggle(NSLocalizedString("_autoupload_photos_", comment: ""), isOn: $model.autoUploadImage)
@@ -158,5 +178,5 @@ struct NCAutoUploadView: View {
 }
 
 #Preview {
-    NCAutoUploadView(model: NCAutoUploadModel(controller: nil))
+    Text("TEST")
 }
