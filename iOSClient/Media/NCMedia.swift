@@ -54,7 +54,6 @@ class NCMedia: UIViewController {
     var isEditMode = false
     var fileSelect: [String] = []
     var filesExists: [String] = []
-    var fileDeleted: [String] = []
     var attributesZoomIn: UIMenuElement.Attributes = []
     var attributesZoomOut: UIMenuElement.Attributes = []
     let gradient: CAGradientLayer = CAGradientLayer()
@@ -236,7 +235,6 @@ class NCMedia: UIViewController {
         timerSearchNewMedia?.invalidate()
         timerSearchNewMedia = nil
         filesExists.removeAll()
-        fileDeleted.removeAll()
 
         NCNetworking.shared.fileExistsQueue.cancelAll()
         NCNetworking.shared.downloadThumbnailQueue.cancelAll()
@@ -257,7 +255,10 @@ class NCMedia: UIViewController {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let error = userInfo["error"] as? NKError else { return }
 
-        if error != .success {
+        if error.errorCode == self.global.errorResourceNotFound, let ocId = userInfo["ocId"] as? String {
+            self.database.deleteMetadataOcId(ocId)
+            self.loadDataSource()
+        } else if error != .success {
             NCContentPresenter().showError(error: error)
             self.loadDataSource()
         }
