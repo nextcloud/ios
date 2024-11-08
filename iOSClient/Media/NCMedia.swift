@@ -54,7 +54,6 @@ class NCMedia: UIViewController {
     var isEditMode = false
     var fileSelect: [String] = []
     var filesExists: [String] = []
-    var fileDeleted: [String] = []
     var attributesZoomIn: UIMenuElement.Attributes = []
     var attributesZoomOut: UIMenuElement.Attributes = []
     let gradient: CAGradientLayer = CAGradientLayer()
@@ -236,7 +235,6 @@ class NCMedia: UIViewController {
         timerSearchNewMedia?.invalidate()
         timerSearchNewMedia = nil
         filesExists.removeAll()
-        fileDeleted.removeAll()
 
         NCNetworking.shared.fileExistsQueue.cancelAll()
         NCNetworking.shared.downloadThumbnailQueue.cancelAll()
