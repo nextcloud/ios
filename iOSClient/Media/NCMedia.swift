@@ -255,7 +255,10 @@ class NCMedia: UIViewController {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let error = userInfo["error"] as? NKError else { return }
 
-        if error != .success {
+        if error.errorCode == self.global.errorResourceNotFound, let ocId = userInfo["ocId"] as? String {
+            self.database.deleteMetadataOcId(ocId)
+            self.loadDataSource()
+        } else if error != .success {
             NCContentPresenter().showError(error: error)
             self.loadDataSource()
         }
