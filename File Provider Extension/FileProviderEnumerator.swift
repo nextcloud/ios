@@ -191,11 +191,11 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     }
                 }
                 let resultsMetadata = self.database.fetchPagedResults(ofType: tableMetadata.self, primaryKey: "ocId", recordsPerPage: self.recordsPerPage, pageNumber: pageNumber, filter: predicate, sortedByKeyPath: "fileName")
-                completionHandler(resultsMetadata)
+                completionHandler(resultsMetadata, isPaginated, paginateToken, paginatedTotal)
             }
         } else {
             let resultsMetadata = self.database.fetchPagedResults(ofType: tableMetadata.self, primaryKey: "ocId", recordsPerPage: recordsPerPage, pageNumber: pageNumber, filter: predicate, sortedByKeyPath: "fileName")
-            completionHandler(resultsMetadata)
+            completionHandler(resultsMetadata, isPaginated, paginateToken, paginatedTotal)
         }
     }
 }
