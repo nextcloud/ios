@@ -112,14 +112,6 @@ extension NCMedia {
                                             options: options) { account, files, _, error in
 
                 if error == .success, let files, session.account == account, !self.showOnlyImages, !self.showOnlyVideos {
-
-                    /// Removes all files in `files` that have an `ocId` present in `fileDeleted`
-                    var files = files
-                    files.removeAll { file in
-                        self.fileDeleted.contains(file.ocId)
-                    }
-                    self.fileDeleted.removeAll()
-
                     /// No files, remove all
                     if lessDate == Date.distantFuture, greaterDate == Date.distantPast, files.isEmpty {
                         self.dataSource.metadatas.removeAll()

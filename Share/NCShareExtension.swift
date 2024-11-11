@@ -184,6 +184,7 @@ class NCShareExtension: UIViewController {
     }
 
     func showAlert(title: String = "_error_", description: String, onDismiss: (() -> Void)? = nil) {
+        let description = description.replacingOccurrences(of: "\t", with: "\n")
         let alertController = UIAlertController(title: NSLocalizedString(title, comment: ""), message: NSLocalizedString(description, comment: ""), preferredStyle: .alert)
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
             onDismiss?()

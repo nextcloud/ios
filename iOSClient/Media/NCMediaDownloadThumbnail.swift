@@ -29,6 +29,7 @@ import Alamofire
 class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
     var metadata: NCMediaDataSource.Metadata
     let utilityFileSystem = NCUtilityFileSystem()
+    let global = NCGlobal.shared
     let media: NCMedia
     var session: NCSession.Session
 
@@ -67,6 +68,8 @@ class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
                         }
                     }
                 }
+            } else if error.errorCode == self.global.errorResourceNotFound {
+                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterDeleteFile, userInfo: ["ocId": tableMetadata.ocId, "error": error])
             }
             self.finish()
         }
