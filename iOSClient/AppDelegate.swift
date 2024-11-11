@@ -308,7 +308,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // MARK: - Login
 
-    func openLogin(selector: Int) {
+    func openLogin(selector: Int, window: UIWindow? = nil) {
         UIApplication.shared.allSceneSessionDestructionExceptFirst()
 
         func showLoginViewController(_ viewController: UIViewController?) {
@@ -329,6 +329,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 } else {
                     controller.present(navigationController, animated: true)
                 }
+            } else {
+                window?.rootViewController = navigationController
+                window?.makeKeyAndVisible()
             }
         }
 
