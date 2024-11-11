@@ -88,7 +88,7 @@ extension NCNetworking {
 
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: showHiddenFiles, account: account, options: options) { task in
             taskHandler(task)
-        } completion: { account, files, _, error in
+        } completion: { account, files, responseData, error in
             guard error == .success, files?.count == 1, let file = files?.first else {
                 return completion(account, nil, error)
             }
