@@ -31,8 +31,11 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     var serverUrl: String?
     let providerUtility = fileProviderUtility()
     let database = NCManageDatabase.shared
-    var recordsPerPage: Int = 20
+    var recordsPerPage: Int = 5
     var anchor: UInt64 = 0
+    var isPaginated: Bool?
+    var paginateToken: String?
+    var paginatedTotal: Int?
 
     init(enumeratedItemIdentifier: NSFileProviderItemIdentifier) {
         self.enumeratedItemIdentifier = enumeratedItemIdentifier
@@ -161,8 +164,23 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.session.account, serverUrl)
 
         if pageNumber == 1 {
-            NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: NCKeychain().showHiddenFiles, account: fileProviderData.shared.session.account) { _, files, _, error in
+            let options = NKRequestOptions(paginate: true,
+                                           paginateCount: recordsPerPage,
+                                           queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+
+            NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: NCKeychain().showHiddenFiles, account: fileProviderData.shared.session.account, options: options) { _, files, responseData, error in
                 if error == .success, let files {
+                    ///
+                    ///
+                    if let headers = responseData?.response?.allHeaderFields as? [String: String] {
+                        let normalizedHeaders = Dictionary(uniqueKeysWithValues: headers.map { ($0.key.lowercased(), $0.value) })
+                        self.isPaginated = Bool(normalizedHeaders["x-nc-paginate"] ?? "false")
+                        self.paginateToken = normalizedHeaders["x-nc-paginate-token"]
+                        self.paginatedTotal = Int(normalizedHeaders["x-nc-paginate-total"] ?? "0")
+                    }
+                    ///
+                    ///
+                    ///
                     self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: true) { metadataFolder, metadatas in
                         /// FOLDER
                         self.database.addMetadata(metadataFolder)
