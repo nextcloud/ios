@@ -222,7 +222,7 @@
 "_multi_file_conflict_title_" = "%@ File conflicts";
 "_replace_action_title_" = "Replace";
 "_keep_both_action_title_" = "Keep both";
-"_cancel_keep_existing_action_title_" = "Cancel and keep existing file";
+"_cancel_keep_existing_action_title_" = "Cancel and keep existing";
 "_replace_all_action_title_" = "Replace all";
 "_keep_both_for_all_action_title_" = "Keep both for all";
 "_more_action_title_" = "More Details";
