@@ -72,6 +72,7 @@ let userAgent: String = {
     var disable_show_more_nextcloud_apps_in_settings: Bool = false
     var doNotAskPasscodeAtStartup: Bool = false
     var disable_source_code_in_settings: Bool = false
+    var enforce_protection = true
 
     // (name: "Name 1", url: "https://cloud.nextcloud.com"),(name: "Name 2", url: "https://cloud.nextcloud.com")
     var enforce_servers: [(name: String, url: String)] = []
@@ -116,6 +117,9 @@ let userAgent: String = {
             }
             if let str = configurationManaged[NCGlobal.shared.configuration_disable_openin_file] as? String {
                 disable_openin_file = (str as NSString).boolValue
+            }
+            if let str = configurationManaged[NCGlobal.shared.configuration_enforce_protection] as? String {
+                enforce_protection = (str as NSString).boolValue
             }
         }
     }

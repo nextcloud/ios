@@ -22,6 +22,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 struct NavigationCollectionViewCommon {
     var serverUrl: String
@@ -50,11 +51,26 @@ class NCMainTabBarController: UITabBarController {
         if #available(iOS 17.0, *) {
             traitOverrides.horizontalSizeClass = .compact
         }
+
+//        if NCBrandOptions.shared.enforce_protection && NCKeychain().passcode.isEmptyOrNil {
+//            let vc = UIHostingController(rootView: PasscodeView(isLockActive: .constant(false)))
+////            vc.isModalInPresentation = true
+////            isModalInPresentation = true
+////            vc.modalPresentationStyle = .fullScreen
+//            present(vc, animated: true)
+//        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         previousIndex = selectedIndex
+
+        if NCBrandOptions.shared.enforce_protection && !NCKeychain().presentPasscode {
+            let vc = UIHostingController(rootView: PasscodeView(isLockActive: .constant(false)))
+            vc.isModalInPresentation = true
+
+            present(vc, animated: true)
+        }
     }
 
     @objc func changeTheming(_ notification: NSNotification) {

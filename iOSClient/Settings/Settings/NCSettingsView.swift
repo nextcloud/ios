@@ -63,6 +63,7 @@ struct NCSettingsView: View {
             })
             /// `Privacy` Section
             Section(content: {
+                //                Section(content: {
                 Button(action: {
                     showPasscode.toggle()
                 }, label: {
@@ -73,6 +74,7 @@ struct NCSettingsView: View {
                             .font(Font.system(.body).weight(.light))
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             .frame(width: 20, height: 20)
+                            .opacity(NCBrandOptions.shared.enforce_protection ? 0.5 : 1)
                         Text(model.isLockActive ? NSLocalizedString("_lock_active_", comment: "") : NSLocalizedString("_lock_not_active_", comment: ""))
                     }
                     .font(.system(size: 16))
@@ -81,41 +83,60 @@ struct NCSettingsView: View {
                 .sheet(isPresented: $showPasscode) {
                     PasscodeView(isLockActive: $model.isLockActive)
                 }
-                /// Enable Touch ID
-                Toggle(NSLocalizedString("_enable_touch_face_id_", comment: ""), isOn: $model.enableTouchID)
-                    .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                    .font(.system(size: 16))
-                    .onChange(of: model.enableTouchID) { _ in
-                        model.updateTouchIDSetting()
-                    }
-                /// Lock no screen
-                Toggle(NSLocalizedString("_lock_protection_no_screen_", comment: ""), isOn: $model.lockScreen)
-                    .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                    .font(.system(size: 16))
-                    .onChange(of: model.lockScreen) { _ in
-                        model.updateLockScreenSetting()
-                    }
-                /// Privacy screen
-                Toggle(NSLocalizedString("_privacy_screen_", comment: ""), isOn: $model.privacyScreen)
-                    .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                    .font(.system(size: 16))
-                    .onChange(of: model.privacyScreen) { _ in
-                        model.updatePrivacyScreenSetting()
-                    }
-                /// Reset app wrong attempts
-                Toggle(NSLocalizedString("_reset_wrong_passcode_", comment: ""), isOn: $model.resetWrongAttempts)
-                    .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                    .font(.system(size: 16))
-                    .onChange(of: model.resetWrongAttempts) { _ in
-                        model.updateResetWrongAttemptsSetting()
-                    }
+                .disabled(NCBrandOptions.shared.enforce_protection)
             }, header: {
                 Text(NSLocalizedString("_privacy_", comment: ""))
             }, footer: {
-                Text(NSLocalizedString("_lock_protection_no_screen_footer_", comment: "") + "\n" + String(format: NSLocalizedString("_reset_wrong_passcode_desc_", comment: ""), NCBrandOptions.shared.resetAppPasscodeAttempts))
-                    .font(.system(size: 12))
-                    .lineSpacing(1)
+                Text("_lock_cannot_disable_")
             })
+
+            Section(content: {
+
+                if !model.isLockActive {
+//                if model.isLockActive {
+                    /// Enable Touch ID
+                    Group {
+                        Button(action: {
+                            showPasscode.toggle()
+                        }, label: {
+                            VStack {
+                                Text(NSLocalizedString("_change_lock_passcode_", comment: ""))
+                                    .tint(Color(NCBrandColor.shared.textColor))
+                            }
+                            .font(.system(size: 16))
+                        })
+
+                        Toggle(NSLocalizedString("_enable_touch_face_id_", comment: ""), isOn: $model.enableTouchID)
+                            .onChange(of: model.enableTouchID) { _ in
+                                model.updateTouchIDSetting()
+                            }
+                        /// Lock no screen
+                        Toggle(NSLocalizedString("_lock_protection_no_screen_", comment: ""), isOn: $model.lockScreen)
+                            .onChange(of: model.lockScreen) { _ in
+                                model.updateLockScreenSetting()
+                            }
+                        /// Privacy screen
+                        Toggle(NSLocalizedString("_privacy_screen_", comment: ""), isOn: $model.privacyScreen)
+                            .onChange(of: model.privacyScreen) { _ in
+                                model.updatePrivacyScreenSetting()
+                            }
+                        /// Reset app wrong attempts
+                        Toggle(NSLocalizedString("_reset_wrong_passcode_", comment: ""), isOn: $model.resetWrongAttempts)
+                            .onChange(of: model.resetWrongAttempts) { _ in
+                                model.updateResetWrongAttemptsSetting()
+                            }
+                    }
+                    .font(.system(size: 16))
+                    .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
+                }
+            }, footer: {
+                if model.isLockActive {
+                    Text(NSLocalizedString("_lock_protection_no_screen_footer_", comment: "") + "\n" + String(format: NSLocalizedString("_reset_wrong_passcode_desc_", comment: ""), NCBrandOptions.shared.resetAppPasscodeAttempts))
+                        .font(.system(size: 12))
+                        .lineSpacing(1)
+                }
+            })
+
             /// Display
             Section(header: Text(NSLocalizedString("_display_", comment: "")), content: {
                 NavigationLink(destination: LazyView {
