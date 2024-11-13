@@ -178,7 +178,6 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: NCKeychain().showHiddenFiles, account: fileProviderData.shared.session.account, options: options) { _, files, responseData, error in
             if error == .success, let files {
                 ///
-                ///
                 if let headers = responseData?.response?.allHeaderFields as? [String: String] {
                     let normalizedHeaders = Dictionary(uniqueKeysWithValues: headers.map { ($0.key.lowercased(), $0.value) })
                     self.isPaginated = Bool(normalizedHeaders["x-nc-paginate"] ?? "false")
@@ -186,10 +185,9 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     self.paginatedTotal = Int(normalizedHeaders["x-nc-paginate-total"] ?? "0")
                 }
                 ///
-                ///
                 self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: useFirstAsMetadataFolder) { metadataFolder, metadatas in
+                    /// FOLDER
                     if useFirstAsMetadataFolder {
-                        /// FOLDER
                         self.database.addMetadata(metadataFolder)
                         self.database.addDirectory(e2eEncrypted: metadataFolder.e2eEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, fileId: metadataFolder.fileId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, richWorkspace: metadataFolder.richWorkspace, serverUrl: serverUrl, account: metadataFolder.account)
                     }
