@@ -908,6 +908,7 @@
 "_resolution_"              = "Resolution";
 "_try_download_full_resolution_"            = "Download full resolution image";
 "_full_resolution_image_info_"            = "This may reveal more information about the photo.";
+"_download_audio_"          = "Download the audio locally";
 "_copied_path_"             = "Copied path";
 "_copy_path_"               = "Copy path";
 "_certificates_"            = "Certificates";
