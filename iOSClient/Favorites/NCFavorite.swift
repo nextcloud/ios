@@ -79,8 +79,8 @@ class NCFavorite: NCCollectionViewCommon {
             if error == .success, let files {
                 self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
                     self.database.updateMetadatasFavorite(account: account, metadatas: metadatas)
+                    self.reloadDataSource()
                 }
-                self.reloadDataSource()
             }
             self.refreshControl.endRefreshing()
         }

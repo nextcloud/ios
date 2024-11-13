@@ -801,13 +801,7 @@ extension NCManageDatabase {
                 for result in results {
                     result.favorite = false
                 }
-                for metadata in metadatas {
-                    if let result = realm.objects(tableMetadata.self).filter("account == %@ AND ocId == %@", account, metadata.ocId).first {
-                        result.favorite = true
-                    } else {
-                        realm.add(metadata, update: .modified)
-                    }
-                }
+                realm.add(metadatas, update: .all)
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
