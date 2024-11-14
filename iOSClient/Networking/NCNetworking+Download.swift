@@ -297,11 +297,11 @@ class NCOperationDownload: ConcurrentOperation, @unchecked Sendable {
         metadata.sessionTaskIdentifier = 0
         metadata.status = NCGlobal.shared.metadataStatusWaitDownload
 
-        NCManageDatabase.shared.addMetadata(metadata)
-
-        NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true) {
-        } completion: { _, _ in
-            self.finish()
+        if let metadata = NCManageDatabase.shared.createMetadata(metadata) {
+            NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true) {
+            } completion: { _, _ in
+                self.finish()
+            }
         }
     }
 }
