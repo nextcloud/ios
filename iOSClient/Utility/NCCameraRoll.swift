@@ -63,7 +63,7 @@ class NCCameraRoll: NSObject {
             }
             metadataSource.isExtractFile = true
 
-            metadatas.append(self.database.addMetadataWithReturnValue(metadataSource))
+            metadatas.append(self.database.addMetadata(metadataSource))
 
             return completition(metadatas)
         }
@@ -77,7 +77,7 @@ class NCCameraRoll: NSObject {
                 if metadata.isLivePhoto, fetchAssets.count > 0 {
                     self.createMetadataLivePhoto(metadata: metadata, asset: fetchAssets.firstObject) { metadata in
                         if let metadata {
-                            metadatas.append(self.database.addMetadataWithReturnValue(metadata))
+                            metadatas.append(self.database.addMetadata(metadata))
                         }
                         completition(metadatas)
                     }
@@ -125,7 +125,7 @@ class NCCameraRoll: NSObject {
                         metadata.session = NCNetworking.shared.sessionUpload
                     }
                     metadata.isExtractFile = true
-                    metadata = self.database.addMetadataWithReturnValue(metadata)
+                    metadata = self.database.addMetadata(metadata)
                 }
                 completion(metadata, fileNamePath, error)
             }
@@ -286,7 +286,7 @@ class NCCameraRoll: NSObject {
                 metadataLivePhoto.date = metadata.date
                 metadataLivePhoto.uploadDate = metadata.uploadDate
 
-                return completion(self.database.addMetadataWithReturnValue(metadataLivePhoto))
+                return completion(self.database.addMetadata(metadataLivePhoto))
             }
         }
     }
