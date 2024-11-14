@@ -81,10 +81,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     let navigationController = NCLoginNavigationController(rootViewController: viewController)
                     window?.rootViewController = navigationController
                     window?.makeKeyAndVisible()
-
-
-//                        let vc = UIHostingController(rootView: PasscodeView(isLockActive: .constant(true)))
-//                        controller.present(vc, animated: true)
                 }
             }
         }
@@ -109,10 +105,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         hidePrivacyProtectionWindow()
         if let window = SceneManager.shared.getWindow(scene: scene), let controller = SceneManager.shared.getController(scene: scene) {
             window.rootViewController = controller
-//            if NCBrandOptions.shared.enforce_protection && NCKeychain().passcode.isEmptyOrNil {
-//                let vc = UIHostingController(rootView: PasscodeView(isLockActive: .constant(true)))
-//                controller.present(vc, animated: true)
-//            } else
             if NCKeychain().presentPasscode {
                 NCPasscode.shared.presentPasscode(viewController: controller, delegate: self) {
                     NCPasscode.shared.enableTouchFaceID()
