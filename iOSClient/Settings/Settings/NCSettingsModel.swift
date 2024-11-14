@@ -53,6 +53,8 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
         NCSession.shared.getSession(controller: controller)
     }
 
+    var changePasscode = false
+
     /// Initializes the view model with default values.
     init(controller: NCMainTabBarController?) {
         self.controller = controller
@@ -112,13 +114,14 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
     }
 }
 
-struct PasscodeView: UIViewControllerRepresentable {
+struct SetupPasscodeView: UIViewControllerRepresentable {
     @Binding var isLockActive: Bool
+    var changePasscode = false
 
     func makeUIViewController(context: Context) -> UIViewController {
         let laContext = LAContext()
         var error: NSError?
-        if NCKeychain().passcode != nil {
+        if NCKeychain().passcode != nil, !changePasscode {
             let passcodeViewController = TOPasscodeViewController(passcodeType: .sixDigits, allowCancel: true)
             passcodeViewController.keypadButtonShowLettering = false
             if NCKeychain().touchFaceID && laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
@@ -138,6 +141,13 @@ struct PasscodeView: UIViewControllerRepresentable {
             }
             passcodeViewController.delegate = context.coordinator
             return passcodeViewController
+        } else if changePasscode {
+            let passcodeSettingsViewController = TOPasscodeSettingsViewController()
+            passcodeSettingsViewController.hideOptionsButton = true
+//            passcodeSettingsViewController.requireCurrentPasscode = true
+            passcodeSettingsViewController.passcodeType = .sixDigits
+            passcodeSettingsViewController.delegate = context.coordinator
+            return passcodeSettingsViewController
         } else {
             let passcodeSettingsViewController = TOPasscodeSettingsViewController()
             passcodeSettingsViewController.hideOptionsButton = true
@@ -157,8 +167,8 @@ struct PasscodeView: UIViewControllerRepresentable {
     }
 
     class Coordinator: NSObject, TOPasscodeSettingsViewControllerDelegate, TOPasscodeViewControllerDelegate {
-        var parent: PasscodeView
-        init(_ parent: PasscodeView) {
+        var parent: SetupPasscodeView
+        init(_ parent: SetupPasscodeView) {
             self.parent = parent
         }
 

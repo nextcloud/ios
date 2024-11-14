@@ -31,6 +31,8 @@ struct NCSettingsView: View {
     @State private var showAcknowledgements = false
     /// State to control the visibility of the passcode view
     @State private var showPasscode = false
+    /// State to contorl the visibility of the change passcode view
+    @State private var showChangePasscode = false
     /// State to control the visibility of the Policy view
     @State private var showBrowser = false
     /// State to control the visibility of the Source Code  view
@@ -63,7 +65,6 @@ struct NCSettingsView: View {
             })
             /// `Privacy` Section
             Section(content: {
-                //                Section(content: {
                 Button(action: {
                     showPasscode.toggle()
                 }, label: {
@@ -80,32 +81,31 @@ struct NCSettingsView: View {
                     .font(.system(size: 16))
                 })
                 .tint(Color(NCBrandColor.shared.textColor))
-                .sheet(isPresented: $showPasscode) {
-                    PasscodeView(isLockActive: $model.isLockActive)
-                }
                 .disabled(NCBrandOptions.shared.enforce_protection)
             }, header: {
                 Text(NSLocalizedString("_privacy_", comment: ""))
             }, footer: {
-                Text("_lock_cannot_disable_")
+                Text(NSLocalizedString("_lock_cannot_disable_mdm_", comment: ""))
             })
 
             Section(content: {
 
                 if !model.isLockActive {
-//                if model.isLockActive {
-                    /// Enable Touch ID
                     Group {
-                        Button(action: {
-                            showPasscode.toggle()
-                        }, label: {
-                            VStack {
-                                Text(NSLocalizedString("_change_lock_passcode_", comment: ""))
-                                    .tint(Color(NCBrandColor.shared.textColor))
-                            }
-                            .font(.system(size: 16))
-                        })
-
+                        // Change passcode
+                        if model.enableTouchID {
+                            Button(action: {
+                                showChangePasscode.toggle()
+                            }, label: {
+                                VStack {
+                                    Text(NSLocalizedString("_change_lock_passcode_", comment: ""))
+                                        .tint(Color(NCBrandColor.shared.textColor))
+                                }
+                                .font(.system(size: 16))
+                            })
+                            .transition(.scale)
+                        }
+                        /// Enable Touch ID
                         Toggle(NSLocalizedString("_enable_touch_face_id_", comment: ""), isOn: $model.enableTouchID)
                             .onChange(of: model.enableTouchID) { _ in
                                 model.updateTouchIDSetting()
@@ -115,11 +115,7 @@ struct NCSettingsView: View {
                             .onChange(of: model.lockScreen) { _ in
                                 model.updateLockScreenSetting()
                             }
-                        /// Privacy screen
-                        Toggle(NSLocalizedString("_privacy_screen_", comment: ""), isOn: $model.privacyScreen)
-                            .onChange(of: model.privacyScreen) { _ in
-                                model.updatePrivacyScreenSetting()
-                            }
+
                         /// Reset app wrong attempts
                         Toggle(NSLocalizedString("_reset_wrong_passcode_", comment: ""), isOn: $model.resetWrongAttempts)
                             .onChange(of: model.resetWrongAttempts) { _ in
@@ -136,6 +132,14 @@ struct NCSettingsView: View {
                         .lineSpacing(1)
                 }
             })
+
+            Section {
+                /// Privacy screen
+                Toggle(NSLocalizedString("_privacy_screen_", comment: ""), isOn: $model.privacyScreen)
+                    .onChange(of: model.privacyScreen) { _ in
+                        model.updatePrivacyScreenSetting()
+                    }
+            }
 
             /// Display
             Section(header: Text(NSLocalizedString("_display_", comment: "")), content: {
@@ -286,6 +290,13 @@ struct NCSettingsView: View {
             }, footer: {
                 Text(model.footerApp + model.footerServer + model.footerSlogan)
             })
+        }
+        .transition(.scale)
+        .sheet(isPresented: $showPasscode) {
+            SetupPasscodeView(isLockActive: $model.isLockActive)
+        }
+        .sheet(isPresented: $showChangePasscode) {
+            SetupPasscodeView(isLockActive: $model.isLockActive, changePasscode: true)
         }
         .navigationBarTitle(NSLocalizedString("_settings_", comment: ""))
         .defaultViewModifier(model)
