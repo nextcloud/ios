@@ -161,7 +161,7 @@ extension NCViewer {
             actions.append(
                 NCMenuAction(
                     title: title,
-                    icon: utility.loadImage(named: "photo", colors: [NCBrandColor.shared.iconImageColor]),
+                    icon: utility.loadImage(named: "iphone.circle", colors: [NCBrandColor.shared.iconImageColor]),
                     action: { _ in
                         guard let metadata = self.database.setMetadatasSessionInWaitDownload(metadatas: [metadata],
                                                                                              session: NCNetworking.shared.sessionDownload,
