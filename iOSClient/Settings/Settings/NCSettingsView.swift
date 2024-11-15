@@ -90,10 +90,10 @@ struct NCSettingsView: View {
 
             Section(content: {
 
-                if !model.isLockActive {
+                if model.isLockActive {
                     Group {
                         // Change passcode
-                        if model.enableTouchID {
+                        if !model.enableTouchID {
                             Button(action: {
                                 showChangePasscode.toggle()
                             }, label: {
@@ -140,6 +140,7 @@ struct NCSettingsView: View {
                         model.updatePrivacyScreenSetting()
                     }
             }
+            .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
 
             /// Display
             Section(header: Text(NSLocalizedString("_display_", comment: "")), content: {
