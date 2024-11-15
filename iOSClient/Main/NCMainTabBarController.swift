@@ -57,7 +57,7 @@ class NCMainTabBarController: UITabBarController {
         super.viewDidAppear(animated)
         previousIndex = selectedIndex
 
-        if NCBrandOptions.shared.enforce_protection && !NCKeychain().presentPasscode {
+        if NCBrandOptions.shared.enforce_protection && NCKeychain().passcode.isEmptyOrNil {
             let vc = UIHostingController(rootView: SetupPasscodeView(isLockActive: .constant(false)))
             vc.isModalInPresentation = true
 
