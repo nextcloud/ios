@@ -59,7 +59,6 @@ struct NCSettingsView: View {
                     }
                     .font(.system(size: 16))
                 }
-            }, header: {
             }, footer: {
                 Text(NSLocalizedString("_autoupload_description_", comment: ""))
             })
@@ -88,23 +87,19 @@ struct NCSettingsView: View {
                 Text(NSLocalizedString("_lock_cannot_disable_mdm_", comment: ""))
             })
 
-            Section(content: {
-
-                if model.isLockActive {
+            if model.isLockActive {
+                Section(content: {
                     Group {
                         // Change passcode
-                        if !model.enableTouchID {
-                            Button(action: {
-                                showChangePasscode.toggle()
-                            }, label: {
-                                VStack {
-                                    Text(NSLocalizedString("_change_lock_passcode_", comment: ""))
-                                        .tint(Color(NCBrandColor.shared.textColor))
-                                }
-                                .font(.system(size: 16))
-                            })
-                            .transition(.scale)
-                        }
+                        Button(action: {
+                            showChangePasscode.toggle()
+                        }, label: {
+                            VStack {
+                                Text(NSLocalizedString("_change_lock_passcode_", comment: ""))
+                                    .tint(Color(NCBrandColor.shared.textColor))
+                            }
+                            .font(.system(size: 16))
+                        })
                         /// Enable Touch ID
                         Toggle(NSLocalizedString("_enable_touch_face_id_", comment: ""), isOn: $model.enableTouchID)
                             .onChange(of: model.enableTouchID) { _ in
@@ -121,17 +116,15 @@ struct NCSettingsView: View {
                             .onChange(of: model.resetWrongAttempts) { _ in
                                 model.updateResetWrongAttemptsSetting()
                             }
+                            .font(.system(size: 16))
                     }
-                    .font(.system(size: 16))
-                    .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                }
-            }, footer: {
-                if model.isLockActive {
+                }, footer: {
                     Text(NSLocalizedString("_lock_protection_no_screen_footer_", comment: "") + "\n" + String(format: NSLocalizedString("_reset_wrong_passcode_desc_", comment: ""), NCBrandOptions.shared.resetAppPasscodeAttempts))
                         .font(.system(size: 12))
                         .lineSpacing(1)
-                }
-            })
+                })
+                .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
+            }
 
             Section {
                 /// Privacy screen
@@ -292,7 +285,6 @@ struct NCSettingsView: View {
                 Text(model.footerApp + model.footerServer + model.footerSlogan)
             })
         }
-        .transition(.scale)
         .sheet(isPresented: $showPasscode) {
             SetupPasscodeView(isLockActive: $model.isLockActive)
         }
