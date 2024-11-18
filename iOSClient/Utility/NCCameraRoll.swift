@@ -209,7 +209,7 @@ class NCCameraRoll: NSObject {
                         metadata.size = self.utilityFileSystem.getFileSize(filePath: fileNamePath)
                         return callCompletionWithError(false)
                     } catch { return callCompletionWithError() }
-                } else if let asset = asset as? AVComposition, asset.tracks.count > 1, let exporter = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetHighestQuality) {
+                } else if let asset = asset as? AVComposition, asset.tracks.count > 1, let exporter = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetPassthrough) {
                     exporter.outputURL = URL(fileURLWithPath: fileNamePath)
                     exporter.outputFileType = AVFileType.mp4
                     exporter.shouldOptimizeForNetworkUse = true
