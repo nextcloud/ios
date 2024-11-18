@@ -408,10 +408,6 @@ extension SceneDelegate: NCPasscodeDelegate {
             controller?.present(popup, animated: true)
         }
     }
-
-    func passcodeReset(_ passcodeViewController: TOPasscodeViewController) {
-        appDelegate?.resetApplication()
-    }
 }
 
 extension SceneDelegate: NCAccountRequestDelegate {
