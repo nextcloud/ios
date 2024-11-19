@@ -363,20 +363,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
         }
     }
-
+    
     private func showPrivacyProtectionWindow() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            guard let windowScene = self.window?.windowScene else {
-                return
-            }
-
-            self.privacyProtectionWindow = UIWindow(windowScene: windowScene)
-            self.privacyProtectionWindow?.rootViewController = UIStoryboard(name: "LaunchScreen", bundle: nil).instantiateInitialViewController()
-            self.privacyProtectionWindow?.windowLevel = .alert + 1
-            self.privacyProtectionWindow?.makeKeyAndVisible()
+        guard let windowScene = self.window?.windowScene else {
+            return
         }
+        
+        self.privacyProtectionWindow = UIWindow(windowScene: windowScene)
+        self.privacyProtectionWindow?.rootViewController = UIStoryboard(name: "LaunchScreen", bundle: nil).instantiateInitialViewController()
+        self.privacyProtectionWindow?.windowLevel = .alert + 1
+        self.privacyProtectionWindow?.makeKeyAndVisible()
     }
-
+    
     private func hidePrivacyProtectionWindow() {
         privacyProtectionWindow?.isHidden = true
         privacyProtectionWindow = nil
