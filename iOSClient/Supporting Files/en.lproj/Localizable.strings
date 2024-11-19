@@ -230,7 +230,7 @@
 "_passcode_counter_fail_" = "Too many failed attempts, please wait before reattempting.";
 "_seconds_"               = "seconds";
 "_change_lock_passcode_"  = "Change passcode";
-"_lock_cannot_disable_mdm_" = "Disabling the lock is not permitted by your configuration profile.";
+"_lock_cannot_disable_mdm_" = "Disabling the passcode lock is not permitted by your configuration profile.";
 /* Background of the file listing view */
 "_use_as_background_"       = "Use it as a background";
 
@@ -305,8 +305,8 @@
 "_passcode_"                    = "Password";
 "_enter_password_"              = "Enter password …";
 "_lock_"                        = "Lock";
-"_lock_active_"                 = "Lock: On";
-"_lock_not_active_"             = "Lock: Off";
+"_lock_active_"                 = "Passcode Lock: On";
+"_lock_not_active_"             = "Passcode Lock: Off";
 "_lock_protection_no_screen_"        = "Do not ask at startup";
 "_lock_protection_no_screen_footer_" = "Use \"Do not ask at startup\" for the encryption option.";
 "_enable_touch_face_id_"        = "Enable Touch/Face ID";
