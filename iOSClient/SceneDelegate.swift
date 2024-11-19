@@ -65,9 +65,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 window?.makeKeyAndVisible()
                 /// Set the ACCOUNT
                 controller.account = activeTableAccount.account
-
-//                let vc = UIHostingController(rootView: PasscodeView(isLockActive: .constant(true)))
-//                controller.present(vc, animated: true)
             }
         } else {
             NCKeychain().removeAll()
