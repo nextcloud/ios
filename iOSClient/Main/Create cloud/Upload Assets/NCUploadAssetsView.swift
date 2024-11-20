@@ -79,7 +79,7 @@ struct NCUploadAssetsView: View {
                                                 Label(NSLocalizedString("_enable_livephoto_", comment: ""), systemImage: "livephoto")
                                             }
                                         }
-                                        if item.data == nil && (item.uti == "public.heic" || item.uti == "public.heif") {
+                                        if item.data == nil && (item.uti == UTType.heic.identifier || item.uti == UTType.heif.identifier) {
                                             if model.previewStore[index].nativeFormat {
                                                 Button(action: {
                                                     model.previewStore[index].nativeFormat = false
