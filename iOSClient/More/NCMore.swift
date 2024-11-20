@@ -311,10 +311,12 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
         if section.type == .moreApps {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: NCMoreAppSuggestionsCell.reuseIdentifier, for: indexPath) as? NCMoreAppSuggestionsCell else { return UITableViewCell() }
-            cell.controller = self.controller
+            cell.setupCell(account: session.account)
             return cell
         } else {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: CCCellMore.reuseIdentifier, for: indexPath) as? CCCellMore else { return UITableViewCell() }
+
+            cell.setupCell(account: session.account)
 
             let item = sections[indexPath.section].items[indexPath.row]
 

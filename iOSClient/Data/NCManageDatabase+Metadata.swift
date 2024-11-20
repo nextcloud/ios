@@ -165,23 +165,15 @@ extension tableMetadata {
         return true
     }
 
-    var isPrintable: Bool {
-        if isDocumentViewableOnly {
-            return false
-        }
-        if ["application/pdf", "com.adobe.pdf"].contains(contentType) || contentType.hasPrefix("text/") || classFile == NKCommon.TypeClassFile.image.rawValue {
-            return true
-        }
-        return false
-    }
-
     var isSavebleInCameraRoll: Bool {
         return (classFile == NKCommon.TypeClassFile.image.rawValue && contentType != "image/svg+xml") || classFile == NKCommon.TypeClassFile.video.rawValue
     }
 
+    /*
     var isDocumentViewableOnly: Bool {
         sharePermissionsCollaborationServices == NCPermissions().permissionReadShare && classFile == NKCommon.TypeClassFile.document.rawValue
     }
+    */
 
     var isAudioOrVideo: Bool {
         return classFile == NKCommon.TypeClassFile.audio.rawValue || classFile == NKCommon.TypeClassFile.video.rawValue
@@ -208,15 +200,15 @@ extension tableMetadata {
     }
 
     var isCopyableInPasteboard: Bool {
-        !isDocumentViewableOnly && !directory
+        !directory
     }
 
     var isCopyableMovable: Bool {
-        !isDocumentViewableOnly && !isDirectoryE2EE && !e2eEncrypted
+        !isDirectoryE2EE && !e2eEncrypted
     }
 
     var isModifiableWithQuickLook: Bool {
-        if directory || isDocumentViewableOnly || isDirectoryE2EE {
+        if directory || isDirectoryE2EE {
             return false
         }
         return isPDF || isImage
@@ -234,7 +226,7 @@ extension tableMetadata {
     }
 
     var canShare: Bool {
-        return session.isEmpty && !isDocumentViewableOnly && !directory && !NCBrandOptions.shared.disable_openin_file
+        return session.isEmpty && !directory && !NCBrandOptions.shared.disable_openin_file
     }
 
     var canSetDirectoryAsE2EE: Bool {
@@ -568,40 +560,27 @@ extension NCManageDatabase {
 
     // MARK: - Set
 
-    func createMetadata(_ metadata: tableMetadata) -> tableMetadata? {
+    @discardableResult
+    func addMetadata(_ metadata: tableMetadata) -> tableMetadata {
         do {
             let realm = try Realm()
-            var managedMetadata: tableMetadata?
             try realm.write {
-                managedMetadata = realm.create(tableMetadata.self, value: metadata, update: .all)
-            }
-            if let managedMetadata {
-                return tableMetadata(value: managedMetadata)
+                return tableMetadata(value: realm.create(tableMetadata.self, value: metadata, update: .all))
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
 
-        return nil
-    }
-
-    func addMetadata(_ metadata: tableMetadata) {
-        let metadata = tableMetadata(value: metadata)
-        do {
-            let realm = try Realm()
-            try realm.write {
-                realm.add(metadata, update: .all)
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
-        }
+        return tableMetadata(value: metadata)
     }
 
     func addMetadatas(_ metadatas: [tableMetadata]) {
         do {
             let realm = try Realm()
             try realm.write {
-                realm.add(metadatas, update: .all)
+                for metadata in metadatas {
+                    realm.create(tableMetadata.self, value: metadata, update: .all)
+                }
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
@@ -801,13 +780,7 @@ extension NCManageDatabase {
                 for result in results {
                     result.favorite = false
                 }
-                for metadata in metadatas {
-                    if let result = realm.objects(tableMetadata.self).filter("account == %@ AND ocId == %@", account, metadata.ocId).first {
-                        result.favorite = true
-                    } else {
-                        realm.add(metadata, update: .modified)
-                    }
-                }
+                realm.add(metadatas, update: .all)
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
@@ -1073,18 +1046,19 @@ extension NCManageDatabase {
 
             if layout.sort == "fileName" {
                 let sortedResults = results.sorted {
+                    let ordered = layout.ascending ? ComparisonResult.orderedAscending : ComparisonResult.orderedDescending
                     // 1. favorite order
                     if $0.favorite == $1.favorite {
                         // 2. directory order TOP
                         if layout.directoryOnTop {
                             if $0.directory == $1.directory {
                                 // 3. natural fileName
-                                return $0.fileNameView.localizedStandardCompare($1.fileNameView) == .orderedAscending
+                                return $0.fileNameView.localizedStandardCompare($1.fileNameView) == ordered
                             } else {
                                 return $0.directory && !$1.directory
                             }
                         } else {
-                            return $0.fileNameView.localizedStandardCompare($1.fileNameView) == .orderedAscending
+                            return $0.fileNameView.localizedStandardCompare($1.fileNameView) == ordered
                         }
                     } else {
                         return $0.favorite && !$1.favorite

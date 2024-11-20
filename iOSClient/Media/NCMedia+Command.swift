@@ -38,7 +38,6 @@ extension NCMedia {
 
     func setSelectcancelButton() {
         fileSelect.removeAll()
-        fileDeleted.removeAll()
         tabBarSelect.selectCount = fileSelect.count
 
         if let visibleCells = self.collectionView?.indexPathsForVisibleItems.compactMap({ self.collectionView?.cellForItem(at: $0) }) {

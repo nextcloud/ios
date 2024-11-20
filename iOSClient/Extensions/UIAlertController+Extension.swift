@@ -63,6 +63,13 @@ extension UIAlertController {
                 }
                 #endif
             } else {
+                #if EXTENSION
+                NCNetworking.shared.createFolder(fileName: fileNameFolder, serverUrl: serverUrl, overwrite: false, withPush: true, sceneIdentifier: sceneIdentifier, session: session) { error in
+                    if let completion {
+                        DispatchQueue.main.async { completion(error) }
+                    }
+                }
+                #else
                 let metadataForCreateFolder = NCManageDatabase.shared.createMetadata(fileName: fileNameFolder,
                                                                                      fileNameView: fileNameFolder,
                                                                                      ocId: NSUUID().uuidString,
@@ -76,6 +83,7 @@ extension UIAlertController {
                 metadataForCreateFolder.sessionDate = Date()
                 NCManageDatabase.shared.addMetadata(metadataForCreateFolder)
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": metadataForCreateFolder.ocId, "serverUrl": metadataForCreateFolder.serverUrl, "account": metadataForCreateFolder.account, "withPush": true, "sceneIdentifier": sceneIdentifier as Any])
+                #endif
             }
         })
 
@@ -94,8 +102,6 @@ extension UIAlertController {
             queue: .main) { _ in
                 guard let text = alertController.textFields?.first?.text else { return }
                 let folderName = text.trimmingCharacters(in: .whitespaces)
-
-                let newExtension = text.fileExtension
                 let isFileHidden = FileNameValidator.shared.isFileHidden(text)
                 let textCheck = FileNameValidator.shared.checkFileName(folderName, account: session.account)
 

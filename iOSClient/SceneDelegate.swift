@@ -71,7 +71,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 UserDefaults.standard.removePersistentDomain(forName: bundleID)
             }
             if NCBrandOptions.shared.disable_intro {
-                appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
+                appDelegate.openLogin(selector: NCGlobal.shared.introLogin, window: window)
             } else {
                 if let viewController = UIStoryboard(name: "NCIntro", bundle: nil).instantiateInitialViewController() as? NCIntroViewController {
                     let navigationController = NCLoginNavigationController(rootViewController: viewController)
@@ -363,18 +363,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
         }
     }
-
+    
     private func showPrivacyProtectionWindow() {
         guard let windowScene = self.window?.windowScene else {
             return
         }
-
-        privacyProtectionWindow = UIWindow(windowScene: windowScene)
-        privacyProtectionWindow?.rootViewController = UIStoryboard(name: "LaunchScreen", bundle: nil).instantiateInitialViewController()
-        privacyProtectionWindow?.windowLevel = .alert + 1
-        privacyProtectionWindow?.makeKeyAndVisible()
+        
+        self.privacyProtectionWindow = UIWindow(windowScene: windowScene)
+        self.privacyProtectionWindow?.rootViewController = UIStoryboard(name: "LaunchScreen", bundle: nil).instantiateInitialViewController()
+        self.privacyProtectionWindow?.windowLevel = .alert + 1
+        self.privacyProtectionWindow?.makeKeyAndVisible()
     }
-
+    
     private func hidePrivacyProtectionWindow() {
         privacyProtectionWindow?.isHidden = true
         privacyProtectionWindow = nil
