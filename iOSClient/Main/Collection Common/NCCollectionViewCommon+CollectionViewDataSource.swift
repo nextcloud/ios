@@ -178,7 +178,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         cell.fileAvatarImageView?.contentMode = .center
         cell.filePreviewImageView?.layer.borderWidth = 0
 
-        if existsImagePreview {
+        if existsImagePreview && layoutForView?.layout != global.layoutPhotoRatio {
             cell.filePreviewImageView?.contentMode = .scaleAspectFill
         } else {
             cell.filePreviewImageView?.contentMode = .scaleAspectFit
