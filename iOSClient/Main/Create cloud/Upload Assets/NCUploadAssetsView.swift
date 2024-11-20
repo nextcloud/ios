@@ -8,6 +8,7 @@
 
 import SwiftUI
 import NextcloudKit
+import UniformTypeIdentifiers
 
 struct NCUploadAssetsView: View {
     @ObservedObject var model: NCUploadAssetsModel
@@ -77,6 +78,21 @@ struct NCUploadAssetsView: View {
                                                 model.previewStore[index].assetType = .livePhoto
                                             }) {
                                                 Label(NSLocalizedString("_enable_livephoto_", comment: ""), systemImage: "livephoto")
+                                            }
+                                        }
+                                        if item.data == nil && (item.uti == UTType.heic.identifier || item.uti == UTType.heif.identifier) {
+                                            if model.previewStore[index].nativeFormat {
+                                                Button(action: {
+                                                    model.previewStore[index].nativeFormat = false
+                                                }) {
+                                                    Label(NSLocalizedString("_Upload_native_format_yes_", comment: ""), systemImage: "eye")
+                                                }
+                                            } else {
+                                                Button(action: {
+                                                    model.previewStore[index].nativeFormat = true
+                                                }) {
+                                                    Label(NSLocalizedString("_Upload_native_format_no_", comment: ""), systemImage: "eye.slash")
+                                                }
                                             }
                                         }
                                         Button(role: .destructive, action: {

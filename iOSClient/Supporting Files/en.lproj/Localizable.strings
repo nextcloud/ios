@@ -1045,6 +1045,8 @@
 "_account_unauthorized_"    = "Warning, %@, you are not authorized, your account has been deleted, if you have changed your password, re-authenticate.";
 "_folder_offline_desc_"     = "Even without an internet connection, you can organize your folders, create files. Once you're back online, your pending actions will automatically sync.";
 "_offline_not_allowed_"     = "This operation is not allowed in offline mode";
+"_Upload_native_format_yes_"= "Upload in native format: yes";
+"_Upload_native_format_no_" = "Upload in native format: no";
 
 // Tip
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails.";

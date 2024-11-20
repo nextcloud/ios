@@ -72,7 +72,7 @@ class NCUploadScanDocument: ObservableObject {
         metadata.status = NCGlobal.shared.metadataStatusWaitUpload
         metadata.sessionDate = Date()
 
-        if self.database.getMetadataConflict(account: session.account, serverUrl: serverUrl, fileNameView: fileName) != nil {
+        if self.database.getMetadataConflict(account: session.account, serverUrl: serverUrl, fileNameView: fileName, nativeFormat: metadata.nativeFormat) != nil {
             completion(true, false)
         } else {
             createPDF(metadata: metadata) { error in

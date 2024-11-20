@@ -140,6 +140,7 @@ class tableMetadata: Object {
     @objc dynamic var height: Int = 0
     @objc dynamic var width: Int = 0
     @objc dynamic var errorCode: Int = 0
+    @objc dynamic var nativeFormat: Bool = false
 
     override static func primaryKey() -> String {
         return "ocId"
@@ -531,6 +532,7 @@ extension NCManageDatabase {
         metadata.user = session.user
         metadata.userId = session.userId
         metadata.sceneIdentifier = sceneIdentifier
+        metadata.nativeFormat = !NCKeychain().formatCompatibility
 
         if !metadata.urlBase.isEmpty, metadata.serverUrl.hasPrefix(metadata.urlBase) {
             metadata.path = String(metadata.serverUrl.dropFirst(metadata.urlBase.count)) + "/"
@@ -1022,12 +1024,12 @@ extension NCManageDatabase {
         return nil
     }
 
-    func getMetadataConflict(account: String, serverUrl: String, fileNameView: String) -> tableMetadata? {
+    func getMetadataConflict(account: String, serverUrl: String, fileNameView: String, nativeFormat: Bool) -> tableMetadata? {
         let fileNameExtension = (fileNameView as NSString).pathExtension.lowercased()
         let fileNameNoExtension = (fileNameView as NSString).deletingPathExtension
         var fileNameConflict = fileNameView
 
-        if fileNameExtension == "heic", NCKeychain().formatCompatibility {
+        if fileNameExtension == "heic", !nativeFormat {
             fileNameConflict = fileNameNoExtension + ".jpg"
         }
         return getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@",

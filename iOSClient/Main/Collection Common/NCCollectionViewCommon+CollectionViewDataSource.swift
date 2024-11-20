@@ -91,7 +91,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                         cell.filePreviewImageView?.image = image
                         cell.filePreviewImageView?.contentMode = .scaleAspectFill
                     }
-                } else if !metadata.hasPreview {
+                } else {
                     DispatchQueue.main.async {
                         cell.filePreviewImageView?.contentMode = .scaleAspectFit
                         if metadata.iconName.isEmpty {
@@ -119,7 +119,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             cell.selected(false, isEditMode: isEditMode)
         }
 
-        if width > 100 && cell.filePreviewImageView?.image != nil {
+        if width > 100 {
             cell.hideButtonMore(false)
             cell.hideImageStatus(false)
         }
@@ -178,7 +178,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         cell.fileAvatarImageView?.contentMode = .center
         cell.filePreviewImageView?.layer.borderWidth = 0
 
-        if existsImagePreview {
+        if existsImagePreview && layoutForView?.layout != global.layoutPhotoRatio {
             cell.filePreviewImageView?.contentMode = .scaleAspectFill
         } else {
             cell.filePreviewImageView?.contentMode = .scaleAspectFit

@@ -267,6 +267,7 @@ class NCCollectionViewDataSource: NSObject {
 
         DispatchQueue.global().async {
             for metadata in metadatas {
+                let metadata = tableMetadata(value: metadata)
                 let indexPath = IndexPath(row: counter, section: 0)
                 if indexPath.row < dataSourceMetadatas.count {
                     if !metadata.isEqual(dataSourceMetadatas[indexPath.row]) {
