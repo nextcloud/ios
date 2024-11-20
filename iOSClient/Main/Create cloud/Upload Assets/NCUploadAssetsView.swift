@@ -8,6 +8,7 @@
 
 import SwiftUI
 import NextcloudKit
+import UniformTypeIdentifiers
 
 struct NCUploadAssetsView: View {
     @ObservedObject var model: NCUploadAssetsModel
