@@ -35,7 +35,7 @@ struct PreviewStore {
     var asset: TLPHAsset
     var assetType: TLPHAsset.AssetType
     var uti: String?
-    var disableFormatCompatibility: Bool
+    var nativeFormat: Bool
     var data: Data?
     var fileName: String
     var image: UIImage
@@ -81,7 +81,7 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
                       let localIdentifier = asset.phAsset?.localIdentifier else { continue }
 
                 DispatchQueue.main.async {
-                    self.previewStore.append(PreviewStore(id: localIdentifier, asset: asset, assetType: asset.type, uti: uti, disableFormatCompatibility: false, fileName: "", image: image))
+                    self.previewStore.append(PreviewStore(id: localIdentifier, asset: asset, assetType: asset.type, uti: uti, nativeFormat: !NCKeychain().formatCompatibility, fileName: "", image: image))
                 }
             }
             DispatchQueue.main.async {
@@ -242,6 +242,7 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
             metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
             metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
             metadataForUpload.sessionDate = Date()
+            metadataForUpload.nativeFormat = previewStore.nativeFormat
 
             if let previewStore = self.previewStore.first(where: { $0.id == asset.localIdentifier }), let data = previewStore.data {
                 if metadataForUpload.contentType == "image/heic" {

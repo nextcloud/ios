@@ -25,7 +25,6 @@ struct NCUploadAssetsView: View {
     let gridItems: [GridItem] = [GridItem()]
     let fileNamePath = NSTemporaryDirectory() + "Photo.jpg"
     let utilityFileSystem = NCUtilityFileSystem()
-    let formatCompatibility = NCKeychain().formatCompatibility
 
     @Environment(\.presentationMode) var presentationMode
 
@@ -80,16 +79,16 @@ struct NCUploadAssetsView: View {
                                                 Label(NSLocalizedString("_enable_livephoto_", comment: ""), systemImage: "livephoto")
                                             }
                                         }
-                                        if item.data == nil && formatCompatibility && (item.uti == "public.heic" || item.uti == "public.heif") {
-                                            if model.previewStore[index].disableFormatCompatibility {
+                                        if item.data == nil && (item.uti == "public.heic" || item.uti == "public.heif") {
+                                            if model.previewStore[index].nativeFormat {
                                                 Button(action: {
-                                                    model.previewStore[index].disableFormatCompatibility = false
+                                                    model.previewStore[index].nativeFormat = false
                                                 }) {
                                                     Label(NSLocalizedString("_Upload_native_format_yes_", comment: ""), systemImage: "eye")
                                                 }
                                             } else {
                                                 Button(action: {
-                                                    model.previewStore[index].disableFormatCompatibility = true
+                                                    model.previewStore[index].nativeFormat = true
                                                 }) {
                                                     Label(NSLocalizedString("_Upload_native_format_no_", comment: ""), systemImage: "eye.slash")
                                                 }
