@@ -250,6 +250,7 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
                     metadataForUpload.contentType = "image/jpeg"
                     metadataForUpload.fileName = fileNameNoExtension + ".jpg"
                     metadataForUpload.fileNameView = fileNameNoExtension + ".jpg"
+                    metadataForUpload.nativeFormat = false
                 }
                 let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadataForUpload.ocId, fileNameView: metadataForUpload.fileNameView)
                 do {
