@@ -249,7 +249,7 @@ class NCCreateFormUploadConflict: UIViewController {
                 var fileName = metadata.fileNameView
                 let fileNameExtension = (fileName as NSString).pathExtension.lowercased()
                 let fileNameNoExtension = (fileName as NSString).deletingPathExtension
-                if fileNameExtension == "heic" && NCKeychain().formatCompatibility {
+                if fileNameExtension == "heic" && !metadata.nativeFormat {
                     fileName = fileNameNoExtension + ".jpg"
                 }
                 let oldPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
