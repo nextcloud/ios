@@ -1024,12 +1024,12 @@ extension NCManageDatabase {
         return nil
     }
 
-    func getMetadataConflict(account: String, serverUrl: String, fileNameView: String) -> tableMetadata? {
+    func getMetadataConflict(account: String, serverUrl: String, fileNameView: String, nativeFormat: Bool) -> tableMetadata? {
         let fileNameExtension = (fileNameView as NSString).pathExtension.lowercased()
         let fileNameNoExtension = (fileNameView as NSString).deletingPathExtension
         var fileNameConflict = fileNameView
 
-        if fileNameExtension == "heic", NCKeychain().formatCompatibility {
+        if fileNameExtension == "heic", !nativeFormat {
             fileNameConflict = fileNameNoExtension + ".jpg"
         }
         return getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@",

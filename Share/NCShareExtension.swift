@@ -338,7 +338,7 @@ extension NCShareExtension {
             metadataForUpload.size = utilityFileSystem.getFileSize(filePath: toPath)
             metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
             metadataForUpload.sessionDate = Date()
-            if self.database.getMetadataConflict(account: session.account, serverUrl: serverUrl, fileNameView: fileName) != nil {
+            if self.database.getMetadataConflict(account: session.account, serverUrl: serverUrl, fileNameView: fileName, nativeFormat: metadataForUpload.nativeFormat) != nil {
                 conflicts.append(metadataForUpload)
             } else {
                 uploadMetadata.append(metadataForUpload)

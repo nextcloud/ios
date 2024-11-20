@@ -261,7 +261,7 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
                 } catch {  }
             }
 
-            if let result = database.getMetadataConflict(account: session.account, serverUrl: serverUrl, fileNameView: fileName) {
+            if let result = database.getMetadataConflict(account: session.account, serverUrl: serverUrl, fileNameView: fileName, nativeFormat: metadataForUpload.nativeFormat) {
                 metadataForUpload.fileName = result.fileName
                 metadatasUploadInConflict.append(metadataForUpload)
             } else {
