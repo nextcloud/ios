@@ -45,6 +45,7 @@
                                             <constraint firstAttribute="height" constant="48" id="3yh-bo-Bzr"/>
                                             <constraint firstAttribute="width" relation="lessThanOrEqual" constant="256" id="W6Y-SA-nDg"/>
                                         </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                         <color key="tintColor" name="Button/Primary/Text/Normal"/>
                                         <state key="normal">
                                             <color key="titleColor" name="Button/Primary/Background/Normal"/>
@@ -61,6 +62,22 @@
                                         </variation>
                                         <connections>
                                             <action selector="actionButtonLogin:" destination="yj9-jo-WIn" eventType="touchUpInside" id="vFP-SJ-rFq"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1jK-Ok-o52" userLabel="QRCode" customClass="SecondaryButton" customModule="Nextcloud" customModuleProvider="target">
+                                        <rect key="frame" x="277" y="819.5" width="256" height="48"/>
+                                        <color key="backgroundColor" name="Button/Primary/Background/Normal"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="48" id="X9p-86-T8V"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                        <color key="tintColor" name="Button/Primary/Text/Normal"/>
+                                        <inset key="titleEdgeInsets" minX="10" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                        <state key="normal" image="qrcode">
+                                            <color key="titleColor" name="Button/Primary/Text/Normal"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="actionButtonQRCode:" destination="yj9-jo-WIn" eventType="touchUpInside" id="zXh-oK-kRk"/>
                                         </connections>
                                     </button>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="5fY-iq-Tv0" userLabel="lblDescription">
@@ -89,7 +106,10 @@
                                     <constraint firstItem="048-Uj-QCi" firstAttribute="centerY" secondItem="hwa-hT-QjM" secondAttribute="centerY" id="OM7-bz-e1C"/>
                                     <constraint firstAttribute="trailing" secondItem="5fY-iq-Tv0" secondAttribute="trailing" constant="10" id="cEP-rs-Tcj"/>
                                     <constraint firstItem="O7g-q0-SHY" firstAttribute="width" secondItem="hwa-hT-QjM" secondAttribute="width" multiplier="0.45" id="eA8-lj-CFb"/>
+                                    <constraint firstItem="HQd-pF-3cE" firstAttribute="top" secondItem="1jK-Ok-o52" secondAttribute="bottom" constant="16" id="i89-h5-ATm"/>
                                     <constraint firstItem="5fY-iq-Tv0" firstAttribute="leading" secondItem="hwa-hT-QjM" secondAttribute="leading" constant="10" id="j1g-YM-IiX"/>
+                                    <constraint firstItem="HQd-pF-3cE" firstAttribute="trailing" secondItem="1jK-Ok-o52" secondAttribute="trailing" id="ly2-Lx-i1X"/>
+                                    <constraint firstItem="HQd-pF-3cE" firstAttribute="leading" secondItem="1jK-Ok-o52" secondAttribute="leading" id="pMG-ea-ynQ"/>
                                     <constraint firstItem="ySx-9E-GUK" firstAttribute="leading" secondItem="hwa-hT-QjM" secondAttribute="leadingMargin" constant="10" id="udj-JU-CJE"/>
                                 </constraints>
                             </view>
@@ -111,6 +131,7 @@
                         <outlet property="lblWelcome" destination="ySx-9E-GUK" id="K4B-id-MwV"/>
                         <outlet property="loginButton" destination="HQd-pF-3cE" id="XOc-dS-QZ8"/>
                         <outlet property="loginContentView" destination="hwa-hT-QjM" id="PdD-gp-Lmt"/>
+                        <outlet property="qrCode" destination="1jK-Ok-o52" id="Kak-Dh-Kni"/>
                         <outlet property="spinner" destination="048-Uj-QCi" id="nLi-TF-b3q"/>
                     </connections>
                 </viewController>
@@ -136,7 +157,8 @@
     </scenes>
     <resources>
         <image name="gradientBackground" width="768" height="1024"/>
-        <image name="logo" width="500" height="69"/>
+        <image name="logo" width="204" height="25"/>
+        <image name="qrcode" width="14" height="14"/>
         <namedColor name="Button/Primary/Background/Normal">
             <color red="0.043137254901960784" green="0.16470588235294117" blue="0.38823529411764707" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>

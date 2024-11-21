@@ -29,7 +29,8 @@ import SwiftUI
 
 class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 	
-    @IBOutlet weak var loginButton: UIButton!
+    @IBOutlet weak var loginButton: PrimaryButton!
+    @IBOutlet weak var qrCode: SecondaryButton!
 	@IBOutlet weak var lblWelcome: UILabel!
 	@IBOutlet weak var lblDescription: UILabel!
 	@IBOutlet weak var loginContentView: UIView!
@@ -63,10 +64,14 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.overrideUserInterfaceStyle = .dark
 		
 		// Login Button
 		loginButton.setTitle(NSLocalizedString("_login_", comment: ""), for: .normal)
-        loginButton.overrideUserInterfaceStyle = .dark
+        
+        // qrcode
+        qrCode.setTitle(NSLocalizedString("_login_with_qrcode_", tableName: nil, bundle: Bundle.main, value:  "Scan QR code", comment: ""), for: .normal)
 		
 		// Labels
 		lblWelcome.text = NSLocalizedString("_login_welcome_", tableName: nil, bundle: Bundle.main, value: "Welcome to the cloud storage", comment: "")
@@ -182,6 +187,11 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         NCNetworking.shared.p12Data = nil
         NCNetworking.shared.p12Password = nil
         login()
+    }
+    
+    @IBAction func actionButtonQRCode(_ sender: Any) {
+        let qrCode = NCLoginQRCode(delegate: self)
+        qrCode.scan()
     }
 
     // MARK: - Share accounts View Controller

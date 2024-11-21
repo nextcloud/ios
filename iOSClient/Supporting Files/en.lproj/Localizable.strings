@@ -44,6 +44,7 @@
 "_removing_sharing_"        = "Removing share";
 "_add_"                     = "Add";
 "_login_"                   = "Log in";
+"_login_with_qrcode_"       = "Scan QR code";
 "_save_"                    = "Save";
 "_warning_"                 = "Warning";
 "_error_"                   = "Error";
