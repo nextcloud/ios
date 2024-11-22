@@ -677,6 +677,9 @@
 "_share_file_drop_"             = "File drop (upload only)";
 "_share_secure_file_drop_"      = "Secure file drop (upload only)";
 "_share_hide_download_"         = "Hide download";
+"_share_limit_download_"        = "Limit downloads";
+"_remaining_share_downloads_"   = "%d remaining downloads allowed";
+"_remaining_"                   = "%d remaining";
 "_share_password_protect_"      = "Password protect";
 "_share_expiration_date_"       = "Set expiration date";
 "_share_note_recipient_"        = "Note to recipient";
