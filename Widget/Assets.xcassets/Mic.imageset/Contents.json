@@ -1,6 +1,7 @@
 {
-  "colors" : [
+  "images" : [
     {
+      "filename" : "Mic.svg",
       "idiom" : "universal"
     }
   ],

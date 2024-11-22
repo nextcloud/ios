@@ -40,17 +40,16 @@ struct ToolbarWidgetView: View {
         GeometryReader { geo in
 
             ZStack(alignment: .topLeading) {
-
+				
                 HStack(spacing: 0) {
-
-                    let sizeButton: CGFloat = 65
+					
+					let sizeButton: CGFloat = 60
 
                     Link(destination: entry.isPlaceholder ? linkNoAction : linkActionUploadAsset, label: {
-                        Image("addImage")
+						Image(uiImage: UIImage(resource: .media))
                             .resizable()
                             .renderingMode(.template)
                             .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandText))
-                            .padding()
                             .background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandElement))
                             .clipShape(Circle())
                             .scaledToFit()
@@ -58,35 +57,32 @@ struct ToolbarWidgetView: View {
                     })
 
                     Link(destination: entry.isPlaceholder ? linkNoAction : linkActionScanDocument, label: {
-                        Image(systemName: "doc.text.viewfinder")
+						Image(uiImage: UIImage(resource: .scan))
                             .resizable()
                             .renderingMode(.template)
                             .font(Font.system(.body).weight(.light))
                             .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandText))
-                            .padding()
                             .background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandElement))
                             .clipShape(Circle())
                             .scaledToFit()
                             .frame(width: geo.size.width / 4, height: sizeButton)
                     })
+					
+					Link(destination: entry.isPlaceholder ? linkNoAction : linkActionVoiceMemo, label: {
+						Image(uiImage: UIImage(resource: .mic))
+							.resizable()
+							.foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandText))
+							.background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandElement))
+							.clipShape(Circle())
+							.scaledToFit()
+							.frame(width: geo.size.width / 4, height: sizeButton)
+					})
 
                     Link(destination: entry.isPlaceholder ? linkNoAction : linkActionTextDocument, label: {
-                        Image("note.text")
+						Image(uiImage: UIImage(resource: .note))
                             .resizable()
                             .renderingMode(.template)
                             .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandText))
-                            .padding()
-                            .background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandElement))
-                            .clipShape(Circle())
-                            .scaledToFit()
-                            .frame(width: geo.size.width / 4, height: sizeButton)
-                    })
-
-                    Link(destination: entry.isPlaceholder ? linkNoAction : linkActionVoiceMemo, label: {
-                        Image("microphone")
-                            .resizable()
-                            .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandText))
-                            .padding()
                             .background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandElement))
                             .clipShape(Circle())
                             .scaledToFit()
@@ -94,6 +90,7 @@ struct ToolbarWidgetView: View {
                     })
                 }
                 .frame(width: geo.size.width, height: geo.size.height, alignment: .center)
+				.padding(.vertical, geo.size.height / 2 * -0.25)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
 
                 HStack {
@@ -101,18 +98,20 @@ struct ToolbarWidgetView: View {
                         .resizable()
                         .font(Font.system(.body).weight(.light))
                         .scaledToFit()
-                        .frame(width: 15, height: 15)
-                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandElement))
+                        .frame(width: WidgetConstants.bottomImageWidthHeight,
+							   height: WidgetConstants.bottomImageWidthHeight)
+                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .title)))
 
                     Text(entry.footerText)
-                        .font(.caption2)
-                        .padding(.trailing, 13.0)
-                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandElement))
+						.font(WidgetConstants.bottomTextFont)
+                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .title)))
                 }
+				.padding(.horizontal, 15.0)
+				.padding(.bottom, 10.0)
                 .frame(maxWidth: geo.size.width - 5, maxHeight: geo.size.height - 2, alignment: .bottomTrailing)
             }
         }
-        .widgetBackground(Color.black.opacity(0.9))
+		.widgetBackground(Color(UIColor(resource: .background)))
     }
 }
 

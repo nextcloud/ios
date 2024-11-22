@@ -49,22 +49,10 @@ struct DashboardWidgetView: View {
             }
 
             ZStack(alignment: .topLeading) {
-                HStack {
-                    Image(uiImage: entry.titleImage)
-                        .renderingMode(.template)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 20, height: 20)
-
-                    Text(entry.title)
-                        .font(.system(size: 15))
-                        .fontWeight(.bold)
-                        .multilineTextAlignment(.center)
-                        .textCase(.uppercase)
-                        .lineLimit(1)
-                }
-                .frame(width: geo.size.width - 20)
-                .padding([.top, .leading, .trailing], 10)
+				Text(entry.title.firstUppercased)
+					.font(WidgetConstants.titleTextFont)
+					.lineLimit(1)
+					.padding([.leading], 13)
 
                 if !entry.isEmpty {
 
@@ -144,7 +132,7 @@ struct DashboardWidgetView: View {
                                 }
                                 if element != entry.datas.last {
                                     Divider()
-                                        .padding(.leading, 54)
+										.overlay(Color(UIColor(resource: .divider)))
                                 }
                             }
                         }
@@ -181,20 +169,22 @@ struct DashboardWidgetView: View {
                     Image(systemName: entry.footerImage)
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 15, height: 15)
+						.frame(width: WidgetConstants.bottomImageWidthHeight,
+							   height: WidgetConstants.bottomImageWidthHeight)
                         .font(Font.system(.body).weight(.light))
-                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandElement))
+                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .title)))
 
                     Text(entry.footerText)
-                        .font(.caption2)
+						.font(WidgetConstants.bottomTextFont)
                         .lineLimit(1)
-                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandElement))
+						.foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .title)))
                 }
                 .padding(.horizontal, 15.0)
+				.padding(.bottom, 10.0)
                 .frame(maxWidth: geo.size.width, maxHeight: geo.size.height - 2, alignment: .bottomTrailing)
             }
         }
-        .widgetBackground(Color(UIColor.systemBackground))
+		.widgetBackground(Color(UIColor(resource: .background)))
     }
 }
 
