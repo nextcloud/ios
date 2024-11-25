@@ -81,7 +81,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                                                                                 session: NCNetworking.shared.sessionDownload,
                                                                                 selector: global.selectorLoadFileView,
                                                                                 sceneIdentifier: self.controller?.sceneIdentifier) {
-                let hud = NCHud(self.view)
+                let hud = NCHud(self.tabBarController?.view)
                 var downloadRequest: DownloadRequest?
 
                 hud.initHudRing(text: NSLocalizedString("_downloading_", comment: ""), tapToCancelDetailText: true) {
@@ -97,7 +97,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                     hud.progress(progress.fractionCompleted)
                 } completion: { afError, error in
                     if error == .success || afError?.isExplicitlyCancelledError ?? false {
-                        hud.success()
+                        hud.dismiss()
                     } else {
                         hud.error(text: error.description)
                     }
