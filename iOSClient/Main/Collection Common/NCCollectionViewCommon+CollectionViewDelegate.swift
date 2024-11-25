@@ -77,9 +77,9 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
             } else if NextcloudKit.shared.isNetworkReachable(),
                       let metadata = database.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                               session: NCNetworking.shared.sessionDownload,
-                                                                                               selector: global.selectorLoadFileView,
-                                                                                               sceneIdentifier: self.controller?.sceneIdentifier) {
+                                                                                session: NCNetworking.shared.sessionDownload,
+                                                                                selector: global.selectorLoadFileView,
+                                                                                sceneIdentifier: self.controller?.sceneIdentifier) {
 
                 NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
             } else {
