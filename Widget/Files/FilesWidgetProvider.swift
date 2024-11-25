@@ -34,7 +34,7 @@ struct FilesWidgetProvider: IntentTimelineProvider {
         let filesItems = getFilesItems(displaySize: context.displaySize)
         let datasPlaceholder = Array(filesDatasTest[0...filesItems - 1])
         let title = getTitleFilesWidget(account: nil)
-        return Entry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: "", url: "", title: title, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " files")
+        return Entry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: "", url: "", title: title, footerImage: "Cloud_Checkmark", footerText: NCBrandOptions.shared.brand + " files")
     }
 
     func getSnapshot(for configuration: AccountIntent, in context: Context, completion: @escaping (Entry) -> Void) {

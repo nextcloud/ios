@@ -103,9 +103,13 @@ struct DashboardWidgetView: View {
 										VStack(alignment: .leading, spacing: 2) {
 											Text(element.title)
 												.font(WidgetConstants.elementTileFont)
-											Text(element.subTitle)
-												.font(WidgetConstants.elementSubtitleFont)
-												.foregroundColor(Color(NCBrandColor.shared.iconImageColor2))
+												.foregroundStyle(Color(UIColor(resource: .title)))
+											if element.subTitle.isEmpty {
+												Text(element.subTitle)
+													.font(WidgetConstants.elementSubtitleFont)
+													.foregroundStyle(Color(UIColor(resource: .subtitle)))
+											}
+											
                                         }
                                         Spacer()
                                     }
@@ -165,7 +169,7 @@ struct DashboardWidget_Previews: PreviewProvider {
         let datas = Array(dashboardDatasTest[0...4])
         let title = "Dashboard"
         let titleImage = UIImage(named: "widget")!
-        let entry = DashboardDataEntry(date: Date(), datas: datas, dashboard: nil, buttons: nil, isPlaceholder: false, isEmpty: true, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: "Nextcloud widget")
+        let entry = DashboardDataEntry(date: Date(), datas: datas, dashboard: nil, buttons: nil, isPlaceholder: false, isEmpty: true, titleImage: titleImage, title: title, footerImage: "Cloud_Checkmark", footerText: "Nextcloud widget")
         DashboardWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }

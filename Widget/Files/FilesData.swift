@@ -93,7 +93,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
     var account: tableAccount?
 
     if isPreview {
-        return completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: "", url: "", title: getTitleFilesWidget(account: nil), footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " files"))
+        return completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: "", url: "", title: getTitleFilesWidget(account: nil), footerImage: "Cloud_Checkmark", footerText: NCBrandOptions.shared.brand + " files"))
     }
 
     let accountIdentifier: String = configuration?.accounts?.identifier ?? "active"
@@ -104,7 +104,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
     }
 
     guard let account = account else {
-        return completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: "", url: "", title: getTitleFilesWidget(account: nil), footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
+        return completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: "", url: "", title: getTitleFilesWidget(account: nil), footerImage: "Cloud_Xmark", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
     }
 
     // NETWORKING
@@ -249,9 +249,9 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
             let footerText = "Files " + NSLocalizedString("_of_", comment: "") + " " + account.displayName + alias
 
             if error != .success {
-                completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: account.userId, url: account.urlBase, title: title, footerImage: "xmark.icloud", footerText: error.errorDescription))
+                completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: account.userId, url: account.urlBase, title: title, footerImage: "Cloud_Xmark", footerText: error.errorDescription))
             } else {
-                completion(FilesDataEntry(date: Date(), datas: datas, isPlaceholder: false, isEmpty: datas.isEmpty, userId: account.userId, url: account.urlBase, title: title, footerImage: "checkmark.icloud", footerText: footerText))
+                completion(FilesDataEntry(date: Date(), datas: datas, isPlaceholder: false, isEmpty: datas.isEmpty, userId: account.userId, url: account.urlBase, title: title, footerImage: "Cloud_Checkmark", footerText: footerText))
             }
         }
     }

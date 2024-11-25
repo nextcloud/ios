@@ -85,14 +85,14 @@ fileprivate struct WidgetContentView: View {
 									.foregroundStyle(Color(element.color ?? NCBrandColor.shared.iconImageColor))
 									.scaledToFit()
 									.aspectRatio(1.1, contentMode: .fit)
-									.frame(width: WidgetConstants.iconPreviewWidhHeight,
-										   height: WidgetConstants.iconPreviewWidhHeight)
+									.frame(width: WidgetConstants.iconPreviewWidthHeight,
+										   height: WidgetConstants.iconPreviewWidthHeight)
 							} else {
 								Image(uiImage: element.image)
 									.resizable()
 									.scaledToFill()
-									.frame(width: WidgetConstants.iconPreviewWidhHeight,
-										   height: WidgetConstants.iconPreviewWidhHeight)
+									.frame(width: WidgetConstants.iconPreviewWidthHeight,
+										   height: WidgetConstants.iconPreviewWidthHeight)
 									.clipped()
 							}
 							
@@ -186,7 +186,7 @@ struct LinkActionsToolbarView: View {
 struct FilesWidget_Previews: PreviewProvider {
     static var previews: some View {
         let datas = Array(filesDatasTest[0...4])
-        let entry = FilesDataEntry(date: Date(), datas: datas, isPlaceholder: false, isEmpty: true, userId: "", url: "", title: "Good afternoon, Marino Faggiana", footerImage: "checkmark.icloud", footerText: "Nextcloud files")
+        let entry = FilesDataEntry(date: Date(), datas: datas, isPlaceholder: false, isEmpty: true, userId: "", url: "", title: "Good afternoon, Marino Faggiana", footerImage: "Cloud_Checkmark", footerText: "Nextcloud files")
         FilesWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }

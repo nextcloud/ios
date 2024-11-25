@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "Cloud_Xmark.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

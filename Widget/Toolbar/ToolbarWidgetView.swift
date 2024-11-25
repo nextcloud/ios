@@ -93,22 +93,14 @@ struct ToolbarWidgetView: View {
 				.padding(.vertical, geo.size.height / 2 * -0.25)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
 
-                HStack {
-                    Image(systemName: entry.footerImage)
-                        .resizable()
-                        .font(Font.system(.body).weight(.light))
-                        .scaledToFit()
-                        .frame(width: WidgetConstants.bottomImageWidthHeight,
-							   height: WidgetConstants.bottomImageWidthHeight)
-                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .title)))
-
-                    Text(entry.footerText)
-						.font(WidgetConstants.bottomTextFont)
-                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .title)))
-                }
-				.padding(.horizontal, 15.0)
-				.padding(.bottom, 10.0)
-                .frame(maxWidth: geo.size.width - 5, maxHeight: geo.size.height - 2, alignment: .bottomTrailing)
+				FooterView(imageName: entry.footerImage,
+						   text: entry.footerText,
+						   isPlaceholder: entry.isPlaceholder)
+					.padding(.horizontal, 15.0)
+					.padding(.bottom, 10.0)
+					.frame(maxWidth: geo.size.width - 5, 
+						   maxHeight: geo.size.height - 2,
+						   alignment: .bottomTrailing)
             }
         }
 		.widgetBackground(Color(UIColor(resource: .background)))
@@ -117,7 +109,7 @@ struct ToolbarWidgetView: View {
 
 struct ToolbarWidget_Previews: PreviewProvider {
     static var previews: some View {
-        let entry = ToolbarDataEntry(date: Date(), isPlaceholder: false, userId: "", url: "", footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " toolbar")
+        let entry = ToolbarDataEntry(date: Date(), isPlaceholder: false, userId: "", url: "", footerImage: "Cloud_Checkmark", footerText: NCBrandOptions.shared.brand + " toolbar")
         ToolbarWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemMedium))
     }
 }
