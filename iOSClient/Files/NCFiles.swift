@@ -210,9 +210,9 @@ class NCFiles: NCCollectionViewCommon {
             guard tableDirectory?.etag != metadata.etag || metadata.e2eEncrypted || self.dataSource.isEmpty() else {
                 return completion(nil, false, NKError())
             }
-            /// Check Response DataC hanged
+            /// Check Response DataChanged
             var checkResponseDataChanged = true
-            if tableDirectory?.etag.isEmpty ?? true || isDirectoryE2EE {
+            if tableDirectory?.etag.isEmpty ?? true || isDirectoryE2EE || self.dataSource.isEmpty() {
                 checkResponseDataChanged = false
             }
 
