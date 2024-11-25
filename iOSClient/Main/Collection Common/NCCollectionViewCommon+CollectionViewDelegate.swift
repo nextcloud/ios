@@ -24,6 +24,7 @@
 import Foundation
 import UIKit
 import NextcloudKit
+import Alamofire
 
 extension NCCollectionViewCommon: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -80,8 +81,27 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                                                                                 session: NCNetworking.shared.sessionDownload,
                                                                                 selector: global.selectorLoadFileView,
                                                                                 sceneIdentifier: self.controller?.sceneIdentifier) {
+                let hud = NCHud(self.view)
+                var downloadRequest: DownloadRequest?
 
-                NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
+                hud.initHudRing(text: NSLocalizedString("_downloading_", comment: ""), tapToCancelDetailText: true) {
+                    if let request = downloadRequest {
+                        request.cancel()
+                    }
+                }
+
+                NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
+                } requestHandler: { request in
+                    downloadRequest = request
+                } progressHandler: { progress in
+                    hud.progress(progress.fractionCompleted)
+                } completion: { afError, error in
+                    if error == .success || afError?.isExplicitlyCancelledError ?? false {
+                        hud.success()
+                    } else {
+                        hud.error(text: error.description)
+                    }
+                }
             } else {
                 let error = NKError(errorCode: global.errorOffline, errorDescription: "_go_online_")
 
