@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "data_protection.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

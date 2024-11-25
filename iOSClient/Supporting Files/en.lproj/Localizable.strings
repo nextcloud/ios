@@ -1114,3 +1114,18 @@
 "_previous_" = "Previous";
 "_storage_used_"                 = "Storage used";
 "_used_of_space_"                = "%@ of %@ used";
+
+//MARK: Data Protection Screens
+"_agree_" = "Agree";
+"_privacy_settings_" = "Datenschutz-Einstellungen";
+"_privacy_settings_description_" = "Diese Anwendung verwendet Cookies und ähnliche Technologien. Durch Klicken auf Zustimmen akzeptieren Sie die Verarbeitung und auch die Weitergabe Ihrer Daten an Dritte. Weitere Informationen, auch zur Datenverarbeitung durch Drittanbieter, finden Sie in den Einstellungen und in unserer [Datenschutzhinweise](https://google.com).Sie können die Nutzung der Tools [Ablehnen](https://google.com) oder Ihre Auswahl jederzeit über Ihre Einstellungenanpassen.";
+"_data_usage_for_app_optimization_" = "Datennutzung zur App-Optimierung";
+"_data_usage_for_app_optimization_description_" = "Zur Verbesserung erfassen wir anonymisierte Daten mit Partner-Software. Sie haben jederzeit volle Kontrolle in den Datenschutzeinstellungen. Beachten Sie, dass Blockieren die Optimierung behindert";
+"_required_data_collection_" = "Required data collection";
+"_required_data_collection_description_" = "Die Datenerfassung ist notwendig für essenzielle App-Funktionen.";
+"_analysis_of_data_collection_" = "Analysis of data collection";
+"_analysis_of_data_collection_description_" = "Anonyme Daten helfen, die App zu optimieren und Fehler zu erkennen.";
+"_save_settings_" = "Einstellungen  speichern";
+
+
+
