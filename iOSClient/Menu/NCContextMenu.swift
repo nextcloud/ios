@@ -90,7 +90,7 @@ class NCContextMenu: NSObject {
                     hud.progress(progress.fractionCompleted)
                 } completion: { afError, error in
                     if error == .success || afError?.isExplicitlyCancelledError ?? false {
-                        hud.success()
+                        hud.dismiss()
                     } else {
                         hud.error(text: error.description)
                     }
@@ -140,7 +140,7 @@ class NCContextMenu: NSObject {
                     hud.progress(progress.fractionCompleted)
                 } completion: { afError, error in
                     if error == .success || afError?.isExplicitlyCancelledError ?? false {
-                        hud.success()
+                        hud.dismiss()
                     } else {
                         hud.error(text: error.description)
                     }
