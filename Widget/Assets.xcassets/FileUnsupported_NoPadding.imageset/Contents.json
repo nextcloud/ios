@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "file_unsupported_widget.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

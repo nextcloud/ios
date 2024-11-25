@@ -229,6 +229,10 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 }
                 if image == nil {
                     image = utility.loadImage(named: file.iconName, useTypeIconFile: true)
+					if image == UIImage(resource: .fileUnsupported) {
+						// Quick fix unsupported file icon size for widget
+						image = UIImage(resource: .fileUnsupportedNoPadding)
+					}
                     useTypeIconFile = true
                 }
 
