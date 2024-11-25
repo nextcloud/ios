@@ -36,16 +36,17 @@ struct FilesWidgetView: View {
 					.frame(width: geo.size.width, height: geo.size.height)
 			}
 			
-			HeaderView(entry: entry)
+			HeaderView(title: entry.title)
 				.padding(.top, 7)
-			
+				
 			VStack(spacing: 5) {
 				
 				if !entry.isEmpty {
 					WidgetContentView(entry: entry)
-						.padding(.top, 35)
+						.padding(.top, 40)
 						.redacted(reason: entry.isPlaceholder ? .placeholder : [])
 				}
+				
 				Spacer()
 				
 				LinkActionsToolbarView(entry: entry, geo: geo)
@@ -54,7 +55,9 @@ struct FilesWidgetView: View {
 						   alignment: .bottomTrailing)
 					.redacted(reason: entry.isPlaceholder ? .placeholder : [])
 				
-				FooterView(entry: entry)
+				FooterView(imageName: entry.footerImage,
+						   text: entry.footerText,
+						   isPlaceholder: entry.isPlaceholder)
 					.padding(.horizontal, 15.0)
 					.padding(.bottom, 10.0)
 					.frame(maxWidth: geo.size.width,
@@ -64,23 +67,6 @@ struct FilesWidgetView: View {
 		}
 		.widgetBackground(Color(UIColor(resource: .background)))
     }
-}
-
-fileprivate struct EmptyWidgetContentView: View {
-	var body: some View {
-		VStack(alignment: .center) {
-			Image(systemName: "checkmark")
-				.resizable()
-				.scaledToFit()
-				.font(Font.system(.body).weight(.light))
-				.frame(width: 50, height: 50)
-			Text(NSLocalizedString("_no_items_", comment: ""))
-				.font(.system(size: 25))
-				.padding()
-			Text(NSLocalizedString("_check_back_later_", comment: ""))
-				.font(.system(size: 15))
-		}
-	}
 }
 
 fileprivate struct WidgetContentView: View {
@@ -96,30 +82,32 @@ fileprivate struct WidgetContentView: View {
 								Image(uiImage: element.image)
 									.resizable()
 									.renderingMode(.template)
-									.foregroundColor(Color(NCBrandColor.shared.iconImageColor))
+									.foregroundStyle(Color(element.color ?? NCBrandColor.shared.iconImageColor))
 									.scaledToFit()
-									.frame(width: 32, height: 32)
+									.aspectRatio(1.1, contentMode: .fit)
+									.frame(width: WidgetConstants.iconPreviewWidhHeight,
+										   height: WidgetConstants.iconPreviewWidhHeight)
 							} else {
 								Image(uiImage: element.image)
 									.resizable()
 									.scaledToFill()
-									.frame(width: 32, height: 32)
+									.frame(width: WidgetConstants.iconPreviewWidhHeight,
+										   height: WidgetConstants.iconPreviewWidhHeight)
 									.clipped()
-									.cornerRadius(5)
 							}
 							
 							VStack(alignment: .leading, spacing: 2) {
 								Text(element.title)
-									.font(.system(size: 16))
-									.fontWeight(.regular)
+									.font(WidgetConstants.elementTileFont)
+									.foregroundStyle(Color(UIColor(resource: .title)))
 								Text(element.subTitle)
-									.font(.system(size: CGFloat(10)))
-									.foregroundColor(Color(NCBrandColor.shared.iconImageColor2))
+									.font(WidgetConstants.elementSubtitleFont)
+									.foregroundStyle(Color(UIColor(resource: .subtitle)))
 							}
 							Spacer()
 						}
 						.padding(.leading, 10)
-						.frame(height: 50)
+						.frame(maxHeight: .infinity)
 					}
 					if element != entry.datas.last {
 						Divider()
@@ -128,18 +116,6 @@ fileprivate struct WidgetContentView: View {
 				}
 			}
 		}
-	}
-}
-
-struct HeaderView: View {
-	let entry: FilesDataEntry
-	
-	var body: some View {
-		Text(entry.tile)
-			.font(WidgetConstants.titleTextFont)
-			.multilineTextAlignment(.center)
-			.lineLimit(1)
-			.padding(.leading, 13)
 	}
 }
 
@@ -164,7 +140,7 @@ struct LinkActionsToolbarView: View {
 					.resizable()
 					.renderingMode(.template)
 					.foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandText))
-					.background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandElement))
+					.background(entry.isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .brandElement)))
 					.clipShape(Circle())
 					.scaledToFit()
 					.frame(width: geo.size.width / 4, height: sizeButton)
@@ -175,7 +151,7 @@ struct LinkActionsToolbarView: View {
 					.resizable()
 					.renderingMode(.template)
 					.foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandText))
-					.background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandElement))
+					.background(entry.isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .brandElement)))
 					.clipShape(Circle())
 					.scaledToFit()
 					.font(Font.system(.body).weight(.light))
@@ -187,7 +163,7 @@ struct LinkActionsToolbarView: View {
 					.resizable()
 					.renderingMode(.template)
 					.foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandText))
-					.background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandElement))
+					.background(entry.isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .brandElement)))
 					.clipShape(Circle())
 					.scaledToFit()
 					.frame(width: geo.size.width / 4, height: sizeButton)
@@ -198,7 +174,7 @@ struct LinkActionsToolbarView: View {
 					.resizable()
 					.renderingMode(.template)
 					.foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandText))
-					.background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandElement))
+					.background(entry.isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .brandElement)))
 					.clipShape(Circle())
 					.scaledToFit()
 					.frame(width: geo.size.width / 4, height: sizeButton)
@@ -207,32 +183,10 @@ struct LinkActionsToolbarView: View {
 	}
 }
 
-struct FooterView: View {
-	let entry: FilesDataEntry
-	
-	var body: some View {
-		HStack {
-			Image(systemName: entry.footerImage)
-				.resizable()
-				.scaledToFit()
-				.frame(width: WidgetConstants.bottomImageWidthHeight,
-					   height: WidgetConstants.bottomImageWidthHeight)
-				.font(Font.system(.body).weight(.light))
-				.foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .title)))
-			
-			Text(entry.footerText)
-				.font(WidgetConstants.bottomTextFont)
-				.lineLimit(1)
-				.minimumScaleFactor(0.5)
-				.foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .title)))
-		}
-	}
-}
-
 struct FilesWidget_Previews: PreviewProvider {
     static var previews: some View {
         let datas = Array(filesDatasTest[0...4])
-        let entry = FilesDataEntry(date: Date(), datas: datas, isPlaceholder: false, isEmpty: true, userId: "", url: "", tile: "Good afternoon, Marino Faggiana", footerImage: "checkmark.icloud", footerText: "Nextcloud files")
+        let entry = FilesDataEntry(date: Date(), datas: datas, isPlaceholder: false, isEmpty: true, userId: "", url: "", title: "Good afternoon, Marino Faggiana", footerImage: "checkmark.icloud", footerText: "Nextcloud files")
         FilesWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }

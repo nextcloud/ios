@@ -918,7 +918,7 @@
 		F7FAFD3A28BFA948000777FE /* NCNotification+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7FAFD3928BFA947000777FE /* NCNotification+Menu.swift */; };
 		F7FF2CB12842159500EBB7A1 /* NCSectionHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = F7FF2CB02842159500EBB7A1 /* NCSectionHeader.xib */; };
 		FC930DC52CEDE33000C9B237 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FC930DC42CEDE33000C9B237 /* Colors.xcassets */; };
-		FC930DC72CEE377700C9B237 /* WidgetConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC930DC62CEE377700C9B237 /* WidgetConstants.swift */; };
+		FC930DC72CEE377700C9B237 /* WidgetCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC930DC62CEE377700C9B237 /* WidgetCommon.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1764,7 +1764,7 @@
 		F7FC7D551DC1F93800BB2C6A /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		F7FF2CB02842159500EBB7A1 /* NCSectionHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NCSectionHeader.xib; sourceTree = "<group>"; };
 		FC930DC42CEDE33000C9B237 /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
-		FC930DC62CEE377700C9B237 /* WidgetConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetConstants.swift; sourceTree = "<group>"; };
+		FC930DC62CEE377700C9B237 /* WidgetCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetCommon.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2299,7 +2299,7 @@
 				F75DD764290AB369002EB562 /* Intent */,
 				F7346E2028B0FA3A006CE2D2 /* Widget-Brinding-header.h */,
 				F7346E1528B0EF5C006CE2D2 /* Widget.swift */,
-				FC930DC62CEE377700C9B237 /* WidgetConstants.swift */,
+				FC930DC62CEE377700C9B237 /* WidgetCommon.swift */,
 			);
 			path = Widget;
 			sourceTree = "<group>";
@@ -4214,7 +4214,7 @@
 				F713FBE62C31646400F10760 /* NCNetworking+AsyncAwait.swift in Sources */,
 				F711A4E92AF9327600095DD8 /* UIImage+animatedGIF.m in Sources */,
 				F73EF7D02B0225BA0087E6E9 /* NCManageDatabase+Tag.swift in Sources */,
-				FC930DC72CEE377700C9B237 /* WidgetConstants.swift in Sources */,
+				FC930DC72CEE377700C9B237 /* WidgetCommon.swift in Sources */,
 				F783030228B4C4B800B84583 /* NCUtility.swift in Sources */,
 				F711D63128F44801003F43C8 /* IntentHandler.swift in Sources */,
 				F76DEE9728F808AF0041B1C9 /* LockscreenData.swift in Sources */,

@@ -120,7 +120,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
 
     // Default widget
     let result = NCManageDatabase.shared.getDashboardWidgetApplications(account: account.account).first
-    let id: String = configuration?.applications?.identifier ?? (result?.id ?? "recommendations")
+    let id: String = configuration?.applications?.identifier ?? (result?.id ?? "Recommendations")
 
     // Capabilities
     NCManageDatabase.shared.setCapabilities(account: account.account)

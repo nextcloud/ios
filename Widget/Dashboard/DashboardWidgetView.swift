@@ -33,27 +33,14 @@ struct DashboardWidgetView: View {
         GeometryReader { geo in
 
             if entry.isEmpty {
-                VStack(alignment: .center) {
-                    Image(systemName: "checkmark")
-                        .resizable()
-                        .scaledToFit()
-                        .font(Font.system(.body).weight(.light))
-                        .frame(width: 50, height: 50)
-                    Text(NSLocalizedString("_no_items_", comment: ""))
-                        .font(.system(size: 25))
-                        .padding()
-                    Text(NSLocalizedString("_check_back_later_", comment: ""))
-                        .font(.system(size: 15))
-                }
-                .frame(width: geo.size.width, height: geo.size.height)
+				EmptyWidgetContentView()
+					.frame(width: geo.size.width, height: geo.size.height)
             }
 
             ZStack(alignment: .topLeading) {
-				Text(entry.title.firstUppercased)
-					.font(WidgetConstants.titleTextFont)
-					.lineLimit(1)
-					.padding([.leading], 13)
-
+				HeaderView(title: entry.title)
+					.padding(.top, 7)
+				
                 if !entry.isEmpty {
 
                     VStack(alignment: .leading) {
@@ -65,8 +52,6 @@ struct DashboardWidgetView: View {
                                 Link(destination: element.link) {
 
                                     HStack {
-
-                                        let subTitleColor = Color(white: 0.5)
 
                                         if entry.isPlaceholder {
                                             Circle()
@@ -115,15 +100,12 @@ struct DashboardWidgetView: View {
                                             }
                                         }
 
-                                        VStack(alignment: .leading, spacing: 2) {
-
-                                            Text(element.title)
-                                                .font(.system(size: 12))
-                                                .fontWeight(.regular)
-
-                                            Text(element.subTitle)
-                                                .font(.system(size: CGFloat(10)))
-                                                .foregroundColor(subTitleColor)
+										VStack(alignment: .leading, spacing: 2) {
+											Text(element.title)
+												.font(WidgetConstants.elementTileFont)
+											Text(element.subTitle)
+												.font(WidgetConstants.elementSubtitleFont)
+												.foregroundColor(Color(NCBrandColor.shared.iconImageColor2))
                                         }
                                         Spacer()
                                     }
@@ -164,24 +146,14 @@ struct DashboardWidgetView: View {
                     .frame(width: geo.size.width - 10, height: geo.size.height - 25, alignment: .bottomTrailing)
                 }
 
-                HStack {
-
-                    Image(systemName: entry.footerImage)
-                        .resizable()
-                        .scaledToFit()
-						.frame(width: WidgetConstants.bottomImageWidthHeight,
-							   height: WidgetConstants.bottomImageWidthHeight)
-                        .font(Font.system(.body).weight(.light))
-                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .title)))
-
-                    Text(entry.footerText)
-						.font(WidgetConstants.bottomTextFont)
-                        .lineLimit(1)
-						.foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .title)))
-                }
-                .padding(.horizontal, 15.0)
-				.padding(.bottom, 10.0)
-                .frame(maxWidth: geo.size.width, maxHeight: geo.size.height - 2, alignment: .bottomTrailing)
+				FooterView(imageName: entry.footerImage,
+						   text: entry.footerText,
+						   isPlaceholder: entry.isPlaceholder)
+					.padding(.horizontal, 15.0)
+					.padding(.bottom, 10.0)
+					.frame(maxWidth: geo.size.width, 
+						   maxHeight: geo.size.height - 2,
+						   alignment: .bottomTrailing)
             }
         }
 		.widgetBackground(Color(UIColor(resource: .background)))
