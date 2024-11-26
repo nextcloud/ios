@@ -145,6 +145,7 @@ struct DashboardWidgetView: View {
                                     .foregroundColor(brandTextColor)
                                     .border(brandColor, width: 1)
                                     .cornerRadius(.infinity)
+                                    .padding(.bottom, 12)
                             })
                         }
                     }
