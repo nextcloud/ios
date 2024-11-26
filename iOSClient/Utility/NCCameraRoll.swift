@@ -140,7 +140,7 @@ class NCCameraRoll: NSObject {
         let creationDate = asset.creationDate ?? Date()
         let modificationDate = asset.modificationDate ?? Date()
 
-        if asset.mediaType == PHAssetMediaType.image && (extensionAsset == "HEIC" || extensionAsset == "DNG") && NCKeychain().formatCompatibility {
+        if asset.mediaType == PHAssetMediaType.image && (extensionAsset == "HEIC" || extensionAsset == "DNG") && !metadata.nativeFormat {
             let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".jpg"
             metadata.contentType = "image/jpeg"
             fileNamePath = NSTemporaryDirectory() + fileName
@@ -209,7 +209,7 @@ class NCCameraRoll: NSObject {
                         metadata.size = self.utilityFileSystem.getFileSize(filePath: fileNamePath)
                         return callCompletionWithError(false)
                     } catch { return callCompletionWithError() }
-                } else if let asset = asset as? AVComposition, asset.tracks.count > 1, let exporter = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetHighestQuality) {
+                } else if let asset = asset as? AVComposition, asset.tracks.count > 1, let exporter = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetPassthrough) {
                     exporter.outputURL = URL(fileURLWithPath: fileNamePath)
                     exporter.outputFileType = AVFileType.mp4
                     exporter.shouldOptimizeForNetworkUse = true

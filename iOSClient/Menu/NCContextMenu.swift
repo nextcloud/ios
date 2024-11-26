@@ -90,7 +90,7 @@ class NCContextMenu: NSObject {
                     hud.progress(progress.fractionCompleted)
                 } completion: { afError, error in
                     if error == .success || afError?.isExplicitlyCancelledError ?? false {
-                        hud.success()
+                        hud.dismiss()
                     } else {
                         hud.error(text: error.description)
                     }
@@ -140,7 +140,7 @@ class NCContextMenu: NSObject {
                     hud.progress(progress.fractionCompleted)
                 } completion: { afError, error in
                     if error == .success || afError?.isExplicitlyCancelledError ?? false {
-                        hud.success()
+                        hud.dismiss()
                     } else {
                         hud.error(text: error.description)
                     }
@@ -197,35 +197,28 @@ class NCContextMenu: NSObject {
             } else {
                 if metadata.lock {
                     menu.append(favorite)
-                    if metadata.isDocumentViewableOnly {
-                        //
-                    } else {
-                        menu.append(share)
-                        if self.database.getMetadataLivePhoto(metadata: metadata) != nil {
-                            menu.append(livePhotoSave)
-                        }
+                    menu.append(share)
+
+                    if self.database.getMetadataLivePhoto(metadata: metadata) != nil {
+                        menu.append(livePhotoSave)
                     }
                 } else {
                     menu.append(favorite)
-                    if metadata.isDocumentViewableOnly {
-                        if viewController is NCMedia {
-                            menu.append(viewInFolder)
-                        }
-                    } else {
-                        menu.append(share)
-                        if self.database.getMetadataLivePhoto(metadata: metadata) != nil {
-                            menu.append(livePhotoSave)
-                        }
+                    menu.append(share)
 
-                        if viewController is NCMedia {
-                            menu.append(viewInFolder)
-                        }
-
-                        // MODIFY WITH QUICK LOOK
-                        if metadata.isModifiableWithQuickLook {
-                            menu.append(modify)
-                        }
+                    if self.database.getMetadataLivePhoto(metadata: metadata) != nil {
+                        menu.append(livePhotoSave)
                     }
+
+                    if viewController is NCMedia {
+                        menu.append(viewInFolder)
+                    }
+
+                    // MODIFY WITH QUICK LOOK
+                    if metadata.isModifiableWithQuickLook {
+                        menu.append(modify)
+                    }
+
                     if viewController is NCMedia {
                         menu.append(deleteConfirmFile)
                     } else {

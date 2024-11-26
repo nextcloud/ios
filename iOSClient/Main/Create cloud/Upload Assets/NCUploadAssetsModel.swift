@@ -34,6 +34,8 @@ struct PreviewStore {
     var id: String
     var asset: TLPHAsset
     var assetType: TLPHAsset.AssetType
+    var uti: String?
+    var nativeFormat: Bool
     var data: Data?
     var fileName: String
     var image: UIImage
@@ -68,10 +70,18 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
 
         DispatchQueue.global(qos: .userInteractive).async {
             for asset in self.assets {
+                var uti: String?
+
+                if let phAsset = asset.phAsset,
+                   let resource = PHAssetResource.assetResources(for: phAsset).first(where: { $0.type == .photo }) {
+                    uti = resource.uniformTypeIdentifier
+                }
+
                 guard let image = asset.fullResolutionImage?.resizeImage(size: CGSize(width: 300, height: 300), isAspectRation: true),
                       let localIdentifier = asset.phAsset?.localIdentifier else { continue }
+
                 DispatchQueue.main.async {
-                    self.previewStore.append(PreviewStore(id: localIdentifier, asset: asset, assetType: asset.type, fileName: "", image: image))
+                    self.previewStore.append(PreviewStore(id: localIdentifier, asset: asset, assetType: asset.type, uti: uti, nativeFormat: !NCKeychain().formatCompatibility, fileName: "", image: image))
                 }
             }
             DispatchQueue.main.async {
@@ -232,6 +242,7 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
             metadataForUpload.sessionSelector = NCGlobal.shared.selectorUploadFile
             metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
             metadataForUpload.sessionDate = Date()
+            metadataForUpload.nativeFormat = previewStore.nativeFormat
 
             if let previewStore = self.previewStore.first(where: { $0.id == asset.localIdentifier }), let data = previewStore.data {
                 if metadataForUpload.contentType == "image/heic" {
@@ -239,6 +250,7 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
                     metadataForUpload.contentType = "image/jpeg"
                     metadataForUpload.fileName = fileNameNoExtension + ".jpg"
                     metadataForUpload.fileNameView = fileNameNoExtension + ".jpg"
+                    metadataForUpload.nativeFormat = false
                 }
                 let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadataForUpload.ocId, fileNameView: metadataForUpload.fileNameView)
                 do {
@@ -250,7 +262,7 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
                 } catch {  }
             }
 
-            if let result = database.getMetadataConflict(account: session.account, serverUrl: serverUrl, fileNameView: fileName) {
+            if let result = database.getMetadataConflict(account: session.account, serverUrl: serverUrl, fileNameView: fileName, nativeFormat: metadataForUpload.nativeFormat) {
                 metadataForUpload.fileName = result.fileName
                 metadatasUploadInConflict.append(metadataForUpload)
             } else {
