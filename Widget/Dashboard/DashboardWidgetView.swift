@@ -106,10 +106,11 @@ struct DashboardWidgetView: View {
 											Text(element.title)
 												.font(WidgetConstants.elementTileFont)
 												.foregroundStyle(Color(UIColor(resource: .title)))
-
-											Text(element.subTitle)
-													.font(WidgetConstants.elementSubtitleFont)
-													.foregroundStyle(Color(UIColor(resource: .subtitle)))
+                                            if !element.subTitle.isEmpty {
+                                                Text(element.subTitle)
+                                                    .font(WidgetConstants.elementSubtitleFont)
+                                                    .foregroundStyle(Color(UIColor(resource: .subtitle)))
+                                            }
                                         }
                                         Spacer()
                                     }
