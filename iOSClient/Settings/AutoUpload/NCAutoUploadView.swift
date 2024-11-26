@@ -28,6 +28,8 @@ import UIKit
 /// A view that allows the user to configure the `auto upload settings for Nextcloud`
 struct NCAutoUploadView: View {
     @ObservedObject var model: NCAutoUploadModel
+    @State var showUploadFolder: Bool = false
+    @State var showSelectAlbums: Bool = false
 
     var body: some View {
         Form {
@@ -43,22 +45,27 @@ struct NCAutoUploadView: View {
                 Text(NSLocalizedString("_autoupload_notice_", comment: ""))
             })
             /// If `autoUpload` state will be true, we will animate out the whole `autoUploadOnView` section
-            if model.autoUpload {
+            if !model.autoUpload {
                 autoUploadOnView
                     .transition(.slide)
                     .animation(.easeInOut, value: model.autoUpload)
             }
         }
         .navigationBarTitle(NSLocalizedString("_auto_upload_folder_", comment: ""))
-        .defaultViewModifier(model)
+        .onAppear {
+            model.onViewAppear()
+        }
         .alert(model.error, isPresented: $model.showErrorAlert) {
             Button(NSLocalizedString("_ok_", comment: ""), role: .cancel) { }
         }
-        .sheet(isPresented: $model.autoUploadFolder) {
+        .sheet(isPresented: $showUploadFolder) {
             SelectView(serverUrl: $model.serverUrl, session: model.session)
             .onDisappear {
                 model.setAutoUploadDirectory(serverUrl: model.serverUrl)
             }
+        }
+        .sheet(isPresented: $showSelectAlbums) {
+            SelectAlbumView(model: AlbumModel())
         }
     }
 
@@ -66,7 +73,7 @@ struct NCAutoUploadView: View {
     var autoUploadOnView: some View {
         Section(content: {
             Button(action: {
-                model.autoUploadFolder.toggle()
+                showUploadFolder.toggle()
             }, label: {
                 HStack {
                     Image(systemName: "folder")
@@ -86,22 +93,22 @@ struct NCAutoUploadView: View {
 
         Section(content: {
             Button(action: {
-                model.autoUploadFolder.toggle()
+                showSelectAlbums.toggle()
             }, label: {
                 HStack {
-                    Image(systemName: "folder")
+                    Image(systemName: "person.2.crop.square.stack")
                         .resizable()
                         .scaledToFit()
                         .font(Font.system(.body).weight(.light))
                         .frame(width: 25, height: 25)
                         .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
-                    Text(NSLocalizedString("_autoupload_select_folder_", comment: ""))
+                    Text(NSLocalizedString("_upload_from_", comment: ""))
                 }
                 .font(.system(size: 16))
             })
             .tint(Color(UIColor.label))
         }, footer: {
-            Text("\(NSLocalizedString("_autoupload_from_", comment: "")): \(model.returnPath())")
+            Text("\(NSLocalizedString("_upload_from_", comment: "")): \(model.returnPath())")
         })
         /// Auto Upload Photo
         Section(content: {
@@ -178,5 +185,5 @@ struct NCAutoUploadView: View {
 }
 
 #Preview {
-    Text("TEST")
+    NCAutoUploadView(model: NCAutoUploadModel(controller: nil))
 }

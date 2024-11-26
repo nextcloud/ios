@@ -31,8 +31,6 @@ import NextcloudKit
 class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     /// A state variable that indicates whether auto upload is enabled or not
     @Published var autoUpload: Bool = false
-    /// A state variable that indicates whether to open NCSelect View or not
-    @Published var autoUploadFolder: Bool = false
     /// A state variable that indicates whether auto upload for photos is enabled or not
     @Published var autoUploadImage: Bool = false
     /// A state variable that indicates whether auto upload for photos is restricted to Wi-Fi only or not
