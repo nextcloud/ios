@@ -9,12 +9,12 @@
 import SwiftUI
 
 struct WidgetConstants {
-	static let bottomTextFont: Font = .custom("SFProText-Regular", size: 16)
+	static let bottomTextFont: Font = .system(size: 16)
 	static let bottomImageWidthHeight = 16.0
 	static let elementIconWidthHeight = 36.0
-	static let titleTextFont: Font = .custom("SFProText-Semibold", size: 24)
-	static let elementTileFont: Font = .custom("SFProText-Semibold", size: 16)
-	static let elementSubtitleFont: Font = .custom("SFProText-Semibold", size: 14)
+    static let titleTextFont: Font = .system(size: 24, weight: .semibold)
+	static let elementTileFont: Font = .system(size: 16, weight: .semibold)
+	static let elementSubtitleFont: Font = .system(size: 14, weight: .semibold)
 }
 
 struct EmptyWidgetContentView: View {
@@ -41,7 +41,7 @@ struct HeaderView: View {
 	let title: String
 	
 	var body: some View {
-		Text(title)
+        Text(title.firstUppercased)
 			.font(WidgetConstants.titleTextFont)
 			.foregroundStyle(Color(UIColor(resource: .title)))
 			.minimumScaleFactor(0.7)
