@@ -52,12 +52,10 @@ struct NCSettingsView: View {
                         Image(systemName: "photo.circle")
                             .resizable()
                             .scaledToFit()
-                            .font(Font.system(.body).weight(.light))
                             .frame(width: 25, height: 25)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_settings_autoupload_", comment: ""))
                     }
-                    .font(.system(size: 16))
                 }
             }, footer: {
                 Text(NSLocalizedString("_autoupload_description_", comment: ""))
@@ -71,13 +69,11 @@ struct NCSettingsView: View {
                         Image(systemName: model.isLockActive ? "lock" : "lock.open")
                             .resizable()
                             .scaledToFit()
-                            .font(Font.system(.body).weight(.light))
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             .frame(width: 20, height: 20)
                             .opacity(NCBrandOptions.shared.enforce_protection ? 0.5 : 1)
                         Text(model.isLockActive ? NSLocalizedString("_lock_active_", comment: "") : NSLocalizedString("_lock_not_active_", comment: ""))
                     }
-                    .font(.system(size: 16))
                 })
                 .tint(Color(NCBrandColor.shared.textColor))
                 .disabled(NCBrandOptions.shared.enforce_protection)
@@ -100,7 +96,6 @@ struct NCSettingsView: View {
                                 Text(NSLocalizedString("_change_lock_passcode_", comment: ""))
                                     .tint(Color(NCBrandColor.shared.textColor))
                             }
-                            .font(.system(size: 16))
                         })
                         /// Enable Touch ID
                         Toggle(NSLocalizedString("_enable_touch_face_id_", comment: ""), isOn: $model.enableTouchID)
@@ -118,12 +113,9 @@ struct NCSettingsView: View {
                             .onChange(of: model.resetWrongAttempts) { _ in
                                 model.updateResetWrongAttemptsSetting()
                             }
-                            .font(.system(size: 16))
                     }
                 }, footer: {
                     Text(NSLocalizedString("_lock_protection_no_screen_footer_", comment: "") + "\n" + String(format: NSLocalizedString("_reset_wrong_passcode_desc_", comment: ""), NCBrandOptions.shared.resetAppPasscodeAttempts))
-                        .font(.system(size: 12))
-                        .lineSpacing(1)
                 })
                 .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
             }
@@ -146,12 +138,10 @@ struct NCSettingsView: View {
                         Image(systemName: "sun.max.circle")
                             .resizable()
                             .scaledToFit()
-                            .font(Font.system(.body).weight(.light))
                             .frame(width: 20, height: 20)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_display_", comment: ""))
                     }
-                    .font(.system(size: 16))
                 }
             })
             /// Calender & Contacts
@@ -164,12 +154,10 @@ struct NCSettingsView: View {
                             Image(systemName: "calendar.badge.plus")
                                 .resizable()
                                 .scaledToFit()
-                                .font(Font.system(.body).weight(.light))
                                 .frame(width: 25, height: 25)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             Text(NSLocalizedString("_mobile_config_", comment: ""))
                         }
-                        .font(.system(size: 16))
                     })
                     .tint(Color(NCBrandColor.shared.textColor))
                 }, header: {
@@ -177,10 +165,8 @@ struct NCSettingsView: View {
                 }, footer: {
                     VStack(alignment: .leading) {
                         Text(NSLocalizedString("_calendar_contacts_footer_warning_", comment: ""))
-                            .font(.system(size: 12))
                         Spacer()
                         Text(NSLocalizedString("_calendar_contacts_footer_", comment: ""))
-                            .font(.system(size: 12))
                     }
 
                 })
@@ -188,7 +174,6 @@ struct NCSettingsView: View {
             /// Users
             Section(content: {
                 Toggle(NSLocalizedString("_settings_account_request_", comment: ""), isOn: $model.accountRequest)
-                    .font(.system(size: 16))
                     .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                     .onChange(of: model.accountRequest, perform: { _ in
                         model.updateAccountRequest()
@@ -197,8 +182,6 @@ struct NCSettingsView: View {
                 Text(NSLocalizedString("_users_", comment: ""))
             }, footer: {
                 Text(NSLocalizedString("_users_footer_", comment: ""))
-                    .font(.system(size: 12))
-                    .lineSpacing(1)
             })
             /// E2EEncryption` Section
             if capabilities.capabilityE2EEEnabled && NCGlobal.shared.e2eeVersions.contains(capabilities.capabilityE2EEApiVersion) {
@@ -213,12 +196,10 @@ struct NCSettingsView: View {
                         Image(systemName: "gear")
                             .resizable()
                             .scaledToFit()
-                            .font(Font.system(.body).weight(.light))
                             .frame(width: 25, height: 25)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_advanced_", comment: ""))
                     }
-                    .font(.system(size: 16))
                 }
             }
             /// `Information` Section
@@ -235,7 +216,6 @@ struct NCSettingsView: View {
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_acknowledgements_", comment: ""))
                     }
-                    .font(.system(size: 16))
                 })
                 .tint(Color(NCBrandColor.shared.textColor))
                 .sheet(isPresented: $showAcknowledgements) {
@@ -249,12 +229,10 @@ struct NCSettingsView: View {
                         Image(systemName: "shield.checkerboard")
                             .resizable()
                             .scaledToFit()
-                            .font(Font.system(.body).weight(.light))
                             .frame(width: 25, height: 25)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_privacy_legal_", comment: ""))
                     }
-                    .font(.system(size: 16))
                 })
                 .tint(Color(NCBrandColor.shared.textColor))
                 .sheet(isPresented: $showBrowser) {
@@ -273,7 +251,6 @@ struct NCSettingsView: View {
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             Text(NSLocalizedString("_source_code_", comment: ""))
                         }
-                        .font(.system(size: 16))
                     })
                     .tint(Color(NCBrandColor.shared.textColor))
                     .sheet(isPresented: $showSourceCode) {
@@ -310,12 +287,10 @@ struct E2EESection: View {
                     Image(systemName: "lock")
                         .resizable()
                         .scaledToFit()
-                        .font(Font.system(.body).weight(.light))
                         .frame(width: 20, height: 20)
                         .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                     Text(NSLocalizedString("_e2e_settings_", comment: ""))
                 }
-                .font(.system(size: 16))
             }
         })
     }
