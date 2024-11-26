@@ -47,25 +47,22 @@ struct NCAccountSettingsView: View {
                             ///
                             /// User
                             VStack {
-                                ZStack {
-                                    Image(uiImage: avatar)
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: UIScreen.main.bounds.width, height: 75)
-                                    if let statusImage = status.statusImage {
-                                        ZStack {
-                                            Circle()
-                                                .fill(.white)
-                                                .frame(width: 30, height: 30)
-                                            Image(uiImage: statusImage)
-                                                .resizable()
-                                                .scaledToFit()
-                                                .frame(width: 30, height: 30)
-                                        }
-                                        .offset(x: 30, y: 30)
+                                Image(uiImage: avatar)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: UIScreen.main.bounds.width, height: 75)
+                                if let statusImage = status.statusImage {
+                                    ZStack {
+                                        Circle()
+                                            .fill(.white)
+                                            .frame(width: 30, height: 30)
+                                        Image(uiImage: statusImage)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 30, height: 30)
                                     }
+                                    .offset(x: 30, y: -30)
                                 }
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
                                 Text(model.getUserName())
                                     .font(.system(size: 16))
                                 Spacer()
