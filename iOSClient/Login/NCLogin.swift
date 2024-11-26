@@ -227,6 +227,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     func isUrlValid(url: String, user: String? = nil) {
         loginButton.isEnabled = false
+        qrCode.isEnabled = false
 		NextcloudKit.shared.getServerStatus(serverUrl: url) { [weak self] serverInfoResult in
             switch serverInfoResult {
             case .success(let serverInfo):
@@ -236,6 +237,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 NextcloudKit.shared.getLoginFlowV2(serverUrl: url) { token, endpoint, login, _, error in
 					self?.spinner.stopAnimating()
                     self?.loginButton.isEnabled = true
+                    self?.qrCode.isEnabled = true
                     // Login Flow V2
                     if error == .success, let token, let endpoint, let login {
 						let loginPoll = NCLoginPoll(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login)
@@ -251,6 +253,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             case .failure(let error):
 				self?.spinner.stopAnimating()
                 self?.loginButton.isEnabled = true
+                self?.qrCode.isEnabled = true
                 if error.errorCode == NSURLErrorServerCertificateUntrusted {
                     let alertController = UIAlertController(title: NSLocalizedString("_ssl_certificate_untrusted_", comment: ""), message: NSLocalizedString("_connect_server_anyway_", comment: ""), preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { _ in
@@ -291,9 +294,13 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 let password = valueArray[1].replacingOccurrences(of: "password:", with: "")
                 let urlBase = valueArray[2].replacingOccurrences(of: "server:", with: "")
                 let serverUrl = urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav
+                spinner.startAnimating()
                 loginButton.isEnabled = false
+                qrCode.isEnabled = false
                 NextcloudKit.shared.checkServer(serverUrl: serverUrl) { error in
+                    self.spinner.stopAnimating()
                     self.loginButton.isEnabled = true
+                    self.qrCode.isEnabled = true
                     if error == .success {
                         self.createAccount(urlBase: urlBase, user: user, password: password)
                     } else {
