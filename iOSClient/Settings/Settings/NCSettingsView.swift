@@ -84,7 +84,9 @@ struct NCSettingsView: View {
             }, header: {
                 Text(NSLocalizedString("_privacy_", comment: ""))
             }, footer: {
-                Text(NSLocalizedString("_lock_cannot_disable_mdm_", comment: ""))
+                if NCBrandOptions.shared.enforce_protection {
+                    Text(NSLocalizedString("_lock_cannot_disable_mdm_", comment: ""))
+                }
             })
 
             if model.isLockActive {
