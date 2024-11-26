@@ -56,7 +56,8 @@ struct DashboardWidgetView: View {
                                         if entry.isPlaceholder {
                                             Circle()
                                                 .fill(Color(.systemGray4))
-                                                .frame(width: 35, height: 35)
+                                                .frame(width: WidgetConstants.elementIconWidthHeight,
+													   height: WidgetConstants.elementIconWidthHeight)
                                         } else if let color = element.imageColor {
                                             Image(uiImage: element.icon)
                                                 .renderingMode(.template)
@@ -79,24 +80,25 @@ struct DashboardWidgetView: View {
                                                     .renderingMode(.template)
                                                     .resizable()
                                                     .scaledToFill()
-                                                    .frame(width: 25, height: 25)
+                                                    .frame(width: WidgetConstants.elementIconWidthHeight,
+														   height: WidgetConstants.elementIconWidthHeight)
                                                     .clipped()
-                                                    .cornerRadius(5)
                                             }
                                         } else {
                                             if entry.dashboard?.itemIconsRound ?? false || element.avatar {
                                                 Image(uiImage: element.icon)
                                                     .resizable()
                                                     .scaledToFill()
-                                                    .frame(width: 35, height: 35)
+                                                    .frame(width: WidgetConstants.elementIconWidthHeight,
+														   height: WidgetConstants.elementIconWidthHeight)
                                                     .clipShape(Circle())
                                             } else {
                                                 Image(uiImage: element.icon)
                                                     .resizable()
                                                     .scaledToFill()
-                                                    .frame(width: 35, height: 35)
+                                                    .frame(width: WidgetConstants.elementIconWidthHeight,
+														   height: WidgetConstants.elementIconWidthHeight)
                                                     .clipped()
-                                                    .cornerRadius(5)
                                             }
                                         }
 
@@ -104,12 +106,10 @@ struct DashboardWidgetView: View {
 											Text(element.title)
 												.font(WidgetConstants.elementTileFont)
 												.foregroundStyle(Color(UIColor(resource: .title)))
-											if element.subTitle.isEmpty {
-												Text(element.subTitle)
+
+											Text(element.subTitle)
 													.font(WidgetConstants.elementSubtitleFont)
 													.foregroundStyle(Color(UIColor(resource: .subtitle)))
-											}
-											
                                         }
                                         Spacer()
                                     }
@@ -123,7 +123,7 @@ struct DashboardWidgetView: View {
                             }
                         }
                     }
-                    .padding(.top, 35)
+                    .padding(.top, 40)
                     .redacted(reason: entry.isPlaceholder ? .placeholder : [])
                 }
 
@@ -155,7 +155,7 @@ struct DashboardWidgetView: View {
 						   isPlaceholder: entry.isPlaceholder)
 					.padding(.horizontal, 15.0)
 					.padding(.bottom, 10.0)
-					.frame(maxWidth: geo.size.width, 
+					.frame(maxWidth: geo.size.width,
 						   maxHeight: geo.size.height - 2,
 						   alignment: .bottomTrailing)
             }

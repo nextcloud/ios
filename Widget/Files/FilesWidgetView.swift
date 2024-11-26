@@ -133,7 +133,7 @@ struct LinkActionsToolbarView: View {
 		let linkActionVoiceMemo: URL = URL(string: NCGlobal.shared.widgetActionVoiceMemo + parameterLink) != nil ? URL(string: NCGlobal.shared.widgetActionVoiceMemo + parameterLink)! : URL(string: NCGlobal.shared.widgetActionVoiceMemo)!
 		
 		HStack(spacing: -6) {
-			let hieight: CGFloat = 48
+			let height: CGFloat = 48
 			let width = geo.size.width / 4
 									
 			Link(destination: entry.isPlaceholder ? linkNoAction : linkActionUploadAsset, label: {
@@ -144,7 +144,7 @@ struct LinkActionsToolbarView: View {
 					.background(entry.isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .brandElement)))
 					.clipShape(Circle())
 					.scaledToFit()
-					.frame(width: width, height: hieight)
+					.frame(width: width, height: height)
 			})
 			
 			Link(destination: entry.isPlaceholder ? linkNoAction : linkActionScanDocument, label: {
@@ -156,7 +156,7 @@ struct LinkActionsToolbarView: View {
 					.clipShape(Circle())
 					.scaledToFit()
 					.font(Font.system(.body).weight(.light))
-					.frame(width: width, height: hieight)
+					.frame(width: width, height: height)
 			})
 			
 			Link(destination: entry.isPlaceholder ? linkNoAction : linkActionVoiceMemo, label: {
@@ -167,7 +167,7 @@ struct LinkActionsToolbarView: View {
 					.background(entry.isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .brandElement)))
 					.clipShape(Circle())
 					.scaledToFit()
-					.frame(width: width, height: hieight)
+					.frame(width: width, height: height)
 			})
 			
 			Link(destination: entry.isPlaceholder ? linkNoAction : linkActionTextDocument, label: {
@@ -178,9 +178,8 @@ struct LinkActionsToolbarView: View {
 					.background(entry.isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .brandElement)))
 					.clipShape(Circle())
 					.scaledToFit()
-					.frame(width: width, height: hieight)
+					.frame(width: width, height: height)
 			})
-						
 		}
 	}
 }

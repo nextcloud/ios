@@ -44,6 +44,7 @@ struct HeaderView: View {
 		Text(title)
 			.font(WidgetConstants.titleTextFont)
 			.foregroundStyle(Color(UIColor(resource: .title)))
+			.minimumScaleFactor(0.7)
 			.lineLimit(1)
 			.padding(.leading, 13)
 	}
@@ -68,7 +69,7 @@ struct FooterView: View {
 			Text(text)
 				.font(WidgetConstants.bottomTextFont)
 				.lineLimit(1)
-				.minimumScaleFactor(0.5)
+				.minimumScaleFactor(0.7)
 				.foregroundColor(isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .bottomElementForeground)))
 		}
 	}
