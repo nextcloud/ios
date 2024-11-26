@@ -11,7 +11,7 @@ import SwiftUI
 struct WidgetConstants {
 	static let bottomTextFont: Font = .custom("SFProText-Regular", size: 16)
 	static let bottomImageWidthHeight = 16.0
-	static let iconPreviewWidthHeight = 36.0
+	static let elementIconWidthHeight = 36.0
 	static let titleTextFont: Font = .custom("SFProText-Semibold", size: 24)
 	static let elementTileFont: Font = .custom("SFProText-Semibold", size: 16)
 	static let elementSubtitleFont: Font = .custom("SFProText-Semibold", size: 14)

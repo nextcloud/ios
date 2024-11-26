@@ -52,7 +52,7 @@ struct FilesWidgetView: View {
 				LinkActionsToolbarView(entry: entry, geo: geo)
 					.frame(width: geo.size.width,
 						   height: 48,
-						   alignment: .bottomTrailing)
+						   alignment: .bottom)
 					.redacted(reason: entry.isPlaceholder ? .placeholder : [])
 				
 				FooterView(imageName: entry.footerImage,
@@ -85,14 +85,14 @@ fileprivate struct WidgetContentView: View {
 									.foregroundStyle(Color(element.color ?? NCBrandColor.shared.iconImageColor))
 									.scaledToFit()
 									.aspectRatio(1.1, contentMode: .fit)
-									.frame(width: WidgetConstants.iconPreviewWidthHeight,
-										   height: WidgetConstants.iconPreviewWidthHeight)
+									.frame(width: WidgetConstants.elementIconWidthHeight,
+										   height: WidgetConstants.elementIconWidthHeight)
 							} else {
 								Image(uiImage: element.image)
 									.resizable()
 									.scaledToFill()
-									.frame(width: WidgetConstants.iconPreviewWidthHeight,
-										   height: WidgetConstants.iconPreviewWidthHeight)
+									.frame(width: WidgetConstants.elementIconWidthHeight,
+										   height: WidgetConstants.elementIconWidthHeight)
 									.clipped()
 							}
 							
@@ -132,9 +132,10 @@ struct LinkActionsToolbarView: View {
 		let linkActionTextDocument: URL = URL(string: NCGlobal.shared.widgetActionTextDocument + parameterLink) != nil ? URL(string: NCGlobal.shared.widgetActionTextDocument + parameterLink)! : URL(string: NCGlobal.shared.widgetActionTextDocument)!
 		let linkActionVoiceMemo: URL = URL(string: NCGlobal.shared.widgetActionVoiceMemo + parameterLink) != nil ? URL(string: NCGlobal.shared.widgetActionVoiceMemo + parameterLink)! : URL(string: NCGlobal.shared.widgetActionVoiceMemo)!
 		
-		HStack(spacing: 0) {
-			let sizeButton: CGFloat = 48
-			
+		HStack(spacing: -6) {
+			let hieight: CGFloat = 48
+			let width = geo.size.width / 4
+									
 			Link(destination: entry.isPlaceholder ? linkNoAction : linkActionUploadAsset, label: {
 				Image(uiImage: UIImage(resource: .media))
 					.resizable()
@@ -143,7 +144,7 @@ struct LinkActionsToolbarView: View {
 					.background(entry.isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .brandElement)))
 					.clipShape(Circle())
 					.scaledToFit()
-					.frame(width: geo.size.width / 4, height: sizeButton)
+					.frame(width: width, height: hieight)
 			})
 			
 			Link(destination: entry.isPlaceholder ? linkNoAction : linkActionScanDocument, label: {
@@ -155,7 +156,7 @@ struct LinkActionsToolbarView: View {
 					.clipShape(Circle())
 					.scaledToFit()
 					.font(Font.system(.body).weight(.light))
-					.frame(width: geo.size.width / 4, height: sizeButton)
+					.frame(width: width, height: hieight)
 			})
 			
 			Link(destination: entry.isPlaceholder ? linkNoAction : linkActionVoiceMemo, label: {
@@ -166,7 +167,7 @@ struct LinkActionsToolbarView: View {
 					.background(entry.isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .brandElement)))
 					.clipShape(Circle())
 					.scaledToFit()
-					.frame(width: geo.size.width / 4, height: sizeButton)
+					.frame(width: width, height: hieight)
 			})
 			
 			Link(destination: entry.isPlaceholder ? linkNoAction : linkActionTextDocument, label: {
@@ -177,8 +178,9 @@ struct LinkActionsToolbarView: View {
 					.background(entry.isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .brandElement)))
 					.clipShape(Circle())
 					.scaledToFit()
-					.frame(width: geo.size.width / 4, height: sizeButton)
+					.frame(width: width, height: hieight)
 			})
+						
 		}
 	}
 }
