@@ -100,7 +100,6 @@ class NCImageCache: NSObject {
                             for metadata in metadatas {
                                 guard !self.isDidEnterBackground else {
                                     self.cache.removeAllValues()
-                                    self.isLoadingCache = false
                                     break
                                 }
 
