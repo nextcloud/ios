@@ -47,31 +47,28 @@ struct NCAccountSettingsView: View {
                             ///
                             /// User
                             VStack {
-                                ZStack {
-                                    Image(uiImage: avatar)
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: UIScreen.main.bounds.width, height: 75)
-                                    if let statusImage = status.statusImage {
-                                        ZStack {
-                                            Circle()
-                                                .fill(.white)
-                                                .frame(width: 30, height: 30)
-                                            Image(uiImage: statusImage)
-                                                .resizable()
-                                                .scaledToFit()
-                                                .frame(width: 30, height: 30)
-                                        }
-                                        .offset(x: 30, y: 30)
+                                Image(uiImage: avatar)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: UIScreen.main.bounds.width, height: 75)
+                                if let statusImage = status.statusImage {
+                                    ZStack {
+                                        Circle()
+                                            .fill(.white)
+                                            .frame(width: 30, height: 30)
+                                        Image(uiImage: statusImage)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 30, height: 30)
                                     }
+                                    .offset(x: 30, y: -30)
                                 }
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
                                 Text(model.getUserName())
-                                    .font(.system(size: 16))
+                                    .font(.subheadline)
                                 Spacer()
                                     .frame(height: 10)
                                 Text(status.statusMessage)
-                                    .font(.system(size: 10))
+                                    .font(.caption)
                                 Spacer()
                                     .frame(height: 20)
                                 ///
@@ -124,7 +121,7 @@ struct NCAccountSettingsView: View {
                             }
                         }
                     }
-                    .font(.system(size: 14))
+                    .font(.subheadline)
                     .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                     .frame(height: model.getTableViewHeight())
                     .animation(.easeIn(duration: 0.3), value: animation)
@@ -137,11 +134,10 @@ struct NCAccountSettingsView: View {
                     VStack {
                         HStack {
                             Text(NSLocalizedString("_alias_", comment: "") + ":")
-                                .font(.system(size: 17))
                                 .fontWeight(.medium)
                             Spacer()
                             TextField(NSLocalizedString("_alias_placeholder_", comment: ""), text: $model.alias)
-                                .font(.system(size: 16))
+                                .font(.callout)
                                 .multilineTextAlignment(.trailing)
                                 .onChange(of: model.alias) { newValue in
                                     model.setAlias(newValue)
@@ -149,7 +145,7 @@ struct NCAccountSettingsView: View {
                         }
                         Text(NSLocalizedString("_alias_footer_", comment: ""))
                             .frame(maxWidth: .infinity, alignment: .leading)
-                            .font(.system(size: 12))
+                            .font(.caption)
                             .lineLimit(2)
                             .foregroundStyle(Color(UIColor.lightGray))
                     }
@@ -172,7 +168,7 @@ struct NCAccountSettingsView: View {
                                     .foregroundStyle(Color(NCBrandColor.shared.textColor))
                                     .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
                             }
-                            .font(.system(size: 14))
+                            .font(.subheadline)
                         })
                         .sheet(isPresented: $showUserStatus) {
                             if let account = model.tblAccount?.account {
@@ -200,7 +196,7 @@ struct NCAccountSettingsView: View {
                                     .foregroundStyle(Color(NCBrandColor.shared.textColor))
                                     .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
                             }
-                            .font(.system(size: 14))
+                            .font(.subheadline)
                         })
                         .sheet(isPresented: $showServerCertificate) {
                             if let url = URL(string: model.tblAccount?.urlBase), let host = url.host {
@@ -225,7 +221,7 @@ struct NCAccountSettingsView: View {
                                     .foregroundStyle(Color(NCBrandColor.shared.textColor))
                                     .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
                             }
-                            .font(.system(size: 14))
+                            .font(.subheadline)
                         })
                         .sheet(isPresented: $showPushCertificate) {
                             if let url = URL(string: NCBrandOptions.shared.pushNotificationServerProxy), let host = url.host {
@@ -253,7 +249,7 @@ struct NCAccountSettingsView: View {
                                 .foregroundStyle(.red)
                                 .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
                         }
-                        .font(.system(size: 14))
+                        .font(.callout)
                     })
                     .alert(NSLocalizedString("_want_delete_account_", comment: ""), isPresented: $showDeleteAccountAlert) {
                         Button(NSLocalizedString("_remove_local_account_", comment: ""), role: .destructive) {

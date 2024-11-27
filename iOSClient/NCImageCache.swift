@@ -42,6 +42,7 @@ class NCImageCache: NSObject {
     }()
 
     public var isLoadingCache: Bool = false
+    var isDidEnterBackground: Bool = false
 
     override init() {
         super.init()
@@ -60,6 +61,7 @@ class NCImageCache: NSObject {
         }
 
         NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { _ in
+            self.isDidEnterBackground = true
             autoreleasepool {
                 self.cache.removeAllValues()
             }
@@ -67,6 +69,11 @@ class NCImageCache: NSObject {
 
         NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil) { _ in
 #if !EXTENSION
+            guard !self.isLoadingCache else {
+                return
+            }
+            self.isDidEnterBackground = false
+
             var files: [NCFiles] = []
             var cost: Int = 0
 
@@ -81,25 +88,37 @@ class NCImageCache: NSObject {
                     }
                 }
 
-                /// MEDIA
-                if let metadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: self.getMediaPredicate(filterLivePhotoFile: true, session: session, showOnlyImages: false, showOnlyVideos: false), sortedByKeyPath: "date", freeze: true)?.prefix(self.countLimit) {
-
-                    self.cache.removeAllValues()
+                DispatchQueue.global().async {
                     self.isLoadingCache = true
 
-                    metadatas.forEach { metadata in
-                        if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt256) {
-                            self.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: NCGlobal.shared.previewExt256, cost: cost)
-                            cost += 1
+                    /// MEDIA
+                    if let metadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: self.getMediaPredicate(filterLivePhotoFile: true, session: session, showOnlyImages: false, showOnlyVideos: false), sortedByKeyPath: "date", freeze: true)?.prefix(self.countLimit) {
+
+                        autoreleasepool {
+                            self.cache.removeAllValues()
+
+                            for metadata in metadatas {
+                                guard !self.isDidEnterBackground else {
+                                    self.cache.removeAllValues()
+                                    break
+                                }
+
+                                if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt256) {
+                                    self.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: NCGlobal.shared.previewExt256, cost: cost)
+                                    cost += 1
+                                }
+                            }
+                        }
+                    }
+
+                    /// FILE
+                    if !self.isDidEnterBackground {
+                        for file in files where !file.serverUrl.isEmpty {
+                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": file.serverUrl])
                         }
                     }
 
                     self.isLoadingCache = false
-                }
-
-                /// FILE
-                for file in files where !file.serverUrl.isEmpty {
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": file.serverUrl])
                 }
             }
 #endif
