@@ -21,13 +21,13 @@ struct DataProtectionSettingsScreen: View {
                     VStack(alignment: .leading) {
                         Text(NSLocalizedString("_data_usage_for_app_optimization_", comment: ""))
                             .font(titleFont)
-                            .foregroundStyle(.white)
+                            .foregroundStyle(Color(.ListCell.title))
                             .padding(.bottom, 12.0)
                         
                         Text("_data_usage_for_app_optimization_description_")
                             .font(textFont)
                             .multilineTextAlignment(.leading)
-                            .foregroundStyle(.white)
+                            .foregroundStyle(Color(.ListCell.title))
                     }
                 }.listRowSeparatorTint(Color(NCBrandColor.shared.formSeparatorColor))
                     .listRowBackground(Color(.AppBackground.form))
@@ -37,6 +37,7 @@ struct DataProtectionSettingsScreen: View {
                         Toggle(NSLocalizedString("_required_data_collection_", comment: ""), isOn: $model.requiredDataCollection)
                             .tint(Color(NCBrandColor.shared.switchColor))
                             .font(titleFont)
+                            .foregroundStyle(Color(.ListCell.title))
                         Text("_required_data_collection_description_")
                             .font(textFont)
                             .multilineTextAlignment(.leading)
@@ -49,6 +50,7 @@ struct DataProtectionSettingsScreen: View {
                         Toggle(NSLocalizedString("_analysis_of_data_collection_", comment: ""), isOn: $model.analysisOfDataCollection)
                             .tint(Color(NCBrandColor.shared.switchColor))
                             .font(titleFont)
+                            .foregroundStyle(Color(.ListCell.title))
                         Text("_analysis_of_data_collection_description_")
                             .font(textFont)
                             .multilineTextAlignment(.leading)
@@ -57,7 +59,6 @@ struct DataProtectionSettingsScreen: View {
                 }.listRowSeparatorTint(Color(NCBrandColor.shared.formSeparatorColor))
                     .listRowBackground(Color(.AppBackground.form))
             }
-            .environment(\.colorScheme, .dark)
             .background(Color(.AppBackground.form))
             .listStyle(.plain)
             
@@ -70,7 +71,6 @@ struct DataProtectionSettingsScreen: View {
             .padding(16.0)
         }
         .background(Color(.AppBackground.form))
-        .environment(\.colorScheme, .dark)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
