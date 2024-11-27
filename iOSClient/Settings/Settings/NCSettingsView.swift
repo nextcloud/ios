@@ -109,13 +109,13 @@ struct NCSettingsView: View {
                             }
 
                         /// Reset app wrong attempts
-                        Toggle(NSLocalizedString("_reset_wrong_passcode_", comment: ""), isOn: $model.resetWrongAttempts)
+                        Toggle(NSLocalizedString("_reset_wrong_passcode_option_", comment: ""), isOn: $model.resetWrongAttempts)
                             .onChange(of: model.resetWrongAttempts) { _ in
                                 model.updateResetWrongAttemptsSetting()
                             }
                     }
                 }, footer: {
-                    Text(NSLocalizedString("_lock_protection_no_screen_footer_", comment: "") + "\n" + String(format: NSLocalizedString("_reset_wrong_passcode_desc_", comment: ""), NCBrandOptions.shared.resetAppPasscodeAttempts))
+                    Text(String(format: NSLocalizedString("_reset_wrong_passcode_desc_", comment: ""), NCBrandOptions.shared.resetAppPasscodeAttempts))
                 })
                 .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
             }
