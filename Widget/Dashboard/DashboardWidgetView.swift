@@ -82,6 +82,7 @@ struct DashboardWidgetView: View {
                                                     .scaledToFill()
                                                     .frame(width: WidgetConstants.elementIconWidthHeight,
 														   height: WidgetConstants.elementIconWidthHeight)
+                                                    .foregroundStyle(Color(uiColor:NCBrandColor.shared.iconImageColor2))
                                                     .clipped()
                                             }
                                         } else {
@@ -132,7 +133,7 @@ struct DashboardWidgetView: View {
 
                     HStack(spacing: 10) {
 
-                        let brandColor = Color(NCBrandColor.shared.brandElement)
+                        let brandColor = Color(UIColor(resource: .brandElement))
                         let brandTextColor = Color(NCBrandColor.shared.brandText)
 
                         ForEach(buttons, id: \.index) { element in
