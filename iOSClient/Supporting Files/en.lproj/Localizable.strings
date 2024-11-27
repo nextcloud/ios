@@ -964,7 +964,7 @@
 "_undo_modify_"             = "Undo modifying";
 "_unauthorizedFilesPasscode_" = "Files app cannot be used with an activated passcode.";
 "_disableFilesApp_"         = "Files app cannot be used because it is disabled.";
-"_reset_application_done_"  = "Reset application, done.";
+"_reset_application_done_"  = "Finished resetting application.";
 "_rename_already_exists_"   = "A file with this name already exists.";
 "_created_"                 = "Created";
 "_recipients_"              = "Recipients";
@@ -987,7 +987,7 @@
 "_download_video_"          = "Download video";
 "_reset_wrong_passcode_"    = "Reset application";
 "_reset_wrong_passcode_option_" = "Reset application after failed attempts";
-"_reset_wrong_passcode_desc_" = "Use \"Reset application\" to remove all accounts and local data after %d failed code entry attempts.";
+"_reset_wrong_passcode_desc_" = "Enabling this option will remove all accounts and local data after %d failed passcode entry attempts.";
 "_deviceOwnerAuthentication_" = "The biometric sensor has been temporarily disabled due to multiple failed attempts. Enter the device passcode to re-enable the sensor.";
 "_virus_detect_"            = "Virus detected. Upload cannot be completed!";
 "_zoom_"                    = "Zoom";
