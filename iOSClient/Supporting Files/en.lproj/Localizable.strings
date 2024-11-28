@@ -44,6 +44,7 @@
 "_removing_sharing_"        = "Removing share";
 "_add_"                     = "Add";
 "_login_"                   = "Log in";
+"_login_with_qrcode_"       = "Scan QR code";
 "_save_"                    = "Save";
 "_warning_"                 = "Warning";
 "_error_"                   = "Error";
@@ -661,7 +662,7 @@
 "_enforce_password_protection_" = "Enforce password protection";
 "_password_obligatory_"         = "Enforce password protection enabled, password obligatory";
 "_shared_with_you_by_"          = "Shared with you by";
-"_shareLinksearch_placeholder_" = "Name, email, or Federated Cloud ID …";
+"_shareLinksearch_placeholder_" = "Name or email …";
 "_shareLinksearch_mail_placeholder_" = "Type a name or an email and press Search";
 "_new_comment_"                 = "New comment …";
 "_edit_comment_"                = "Edit comment";

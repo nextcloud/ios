@@ -1,19 +1,8 @@
 {
   "images" : [
     {
-      "filename" : "offlineFlag.png",
-      "idiom" : "universal",
-      "scale" : "1x"
-    },
-    {
-      "filename" : "offlineFlag@2x.png",
-      "idiom" : "universal",
-      "scale" : "2x"
-    },
-    {
-      "filename" : "offlineFlag@3x.png",
-      "idiom" : "universal",
-      "scale" : "3x"
+      "filename" : "offlineFlat.png",
+      "idiom" : "universal"
     }
   ],
   "info" : {

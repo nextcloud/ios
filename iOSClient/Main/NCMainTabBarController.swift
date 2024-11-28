@@ -39,8 +39,19 @@ class NCMainTabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         delegate = self
+		setupTabBarView()
         burgerMenuController = BurgerMenuAttachController(with: self)
     }
+	
+	private func setupTabBarView() {
+		if UIDevice.current.userInterfaceIdiom == .pad {
+			tabBar.itemPositioning = .centered
+			if let itemsCount = tabBar.items?.count {
+				tabBar.itemWidth = UITabBarGuideline.padItemWidth
+				tabBar.itemSpacing = UITabBarGuideline.padItemsSpacing(for: view.bounds.width, itemsCount: itemsCount)
+			}
+		}
+	}
     
     func showBurgerMenu() {
         burgerMenuController?.showMenu()

@@ -38,6 +38,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene),
               let appDelegate else { return }
         self.window = UIWindow(windowScene: windowScene)
+		setupUIAppearance()
 
         if NCManageDatabase.shared.getActiveAccount() != nil {
             if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
@@ -60,6 +61,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         appDelegate.startTimerErrorNetworking(scene: scene)
     }
 
+	private func setupUIAppearance() {
+		NCMainTabBar.setupAppearance()
+	}
+	
     func sceneDidDisconnect(_ scene: UIScene) {
         print("[DEBUG] Scene did disconnect")
     }

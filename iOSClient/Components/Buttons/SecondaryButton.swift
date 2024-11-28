@@ -53,10 +53,11 @@ class SecondaryButton: UIButton {
         setTitleColor(titleColor(), for: .normal)
         backgroundColor = backgroundColor()
         layer.borderColor = borderColor()
+        tintColor = titleColor()
     }
     
     private func borderColor() -> CGColor {
-        return UIColor(resource: isEnabled ? .Button.Secondary.Border.normal : .Button.Secondary.Border.disabled).cgColor
+        return UIColor(resource: isEnabled ? .Button.Secondary.Border.normal : .Button.Secondary.Border.disabled).resolvedColor(with: self.traitCollection).cgColor
     }
     
     private func backgroundColor() -> UIColor {

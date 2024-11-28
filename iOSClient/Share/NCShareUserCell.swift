@@ -155,7 +155,9 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
     func setupCell(sharee: NKSharee, userBaseUrl: NCUserBaseUrl) {
         let utility = NCUtility()
         imageItem.image = NCShareCommon().getImageShareType(shareType: sharee.shareType)
-        imageShareeType.image = NCShareCommon().getImageShareType(shareType: sharee.shareType)
+        imageShareeType.image = NCShareCommon().getImageShareType(shareType: sharee.shareType)?
+            .withRenderingMode(.alwaysTemplate)
+        imageShareeType.tintColor = UIColor(resource: .Share.SearchUserCell.userType)
         let status = utility.getUserStatus(userIcon: sharee.userIcon, userStatus: sharee.userStatus, userMessage: sharee.userMessage)
 
         if let statusImage = status.statusImage {
@@ -170,10 +172,7 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
             centerTitle.constant = 0
         }
 
-        imageItem.image = utility.loadUserImage(
-            for: sharee.shareWith,
-               displayName: nil,
-               userBaseUrl: userBaseUrl)
+        imageItem.image = utility.userImage
 
         let fileName = userBaseUrl.userBaseUrl + "-" + sharee.shareWith + ".png"
         if NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName) == nil {

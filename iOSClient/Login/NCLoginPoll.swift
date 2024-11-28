@@ -47,7 +47,7 @@ struct NCLoginPoll: View {
 			VStack {
 				Image(.logo)
 					.resizable()
-					.aspectRatio(159/22, contentMode: .fit)
+					.scaledToFit()
 					.frame(width: size.width * 0.45)
 					.padding(.top, size.height * 0.12)
 				Text(NSLocalizedString("_poll_desc_", comment: ""))
@@ -75,7 +75,7 @@ struct NCLoginPoll: View {
                     .buttonStyle(ButtonStylePrimary(maxWidth: .infinity))
                     
 				}
-                .frame(width: 210)
+                .frame(width: 250)
 				.padding(.bottom, size.height * 0.15)
                 .environment(\.colorScheme, .dark)
 			}
