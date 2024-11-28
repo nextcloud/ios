@@ -55,7 +55,7 @@ struct DataProtectionAgreementScreen: View {
                 .buttonStyle(ButtonStyleSecondary(maxWidth: 288.0))
                 
                 Button(NSLocalizedString("_agree_", comment: "")) {
-                    
+                    DataProtectionAgreementManager.shared?.dismissView()
                 }
                 .buttonStyle(ButtonStylePrimary(maxWidth: 288.0))
             }
