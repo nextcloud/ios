@@ -247,6 +247,7 @@ struct NCShareConfig {
         let cellConfig = config(for: indexPath)
         let cell = cellConfig?.getCell(for: share)
         cell?.textLabel?.text = cellConfig?.title
+        cell?.textLabel?.textColor = UIColor(resource: .Share.Advanced.Cell.title)
         if let cellConfig = cellConfig as? NCPermission, !cellConfig.hasResharePermission(for: resharePermission), !cellConfig.hasDownload() {
             cell?.isUserInteractionEnabled = false
             cell?.textLabel?.isEnabled = false

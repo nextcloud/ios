@@ -382,7 +382,8 @@ extension NCSelect: UICollectionViewDataSource {
 
         // image Favorite
         if metadata.favorite {
-            cell.imageFavorite.image = NCImageCache.images.favorite
+            cell.imageFavorite.image = UIImage(resource: .FileFolderCell.star)
+            
         }
 
         cell.imageSelect.isHidden = true

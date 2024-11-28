@@ -33,7 +33,7 @@ struct FilesDataEntry: TimelineEntry {
     let isEmpty: Bool
     let userId: String
     let url: String
-    let tile: String
+    let title: String
     let footerImage: String
     let footerText: String
 }
@@ -45,6 +45,7 @@ struct FilesData: Identifiable, Hashable {
     var subTitle: String
     var url: URL
     var useTypeIconFile: Bool = false
+	var color: UIColor?
 }
 
 let filesDatasTest: [FilesData] = [
@@ -80,7 +81,7 @@ func getTitleFilesWidget(account: tableAccount?) -> String {
 }
 
 func getFilesItems(displaySize: CGSize) -> Int {
-    let items = Int((displaySize.height - 90) / 55)
+    let items = Int((displaySize.height - 90) / 59)
     return items
 }
 
@@ -92,7 +93,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
     var account: tableAccount?
 
     if isPreview {
-        return completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: "", url: "", tile: getTitleFilesWidget(account: nil), footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " files"))
+        return completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: "", url: "", title: getTitleFilesWidget(account: nil), footerImage: "Cloud_Checkmark", footerText: NCBrandOptions.shared.brand + " files"))
     }
 
     let accountIdentifier: String = configuration?.accounts?.identifier ?? "active"
@@ -103,7 +104,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
     }
 
     guard let account = account else {
-        return completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: "", url: "", tile: getTitleFilesWidget(account: nil), footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
+        return completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: "", url: "", title: getTitleFilesWidget(account: nil), footerImage: "Cloud_Xmark", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
     }
 
     // NETWORKING
@@ -228,6 +229,10 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 }
                 if image == nil {
                     image = utility.loadImage(named: file.iconName, useTypeIconFile: true)
+					if image == UIImage(resource: .fileUnsupported) {
+						// Quick fix unsupported file icon size for widget
+						image = UIImage(resource: .fileUnsupportedNoPadding)
+					}
                     useTypeIconFile = true
                 }
 
@@ -235,7 +240,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 let metadata = NCManageDatabase.shared.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
 
                 // DATA
-                let data = FilesData(id: metadata.ocId, image: image ?? UIImage(), title: metadata.fileNameView, subTitle: subTitle, url: url, useTypeIconFile: useTypeIconFile)
+				let data = FilesData(id: metadata.ocId, image: image ?? UIImage(), title: metadata.fileNameView, subTitle: subTitle, url: url, useTypeIconFile: useTypeIconFile, color: colorByImageName(file.iconName))
                 datas.append(data)
                 if datas.count == filesItems { break}
             }
@@ -244,10 +249,27 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
             let footerText = "Files " + NSLocalizedString("_of_", comment: "") + " " + account.displayName + alias
 
             if error != .success {
-                completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: account.userId, url: account.urlBase, tile: title, footerImage: "xmark.icloud", footerText: error.errorDescription))
+                completion(FilesDataEntry(date: Date(), datas: datasPlaceholder, isPlaceholder: true, isEmpty: false, userId: account.userId, url: account.urlBase, title: title, footerImage: "Cloud_Xmark", footerText: error.errorDescription))
             } else {
-                completion(FilesDataEntry(date: Date(), datas: datas, isPlaceholder: false, isEmpty: datas.isEmpty, userId: account.userId, url: account.urlBase, tile: title, footerImage: "checkmark.icloud", footerText: footerText))
+                completion(FilesDataEntry(date: Date(), datas: datas, isPlaceholder: false, isEmpty: datas.isEmpty, userId: account.userId, url: account.urlBase, title: title, footerImage: "Cloud_Checkmark", footerText: footerText))
             }
         }
     }
+	
+	@Sendable func colorByImageName(_ name: String) -> UIColor {
+		switch name {
+		case NKCommon.TypeIconFile.audio.rawValue, 
+			 NKCommon.TypeIconFile.code.rawValue,
+			 NKCommon.TypeIconFile.compress.rawValue,
+		 	 NKCommon.TypeIconFile.image.rawValue,
+			 NKCommon.TypeIconFile.movie.rawValue,
+			 NKCommon.TypeIconFile.txt.rawValue,
+			 NKCommon.TypeIconFile.url.rawValue: return NCBrandColor.shared.iconImageColor2
+		case NKCommon.TypeIconFile.document.rawValue: return NCBrandColor.shared.documentIconColor
+		case NKCommon.TypeIconFile.ppt.rawValue: return NCBrandColor.shared.presentationIconColor
+		case NKCommon.TypeIconFile.xls.rawValue: return NCBrandColor.shared.spreadsheetIconColor
+			
+		default: return UIColor(resource: .brandElement)
+		}
+	}
 }

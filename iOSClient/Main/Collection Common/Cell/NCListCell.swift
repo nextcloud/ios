@@ -28,7 +28,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var imageFavorite: UIImageView!
-    @IBOutlet weak var imageFavoriteBackground: UIImageView!
     @IBOutlet weak var imageLocal: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
@@ -145,18 +144,11 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         labelTitle.textColor = UIColor(resource: .ListCell.title)
         labelInfo.textColor = UIColor(resource: .ListCell.subtitle)
         labelSubinfo.textColor = UIColor(resource: .ListCell.subtitle)
-
-        imageFavoriteBackground.isHidden = true
     }
 
     override func prepareForReuse() {
         super.prepareForReuse()
         imageItem.backgroundColor = nil
-        if fileFavoriteImage?.image != nil {
-            imageFavoriteBackground.isHidden = false
-        } else {
-            imageFavoriteBackground.isHidden = true
-        }
 
         accessibilityHint = nil
         accessibilityLabel = nil
@@ -284,18 +276,10 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     }
 
     func setIconOutlines() {
-        imageFavoriteBackground.isHidden = fileFavoriteImage?.image == nil
-
         if imageStatus.image != nil {
             imageStatus.makeCircularBackground(withColor: .systemBackground)
         } else {
             imageStatus.backgroundColor = .clear
-        }
-
-        if imageLocal.image != nil {
-            imageLocal.makeCircularBackground(withColor: .systemBackground)
-        } else {
-            imageLocal.backgroundColor = .clear
         }
     }
 }
@@ -309,7 +293,7 @@ protocol NCListCellDelegate: AnyObject {
 // MARK: - List Layout
 
 class NCListLayout: UICollectionViewFlowLayout {
-    var itemHeight: CGFloat = 48
+    var itemHeight: CGFloat = 64
 
     override init() {
         super.init()

@@ -31,12 +31,12 @@ extension UINavigationController {
         return self.visibleViewController!.topMostViewController()
     }
 
-    func setNavigationBarAppearance() {
+    func setNavigationBarAppearance(backround: UIColor = NCBrandColor.shared.appBackgroundColor) {
         navigationBar.tintColor = NCBrandColor.shared.iconImageColor
         
         let standardAppearance = UINavigationBarAppearance()
         standardAppearance.configureWithOpaqueBackground()
-        standardAppearance.backgroundColor = NCBrandColor.shared.appBackgroundColor
+        standardAppearance.backgroundColor = backround
         standardAppearance.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.shared.textColor]
         standardAppearance.titleTextAttributes = [NSAttributedString.Key.foregroundColor: NCBrandColor.shared.textColor]
         standardAppearance.shadowColor = .clear

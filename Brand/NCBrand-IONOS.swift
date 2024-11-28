@@ -14,7 +14,7 @@ import UIKit
     override init() {
         super.init()
         
-        brand = "IONOS"
+        brand = "IONOS HiDrive Next"
         loginBaseUrl = "https://nextcloud-aio.iocaste45.de"
 
         disable_intro = true
@@ -23,7 +23,7 @@ import UIKit
 #if BETA
         capabilitiesGroup = "group.de.strato.ionos.easystorage.beta"
 #elseif APPSTORE
-        capabilitiesGroup = "group.de.ionos.easystorage"
+        capabilitiesGroup = "group.com.ionos.hidrivenext"
 #else
         capabilitiesGroup = "group.com.viseven.ionos.easystorage"
 #endif

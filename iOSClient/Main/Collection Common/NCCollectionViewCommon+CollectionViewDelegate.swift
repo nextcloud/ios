@@ -66,6 +66,10 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
         if metadata.directory {
             pushMetadata(metadata)
+        } else if metadata.isURL,
+                  let url = URL(string: metadata.serverUrl)?.appendingPathComponent(metadata.url),
+                  UIApplication.shared.canOpenURL(url) {
+            UIApplication.shared.open(url)
         } else {
             let imageIcon = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag))
             if !metadata.isDirectoryE2EE && (metadata.isImage || metadata.isAudioOrVideo) {

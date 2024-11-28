@@ -234,7 +234,7 @@ struct NCSettingsAdvancedView: View {
                             .frame(width: 15, height: 20)
 							.foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_exit_", comment: ""))
-                            .foregroundColor(Color(UIColor.systemRed))
+							.foregroundColor(Color(UIColor(resource: .destructiveAction)))
                     }
                     .font(.system(size: 16))
                 })
