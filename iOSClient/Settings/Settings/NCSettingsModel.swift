@@ -141,6 +141,13 @@ struct SetupPasscodeView: UIViewControllerRepresentable {
             }
             passcodeViewController.delegate = context.coordinator
             return passcodeViewController
+        } else if changePasscode {
+                   let passcodeSettingsViewController = TOPasscodeSettingsViewController()
+                   passcodeSettingsViewController.hideOptionsButton = true
+       //            passcodeSettingsViewController.requireCurrentPasscode = true
+                   passcodeSettingsViewController.passcodeType = .sixDigits
+                   passcodeSettingsViewController.delegate = context.coordinator
+                   return passcodeSettingsViewController
         } else {
             let passcodeSettingsViewController = TOPasscodeSettingsViewController()
             passcodeSettingsViewController.hideOptionsButton = true

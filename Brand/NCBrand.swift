@@ -72,13 +72,13 @@ let userAgent: String = {
     var disable_show_more_nextcloud_apps_in_settings: Bool = false
     var doNotAskPasscodeAtStartup: Bool = false
     var disable_source_code_in_settings: Bool = false
-    var enforce_protection = false
+    var enforce_passcode_lock = false
 
     // (name: "Name 1", url: "https://cloud.nextcloud.com"),(name: "Name 2", url: "https://cloud.nextcloud.com")
     var enforce_servers: [(name: String, url: String)] = []
 
     // Internal option behaviour
-    var cleanUpDay: Int = 0                                                        // Set default "Delete, in the cache, all files older than" possible days value are: 0, 1, 7, 30, 90, 180, 365
+    var cleanUpDay: Int = 0                                                        // Set default "Delete all cached files older than" possible days value are: 0, 1, 7, 30, 90, 180, 365
 
     // Max download/upload concurrent
     let maxConcurrentOperationDownload: Int = 5
@@ -96,7 +96,6 @@ let userAgent: String = {
     override init() {
         // wrapper AppConfig
         if let configurationManaged = UserDefaults.standard.dictionary(forKey: "com.apple.configuration.managed"), use_AppConfig {
-
             if let str = configurationManaged[NCGlobal.shared.configuration_brand] as? String {
                 brand = str
             }
@@ -118,8 +117,8 @@ let userAgent: String = {
             if let str = configurationManaged[NCGlobal.shared.configuration_disable_openin_file] as? String {
                 disable_openin_file = (str as NSString).boolValue
             }
-            if let str = configurationManaged[NCGlobal.shared.configuration_enforce_protection] as? String {
-                enforce_protection = (str as NSString).boolValue
+            if let str = configurationManaged[NCGlobal.shared.configuration_enforce_passcode_lock] as? String {
+                enforce_passcode_lock = (str as NSString).boolValue
             }
         }
     }

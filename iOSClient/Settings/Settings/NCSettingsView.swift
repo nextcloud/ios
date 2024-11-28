@@ -71,16 +71,16 @@ struct NCSettingsView: View {
                             .scaledToFit()
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             .frame(width: 20, height: 20)
-                            .opacity(NCBrandOptions.shared.enforce_protection ? 0.5 : 1)
+                            .opacity(NCBrandOptions.shared.enforce_passcode_lock ? 0.5 : 1)
                         Text(model.isLockActive ? NSLocalizedString("_lock_active_", comment: "") : NSLocalizedString("_lock_not_active_", comment: ""))
                     }
                 })
                 .tint(Color(NCBrandColor.shared.textColor))
-                .disabled(NCBrandOptions.shared.enforce_protection)
+                .disabled(NCBrandOptions.shared.enforce_passcode_lock)
             }, header: {
                 Text(NSLocalizedString("_privacy_", comment: ""))
             }, footer: {
-                if NCBrandOptions.shared.enforce_protection {
+                if NCBrandOptions.shared.enforce_passcode_lock {
                     Text(NSLocalizedString("_lock_cannot_disable_mdm_", comment: ""))
                 }
             })
@@ -102,11 +102,14 @@ struct NCSettingsView: View {
                             .onChange(of: model.enableTouchID) { _ in
                                 model.updateTouchIDSetting()
                             }
-                        /// Lock no screen
-                        Toggle(NSLocalizedString("_lock_protection_no_screen_", comment: ""), isOn: $model.lockScreen)
-                            .onChange(of: model.lockScreen) { _ in
-                                model.updateLockScreenSetting()
-                            }
+
+                        if !NCBrandOptions.shared.enforce_passcode_lock {
+                            /// Do not ask for passcode on startup
+                            Toggle(NSLocalizedString("_lock_protection_no_screen_", comment: ""), isOn: $model.lockScreen)
+                                .onChange(of: model.lockScreen) { _ in
+                                    model.updateLockScreenSetting()
+                                }
+                        }
 
                         /// Reset app wrong attempts
                         Toggle(NSLocalizedString("_reset_wrong_passcode_option_", comment: ""), isOn: $model.resetWrongAttempts)
@@ -121,7 +124,7 @@ struct NCSettingsView: View {
             }
 
             Section {
-                /// Privacy screen
+                /// Splash screen when app inactive
                 Toggle(NSLocalizedString("_privacy_screen_", comment: ""), isOn: $model.privacyScreen)
                     .onChange(of: model.privacyScreen) { _ in
                         model.updatePrivacyScreenSetting()
