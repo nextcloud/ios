@@ -101,10 +101,5 @@ struct SetupPasscodeView: UIViewControllerRepresentable {
             }
             return false
         }
-
-        func passcodeSettingsViewController(_ passcodeSettingsViewController: TOPasscodeSettingsViewController, didAttemptCurrentPasscode passcode: String) -> Bool {
-            // verify here if the code is correct
-            return true
-        }
     }
 }
