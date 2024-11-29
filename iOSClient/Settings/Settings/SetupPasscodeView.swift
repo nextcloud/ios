@@ -18,40 +18,32 @@ struct SetupPasscodeView: UIViewControllerRepresentable {
     func makeUIViewController(context: Context) -> UIViewController {
         let laContext = LAContext()
         var error: NSError?
-        if NCKeychain().passcode != nil, !changePasscode {
-            let passcodeViewController = TOPasscodeViewController(passcodeType: .sixDigits, allowCancel: true)
-            passcodeViewController.keypadButtonShowLettering = false
-            if NCKeychain().touchFaceID && laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
-                if error == nil {
-                    if laContext.biometryType == .faceID {
-                        passcodeViewController.biometryType = .faceID
-                        passcodeViewController.allowBiometricValidation = true
-                        passcodeViewController.automaticallyPromptForBiometricValidation = true
-                    } else if laContext.biometryType == .touchID {
-                        passcodeViewController.biometryType = .touchID
-                        passcodeViewController.allowBiometricValidation = true
-                        passcodeViewController.automaticallyPromptForBiometricValidation = true
-                    } else {
-                        print("No Biometric support")
-                    }
+        if let passcode = NCKeychain().passcode, !changePasscode {
+            let passcodeVC = TOPasscodeViewController(passcodeType: .sixDigits, allowCancel: true)
+            passcodeVC.keypadButtonShowLettering = false
+
+            if NCKeychain().touchFaceID, laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error), error == nil {
+                switch laContext.biometryType {
+                case .faceID:
+                    passcodeVC.biometryType = .faceID
+                case .touchID:
+                    passcodeVC.biometryType = .touchID
+                default:
+                    print("No Biometric support")
                 }
+                passcodeVC.allowBiometricValidation = true
+                passcodeVC.automaticallyPromptForBiometricValidation = true
             }
-            passcodeViewController.delegate = context.coordinator
-            return passcodeViewController
-        } else if changePasscode {
-            let passcodeSettingsViewController = TOPasscodeSettingsViewController()
-            passcodeSettingsViewController.hideOptionsButton = true
-            passcodeSettingsViewController.requireCurrentPasscode = true
-            passcodeSettingsViewController.passcodeType = .sixDigits
-            passcodeSettingsViewController.delegate = context.coordinator
-            return passcodeSettingsViewController
+
+            passcodeVC.delegate = context.coordinator
+            return passcodeVC
         } else {
-            let passcodeSettingsViewController = TOPasscodeSettingsViewController()
-            passcodeSettingsViewController.hideOptionsButton = true
-            passcodeSettingsViewController.requireCurrentPasscode = false
-            passcodeSettingsViewController.passcodeType = .sixDigits
-            passcodeSettingsViewController.delegate = context.coordinator
-            return passcodeSettingsViewController
+            let passcodeSettingsVC = TOPasscodeSettingsViewController()
+            passcodeSettingsVC.hideOptionsButton = true
+            passcodeSettingsVC.requireCurrentPasscode = changePasscode
+            passcodeSettingsVC.passcodeType = .sixDigits
+            passcodeSettingsVC.delegate = context.coordinator
+            return passcodeSettingsVC
         }
     }
 
@@ -87,6 +79,10 @@ struct SetupPasscodeView: UIViewControllerRepresentable {
             }
         }
 
+        func passcodeSettingsViewController(_ passcodeSettingsViewController: TOPasscodeSettingsViewController, didAttemptCurrentPasscode passcode: String) -> Bool {
+            return passcode == NCKeychain().passcode
+        }
+
         func passcodeSettingsViewController(_ passcodeSettingsViewController: TOPasscodeSettingsViewController, didChangeToNewPasscode passcode: String, of type: TOPasscodeType) {
             NCKeychain().passcode = passcode
             self.parent.isLockActive = true
@@ -97,8 +93,8 @@ struct SetupPasscodeView: UIViewControllerRepresentable {
             passcodeViewController.dismiss(animated: true)
         }
 
-        func passcodeViewController(_ passcodeViewController: TOPasscodeViewController, isCorrectCode code: String) -> Bool {
-            if code == NCKeychain().passcode {
+        func passcodeViewController(_ passcodeViewController: TOPasscodeViewController, isCorrectCode passcode: String) -> Bool {
+            if passcode == NCKeychain().passcode {
                 self.parent.isLockActive = false
                 NCKeychain().passcode = nil
                 return true

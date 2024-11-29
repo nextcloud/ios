@@ -47,13 +47,11 @@ class NCImageCache: NSObject {
     override init() {
         super.init()
 
-        countLimit = calculateMaxImages(percentage: 5.0, imageSizeKB: 30.0) // 5% of cache = 20
+        countLimit = calculateMaxImages(percentage: 2.5, imageSizeKB: 30.0)
         NextcloudKit.shared.nkCommonInstance.writeLog("Counter cache image: \(countLimit)")
 
         NotificationCenter.default.addObserver(forName: LRUCacheMemoryWarningNotification, object: nil, queue: nil) { _ in
             self.cache.removeAllValues()
-            self.countLimit = self.countLimit - 500
-            if self.countLimit <= 0 { self.countLimit = 100 }
             self.cache = LRUCache<String, UIImage>(countLimit: self.countLimit)
     #if DEBUG
             NCContentPresenter().messageNotification("Cache image memory warning \(self.countLimit)", error: .success, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
