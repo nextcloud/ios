@@ -1126,6 +1126,7 @@
 "_required_data_collection_description_" = "Die Datenerfassung ist notwendig für essenzielle App-Funktionen.";
 "_analysis_of_data_collection_" = "Analysis of data collection";
 "_analysis_of_data_collection_description_" = "Anonyme Daten helfen, die App zu optimieren und Fehler zu erkennen.";
+"_data_protection_" = "Datenschutz";
 "_save_settings_" = "Einstellungen  speichern";
 
 

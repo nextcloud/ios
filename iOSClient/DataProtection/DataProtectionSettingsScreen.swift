@@ -65,13 +65,15 @@ struct DataProtectionSettingsScreen: View {
             Spacer()
             
             Button(NSLocalizedString("_save_settings_", comment: "")) {
-                
+                DataProtectionAgreementManager.shared?.dismissView()
             }
             .buttonStyle(ButtonStylePrimary(maxWidth: .infinity))
             .padding(16.0)
         }
         .background(Color(.AppBackground.form))
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .navigationTitle(NSLocalizedString("_data_protection_", comment:""))
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
