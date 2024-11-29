@@ -82,7 +82,6 @@ struct SetupPasscodeView: UIViewControllerRepresentable {
         }
 
         func passcodeSettingsViewController(_ passcodeSettingsViewController: TOPasscodeSettingsViewController, didAttemptCurrentPasscode passcode: String) -> Bool {
-            print(passcodeSettingsViewController.failedPasscodeAttemptCount)
             if passcode == NCKeychain().passcode {
                 return true
             } else if passcodeSettingsViewController.failedPasscodeAttemptCount == parent.maxFailedAttempts {
