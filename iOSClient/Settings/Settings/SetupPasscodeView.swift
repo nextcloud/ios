@@ -15,7 +15,7 @@ import PopupView
 struct SetupPasscodeView: UIViewControllerRepresentable {
     @Binding var isLockActive: Bool
     var changePasscode: Bool = false
-    let maxFailedAttempts = 3
+    let maxFailedAttempts = 2
 
     func makeUIViewController(context: Context) -> UIViewController {
         let laContext = LAContext()
@@ -82,12 +82,15 @@ struct SetupPasscodeView: UIViewControllerRepresentable {
         }
 
         func passcodeSettingsViewController(_ passcodeSettingsViewController: TOPasscodeSettingsViewController, didAttemptCurrentPasscode passcode: String) -> Bool {
-            if passcodeSettingsViewController.failedPasscodeAttemptCount == parent.maxFailedAttempts - 1 {
+            print(passcodeSettingsViewController.failedPasscodeAttemptCount)
+            if passcode == NCKeychain().passcode {
+                return true
+            } else if passcodeSettingsViewController.failedPasscodeAttemptCount == parent.maxFailedAttempts {
                 passcodeSettingsViewController.dismiss(animated: true)
                 NCContentPresenter().showCustomMessage(message: NSLocalizedString("_too_many_failed_passcode_attempts_error_", comment: ""), type: .error)
             }
 
-            return passcode == NCKeychain().passcode
+            return false
         }
 
         func passcodeSettingsViewController(_ passcodeSettingsViewController: TOPasscodeSettingsViewController, didChangeToNewPasscode passcode: String, of type: TOPasscodeType) {
@@ -99,7 +102,7 @@ struct SetupPasscodeView: UIViewControllerRepresentable {
         func didTapCancel(in passcodeViewController: TOPasscodeViewController) {
             passcodeViewController.dismiss(animated: true)
         }
-
+        
         func passcodeViewController(_ passcodeViewController: TOPasscodeViewController, isCorrectCode passcode: String) -> Bool {
             if passcode == NCKeychain().passcode {
                 parent.isLockActive = false
