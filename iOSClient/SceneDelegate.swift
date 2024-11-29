@@ -26,6 +26,7 @@ import UIKit
 import NextcloudKit
 import WidgetKit
 import SwiftEntryKit
+import SwiftUI
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?

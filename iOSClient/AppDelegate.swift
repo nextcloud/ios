@@ -105,6 +105,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             self.handleProcessingTask(task)
         }
 
+        if NCBrandOptions.shared.enforce_passcode_lock {
+            NCKeychain().requestPasscodeAtStart = true
+        }
+
         /// Activation singleton
         _ = NCActionCenter.shared
         _ = NCNetworkingProcess.shared
