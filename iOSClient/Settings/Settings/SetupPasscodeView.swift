@@ -15,7 +15,7 @@ import PopupView
 struct SetupPasscodeView: UIViewControllerRepresentable {
     @Binding var isLockActive: Bool
     var changePasscode: Bool = false
-    let maxFailedAttempts = 2
+    let maxFailedAttempts = 2 // + 1 = 3... The lib failed attempt counter starts at 0. Why? Who knows.
 
     func makeUIViewController(context: Context) -> UIViewController {
         let laContext = LAContext()
@@ -102,14 +102,14 @@ struct SetupPasscodeView: UIViewControllerRepresentable {
         func didTapCancel(in passcodeViewController: TOPasscodeViewController) {
             passcodeViewController.dismiss(animated: true)
         }
-        
+
         func passcodeViewController(_ passcodeViewController: TOPasscodeViewController, isCorrectCode passcode: String) -> Bool {
             if passcode == NCKeychain().passcode {
                 parent.isLockActive = false
                 NCKeychain().passcode = nil
                 return true
             }
-            
+
             return false
         }
     }
