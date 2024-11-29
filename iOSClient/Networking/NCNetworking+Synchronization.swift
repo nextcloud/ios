@@ -84,7 +84,7 @@ extension NCNetworking {
 
     func isSynchronizable(ocId: String, fileName: String, etag: String) -> Bool {
         if let metadata = self.database.getMetadataFromOcId(ocId),
-           (metadata.status == self.global.metadataStatusDownloading || metadata.status == self.global.metadataStatusWaitDownload) {
+           metadata.status == self.global.metadataStatusDownloading || metadata.status == self.global.metadataStatusWaitDownload {
             return false
         }
         let localFile = self.database.getResultsTableLocalFile(predicate: NSPredicate(format: "ocId == %@", ocId))?.first

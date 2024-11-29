@@ -38,7 +38,7 @@ class NCCreateDocument: NSObject {
         var options = NKRequestOptions()
         let serverUrl = controller.currentServerUrl()
 
-        if let creatorId, (editorId == NCGlobal.shared.editorText || editorId == NCGlobal.shared.editorOnlyoffice) {
+        if let creatorId, editorId == NCGlobal.shared.editorText || editorId == NCGlobal.shared.editorOnlyoffice {
             if editorId == NCGlobal.shared.editorOnlyoffice {
                 options = NKRequestOptions(customUserAgent: NCUtility().getCustomUserAgentOnlyOffice())
             } else if editorId == NCGlobal.shared.editorText {

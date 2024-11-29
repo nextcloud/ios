@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="dark"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -37,7 +37,7 @@
                                     <constraint firstAttribute="height" constant="20" id="HVo-ht-9m6"/>
                                 </constraints>
                                 <state key="normal">
-                                    <imageReference key="image" image="doc.on.doc" catalog="system" renderingMode="hierarchical">
+                                    <imageReference key="image" image="document.on.document" catalog="system" renderingMode="hierarchical">
                                         <hierarchicalColors>
                                             <color systemColor="labelColor"/>
                                             <color systemColor="secondaryLabelColor"/>
@@ -111,7 +111,7 @@
         </tableViewCell>
     </objects>
     <resources>
-        <image name="doc.on.doc" catalog="system" width="116" height="128"/>
+        <image name="document.on.document" catalog="system" width="116" height="128"/>
         <image name="ellipsis" catalog="system" width="128" height="37"/>
         <image name="link.circle.fill" catalog="system" width="128" height="123"/>
         <systemColor name="labelColor">

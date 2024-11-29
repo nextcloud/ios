@@ -262,7 +262,7 @@ class NCViewerMedia: UIViewController {
             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
         }
 
-        if metadata.isImage, (fileNameExtension == "GIF" || fileNameExtension == "SVG"), !utilityFileSystem.fileProviderStorageExists(metadata) {
+        if metadata.isImage, fileNameExtension == "GIF" || fileNameExtension == "SVG", !utilityFileSystem.fileProviderStorageExists(metadata) {
             downloadImage()
         }
 
