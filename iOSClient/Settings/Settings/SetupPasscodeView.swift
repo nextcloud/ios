@@ -10,15 +10,17 @@ import Foundation
 import UIKit
 import SwiftUI
 import LocalAuthentication
+import PopupView
 
 struct SetupPasscodeView: UIViewControllerRepresentable {
     @Binding var isLockActive: Bool
-    var changePasscode = false
+    var changePasscode: Bool = false
+    let maxFailedAttempts = 3
 
     func makeUIViewController(context: Context) -> UIViewController {
         let laContext = LAContext()
         var error: NSError?
-        if let passcode = NCKeychain().passcode, !changePasscode {
+        if !NCKeychain().passcode.isEmptyOrNil, !changePasscode {
             let passcodeVC = TOPasscodeViewController(passcodeType: .sixDigits, allowCancel: true)
             passcodeVC.keypadButtonShowLettering = false
 
@@ -80,12 +82,17 @@ struct SetupPasscodeView: UIViewControllerRepresentable {
         }
 
         func passcodeSettingsViewController(_ passcodeSettingsViewController: TOPasscodeSettingsViewController, didAttemptCurrentPasscode passcode: String) -> Bool {
+            if passcodeSettingsViewController.failedPasscodeAttemptCount == parent.maxFailedAttempts - 1 {
+                passcodeSettingsViewController.dismiss(animated: true)
+                NCContentPresenter().showCustomMessage(message: NSLocalizedString("_too_many_failed_passcode_attempts_error_", comment: ""), type: .error)
+            }
+
             return passcode == NCKeychain().passcode
         }
 
         func passcodeSettingsViewController(_ passcodeSettingsViewController: TOPasscodeSettingsViewController, didChangeToNewPasscode passcode: String, of type: TOPasscodeType) {
             NCKeychain().passcode = passcode
-            self.parent.isLockActive = true
+            parent.isLockActive = true
             passcodeSettingsViewController.dismiss(animated: true)
         }
 
@@ -95,10 +102,11 @@ struct SetupPasscodeView: UIViewControllerRepresentable {
 
         func passcodeViewController(_ passcodeViewController: TOPasscodeViewController, isCorrectCode passcode: String) -> Bool {
             if passcode == NCKeychain().passcode {
-                self.parent.isLockActive = false
+                parent.isLockActive = false
                 NCKeychain().passcode = nil
                 return true
             }
+            
             return false
         }
     }

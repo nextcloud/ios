@@ -58,6 +58,10 @@ class NCContentPresenter: NSObject {
 
     // MARK: - Message
 
+    func showCustomMessage(title: String = "", message: String, priority: EKAttributes.Precedence.Priority = .normal, delay: TimeInterval = NCGlobal.shared.dismissAfterSecond, type: messageType) {
+        self.flatTop(title: NSLocalizedString(title, comment: ""), description: message, delay: delay, type: type, priority: priority, dropEnqueuedEntries: false)
+    }
+
     func showError(error: NKError, priority: EKAttributes.Precedence.Priority = .normal) {
         messageNotification(
             "_error_",

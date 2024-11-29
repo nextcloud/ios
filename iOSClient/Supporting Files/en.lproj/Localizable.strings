@@ -868,6 +868,7 @@
 "Enter Passcode"            = "Enter Passcode";
 "Enter a new passcode"      = "Enter a new passcode";
 "Confirm new passcode"      = "Confirm new passcode";
+"_too_many_failed_passcode_attempts_error_" = "Too many failed passcode attempts. Please try again.";
 "Passcodes didn't match. Try again." = "Passcodes didn't match. Try again.";
 "Delete"                    = "Delete";
 "Cancel"                    = "Cancel";
