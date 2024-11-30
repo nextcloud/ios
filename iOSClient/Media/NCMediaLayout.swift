@@ -176,8 +176,14 @@ public class NCMediaLayout: UICollectionViewLayout {
             for idx in 0..<itemCount {
                 let indexPath = IndexPath(item: idx, section: section)
                 let columnIndex = shortestColumnIndex()
+                let xOffset: Float
 
-                let xOffset = Float(sectionInset.left) + Float(itemWidth + minimumColumnSpacing) * Float(columnIndex)
+                if UIView.userInterfaceLayoutDirection(for: collectionView.semanticContentAttribute) == .leftToRight {
+                    xOffset = Float(sectionInset.left) + Float(itemWidth + minimumColumnSpacing) * Float(columnIndex)
+                } else {
+                    xOffset = Float(collectionView.frame.width) - Float(sectionInset.right) - Float(itemWidth + minimumColumnSpacing) * Float(columnIndex + 1)
+                }
+
                 let yOffset = columnHeights[columnIndex]
                 let typeLayout = delegate.getLayout() ?? NCGlobal.shared.mediaLayoutRatio
                 let itemSize = delegate.collectionView(collectionView, layout: self, sizeForItemAtIndexPath: indexPath, columnCount: self.columnCount, typeLayout: typeLayout)

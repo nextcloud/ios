@@ -294,7 +294,7 @@ extension tableMetadata {
     }
 
     var isAvailableRichDocumentEditorView: Bool {
-        guard (classFile == NKCommon.TypeClassFile.document.rawValue),
+        guard classFile == NKCommon.TypeClassFile.document.rawValue,
               NCCapabilities.shared.getCapabilities(account: account).capabilityRichDocumentsEnabled,
               NextcloudKit.shared.isNetworkReachable() else { return false }
 
