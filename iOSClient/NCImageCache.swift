@@ -47,7 +47,7 @@ class NCImageCache: NSObject {
     override init() {
         super.init()
 
-        countLimit = calculateMaxImages(percentage: 2.5, imageSizeKB: 30.0)
+        countLimit = calculateMaxImages(percentage: 4, imageSizeKB: 30.0)
         NextcloudKit.shared.nkCommonInstance.writeLog("Counter cache image: \(countLimit)")
 
         NotificationCenter.default.addObserver(forName: LRUCacheMemoryWarningNotification, object: nil, queue: nil) { _ in
@@ -91,7 +91,6 @@ class NCImageCache: NSObject {
 
                     /// MEDIA
                     if let metadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: self.getMediaPredicate(filterLivePhotoFile: true, session: session, showOnlyImages: false, showOnlyVideos: false), sortedByKeyPath: "date", freeze: true)?.prefix(self.countLimit) {
-
                         autoreleasepool {
                             self.cache.removeAllValues()
 
@@ -100,7 +99,9 @@ class NCImageCache: NSObject {
                                     self.cache.removeAllValues()
                                     break
                                 }
-
+                                if metadata.isInvalidated {
+                                    continue
+                                }
                                 if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt256) {
                                     self.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: NCGlobal.shared.previewExt256, cost: cost)
                                     cost += 1
