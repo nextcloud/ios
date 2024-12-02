@@ -36,7 +36,7 @@ class NCImageCache: NSObject {
     private let allowExtensions = [NCGlobal.shared.previewExt256]
     private var brandElementColor: UIColor?
 
-    public var countLimit: Int = 0
+    public var countLimit: Int = 2000
     lazy var cache: LRUCache<String, UIImage> = {
         return LRUCache<String, UIImage>(countLimit: countLimit)
     }()
@@ -47,22 +47,15 @@ class NCImageCache: NSObject {
     override init() {
         super.init()
 
-        countLimit = calculateMaxImages(percentage: 4, imageSizeKB: 30.0)
-        NextcloudKit.shared.nkCommonInstance.writeLog("Counter cache image: \(countLimit)")
-
         NotificationCenter.default.addObserver(forName: LRUCacheMemoryWarningNotification, object: nil, queue: nil) { _ in
             self.cache.removeAllValues()
             self.cache = LRUCache<String, UIImage>(countLimit: self.countLimit)
-    #if DEBUG
-            NCContentPresenter().messageNotification("Cache image memory warning \(self.countLimit)", error: .success, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
-    #endif
         }
 
         NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: nil) { _ in
             self.isDidEnterBackground = true
-            autoreleasepool {
-                self.cache.removeAllValues()
-            }
+            self.cache.removeAllValues()
+            self.cache = LRUCache<String, UIImage>(countLimit: self.countLimit)
         }
 
         NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil) { _ in
@@ -99,9 +92,6 @@ class NCImageCache: NSObject {
                                     self.cache.removeAllValues()
                                     break
                                 }
-                                if metadata.isInvalidated {
-                                    continue
-                                }
                                 if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt256) {
                                     self.addImageCache(ocId: metadata.ocId, etag: metadata.etag, image: image, ext: NCGlobal.shared.previewExt256, cost: cost)
                                     cost += 1
@@ -126,15 +116,6 @@ class NCImageCache: NSObject {
 
     deinit {
         NotificationCenter.default.removeObserver(self, name: LRUCacheMemoryWarningNotification, object: nil)
-    }
-
-    func calculateMaxImages(percentage: Double, imageSizeKB: Double) -> Int {
-        let totalRamBytes = Double(ProcessInfo.processInfo.physicalMemory)
-        let cacheSizeBytes = totalRamBytes * (percentage / 100.0)
-        let imageSizeBytes = imageSizeKB * 1024
-        let maxImages = Int(cacheSizeBytes / imageSizeBytes)
-
-        return maxImages
     }
 
     func allowExtensions(ext: String) -> Bool {
