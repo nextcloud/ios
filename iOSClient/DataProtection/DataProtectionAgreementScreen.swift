@@ -41,11 +41,20 @@ struct DataProtectionAgreementScreen: View {
                             .padding(.bottom, 12.0)
                         
                         ScrollView {
-                            Text("Diese Anwendung verwendet Cookies und ähnliche Technologien. Durch Klicken auf Zustimmen akzeptieren Sie die Verarbeitung und auch die Weitergabe Ihrer Daten an Dritte. Weitere Informationen, auch zur Datenverarbeitung durch Drittanbieter, finden Sie in den Einstellungen und in unserer [Datenschutzhinweise](https://google.com).Sie können die Nutzung der Tools [Ablehnen](https://google.com) oder Ihre Auswahl jederzeit über Ihre Einstellungenanpassen")
+                            Text(.init(NSLocalizedString("_privacy_settings_description_", comment: "")))
                                 .font(textFont)
                                 .multilineTextAlignment(.leading)
                                 .foregroundStyle(.white)
                                 .accentColor(Color(.DataProtection.link))
+                                .environment(\.openURL, OpenURLAction { url in
+                                    if url.absoluteString == "link://privacypolicy" {
+                                        UIApplication.shared.open(URL(string:"https://google.com")!)
+                                    }
+                                    else if url.absoluteString == "link://reject" {
+                                        DataProtectionAgreementManager.shared?.dismissView()
+                                    }
+                                    return .discarded
+                                })
                         }
                         .padding(.bottom, 24)
                     }
@@ -74,6 +83,7 @@ struct DataProtectionAgreementScreen: View {
                 }
             }
             .accentColor(Color(.DataProtection.navigationBarTint))
+            .navigationViewStyle(StackNavigationViewStyle())
         }
     }
 }

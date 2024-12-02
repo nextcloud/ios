@@ -1118,16 +1118,17 @@
 
 //MARK: Data Protection Screens
 "_agree_" = "Agree";
-"_privacy_settings_" = "Datenschutz-Einstellungen";
-"_privacy_settings_description_" = "Diese Anwendung verwendet Cookies und ähnliche Technologien. Durch Klicken auf Zustimmen akzeptieren Sie die Verarbeitung und auch die Weitergabe Ihrer Daten an Dritte. Weitere Informationen, auch zur Datenverarbeitung durch Drittanbieter, finden Sie in den Einstellungen und in unserer [Datenschutzhinweise](https://google.com).Sie können die Nutzung der Tools [Ablehnen](https://google.com) oder Ihre Auswahl jederzeit über Ihre Einstellungenanpassen.";
+"_privacy_settings_" = "Privacy Settings";
+"_privacy_settings_description_" = "This application uses cookies and similar technologies. By clicking on Agree, you consent to the processing of your data and also to its transfer to third parties. \nVisit our [Privacy Policy](link://privacypolicy) for more information, also on data processing by third party providers.\nClick on [Reject](link://reject) to prevent use of the tool, or change your selection at any time in Settings.";
 "_data_usage_for_app_optimization_" = "Datennutzung zur App-Optimierung";
-"_data_usage_for_app_optimization_description_" = "Zur Verbesserung erfassen wir anonymisierte Daten mit Partner-Software. Sie haben jederzeit volle Kontrolle in den Datenschutzeinstellungen. Beachten Sie, dass Blockieren die Optimierung behindert";
-"_required_data_collection_" = "Required data collection";
-"_required_data_collection_description_" = "Die Datenerfassung ist notwendig für essenzielle App-Funktionen.";
-"_analysis_of_data_collection_" = "Analysis of data collection";
-"_analysis_of_data_collection_description_" = "Anonyme Daten helfen, die App zu optimieren und Fehler zu erkennen.";
-"_data_protection_" = "Datenschutz";
-"_save_settings_" = "Einstellungen  speichern";
+"_data_usage_for_app_optimization_description_" = "We collect anonymized data to optimize our app.\nWe use software solutions by various partners for this purpose. Our intention is to offer full transparency and allow you to decide how your anonymized data is collected and used. You can also change your settings at any time later on under the Privacy menu item. Please note, however, that data collection contributes significantly to optimizing this app and that you would prevent these improvements by rejecting the transfer of data.";
+
+"_required_data_collection_" = "Necessary data collection";
+"_required_data_collection_description_" = "This data helps us to optimize your user experience and to identify system crashes and bugs.";
+"_analysis_of_data_collection_" = "Data analysis for needs-based design";
+"_analysis_of_data_collection_description_" = "This data helps us to optimize your user experience and to identify system crashes and bugs.";
+"_data_protection_" = "Data Privacy";
+"_save_settings_" = "Save Settings";
 
 
 

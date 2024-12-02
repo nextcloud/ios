@@ -12,9 +12,15 @@ struct DataProtectionSettingsScreen: View {
     
     @ObservedObject var model = DataProtectionModel()
     
+    var isIPad: Bool {
+        UIDevice.current.userInterfaceIdiom == .pad
+    }
+    
     var body: some View {
-        let titleFont = Font.system(size: 16.0, weight: .bold)
-        let textFont = Font.system(size: 16.0)
+        let titleFont = Font.system(size: isIPad ? 24.0 : 16.0, weight: .bold)
+        let textFont = Font.system(size: isIPad ? 18.0 : 16.0)
+        let listRowTitleFont = Font.system(size: 16.0, weight: .bold)
+        let listRowSubtitleFont = Font.system(size: 16.0)
         
         VStack {
             ScrollView {
@@ -42,10 +48,10 @@ struct DataProtectionSettingsScreen: View {
                         VStack(alignment: .leading) {
                             Toggle(NSLocalizedString("_required_data_collection_", comment: ""), isOn: $model.requiredDataCollection)
                                 .tint(Color(NCBrandColor.shared.switchColor))
-                                .font(titleFont)
+                                .font(listRowTitleFont)
                                 .foregroundStyle(Color(.ListCell.title))
                             Text("_required_data_collection_description_")
-                                .font(textFont)
+                                .font(listRowSubtitleFont)
                                 .multilineTextAlignment(.leading)
                                 .foregroundStyle(Color(.DataProtection.listRowSubtitle))
                         }
@@ -59,10 +65,10 @@ struct DataProtectionSettingsScreen: View {
                         VStack(alignment: .leading) {
                             Toggle(NSLocalizedString("_analysis_of_data_collection_", comment: ""), isOn: $model.analysisOfDataCollection)
                                 .tint(Color(NCBrandColor.shared.switchColor))
-                                .font(titleFont)
+                                .font(listRowTitleFont)
                                 .foregroundStyle(Color(.ListCell.title))
                             Text("_analysis_of_data_collection_description_")
-                                .font(textFont)
+                                .font(listRowSubtitleFont)
                                 .multilineTextAlignment(.leading)
                                 .foregroundStyle(Color(.DataProtection.listRowSubtitle))
                         }
@@ -72,7 +78,6 @@ struct DataProtectionSettingsScreen: View {
                                             trailing: 16.0))
                         
                         divider()
-                        
                     }
                     .background(Color(.DataProtection.listRow))
                 }
@@ -84,13 +89,13 @@ struct DataProtectionSettingsScreen: View {
             Button(NSLocalizedString("_save_settings_", comment: "")) {
                 DataProtectionAgreementManager.shared?.dismissView()
             }
-            .buttonStyle(ButtonStylePrimary(maxWidth: .infinity))
+            .buttonStyle(ButtonStylePrimary(maxWidth: 288.0))
             .padding(16.0)
         }
         .background(Color(.AppBackground.dataProtection))
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .navigationTitle(NSLocalizedString("_data_protection_", comment:""))
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarTitleDisplayMode(isIPad ? .large : .inline)
     }
     
     private func divider() -> some View {
