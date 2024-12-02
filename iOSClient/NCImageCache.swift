@@ -91,7 +91,6 @@ class NCImageCache: NSObject {
 
                     /// MEDIA
                     if let metadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: self.getMediaPredicate(filterLivePhotoFile: true, session: session, showOnlyImages: false, showOnlyVideos: false), sortedByKeyPath: "date", freeze: true)?.prefix(self.countLimit) {
-
                         autoreleasepool {
                             self.cache.removeAllValues()
 
