@@ -286,7 +286,8 @@ class NCMedia: UIViewController {
             dataSource.removeMetadata([ocId])
             database.deleteMetadataOcId(ocId)
 
-            if !indexPaths.isEmpty {
+            if !indexPaths.isEmpty,
+               !indexPaths.filter({ $0.item < self.dataSource.metadatas.count }).isEmpty {
                 collectionView.deleteItems(at: indexPaths)
             } else {
                 collectionViewReloadData()
