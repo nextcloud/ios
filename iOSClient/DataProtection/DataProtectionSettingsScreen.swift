@@ -13,54 +13,71 @@ struct DataProtectionSettingsScreen: View {
     @ObservedObject var model = DataProtectionModel()
     
     var body: some View {
+        let titleFont = Font.system(size: 16.0, weight: .bold)
+        let textFont = Font.system(size: 16.0)
+        
         VStack {
-            List {
-                let titleFont = Font.system(size: 16.0, weight: .bold)
-                let textFont = Font.system(size: 16.0)
-                Section {
-                    VStack(alignment: .leading) {
-                        Text(NSLocalizedString("_data_usage_for_app_optimization_", comment: ""))
-                            .font(titleFont)
-                            .foregroundStyle(Color(.ListCell.title))
-                            .padding(.bottom, 12.0)
+            ScrollView {
+                VStack(alignment: .leading){
+                    Text(NSLocalizedString("_data_usage_for_app_optimization_", comment: ""))
+                        .font(titleFont)
+                        .foregroundStyle(Color(.ListCell.title))
+                        .padding(EdgeInsets(top: 32.0,
+                                            leading: 16.0,
+                                            bottom: 0.0,
+                                            trailing: 16.0))
+                    
+                    Text("_data_usage_for_app_optimization_description_")
+                        .font(textFont)
+                        .multilineTextAlignment(.leading)
+                        .foregroundStyle(Color(.ListCell.title))
+                        .padding(EdgeInsets(top: 0.0,
+                                            leading: 16.0,
+                                            bottom: 32.0,
+                                            trailing: 16.0))
+                    
+                    VStack{
+                        divider()
                         
-                        Text("_data_usage_for_app_optimization_description_")
-                            .font(textFont)
-                            .multilineTextAlignment(.leading)
-                            .foregroundStyle(Color(.ListCell.title))
+                        VStack(alignment: .leading) {
+                            Toggle(NSLocalizedString("_required_data_collection_", comment: ""), isOn: $model.requiredDataCollection)
+                                .tint(Color(NCBrandColor.shared.switchColor))
+                                .font(titleFont)
+                                .foregroundStyle(Color(.ListCell.title))
+                            Text("_required_data_collection_description_")
+                                .font(textFont)
+                                .multilineTextAlignment(.leading)
+                                .foregroundStyle(Color(.DataProtection.listRowSubtitle))
+                        }
+                        .padding(EdgeInsets(top: 12.0,
+                                            leading: 16.0,
+                                            bottom: 12.0,
+                                            trailing: 16.0))
+                        
+                        divider()
+                           
+                        VStack(alignment: .leading) {
+                            Toggle(NSLocalizedString("_analysis_of_data_collection_", comment: ""), isOn: $model.analysisOfDataCollection)
+                                .tint(Color(NCBrandColor.shared.switchColor))
+                                .font(titleFont)
+                                .foregroundStyle(Color(.ListCell.title))
+                            Text("_analysis_of_data_collection_description_")
+                                .font(textFont)
+                                .multilineTextAlignment(.leading)
+                                .foregroundStyle(Color(.DataProtection.listRowSubtitle))
+                        }
+                        .padding(EdgeInsets(top: 12.0,
+                                            leading: 16.0,
+                                            bottom: 12.0,
+                                            trailing: 16.0))
+                        
+                        divider()
+                        
                     }
-                }.listRowSeparatorTint(Color(NCBrandColor.shared.formSeparatorColor))
-                    .listRowBackground(Color(.AppBackground.form))
-
-                Section {
-                    VStack(alignment: .leading) {
-                        Toggle(NSLocalizedString("_required_data_collection_", comment: ""), isOn: $model.requiredDataCollection)
-                            .tint(Color(NCBrandColor.shared.switchColor))
-                            .font(titleFont)
-                            .foregroundStyle(Color(.ListCell.title))
-                        Text("_required_data_collection_description_")
-                            .font(textFont)
-                            .multilineTextAlignment(.leading)
-                            .foregroundStyle(Color(.ListCell.subtitle))
-                    }
-                }.listRowSeparatorTint(Color(NCBrandColor.shared.formSeparatorColor))
-                    .listRowBackground(Color(.AppBackground.form))
-                Section {
-                    VStack(alignment: .leading) {
-                        Toggle(NSLocalizedString("_analysis_of_data_collection_", comment: ""), isOn: $model.analysisOfDataCollection)
-                            .tint(Color(NCBrandColor.shared.switchColor))
-                            .font(titleFont)
-                            .foregroundStyle(Color(.ListCell.title))
-                        Text("_analysis_of_data_collection_description_")
-                            .font(textFont)
-                            .multilineTextAlignment(.leading)
-                            .foregroundStyle(Color(.ListCell.subtitle))
-                    }
-                }.listRowSeparatorTint(Color(NCBrandColor.shared.formSeparatorColor))
-                    .listRowBackground(Color(.AppBackground.form))
+                    .background(Color(.DataProtection.listRow))
+                }
             }
-            .background(Color(.AppBackground.form))
-            .listStyle(.plain)
+            .background(Color(.AppBackground.dataProtection))
             
             Spacer()
             
@@ -70,10 +87,16 @@ struct DataProtectionSettingsScreen: View {
             .buttonStyle(ButtonStylePrimary(maxWidth: .infinity))
             .padding(16.0)
         }
-        .background(Color(.AppBackground.form))
+        .background(Color(.AppBackground.dataProtection))
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .navigationTitle(NSLocalizedString("_data_protection_", comment:""))
         .navigationBarTitleDisplayMode(.inline)
+    }
+    
+    private func divider() -> some View {
+        Divider()
+            .background(Color(.DataProtection.listSeparator))
+            .frame(height: 1.0)
     }
 }
 
