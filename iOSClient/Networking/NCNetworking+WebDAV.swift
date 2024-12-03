@@ -56,7 +56,7 @@ extension NCNetworking {
                                              depth: "1",
                                              showHiddenFiles: NCKeychain().showHiddenFiles,
                                              account: account,
-                                             options: NKRequestOptions(paginate: true, paginateCount: 10, queue: queue)) { task in
+                                             options: NKRequestOptions(queue: queue)) { task in
             taskHandler(task)
         } completion: { account, files, responseData, error in
             guard error == .success, let files else {
