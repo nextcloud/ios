@@ -55,10 +55,10 @@ extension NCMedia {
               !self.showOnlyVideos,
               !isEditMode,
               NCNetworking.shared.downloadThumbnailQueue.operationCount == 0,
-              let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)),
-              let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) })
+              let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account))
         else { return }
         let limit = max(self.collectionView.visibleCells.count * 3, 300)
+        let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) })
 
         DispatchQueue.global(qos: .background).async {
             self.semaphore.wait()
@@ -75,7 +75,7 @@ extension NCMedia {
                 self.collectionViewReloadData()
             }
 
-            if !distant {
+            if let visibleCells, !distant {
                 firstCellDate = (visibleCells.first as? NCMediaCell)?.date
                 if firstCellDate == self.dataSource.metadatas.first?.date {
                     lessDate = Date.distantFuture
@@ -156,12 +156,16 @@ extension NCMedia {
                     self.collectionViewReloadData()
                 }
 
+                self.semaphore.signal()
+
                 DispatchQueue.main.async {
                     self.activityIndicator.stopAnimating()
-                }
+                    self.hasRunSearchMedia = false
 
-                self.semaphore.signal()
-                self.hasRunSearchMedia = false
+                    if self.dataSource.metadatas.isEmpty {
+                        self.collectionViewReloadData()
+                    }
+                }
             }
         }
     }
