@@ -36,7 +36,7 @@ class NCMedia: UIViewController {
     @IBOutlet weak var menuButton: UIButton!
     @IBOutlet weak var gradientView: UIView!
 
-    let lockQueue = DispatchQueue(label: "com.nextcloud.mediasearch.lockqueue")
+    let semaphore = DispatchSemaphore(value: 1)
     var hasRunSearchMedia: Bool = false
 
     let layout = NCMediaLayout()
