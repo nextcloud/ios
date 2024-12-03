@@ -61,7 +61,6 @@ extension NCMedia {
         let limit = max(self.collectionView.visibleCells.count * 3, 300)
 
         DispatchQueue.global(qos: .background).async {
-            print("XXXXX WAIT")
             self.semaphore.wait()
             self.hasRunSearchMedia = true
 
@@ -161,7 +160,6 @@ extension NCMedia {
                     self.activityIndicator.stopAnimating()
                 }
 
-                print("XXXXX SIGNAL")
                 self.semaphore.signal()
                 self.hasRunSearchMedia = false
             }
