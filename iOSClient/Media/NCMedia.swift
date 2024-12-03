@@ -278,6 +278,7 @@ class NCMedia: UIViewController {
 
         if !fileExists {
             if let index = dataSource.metadatas.firstIndex(where: {$0.ocId == ocId}),
+               index < self.dataSource.metadatas.count,
                let cell = collectionView.cellForItem(at: IndexPath(row: index, section: 0)) as? NCMediaCell,
                dataSource.metadatas[index].ocId == cell.ocId {
                 indexPaths.append(IndexPath(row: index, section: 0))
