@@ -310,6 +310,14 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     }
                 }
             }
+        } else {
+            let alertController = UIAlertController(title: NSLocalizedString( "_error_", comment: ""),
+                                                    message: NSLocalizedString("_login_wrong_QR_format_", comment: ""),
+                                                    preferredStyle: .alert)
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""),
+                                                    style: .default,
+                                                    handler: nil))
+            self.present(alertController, animated: true)
         }
     }
 
