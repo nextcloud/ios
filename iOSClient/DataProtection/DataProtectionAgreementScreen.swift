@@ -15,6 +15,7 @@ struct DataProtectionAgreementScreen: View {
     }
     
     @State private var isShowingSettingsView = false
+    @State private var isShowPrivacyPolicy = false
     
     var body: some View {
         let titleFont = Font.system(size: isIPad ? 36.0 : 18.0, weight: .bold)
@@ -48,10 +49,10 @@ struct DataProtectionAgreementScreen: View {
                                 .accentColor(Color(.DataProtection.link))
                                 .environment(\.openURL, OpenURLAction { url in
                                     if url.absoluteString == "link://privacypolicy" {
-                                        UIApplication.shared.open(URL(string:"https://google.com")!)
+                                        isShowPrivacyPolicy = true
                                     }
                                     else if url.absoluteString == "link://reject" {
-                                        DataProtectionAgreementManager.shared?.dismissView()
+                                        DataProtectionAgreementManager.shared?.rejectAgreement()
                                     }
                                     return .discarded
                                 })
@@ -59,6 +60,9 @@ struct DataProtectionAgreementScreen: View {
                         .padding(.bottom, 24)
                     }
                     .frame(width: size.width * textBoxRatio)
+                    .sheet(isPresented: $isShowPrivacyPolicy) {
+                        NCBrowserWebView(urlBase: URL(string: NCBrandOptions.shared.privacy)!, browserTitle: NSLocalizedString("_privacy_legal_", comment: ""))
+                    }
                     
                     NavigationLink(destination: DataProtectionSettingsScreen(), isActive: $isShowingSettingsView) { EmptyView() }
                         .navigationTitle("")
@@ -69,7 +73,7 @@ struct DataProtectionAgreementScreen: View {
                     .buttonStyle(ButtonStyleSecondary(maxWidth: 288.0))
                     
                     Button(NSLocalizedString("_agree_", comment: "")) {
-                        DataProtectionAgreementManager.shared?.dismissView()
+                        DataProtectionAgreementManager.shared?.acceptAgreement()
                     }
                     .buttonStyle(ButtonStylePrimary(maxWidth: 288.0))
                 }

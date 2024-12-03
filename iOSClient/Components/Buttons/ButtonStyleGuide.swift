@@ -83,6 +83,7 @@ struct ButtonStyleSecondary: ButtonStyle {
 						Capsule().fill(backgroundColor(for: configuration))
 					})
 			}
+            .contentShape(Rectangle())
 	}
 }
 

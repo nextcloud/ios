@@ -104,7 +104,6 @@ struct NCLoginPoll: View {
                         }
                     }
                 }
-            DataProtectionAgreementManager.shared?.showView(dismissBlock: { })
         }
         .onAppear {
             loginManager.configure(loginFlowV2Token: loginFlowV2Token, loginFlowV2Endpoint: loginFlowV2Endpoint, loginFlowV2Login: loginFlowV2Login)

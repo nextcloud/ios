@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AppTrackingTransparency
 
 class DataProtectionAgreementManager {
     private(set) static var shared = DataProtectionAgreementManager()
@@ -16,6 +17,10 @@ class DataProtectionAgreementManager {
     private var dismissBlock: (() -> Void)?
 
     var rootViewController: UIViewController
+    
+    struct DataProtectionKeys {
+        static let accepted = "data_protection_agreement_accepted"
+    }
     
     private init?() {
         self.rootViewController = DataProtectionHostingController(rootView: DataProtectionAgreementScreen())
@@ -32,6 +37,11 @@ class DataProtectionAgreementManager {
 
     /// Remove the window from the stack making it not visible
     func dismissView() {
+        guard (Thread.current.isMainThread == true) else {
+            return DispatchQueue.main.sync {
+                self.dismissView()
+            }
+        }
         guard (self.isViewVisible == true) else {
             return
         }
@@ -45,6 +55,11 @@ class DataProtectionAgreementManager {
     ///
     /// - Parameter dismissBlock: Block to be called when `dismissView` is called
     func showView(dismissBlock: @escaping () -> Void) {
+        guard (Thread.current.isMainThread == true) else {
+            return DispatchQueue.main.sync {
+                self.showView(dismissBlock: dismissBlock)
+            }
+        }
         guard (self.isViewVisible == false) else {
             return
         }
@@ -59,5 +74,44 @@ class DataProtectionAgreementManager {
 
         self.window?.isHidden = false
         self.window?.makeKeyAndVisible()
+    }
+    
+    func checkAgreement() {
+        if !UserDefaults.standard.bool(forKey: DataProtectionKeys.accepted) {
+            showView { }
+        }
+    }
+    
+    func acceptAgreement() {
+        self.askForTrackingPermission { [weak self] granted in
+            UserDefaults.standard.set(granted, forKey: DataProtectionKeys.accepted)
+            self?.dismissView()
+        }
+    }
+    
+    func rejectAgreement() {
+        UserDefaults.standard.set(false, forKey: DataProtectionKeys.accepted)
+        dismissView()
+    }
+    
+    func removeAgreement(){
+        UserDefaults.standard.set(false, forKey: DataProtectionKeys.accepted)
+    }
+    
+    private func askForTrackingPermission(completion: ((_ isPermissionGranted: Bool) -> Void)?) {
+        
+        switch ATTrackingManager.trackingAuthorizationStatus {
+        case .notDetermined:    self.handleNotDetermined(completion: completion)
+        case .authorized:        completion?(true)
+        case .restricted,
+                .denied:            completion?(false)
+        @unknown default:        return
+        }
+    }
+    
+    private func handleNotDetermined(completion: ((_ isPermissionGranted: Bool) -> Void)?) {
+            ATTrackingManager.requestTrackingAuthorization { _ in
+                self.askForTrackingPermission(completion: completion)
+            }
     }
 }

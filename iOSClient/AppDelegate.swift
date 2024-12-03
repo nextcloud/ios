@@ -564,6 +564,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCKeychain().clearAllKeysEndToEnd(account: account)
         NCKeychain().clearAllKeysPushNotification(account: account)
         NCKeychain().setPassword(account: account, password: nil)
+        DataProtectionAgreementManager.shared?.removeAgreement()
 
         self.account = ""
         self.urlBase = ""
