@@ -10,7 +10,7 @@ import SwiftUI
 
 struct DataProtectionSettingsScreen: View {
     
-    @ObservedObject var model = DataProtectionModel()
+    @ObservedObject var model: DataProtectionModel
     
     var isIPad: Bool {
         UIDevice.current.userInterfaceIdiom == .pad
@@ -91,6 +91,7 @@ struct DataProtectionSettingsScreen: View {
             }
             .buttonStyle(ButtonStylePrimary(maxWidth: 288.0))
             .padding(16.0)
+            .hiddenConditionally(isHidden: model.isShownFromSettings)
         }
         .background(Color(.AppBackground.dataProtection))
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -106,5 +107,5 @@ struct DataProtectionSettingsScreen: View {
 }
 
 #Preview {
-    DataProtectionSettingsScreen()
+    DataProtectionSettingsScreen(model: DataProtectionModel())
 }

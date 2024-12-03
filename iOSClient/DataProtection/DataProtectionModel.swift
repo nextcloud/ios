@@ -12,4 +12,10 @@ class DataProtectionModel: ObservableObject {
     
     @Published var requiredDataCollection: Bool = false
     @Published var analysisOfDataCollection: Bool = false
+    
+    var isShownFromSettings: Bool = false
+    
+    init(showFromSettings: Bool = false) {
+        self.isShownFromSettings = showFromSettings
+    }
 }
