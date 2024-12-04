@@ -190,7 +190,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                 metadataForUpload.status = NCGlobal.shared.metadataStatusWaitUpload
                 metadataForUpload.sessionDate = Date()
 
-                if database.getMetadataConflict(account: session.account, serverUrl: serverUrl, fileNameView: fileName) != nil {
+                if database.getMetadataConflict(account: session.account, serverUrl: serverUrl, fileNameView: fileName, nativeFormat: metadataForUpload.nativeFormat) != nil {
                     metadatasInConflict.append(metadataForUpload)
                 } else {
                     metadatas.append(metadataForUpload)

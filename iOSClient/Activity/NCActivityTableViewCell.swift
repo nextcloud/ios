@@ -33,10 +33,6 @@ class NCActivityCollectionViewCell: UICollectionViewCell {
 
     var fileId = ""
     var indexPath = IndexPath()
-
-    override func awakeFromNib() {
-        super.awakeFromNib()
-    }
 }
 
 class NCActivityTableViewCell: UITableViewCell, NCCellProtocol {

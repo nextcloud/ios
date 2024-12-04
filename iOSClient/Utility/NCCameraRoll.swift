@@ -62,9 +62,9 @@ class NCCameraRoll: NSObject {
                 metadataSource.session = NCNetworking.shared.sessionUpload
             }
             metadataSource.isExtractFile = true
-            if let metadata = self.database.createMetadata(metadataSource) {
-                metadatas.append(metadata)
-            }
+
+            metadatas.append(self.database.addMetadata(metadataSource))
+
             return completition(metadatas)
         }
 
@@ -76,8 +76,8 @@ class NCCameraRoll: NSObject {
                 let fetchAssets = PHAsset.fetchAssets(withLocalIdentifiers: [metadataSource.assetLocalIdentifier], options: nil)
                 if metadata.isLivePhoto, fetchAssets.count > 0 {
                     self.createMetadataLivePhoto(metadata: metadata, asset: fetchAssets.firstObject) { metadata in
-                        if let metadata, let metadata = self.database.createMetadata(metadata) {
-                            metadatas.append(metadata)
+                        if let metadata {
+                            metadatas.append(self.database.addMetadata(metadata))
                         }
                         completition(metadatas)
                     }
@@ -103,7 +103,7 @@ class NCCameraRoll: NSObject {
                                                    completion: @escaping (_ metadata: tableMetadata?, _ fileNamePath: String?, _ error: Bool) -> Void) {
 
         var fileNamePath: String?
-        let metadata = tableMetadata.init(value: metadata)
+        var metadata = metadata
         var compatibilityFormat: Bool = false
         var chunkSize = NCGlobal.shared.chunkSizeMBCellular
         if NCNetworking.shared.networkReachability == NKCommon.TypeReachability.reachableEthernetOrWiFi {
@@ -114,7 +114,6 @@ class NCCameraRoll: NSObject {
             if error {
                 completion(nil, nil, true)
             } else {
-                var metadataReturn = metadata
                 if modifyMetadataForUpload {
                     if metadata.size > chunkSize {
                         metadata.chunk = chunkSize
@@ -126,11 +125,9 @@ class NCCameraRoll: NSObject {
                         metadata.session = NCNetworking.shared.sessionUpload
                     }
                     metadata.isExtractFile = true
-                    if let metadata = self.database.createMetadata(metadata) {
-                        metadataReturn = metadata
-                    }
+                    metadata = self.database.addMetadata(metadata)
                 }
-                completion(metadataReturn, fileNamePath, error)
+                completion(metadata, fileNamePath, error)
             }
         }
 
@@ -143,7 +140,7 @@ class NCCameraRoll: NSObject {
         let creationDate = asset.creationDate ?? Date()
         let modificationDate = asset.modificationDate ?? Date()
 
-        if asset.mediaType == PHAssetMediaType.image && (extensionAsset == "HEIC" || extensionAsset == "DNG") && NCKeychain().formatCompatibility {
+        if asset.mediaType == PHAssetMediaType.image && (extensionAsset == "HEIC" || extensionAsset == "DNG") && !metadata.nativeFormat {
             let fileName = (metadata.fileNameView as NSString).deletingPathExtension + ".jpg"
             metadata.contentType = "image/jpeg"
             fileNamePath = NSTemporaryDirectory() + fileName
@@ -212,7 +209,7 @@ class NCCameraRoll: NSObject {
                         metadata.size = self.utilityFileSystem.getFileSize(filePath: fileNamePath)
                         return callCompletionWithError(false)
                     } catch { return callCompletionWithError() }
-                } else if let asset = asset as? AVComposition, asset.tracks.count > 1, let exporter = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetHighestQuality) {
+                } else if let asset = asset as? AVComposition, asset.tracks.count > 1, let exporter = AVAssetExportSession(asset: asset, presetName: AVAssetExportPresetPassthrough) {
                     exporter.outputURL = URL(fileURLWithPath: fileNamePath)
                     exporter.outputFileType = AVFileType.mp4
                     exporter.shouldOptimizeForNetworkUse = true
@@ -288,10 +285,8 @@ class NCCameraRoll: NSObject {
                 metadataLivePhoto.creationDate = metadata.creationDate
                 metadataLivePhoto.date = metadata.date
                 metadataLivePhoto.uploadDate = metadata.uploadDate
-                if let metadata = self.database.createMetadata(metadataLivePhoto) {
-                    return completion(metadata)
-                }
-                completion(nil)
+
+                return completion(self.database.addMetadata(metadataLivePhoto))
             }
         }
     }

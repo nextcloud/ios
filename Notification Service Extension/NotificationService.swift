@@ -23,12 +23,13 @@ import UIKit
 import UserNotifications
 
 class NotificationService: UNNotificationServiceExtension {
-
     var contentHandler: ((UNNotificationContent) -> Void)?
     var bestAttemptContent: UNMutableNotificationContent?
+    var request: UNNotificationRequest?
 
     override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
         self.contentHandler = contentHandler
+        self.request = request
         bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
 
         if let bestAttemptContent = bestAttemptContent {
@@ -37,11 +38,19 @@ class NotificationService: UNNotificationServiceExtension {
             do {
                 if let message = bestAttemptContent.userInfo["subject"] as? String {
                     for tableAccount in NCManageDatabase.shared.getAllTableAccount() {
-                        guard let privateKey = NCKeychain().getPushNotificationPrivateKey(account: tableAccount.account),
-                              let decryptedMessage = NCPushNotificationEncryption.shared().decryptPushNotification(message, withDevicePrivateKey: privateKey),
-                              let data = decryptedMessage.data(using: .utf8) else {
+                        guard let privateKey = NCKeychain().getPushNotificationPrivateKey(account: tableAccount.account) else {
+                            bestAttemptContent.body = "Error retrieving private key for \(tableAccount.account)"
                             continue
                         }
+                        guard let decryptedMessage = NCPushNotificationEncryption.shared().decryptPushNotification(message, withDevicePrivateKey: privateKey) else {
+                            bestAttemptContent.body = "Error decryption for \(tableAccount.account)"
+                            continue
+                        }
+                        guard let data = decryptedMessage.data(using: .utf8) else {
+                            bestAttemptContent.body = "Error decryption data utf8 for \(tableAccount.account)"
+                            continue
+                        }
+
                         if var json = try JSONSerialization.jsonObject(with: data) as? [String: AnyObject],
                            let subject = json["subject"] as? String {
                             bestAttemptContent.body = subject
@@ -50,7 +59,10 @@ class NotificationService: UNNotificationServiceExtension {
                                 pref.set(json, forKey: "NOTIFICATION_DATA")
                                 pref.synchronize()
                             }
+                        } else {
+                            bestAttemptContent.body = "Error JSON Serialization for  \(tableAccount.account)"
                         }
+                        break
                     }
                 }
             } catch let error as NSError {
@@ -66,9 +78,8 @@ class NotificationService: UNNotificationServiceExtension {
         // Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
         if let contentHandler = contentHandler, let bestAttemptContent = bestAttemptContent {
             bestAttemptContent.title = ""
-            bestAttemptContent.body = "Nextcloud notification"
+            bestAttemptContent.body = "Nextcloud Notification Time Will Expire"
             contentHandler(bestAttemptContent)
         }
     }
-
 }

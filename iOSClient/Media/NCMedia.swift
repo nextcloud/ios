@@ -36,7 +36,7 @@ class NCMedia: UIViewController {
     @IBOutlet weak var menuButton: UIButton!
     @IBOutlet weak var gradientView: UIView!
 
-    let lockQueue = DispatchQueue(label: "com.nextcloud.mediasearch.lockqueue")
+    let semaphore = DispatchSemaphore(value: 1)
     var hasRunSearchMedia: Bool = false
 
     let layout = NCMediaLayout()
@@ -278,6 +278,7 @@ class NCMedia: UIViewController {
 
         if !fileExists {
             if let index = dataSource.metadatas.firstIndex(where: {$0.ocId == ocId}),
+               index < self.dataSource.metadatas.count,
                let cell = collectionView.cellForItem(at: IndexPath(row: index, section: 0)) as? NCMediaCell,
                dataSource.metadatas[index].ocId == cell.ocId {
                 indexPaths.append(IndexPath(row: index, section: 0))
@@ -286,7 +287,8 @@ class NCMedia: UIViewController {
             dataSource.removeMetadata([ocId])
             database.deleteMetadataOcId(ocId)
 
-            if !indexPaths.isEmpty {
+            if !indexPaths.isEmpty,
+               !indexPaths.filter({ $0.item < self.dataSource.metadatas.count }).isEmpty {
                 collectionView.deleteItems(at: indexPaths)
             } else {
                 collectionViewReloadData()

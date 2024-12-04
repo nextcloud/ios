@@ -140,6 +140,7 @@ class tableMetadata: Object {
     @objc dynamic var height: Int = 0
     @objc dynamic var width: Int = 0
     @objc dynamic var errorCode: Int = 0
+    @objc dynamic var nativeFormat: Bool = false
 
     override static func primaryKey() -> String {
         return "ocId"
@@ -165,23 +166,15 @@ extension tableMetadata {
         return true
     }
 
-    var isPrintable: Bool {
-        if isDocumentViewableOnly {
-            return false
-        }
-        if ["application/pdf", "com.adobe.pdf"].contains(contentType) || contentType.hasPrefix("text/") || classFile == NKCommon.TypeClassFile.image.rawValue {
-            return true
-        }
-        return false
-    }
-
     var isSavebleInCameraRoll: Bool {
         return (classFile == NKCommon.TypeClassFile.image.rawValue && contentType != "image/svg+xml") || classFile == NKCommon.TypeClassFile.video.rawValue
     }
 
+    /*
     var isDocumentViewableOnly: Bool {
         sharePermissionsCollaborationServices == NCPermissions().permissionReadShare && classFile == NKCommon.TypeClassFile.document.rawValue
     }
+    */
 
     var isAudioOrVideo: Bool {
         return classFile == NKCommon.TypeClassFile.audio.rawValue || classFile == NKCommon.TypeClassFile.video.rawValue
@@ -208,15 +201,15 @@ extension tableMetadata {
     }
 
     var isCopyableInPasteboard: Bool {
-        !isDocumentViewableOnly && !directory
+        !directory
     }
 
     var isCopyableMovable: Bool {
-        !isDocumentViewableOnly && !isDirectoryE2EE && !e2eEncrypted
+        !isDirectoryE2EE && !e2eEncrypted
     }
 
     var isModifiableWithQuickLook: Bool {
-        if directory || isDocumentViewableOnly || isDirectoryE2EE {
+        if directory || isDirectoryE2EE {
             return false
         }
         return isPDF || isImage
@@ -234,7 +227,7 @@ extension tableMetadata {
     }
 
     var canShare: Bool {
-        return session.isEmpty && !isDocumentViewableOnly && !directory && !NCBrandOptions.shared.disable_openin_file
+        return session.isEmpty && !directory && !NCBrandOptions.shared.disable_openin_file
     }
 
     var canSetDirectoryAsE2EE: Bool {
@@ -301,7 +294,7 @@ extension tableMetadata {
     }
 
     var isAvailableRichDocumentEditorView: Bool {
-        guard (classFile == NKCommon.TypeClassFile.document.rawValue),
+        guard classFile == NKCommon.TypeClassFile.document.rawValue,
               NCCapabilities.shared.getCapabilities(account: account).capabilityRichDocumentsEnabled,
               NextcloudKit.shared.isNetworkReachable() else { return false }
 
@@ -539,6 +532,7 @@ extension NCManageDatabase {
         metadata.user = session.user
         metadata.userId = session.userId
         metadata.sceneIdentifier = sceneIdentifier
+        metadata.nativeFormat = !NCKeychain().formatCompatibility
 
         if !metadata.urlBase.isEmpty, metadata.serverUrl.hasPrefix(metadata.urlBase) {
             metadata.path = String(metadata.serverUrl.dropFirst(metadata.urlBase.count)) + "/"
@@ -568,40 +562,27 @@ extension NCManageDatabase {
 
     // MARK: - Set
 
-    func createMetadata(_ metadata: tableMetadata) -> tableMetadata? {
+    @discardableResult
+    func addMetadata(_ metadata: tableMetadata) -> tableMetadata {
         do {
             let realm = try Realm()
-            var managedMetadata: tableMetadata?
             try realm.write {
-                managedMetadata = realm.create(tableMetadata.self, value: metadata, update: .all)
-            }
-            if let managedMetadata {
-                return tableMetadata(value: managedMetadata)
+                return tableMetadata(value: realm.create(tableMetadata.self, value: metadata, update: .all))
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
         }
 
-        return nil
-    }
-
-    func addMetadata(_ metadata: tableMetadata) {
-        let metadata = tableMetadata(value: metadata)
-        do {
-            let realm = try Realm()
-            try realm.write {
-                realm.add(metadata, update: .all)
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
-        }
+        return tableMetadata(value: metadata)
     }
 
     func addMetadatas(_ metadatas: [tableMetadata]) {
         do {
             let realm = try Realm()
             try realm.write {
-                realm.add(metadatas, update: .all)
+                for metadata in metadatas {
+                    realm.create(tableMetadata.self, value: metadata, update: .all)
+                }
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
@@ -801,13 +782,7 @@ extension NCManageDatabase {
                 for result in results {
                     result.favorite = false
                 }
-                for metadata in metadatas {
-                    if let result = realm.objects(tableMetadata.self).filter("account == %@ AND ocId == %@", account, metadata.ocId).first {
-                        result.favorite = true
-                    } else {
-                        realm.add(metadata, update: .modified)
-                    }
-                }
+                realm.add(metadatas, update: .all)
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
@@ -1049,12 +1024,12 @@ extension NCManageDatabase {
         return nil
     }
 
-    func getMetadataConflict(account: String, serverUrl: String, fileNameView: String) -> tableMetadata? {
+    func getMetadataConflict(account: String, serverUrl: String, fileNameView: String, nativeFormat: Bool) -> tableMetadata? {
         let fileNameExtension = (fileNameView as NSString).pathExtension.lowercased()
         let fileNameNoExtension = (fileNameView as NSString).deletingPathExtension
         var fileNameConflict = fileNameView
 
-        if fileNameExtension == "heic", NCKeychain().formatCompatibility {
+        if fileNameExtension == "heic", !nativeFormat {
             fileNameConflict = fileNameNoExtension + ".jpg"
         }
         return getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameView == %@",

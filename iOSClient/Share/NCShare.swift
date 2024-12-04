@@ -265,7 +265,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         dropDown.direction = .bottom
 
         dropDown.cellNib = UINib(nibName: "NCSearchUserDropDownCell", bundle: nil)
-        dropDown.customCellConfiguration = { (index: Index, _, cell: DropDownCell) -> Void in
+        dropDown.customCellConfiguration = { (index: Index, _, cell: DropDownCell) in
             guard let cell = cell as? NCSearchUserDropDownCell else { return }
             let sharee = sharees[index]
             cell.setupCell(sharee: sharee, session: self.session)
