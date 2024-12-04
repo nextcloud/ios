@@ -50,6 +50,7 @@ struct DataProtectionSettingsScreen: View {
                                 .tint(Color(NCBrandColor.shared.switchColor))
                                 .font(listRowTitleFont)
                                 .foregroundStyle(Color(.ListCell.title))
+                                .disabled(true)
                             Text("_required_data_collection_description_")
                                 .font(listRowSubtitleFont)
                                 .multilineTextAlignment(.leading)
@@ -67,6 +68,9 @@ struct DataProtectionSettingsScreen: View {
                                 .tint(Color(NCBrandColor.shared.switchColor))
                                 .font(listRowTitleFont)
                                 .foregroundStyle(Color(.ListCell.title))
+                                .onChange(of: model.analysisOfDataCollection) { allowAnalysis in
+                                    model.allowAnalysisOfDataCollection(allowAnalysis)
+                                }
                             Text("_analysis_of_data_collection_description_")
                                 .font(listRowSubtitleFont)
                                 .multilineTextAlignment(.leading)
@@ -87,7 +91,7 @@ struct DataProtectionSettingsScreen: View {
             Spacer()
             
             Button(NSLocalizedString("_save_settings_", comment: "")) {
-                DataProtectionAgreementManager.shared?.dismissView()
+                DataProtectionAgreementManager.shared?.saveSettings()
             }
             .buttonStyle(ButtonStylePrimary(maxWidth: 288.0))
             .padding(16.0)
