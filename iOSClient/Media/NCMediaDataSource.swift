@@ -26,13 +26,14 @@ import NextcloudKit
 import RealmSwift
 
 extension NCMedia {
-    func loadDataSource() {
+    func loadDataSource(completion: @escaping () -> Void = {}) {
         let session = self.session
         DispatchQueue.global().async {
             if let metadatas = self.database.getResultsMetadatas(predicate: self.imageCache.getMediaPredicate(filterLivePhotoFile: true, session: session, showOnlyImages: self.showOnlyImages, showOnlyVideos: self.showOnlyVideos), sortedByKeyPath: "date") {
                 self.dataSource = NCMediaDataSource(metadatas: metadatas)
             }
             self.collectionViewReloadData()
+            completion()
         }
     }
 
@@ -61,7 +62,7 @@ extension NCMedia {
         let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) })
 
         DispatchQueue.global(qos: .background).async {
-            self.semaphore.wait()
+            self.semaphoreSearchMedia.wait()
             self.hasRunSearchMedia = true
 
             var lessDate = Date.distantFuture
@@ -156,7 +157,7 @@ extension NCMedia {
                     self.collectionViewReloadData()
                 }
 
-                self.semaphore.signal()
+                self.semaphoreSearchMedia.signal()
 
                 DispatchQueue.main.async {
                     self.activityIndicator.stopAnimating()

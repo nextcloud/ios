@@ -615,6 +615,18 @@ extension NCManageDatabase {
         }
     }
 
+    func deleteMetadataOcIds(_ ocIds: [String]) {
+        do {
+            let realm = try Realm()
+            try realm.write {
+                let results = realm.objects(tableMetadata.self).filter("ocId IN %@", ocIds)
+                realm.delete(results)
+            }
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
+        }
+    }
+
     func deleteMetadatas(_ metadatas: [tableMetadata]) {
         do {
             let realm = try Realm()

@@ -841,12 +841,13 @@ class NCOperationFileExists: ConcurrentOperation, @unchecked Sendable {
                                              requestBody: nil,
                                              account: account,
                                              options: options) { _, _, _, error in
+            self.finish()
+
             if error == .success {
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterFileExists, userInfo: ["ocId": self.ocId, "fileExists": true])
             } else if error.errorCode == NCGlobal.shared.errorResourceNotFound {
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterFileExists, userInfo: ["ocId": self.ocId, "fileExists": false])
             }
-            self.finish()
         }
     }
 }
