@@ -8,6 +8,8 @@
 
 import UIKit
 import AppTrackingTransparency
+import FirebaseAnalytics
+import Firebase
 
 class DataProtectionAgreementManager {
     private(set) static var shared = DataProtectionAgreementManager()
@@ -78,8 +80,16 @@ class DataProtectionAgreementManager {
     
     func checkAgreement() {
         if !UserDefaults.standard.bool(forKey: DataProtectionKeys.accepted) {
-            showView { }
+            showView { [weak self] in
+                self?.setupAnalyticsCollection()
+            }
         }
+    }
+    
+    func setupAnalyticsCollection(){
+        let isAllowed = isAllowedAnalysisOfDataCollection()
+        Analytics.setAnalyticsCollectionEnabled(isAllowed)
+        Crashlytics.crashlytics().setCrashlyticsCollectionEnabled(isAllowed)
     }
     
     func acceptAgreement() {

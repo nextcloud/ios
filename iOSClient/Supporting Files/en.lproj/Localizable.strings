@@ -1120,7 +1120,6 @@
 "_agree_" = "Agree";
 "_privacy_settings_" = "Privacy Settings";
 "_privacy_settings_description_" = "This application uses cookies and similar technologies. By clicking on Agree, you consent to the processing of your data and also to its transfer to third parties. \nVisit our [Privacy Policy](link://privacypolicy) for more information, also on data processing by third party providers.\nClick on [Reject](link://reject) to prevent use of the tool, or change your selection at any time in Settings.";
-"_data_usage_for_app_optimization_" = "Datennutzung zur App-Optimierung";
 "_data_usage_for_app_optimization_description_" = "We collect anonymized data to optimize our app.\nWe use software solutions by various partners for this purpose. Our intention is to offer full transparency and allow you to decide how your anonymized data is collected and used. You can also change your settings at any time later on under the Privacy menu item. Please note, however, that data collection contributes significantly to optimizing this app and that you would prevent these improvements by rejecting the transfer of data.";
 
 "_required_data_collection_" = "Necessary data collection";

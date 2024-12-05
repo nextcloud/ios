@@ -30,7 +30,6 @@ import WidgetKit
 import Queuer
 import EasyTipView
 import SwiftUI
-import FirebaseAnalytics
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate, NCUserBaseUrl {
@@ -69,10 +68,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionApp())
 
         UserDefaults.standard.register(defaults: ["UserAgent": userAgent])
-        if !NCKeychain().disableCrashservice, !NCBrandOptions.shared.disable_crash_service {
-            FirebaseApp.configure()
-            Analytics.setAnalyticsCollectionEnabled(true)
-        }
+        
+        FirebaseApp.configure()
+        DataProtectionAgreementManager.shared?.setupAnalyticsCollection()
 
         utilityFileSystem.createDirectoryStandard()
         utilityFileSystem.emptyTemporaryDirectory()

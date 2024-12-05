@@ -19,6 +19,7 @@ import UIKit
 
         disable_intro = true
         disable_request_login_url = true
+        disable_crash_service = true
 
 #if BETA
         capabilitiesGroup = "group.de.strato.ionos.easystorage.beta"

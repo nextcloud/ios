@@ -25,14 +25,6 @@ struct DataProtectionSettingsScreen: View {
         VStack {
             ScrollView {
                 VStack(alignment: .leading){
-                    Text(NSLocalizedString("_data_usage_for_app_optimization_", comment: ""))
-                        .font(titleFont)
-                        .foregroundStyle(Color(.ListCell.title))
-                        .padding(EdgeInsets(top: 32.0,
-                                            leading: 16.0,
-                                            bottom: 0.0,
-                                            trailing: 16.0))
-                    
                     Text("_data_usage_for_app_optimization_description_")
                         .font(textFont)
                         .multilineTextAlignment(.leading)
