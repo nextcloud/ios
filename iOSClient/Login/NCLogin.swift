@@ -468,7 +468,9 @@ extension NCLogin: ClientCertificateDelegate, UIDocumentPickerDelegate {
             documentProviderMenu.delegate = self
             self.present(documentProviderMenu, animated: true, completion: nil)
         }))
-        present(alertNoCertFound, animated: true)
+        DispatchQueue.main.async {
+            self.present(alertNoCertFound, animated: true)
+        }
     }
 
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
@@ -483,7 +485,9 @@ extension NCLogin: ClientCertificateDelegate, UIDocumentPickerDelegate {
         alertEnterPassword.addTextField { textField in
             textField.isSecureTextEntry = true
         }
-        present(alertEnterPassword, animated: true)
+        DispatchQueue.main.async {
+            self.present(alertEnterPassword, animated: true)
+        }
     }
 
     func onIncorrectPassword() {
@@ -491,6 +495,8 @@ extension NCLogin: ClientCertificateDelegate, UIDocumentPickerDelegate {
         NCNetworking.shared.p12Password = nil
         let alertWrongPassword = UIAlertController(title: NSLocalizedString("_client_cert_wrong_password_", comment: ""), message: "", preferredStyle: .alert)
         alertWrongPassword.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default))
-        present(alertWrongPassword, animated: true)
+        DispatchQueue.main.async {
+            self.present(alertWrongPassword, animated: true)
+        }
     }
 }
