@@ -265,8 +265,6 @@ class FileProviderExtension: NSFileProviderExtension {
                                              sessionTaskIdentifier: task.taskIdentifier,
                                              status: NCGlobal.shared.metadataStatusUploading)
             fileProviderData.shared.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(metadata.fileId)) { _ in }
-        } else {
-            print("error")
         }
     }
 
