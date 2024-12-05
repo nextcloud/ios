@@ -36,7 +36,7 @@ class NCMedia: UIViewController {
     @IBOutlet weak var menuButton: UIButton!
     @IBOutlet weak var gradientView: UIView!
 
-    let semaphore = DispatchSemaphore(value: 1)
+    let semaphoreSearchMedia = DispatchSemaphore(value: 1)
     var hasRunSearchMedia: Bool = false
 
     let layout = NCMediaLayout()
@@ -54,6 +54,7 @@ class NCMedia: UIViewController {
     var isEditMode = false
     var fileSelect: [String] = []
     var filesExists: [String] = []
+    var ocIdDoNotExists: [String] = []
     var attributesZoomIn: UIMenuElement.Attributes = []
     var attributesZoomOut: UIMenuElement.Attributes = []
     let gradient: CAGradientLayer = CAGradientLayer()
@@ -271,28 +272,21 @@ class NCMedia: UIViewController {
     @objc func fileExists(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
-              let fileExists = userInfo["fileExists"] as? Bool else { return }
-        var indexPaths: [IndexPath] = []
+              let fileExists = userInfo["fileExists"] as? Bool
+        else {
+            return
+        }
 
         filesExists.append(ocId)
-
         if !fileExists {
-            if let index = dataSource.metadatas.firstIndex(where: {$0.ocId == ocId}),
-               index < self.dataSource.metadatas.count,
-               let cell = collectionView.cellForItem(at: IndexPath(row: index, section: 0)) as? NCMediaCell,
-               dataSource.metadatas[index].ocId == cell.ocId {
-                indexPaths.append(IndexPath(row: index, section: 0))
-            }
+            ocIdDoNotExists.append(ocId)
+        }
 
-            dataSource.removeMetadata([ocId])
-            database.deleteMetadataOcId(ocId)
-
-            if !indexPaths.isEmpty,
-               !indexPaths.filter({ $0.item < self.dataSource.metadatas.count }).isEmpty {
-                collectionView.deleteItems(at: indexPaths)
-            } else {
-                collectionViewReloadData()
-            }
+        if NCNetworking.shared.fileExistsQueue.operationCount == 0, !ocIdDoNotExists.isEmpty {
+            dataSource.removeMetadata(ocIdDoNotExists)
+            database.deleteMetadataOcIds(ocIdDoNotExists)
+            ocIdDoNotExists.removeAll()
+            collectionViewReloadData()
         }
     }
 

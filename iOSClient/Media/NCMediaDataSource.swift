@@ -61,7 +61,7 @@ extension NCMedia {
         let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) })
 
         DispatchQueue.global(qos: .background).async {
-            self.semaphore.wait()
+            self.semaphoreSearchMedia.wait()
             self.hasRunSearchMedia = true
 
             var lessDate = Date.distantFuture
@@ -156,7 +156,7 @@ extension NCMedia {
                     self.collectionViewReloadData()
                 }
 
-                self.semaphore.signal()
+                self.semaphoreSearchMedia.signal()
 
                 DispatchQueue.main.async {
                     self.activityIndicator.stopAnimating()
