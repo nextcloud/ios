@@ -188,6 +188,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                  return outgoing
              }
         }
+        
+        NCNetworking.shared.certificateDelegate = self
     }
 
     override func viewDidAppear(_ animated: Bool) {
