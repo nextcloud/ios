@@ -37,7 +37,7 @@ class NCMedia: UIViewController {
     @IBOutlet weak var gradientView: UIView!
 
     let semaphoreSearchMedia = DispatchSemaphore(value: 1)
-    var hasRunSearchMedia: Bool = false
+    let semaphoreNotificationCenter = DispatchSemaphore(value: 1)
 
     let layout = NCMediaLayout()
     var layoutType = NCGlobal.shared.mediaLayoutRatio
@@ -55,6 +55,7 @@ class NCMedia: UIViewController {
     var fileSelect: [String] = []
     var filesExists: [String] = []
     var ocIdDoNotExists: [String] = []
+    var hasRunSearchMedia: Bool = false
     var attributesZoomIn: UIMenuElement.Attributes = []
     var attributesZoomOut: UIMenuElement.Attributes = []
     let gradient: CAGradientLayer = CAGradientLayer()
@@ -256,12 +257,21 @@ class NCMedia: UIViewController {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let error = userInfo["error"] as? NKError else { return }
 
-        if error.errorCode == self.global.errorResourceNotFound, let ocId = userInfo["ocId"] as? String {
+        semaphoreNotificationCenter.wait()
+
+        if error.errorCode == self.global.errorResourceNotFound,
+           let ocId = userInfo["ocId"] as? String {
             self.database.deleteMetadataOcId(ocId)
-            self.loadDataSource()
+            self.loadDataSource {
+                self.semaphoreNotificationCenter.signal()
+            }
         } else if error != .success {
             NCContentPresenter().showError(error: error)
-            self.loadDataSource()
+            self.loadDataSource {
+                self.semaphoreNotificationCenter.signal()
+            }
+        } else {
+            semaphoreNotificationCenter.signal()
         }
     }
 

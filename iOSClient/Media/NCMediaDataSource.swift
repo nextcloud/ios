@@ -26,13 +26,14 @@ import NextcloudKit
 import RealmSwift
 
 extension NCMedia {
-    func loadDataSource() {
+    func loadDataSource(completion: @escaping () -> Void = {}) {
         let session = self.session
         DispatchQueue.global().async {
             if let metadatas = self.database.getResultsMetadatas(predicate: self.imageCache.getMediaPredicate(filterLivePhotoFile: true, session: session, showOnlyImages: self.showOnlyImages, showOnlyVideos: self.showOnlyVideos), sortedByKeyPath: "date") {
                 self.dataSource = NCMediaDataSource(metadatas: metadatas)
             }
             self.collectionViewReloadData()
+            completion()
         }
     }
 
