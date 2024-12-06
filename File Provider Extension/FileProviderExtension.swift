@@ -254,19 +254,17 @@ class FileProviderExtension: NSFileProviderExtension {
                                          selector: "",
                                          status: NCGlobal.shared.metadataStatusUploading)
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            if let task = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).upload(serverUrlFileName: serverUrlFileName,
-                                                                                                      fileNameLocalPath: url.path,
-                                                                                                      dateCreationFile: nil,
-                                                                                                      dateModificationFile: nil,
-                                                                                                      overwrite: true,
-                                                                                                      account: metadata.account,
-                                                                                                      sessionIdentifier: metadata.session) {
-                self.database.setMetadataSession(ocId: metadata.ocId,
-                                                 sessionTaskIdentifier: task.taskIdentifier,
-                                                 status: NCGlobal.shared.metadataStatusUploading)
-                fileProviderData.shared.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(metadata.fileId)) { _ in }
-            }
+        if let task = NKBackground(nkCommonInstance: NextcloudKit.shared.nkCommonInstance).upload(serverUrlFileName: serverUrlFileName,
+                                                                                                  fileNameLocalPath: url.path,
+                                                                                                  dateCreationFile: nil,
+                                                                                                  dateModificationFile: nil,
+                                                                                                  overwrite: true,
+                                                                                                  account: metadata.account,
+                                                                                                  sessionIdentifier: NCNetworking.shared.sessionUploadBackgroundExt) {
+            self.database.setMetadataSession(ocId: metadata.ocId,
+                                             sessionTaskIdentifier: task.taskIdentifier,
+                                             status: NCGlobal.shared.metadataStatusUploading)
+            fileProviderData.shared.fileProviderManager.register(task, forItemWithIdentifier: NSFileProviderItemIdentifier(metadata.fileId)) { _ in }
         }
     }
 
