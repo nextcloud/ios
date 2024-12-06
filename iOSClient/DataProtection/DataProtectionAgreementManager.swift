@@ -107,8 +107,8 @@ class DataProtectionAgreementManager {
     func rejectAgreement() {
         UserDefaults.standard.set(true, forKey: DataProtectionKeys.accepted)
         self.askForTrackingPermission { [weak self] granted in
-            if granted {
-                self?.redirectToSettings()
+            if granted {       
+                self?.redirectToSettings(onCancel: nil)
             }
             else {
                 self?.dismissView()
@@ -120,10 +120,12 @@ class DataProtectionAgreementManager {
         UserDefaults.standard.set(false, forKey: DataProtectionKeys.accepted)
     }
     
-    func allowAnalysisOfDataCollection(_ allowAnalysisOfDataCollection: Bool) {
+    func allowAnalysisOfDataCollection(_ allowAnalysisOfDataCollection: Bool, completion: ((_ allowChanges: Bool) -> Void)?) {
         self.askForTrackingPermission { [weak self] granted in
             if granted != allowAnalysisOfDataCollection {
-                self?.redirectToSettings()
+                self?.redirectToSettings(onCancel: { onCancel in
+                    completion?(!onCancel)
+                })
             }
         }
     }
@@ -148,17 +150,18 @@ class DataProtectionAgreementManager {
             }
     }
     
-    private func redirectToSettings() {
+    private func redirectToSettings(onCancel: ((_ onCancel: Bool) -> Void)?) {
         let alert = UIAlertController(title: "", message: NSLocalizedString("_alert_tracking_access", comment: ""), preferredStyle: .alert)
 
-        alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { _ in onCancel?(true) }))
         
         alert.addAction(UIAlertAction(title: NSLocalizedString("_settings_", comment: ""), style: .default, handler: { (_) in
-          DispatchQueue.main.async {
-            if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
-                UIApplication.shared.open(settingsURL, options: [:], completionHandler: nil)
+            onCancel?(false)
+            DispatchQueue.main.async {
+                if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(settingsURL, options: [:], completionHandler: nil)
+                }
             }
-          }
         }))
         
         if !(self.window?.isHidden ?? true) {
