@@ -373,7 +373,6 @@ struct UploadScanDocumentView: View {
                         HStack {
                             Text(NSLocalizedString("_filename_", comment: ""))
                             TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $fileName)
-                                .modifier(TextFieldClearButton(text: $fileName))
                                 .multilineTextAlignment(.trailing)
                                 .onChange(of: fileName) { _ in
                                     let controller = (UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController)
