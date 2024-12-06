@@ -1109,7 +1109,8 @@
 
 //MARK: Login
 "_login_welcome_"				 	= "Welcome to the cloud storage";
-"_login_description_" 				= "You need to login over browser";
+"_login_description_"               = "You need to login over browser";
+"_login_wrong_QR_format_" 		    = "QR code format is incorrect";
 
 //MARK: Burger menu
 "_previous_" = "Previous";

@@ -15,7 +15,7 @@ import UIKit
         super.init()
         
         brand = "IONOS HiDrive Next"
-        loginBaseUrl = "https://nextcloud-aio.iocaste45.de"
+        loginBaseUrl = "https://easy-qa-1.nextcloud-ionos.com"
 
         disable_intro = true
         disable_request_login_url = true
