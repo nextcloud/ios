@@ -415,30 +415,32 @@ struct UploadScanDocumentView: View {
                         view.listRowSeparator(.hidden)
                     }
 
-                    VStack(spacing: 20) {
-                        Toggle(NSLocalizedString("_delete_all_scanned_images_", comment: ""), isOn: $removeAllFiles)
-                            .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.getElement(account: model.session.account))))
-                            .onChange(of: removeAllFiles) { newValue in
-                                NCKeychain().deleteAllScanImages = newValue
-                            }
-                        Button(NSLocalizedString("_save_", comment: "")) {
-                            let fileName = model.fileName(fileName)
-                            if !fileName.isEmpty {
-                                model.showHUD.toggle()
-                                model.save(fileName: fileName, password: password, isTextRecognition: isTextRecognition, removeAllFiles: removeAllFiles, quality: quality) { openConflictViewController, error in
+                    Section {
+                        VStack(spacing: 20) {
+                            Toggle(NSLocalizedString("_delete_all_scanned_images_", comment: ""), isOn: $removeAllFiles)
+                                .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.getElement(account: model.session.account))))
+                                .onChange(of: removeAllFiles) { newValue in
+                                    NCKeychain().deleteAllScanImages = newValue
+                                }
+                            Button(NSLocalizedString("_save_", comment: "")) {
+                                let fileName = model.fileName(fileName)
+                                if !fileName.isEmpty {
                                     model.showHUD.toggle()
-                                    if error {
-                                        print("error")
-                                    } else if openConflictViewController {
-                                        isPresentedUploadConflict = true
-                                    } else {
-                                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDismissScanDocument)
+                                    model.save(fileName: fileName, password: password, isTextRecognition: isTextRecognition, removeAllFiles: removeAllFiles, quality: quality) { openConflictViewController, error in
+                                        model.showHUD.toggle()
+                                        if error {
+                                            print("error")
+                                        } else if openConflictViewController {
+                                            isPresentedUploadConflict = true
+                                        } else {
+                                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDismissScanDocument)
+                                        }
                                     }
                                 }
                             }
+                            .buttonStyle(ButtonRounded(disabled: fileName.isEmpty || !footer.isEmpty, account: model.session.account))
+                            .disabled(fileName.isEmpty || !footer.isEmpty)
                         }
-                        .buttonStyle(ButtonRounded(disabled: fileName.isEmpty || !footer.isEmpty, account: model.session.account))
-                        .disabled(fileName.isEmpty || !footer.isEmpty)
                     }
 
                     Section(header: Text(NSLocalizedString("_quality_image_title_", comment: ""))) {
