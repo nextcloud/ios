@@ -178,7 +178,6 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                                        queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: NCKeychain().showHiddenFiles, account: fileProviderData.shared.session.account, options: options) { _, files, responseData, error in
-            ///
             if let headers = responseData?.response?.allHeaderFields as? [String: String] {
                 let normalizedHeaders = Dictionary(uniqueKeysWithValues: headers.map { ($0.key.lowercased(), $0.value) })
                 self.isPaginated = Bool(normalizedHeaders["x-nc-paginate"] ?? "false") ?? false
@@ -187,8 +186,6 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             }
 
             if error == .success, let files {
-
-                ///
                 self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: useFirstAsMetadataFolder) { metadataFolder, metadatas in
                     /// FOLDER
                     if useFirstAsMetadataFolder {
