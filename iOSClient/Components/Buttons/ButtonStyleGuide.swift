@@ -83,8 +83,14 @@ struct ButtonStyleSecondary: ButtonStyle {
 						Capsule().fill(backgroundColor(for: configuration))
 					})
 			}
-            .contentShape(Rectangle())
+            .makeAllButtonSpaceTappable()
 	}
+}
+
+private extension View {
+    func makeAllButtonSpaceTappable() -> some View {
+        self.contentShape(Rectangle())
+    }
 }
 
 extension ButtonStyle where Self == ButtonStyleSecondary {
