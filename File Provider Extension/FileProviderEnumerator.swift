@@ -164,12 +164,10 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
 
     func fetchItemsForPage(serverUrl: String, pageNumber: Int, completion: @escaping (_ metadatas: [tableMetadata]?) -> Void) {
         var paginateCount = recordsPerPage
-        var useFirstAsMetadataFolder: Bool = false
         if pageNumber == 0 {
-            database.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.session.account, serverUrl))
-            useFirstAsMetadataFolder = true
             paginateCount += 1
         }
+        var useFirstAsMetadataFolder: Bool = false
         let offset = pageNumber * recordsPerPage
         let options = NKRequestOptions(paginate: true,
                                        paginateToken: self.paginateToken,
@@ -186,6 +184,10 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             }
 
             if error == .success, let files {
+                if pageNumber == 0 {
+                    self.database.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.session.account, serverUrl))
+                    useFirstAsMetadataFolder = true
+                }
                 self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: useFirstAsMetadataFolder) { metadataFolder, metadatas in
                     /// FOLDER
                     if useFirstAsMetadataFolder {
