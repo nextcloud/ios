@@ -33,7 +33,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     let database = NCManageDatabase.shared
     let recordsPerPage: Int = 5
     var anchor: UInt64 = 0
-    var isPaginated: Bool?
+    var isPaginated: Bool = false
     var paginateToken: String?
     var paginatedTotal: Int?
 
@@ -107,7 +107,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 observer.didEnumerate(items)
 
                 if let metadatas,
-                    metadatas.count == self.recordsPerPage {
+                   self.isPaginated,
+                   metadatas.count == self.recordsPerPage {
                     pageNumber += 1
                     let providerPage = NSFileProviderPage("\(pageNumber)".data(using: .utf8)!)
                     observer.finishEnumerating(upTo: providerPage)
@@ -180,7 +181,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 ///
                 if let headers = responseData?.response?.allHeaderFields as? [String: String] {
                     let normalizedHeaders = Dictionary(uniqueKeysWithValues: headers.map { ($0.key.lowercased(), $0.value) })
-                    self.isPaginated = Bool(normalizedHeaders["x-nc-paginate"] ?? "false")
+                    self.isPaginated = Bool(normalizedHeaders["x-nc-paginate"] ?? "false") ?? false
                     self.paginateToken = normalizedHeaders["x-nc-paginate-token"]
                     self.paginatedTotal = Int(normalizedHeaders["x-nc-paginate-total"] ?? "0")
                 }
