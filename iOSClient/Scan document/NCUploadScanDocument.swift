@@ -470,8 +470,6 @@ struct UploadScanDocumentView: View {
         }
         .sheet(isPresented: $isPresentedUploadConflict) {
             UploadConflictView(delegate: model, serverUrl: model.serverUrl, metadatasUploadInConflict: [model.metadata], metadatasNOConflict: [])
-        }.onTapGesture {
-            UIApplication.shared.connectedScenes.flatMap { ($0 as? UIWindowScene)?.windows ?? [] }.filter { $0.isKeyWindow }.first?.endEditing(true)
         }
     }
 }
