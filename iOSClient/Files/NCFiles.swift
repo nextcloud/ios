@@ -30,6 +30,7 @@ class NCFiles: NCCollectionViewCommon {
     internal var fileNameBlink: String?
     internal var fileNameOpen: String?
     internal var matadatasHash: String = ""
+    internal var semaphoreReloadDataSource = DispatchSemaphore(value: 1)
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -123,6 +124,7 @@ class NCFiles: NCCollectionViewCommon {
         guard !isSearchingMode else {
             return super.reloadDataSource()
         }
+        self.semaphoreReloadDataSource.wait()
 
         var predicate = self.defaultPredicate
         let predicateDirectory = NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, self.serverUrl)
@@ -140,10 +142,12 @@ class NCFiles: NCCollectionViewCommon {
         self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView)
 
         if metadatas.isEmpty {
+            self.semaphoreReloadDataSource.signal()
             return super.reloadDataSource()
         }
 
         self.dataSource.caching(metadatas: metadatas, dataSourceMetadatas: dataSourceMetadatas) { updated in
+            self.semaphoreReloadDataSource.signal()
             if updated || self.isNumberOfItemsInAllSectionsNull || self.numberOfItemsInAllSections != metadatas.count {
                 super.reloadDataSource()
             }
