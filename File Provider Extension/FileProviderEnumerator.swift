@@ -34,7 +34,6 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     var anchor: UInt64 = 0
     // X-NC-PAGINATE
     var recordsPerPage: Int = 5
-    var isPaginated: Bool = false
     var paginateToken: String?
     var paginatedTotal: Int?
 
@@ -92,7 +91,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 pageNumber = intPage
             }
 
-            self.fetchItemsForPage(serverUrl: serverUrl, pageNumber: pageNumber) { metadatas in
+            self.fetchItemsForPage(serverUrl: serverUrl, pageNumber: pageNumber) { metadatas, isPaginated in
                 if let metadatas {
                     for metadata in metadatas {
                         if metadata.e2eEncrypted || (!metadata.session.isEmpty && metadata.session != NCNetworking.shared.sessionUploadBackgroundExt) {
@@ -108,7 +107,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 observer.didEnumerate(items)
 
                 if let metadatas,
-                   self.isPaginated,
+                   isPaginated,
                    metadatas.count == self.recordsPerPage {
                     pageNumber += 1
                     let providerPage = NSFileProviderPage("\(pageNumber)".data(using: .utf8)!)
@@ -162,7 +161,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         completionHandler(NSFileProviderSyncAnchor(data!))
     }
 
-    func fetchItemsForPage(serverUrl: String, pageNumber: Int, completion: @escaping (_ metadatas: [tableMetadata]?) -> Void) {
+    func fetchItemsForPage(serverUrl: String, pageNumber: Int, completion: @escaping (_ metadatas: [tableMetadata]?, _ isPaginated: Bool) -> Void) {
+        var isPaginated: Bool = false
         var paginateCount = recordsPerPage
         if pageNumber == 0 {
             paginateCount += 1
@@ -178,7 +178,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: NCKeychain().showHiddenFiles, account: fileProviderData.shared.session.account, options: options) { _, files, responseData, error in
             if let headers = responseData?.response?.allHeaderFields as? [String: String] {
                 let normalizedHeaders = Dictionary(uniqueKeysWithValues: headers.map { ($0.key.lowercased(), $0.value) })
-                self.isPaginated = Bool(normalizedHeaders["x-nc-paginate"] ?? "false") ?? false
+                isPaginated = Bool(normalizedHeaders["x-nc-paginate"] ?? "false") ?? false
                 self.paginateToken = normalizedHeaders["x-nc-paginate-token"]
                 self.paginatedTotal = Int(normalizedHeaders["x-nc-paginate-total"] ?? "0")
             }
@@ -196,14 +196,14 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                     }
                     /// FILES
                     self.database.addMetadatas(metadatas)
-                    completion(metadatas)
+                    completion(metadatas, isPaginated)
                 }
             } else {
-                if self.isPaginated {
-                    completion(nil)
+                if isPaginated {
+                    completion(nil, isPaginated)
                 } else {
                     let metadatas = self.database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.session.account, serverUrl))
-                    completion(metadatas)
+                    completion(metadatas, isPaginated)
                 }
             }
         }
