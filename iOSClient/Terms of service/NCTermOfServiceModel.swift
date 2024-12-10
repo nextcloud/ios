@@ -31,7 +31,11 @@ class NCTermOfServiceModel: ObservableObject, ViewOnAppearHandling {
         }
 
         if let languages = tos?.getLanguages() {
-            self.languages = languages
+            for language in languages {
+                if self.terms[language.key] != nil {
+                    self.languages[language.key] = language.value
+                }
+            }
         } else {
             terms = [
                 "en": "These are the Terms of Service.",

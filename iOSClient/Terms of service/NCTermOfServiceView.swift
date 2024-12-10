@@ -1,14 +1,14 @@
 import SwiftUI
 
 struct NCTermOfServiceModelView: View {
-    @State private var selectedLanguage = "en"
+    @State private var selectedLanguage = Locale.preferredLanguages.first?.components(separatedBy: "-").first ?? "en"
     @State private var termsText = "Loading terms..."
     @ObservedObject var model: NCTermOfServiceModel
 
     var body: some View {
         VStack {
             HStack {
-                Text("Terms of Service")
+                Text(NSLocalizedString("_terms_of_service_", comment: "Terms of Service"))
                     .font(.headline)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
@@ -20,8 +20,12 @@ struct NCTermOfServiceModelView: View {
                 .pickerStyle(MenuPickerStyle())
                 .frame(maxWidth: .infinity, alignment: .trailing)
                 .onChange(of: selectedLanguage) { newLanguage in
-                    // Cambia i termini in base alla lingua selezionata
-                    termsText = model.terms[newLanguage] ?? "Terms not available in selected language."
+                    if let terms = model.terms[newLanguage] {
+                        termsText = terms
+                    } else {
+                        selectedLanguage = "en"
+                        termsText = model.terms["en"] ?? "Terms not available in selected language."
+                    }
                 }
             }
             .padding(.horizontal)
