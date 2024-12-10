@@ -21,9 +21,9 @@ class DataProtectionModel: ObservableObject {
     }
     
     func allowAnalysisOfDataCollection(_ allowAnalysisOfDataCollection: Bool) {
-        DataProtectionAgreementManager.shared?.allowAnalysisOfDataCollection(allowAnalysisOfDataCollection) { allowChanges in
+        DataProtectionAgreementManager.shared?.allowAnalysisOfDataCollection(allowAnalysisOfDataCollection) { [weak self] allowChanges in
             if !allowChanges {
-                self.analysisOfDataCollection = DataProtectionAgreementManager.shared?.isAllowedAnalysisOfDataCollection() ?? false
+                self?.analysisOfDataCollection = DataProtectionAgreementManager.shared?.isAllowedAnalysisOfDataCollection() ?? false
             }
         }
     }

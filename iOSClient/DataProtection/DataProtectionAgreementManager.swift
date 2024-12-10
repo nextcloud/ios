@@ -17,7 +17,7 @@ class DataProtectionAgreementManager {
     private(set) var isViewVisible = false
     private var window: UIWindow?
     private var dismissBlock: (() -> Void)?
-
+    
     var rootViewController: UIViewController
     
     struct DataProtectionKeys {
@@ -25,61 +25,62 @@ class DataProtectionAgreementManager {
     }
     
     private init?() {
-        self.rootViewController = DataProtectionHostingController(rootView: DataProtectionAgreementScreen())
+        rootViewController = DataProtectionHostingController(rootView: DataProtectionAgreementScreen())
     }
-
+    
     private func instantiateWindow() {
         guard let windowScene = UIApplication.shared.firstWindow?.windowScene else { return }
         let window = UIWindow(windowScene: windowScene)
         window.windowLevel = UIWindow.Level.alert
-        window.rootViewController = self.rootViewController
-
+        window.rootViewController = rootViewController
+        
         self.window = window
     }
-
+    
     /// Remove the window from the stack making it not visible
     func dismissView() {
-        guard (Thread.current.isMainThread == true) else {
-            return DispatchQueue.main.sync {
-                self.dismissView()
+        guard Thread.current.isMainThread else {
+            return DispatchQueue.main.async { [weak self] in
+                self?.dismissView()
             }
         }
-        guard (self.isViewVisible == true) else {
+        guard isViewVisible else {
             return
         }
-
-        self.isViewVisible = false
-        self.window?.isHidden = true
-        self.dismissBlock?()
+        
+        isViewVisible = false
+        window?.isHidden = true
+        dismissBlock?()
     }
-
+    
     /// Make the window visible
     ///
     /// - Parameter dismissBlock: Block to be called when `dismissView` is called
     func showView(dismissBlock: @escaping () -> Void) {
-        guard (Thread.current.isMainThread == true) else {
-            return DispatchQueue.main.sync {
-                self.showView(dismissBlock: dismissBlock)
+        guard Thread.current.isMainThread else {
+            return DispatchQueue.main.async { [weak self] in
+                self?.showView(dismissBlock: dismissBlock)
             }
         }
-        guard (self.isViewVisible == false) else {
+        guard !isViewVisible else {
             return
         }
-
+        
         self.dismissBlock = dismissBlock
-
-        if (self.window == nil) {
-            self.instantiateWindow()
+        
+        if (window == nil) {
+            instantiateWindow()
         }
-
-        self.isViewVisible = true
-
-        self.window?.isHidden = false
-        self.window?.makeKeyAndVisible()
+        
+        isViewVisible = true
+        
+        window?.isHidden = false
+        window?.makeKeyAndVisible()
     }
     
     func checkAgreement() {
-        if !UserDefaults.standard.bool(forKey: DataProtectionKeys.accepted) {
+        let dataProtectionAccepted = UserDefaults.standard.bool(forKey: DataProtectionKeys.accepted)
+        if !dataProtectionAccepted {
             showView { [weak self] in
                 self?.setupAnalyticsCollection()
             }
@@ -94,7 +95,7 @@ class DataProtectionAgreementManager {
     
     func acceptAgreement() {
         UserDefaults.standard.set(true, forKey: DataProtectionKeys.accepted)
-        self.askForTrackingPermission { [weak self] _ in
+        askForTrackingPermission { [weak self] _ in
             self?.dismissView()
         }
     }
@@ -106,8 +107,8 @@ class DataProtectionAgreementManager {
     
     func rejectAgreement() {
         UserDefaults.standard.set(true, forKey: DataProtectionKeys.accepted)
-        self.askForTrackingPermission { [weak self] granted in
-            if granted {       
+        askForTrackingPermission { [weak self] granted in
+            if granted {
                 self?.redirectToSettings(onCancel: nil)
             }
             else {
@@ -121,7 +122,7 @@ class DataProtectionAgreementManager {
     }
     
     func allowAnalysisOfDataCollection(_ allowAnalysisOfDataCollection: Bool, completion: ((_ allowChanges: Bool) -> Void)?) {
-        self.askForTrackingPermission { [weak self] granted in
+        askForTrackingPermission { [weak self] granted in
             if granted != allowAnalysisOfDataCollection {
                 self?.redirectToSettings(onCancel: { onCancel in
                     completion?(!onCancel)
@@ -136,7 +137,7 @@ class DataProtectionAgreementManager {
     
     private func askForTrackingPermission(completion: ((_ isPermissionGranted: Bool) -> Void)?) {
         switch ATTrackingManager.trackingAuthorizationStatus {
-        case .notDetermined:    self.handleNotDetermined(completion: completion)
+        case .notDetermined:    handleNotDetermined(completion: completion)
         case .authorized:       completion?(true)
         case .restricted,
                 .denied:        completion?(false)
@@ -145,14 +146,14 @@ class DataProtectionAgreementManager {
     }
     
     private func handleNotDetermined(completion: ((_ isPermissionGranted: Bool) -> Void)?) {
-            ATTrackingManager.requestTrackingAuthorization { _ in
-                self.askForTrackingPermission(completion: completion)
-            }
+        ATTrackingManager.requestTrackingAuthorization { [weak self] _ in
+            self?.askForTrackingPermission(completion: completion)
+        }
     }
     
     private func redirectToSettings(onCancel: ((_ onCancel: Bool) -> Void)?) {
         let alert = UIAlertController(title: "", message: NSLocalizedString("_alert_tracking_access", comment: ""), preferredStyle: .alert)
-
+        
         alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { _ in onCancel?(true) }))
         
         alert.addAction(UIAlertAction(title: NSLocalizedString("_settings_", comment: ""), style: .default, handler: { (_) in
@@ -164,7 +165,7 @@ class DataProtectionAgreementManager {
             }
         }))
         
-        if !(self.window?.isHidden ?? true) {
+        if !(window?.isHidden ?? true) {
             DispatchQueue.main.async { [weak self] in
                 self?.rootViewController.present(alert, animated: false)
             }
