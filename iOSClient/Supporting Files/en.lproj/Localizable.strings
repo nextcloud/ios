@@ -1051,6 +1051,8 @@
 "_offline_not_allowed_"     = "This operation is not allowed in offline mode";
 "_Upload_native_format_yes_"= "Upload in native format: yes";
 "_Upload_native_format_no_" = "Upload in native format: no";
+"_terms_accept_"            = "I acknowledge that I have read and agree to the above terms of service";
+"_terms_accepted_"          = "Terms accepted";
 
 // Tip
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails.";

@@ -2,7 +2,6 @@ import SwiftUI
 
 struct NCTermOfServiceModelView: View {
     @State private var selectedLanguage = "en"
-    @State private var acceptedTerms = false
     @State private var termsText = "Loading terms..."
     @ObservedObject var model: NCTermOfServiceModel
 
@@ -32,21 +31,21 @@ struct NCTermOfServiceModelView: View {
                     .font(.body)
                     .foregroundColor(.primary)
                     .frame(maxWidth: .infinity)
-                    .padding(.horizontal) // Solo per il testo dei termini
+                    .padding(.horizontal)
             }
             .padding(.top)
 
             Button(action: {
-                acceptedTerms.toggle()
+                model.hasUserSigned.toggle()
             }) {
-                Text(acceptedTerms ? "Terms Accepted" : "Accept Terms")
+                Text(model.hasUserSigned ? NSLocalizedString("_terms_accepted_", comment: "Accepted terms") : NSLocalizedString("_terms_accept_", comment: "Accept terms"))
                     .foregroundColor(.white)
                     .padding()
-                    .background(acceptedTerms ? Color.green : Color.blue)
+                    .background(model.hasUserSigned ? Color.green : Color.blue)
                     .cornerRadius(10)
                     .padding(.bottom)
             }
-            .disabled(acceptedTerms)
+            .disabled(model.hasUserSigned)
         }
         .padding()
         .onAppear {
