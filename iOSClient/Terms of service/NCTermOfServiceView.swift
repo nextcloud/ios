@@ -42,7 +42,7 @@ struct NCTermOfServiceModelView: View {
             .padding(.top)
 
             Button(action: {
-                model.dismissView = true
+                model.signTermsOfService(termId: model.termsId[selectedLanguage])
             }) {
                 Text(model.hasUserSigned ? NSLocalizedString("_terms_accepted_", comment: "Accepted terms") : NSLocalizedString("_terms_accept_", comment: "Accept terms"))
                     .foregroundColor(.white)
