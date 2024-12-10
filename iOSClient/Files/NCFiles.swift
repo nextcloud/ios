@@ -24,6 +24,7 @@
 import UIKit
 import NextcloudKit
 import RealmSwift
+import SwiftUI
 
 class NCFiles: NCCollectionViewCommon {
     internal var isRoot: Bool = true
@@ -195,7 +196,10 @@ class NCFiles: NCCollectionViewCommon {
                 } else if error.errorCode == self.global.errorForbidden {
                     NextcloudKit.shared.getTermsOfService(account: self.session.account) { account, tos, _, error in
                         if error == .success, let tos {
-
+                            let termOfServiceModel = NCTermOfServiceModel(controller: self.controller, tos: tos)
+                            let termOfServiceView = NCTermOfServiceModelView(model: termOfServiceModel)
+                            let termOfServiceController = UIHostingController(rootView: termOfServiceView)
+                            self.present(termOfServiceController, animated: true, completion: nil)
                         }
                     }
                 }

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2024 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
 import NextcloudKit
@@ -8,21 +11,41 @@ class NCTermOfServiceModel: ObservableObject, ViewOnAppearHandling {
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     /// Root View Controller
     var controller: NCMainTabBarController?
-
     /// Set true for dismiss the view
     @Published var dismissView = false
-    /// DB
-    let database = NCManageDatabase.shared
+    // Data
+    @Published var languages: [String: String] = [:]
+    @Published var terms: [String: String] = [:]
+    @Published var hasUserSigned: Bool = false
 
-    /// Initialization code to set up the ViewModel with the active account
-    init(controller: NCMainTabBarController?, tos: NKTermsOfService) {
+    /// Initialization code
+    init(controller: NCMainTabBarController?, tos: NKTermsOfService?) {
         self.controller = controller
-        onViewAppear()
+
+        if let terms = tos?.getTerms() {
+            for term in terms {
+                self.terms[term.languageCode] = term.body
+            }
+        } else {
+            languages = ["en": "English", "de": "Deutsch", "it": "Italiano"]
+        }
+
+        if let languages = tos?.getLanguages() {
+            self.languages = languages
+        } else {
+            terms = [
+                "en": "These are the Terms of Service.",
+                "de": "Dies sind die Allgemeinen Geschäftsbedingungen.",
+                "it": "Questi sono i Termini di servizio."
+            ]
+        }
+
+        if let hasUserSigned = tos?.hasUserSigned() {
+            self.hasUserSigned = hasUserSigned
+        }
     }
 
-    deinit {
-
-    }
+    deinit { }
 
     /// Triggered when the view appears.
     func onViewAppear() {
