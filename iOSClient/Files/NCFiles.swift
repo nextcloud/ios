@@ -192,6 +192,12 @@ class NCFiles: NCCollectionViewCommon {
                             NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile))
                         }
                     }
+                } else if error.errorCode == self.global.errorForbidden {
+                    NextcloudKit.shared.getTermsOfService(account: self.session.account) { account, tos, _, error in
+                        if error == .success, let tos {
+
+                        }
+                    }
                 }
             }
         }
