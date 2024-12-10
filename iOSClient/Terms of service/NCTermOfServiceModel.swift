@@ -6,9 +6,7 @@ import Foundation
 import NextcloudKit
 
 /// A model that allows the user to configure the account
-class NCTermOfServiceModel: ObservableObject, ViewOnAppearHandling {
-    /// AppDelegate
-    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+class NCTermOfServiceModel: ObservableObject {
     /// Root View Controller
     var controller: NCMainTabBarController?
     /// Set true for dismiss the view
@@ -50,9 +48,4 @@ class NCTermOfServiceModel: ObservableObject, ViewOnAppearHandling {
     }
 
     deinit { }
-
-    /// Triggered when the view appears.
-    func onViewAppear() {
-
-    }
 }

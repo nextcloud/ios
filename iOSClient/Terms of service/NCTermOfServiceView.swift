@@ -5,6 +5,8 @@ struct NCTermOfServiceModelView: View {
     @State private var termsText = "Loading terms..."
     @ObservedObject var model: NCTermOfServiceModel
 
+    @Environment(\.presentationMode) var presentationMode
+
     var body: some View {
         VStack {
             HStack {
@@ -23,8 +25,8 @@ struct NCTermOfServiceModelView: View {
                     if let terms = model.terms[newLanguage] {
                         termsText = terms
                     } else {
-                        selectedLanguage = "en"
-                        termsText = model.terms["en"] ?? "Terms not available in selected language."
+                        selectedLanguage = model.languages.first?.key ?? "en"
+                        termsText = model.terms[selectedLanguage] ?? "Terms not available in selected language."
                     }
                 }
             }
@@ -40,7 +42,7 @@ struct NCTermOfServiceModelView: View {
             .padding(.top)
 
             Button(action: {
-                model.hasUserSigned.toggle()
+                model.dismissView = true
             }) {
                 Text(model.hasUserSigned ? NSLocalizedString("_terms_accepted_", comment: "Accepted terms") : NSLocalizedString("_terms_accept_", comment: "Accept terms"))
                     .foregroundColor(.white)
@@ -53,7 +55,17 @@ struct NCTermOfServiceModelView: View {
         }
         .padding()
         .onAppear {
-            termsText = model.terms[selectedLanguage] ?? "Terms not available in selected language."
+            if let item = model.terms[selectedLanguage] {
+                termsText = item
+            } else {
+                selectedLanguage = model.languages.first?.key ?? "en"
+                termsText = model.terms[selectedLanguage] ?? "Terms not available in selected language."
+            }
+        }
+        .onReceive(model.$dismissView) { newValue in
+            if newValue {
+                presentationMode.wrappedValue.dismiss()
+            }
         }
     }
 }
