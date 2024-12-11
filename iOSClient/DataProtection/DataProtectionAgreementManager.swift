@@ -21,10 +21,10 @@ class DataProtectionAgreementManager {
     var rootViewController: UIViewController
     
     struct DataProtectionKeys {
-        static let accepted = "data_protection_agreement_accepted"
+        static let agreementWasShown = "data_protection_agreement_was_shown"
     }
     
-    private init?() {
+    private init() {
         rootViewController = DataProtectionHostingController(rootView: DataProtectionAgreementScreen())
     }
     
@@ -78,9 +78,9 @@ class DataProtectionAgreementManager {
         window?.makeKeyAndVisible()
     }
     
-    func checkAgreement() {
-        let dataProtectionAccepted = UserDefaults.standard.bool(forKey: DataProtectionKeys.accepted)
-        if !dataProtectionAccepted {
+    func showAgreement() {
+        let wasAgreementShown = UserDefaults.standard.bool(forKey: DataProtectionKeys.agreementWasShown)
+        if !wasAgreementShown {
             showView { [weak self] in
                 self?.setupAnalyticsCollection()
             }
@@ -94,22 +94,22 @@ class DataProtectionAgreementManager {
     }
     
     func acceptAgreement() {
-        UserDefaults.standard.set(true, forKey: DataProtectionKeys.accepted)
+        agreementWasShown(true)
         askForTrackingPermission { [weak self] _ in
             self?.dismissView()
         }
     }
     
     func saveSettings() {
-        UserDefaults.standard.set(true, forKey: DataProtectionKeys.accepted)
+        agreementWasShown(true)
         dismissView()
     }
     
     func rejectAgreement() {
-        UserDefaults.standard.set(true, forKey: DataProtectionKeys.accepted)
+        agreementWasShown(true)
         askForTrackingPermission { [weak self] granted in
             if granted {
-                self?.redirectToSettings(onCancel: nil)
+                self?.redirectToSettings()
             }
             else {
                 self?.dismissView()
@@ -117,16 +117,18 @@ class DataProtectionAgreementManager {
         }
     }
     
-    func removeAgreement() {
-        UserDefaults.standard.set(false, forKey: DataProtectionKeys.accepted)
+    func onAccountDeleted() {
+        agreementWasShown(false)
     }
     
-    func allowAnalysisOfDataCollection(_ allowAnalysisOfDataCollection: Bool, completion: ((_ allowChanges: Bool) -> Void)?) {
-        askForTrackingPermission { [weak self] granted in
+    private func agreementWasShown(_ wasShown: Bool) {
+        UserDefaults.standard.set(wasShown, forKey: DataProtectionKeys.agreementWasShown)
+    }
+    
+    func allowAnalysisOfDataCollection(_ allowAnalysisOfDataCollection: Bool, redirectToSettings: (() -> Void)?) {
+        askForTrackingPermission { granted in
             if granted != allowAnalysisOfDataCollection {
-                self?.redirectToSettings(onCancel: { onCancel in
-                    completion?(!onCancel)
-                })
+                redirectToSettings?()
             }
         }
     }
@@ -151,13 +153,12 @@ class DataProtectionAgreementManager {
         }
     }
     
-    private func redirectToSettings(onCancel: ((_ onCancel: Bool) -> Void)?) {
-        let alert = UIAlertController(title: "", message: NSLocalizedString("_alert_tracking_access", comment: ""), preferredStyle: .alert)
+    private func redirectToSettings() {
+        let alert = UIAlertController(title: NSLocalizedString("_alert_tracking_access", comment: ""), message: nil, preferredStyle: .alert)
         
-        alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { _ in onCancel?(true) }))
+        alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: { _ in }))
         
         alert.addAction(UIAlertAction(title: NSLocalizedString("_settings_", comment: ""), style: .default, handler: { (_) in
-            onCancel?(false)
             DispatchQueue.main.async {
                 if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
                     UIApplication.shared.open(settingsURL, options: [:], completionHandler: nil)
@@ -165,15 +166,8 @@ class DataProtectionAgreementManager {
             }
         }))
         
-        if !(window?.isHidden ?? true) {
-            DispatchQueue.main.async { [weak self] in
-                self?.rootViewController.present(alert, animated: false)
-            }
-        }
-        else if let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController{
-            DispatchQueue.main.async {
-                controller.presentedViewController?.present(alert, animated: false)
-            }
+        DispatchQueue.main.async { [weak self] in
+            self?.rootViewController.present(alert, animated: false)
         }
     }
 }

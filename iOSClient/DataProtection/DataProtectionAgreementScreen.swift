@@ -52,7 +52,7 @@ struct DataProtectionAgreementScreen: View {
                                         isShowPrivacyPolicy = true
                                     }
                                     else if url.absoluteString == "link://reject" {
-                                        DataProtectionAgreementManager.shared?.rejectAgreement()
+                                        DataProtectionAgreementManager.shared.rejectAgreement()
                                     }
                                     return .discarded
                                 })
@@ -73,7 +73,7 @@ struct DataProtectionAgreementScreen: View {
                     .buttonStyle(ButtonStyleSecondary(maxWidth: 288.0))
                     
                     Button(NSLocalizedString("_agree_", comment: "")) {
-                        DataProtectionAgreementManager.shared?.acceptAgreement()
+                        DataProtectionAgreementManager.shared.acceptAgreement()
                     }
                     .buttonStyle(ButtonStylePrimary(maxWidth: 288.0))
                 }

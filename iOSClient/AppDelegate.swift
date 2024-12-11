@@ -70,7 +70,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         UserDefaults.standard.register(defaults: ["UserAgent": userAgent])
         
         FirebaseApp.configure()
-        DataProtectionAgreementManager.shared?.setupAnalyticsCollection()
+        DataProtectionAgreementManager.shared.setupAnalyticsCollection()
 
         utilityFileSystem.createDirectoryStandard()
         utilityFileSystem.emptyTemporaryDirectory()
@@ -562,7 +562,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCKeychain().clearAllKeysEndToEnd(account: account)
         NCKeychain().clearAllKeysPushNotification(account: account)
         NCKeychain().setPassword(account: account, password: nil)
-        DataProtectionAgreementManager.shared?.removeAgreement()
+        DataProtectionAgreementManager.shared.onAccountDeleted()
 
         self.account = ""
         self.urlBase = ""

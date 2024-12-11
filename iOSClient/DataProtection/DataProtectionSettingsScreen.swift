@@ -150,6 +150,18 @@ struct DataProtectionSettingsScreen: View {
             .onChange(of: model.analysisOfDataCollection) { allowAnalysis in
                 model.allowAnalysisOfDataCollection(allowAnalysis)
             }
+            .alert(NSLocalizedString("_alert_tracking_access", comment: ""), isPresented: $model.redirectToSettings, actions: {
+                Button(NSLocalizedString("_cancel_", comment: ""),
+                       role: .none,
+                       action: {
+                    model.cancelOpenSettings()
+                })
+                Button(NSLocalizedString("_settings_", comment: ""),
+                       role: .none,
+                       action: {
+                    model.openSettings()
+                })
+            })
     }
     
     private func analysisOfDataCollectionFooter() -> some View {
@@ -162,7 +174,7 @@ struct DataProtectionSettingsScreen: View {
     
     private func saveSettingsButton() -> some View {
         Button(NSLocalizedString("_save_settings_", comment: "")) {
-            DataProtectionAgreementManager.shared?.saveSettings()
+            model.saveSettings()
         }
         .buttonStyle(ButtonStylePrimary(maxWidth: 288.0))
         .padding(16.0)
