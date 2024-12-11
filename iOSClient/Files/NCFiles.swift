@@ -24,6 +24,7 @@
 import UIKit
 import NextcloudKit
 import RealmSwift
+import SwiftUI
 
 class NCFiles: NCCollectionViewCommon {
     internal var isRoot: Bool = true
@@ -190,6 +191,19 @@ class NCFiles: NCCollectionViewCommon {
                     for metadata in metadatas where !metadata.directory && downloadMetadata(metadata) {
                         if NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
                             NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile))
+                        }
+                    }
+                } else if error.errorCode == self.global.errorForbidden {
+                    DispatchQueue.main.async {
+                        if self.presentedViewController == nil {
+                            NextcloudKit.shared.getTermsOfService(account: self.session.account) { _, tos, _, error in
+                                if error == .success, let tos {
+                                    let termOfServiceModel = NCTermOfServiceModel(controller: self.controller, tos: tos)
+                                    let termOfServiceView = NCTermOfServiceModelView(model: termOfServiceModel)
+                                    let termOfServiceController = UIHostingController(rootView: termOfServiceView)
+                                    self.present(termOfServiceController, animated: true, completion: nil)
+                                }
+                            }
                         }
                     }
                 }
