@@ -33,7 +33,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     let database = NCManageDatabase.shared
     var anchor: UInt64 = 0
     // X-NC-PAGINATE
-    var recordsPerPage: Int = 5
+    var recordsPerPage: Int = 50
     var paginateToken: String?
     var paginatedTotal: Int?
 
@@ -168,7 +168,10 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             paginateCount += 1
         }
         var useFirstAsMetadataFolder: Bool = false
-        let offset = pageNumber * recordsPerPage
+        var offset = pageNumber * recordsPerPage
+        if pageNumber > 0 {
+            offset += 1
+        }
         let options = NKRequestOptions(paginate: true,
                                        paginateToken: self.paginateToken,
                                        paginateOffset: offset,
