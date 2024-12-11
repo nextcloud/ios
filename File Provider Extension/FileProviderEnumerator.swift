@@ -162,12 +162,12 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     }
 
     func fetchItemsForPage(serverUrl: String, pageNumber: Int, completion: @escaping (_ metadatas: [tableMetadata]?, _ isPaginated: Bool) -> Void) {
+        var useFirstAsMetadataFolder: Bool = false
         var isPaginated: Bool = false
         var paginateCount = recordsPerPage
         if pageNumber == 0 {
             paginateCount += 1
         }
-        var useFirstAsMetadataFolder: Bool = false
         var offset = pageNumber * recordsPerPage
         if pageNumber > 0 {
             offset += 1
