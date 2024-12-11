@@ -630,10 +630,10 @@
 
 // MARK: Files Header
 
-"_select_selectionLabel_selectAll_"			= "select all";
-"_select_selectionLabel_oneItemSelected_"	= "one item selected";
-"_select_selectionLabel_manyItemsSelected_"  = "%@ items selected";
-"_select_selectionLabel_deselectAll_"		= "deselect all";
+"_select_selectionLabel_selectAll_" = "select all";
+"_select_selectionLabel_oneItemSelected_" = "one item selected";
+"_select_selectionLabel_manyItemsSelected_" = "%@ items selected";
+"_select_selectionLabel_deselectAll_" = "deselect all";
 
 // MARK: Share
 
@@ -1108,11 +1108,11 @@
 "_please_rename_file_"      = "Please rename the file or folder.";
 
 //MARK: Login
-"_login_welcome_"				 	= "Welcome to the cloud storage";
-"_login_description_"               = "You need to login over browser";
-"_login_wrong_QR_format_" 		    = "QR code format is incorrect";
+"_login_welcome_" = "Welcome to the cloud storage";
+"_login_description_" = "You need to login over browser";
+"_login_wrong_QR_format_" = "QR code format is incorrect";
 
 //MARK: Burger menu
 "_previous_" = "Previous";
-"_storage_used_"                 = "Storage used";
-"_used_of_space_"                = "%@ of %@ used";
+"_storage_used_" = "Storage used";
+"_used_of_space_" = "%@ of %@ used";
