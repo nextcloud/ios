@@ -33,9 +33,9 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     let database = NCManageDatabase.shared
     var anchor: UInt64 = 0
     // X-NC-PAGINATE
-    var recordsPerPage: Int = 5
+    var recordsPerPage: Int = 100
     var paginateToken: String?
-    var paginatedTotal: Int?
+    var paginatedTotal: Int = 0
 
     init(enumeratedItemIdentifier: NSFileProviderItemIdentifier) {
         self.enumeratedItemIdentifier = enumeratedItemIdentifier
@@ -162,25 +162,30 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     }
 
     func fetchItemsForPage(serverUrl: String, pageNumber: Int, completion: @escaping (_ metadatas: [tableMetadata]?, _ isPaginated: Bool) -> Void) {
+        var useFirstAsMetadataFolder: Bool = false
         var isPaginated: Bool = false
         var paginateCount = recordsPerPage
         if pageNumber == 0 {
             paginateCount += 1
         }
-        var useFirstAsMetadataFolder: Bool = false
-        let offset = pageNumber * recordsPerPage
+        var offset = pageNumber * recordsPerPage
+        if pageNumber > 0 {
+            offset += 1
+        }
         let options = NKRequestOptions(paginate: true,
                                        paginateToken: self.paginateToken,
                                        paginateOffset: offset,
                                        paginateCount: paginateCount,
                                        queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
+        print("PAGINATE OFFSET: \(offset) COUNT: \(paginateCount) TOTAL: \(self.paginatedTotal)")
+
         NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: NCKeychain().showHiddenFiles, account: fileProviderData.shared.session.account, options: options) { _, files, responseData, error in
             if let headers = responseData?.response?.allHeaderFields as? [String: String] {
                 let normalizedHeaders = Dictionary(uniqueKeysWithValues: headers.map { ($0.key.lowercased(), $0.value) })
                 isPaginated = Bool(normalizedHeaders["x-nc-paginate"] ?? "false") ?? false
                 self.paginateToken = normalizedHeaders["x-nc-paginate-token"]
-                self.paginatedTotal = Int(normalizedHeaders["x-nc-paginate-total"] ?? "0")
+                self.paginatedTotal = Int(normalizedHeaders["x-nc-paginate-total"] ?? "0") ?? 0
             }
 
             if error == .success, let files {
