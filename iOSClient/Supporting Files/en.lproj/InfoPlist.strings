@@ -5,3 +5,4 @@ NSPhotoLibraryUsageDescription = "Photo library access is required to upload you
 NSPhotoLibraryAddUsageDescription = "Photo library access is required to upload your photos and videos to your cloud.";
 NSMicrophoneUsageDescription = "Microphone access is required to create voice notes.";
 NSLocationWhenInUseUsageDescription = "The app will show your location on a map.";
+NSUserTrackingUsageDescription = "In order to measure the quality of the programming of the app and to find crashes and errors and their cause, anonymized data from the program flow is evaluated. At no time are individual users identified, your identity remains protected.";

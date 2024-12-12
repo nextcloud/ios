@@ -42,6 +42,11 @@ class NCMainTabBarController: UITabBarController {
 		setupTabBarView()
         burgerMenuController = BurgerMenuAttachController(with: self)
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        DataProtectionAgreementManager.shared.showAgreement()
+    }
 	
 	private func setupTabBarView() {
 		if UIDevice.current.userInterfaceIdiom == .pad {
