@@ -144,6 +144,20 @@ struct NCSettingsView: View {
                     }
                     .font(.system(size: 16))
                 }
+                
+                NavigationLink(destination: LazyView {
+                    DataProtectionSettingsScreen(model: DataProtectionModel(showFromSettings: true))
+                }) {
+                    HStack {
+                        Image(.Settings.dataprivacy)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 20, height: 20)
+                            .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
+                        Text(NSLocalizedString("_data_protection_", comment: ""))
+                    }
+                    .font(.system(size: 16))
+                }
             }.applyGlobalFormSectionStyle()
             /// `Information` Section
             Section(header: Text(NSLocalizedString("_information_", comment: "")), content: {
