@@ -18,21 +18,16 @@ struct SelectAlbumView: View {
     var body: some View {
         Text(NSLocalizedString("_select_autoupload_albums_", comment: ""))
 
-        List(selection: $selectedAlbums) {
+        List {
             Section {
-                HStack {
+                SelectionButton(tag: cameraRollTag, selection: $selectedAlbums) {
                     Image(systemName: "photo")
                     Text(NSLocalizedString("_camera_roll_", comment: ""))
                 }
             }
-            .tag(cameraRollTag)
 
-
-            SmartAlbums(model: model)
-
+            SmartAlbums(model: model, selectedAlbums: $selectedAlbums)
         }
-        .highPriorityGesture(DragGesture())
-        .simultaneousGesture(DragGesture())
         .environment(\.editMode, .constant(EditMode.active))
         .onChange(of: selectedAlbums) { newValue in
             if newValue.count > 1, oldSelectedAlbums.contains(cameraRollTag) {
@@ -53,45 +48,43 @@ struct SelectAlbumView: View {
     SelectAlbumView(model: AlbumModel())
 }
 
-@MainActor class AlbumModel: NSObject, ObservableObject {
-    @Published var allPhotos: PHFetchResult<PHAsset>!
-    @Published var allPhotosCount = 0
-    @Published var smartAlbums: [PHAssetCollection] = []
-    @Published var selectedSmartAlbums: [PHAssetCollection] = []
-//    @Published var albums: Albums
-//    @Published var userCollections: PHFetchResult<PHCollection>!
-//    let sectionLocalizedTitles = ["", NSLocalizedString("Smart Albums", comment: ""), NSLocalizedString("Albums", comment: "")]
+struct SmartAlbums: View {
+    @StateObject var model: AlbumModel
+    @Binding var selectedAlbums: Set<String>
 
-    override init() {
-        super.init()
-        
-        let allPhotosOptions = PHFetchOptions()
-        allPhotosOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
-        allPhotos = PHAsset.fetchAssets(with: allPhotosOptions)
-
-//        allPhotos.enumerateObjects { asset, _, _ in
-//            self.allPhotos.append(asset)
-//        }
-
-        allPhotosCount = allPhotos.count
-
-        let assetCollections = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .any, options: nil)
-
-        assetCollections.enumerateObjects { collection, _, _ in
-            self.smartAlbums.append(collection)
-        }
-
-        PHPhotoLibrary.shared().register(self)
-    }
-
-    func getAlbums(selectedAlbums: Set<String>) {
-        selectedSmartAlbums = selectedAlbums.compactMap { selectedAlbum in
-            return smartAlbums.first(where: { $0.localIdentifier == selectedAlbum })
+    var body: some View {
+        Section(NSLocalizedString("_smart_albums_", comment: "")) {
+            ForEach(model.smartAlbums, id: \.localIdentifier) { album in
+                SelectionButton(tag: album.localIdentifier, selection: $selectedAlbums) {
+                    Text(album.localizedTitle ?? "")
+                    Text(String(album.assetCount))
+                }
+            }
         }
     }
+}
 
-    deinit {
-        PHPhotoLibrary.shared().unregisterChangeObserver(self)
+struct SelectionButton<Content: View>: View {
+    let tag: String
+    @Binding var selection: Set<String>
+    @ViewBuilder var content: Content
+
+    var body: some View {
+        Button(action: {
+            withAnimation {
+                if selection.contains(tag) {
+                    selection.remove(tag)
+                } else {
+                    selection.insert(tag)
+                }
+            }
+        }) {
+            HStack {
+                Image(systemName: selection.contains(tag) ? "checkmark.circle.fill" : "circle")
+                content
+            }
+        }
+        .foregroundColor(.primary)
     }
 }
 
@@ -103,21 +96,5 @@ extension AlbumModel: PHPhotoLibraryChangeObserver {
             }
         }
 
-    }
-}
-
-struct SmartAlbums: View {
-    @StateObject var model: AlbumModel
-
-    var body: some View {
-        Section(NSLocalizedString("_smart_albums_", comment: "")) {
-            ForEach(model.smartAlbums, id: \.localIdentifier) { album in
-                HStack {
-                    Text(album.localizedTitle ?? "")
-                    Text(String(album.assetCount))
-                } // Tag each album for selection
-                .tag(album.localIdentifier)
-            }
-        }
     }
 }
