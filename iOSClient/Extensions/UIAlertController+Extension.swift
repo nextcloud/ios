@@ -253,7 +253,6 @@ extension UIAlertController {
                     message = NSLocalizedString("_file_name_new_extension_", comment: "")
                 }
 
-
                 let attributedString = NSAttributedString(string: message, attributes: [
                     NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14),
                     NSAttributedString.Key.foregroundColor: messageColor

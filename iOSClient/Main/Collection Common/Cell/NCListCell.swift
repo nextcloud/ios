@@ -32,6 +32,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var imageLocal: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
+    @IBOutlet weak var labelInfoSeparator: UILabel!
     @IBOutlet weak var labelSubinfo: UILabel!
     @IBOutlet weak var imageShared: UIImageView!
     @IBOutlet weak var buttonShared: UIButton!
@@ -44,7 +45,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var imageItemLeftConstraint: NSLayoutConstraint!
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var titleTrailingConstraint: NSLayoutConstraint!
-    @IBOutlet weak var subInfoTrailingConstraint: NSLayoutConstraint!
 
     var ocId = ""
     var ocIdTransfer = ""
@@ -179,12 +179,10 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 
     func titleInfoTrailingFull() {
         titleTrailingConstraint.constant = 10
-        subInfoTrailingConstraint.constant = 10
     }
 
     func titleInfoTrailingDefault() {
         titleTrailingConstraint.constant = 90
-        subInfoTrailingConstraint.constant = 90
     }
 
     func setButtonMore(image: UIImage) {
@@ -240,7 +238,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
 
     func writeInfoDateSize(date: NSDate, size: Int64) {
         labelInfo.text = NCUtility().dateDiff(date as Date)
-        labelSubinfo.text = " · " + NCUtilityFileSystem().transformedSize(size)
+        labelSubinfo.text = NCUtilityFileSystem().transformedSize(size)
     }
 
     func setAccessibility(label: String, value: String) {

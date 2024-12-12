@@ -31,9 +31,4 @@ class NCIntroCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var imageView: UIImageView!
 
     var indexPath = IndexPath()
-
-    override func awakeFromNib() {
-        super.awakeFromNib()
-    }
-
 }

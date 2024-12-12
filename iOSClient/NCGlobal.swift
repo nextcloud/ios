@@ -55,6 +55,7 @@ class NCGlobal: NSObject {
     let talkName                                    = "talk-message"
     let spreedName                                  = "spreed"
     let twoFactorNotificatioName                    = "twofactor_nextcloud_notification"
+    let termsOfServiceName                          = "terms_of_service"
 
     // Nextcloud version
     //
@@ -379,6 +380,7 @@ class NCGlobal: NSObject {
     let configuration_disable_log                               = "disable_log"
     let configuration_disable_more_external_site                = "disable_more_external_site"
     let configuration_disable_openin_file                       = "disable_openin_file"
+    let configuration_enforce_passcode_lock                     = "enforce_passcode_lock"
 
     // MORE NEXTCLOUD APPS
     //

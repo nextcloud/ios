@@ -32,15 +32,19 @@ extension FileProviderExtension {
         var counterProgress: Int64 = 0
 
         for itemIdentifier in itemIdentifiers {
-            guard let metadata = providerUtility.getTableMetadataFromItemIdentifier(itemIdentifier), metadata.hasPreview else {
+            guard let metadata = providerUtility.getTableMetadataFromItemIdentifier(itemIdentifier),
+                  metadata.hasPreview
+            else {
                 counterProgress += 1
-                if counterProgress == progress.totalUnitCount { completionHandler(nil) }
+                if counterProgress == progress.totalUnitCount {
+                    completionHandler(nil)
+                }
                 continue
             }
 
             NextcloudKit.shared.downloadPreview(fileId: metadata.fileId,
-                                                width: Int(size.width),
-                                                height: Int(size.height),
+                                                width: Int(NCGlobal.shared.size512.width),
+                                                height: Int(NCGlobal.shared.size512.height),
                                                 etag: metadata.etag,
                                                 account: metadata.account) { _ in
             } completion: { _, _, _, _, responseData, error in
@@ -55,6 +59,7 @@ extension FileProviderExtension {
                 }
             }
         }
+
         return progress
     }
 }

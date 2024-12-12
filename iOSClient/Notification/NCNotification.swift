@@ -348,10 +348,6 @@ class NCNotificationCell: UITableViewCell, NCCellProtocol {
         set { user = newValue ?? "" }
     }
 
-    override func awakeFromNib() {
-        super.awakeFromNib()
-    }
-
     @IBAction func touchUpInsideRemove(_ sender: Any) {
         guard let notification = notification else { return }
         delegate?.tapRemove(with: notification)

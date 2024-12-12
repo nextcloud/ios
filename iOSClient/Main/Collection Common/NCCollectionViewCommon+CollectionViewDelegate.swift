@@ -24,13 +24,15 @@
 import Foundation
 import UIKit
 import NextcloudKit
+import Alamofire
 
 extension NCCollectionViewCommon: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let metadata = self.dataSource.getMetadata(indexPath: indexPath),
-              !metadata.isInvalidated,
-              (metadata.name == global.appName || metadata.name == NCGlobal.shared.talkName)
-        else { return }
+              !metadata.isInvalidated
+        else {
+            return
+        }
 
         if isEditMode {
             if let index = fileSelect.firstIndex(of: metadata.ocId) {
@@ -61,7 +63,8 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             pushMetadata(metadata)
         } else {
             let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024)
-            if !metadata.isDirectoryE2EE, (metadata.isImage || metadata.isAudioOrVideo) {
+
+            if !metadata.isDirectoryE2EE, metadata.isImage || metadata.isAudioOrVideo {
                 let metadatas = self.dataSource.getMetadatas()
                 let ocIds = metadatas.filter { $0.classFile == NKCommon.TypeClassFile.image.rawValue ||
                                                $0.classFile == NKCommon.TypeClassFile.video.rawValue ||
@@ -77,11 +80,34 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
             } else if NextcloudKit.shared.isNetworkReachable(),
                       let metadata = database.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                               session: NCNetworking.shared.sessionDownload,
-                                                                                               selector: global.selectorLoadFileView,
-                                                                                               sceneIdentifier: self.controller?.sceneIdentifier) {
+                                                                                session: NCNetworking.shared.sessionDownload,
+                                                                                selector: global.selectorLoadFileView,
+                                                                                sceneIdentifier: self.controller?.sceneIdentifier) {
+                if metadata.name == "files" {
+                    let hud = NCHud(self.tabBarController?.view)
+                    var downloadRequest: DownloadRequest?
 
-                NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
+                    hud.initHudRing(text: NSLocalizedString("_downloading_", comment: ""), tapToCancelDetailText: true) {
+                        if let request = downloadRequest {
+                            request.cancel()
+                        }
+                    }
+
+                    NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
+                    } requestHandler: { request in
+                        downloadRequest = request
+                    } progressHandler: { progress in
+                        hud.progress(progress.fractionCompleted)
+                    } completion: { afError, error in
+                        if error == .success || afError?.isExplicitlyCancelledError ?? false {
+                            hud.dismiss()
+                        } else {
+                            hud.error(text: error.description)
+                        }
+                    }
+                } else if !metadata.url.isEmpty {
+                    NCViewer().view(viewController: self, metadata: metadata, image: nil)
+                }
             } else {
                 let error = NKError(errorCode: global.errorOffline, errorDescription: "_go_online_")
 

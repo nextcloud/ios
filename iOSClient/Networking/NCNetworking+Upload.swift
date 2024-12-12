@@ -76,7 +76,7 @@ extension NCNetworking {
                     self.database.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
                     NCContentPresenter().messageNotification("_error_files_upload_", error: error, delay: self.global.dismissAfterSecond, type: .error, afterDelay: 0.5)
                 case NKError.chunkFileUpload:
-                    if let afError, (afError.isExplicitlyCancelledError || sessionTaskFailedCode == self.global.errorExplicitlyCancelled ) {
+                    if let afError, afError.isExplicitlyCancelledError || sessionTaskFailedCode == self.global.errorExplicitlyCancelled {
                         self.database.deleteChunks(account: account, ocId: metadata.ocId, directory: directory)
                     }
                 case NKError.chunkMoveFile:

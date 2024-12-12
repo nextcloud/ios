@@ -105,6 +105,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             self.handleProcessingTask(task)
         }
 
+        if NCBrandOptions.shared.enforce_passcode_lock {
+            NCKeychain().requestPasscodeAtStart = true
+        }
+
         /// Activation singleton
         _ = NCActionCenter.shared
         _ = NCNetworkingProcess.shared
@@ -275,34 +279,38 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func nextcloudPushNotificationAction(data: [String: AnyObject]) {
-        guard let data = NCApplicationHandle().nextcloudPushNotificationAction(data: data) else { return }
-        var findAccount: String?
+        guard let data = NCApplicationHandle().nextcloudPushNotificationAction(data: data)
+        else {
+            return
+        }
+        let account = data["account"] as? String ?? "unavailable"
+        let app = data["app"] as? String
 
-        if let accountPush = data["account"] as? String {
-            for tableAccount in NCManageDatabase.shared.getAllTableAccount() {
-                if tableAccount.account == accountPush {
-                    for controller in SceneManager.shared.getControllers() {
-                        if controller.account == accountPush {
-                            NCAccount().changeAccount(tableAccount.account, userProfile: nil, controller: controller) {
-                                findAccount = tableAccount.account
-                            }
-                        }
-                    }
-                }
-            }
-            if let account = findAccount, let viewController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? NCNotification {
+        func openNotification(controller: NCMainTabBarController) {
+            if app == NCGlobal.shared.termsOfServiceName {
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterGetServerData, second: 0.5)
+            } else if let viewController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? NCNotification {
                 viewController.session = NCSession.shared.getSession(account: account)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     let navigationController = UINavigationController(rootViewController: viewController)
                     navigationController.modalPresentationStyle = .fullScreen
-                    UIApplication.shared.firstWindow?.rootViewController?.present(navigationController, animated: true)
+                    controller.present(navigationController, animated: true)
                 }
-            } else {
-                let message = NSLocalizedString("_the_account_", comment: "") + " " + accountPush + " " + NSLocalizedString("_does_not_exist_", comment: "")
-                let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
-                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-                UIApplication.shared.firstWindow?.rootViewController?.present(alertController, animated: true, completion: { })
             }
+        }
+
+        if let controller = SceneManager.shared.getControllers().first(where: { $0.account == account }) {
+            openNotification(controller: controller)
+        } else if let tableAccount = NCManageDatabase.shared.getAllTableAccount().first(where: { $0.account == account }),
+                  let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController {
+            NCAccount().changeAccount(tableAccount.account, userProfile: nil, controller: controller) {
+                openNotification(controller: controller)
+            }
+        } else {
+            let message = NSLocalizedString("_the_account_", comment: "") + " " + account + " " + NSLocalizedString("_does_not_exist_", comment: "")
+            let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
+            UIApplication.shared.firstWindow?.rootViewController?.present(alertController, animated: true, completion: { })
         }
     }
 

@@ -57,17 +57,23 @@ extension NCNetworking {
                               requestHandler: @escaping (_ request: DownloadRequest) -> Void = { _ in },
                               progressHandler: @escaping (_ progress: Progress) -> Void = { _ in },
                               completion: @escaping (_ afError: AFError?, _ error: NKError) -> Void = { _, _ in }) {
+        var metadata = metadata
         var downloadTask: URLSessionTask?
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileName)
         let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
-        if metadata.status == global.metadataStatusDownloading || metadata.status == global.metadataStatusUploading {
-            return completion(nil, NKError())
+        /// Test metadata exists ?
+        database.realmRefresh()
+        ///
+        if let metadataExists = database.getMetadataFromOcId(metadata.ocId) {
+            metadata = metadataExists
+        } else {
+            metadata = database.addMetadata(metadata)
         }
 
-        if database.getMetadataFromOcId(metadata.ocId) == nil {
-            database.addMetadata(metadata)
+        if metadata.status == global.metadataStatusDownloading || metadata.status == global.metadataStatusUploading {
+            return completion(nil, NKError())
         }
 
         NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account, options: options, requestHandler: { request in
@@ -297,7 +303,7 @@ class NCOperationDownload: ConcurrentOperation, @unchecked Sendable {
         metadata.sessionTaskIdentifier = 0
         metadata.status = NCGlobal.shared.metadataStatusWaitDownload
 
-        NCManageDatabase.shared.addMetadata(metadata)
+        let metadata = NCManageDatabase.shared.addMetadata(metadata)
 
         NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true) {
         } completion: { _, _ in
