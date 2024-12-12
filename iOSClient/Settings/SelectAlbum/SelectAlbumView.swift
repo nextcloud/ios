@@ -12,7 +12,7 @@ import Photos
 struct SelectAlbumView: View {
     @ObservedObject var model: AlbumModel
     @State private var oldSelectedAlbums = Set<String>()
-    @Binding var selectedAlbums: Set<String>
+    @State var selectedAlbums = Set<String>()
     private let cameraRollTag = "-1"
 
     var body: some View {
@@ -24,12 +24,15 @@ struct SelectAlbumView: View {
                     Image(systemName: "photo")
                     Text(NSLocalizedString("_camera_roll_", comment: ""))
                 }
-                .tag(cameraRollTag)
             }
+            .tag(cameraRollTag)
+
 
             SmartAlbums(model: model)
 
         }
+        .highPriorityGesture(DragGesture())
+        .simultaneousGesture(DragGesture())
         .environment(\.editMode, .constant(EditMode.active))
         .onChange(of: selectedAlbums) { newValue in
             if newValue.count > 1, oldSelectedAlbums.contains(cameraRollTag) {
@@ -39,26 +42,29 @@ struct SelectAlbumView: View {
             }
 
             oldSelectedAlbums = newValue
+
+            model.getAlbums(selectedAlbums: selectedAlbums)
         }
+
     }
 }
 
 #Preview {
-    SelectAlbumView(model: AlbumModel(albums: Albums()), selectedAlbums: .constant(Set()))
+    SelectAlbumView(model: AlbumModel())
 }
 
 @MainActor class AlbumModel: NSObject, ObservableObject {
     @Published var allPhotos: PHFetchResult<PHAsset>!
     @Published var allPhotosCount = 0
     @Published var smartAlbums: [PHAssetCollection] = []
-    @Published var albums: Albums
+    @Published var selectedSmartAlbums: [PHAssetCollection] = []
+//    @Published var albums: Albums
 //    @Published var userCollections: PHFetchResult<PHCollection>!
 //    let sectionLocalizedTitles = ["", NSLocalizedString("Smart Albums", comment: ""), NSLocalizedString("Albums", comment: "")]
 
-    init(albums: Albums) {
-        self.albums = albums
+    override init() {
         super.init()
-
+        
         let allPhotosOptions = PHFetchOptions()
         allPhotosOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
         allPhotos = PHAsset.fetchAssets(with: allPhotosOptions)
@@ -72,10 +78,16 @@ struct SelectAlbumView: View {
         let assetCollections = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .any, options: nil)
 
         assetCollections.enumerateObjects { collection, _, _ in
-            albums.smartAlbums.append(collection)
+            self.smartAlbums.append(collection)
         }
 
         PHPhotoLibrary.shared().register(self)
+    }
+
+    func getAlbums(selectedAlbums: Set<String>) {
+        selectedSmartAlbums = selectedAlbums.compactMap { selectedAlbum in
+            return smartAlbums.first(where: { $0.localIdentifier == selectedAlbum })
+        }
     }
 
     deinit {

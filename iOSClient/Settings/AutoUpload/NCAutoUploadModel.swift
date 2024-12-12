@@ -56,8 +56,6 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     let database = NCManageDatabase.shared
     @Published var autoUploadPath = "\(NCManageDatabase.shared.getAccountAutoUploadFileName())"
 
-    @Published var albums: Albums
-
     /// Root View Controller
     var controller: NCMainTabBarController?
     /// A variable user for change the auto upload directory
@@ -68,9 +66,8 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     }
 
     /// Initialization code to set up the ViewModel with the active account
-    init(controller: NCMainTabBarController?, albums: Albums) {
+    init(controller: NCMainTabBarController?) {
         self.controller = controller
-        self.albums = albums
         onViewAppear()
     }
 
@@ -169,7 +166,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     func handleAutoUploadFullChange(newValue: Bool) {
         updateAccountProperty(\.autoUploadFull, value: newValue)
         if newValue {
-            print(albums.smartAlbums)
+//            print(albums.smartAlbums)
 //            if albums.userCollections {
 //                NCAutoUpload.shared.autoUploadFullPhotos(controller: self.controller, log: "Auto upload full", account: session.account)
 //            }
@@ -223,11 +220,11 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         onViewAppear()
     }
 
-    func getAlbums(selectedAlbums: Set<String>) -> [PHAssetCollection] {
-        selectedAlbums.compactMap { selectedAlbum in
-            return albums.smartAlbums.first(where: { $0.localIdentifier == selectedAlbum })
-        }
-    }
+//    func getAlbums(selectedAlbums: Set<String>) -> [PHAssetCollection] {
+//        selectedAlbums.compactMap { selectedAlbum in
+//            return albums.smartAlbums.first(where: { $0.localIdentifier == selectedAlbum })
+//        }
+//    }
 }
 
 /// An enum that represents the granularity of the subfolders for auto upload

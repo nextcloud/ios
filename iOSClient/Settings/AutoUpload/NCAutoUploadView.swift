@@ -28,9 +28,9 @@ import UIKit
 /// A view that allows the user to configure the `auto upload settings for Nextcloud`
 struct NCAutoUploadView: View {
     @ObservedObject var model: NCAutoUploadModel
+    @ObservedObject var albumModel: AlbumModel
     @State private var showUploadFolder: Bool = false
     @State private var showSelectAlbums: Bool = false
-    @State private var selectedAlbums = Set<String>()
 
     var body: some View {
         Form {
@@ -65,7 +65,7 @@ struct NCAutoUploadView: View {
             }
         }
         .sheet(isPresented: $showSelectAlbums) {
-            SelectAlbumView(model: AlbumModel(albums: model.albums), selectedAlbums: $selectedAlbums)
+            SelectAlbumView(model: albumModel)
         }
     }
 
@@ -105,7 +105,7 @@ struct NCAutoUploadView: View {
             .tint(Color(UIColor.label))
         }, footer: {
 //            Text("\(NSLocalizedString("_upload_from_", comment: "")): \(model.returnPath())")
-            Text(selectedAlbums.joined())
+            Text(albumModel.selectedSmartAlbums.compactMap({$0.localizedTitle}).joined())
         })
         /// Auto Upload Photo
         Section(content: {
@@ -174,5 +174,5 @@ struct NCAutoUploadView: View {
 }
 
 #Preview {
-    NCAutoUploadView(model: NCAutoUploadModel(controller: nil, albums: Albums()))
+    NCAutoUploadView(model: NCAutoUploadModel(controller: nil), albumModel: AlbumModel())
 }
