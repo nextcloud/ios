@@ -22,13 +22,12 @@
 //
 
 import UIKit
-import WebKit
+@preconcurrency import WebKit
 import NextcloudKit
 import FloatingPanel
 
 class NCLoginProvider: UIViewController {
     var webView: WKWebView?
-    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utility = NCUtility()
     var titleView: String = ""
     var urlBase = ""
@@ -58,24 +57,17 @@ class NCLoginProvider: UIViewController {
 
         if let host = URL(string: urlBase)?.host {
             titleView = host
-            if let account = NCManageDatabase.shared.getActiveAccount(), NCKeychain().getPassword(account: account.account).isEmpty {
-                titleView = NSLocalizedString("_user_", comment: "") + " " + account.userId + " " + NSLocalizedString("_in_", comment: "") + " " + host
+            if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount(), NCKeychain().getPassword(account: activeTableAccount.account).isEmpty {
+                titleView = NSLocalizedString("_user_", comment: "") + " " + activeTableAccount.userId + " " + NSLocalizedString("_in_", comment: "") + " " + host
             }
         }
 
         self.title = titleView
     }
 
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        // Stop timer error network
-        appDelegate.timerErrorNetworkingDisabled = true
-    }
-
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         NCActivityIndicator.shared.stop()
-        appDelegate.timerErrorNetworkingDisabled = false
     }
 
     func loadWebPage(webView: WKWebView, url: URL) {
@@ -166,21 +158,37 @@ extension NCLoginProvider: WKNavigationDelegate {
         let account: String = "\(username) \(urlBase)"
         let user = username
 
-        NextcloudKit.shared.setup(account: account, user: user, userId: user, password: password, urlBase: urlBase)
-        NextcloudKit.shared.getUserProfile(account: account) { _, userProfile, _, error in
+        NextcloudKit.shared.getUserProfile(account: account) { account, userProfile, _, error in
             if error == .success, let userProfile {
-                NCManageDatabase.shared.deleteAccount(account)
+                NextcloudKit.shared.appendSession(account: account,
+                                                  urlBase: urlBase,
+                                                  user: user,
+                                                  userId: user,
+                                                  password: password,
+                                                  userAgent: userAgent,
+                                                  nextcloudVersion: NCCapabilities.shared.getCapabilities(account: account).capabilityServerVersionMajor,
+                                                  groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+                NCSession.shared.appendSession(account: account, urlBase: urlBase, user: user, userId: userProfile.userId)
                 NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
-                self.appDelegate.changeAccount(account, userProfile: userProfile) { }
+                NCAccount().changeAccount(account, userProfile: userProfile, controller: nil) { }
+
                 let window = UIApplication.shared.firstWindow
-                if window?.rootViewController is NCMainTabBarController {
+                if let controller = window?.rootViewController as? NCMainTabBarController {
+                    controller.account = account
                     self.dismiss(animated: true)
                 } else {
                     if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+                        controller.account = account
                         controller.modalPresentationStyle = .fullScreen
                         controller.view.alpha = 0
+
                         window?.rootViewController = controller
                         window?.makeKeyAndVisible()
+
+                        if let scene = window?.windowScene {
+                            SceneManager.shared.register(scene: scene, withRootViewController: controller)
+                        }
+
                         UIView.animate(withDuration: 0.5) {
                             controller.view.alpha = 1
                         }

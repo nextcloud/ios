@@ -25,11 +25,11 @@ import UIKit
 import NextcloudKit
 
 class NCMainTabBar: UITabBar {
-
     private var fillColor: UIColor!
     private var shapeLayer: CALayer?
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private let centerButtonY: CGFloat = -28
+    public var color = NCBrandColor.shared.customer
 
     public var menuRect: CGRect {
         let tabBarItemWidth = Int(self.frame.size.width) / (self.items?.count ?? 0)
@@ -42,16 +42,11 @@ class NCMainTabBar: UITabBar {
     required init?(coder: NSCoder) {
         super.init(coder: coder)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
 
-        changeTheming()
-    }
-
-    @objc func changeTheming() {
-        tintColor = NCBrandColor.shared.brandElement
-        if let centerButton = self.viewWithTag(99) {
-            centerButton.backgroundColor = NCBrandColor.shared.brandElement
+        if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
+            self.color = NCBrandColor.shared.getElement(account: activeTableAccount.account)
+            tintColor = color
         }
     }
 
@@ -171,7 +166,7 @@ class NCMainTabBar: UITabBar {
 
         centerButton.setTitle("", for: .normal)
         centerButton.setImage(imagePlus, for: .normal)
-        centerButton.backgroundColor = NCBrandColor.shared.brandElement
+        centerButton.backgroundColor = color
         centerButton.tintColor = UIColor.white
         centerButton.tag = 99
         centerButton.accessibilityLabel = NSLocalizedString("_accessibility_add_upload_", comment: "")
@@ -180,11 +175,10 @@ class NCMainTabBar: UITabBar {
         centerButton.layer.shadowOffset = CGSize(width: 0, height: 0)
         centerButton.layer.shadowRadius = 3.0
         centerButton.layer.shadowOpacity = 0.5
-        centerButton.action(for: .touchUpInside) { [self] _ in
-
+        centerButton.action(for: .touchUpInside) { _ in
             if let controller = self.window?.rootViewController as? NCMainTabBarController {
                 let serverUrl = controller.currentServerUrl()
-                if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", self.appDelegate.account, serverUrl)) {
+                if let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", NCSession.shared.getSession(controller: controller).account, serverUrl)) {
                     if !directory.permissions.contains("CK") {
                         let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_no_permission_add_file_")
                         NCContentPresenter().showWarning(error: error)
@@ -192,10 +186,10 @@ class NCMainTabBar: UITabBar {
                     }
                 }
 
-                let fileFolderPath = NCUtilityFileSystem().getFileNamePath("", serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+                let fileFolderPath = NCUtilityFileSystem().getFileNamePath("", serverUrl: serverUrl, session: NCSession.shared.getSession(controller: controller))
                 let fileFolderName = (serverUrl as NSString).lastPathComponent
 
-                if !FileNameValidator.shared.checkFolderPath(folderPath: fileFolderPath) {
+                if !FileNameValidator.shared.checkFolderPath(fileFolderPath, account: controller.account) {
                     controller.present(UIAlertController.warning(message: "\(String(format: NSLocalizedString("_file_name_validator_error_reserved_name_", comment: ""), fileFolderName)) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
 
                     return
@@ -209,17 +203,15 @@ class NCMainTabBar: UITabBar {
     }
 
     @objc func updateBadgeNumber(_ notification: NSNotification) {
-        DispatchQueue.main.async {
-            guard let userInfo = notification.userInfo as NSDictionary?,
-                  let counterDownload = userInfo["counterDownload"] as? Int,
-                  let counterUpload = userInfo["counterUpload"] as? Int
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let counterDownload = userInfo["counterDownload"] as? Int,
+              let counterUpload = userInfo["counterUpload"] as? Int
             else { return }
-            self.updateBadgeNumberUI(counterDownload: counterDownload, counterUpload: counterUpload)
-        }
+
+        self.updateBadgeNumberUI(counterDownload: counterDownload, counterUpload: counterUpload)
     }
 
     func updateBadgeNumberUI(counterDownload: Int, counterUpload: Int) {
-
         UIApplication.shared.applicationIconBadgeNumber = counterDownload + counterUpload
 
         if let item = self.items?[0] {

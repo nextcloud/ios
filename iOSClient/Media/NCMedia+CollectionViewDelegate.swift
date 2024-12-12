@@ -27,41 +27,32 @@ import RealmSwift
 
 extension NCMedia: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        var mediaCell: NCGridMediaCell?
-        if let metadata = self.metadatas?[indexPath.row] {
-            if let visibleCells = self.collectionView?.indexPathsForVisibleItems.compactMap({ self.collectionView?.cellForItem(at: $0) }) {
-                for case let cell as NCGridMediaCell in visibleCells {
-                    if cell.ocId == metadata.ocId {
-                        mediaCell = cell
-                    }
-                }
-            }
-            if isEditMode {
-                if let index = selectOcId.firstIndex(of: metadata.ocId) {
-                    selectOcId.remove(at: index)
-                    mediaCell?.selected(false)
-                } else {
-                    selectOcId.append(metadata.ocId)
-                    mediaCell?.selected(true)
+        guard let metadata = dataSource.getMetadata(indexPath: indexPath),
+              let cell = collectionView.cellForItem(at: indexPath) as? NCMediaCell else { return }
 
-                }
-                tabBarSelect.selectCount = selectOcId.count
+        if isEditMode {
+            if let index = fileSelect.firstIndex(of: metadata.ocId) {
+                fileSelect.remove(at: index)
+                cell.selected(false)
             } else {
-                // ACTIVE SERVERURL
-                serverUrl = metadata.serverUrl
-                if let metadatas = self.metadatas?.getArray() {
-                    NCViewer().view(viewController: self, metadata: metadata, metadatas: metadatas, imageIcon: getImage(metadata: metadata))
-                }
+                fileSelect.append(metadata.ocId)
+                cell.selected(true)
             }
+            tabBarSelect.selectCount = fileSelect.count
+        } else if let metadata = database.getMetadataFromOcId(metadata.ocId) {
+            let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt1024)
+            let ocIds = dataSource.metadatas.map { $0.ocId }
+
+            NCViewer().view(viewController: self, metadata: metadata, ocIds: ocIds, image: image)
         }
     }
 
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        guard let cell = collectionView.cellForItem(at: indexPath) as? NCGridMediaCell,
-              let metadata = self.metadatas?[indexPath.row] else { return nil }
+        guard let ocId = dataSource.getMetadata(indexPath: indexPath)?.ocId,
+              let metadata = database.getMetadataFromOcId(ocId)
+        else { return nil }
         let identifier = indexPath as NSCopying
-        let image = cell.imageItem.image
-        self.serverUrl = metadata.serverUrl
+        let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt1024)
 
         return UIContextMenuConfiguration(identifier: identifier, previewProvider: {
             return NCViewerProviderContextMenu(metadata: metadata, image: image)

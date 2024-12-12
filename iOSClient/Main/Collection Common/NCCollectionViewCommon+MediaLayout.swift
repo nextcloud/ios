@@ -27,11 +27,15 @@ import NextcloudKit
 
 extension NCCollectionViewCommon: NCMediaLayoutDelegate {
     func getColumnCount() -> Int {
-        if let column = self.layoutForView?.columnPhoto, column > 0 {
-            return column
+        if self.numberOfColumns == 0,
+           let layoutForView = database.getLayoutForView(account: session.account, key: NCGlobal.shared.layoutViewFiles, serverUrl: self.serverUrl) {
+            if layoutForView.columnPhoto > 0 {
+                self.numberOfColumns = layoutForView.columnPhoto
+            } else {
+                self.numberOfColumns = 3
+            }
         }
-        self.layoutForView?.columnPhoto = 3
-        return 3
+        return self.numberOfColumns
     }
 
     func getLayout() -> String? {
@@ -62,17 +66,22 @@ extension NCCollectionViewCommon: NCMediaLayoutDelegate {
         return 1.0
     }
 
-    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath, columnCount: Int, typeLayout: String) -> CGSize {
-        let size = CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
-        if typeLayout == NCGlobal.shared.layoutPhotoRatio {
-            let metadata = self.dataSource.metadatas[indexPath.row]
+    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: IndexPath, columnCount: Int, typeLayout: String) -> CGSize {
+        if typeLayout == NCGlobal.shared.layoutPhotoSquare {
+            return CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
+        } else {
+            guard let metadata = dataSource.getMetadata(indexPath: indexPath) else { return .zero }
 
             if metadata.imageSize != CGSize.zero {
                 return metadata.imageSize
-            } else if let size = NCImageCache.shared.getPreviewSizeCache(ocId: metadata.ocId, etag: metadata.etag) {
-                return size
+            } else if metadata.classFile == NKCommon.TypeClassFile.document.rawValue {
+                let ext = NCGlobal.shared.getSizeExtension(column: self.numberOfColumns)
+                if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: ext) {
+                    return image.size
+                }
             }
+
+            return CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
         }
-        return size
     }
 }

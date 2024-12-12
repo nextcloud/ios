@@ -27,6 +27,7 @@ import RealmSwift
 import NextcloudKit
 import CoreMedia
 import Photos
+import CommonCrypto
 
 protocol DateCompareable {
     var dateKey: Date { get }
@@ -41,17 +42,20 @@ class NCManageDatabase: NSObject {
 
     override init() {
         func migrationSchema(_ migration: Migration, _ oldSchemaVersion: UInt64) {
-            if oldSchemaVersion < 354 {
-                migration.deleteData(forType: NCDBLayoutForView.className())
+            if oldSchemaVersion < 365 {
+                migration.deleteData(forType: tableMetadata.className())
+                migration.enumerateObjects(ofType: tableDirectory.className()) { _, newObject in
+                    newObject?["etag"] = ""
+                }
             }
         }
 
         func compactDB(_ totalBytes: Int, _ usedBytes: Int) -> Bool {
-            // totalBytes refers to the size of the file on disk in bytes (data + free space)
-            // usedBytes refers to the number of bytes used by data in the file
-            // Compact if the file is over 100MB in size and less than 50% 'used'
-            let oneHundredMB = 100 * 1024 * 1024
-            return (totalBytes > oneHundredMB) && (Double(usedBytes) / Double(totalBytes)) < 0.5
+            let usedPercentage = (Double(usedBytes) / Double(totalBytes)) * 100
+            /// Compact the database if more than 25% of the space is free
+            let shouldCompact = (usedPercentage < 75.0) && (totalBytes > 100 * 1024 * 1024)
+
+            return shouldCompact
         }
         var realm: Realm?
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
@@ -60,7 +64,8 @@ class NCManageDatabase: NSObject {
         let bundlePathExtension: String = bundleUrl.pathExtension
         let bundleFileName: String = (bundleUrl.path as NSString).lastPathComponent
         let isAppex: Bool = bundlePathExtension == "appex"
-        var objectTypesAppex = [tableMetadata.self,
+        var objectTypesAppex = [NCKeyValue.self,
+                                tableMetadata.self,
                                 tableLocalFile.self,
                                 tableDirectory.self,
                                 tableTag.self,
@@ -94,12 +99,14 @@ class NCManageDatabase: NSObject {
 
         if isAppex {
             if bundleFileName == "File Provider Extension.appex" {
-                objectTypesAppex = [tableMetadata.self,
+                objectTypesAppex = [NCKeyValue.self,
+                                    tableMetadata.self,
                                     tableLocalFile.self,
                                     tableDirectory.self,
                                     tableTag.self,
                                     tableAccount.self,
-                                    tableCapabilities.self]
+                                    tableCapabilities.self,
+                                    tableE2eEncryption.self]
             }
             do {
                 Realm.Configuration.defaultConfiguration =
@@ -145,7 +152,6 @@ class NCManageDatabase: NSObject {
             let realm = try Realm()
             try realm.write {
                 var results: Results<Object>
-
                 if let account = account {
                     results = realm.objects(table).filter("account == %@", account)
                 } else {
@@ -159,7 +165,7 @@ class NCManageDatabase: NSObject {
         }
     }
 
-    func clearDatabase(account: String?, removeAccount: Bool) {
+    func clearDatabase(account: String? = nil, removeAccount: Bool = false) {
         if removeAccount {
             self.clearTable(tableAccount.self, account: account)
         }
@@ -216,6 +222,24 @@ class NCManageDatabase: NSObject {
         return nil
     }
 
+    func realmRefresh() {
+        do {
+            let realm = try Realm()
+            realm.refresh()
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not refresh database: \(error)")
+        }
+    }
+
+    func sha256Hash(_ input: String) -> String {
+        let data = Data(input.utf8)
+        var digest = [UInt8](repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
+        data.withUnsafeBytes {
+            _ = CC_SHA256($0.baseAddress, CC_LONG(data.count), &digest)
+        }
+        return digest.map { String(format: "%02hhx", $0) }.joined()
+    }
+
     // MARK: -
     // MARK: Func T
 
@@ -250,17 +274,22 @@ class NCManageDatabase: NSObject {
         /// Account
         let account = "marinofaggiana https://cloudtest.nextcloud.com"
         let account2 = "mariorossi https://cloudtest.nextcloud.com"
-        NCManageDatabase.shared.addAccount(account, urlBase: "https://cloudtest.nextcloud.com", user: "marinofaggiana", userId: "marinofaggiana", password: "password")
-        NCManageDatabase.shared.addAccount(account2, urlBase: "https://cloudtest.nextcloud.com", user: "mariorossi", userId: "mariorossi", password: "password")
+        addAccount(account, urlBase: "https://cloudtest.nextcloud.com", user: "marinofaggiana", userId: "marinofaggiana", password: "password")
+        addAccount(account2, urlBase: "https://cloudtest.nextcloud.com", user: "mariorossi", userId: "mariorossi", password: "password")
         let userProfile = NKUserProfile()
         userProfile.displayName = "Marino Faggiana"
         userProfile.address = "Hirschstrasse 26, 70192 Stuttgart, Germany"
         userProfile.phone = "+49 (711) 252 428 - 90"
         userProfile.email = "cloudtest@nextcloud.com"
-        NCManageDatabase.shared.setAccountUserProfile(account: account, userProfile: userProfile)
+        setAccountUserProfile(account: account, userProfile: userProfile)
         let userProfile2 = NKUserProfile()
         userProfile2.displayName = "Mario Rossi"
         userProfile2.email = "cloudtest@nextcloud.com"
-        NCManageDatabase.shared.setAccountUserProfile(account: account2, userProfile: userProfile2)
+        setAccountUserProfile(account: account2, userProfile: userProfile2)
     }
+}
+
+class NCKeyValue: Object {
+    @Persisted var key: String = ""
+    @Persisted var value: String?
 }

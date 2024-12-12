@@ -34,7 +34,7 @@ struct NCAutoUploadView: View {
             /// Auto Upload
             Section(content: {
                 Toggle(NSLocalizedString("_autoupload_", comment: ""), isOn: $model.autoUpload)
-                    .tint(Color(NCBrandColor.shared.brandElement))
+                    .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                     .onChange(of: model.autoUpload) { newValue in
                         model.handleAutoUploadChange(newValue: newValue)
                     }
@@ -53,6 +53,12 @@ struct NCAutoUploadView: View {
         .defaultViewModifier(model)
         .alert(model.error, isPresented: $model.showErrorAlert) {
             Button(NSLocalizedString("_ok_", comment: ""), role: .cancel) { }
+        }
+        .sheet(isPresented: $model.autoUploadFolder) {
+            SelectView(serverUrl: $model.serverUrl, session: model.session)
+            .onDisappear {
+                model.setAutoUploadDirectory(serverUrl: model.serverUrl)
+            }
         }
     }
 
@@ -77,22 +83,16 @@ struct NCAutoUploadView: View {
         }, footer: {
             Text("\(NSLocalizedString("_autoupload_current_folder_", comment: "")): \(model.returnPath())")
         })
-        .sheet(isPresented: $model.autoUploadFolder) {
-            SelectView(serverUrl: $model.serverUrl)
-                .onDisappear {
-                    model.setAutoUploadDirectory(serverUrl: model.serverUrl)
-                }
-        }
         /// Auto Upload Photo
         Section(content: {
             Toggle(NSLocalizedString("_autoupload_photos_", comment: ""), isOn: $model.autoUploadImage)
-                .tint(Color(NCBrandColor.shared.brandElement))
+                .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                 .onChange(of: model.autoUploadImage) { newValue in
                     model.handleAutoUploadImageChange(newValue: newValue)
                 }
                 .font(.system(size: 16))
             Toggle(NSLocalizedString("_wifi_only_", comment: ""), isOn: $model.autoUploadWWAnPhoto)
-                .tint(Color(NCBrandColor.shared.brandElement))
+                .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                 .onChange(of: model.autoUploadWWAnPhoto) { newValue in
                     model.handleAutoUploadWWAnPhotoChange(newValue: newValue)
                 }
@@ -101,22 +101,31 @@ struct NCAutoUploadView: View {
         /// Auto Upload Video
         Section(content: {
             Toggle(NSLocalizedString("_autoupload_videos_", comment: ""), isOn: $model.autoUploadVideo)
-                .tint(Color(NCBrandColor.shared.brandElement))
+                .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                 .onChange(of: model.autoUploadVideo) { newValue in
                     model.handleAutoUploadVideoChange(newValue: newValue)
                 }
                 .font(.system(size: 16))
             Toggle(NSLocalizedString("_wifi_only_", comment: ""), isOn: $model.autoUploadWWAnVideo)
-                .tint(Color(NCBrandColor.shared.brandElement))
+                .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                 .onChange(of: model.autoUploadWWAnVideo) { newValue in
                     model.handleAutoUploadWWAnVideoChange(newValue: newValue)
+                }
+                .font(.system(size: 16))
+        })
+        /// Only upload favorites if desired
+        Section(content: {
+            Toggle(NSLocalizedString("_autoupload_favorites_", comment: ""), isOn: $model.autoUploadFavoritesOnly)
+                .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
+                .onChange(of: model.autoUploadFavoritesOnly) { newValue in
+                    model.handleAutoUploadFavoritesOnlyChange(newValue: newValue)
                 }
                 .font(.system(size: 16))
         })
         /// Auto Upload create subfolder
         Section(content: {
             Toggle(NSLocalizedString("_autoupload_create_subfolder_", comment: ""), isOn: $model.autoUploadCreateSubfolder)
-                .tint(Color(NCBrandColor.shared.brandElement))
+                .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                 .onChange(of: model.autoUploadCreateSubfolder) { newValue in
                     model.handleAutoUploadCreateSubfolderChange(newValue: newValue)
                 }
@@ -136,7 +145,7 @@ struct NCAutoUploadView: View {
         /// Auto Upload Full
         Section(content: {
             Toggle(NSLocalizedString("_autoupload_fullphotos_", comment: ""), isOn: $model.autoUploadFull)
-                .tint(Color(NCBrandColor.shared.brandElement))
+                .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                 .onChange(of: model.autoUploadFull) { newValue in
                     model.handleAutoUploadFullChange(newValue: newValue)
                 }

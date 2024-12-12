@@ -29,6 +29,7 @@ struct ToolbarDataEntry: TimelineEntry {
     let isPlaceholder: Bool
     let userId: String
     let url: String
+    let account: String
     let footerImage: String
     let footerText: String
 }
@@ -36,19 +37,21 @@ struct ToolbarDataEntry: TimelineEntry {
 func getToolbarDataEntry(isPreview: Bool, completion: @escaping (_ entry: ToolbarDataEntry) -> Void) {
     var userId = ""
     var url = ""
+    var account = ""
 
-    if let account = NCManageDatabase.shared.getActiveAccount() {
-        userId = account.userId
-        url = account.urlBase
+    if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
+        userId = activeTableAccount.userId
+        url = activeTableAccount.urlBase
+        account = activeTableAccount.account
     }
 
     if isPreview {
-        return completion(ToolbarDataEntry(date: Date(), isPlaceholder: true, userId: userId, url: url, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " toolbar"))
+        return completion(ToolbarDataEntry(date: Date(), isPlaceholder: true, userId: userId, url: url, account: account, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " toolbar"))
     }
 
-    if NCManageDatabase.shared.getActiveAccount() == nil {
-        return completion(ToolbarDataEntry(date: Date(), isPlaceholder: true, userId: userId, url: url, footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
+    if NCManageDatabase.shared.getActiveTableAccount() == nil {
+        return completion(ToolbarDataEntry(date: Date(), isPlaceholder: true, userId: userId, url: url, account: account, footerImage: "xmark.icloud", footerText: NSLocalizedString("_no_active_account_", value: "No account found", comment: "")))
     }
 
-    completion(ToolbarDataEntry(date: Date(), isPlaceholder: false, userId: userId, url: url, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " toolbar"))
+    completion(ToolbarDataEntry(date: Date(), isPlaceholder: false, userId: userId, url: url, account: account, footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " toolbar"))
 }

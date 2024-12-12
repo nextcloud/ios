@@ -29,7 +29,6 @@ import MarkdownKit
 
     @IBOutlet weak var textView: UITextView!
 
-    private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private let richWorkspaceCommon = NCRichWorkspaceCommon()
     private var markdownParser = MarkdownParser()
     private var textViewColor: UIColor?
@@ -37,6 +36,10 @@ import MarkdownKit
     var richWorkspaceText: String = ""
     var serverUrl: String = ""
     var delegate: NCCollectionViewCommon?
+
+    var session: NCSession.Session {
+        NCSession.shared.getSession(controller: self.delegate?.tabBarController)
+    }
 
     // MARK: - View Life Cycle
 
@@ -62,10 +65,10 @@ import MarkdownKit
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        NCNetworking.shared.readFile(serverUrlFileName: self.serverUrl, account: appDelegate.account, queue: .main) { _ in
+        NCNetworking.shared.readFile(serverUrlFileName: self.serverUrl, account: session.account, queue: .main) { _ in
         } completion: { account, metadata, error in
-            if error == .success, account == self.appDelegate.account, let metadata {
-                NCManageDatabase.shared.setDirectory(serverUrl: self.serverUrl, richWorkspace: metadata.richWorkspace, account: account)
+            if error == .success, let metadata {
+                NCManageDatabase.shared.updateDirectoryRichWorkspace(metadata.richWorkspace, account: account, serverUrl: self.serverUrl)
                 if self.richWorkspaceText != metadata.richWorkspace, metadata.richWorkspace != nil {
                     self.delegate?.richWorkspaceText = self.richWorkspaceText
                     self.richWorkspaceText = metadata.richWorkspace!
@@ -76,7 +79,7 @@ import MarkdownKit
     }
 
     public func presentationControllerWillDismiss(_ presentationController: UIPresentationController) {
-        self.viewWillAppear(true)
+        self.viewDidAppear(true)
     }
 
     @objc func closeItemTapped(_ sender: UIBarButtonItem) {
@@ -84,6 +87,6 @@ import MarkdownKit
     }
 
     @IBAction func editItemAction(_ sender: Any) {
-        richWorkspaceCommon.openViewerNextcloudText(serverUrl: serverUrl, viewController: self)
+        richWorkspaceCommon.openViewerNextcloudText(serverUrl: serverUrl, viewController: self, session: session)
     }
 }

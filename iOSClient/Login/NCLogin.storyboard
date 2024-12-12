@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina6_1" orientation="portrait" appearance="light"/>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23094" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_9" orientation="portrait" appearance="dark"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23084"/>
+        <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -13,18 +15,18 @@
             <objects>
                 <viewController storyboardIdentifier="NCLogin" id="yj9-jo-WIn" customClass="NCLogin" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Bv6-g3-l0M">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="BpI-xK-1SU">
-                                <rect key="frame" x="87" y="226.5" width="240" height="120"/>
+                                <rect key="frame" x="100" y="241.66666666666663" width="240" height="120"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="120" id="E9d-5O-bto"/>
                                     <constraint firstAttribute="width" constant="240" id="xwH-mh-yDU"/>
                                 </constraints>
                             </imageView>
                             <textField opaque="NO" clipsSubviews="YES" tag="1" contentMode="scaleToFill" layoutMarginsFollowReadableWidth="YES" insetsLayoutMarginsFromSafeArea="NO" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="  Server address https://…" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="szn-G7-5sK">
-                                <rect key="frame" x="50" y="376.5" width="314" height="44"/>
+                                <rect key="frame" x="50" y="391.66666666666669" width="340" height="44"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="44" id="I2v-Zr-IWf"/>
                                 </constraints>
@@ -33,7 +35,7 @@
                                 <textInputTraits key="textInputTraits" autocorrectionType="no" keyboardType="URL" returnKeyType="done"/>
                             </textField>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HQd-pF-3cE">
-                                <rect key="frame" x="324" y="378.5" width="40" height="40"/>
+                                <rect key="frame" x="350" y="393.66666666666669" width="40" height="40"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="40" id="3yh-bo-Bzr"/>
@@ -42,36 +44,35 @@
                                 <color key="tintColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <state key="normal">
                                     <color key="titleShadowColor" red="0.5" green="0.5" blue="0.5" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                    <imageReference key="image" image="arrow.right" catalog="system" symbolScale="large"/>
                                 </state>
                                 <connections>
                                     <action selector="actionButtonLogin:" destination="yj9-jo-WIn" eventType="touchUpInside" id="vFP-SJ-rFq"/>
                                 </connections>
                             </button>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Al0-LA-Ndt">
-                                <rect key="frame" x="334" y="388.5" width="20" height="20"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="20" id="IQA-ga-jx5"/>
-                                    <constraint firstAttribute="width" constant="20" id="hVA-N5-u88"/>
-                                </constraints>
-                            </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="The link to your Nextcloud web interface when you open it in the browser." textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PJH-5i-Tkf">
-                                <rect key="frame" x="60" y="438.5" width="294" height="29"/>
+                                <rect key="frame" x="60" y="453.66666666666669" width="320" height="28.666666666666686"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6tp-bh-Z9k" userLabel="QRCode">
-                                <rect key="frame" x="182" y="567.5" width="50" height="50"/>
+                            <button contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6tp-bh-Z9k" userLabel="QRCode">
+                                <rect key="frame" x="192.66666666666663" y="582.33333333333337" width="55.000000000000028" height="50"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="50" id="3hb-Ez-hOz"/>
+                                    <constraint firstAttribute="width" constant="55" id="3hb-Ez-hOz"/>
                                     <constraint firstAttribute="height" constant="50" id="OLT-tb-4Qb"/>
                                 </constraints>
+                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <state key="normal">
+                                    <imageReference key="image" image="qrcode.viewfinder" catalog="system" symbolScale="default"/>
+                                    <preferredSymbolConfiguration key="preferredSymbolConfiguration" configurationType="pointSize" pointSize="50" scale="large"/>
+                                </state>
                                 <connections>
                                     <action selector="actionQRCode:" destination="yj9-jo-WIn" eventType="touchUpInside" id="qwL-rG-ead"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5lM-dt-8fM">
-                                <rect key="frame" x="182" y="667.5" width="50" height="50"/>
+                                <rect key="frame" x="195" y="682.33333333333337" width="50" height="50"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="0RD-Gi-CTv"/>
                                     <constraint firstAttribute="width" constant="50" id="NuK-Yo-LoT"/>
@@ -80,9 +81,29 @@
                                     <action selector="actionCertificate:" destination="yj9-jo-WIn" eventType="touchUpInside" id="Ibx-wC-iEY"/>
                                 </connections>
                             </button>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="system" lineBreakMode="tailTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IXM-eK-wKA" userLabel="Choose Server">
+                                <rect key="frame" x="50" y="391.66666666666669" width="290" height="44"/>
+                                <color key="backgroundColor" white="1" alpha="0.40478847789115646" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="44" id="k9B-my-RAo"/>
+                                </constraints>
+                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <inset key="contentEdgeInsets" minX="0.0" minY="0.0" maxX="35" maxY="0.0"/>
+                                <inset key="titleEdgeInsets" minX="10" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" title="Name 1"/>
+                            </button>
+                            <imageView hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="arrowtriangle.down.circle" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="rza-UC-nsA">
+                                <rect key="frame" x="310" y="403.66666666666669" width="20" height="19.666666666666686"/>
+                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="20" id="Y46-VP-7nh"/>
+                                    <constraint firstAttribute="height" constant="21" id="boa-1i-a6E"/>
+                                </constraints>
+                            </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="8lf-3Y-f5R"/>
-                        <color key="backgroundColor" white="0.9023259132753424" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" systemColor="tintColor"/>
                         <constraints>
                             <constraint firstItem="8lf-3Y-f5R" firstAttribute="trailing" secondItem="szn-G7-5sK" secondAttribute="trailing" constant="50" id="24L-p4-zOF"/>
                             <constraint firstItem="PJH-5i-Tkf" firstAttribute="leading" secondItem="8lf-3Y-f5R" secondAttribute="leading" constant="60" id="3aW-cF-rdF"/>
@@ -90,27 +111,33 @@
                             <constraint firstItem="6tp-bh-Z9k" firstAttribute="centerX" secondItem="8lf-3Y-f5R" secondAttribute="centerX" id="Apc-1U-CwU"/>
                             <constraint firstItem="BpI-xK-1SU" firstAttribute="top" secondItem="Bv6-g3-l0M" secondAttribute="centerY" multiplier="0.5" constant="2.5" id="Gkg-up-7eW"/>
                             <constraint firstItem="8lf-3Y-f5R" firstAttribute="centerX" secondItem="BpI-xK-1SU" secondAttribute="centerX" id="IxG-UI-0vq"/>
+                            <constraint firstItem="rza-UC-nsA" firstAttribute="top" secondItem="BpI-xK-1SU" secondAttribute="bottom" constant="41.5" id="MS5-cH-8Ea"/>
                             <constraint firstItem="6tp-bh-Z9k" firstAttribute="top" secondItem="PJH-5i-Tkf" secondAttribute="bottom" constant="100" id="MZQ-GT-XSM"/>
+                            <constraint firstItem="IXM-eK-wKA" firstAttribute="leading" secondItem="8lf-3Y-f5R" secondAttribute="leading" constant="50" id="SE6-52-VoG"/>
                             <constraint firstItem="PJH-5i-Tkf" firstAttribute="top" secondItem="szn-G7-5sK" secondAttribute="bottom" constant="18" id="Vfj-lG-7wT"/>
-                            <constraint firstItem="Al0-LA-Ndt" firstAttribute="centerX" secondItem="HQd-pF-3cE" secondAttribute="centerX" id="Yll-3L-vuj"/>
                             <constraint firstItem="HQd-pF-3cE" firstAttribute="centerY" secondItem="szn-G7-5sK" secondAttribute="centerY" id="cG8-kL-pdu"/>
-                            <constraint firstItem="Al0-LA-Ndt" firstAttribute="centerY" secondItem="HQd-pF-3cE" secondAttribute="centerY" id="eOF-06-PmZ"/>
                             <constraint firstItem="5lM-dt-8fM" firstAttribute="top" secondItem="6tp-bh-Z9k" secondAttribute="bottom" constant="50" id="i5K-Jt-epF"/>
                             <constraint firstItem="szn-G7-5sK" firstAttribute="top" secondItem="BpI-xK-1SU" secondAttribute="bottom" constant="30" id="lWz-Yy-NCO"/>
                             <constraint firstItem="5lM-dt-8fM" firstAttribute="centerX" secondItem="8lf-3Y-f5R" secondAttribute="centerX" id="mKe-Nn-9dd"/>
+                            <constraint firstItem="HQd-pF-3cE" firstAttribute="leading" secondItem="IXM-eK-wKA" secondAttribute="trailing" constant="30" id="p5X-FY-AQg">
+                                <variation key="widthClass=compact" constant="10"/>
+                            </constraint>
+                            <constraint firstItem="IXM-eK-wKA" firstAttribute="top" secondItem="BpI-xK-1SU" secondAttribute="bottom" constant="30" id="sBQ-Q7-GKc"/>
                             <constraint firstItem="szn-G7-5sK" firstAttribute="leading" secondItem="8lf-3Y-f5R" secondAttribute="leading" constant="50" id="uQw-dy-Ga4"/>
+                            <constraint firstItem="IXM-eK-wKA" firstAttribute="trailing" secondItem="rza-UC-nsA" secondAttribute="trailing" constant="10" id="zD5-gc-sHh"/>
                             <constraint firstItem="8lf-3Y-f5R" firstAttribute="trailing" secondItem="PJH-5i-Tkf" secondAttribute="trailing" constant="60" id="zzV-UD-gRV"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="6v9-Gy-jiv"/>
                     <connections>
-                        <outlet property="baseUrl" destination="szn-G7-5sK" id="rpO-mh-09O"/>
+                        <outlet property="baseUrlTextField" destination="szn-G7-5sK" id="rpO-mh-09O"/>
                         <outlet property="certificate" destination="5lM-dt-8fM" id="vw6-cH-njm"/>
+                        <outlet property="enforceServersButton" destination="IXM-eK-wKA" id="Ezu-3y-iDa"/>
+                        <outlet property="enforceServersDropdownImage" destination="rza-UC-nsA" id="eWk-Ww-vJM"/>
                         <outlet property="imageBrand" destination="BpI-xK-1SU" id="0tB-69-RNs"/>
                         <outlet property="imageBrandConstraintY" destination="Gkg-up-7eW" id="RKw-pM-dZr"/>
                         <outlet property="loginAddressDetail" destination="PJH-5i-Tkf" id="wBQ-5P-HD4"/>
                         <outlet property="loginButton" destination="HQd-pF-3cE" id="XOc-dS-QZ8"/>
-                        <outlet property="loginImage" destination="Al0-LA-Ndt" id="dT5-vu-5eD"/>
                         <outlet property="qrCode" destination="6tp-bh-Z9k" id="Tw3-op-BgR"/>
                     </connections>
                 </viewController>
@@ -123,7 +150,7 @@
             <objects>
                 <viewController storyboardIdentifier="NCLoginProvider" id="yEb-Ky-35s" customClass="NCLoginProvider" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="UX5-cJ-bY6">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="440" height="956"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <viewLayoutGuide key="safeArea" id="vqz-4v-cZu"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -134,4 +161,12 @@
             <point key="canvasLocation" x="5421.739130434783" y="-1210.0446428571429"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="arrow.right" catalog="system" width="128" height="95"/>
+        <image name="arrowtriangle.down.circle" catalog="system" width="128" height="123"/>
+        <image name="qrcode.viewfinder" catalog="system" width="128" height="115"/>
+        <systemColor name="tintColor">
+            <color red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+    </resources>
 </document>

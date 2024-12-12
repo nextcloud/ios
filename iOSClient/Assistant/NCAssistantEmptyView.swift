@@ -9,6 +9,7 @@
 import SwiftUI
 
 struct NCAssistantEmptyView: View {
+    @EnvironmentObject var model: NCAssistantTask
     let titleKey, subtitleKey: String
 
     var body: some View {
@@ -17,7 +18,7 @@ struct NCAssistantEmptyView: View {
                 .renderingMode(.template)
                 .resizable()
                 .aspectRatio(contentMode: .fit)
-                .foregroundStyle(Color(NCBrandColor.shared.brandElement))
+                .foregroundStyle(Color(NCBrandColor.shared.getElement(account: model.controller?.account)))
                 .font(Font.system(.body).weight(.light))
                 .frame(height: 100)
 

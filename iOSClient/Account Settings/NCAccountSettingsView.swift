@@ -41,50 +41,47 @@ struct NCAccountSettingsView: View {
             Form {
                 Section(content: {
                     TabView(selection: $model.indexActiveAccount) {
-                        ForEach(0..<model.accounts.count, id: \.self) { index in
+                        ForEach(0..<model.tblAccounts.count, id: \.self) { index in
                             let status = model.getUserStatus()
-                            let avatar = NCUtility().loadUserImage(for: model.accounts[index].user, displayName: model.accounts[index].displayName, userBaseUrl: model.accounts[index])
+                            let avatar = NCUtility().loadUserImage(for: model.tblAccounts[index].user, displayName: model.tblAccounts[index].displayName, urlBase: model.tblAccounts[index].urlBase)
                             ///
                             /// User
                             VStack {
-                                ZStack {
-                                    Image(uiImage: avatar)
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(width: UIScreen.main.bounds.width, height: 75)
-                                    if let statusImage = status.statusImage {
-                                        ZStack {
-                                            Circle()
-                                                .fill(.white)
-                                                .frame(width: 30, height: 30)
-                                            Image(uiImage: statusImage)
-                                                .resizable()
-                                                .scaledToFit()
-                                                .frame(width: 30, height: 30)
-                                        }
-                                        .offset(x: 30, y: 30)
+                                Image(uiImage: avatar)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: UIScreen.main.bounds.width, height: 75)
+                                if let statusImage = status.statusImage {
+                                    ZStack {
+                                        Circle()
+                                            .fill(.white)
+                                            .frame(width: 30, height: 30)
+                                        Image(uiImage: statusImage)
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 30, height: 30)
                                     }
+                                    .offset(x: 30, y: -30)
                                 }
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
                                 Text(model.getUserName())
-                                    .font(.system(size: 16))
+                                    .font(.subheadline)
                                 Spacer()
                                     .frame(height: 10)
                                 Text(status.statusMessage)
-                                    .font(.system(size: 10))
+                                    .font(.caption)
                                 Spacer()
                                     .frame(height: 20)
                                 ///
                                 /// Personal data
-                                if let activeAccount = model.activeAccount {
-                                    if !activeAccount.email.isEmpty {
+                                if let tblAccount = model.tblAccount {
+                                    if !tblAccount.email.isEmpty {
                                         HStack {
                                             Image(systemName: "mail")
                                                 .resizable()
                                                 .scaledToFit()
                                                 .font(Font.system(.body).weight(.light))
                                                 .frame(width: 20, height: 20)
-                                            Text(activeAccount.email)
+                                            Text(tblAccount.email)
                                                 .lineLimit(1)
                                                 .truncationMode(.middle)
                                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -92,28 +89,28 @@ struct NCAccountSettingsView: View {
                                         }
                                         .frame(maxWidth: .infinity, maxHeight: 30)
                                     }
-                                    if !activeAccount.phone.isEmpty {
+                                    if !tblAccount.phone.isEmpty {
                                         HStack {
                                             Image(systemName: "phone")
                                                 .resizable()
                                                 .scaledToFit()
                                                 .font(Font.system(.body).weight(.light))
                                                 .frame(width: 20, height: 20)
-                                            Text(activeAccount.phone)
+                                            Text(tblAccount.phone)
                                                 .lineLimit(1)
                                                 .truncationMode(.middle)
                                                 .frame(maxWidth: .infinity, alignment: .leading)
                                         }
                                         .frame(maxWidth: .infinity, maxHeight: 30)
                                     }
-                                    if !activeAccount.address.isEmpty {
+                                    if !tblAccount.address.isEmpty {
                                         HStack {
                                             Image(systemName: "house")
                                                 .resizable()
                                                 .scaledToFit()
                                                 .font(Font.system(.body).weight(.light))
                                                 .frame(width: 20, height: 20)
-                                            Text(activeAccount.address)
+                                            Text(tblAccount.address)
                                                 .lineLimit(1)
                                                 .truncationMode(.middle)
                                                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -124,24 +121,23 @@ struct NCAccountSettingsView: View {
                             }
                         }
                     }
-                    .font(.system(size: 14))
+                    .font(.subheadline)
                     .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                     .frame(height: model.getTableViewHeight())
                     .animation(.easeIn(duration: 0.3), value: animation)
                     .onChange(of: model.indexActiveAccount) { index in
                         animation.toggle()
-                        model.setAccount(account: model.accounts[index].account)
+                        model.setAccount(account: model.tblAccounts[index].account)
                     }
                     ///
                     /// Change alias
                     VStack {
                         HStack {
                             Text(NSLocalizedString("_alias_", comment: "") + ":")
-                                .font(.system(size: 17))
                                 .fontWeight(.medium)
                             Spacer()
                             TextField(NSLocalizedString("_alias_placeholder_", comment: ""), text: $model.alias)
-                                .font(.system(size: 16))
+                                .font(.callout)
                                 .multilineTextAlignment(.trailing)
                                 .onChange(of: model.alias) { newValue in
                                     model.setAlias(newValue)
@@ -149,13 +145,13 @@ struct NCAccountSettingsView: View {
                         }
                         Text(NSLocalizedString("_alias_footer_", comment: ""))
                             .frame(maxWidth: .infinity, alignment: .leading)
-                            .font(.system(size: 12))
+                            .font(.caption)
                             .lineLimit(2)
                             .foregroundStyle(Color(UIColor.lightGray))
                     }
                     ///
                     /// User Status
-                    if NCGlobal.shared.capabilityUserStatusEnabled {
+                    if NCCapabilities.shared.getCapabilities(account: model.tblAccount?.account).capabilityUserStatusEnabled {
                         Button(action: {
                             showUserStatus = true
                         }, label: {
@@ -172,10 +168,12 @@ struct NCAccountSettingsView: View {
                                     .foregroundStyle(Color(NCBrandColor.shared.textColor))
                                     .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
                             }
-                            .font(.system(size: 14))
+                            .font(.subheadline)
                         })
                         .sheet(isPresented: $showUserStatus) {
-                            UserStatusView(showUserStatus: $showUserStatus)
+                            if let account = model.tblAccount?.account {
+                                UserStatusView(showUserStatus: $showUserStatus, account: account)
+                            }
                         }
                         .onChange(of: showUserStatus) { _ in }
                     }
@@ -198,10 +196,10 @@ struct NCAccountSettingsView: View {
                                     .foregroundStyle(Color(NCBrandColor.shared.textColor))
                                     .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
                             }
-                            .font(.system(size: 14))
+                            .font(.subheadline)
                         })
                         .sheet(isPresented: $showServerCertificate) {
-                            if let url = URL(string: model.activeAccount?.urlBase), let host = url.host {
+                            if let url = URL(string: model.tblAccount?.urlBase), let host = url.host {
                                 certificateDetailsView(host: host, title: NSLocalizedString("_certificate_view_", comment: ""))
                             }
                         }
@@ -223,7 +221,7 @@ struct NCAccountSettingsView: View {
                                     .foregroundStyle(Color(NCBrandColor.shared.textColor))
                                     .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
                             }
-                            .font(.system(size: 14))
+                            .font(.subheadline)
                         })
                         .sheet(isPresented: $showPushCertificate) {
                             if let url = URL(string: NCBrandOptions.shared.pushNotificationServerProxy), let host = url.host {
@@ -251,7 +249,7 @@ struct NCAccountSettingsView: View {
                                 .foregroundStyle(.red)
                                 .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
                         }
-                        .font(.system(size: 14))
+                        .font(.callout)
                     })
                     .alert(NSLocalizedString("_want_delete_account_", comment: ""), isPresented: $showDeleteAccountAlert) {
                         Button(NSLocalizedString("_remove_local_account_", comment: ""), role: .destructive) {
@@ -279,7 +277,7 @@ struct NCAccountSettingsView: View {
             }
         }
         .onDisappear {
-            model.delegate?.accountSettingsDidDismiss(tableAccount: model.activeAccount)
+            model.delegate?.accountSettingsDidDismiss(tableAccount: model.tblAccount, controller: model.controller)
         }
     }
 }

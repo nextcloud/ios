@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import UIKit
 import RealmSwift
 import NextcloudKit
 
@@ -100,11 +101,13 @@ extension NCManageDatabase {
         }
     }
 
-    func deleteLocalFile(predicate: NSPredicate) {
+    func deleteLocalFileOcId(_ ocId: String?) {
+        guard let ocId else { return }
+
         do {
             let realm = try Realm()
             try realm.write {
-                let results = realm.objects(tableLocalFile.self).filter(predicate)
+                let results = realm.objects(tableLocalFile.self).filter("ocId == %@", ocId)
                 realm.delete(results)
             }
         } catch let error {

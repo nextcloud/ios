@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import UIKit
 
 class BaseNCMoreCell: UITableViewCell {
     let selectionColor: UIView = UIView()
@@ -40,6 +41,8 @@ class BaseNCMoreCell: UITableViewCell {
             super.frame = frame
         }
     }
+
+    open func setupCell(account: String) {}
 
     override func awakeFromNib() {
         super.awakeFromNib()

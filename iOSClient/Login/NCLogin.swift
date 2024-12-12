@@ -30,12 +30,13 @@ import SwiftUI
 class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     @IBOutlet weak var imageBrand: UIImageView!
     @IBOutlet weak var imageBrandConstraintY: NSLayoutConstraint!
-    @IBOutlet weak var baseUrl: UITextField!
+    @IBOutlet weak var baseUrlTextField: UITextField!
     @IBOutlet weak var loginAddressDetail: UILabel!
     @IBOutlet weak var loginButton: UIButton!
-    @IBOutlet weak var loginImage: UIImageView!
     @IBOutlet weak var qrCode: UIButton!
     @IBOutlet weak var certificate: UIButton!
+    @IBOutlet weak var enforceServersButton: UIButton!
+    @IBOutlet weak var enforceServersDropdownImage: UIImageView!
 
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private var textColor: UIColor = .white
@@ -82,36 +83,30 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         imageBrand.image = UIImage(named: "logo")
 
         // Url
-        baseUrl.textColor = textColor
-        baseUrl.tintColor = textColor
-        baseUrl.layer.cornerRadius = 10
-        baseUrl.layer.borderWidth = 1
-        baseUrl.layer.borderColor = textColor.cgColor
-        baseUrl.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: baseUrl.frame.height))
-        baseUrl.leftViewMode = .always
-        baseUrl.rightView = UIView(frame: CGRect(x: 0, y: 0, width: 35, height: baseUrl.frame.height))
-        baseUrl.rightViewMode = .always
-        baseUrl.attributedPlaceholder = NSAttributedString(string: NSLocalizedString("_login_url_", comment: ""), attributes: [NSAttributedString.Key.foregroundColor: textColor.withAlphaComponent(0.5)])
-        baseUrl.delegate = self
+        baseUrlTextField.textColor = textColor
+        baseUrlTextField.tintColor = textColor
+        baseUrlTextField.layer.cornerRadius = 10
+        baseUrlTextField.layer.borderWidth = 1
+        baseUrlTextField.layer.borderColor = textColor.cgColor
+        baseUrlTextField.leftView = UIView(frame: CGRect(x: 0, y: 0, width: 15, height: baseUrlTextField.frame.height))
+        baseUrlTextField.leftViewMode = .always
+        baseUrlTextField.rightView = UIView(frame: CGRect(x: 0, y: 0, width: 35, height: baseUrlTextField.frame.height))
+        baseUrlTextField.rightViewMode = .always
+        baseUrlTextField.attributedPlaceholder = NSAttributedString(string: NSLocalizedString("_login_url_", comment: ""), attributes: [NSAttributedString.Key.foregroundColor: textColor.withAlphaComponent(0.5)])
+        baseUrlTextField.delegate = self
 
-        baseUrl.isEnabled = !NCBrandOptions.shared.disable_request_login_url
+        baseUrlTextField.isEnabled = !NCBrandOptions.shared.disable_request_login_url
 
         // Login button
         loginAddressDetail.textColor = textColor
         loginAddressDetail.text = String.localizedStringWithFormat(NSLocalizedString("_login_address_detail_", comment: ""), NCBrandOptions.shared.brand)
 
-        // Login Image
-        loginImage.image = UIImage(named: "arrow.right")?.image(color: textColor, size: 100)
-
         // brand
         if NCBrandOptions.shared.disable_request_login_url {
-            baseUrl.isEnabled = false
-            baseUrl.isUserInteractionEnabled = false
-            baseUrl.alpha = 0.5
+            baseUrlTextField.isEnabled = false
+            baseUrlTextField.isUserInteractionEnabled = false
+            baseUrlTextField.alpha = 0.5
         }
-
-        // qrcode
-        qrCode.setImage(UIImage(systemName: "qrcode.viewfinder")?.image(color: textColor, size: 100), for: .normal)
 
         // certificate
         certificate.setImage(UIImage(named: "certificate")?.image(color: textColor, size: 100), for: .normal)
@@ -129,7 +124,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         self.navigationController?.view.backgroundColor = NCBrandColor.shared.customer
         self.navigationController?.navigationBar.tintColor = textColor
 
-        if !NCManageDatabase.shared.getAllAccount().isEmpty {
+        if !NCManageDatabase.shared.getAllTableAccount().isEmpty {
             let navigationItemCancel = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(self.actionCancel))
             navigationItemCancel.tintColor = textColor
             navigationItem.leftBarButtonItem = navigationItemCancel
@@ -137,14 +132,14 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
         if let dirGroupApps = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupApps) {
             // Nextcloud update share accounts
-            if let error = appDelegate.updateShareAccounts() {
+            if let error = NCAccount().updateAppsShareAccounts() {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Create share accounts \(error.localizedDescription)")
             }
             // Nextcloud get share accounts
             if let shareAccounts = NKShareAccounts().getShareAccount(at: dirGroupApps, application: UIApplication.shared) {
                 var accountTemp = [NKShareAccounts.DataAccounts]()
                 for shareAccount in shareAccounts {
-                    if NCManageDatabase.shared.getAccount(predicate: NSPredicate(format: "urlBase == %@ AND user == %@", shareAccount.url, shareAccount.user)) == nil {
+                    if NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "urlBase == %@ AND user == %@", shareAccount.url, shareAccount.user)) == nil {
                         accountTemp.append(shareAccount)
                     }
                 }
@@ -165,14 +160,40 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
 
         handleLoginWithAppConfig()
-        baseUrl.text = urlBase
+        baseUrlTextField.text = urlBase
+
+        enforceServersButton.setTitle(NSLocalizedString("_select_server_", comment: ""), for: .normal)
+
+        let enforceServers = NCBrandOptions.shared.enforce_servers
+
+        if !enforceServers.isEmpty {
+            baseUrlTextField.isHidden = true
+            enforceServersDropdownImage.isHidden = false
+            enforceServersButton.isHidden = false
+
+            let actions = enforceServers.map { server in
+                UIAction(title: server.name, handler: { [self] _ in
+                    enforceServersButton.setTitle(server.name, for: .normal)
+                    baseUrlTextField.text = server.url
+                })
+            }
+
+            enforceServersButton.layer.cornerRadius = 10
+            enforceServersButton.menu = .init(title: NSLocalizedString("_servers_", comment: ""), children: actions)
+            enforceServersButton.showsMenuAsPrimaryAction = true
+            enforceServersButton.configuration?.titleTextAttributesTransformer =
+               UIConfigurationTextAttributesTransformer { incoming in
+                 var outgoing = incoming
+                 outgoing.font = UIFont.systemFont(ofSize: 13)
+                 return outgoing
+             }
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        appDelegate.timerErrorNetworkingDisabled = true
 
-        if self.shareAccounts != nil, let image = UIImage(systemName: "person.badge.plus")?.withTintColor(.white, renderingMode: .alwaysOriginal), let backgroundColor = NCBrandColor.shared.brandElement.lighter(by: 10) {
+        if self.shareAccounts != nil, let image = UIImage(systemName: "person.badge.plus")?.withTintColor(.white, renderingMode: .alwaysOriginal), let backgroundColor = NCBrandColor.shared.customer.lighter(by: 10) {
             let title = String(format: NSLocalizedString("_apps_nextcloud_detect_", comment: ""), NCBrandOptions.shared.brand)
             let description = String(format: NSLocalizedString("_add_existing_account_", comment: ""), NCBrandOptions.shared.brand)
             NCContentPresenter().alertAction(image: image, contentModeImage: .scaleAspectFit, sizeImage: CGSize(width: 45, height: 45), backgroundColor: backgroundColor, textColor: textColor, title: title, description: description, textCancelButton: "_cancel_", textOkButton: "_ok_", attributes: EKAttributes.topFloat) { identifier in
@@ -181,11 +202,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 }
             }
         }
-    }
-
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        appDelegate.timerErrorNetworkingDisabled = false
     }
 
     private func handleLoginWithAppConfig() {
@@ -297,20 +313,20 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     // MARK: - Login
 
     private func login() {
-        guard var url = baseUrl.text?.trimmingCharacters(in: .whitespacesAndNewlines) else { return }
+        guard var url = baseUrlTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines) else { return }
         if url.hasSuffix("/") { url = String(url.dropLast()) }
         if url.isEmpty { return }
         // Check whether baseUrl contain protocol. If not add https:// by default.
         if url.hasPrefix("https") == false && url.hasPrefix("http") == false {
             url = "https://" + url
         }
-        self.baseUrl.text = url
+        self.baseUrlTextField.text = url
         isUrlValid(url: url)
     }
 
     func isUrlValid(url: String, user: String? = nil) {
         loginButton.isEnabled = false
-        NextcloudKit.shared.getServerStatus(serverUrl: url) { serverInfoResult in
+        NextcloudKit.shared.getServerStatus(serverUrl: url) { _, serverInfoResult in
             switch serverInfoResult {
             case .success(let serverInfo):
                 if let host = URL(string: url)?.host {
@@ -369,9 +385,9 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 let user = valueArray[0].replacingOccurrences(of: "user:", with: "")
                 let password = valueArray[1].replacingOccurrences(of: "password:", with: "")
                 let urlBase = valueArray[2].replacingOccurrences(of: "server:", with: "")
-                let serverUrl = urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav
+                let serverUrl = urlBase + "/remote.php/dav"
                 loginButton.isEnabled = false
-                NextcloudKit.shared.checkServer(serverUrl: serverUrl) { error in
+                NextcloudKit.shared.checkServer(serverUrl: serverUrl) { _, error in
                     self.loginButton.isEnabled = true
                     if error == .success {
                         self.createAccount(urlBase: urlBase, user: user, password: password)
@@ -397,20 +413,29 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     }
 
     private func createAccount(urlBase: String, user: String, password: String) {
+        let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
         if let host = URL(string: urlBase)?.host {
             NCNetworking.shared.writeCertificate(host: host)
         }
-        self.appDelegate.createAccount(urlBase: urlBase, user: user, password: password) { error in
+        NCAccount().createAccount(urlBase: urlBase, user: user, password: password, controller: controller) { account, error in
             if error == .success {
                 let window = UIApplication.shared.firstWindow
-                if window?.rootViewController is NCMainTabBarController {
+                if let controller = window?.rootViewController as? NCMainTabBarController {
+                    controller.account = account
                     self.dismiss(animated: true)
                 } else {
                     if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+                        controller.account = account
                         controller.modalPresentationStyle = .fullScreen
                         controller.view.alpha = 0
+
                         window?.rootViewController = controller
                         window?.makeKeyAndVisible()
+
+                        if let scene = window?.windowScene {
+                            SceneManager.shared.register(scene: scene, withRootViewController: controller)
+                        }
+
                         UIView.animate(withDuration: 0.5) {
                             controller.view.alpha = 1
                         }

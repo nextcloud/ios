@@ -94,12 +94,8 @@ class NCUtilityFileSystem: NSObject {
         return path
     }
 
-    func getDirectoryProviderStorageIconOcId(_ ocId: String, etag: String) -> String {
-        return getDirectoryProviderStorageOcId(ocId) + "/" + etag + NCGlobal.shared.storageExtIcon
-    }
-
-    func getDirectoryProviderStoragePreviewOcId(_ ocId: String, etag: String) -> String {
-        return getDirectoryProviderStorageOcId(ocId) + "/" + etag + NCGlobal.shared.storageExtPreview
+    func getDirectoryProviderStorageImageOcId(_ ocId: String, etag: String, ext: String) -> String {
+        return getDirectoryProviderStorageOcId(ocId) + "/" + etag + ext
     }
 
     func fileProviderStorageExists(_ metadata: tableMetadata) -> Bool {
@@ -133,20 +129,26 @@ class NCUtilityFileSystem: NSObject {
         return 0
     }
 
-    func fileProviderStoragePreviewIconExists(_ ocId: String, etag: String) -> Bool {
-        let fileNamePathPreview = getDirectoryProviderStoragePreviewOcId(ocId, etag: etag)
-        let fileNamePathIcon = getDirectoryProviderStorageIconOcId(ocId, etag: etag)
+    func fileProviderStorageImageExists(_ ocId: String, etag: String, ext: String) -> Bool {
+        let fileNamePath = getDirectoryProviderStorageImageOcId(ocId, etag: etag, ext: ext)
         do {
-            let fileNamePathPreviewAttribute = try fileManager.attributesOfItem(atPath: fileNamePathPreview)
-            let fileSizePreview: UInt64 = fileNamePathPreviewAttribute[FileAttributeKey.size] as? UInt64 ?? 0
-            let fileNamePathIconAttribute = try fileManager.attributesOfItem(atPath: fileNamePathIcon)
-            let fileSizeIcon: UInt64 = fileNamePathIconAttribute[FileAttributeKey.size] as? UInt64 ?? 0
-            if fileSizePreview > 0 && fileSizeIcon > 0 {
+            let fileNamePathAttribute = try fileManager.attributesOfItem(atPath: fileNamePath)
+            let fileSize: UInt64 = fileNamePathAttribute[FileAttributeKey.size] as? UInt64 ?? 0
+            if fileSize > 0 {
                 return true
             } else {
                 return false
             }
         } catch { }
+        return false
+    }
+
+    func fileProviderStorageImageExists(_ ocId: String, etag: String) -> Bool {
+        if fileProviderStorageImageExists(ocId, etag: etag, ext: NCGlobal.shared.previewExt1024),
+           fileProviderStorageImageExists(ocId, etag: etag, ext: NCGlobal.shared.previewExt512),
+           fileProviderStorageImageExists(ocId, etag: etag, ext: NCGlobal.shared.previewExt256) {
+            return true
+        }
         return false
     }
 
@@ -202,17 +204,18 @@ class NCUtilityFileSystem: NSObject {
         } catch { print("Error: \(error)") }
     }
 
-    func isDirectoryE2EE(serverUrl: String, userBase: NCUserBaseUrl) -> Bool {
-        return isDirectoryE2EE(account: userBase.account, urlBase: userBase.urlBase, userId: userBase.userId, serverUrl: serverUrl)
+    func isDirectoryE2EE(serverUrl: String, account: String) -> Bool {
+        return isDirectoryE2EE(session: NCSession.shared.getSession(account: account), serverUrl: serverUrl)
     }
 
     func isDirectoryE2EE(file: NKFile) -> Bool {
-        return isDirectoryE2EE(account: file.account, urlBase: file.urlBase, userId: file.userId, serverUrl: file.serverUrl)
+        let session = NCSession.Session(account: file.account, urlBase: file.urlBase, user: file.user, userId: file.userId)
+        return isDirectoryE2EE(session: session, serverUrl: file.serverUrl)
     }
 
-    func isDirectoryE2EE(account: String, urlBase: String, userId: String, serverUrl: String) -> Bool {
-        if serverUrl == getHomeServer(urlBase: urlBase, userId: userId) || serverUrl == ".." { return false }
-        if let directory = NCManageDatabase.shared.getTableDirectory(account: account, serverUrl: serverUrl) {
+    func isDirectoryE2EE(session: NCSession.Session, serverUrl: String) -> Bool {
+        if serverUrl == getHomeServer(session: session) || serverUrl == ".." { return false }
+        if let directory = NCManageDatabase.shared.getTableDirectory(account: session.account, serverUrl: serverUrl) {
             return directory.e2eEncrypted
         }
         return false
@@ -380,8 +383,8 @@ class NCUtilityFileSystem: NSObject {
 
     // MARK: - 
 
-    func getHomeServer(urlBase: String, userId: String) -> String {
-        return urlBase + "/remote.php/dav/files/" + userId
+    func getHomeServer(session: NCSession.Session) -> String {
+        return session.urlBase + "/remote.php/dav/files/" + session.userId
     }
 
     func getPath(path: String, user: String, fileName: String? = nil) -> String {
@@ -418,8 +421,8 @@ class NCUtilityFileSystem: NSObject {
         }
     }
 
-    func getFileNamePath(_ fileName: String, serverUrl: String, urlBase: String, userId: String) -> String {
-        let home = getHomeServer(urlBase: urlBase, userId: userId)
+    func getFileNamePath(_ fileName: String, serverUrl: String, session: NCSession.Session) -> String {
+        let home = getHomeServer(session: session)
         var fileNamePath = serverUrl.replacingOccurrences(of: home, with: "") + "/" + fileName
         if fileNamePath.first == "/" {
             fileNamePath.removeFirst()
@@ -638,7 +641,7 @@ class NCUtilityFileSystem: NSObject {
                             try manager.removeItem(atPath: fileURL.path)
                         } catch { }
                         manager.createFile(atPath: fileURL.path, contents: nil, attributes: nil)
-                        NCManageDatabase.shared.deleteLocalFile(predicate: NSPredicate(format: "ocId == %@", ocId))
+                        NCManageDatabase.shared.deleteLocalFileOcId(ocId)
                     }
                 }
             }

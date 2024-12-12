@@ -27,12 +27,12 @@ import UIKit
 extension NCShare: NCShareLinkCellDelegate, NCShareUserCellDelegate {
 
     func copyInternalLink(sender: Any) {
-        guard let metadata = self.metadata, let appDelegate = appDelegate else { return }
+        guard let metadata = self.metadata else { return }
 
         let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
         NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: metadata.account) { _, metadata, error in
             if error == .success, let metadata = metadata {
-                let internalLink = appDelegate.urlBase + "/index.php/f/" + metadata.fileId
+                let internalLink = metadata.urlBase + "/index.php/f/" + metadata.fileId
                 self.shareCommon.copyLink(link: internalLink, viewController: self, sender: sender)
             } else {
                 NCContentPresenter().showError(error: error)
@@ -56,13 +56,13 @@ extension NCShare: NCShareLinkCellDelegate, NCShareUserCellDelegate {
     }
 
     func showProfile(with tableShare: tableShare?, sender: Any) {
-        guard let tableShare = tableShare else { return }
-        showProfileMenu(userId: tableShare.shareWith)
+        guard let tableShare else { return }
+        showProfileMenu(userId: tableShare.shareWith, session: session)
     }
 
     func quickStatus(with tableShare: tableShare?, sender: Any) {
-        guard let tableShare = tableShare,
-              let metadata = metadata,
+        guard let tableShare,
+              let metadata,
               tableShare.shareType != NCPermissions().permissionDefaultFileRemoteShareNoSupportShareOption else { return }
         self.toggleUserPermissionMenu(isDirectory: metadata.directory, tableShare: tableShare)
     }

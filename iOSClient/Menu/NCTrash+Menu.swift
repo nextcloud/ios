@@ -29,9 +29,9 @@ import NextcloudKit
 
 extension NCTrash {
     func toggleMenuMore(with objectId: String, image: UIImage?, isGridCell: Bool) {
-        guard let tableTrash = NCManageDatabase.shared.getTrashItem(fileId: objectId, account: appDelegate.account) else { return }
+        guard let resultTableTrash = self.database.getResultTrashItem(fileId: objectId, account: session.account) else { return }
         guard isGridCell else {
-            let alert = UIAlertController(title: NSLocalizedString("_want_delete_", comment: ""), message: tableTrash.trashbinFileName, preferredStyle: .alert)
+            let alert = UIAlertController(title: NSLocalizedString("_want_delete_", comment: ""), message: resultTableTrash.trashbinFileName, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("_delete_", comment: ""), style: .destructive, handler: { _ in
                 self.deleteItem(with: objectId)
             }))
@@ -44,19 +44,19 @@ extension NCTrash {
         var actions: [NCMenuAction] = []
 
         var iconHeader: UIImage!
-        if let icon = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageIconOcId(tableTrash.fileId, etag: tableTrash.fileName)) {
+        if let icon = utility.getImage(ocId: resultTableTrash.fileId, etag: resultTableTrash.fileName, ext: NCGlobal.shared.previewExt512) {
             iconHeader = icon
         } else {
-            if tableTrash.directory {
-                iconHeader = NCImageCache.images.folder
+            if resultTableTrash.directory {
+                iconHeader = NCImageCache.shared.getFolder(account: resultTableTrash.account)
             } else {
-                iconHeader = NCImageCache.images.file
+                iconHeader = NCImageCache.shared.getImageFile()
             }
         }
 
         actions.append(
             NCMenuAction(
-                title: tableTrash.trashbinFileName,
+                title: resultTableTrash.trashbinFileName,
                 icon: iconHeader,
                 action: nil
             )

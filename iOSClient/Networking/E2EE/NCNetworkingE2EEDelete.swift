@@ -20,15 +20,16 @@
 //
 
 import Foundation
+import UIKit
 import NextcloudKit
 
 class NCNetworkingE2EEDelete: NSObject {
-
+    let database = NCManageDatabase.shared
     let networkingE2EE = NCNetworkingE2EE()
 
     func delete(metadata: tableMetadata) async -> NKError {
-
-        guard let directory = NCManageDatabase.shared.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
+        let session = NCSession.shared.getSession(account: metadata.account)
+        guard let directory = self.database.getTableDirectory(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", metadata.account, metadata.serverUrl)) else {
             return NKError(errorCode: NCGlobal.shared.errorUnexpectedResponseFromDB, errorDescription: "_e2e_error_")
         }
 
@@ -45,15 +46,36 @@ class NCNetworkingE2EEDelete: NSObject {
 
         // DELETE FILE
         //
-        let deleteMetadataPlainError = await NCNetworking.shared.deleteMetadataPlain(metadata, customHeader: ["e2e-token": e2eToken])
-        guard deleteMetadataPlainError == .success else {
+        let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
+        let options = NKRequestOptions(customHeader: ["e2e-token": e2eToken], taskDescription: NCGlobal.shared.taskDescriptionDeleteFileOrFolder)
+        let result = await NCNetworking.shared.deleteFileOrFolder(serverUrlFileName: serverUrlFileName, account: metadata.account, options: options)
+        if result.error == .success || result.error.errorCode == NCGlobal.shared.errorResourceNotFound {
+            do {
+                try FileManager.default.removeItem(atPath: NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId))
+                database.deleteVideo(metadata: metadata)
+                database.deleteMetadataOcId(metadata.ocId)
+                database.deleteLocalFileOcId(metadata.ocId)
+                // LIVE PHOTO SERVER
+                if let metadataLive = self.database.getMetadataLivePhoto(metadata: metadata), metadataLive.isFlaggedAsLivePhotoByServer {
+                    do {
+                        try FileManager.default.removeItem(atPath: NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadataLive.ocId))
+                    } catch { }
+                    self.database.deleteVideo(metadata: metadataLive)
+                    self.database.deleteMetadataOcId(metadataLive.ocId)
+                    self.database.deleteLocalFileOcId(metadataLive.ocId)
+                }
+                if metadata.directory {
+                    self.database.deleteDirectoryAndSubDirectory(serverUrl: NCUtilityFileSystem().stringAppendServerUrl(metadata.serverUrl, addFileName: metadata.fileName), account: metadata.account)
+                }
+            } catch { }
+        } else {
             await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
-            return deleteMetadataPlainError
+            return result.error
         }
 
         // DOWNLOAD METADATA
         //
-        let errorDownloadMetadata = await networkingE2EE.downloadMetadata(account: metadata.account, serverUrl: metadata.serverUrl, urlBase: metadata.urlBase, userId: metadata.userId, fileId: fileId, e2eToken: e2eToken)
+        let errorDownloadMetadata = await networkingE2EE.downloadMetadata(serverUrl: metadata.serverUrl, fileId: fileId, e2eToken: e2eToken, session: session)
         guard errorDownloadMetadata == .success else {
             await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
             return errorDownloadMetadata
@@ -61,17 +83,19 @@ class NCNetworkingE2EEDelete: NSObject {
 
         // UPDATE DB
         //
-        NCManageDatabase.shared.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@", metadata.account, metadata.serverUrl, metadata.fileName))
+        self.database.deleteE2eEncryption(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileNameIdentifier == %@",
+                                                                 metadata.account,
+                                                                 metadata.serverUrl,
+                                                                 metadata.fileName))
 
         // UPLOAD METADATA
         //
-        let uploadMetadataError = await networkingE2EE.uploadMetadata(account: metadata.account,
-                                                                               serverUrl: metadata.serverUrl,
-                                                                               ocIdServerUrl: directory.ocId,
-                                                                               fileId: fileId,
-                                                                               userId: metadata.userId,
-                                                                               e2eToken: e2eToken,
-                                                                               method: "PUT")
+        let uploadMetadataError = await networkingE2EE.uploadMetadata(serverUrl: metadata.serverUrl,
+                                                                      ocIdServerUrl: directory.ocId,
+                                                                      fileId: fileId,
+                                                                      e2eToken: e2eToken,
+                                                                      method: "PUT",
+                                                                      session: session)
         guard uploadMetadataError == .success else {
             await networkingE2EE.unlock(account: metadata.account, serverUrl: metadata.serverUrl)
             return uploadMetadataError

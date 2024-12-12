@@ -22,6 +22,7 @@
 //
 
 import Foundation
+import UIKit
 import RealmSwift
 import NextcloudKit
 
@@ -29,6 +30,7 @@ extension NCManageDatabase {
     func setMetadataSession(ocId: String,
                             newFileName: String? = nil,
                             session: String? = nil,
+                            sessionTaskIdentifier: Int? = nil,
                             sessionError: String? = nil,
                             selector: String? = nil,
                             status: Int? = nil,
@@ -45,6 +47,9 @@ extension NCManageDatabase {
                     }
                     if let session {
                         result.session = session
+                    }
+                    if let sessionTaskIdentifier {
+                        result.sessionTaskIdentifier = sessionTaskIdentifier
                     }
                     if let sessionError {
                         result.sessionError = sessionError
@@ -76,31 +81,6 @@ extension NCManageDatabase {
         }
     }
 
-    func setMetadataSession(ocId: String,
-                            status: Int? = nil,
-                            taskIdentifier: Int? = nil) {
-        do {
-            let realm = try Realm()
-            try realm.write {
-                if let result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first {
-                    if let status {
-                        result.status = status
-                        if status == NCGlobal.shared.metadataStatusWaitDownload || status == NCGlobal.shared.metadataStatusWaitUpload {
-                            result.sessionDate = Date()
-                        } else if status == NCGlobal.shared.metadataStatusNormal {
-                            result.sessionDate = nil
-                        }
-                    }
-                    if let taskIdentifier {
-                        result.sessionTaskIdentifier = taskIdentifier
-                    }
-                }
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
-        }
-    }
-
     @discardableResult
     func setMetadatasSessionInWaitDownload(metadatas: [tableMetadata], session: String, selector: String, sceneIdentifier: String? = nil) -> tableMetadata? {
         if metadatas.isEmpty { return nil }
@@ -113,6 +93,7 @@ extension NCManageDatabase {
                     if let result = realm.objects(tableMetadata.self).filter("ocId == %@", metadata.ocId).first {
                         result.sceneIdentifier = sceneIdentifier
                         result.session = session
+                        result.sessionTaskIdentifier = 0
                         result.sessionError = ""
                         result.sessionSelector = selector
                         result.status = NCGlobal.shared.metadataStatusWaitDownload
@@ -121,6 +102,7 @@ extension NCManageDatabase {
                     } else {
                         metadata.sceneIdentifier = sceneIdentifier
                         metadata.session = session
+                        metadata.sessionTaskIdentifier = 0
                         metadata.sessionError = ""
                         metadata.sessionSelector = selector
                         metadata.status = NCGlobal.shared.metadataStatusWaitDownload
@@ -137,17 +119,39 @@ extension NCManageDatabase {
         return metadataUpdated
     }
 
-    func clearMetadataSession(metadatas: Results<tableMetadata>) {
+    func clearMetadataSession(metadatas: [tableMetadata]) {
         do {
             let realm = try Realm()
             try realm.write {
                 for metadata in metadatas {
-                    metadata.sceneIdentifier = nil
-                    metadata.session = ""
-                    metadata.sessionError = ""
-                    metadata.sessionSelector = ""
-                    metadata.sessionDate = nil
-                    metadata.status = NCGlobal.shared.metadataStatusNormal
+                    if let result = realm.objects(tableMetadata.self).filter("ocId == %@", metadata.ocId).first {
+                        result.sceneIdentifier = nil
+                        result.session = ""
+                        result.sessionTaskIdentifier = 0
+                        result.sessionError = ""
+                        result.sessionSelector = ""
+                        result.sessionDate = nil
+                        result.status = NCGlobal.shared.metadataStatusNormal
+                    }
+                }
+            }
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
+        }
+    }
+
+    func clearMetadataSession(metadata: tableMetadata) {
+        do {
+            let realm = try Realm()
+            try realm.write {
+                if let result = realm.objects(tableMetadata.self).filter("ocId == %@", metadata.ocId).first {
+                    result.sceneIdentifier = nil
+                    result.session = ""
+                    result.sessionTaskIdentifier = 0
+                    result.sessionError = ""
+                    result.sessionSelector = ""
+                    result.sessionDate = nil
+                    result.status = NCGlobal.shared.metadataStatusNormal
                 }
             }
         } catch let error {
@@ -164,6 +168,12 @@ extension NCManageDatabase {
             try realm.write {
                 result = realm.objects(tableMetadata.self).filter("ocId == %@", ocId).first
                 result?.status = status
+
+                if status == NCGlobal.shared.metadataStatusNormal {
+                    result?.sessionDate = nil
+                } else {
+                    result?.sessionDate = Date()
+                }
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
@@ -184,6 +194,9 @@ extension NCManageDatabase {
         if serverUrl.hasSuffix("/") {
             serverUrl = String(serverUrl.dropLast())
         }
-        return NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@ AND sessionTaskIdentifier == %d", serverUrl, fileName, sessionTaskIdentifier))
+        return getMetadata(predicate: NSPredicate(format: "serverUrl == %@ AND fileName == %@ AND sessionTaskIdentifier == %d",
+                                                  serverUrl,
+                                                  fileName,
+                                                  sessionTaskIdentifier))
     }
 }

@@ -27,14 +27,13 @@ import UIKit
 import MobileVLCKit
 
 class NCPlayer: NSObject {
-
-    internal let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     internal var url: URL?
     internal var player = VLCMediaPlayer()
     internal var dialogProvider: VLCDialogProvider?
     internal var metadata: tableMetadata
     internal var singleTapGestureRecognizer: UITapGestureRecognizer?
     internal var activityIndicator: UIActivityIndicatorView
+    internal let database = NCManageDatabase.shared
     internal var width: Int?
     internal var height: Int?
     internal var length: Int?
@@ -50,7 +49,6 @@ class NCPlayer: NSObject {
     // MARK: - View Life Cycle
 
     init(imageVideoContainer: UIImageView, playerToolBar: NCPlayerToolBar?, metadata: tableMetadata, viewerMediaPage: NCViewerMediaPage?) {
-
         self.imageVideoContainer = imageVideoContainer
         self.playerToolBar = playerToolBar
         self.metadata = metadata
@@ -73,14 +71,13 @@ class NCPlayer: NSObject {
     }
 
     deinit {
-
         player.stop()
         print("deinit NCPlayer with ocId \(metadata.ocId)")
         NotificationCenter.default.removeObserver(self, name: UIApplication.didEnterBackgroundNotification, object: nil)
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterPlayerStoppedPlaying)
     }
 
     func openAVPlayer(url: URL, autoplay: Bool = false) {
-
         var position: Float = 0
         let userAgent = userAgent
 
@@ -97,7 +94,7 @@ class NCPlayer: NSObject {
         // player?.media?.addOption("--network-caching=500")
         player.media?.addOption(":http-user-agent=\(userAgent)")
 
-        if let result = NCManageDatabase.shared.getVideo(metadata: metadata),
+        if let result = self.database.getVideo(metadata: metadata),
             let resultPosition = result.position {
             position = resultPosition
         }
@@ -125,7 +122,6 @@ class NCPlayer: NSObject {
     }
 
     func restartAVPlayer(position: Float, pauseAfterPlay: Bool) {
-
         if let url = self.url, !player.isPlaying {
 
             player.media = VLCMedia(url: url)
@@ -137,8 +133,7 @@ class NCPlayer: NSObject {
 
             if metadata.isVideo {
                 if position == 0 {
-                    let fileNamePreviewLocalPath = NCUtilityFileSystem().getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
-                    imageVideoContainer?.image = UIImage(contentsOfFile: fileNamePreviewLocalPath)
+                    imageVideoContainer?.image = NCUtility().getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024)
                 } else {
                     imageVideoContainer?.image = nil
                 }
@@ -153,7 +148,6 @@ class NCPlayer: NSObject {
     }
 
     func changeScreenMode() {
-
         guard let viewerMediaPage = viewerMediaPage else { return }
 
         if viewerMediaScreenMode == .full {
@@ -166,7 +160,6 @@ class NCPlayer: NSObject {
     // MARK: - NotificationCenter
 
     @objc func applicationDidEnterBackground(_ notification: NSNotification) {
-
         if metadata.isVideo {
             playerPause()
         }
@@ -174,16 +167,14 @@ class NCPlayer: NSObject {
 
     // MARK: -
 
-    func isPlay() -> Bool {
-
+    func isPlaying() -> Bool {
         return player.isPlaying
     }
 
     func playerPlay() {
-
         playerToolBar?.playbackSliderEvent = .began
 
-        if let result = NCManageDatabase.shared.getVideo(metadata: metadata), let position = result.position {
+        if let result = self.database.getVideo(metadata: metadata), let position = result.position {
             player.position = position
             playerToolBar?.playbackSliderEvent = .moved
         }
@@ -196,44 +187,37 @@ class NCPlayer: NSObject {
     }
 
     @objc func playerStop() {
-
         savePosition()
         player.stop()
     }
 
     @objc func playerPause() {
-
         savePosition()
         player.pause()
     }
 
     func playerPosition(_ position: Float) {
-
-        NCManageDatabase.shared.addVideo(metadata: metadata, position: position)
+        self.database.addVideo(metadata: metadata, position: position)
         player.position = position
     }
 
     func savePosition() {
-
-        guard metadata.isVideo, isPlay() else { return }
-        NCManageDatabase.shared.addVideo(metadata: metadata, position: player.position)
+        guard metadata.isVideo, isPlaying() else { return }
+        self.database.addVideo(metadata: metadata, position: player.position)
     }
 
     func jumpForward(_ seconds: Int32) {
-
         player.play()
         player.jumpForward(seconds)
     }
 
     func jumpBackward(_ seconds: Int32) {
-
         player.play()
         player.jumpBackward(seconds)
     }
 }
 
 extension NCPlayer: VLCMediaPlayerDelegate {
-
     func mediaPlayerStateChanged(_ aNotification: Notification) {
 
         if player.state == .buffering && player.isPlaying {
@@ -245,13 +229,16 @@ extension NCPlayer: VLCMediaPlayerDelegate {
         switch player.state {
         case .stopped:
             playerToolBar?.playButtonPlay()
+
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterPlayerStoppedPlaying)
+
             print("Played mode: STOPPED")
         case .opening:
             print("Played mode: OPENING")
         case .buffering:
             print("Played mode: BUFFERING")
         case .ended:
-            NCManageDatabase.shared.addVideo(metadata: self.metadata, position: 0)
+            self.database.addVideo(metadata: self.metadata, position: 0)
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 if let playRepeat = self.playerToolBar?.playRepeat {
                     self.restartAVPlayer(position: 0, pauseAfterPlay: !playRepeat)
@@ -274,7 +261,7 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             } else {
                 playerToolBar.playButtonPause()
                 // Set track audio/subtitle
-                let data = NCManageDatabase.shared.getVideo(metadata: metadata)
+                let data = self.database.getVideo(metadata: metadata)
                 if let currentAudioTrackIndex = data?.currentAudioTrackIndex {
                     player.currentAudioTrackIndex = Int32(currentAudioTrackIndex)
                 }
@@ -289,9 +276,14 @@ extension NCPlayer: VLCMediaPlayerDelegate {
             self.width = Int(size.width)
             self.height = Int(size.height)
             playerToolBar.updateTopToolBar(videoSubTitlesIndexes: player.videoSubTitlesIndexes, audioTrackIndexes: player.audioTrackIndexes)
-            NCManageDatabase.shared.addVideo(metadata: metadata, width: self.width, height: self.height, length: self.length)
+            self.database.addVideo(metadata: metadata, width: self.width, height: self.height, length: self.length)
+
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterPlayerIsPlaying)
+
             print("Played mode: PLAYING")
         case .paused:
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterPlayerStoppedPlaying)
+
             playerToolBar?.playButtonPlay()
             print("Played mode: PAUSED")
         default: break
@@ -305,16 +297,12 @@ extension NCPlayer: VLCMediaPlayerDelegate {
 }
 
 extension NCPlayer: VLCMediaThumbnailerDelegate {
-
     func mediaThumbnailerDidTimeOut(_ mediaThumbnailer: VLCMediaThumbnailer) { }
-
     func mediaThumbnailer(_ mediaThumbnailer: VLCMediaThumbnailer, didFinishThumbnail thumbnail: CGImage) { }
 }
 
 extension NCPlayer: VLCCustomDialogRendererProtocol {
-
     func showError(withTitle error: String, message: String) {
-
         let alert = UIAlertController(title: error, message: message, preferredStyle: .alert)
 
         alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
@@ -330,7 +318,6 @@ extension NCPlayer: VLCCustomDialogRendererProtocol {
     }
 
     func showQuestion(withTitle title: String, message: String, type questionType: VLCDialogQuestionType, cancel cancelString: String?, action1String: String?, action2String: String?, withReference reference: NSValue) {
-
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
 
         if let action1String = action1String {

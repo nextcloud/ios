@@ -38,12 +38,10 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     private var externalSiteMenu: [NKExternalSite] = []
     private var settingsMenu: [NKExternalSite] = []
     private var quotaMenu: [NKExternalSite] = []
-    private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private let applicationHandle = NCApplicationHandle()
-    private var tabAccount: tableAccount?
-
-    let utilityFileSystem = NCUtilityFileSystem()
-    let utility = NCUtility()
+    private let utilityFileSystem = NCUtilityFileSystem()
+    private let utility = NCUtility()
+    private let database = NCManageDatabase.shared
 
     private struct Section {
         var items: [NKExternalSite]
@@ -55,6 +53,14 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
     }
     private var sections: [Section] = []
+
+    private var session: NCSession.Session {
+        NCSession.shared.getSession(controller: tabBarController)
+    }
+
+    private var controller: NCMainTabBarController? {
+        self.tabBarController as? NCMainTabBarController
+    }
 
     // MARK: - View Life Cycle
 
@@ -87,8 +93,12 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     // MARK: -
 
     func loadItems() {
+        guard let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
+            return
+        }
         var item = NKExternalSite()
         var quota: String = ""
+        let capabilities = NCCapabilities.shared.getCapabilities(account: tableAccount.account)
 
         // Clear
         functionMenu.removeAll()
@@ -97,12 +107,12 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         quotaMenu.removeAll()
         sections.removeAll()
         labelQuotaExternalSite.text = ""
-        progressQuota.progressTintColor = NCBrandColor.shared.brandElement
+        progressQuota.progressTintColor = NCBrandColor.shared.getElement(account: session.account)
 
         // ITEM : Transfer
         item = NKExternalSite()
         item.name = "_transfers_"
-        item.icon = "arrow.left.arrow.right"
+        item.icon = "arrow.left.arrow.right.circle"
         item.url = "segueTransfers"
         item.order = 10
         functionMenu.append(item)
@@ -123,7 +133,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         item.order = 30
         functionMenu.append(item)
 
-        if NCGlobal.shared.capabilityAssistantEnabled, NCBrandOptions.shared.disable_show_more_nextcloud_apps_in_settings {
+        if capabilities.capabilityAssistantEnabled, NCBrandOptions.shared.disable_show_more_nextcloud_apps_in_settings {
             // ITEM : Assistant
             item = NKExternalSite()
             item.name = "_assistant_"
@@ -134,7 +144,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
 
         // ITEM : Shares
-        if NCGlobal.shared.capabilityFileSharingApiEnabled {
+        if capabilities.capabilityFileSharingApiEnabled {
             item = NKExternalSite()
             item.name = "_list_shares_"
             item.icon = "person.badge.plus"
@@ -152,7 +162,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         functionMenu.append(item)
 
         // ITEM : Groupfolders
-        if NCGlobal.shared.capabilityGroupfoldersEnabled {
+        if capabilities.capabilityGroupfoldersEnabled {
             item = NKExternalSite()
             item.name = "_group_folders_"
             item.icon = "person.2"
@@ -170,7 +180,7 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         functionMenu.append(item)
 
         // ITEM : Trash
-        if NCGlobal.shared.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion15 {
+        if capabilities.capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion15 {
             item = NKExternalSite()
             item.name = "_trash_view_"
             item.icon = "trash"
@@ -198,34 +208,29 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         }
 
         // Display Name user & Quota
-        if let activeAccount = NCManageDatabase.shared.getActiveAccount() {
-            self.tabAccount = activeAccount
-
-            if activeAccount.quotaRelative > 0 {
-                progressQuota.progress = Float(activeAccount.quotaRelative) / 100
-            } else {
-                progressQuota.progress = 0
-            }
-
-            switch activeAccount.quotaTotal {
-            case -1:
-                quota = "0"
-            case -2:
-                quota = NSLocalizedString("_quota_space_unknown_", comment: "")
-            case -3:
-                quota = NSLocalizedString("_quota_space_unlimited_", comment: "")
-            default:
-                quota = utilityFileSystem.transformedSize(activeAccount.quotaTotal)
-            }
-
-            let quotaUsed: String = utilityFileSystem.transformedSize(activeAccount.quotaUsed)
-
-            labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
+        if tableAccount.quotaRelative > 0 {
+            progressQuota.progress = Float(tableAccount.quotaRelative) / 100
+        } else {
+            progressQuota.progress = 0
         }
+
+        switch tableAccount.quotaTotal {
+        case -1:
+            quota = "0"
+        case -2:
+            quota = NSLocalizedString("_quota_space_unknown_", comment: "")
+        case -3:
+            quota = NSLocalizedString("_quota_space_unlimited_", comment: "")
+        default:
+            quota = utilityFileSystem.transformedSize(tableAccount.quotaTotal)
+        }
+        let quotaUsed: String = utilityFileSystem.transformedSize(tableAccount.quotaUsed)
+
+        labelQuota.text = String.localizedStringWithFormat(NSLocalizedString("_quota_using_", comment: ""), quotaUsed, quota)
 
         // ITEM : External
         if NCBrandOptions.shared.disable_more_external_site == false {
-            if let externalSites = NCManageDatabase.shared.getAllExternalSites(account: appDelegate.account) {
+            if let externalSites = self.database.getAllExternalSites(account: session.account) {
                 for externalSite in externalSites {
                     if !externalSite.name.isEmpty, !externalSite.url.isEmpty, let urlEncoded = externalSite.url.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
                         item = NKExternalSite()
@@ -306,9 +311,12 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
         if section.type == .moreApps {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: NCMoreAppSuggestionsCell.reuseIdentifier, for: indexPath) as? NCMoreAppSuggestionsCell else { return UITableViewCell() }
+            cell.setupCell(account: session.account)
             return cell
         } else {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: CCCellMore.reuseIdentifier, for: indexPath) as? CCCellMore else { return UITableViewCell() }
+
+            cell.setupCell(account: session.account)
 
             let item = sections[indexPath.section].items[indexPath.row]
 
@@ -353,6 +361,9 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             let nameStoryboard = item.url.replacingOccurrences(of: "openStoryboard", with: "")
             let storyboard = UIStoryboard(name: nameStoryboard, bundle: nil)
             if let controller = storyboard.instantiateInitialViewController() {
+                if let vc = controller.topMostViewController() as? NCScan {
+                    vc.controller = self.controller
+                }
                 controller.modalPresentationStyle = UIModalPresentationStyle.pageSheet
                 present(controller, animated: true, completion: nil)
             }
@@ -367,7 +378,8 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         } else if item.url == "logout" {
             let alertController = UIAlertController(title: "", message: NSLocalizedString("_want_delete_", comment: ""), preferredStyle: .alert)
             let actionYes = UIAlertAction(title: NSLocalizedString("_yes_delete_", comment: ""), style: .default) { (_: UIAlertAction) in
-                self.appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
+                let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+                appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
             }
 
             let actionNo = UIAlertAction(title: NSLocalizedString("_no_delete_", comment: ""), style: .default) { (_: UIAlertAction) in
@@ -378,11 +390,11 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             alertController.addAction(actionNo)
             self.present(alertController, animated: true, completion: nil)
         } else if item.url == "openAssistant" {
-            let assistant = NCAssistant().environmentObject(NCAssistantTask())
+            let assistant = NCAssistant().environmentObject(NCAssistantTask(controller: self.controller))
             let hostingController = UIHostingController(rootView: assistant)
             present(hostingController, animated: true, completion: nil)
         } else if item.url == "openSettings" {
-            let settingsView = NCSettingsView(model: NCSettingsModel(controller: tabBarController as? NCMainTabBarController))
+            let settingsView = NCSettingsView(model: NCSettingsModel(controller: self.controller))
             let settingsController = UIHostingController(rootView: settingsView)
             navigationController?.pushViewController(settingsController, animated: true)
         } else {

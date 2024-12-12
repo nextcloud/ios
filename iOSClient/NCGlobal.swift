@@ -24,68 +24,13 @@
 import UIKit
 
 class NCGlobal: NSObject {
-    static let shared: NCGlobal = {
-        let instance = NCGlobal()
-        return instance
-    }()
-
-    func usernameToColor(_ username: String) -> CGColor {
-        // Normalize hash
-        let lowerUsername = username.lowercased()
-        var hash: String
-
-        let regex = try! NSRegularExpression(pattern: "^([0-9a-f]{4}-?){8}$")
-        let matches = regex.matches(
-            in: username,
-            range: NSRange(username.startIndex..., in: username))
-
-        if !matches.isEmpty {
-            // Already a md5 hash?
-            // done, use as is.
-            hash = lowerUsername
-        } else {
-            hash = lowerUsername.md5()
-        }
-
-        hash = hash.replacingOccurrences(of: "[^0-9a-f]", with: "", options: .regularExpression)
-
-        // userColors has 18 colors by default
-        let userColorIx = NCGlobal.hashToInt(hash: hash, maximum: 18)
-        return NCBrandColor.shared.userColors[userColorIx]
-    }
-
-    func getHeightHeaderEmptyData(view: UIView, portraitOffset: CGFloat, landscapeOffset: CGFloat, isHeaderMenuTransferViewEnabled: Bool = false) -> CGFloat {
-        var height: CGFloat = 0
-        if UIDevice.current.orientation.isPortrait {
-            height = (view.frame.height / 2) - (view.safeAreaInsets.top / 2) + portraitOffset
-        } else {
-            height = (view.frame.height / 2) + landscapeOffset + CGFloat(isHeaderMenuTransferViewEnabled ? 35 : 0)
-        }
-        return height
-    }
-
-    // Convert a string to an integer evenly
-    // hash is hex string
-    static func hashToInt(hash: String, maximum: Int) -> Int {
-        let result = hash.compactMap(\.hexDigitValue)
-        return result.reduce(0, { $0 + $1 }) % maximum
-    }
+    static let shared = NCGlobal()
 
     // ENUM
     //
     public enum TypeFilterScanDocument: String {
         case document = "document"
         case original = "original"
-    }
-
-    // Sharing & Comments
-    //
-    var disableSharesView: Bool {
-        if !capabilityFileSharingApiEnabled && !capabilityFilesComments && capabilityActivity.isEmpty {
-            return true
-        } else {
-            return false
-        }
     }
 
     // Directory on Group
@@ -134,12 +79,34 @@ class NCGlobal: NSObject {
     let introLogin: Int                             = 0
     let introSignup: Int                            = 1
 
-    // Avatar & Preview size
+    // Avatar
     //
     let avatarSize: Int                             = 128 * Int(UIScreen.main.scale)
     let avatarSizeRounded: Int                      = 128
-    let sizePreview: Int                            = 1024
-    let sizeIcon: Int                               = 512
+
+    // Preview size
+    //
+    let size1024: CGSize                            = CGSize(width: 1024, height: 1024)
+    let size512: CGSize                             = CGSize(width: 512, height: 512)
+    let size256: CGSize                             = CGSize(width: 256, height: 256)
+    // Image extension
+    let previewExt1024                              = ".1024.preview.jpg"
+    let previewExt512                               = ".512.preview.jpg"
+    let previewExt256                               = ".256.preview.jpg"
+
+    func getSizeExtension(column: Int) -> String {
+        if column == 0 { return previewExt256 }
+        let width = UIScreen.main.bounds.width / CGFloat(column)
+
+         switch (width * 4) {
+         case 0...384:
+              return previewExt256
+         case 385...768:
+             return previewExt512
+         default:
+             return previewExt1024
+         }
+    }
 
     // E2EE
     //
@@ -184,7 +151,6 @@ class NCGlobal: NSObject {
     // Button Type in Cell list/grid
     //
     let buttonMoreMore                              = "more"
-    let buttonMoreStop                              = "stop"
     let buttonMoreLock                              = "moreLock"
 
     // Standard height sections header/footer
@@ -215,17 +181,12 @@ class NCGlobal: NSObject {
 
     // Rich Workspace
     //
-    let fileNameRichWorkspace = "Readme.md"
-
-    // Image extension
-    //
-    let storageExtIcon                              = ".small.ico"
-    let storageExtPreview                           = ".preview.ico"
+    let fileNameRichWorkspace                       = "Readme.md"
 
     // ContentPresenter
     //
     let dismissAfterSecond: TimeInterval        = 4
-    let dismissAfterSecondLong: TimeInterval    = 10
+    let dismissAfterSecondLong: TimeInterval    = 7
 
     // Error
     //
@@ -240,6 +201,7 @@ class NCGlobal: NSObject {
     let errorPreconditionFailed: Int            = 412
     let errorUnsupportedMediaType: Int          = 415
     let errorInternalServerError: Int           = 500
+    let errorMaintenance: Int                   = 503
     let errorQuota: Int                         = 507
     let errorUnauthorized997: Int               = 997
     let errorExplicitlyCancelled: Int           = -999
@@ -309,9 +271,19 @@ class NCGlobal: NSObject {
     let metadataStatusUploading: Int            = 2
     let metadataStatusUploadError: Int          = 3
 
-    //  Hidden files included in the read
-    //
-    let includeHiddenFiles: [String] = [".LivePhoto"]
+    let metadataStatusWaitCreateFolder: Int     = 10
+    let metadataStatusWaitDelete: Int           = 11
+    let metadataStatusWaitRename: Int           = 12
+    let metadataStatusWaitFavorite: Int         = 13
+    let metadataStatusWaitCopy: Int             = 14
+    let metadataStatusWaitMove: Int             = 15
+
+    let metadataStatusInTransfer                = [-1, -2, 1, 2]
+    let metadataStatusFileDown                  = [-1, -2, -3]
+    let metadataStatusHideInView                = [1, 2, 3, 11]
+    let metadataStatusHideInFileExtension       = [1, 2, 3, 10, 11]
+    let metadataStatusObserve                   = [-1, 1, 10, 11, 12, 13, 14, 15]
+    let metadataStatusWaitWebDav                = [10, 11, 12, 13, 14, 15]
 
     // Auto upload subfolder granularity
     //
@@ -321,41 +293,39 @@ class NCGlobal: NSObject {
 
     // Notification Center
     //
-    let notificationCenterChangeUser                            = "changeUser"
-    let notificationCenterChangeTheming                         = "changeTheming"
+    let notificationCenterChangeUser                            = "changeUser"                      // userInfo: account, controller
+    let notificationCenterChangeTheming                         = "changeTheming"                   // userInfo: account
     let notificationCenterRichdocumentGrabFocus                 = "richdocumentGrabFocus"
     let notificationCenterReloadDataNCShare                     = "reloadDataNCShare"
     let notificationCenterCloseRichWorkspaceWebView             = "closeRichWorkspaceWebView"
     let notificationCenterReloadAvatar                          = "reloadAvatar"
-    let notificationCenterCreateMediaCacheEnded                 = "createMediaCacheEnded"
+    let notificationCenterClearCache                            = "clearCache"
+    let notificationCenterChangeLayout                          = "changeLayout"                    // userInfo: account, serverUrl, layoutForView
 
-    let notificationCenterReloadDataSource                      = "reloadDataSource"
-    let notificationCenterReloadDataSourceNetwork               = "reloadDataSourceNetwork"         // userInfo: withQueryDB
+    let notificationCenterReloadDataSource                      = "reloadDataSource"                // userInfo: serverUrl?, clearDataSource
+    let notificationCenterGetServerData                         = "getServerData"                   // userInfo: serverUrl?
 
     let notificationCenterChangeStatusFolderE2EE                = "changeStatusFolderE2EE"          // userInfo: serverUrl
 
-    let notificationCenterDownloadStartFile                     = "downloadStartFile"               // userInfo: ocId, serverUrl, account
-    let notificationCenterDownloadedFile                        = "downloadedFile"                  // userInfo: ocId, serverUrl, account, selector, error
-    let notificationCenterDownloadCancelFile                    = "downloadCancelFile"              // userInfo: ocId, serverUrl, account
+    let notificationCenterDownloadStartFile                     = "downloadStartFile"               // userInfo: ocId, ocIdTransfer, session, serverUrl, account
+    let notificationCenterDownloadedFile                        = "downloadedFile"                  // userInfo: ocId, ocIdTransfer, session, session, serverUrl, account, selector, error
+    let notificationCenterDownloadCancelFile                    = "downloadCancelFile"              // userInfo: ocId, ocIdTransfer, session, serverUrl, account
 
-    let notificationCenterUploadStartFile                       = "uploadStartFile"                 // userInfo: ocId, serverUrl, account, fileName, sessionSelector
-    let notificationCenterUploadedFile                          = "uploadedFile"                    // userInfo: ocId, serverUrl, account, fileName, ocIdTemp, error
-    let notificationCenterUploadedLivePhoto                     = "uploadedLivePhoto"               // userInfo: ocId, serverUrl, account, fileName, ocIdTemp, error
+    let notificationCenterUploadStartFile                       = "uploadStartFile"                 // userInfo: ocId, ocIdTransfer, session, serverUrl, account, fileName, sessionSelector
+    let notificationCenterUploadedFile                          = "uploadedFile"                    // userInfo: ocId, ocIdTransfer, session, serverUrl, account, fileName, ocIdTransfer, error
+    let notificationCenterUploadedLivePhoto                     = "uploadedLivePhoto"               // userInfo: ocId, ocIdTransfer, session, serverUrl, account, fileName, ocIdTransfer, error
+    let notificationCenterUploadCancelFile                      = "uploadCancelFile"                // userInfo: ocId, ocIdTransfer, session, serverUrl, account
 
-    let notificationCenterUploadCancelFile                      = "uploadCancelFile"                // userInfo: ocId, serverUrl, account
-
-    let notificationCenterProgressTask                          = "progressTask"                    // userInfo: account, ocId, serverUrl, status, chunk, e2eEncrypted, progress, totalBytes, totalBytesExpected
+    let notificationCenterProgressTask                          = "progressTask"                    // userInfo: account, ocId, ocIdTransfer, session, serverUrl, status, chunk, e2eEncrypted, progress, totalBytes, totalBytesExpected
 
     let notificationCenterUpdateBadgeNumber                     = "updateBadgeNumber"               // userInfo: counterDownload, counterUpload
 
     let notificationCenterCreateFolder                          = "createFolder"                    // userInfo: ocId, serverUrl, account, withPush, sceneIdentifier
-    let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: [ocId], onlyLocalCache, error
-    let notificationCenterMoveFile                              = "moveFile"                        // userInfo: [ocId], error, dragdrop
-    let notificationCenterCopyFile                              = "copyFile"                        // userInfo: [ocId], error, dragdrop
-    let notificationCenterRenameFile                            = "renameFile"                      // userInfo: ocId, account, indexPath
+    let notificationCenterDeleteFile                            = "deleteFile"                      // userInfo: [ocId], error
+    let notificationCenterCopyMoveFile                          = "copyMoveFile"                    // userInfo: [ocId] serverUrl, account, dragdrop, type (copy, move)
+    let notificationCenterRenameFile                            = "renameFile"                      // userInfo: serverUrl, account, error
     let notificationCenterFavoriteFile                          = "favoriteFile"                    // userInfo: ocId, serverUrl
-
-    let notificationCenterOperationReadFile                     = "operationReadFile"               // userInfo: ocId
+    let notificationCenterFileExists                            = "fileExists"                      // userInfo: ocId, fileExists
 
     let notificationCenterMenuSearchTextPDF                     = "menuSearchTextPDF"
     let notificationCenterMenuGotToPageInPDF                    = "menuGotToPageInPDF"
@@ -367,6 +337,9 @@ class NCGlobal: NSObject {
 
     let notificationCenterEnableSwipeGesture                    = "enableSwipeGesture"
     let notificationCenterDisableSwipeGesture                   = "disableSwipeGesture"
+
+    let notificationCenterPlayerIsPlaying                       = "playerIsPlaying"
+    let notificationCenterPlayerStoppedPlaying                  = "playerStoppedPlaying"
 
     // TIP
     //
@@ -406,57 +379,10 @@ class NCGlobal: NSObject {
     let configuration_disable_log                               = "disable_log"
     let configuration_disable_more_external_site                = "disable_more_external_site"
     let configuration_disable_openin_file                       = "disable_openin_file"
-
-    // CAPABILITIES
-    //
-    var capabilityServerVersionMajor: Int                       = 0
-    var capabilityServerVersion: String                         = ""
-
-    var capabilityFileSharingApiEnabled: Bool                   = false
-    var capabilityFileSharingPubPasswdEnforced: Bool            = false
-    var capabilityFileSharingPubExpireDateEnforced: Bool        = false
-    var capabilityFileSharingPubExpireDateDays: Int             = 0
-    var capabilityFileSharingInternalExpireDateEnforced: Bool   = false
-    var capabilityFileSharingInternalExpireDateDays: Int        = 0
-    var capabilityFileSharingRemoteExpireDateEnforced: Bool     = false
-    var capabilityFileSharingRemoteExpireDateDays: Int          = 0
-    var capabilityFileSharingDefaultPermission: Int             = 0
-
-    var capabilityThemingColor: String                          = ""
-    var capabilityThemingColorElement: String                   = ""
-    var capabilityThemingColorText: String                      = ""
-    var capabilityThemingName: String                           = ""
-    var capabilityThemingSlogan: String                         = ""
-
-    var capabilityE2EEEnabled: Bool                             = false
-    var capabilityE2EEApiVersion: String                        = ""
-
-    var capabilityRichDocumentsEnabled: Bool                    = false
-    var capabilityRichDocumentsMimetypes = ThreadSafeArray<String>()
-    var capabilityActivity = ThreadSafeArray<String>()
-    var capabilityNotification = ThreadSafeArray<String>()
-
-    var capabilityFilesUndelete: Bool                           = false
-    var capabilityFilesLockVersion: String                      = ""    // NC 24
-    var capabilityFilesComments: Bool                           = false // NC 20
-    var capabilityFilesBigfilechunking: Bool                    = false
-
-    var capabilityUserStatusEnabled: Bool                       = false
-    var capabilityExternalSites: Bool                           = false
-    var capabilityGroupfoldersEnabled: Bool                     = false // NC27
-    var capabilityAssistantEnabled: Bool                        = false // NC28
-    var isLivePhotoServerAvailable: Bool {                              // NC28
-        return capabilityServerVersionMajor >= nextcloudVersion28
-    }
-
-    var capabilitySecurityGuardDiagnostics                      = false
-
-    var capabilityForbiddenFileNames: [String]                    = []
-    var capabilityForbiddenFileNameBasenames: [String]            = []
-    var capabilityForbiddenFileNameCharacters: [String]           = []
-    var capabilityForbiddenFileNameExtensions: [String]           = []
+    let configuration_enforce_passcode_lock                     = "enforce_passcode_lock"
 
     // MORE NEXTCLOUD APPS
+    //
     let talkSchemeUrl                                           = "nextcloudtalk://"
     let notesSchemeUrl                                          = "nextcloudnotes://"
     let talkAppStoreUrl                                         = "https://apps.apple.com/in/app/nextcloud-talk/id1296825574"
@@ -495,4 +421,11 @@ class NCGlobal: NSObject {
     // GROUP AMIN
     //
     let groupAdmin                          = "admin"
+
+    // DATA TASK DESCRIPTION
+    //
+    let taskDescriptionRetrievesProperties  = "retrievesProperties"
+    let taskDescriptionSynchronization      = "synchronization"
+    let taskDescriptionDeleteFileOrFolder   = "deleteFileOrFolder"
+
 }

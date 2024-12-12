@@ -27,7 +27,6 @@ import SVGKit
 import MobileVLCKit
 
 class NCViewerProviderContextMenu: UIViewController {
-
     private let imageView = UIImageView()
     private var metadata: tableMetadata?
     private var metadataLivePhoto: tableMetadata?
@@ -49,19 +48,17 @@ class NCViewerProviderContextMenu: UIViewController {
         self.image = image
 
         if metadata.directory {
-            imageView.image = NCImageCache.images.folder.colorizeFolder(metadata: metadata)
+            imageView.image = NCImageCache.shared.getFolder(account: metadata.account)
             imageView.frame = resize(CGSize(width: sizeIcon, height: sizeIcon))
         } else {
             // ICON
-            let image = NCUtility().loadImage(named: metadata.iconName, useTypeIconFile: true)
+            let image = NCUtility().loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
             imageView.image = image
             imageView.frame = resize(CGSize(width: sizeIcon, height: sizeIcon))
             // PREVIEW
-            if utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
-                if let image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)) {
-                    imageView.image = image
-                    imageView.frame = resize(image.size)
-                }
+            if let image = NCUtility().getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512) {
+                imageView.image = image
+                imageView.frame = resize(image.size)
             }
             // VIEW IMAGE
             if metadata.isImage && utilityFileSystem.fileProviderStorageExists(metadata) {
@@ -73,7 +70,7 @@ class NCViewerProviderContextMenu: UIViewController {
             }
             // VIEW VIDEO
             if metadata.isVideo {
-                if !utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
+                if !NCUtility().existsImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512) {
                     let newSize = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
                     imageView.image = nil
                     imageView.frame = newSize
@@ -100,18 +97,21 @@ class NCViewerProviderContextMenu: UIViewController {
             }
             // AUTO DOWNLOAD IMAGE GIF
             if !utilityFileSystem.fileProviderStorageExists(metadata),
+               NCNetworking.shared.isOnline,
                metadata.contentType == "image/gif",
                NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
                 NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: ""))
             }
             // AUTO DOWNLOAD IMAGE SVG
             if !utilityFileSystem.fileProviderStorageExists(metadata),
+               NCNetworking.shared.isOnline,
                metadata.contentType == "image/svg+xml",
                NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
                 NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: ""))
             }
             // AUTO DOWNLOAD LIVE PHOTO
             if let metadataLivePhoto = self.metadataLivePhoto,
+               NCNetworking.shared.isOnline,
                !utilityFileSystem.fileProviderStorageExists(metadataLivePhoto),
                NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
                 NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadataLivePhoto, selector: ""))
@@ -201,7 +201,7 @@ class NCViewerProviderContextMenu: UIViewController {
         } else if metadata.contentType == "image/svg+xml" {
             let imagePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
             if let svgImage = SVGKImage(contentsOfFile: imagePath) {
-                svgImage.size = CGSize(width: NCGlobal.shared.sizePreview, height: NCGlobal.shared.sizePreview)
+                svgImage.size = NCGlobal.shared.size1024
                 image = svgImage.uiImage
             }
         } else {

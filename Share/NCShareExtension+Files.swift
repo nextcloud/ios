@@ -22,14 +22,17 @@
 //
 
 import Foundation
+import UIKit
 import UniformTypeIdentifiers
 import NextcloudKit
 
 extension NCShareExtension {
     @objc func reloadDatasource(withLoadFolder: Bool) {
-        layoutForView = NCManageDatabase.shared.setLayoutForView(account: activeAccount.account, key: keyLayout, serverUrl: serverUrl)
-        let metadatas = NCManageDatabase.shared.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", activeAccount.account, serverUrl))
-        self.dataSource = NCDataSource(metadatas: metadatas, account: activeAccount.account, layoutForView: layoutForView)
+        let layoutForView = NCManageDatabase.shared.getLayoutForView(account: session.account, key: keyLayout, serverUrl: serverUrl) ?? NCDBLayoutForView()
+        let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND directory == true", session.account, serverUrl)
+        let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: layoutForView)
+
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas)
 
         if withLoadFolder {
             loadFolder()
@@ -42,19 +45,22 @@ extension NCShareExtension {
     @objc func didCreateFolder(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let ocId = userInfo["ocId"] as? String,
-              let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId)
+              let metadata = self.database.getMetadataFromOcId(ocId)
         else { return }
 
         self.serverUrl += "/" + metadata.fileName
         self.reloadDatasource(withLoadFolder: true)
-        self.setNavigationBar(navigationTitle: metadata.fileName)
+        self.setNavigationBar(navigationTitle: metadata.fileNameView)
     }
 
     func loadFolder() {
-        NCNetworking.shared.readFolder(serverUrl: serverUrl, account: activeAccount.account) { task in
+        NCNetworking.shared.readFolder(serverUrl: serverUrl,
+                                       account: session.account,
+                                       checkResponseDataChanged: false,
+                                       queue: .main) { task in
             self.dataSourceTask = task
             self.collectionView.reloadData()
-        } completion: { _, metadataFolder, _, _, _, error in
+        } completion: { _, metadataFolder, _, _, error in
             DispatchQueue.main.async {
                 if error != .success {
                     self.showAlert(description: error.errorDescription)

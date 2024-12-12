@@ -27,7 +27,8 @@ import NextcloudKit
 protocol NCShareCellDelegate: AnyObject {
     var uploadStarted: Bool { get }
     func removeFile(named fileName: String)
-    func renameFile(named fileName: String)
+    func showRenameFileDialog(named fileName: String, account: String)
+    func renameFile(oldName: String, newName: String, account: String)
 }
 
 class NCShareCell: UITableViewCell {
@@ -36,13 +37,15 @@ class NCShareCell: UITableViewCell {
     @IBOutlet weak var moreButton: UIButton!
     @IBOutlet weak var sizeCell: UILabel!
     weak var delegate: (NCShareCellDelegate & UIViewController)?
-    var fileName = ""
+    var fileName: String = ""
+    var account: String = ""
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
 
-    func setup(fileName: String) {
+    func setup(fileName: String, account: String) {
         self.fileName = fileName
-        let resultInternalType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false)
+        self.account = account
+        let resultInternalType = NextcloudKit.shared.nkCommonInstance.getInternalType(fileName: fileName, mimeType: "", directory: false, account: account)
 
         backgroundColor = .systemBackground
         imageCell?.layer.cornerRadius = 6
@@ -52,7 +55,7 @@ class NCShareCell: UITableViewCell {
             imageCell.image = image
             imageCell.contentMode = .scaleAspectFill
         } else {
-            imageCell.image = utility.loadImage(named: resultInternalType.iconName, useTypeIconFile: true)
+            imageCell.image = utility.loadImage(named: resultInternalType.iconName, useTypeIconFile: true, account: account)
             imageCell.contentMode = .scaleAspectFit
         }
 
@@ -61,7 +64,7 @@ class NCShareCell: UITableViewCell {
         let fileSize = utilityFileSystem.getFileSize(filePath: (NSTemporaryDirectory() + fileName))
         sizeCell?.text = utilityFileSystem.transformedSize(fileSize)
 
-        moreButton?.setImage(NCImageCache.images.buttonMore, for: .normal)
+        moreButton?.setImage(NCImageCache.shared.getImageButtonMore(), for: .normal)
     }
 
     @IBAction func buttonTapped(_ sender: Any) {
@@ -69,7 +72,7 @@ class NCShareCell: UITableViewCell {
         let alertController = UIAlertController(title: "", message: fileName, preferredStyle: .alert)
 
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_rename_file_", comment: ""), style: .default) { _ in
-            self.delegate?.renameFile(named: self.fileName)
+            self.delegate?.showRenameFileDialog(named: self.fileName, account: self.account)
         })
 
         alertController.addAction(UIAlertAction(title: NSLocalizedString("_remove_file_", comment: ""), style: .default) { _ in

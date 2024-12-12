@@ -67,17 +67,24 @@ struct NCLoginPoll: View {
         .onChange(of: loginManager.pollFinished) { value in
             if value {
                 let window = UIApplication.shared.firstWindow
-
-                if window?.rootViewController is NCMainTabBarController {
-                    window?.rootViewController?.dismiss(animated: true, completion: nil)
+                if let controller = window?.rootViewController as? NCMainTabBarController {
+                    controller.account = loginManager.account
+                    controller.dismiss(animated: true, completion: nil)
                 } else {
-                    if let mainTabBarController = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
-                        mainTabBarController.modalPresentationStyle = .fullScreen
-                        mainTabBarController.view.alpha = 0
-                        window?.rootViewController = mainTabBarController
+                    if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+                        controller.account = loginManager.account
+                        controller.modalPresentationStyle = .fullScreen
+                        controller.view.alpha = 0
+
+                        window?.rootViewController = controller
                         window?.makeKeyAndVisible()
+
+                        if let scene = window?.windowScene {
+                            SceneManager.shared.register(scene: scene, withRootViewController: controller)
+                        }
+
                         UIView.animate(withDuration: 0.5) {
-                            mainTabBarController.view.alpha = 1
+                            controller.view.alpha = 1
                         }
                     }
                 }
@@ -91,6 +98,9 @@ struct NCLoginPoll: View {
                 loginManager.openLoginInBrowser()
             }
         }
+        .onDisappear {
+            loginManager.onDisappear()
+        }
         .interactiveDismissDisabled()
     }
 }
@@ -100,40 +110,53 @@ struct NCLoginPoll: View {
 }
 
 private class LoginManager: ObservableObject {
-    private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-
     var loginFlowV2Token = ""
     var loginFlowV2Endpoint = ""
     var loginFlowV2Login = ""
 
     @Published var pollFinished = false
     @Published var isLoading = false
+    @Published var account = ""
 
-    init() {
-        NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: UIApplication.didBecomeActiveNotification, object: nil)
-    }
-
-    @objc func applicationDidBecomeActive(_ notification: NSNotification) {
-        poll()
-    }
+    var timer: DispatchSourceTimer?
 
     func configure(loginFlowV2Token: String, loginFlowV2Endpoint: String, loginFlowV2Login: String) {
         self.loginFlowV2Token = loginFlowV2Token
         self.loginFlowV2Endpoint = loginFlowV2Endpoint
         self.loginFlowV2Login = loginFlowV2Login
+
+        poll()
     }
 
     func poll() {
-        NextcloudKit.shared.getLoginFlowV2Poll(token: self.loginFlowV2Token, endpoint: self.loginFlowV2Endpoint) { server, loginName, appPassword, _, error in
-            if error == .success, let urlBase = server, let user = loginName, let appPassword {
-                self.isLoading = true
-                self.appDelegate.createAccount(urlBase: urlBase, user: user, password: appPassword) { error in
-                    if error == .success {
-                        self.pollFinished = true
+        let queue = DispatchQueue.global(qos: .background)
+        timer = DispatchSource.makeTimerSource(queue: queue)
+
+        guard let timer = timer else { return }
+
+        timer.schedule(deadline: .now(), repeating: .seconds(1), leeway: .seconds(1))
+        timer.setEventHandler(handler: {
+            DispatchQueue.main.async {
+                let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
+                NextcloudKit.shared.getLoginFlowV2Poll(token: self.loginFlowV2Token, endpoint: self.loginFlowV2Endpoint) { server, loginName, appPassword, _, error in
+                    if error == .success, let urlBase = server, let user = loginName, let appPassword {
+                        self.isLoading = true
+                        NCAccount().createAccount(urlBase: urlBase, user: user, password: appPassword, controller: controller) { account, error in
+                            if error == .success {
+                                self.account = account
+                                self.pollFinished = true
+                            }
+                        }
                     }
                 }
             }
-        }
+        })
+
+        timer.resume()
+    }
+
+    func onDisappear() {
+        timer?.cancel()
     }
 
     func openLoginInBrowser() {

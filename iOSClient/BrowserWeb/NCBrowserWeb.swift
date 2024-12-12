@@ -22,7 +22,7 @@
 //
 
 import UIKit
-import WebKit
+@preconcurrency import WebKit
 
 @objc protocol NCBrowserWebDelegate: AnyObject {
     @objc optional func browserWebDismiss()

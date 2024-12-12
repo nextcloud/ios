@@ -26,9 +26,7 @@ import UIKit
 import Accelerate
 
 extension UIImage {
-
-    @objc func resizeImage(size: CGSize, isAspectRation: Bool = true) -> UIImage? {
-
+    func resizeImage(size: CGSize, isAspectRation: Bool = true) -> UIImage? {
         let originRatio = self.size.width / self.size.height
         let newRatio = size.width / size.height
         var newSize = size
@@ -44,13 +42,9 @@ extension UIImage {
         }
 
         UIGraphicsBeginImageContextWithOptions(newSize, false, 1.0)
-        self.draw(in: CGRect(x: 0, y: 0, width: newSize.width, height: newSize.height))
-        let newImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        if let image = newImage {
-            return image
-        }
-        return self
+        self.draw(in: CGRect(origin: .zero, size: newSize))
+        defer { UIGraphicsEndImageContext() }
+        return UIGraphicsGetImageFromCurrentImageContext()
     }
 
     func fixedOrientation() -> UIImage? {

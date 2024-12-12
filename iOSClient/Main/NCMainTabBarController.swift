@@ -22,6 +22,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 struct NavigationCollectionViewCommon {
     var serverUrl: String
@@ -31,19 +32,51 @@ struct NavigationCollectionViewCommon {
 
 class NCMainTabBarController: UITabBarController {
     var sceneIdentifier: String = UUID().uuidString
+    var account = ""
     var documentPickerViewController: NCDocumentPickerViewController?
     let navigationCollectionViewCommon = ThreadSafeArray<NavigationCollectionViewCommon>()
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private var previousIndex: Int?
 
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         delegate = self
+
+        if #available(iOS 17.0, *) {
+            traitOverrides.horizontalSizeClass = .compact
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         previousIndex = selectedIndex
+
+        if NCBrandOptions.shared.enforce_passcode_lock && NCKeychain().passcode.isEmptyOrNil {
+            let vc = UIHostingController(rootView: SetupPasscodeView(isLockActive: .constant(false)))
+            vc.isModalInPresentation = true
+
+            present(vc, animated: true)
+        }
+    }
+
+    @objc func changeTheming(_ notification: NSNotification) {
+        guard let userInfo = notification.userInfo as? NSDictionary else { return }
+        let account = userInfo["account"] as? String
+
+        if let tabBar = self.tabBar as? NCMainTabBar,
+           self.account == account {
+            let color = NCBrandColor.shared.getElement(account: account)
+            tabBar.color = color
+            tabBar.tintColor = color
+
+            tabBar.setNeedsDisplay()
+        }
     }
 
     func currentViewController() -> UIViewController? {
@@ -51,16 +84,13 @@ class NCMainTabBarController: UITabBarController {
     }
 
     func currentServerUrl() -> String {
-        var serverUrl = NCUtilityFileSystem().getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
+        let session = NCSession.shared.getSession(account: account)
+        var serverUrl = NCUtilityFileSystem().getHomeServer(session: session)
         let viewController = currentViewController()
         if let collectionViewCommon = viewController as? NCCollectionViewCommon {
             if !collectionViewCommon.serverUrl.isEmpty {
                 serverUrl = collectionViewCommon.serverUrl
             }
-        } else if let media = viewController as? NCMedia {
-            serverUrl = media.serverUrl
-        } else if let viewerMediaPage = viewController as? NCViewerMediaPage {
-            serverUrl = viewerMediaPage.metadatas[viewerMediaPage.currentIndex].serverUrl
         }
         return serverUrl
     }

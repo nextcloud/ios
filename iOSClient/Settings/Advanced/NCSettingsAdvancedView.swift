@@ -38,83 +38,73 @@ struct NCSettingsAdvancedView: View {
             /// Show Hidden Files
             Section(content: {
                 Toggle(NSLocalizedString("_show_hidden_files_", comment: ""), isOn: $model.showHiddenFiles)
-                    .tint(Color(NCBrandColor.shared.brandElement))
+                    .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                     .onChange(of: model.showHiddenFiles) { _ in
                         model.updateShowHiddenFiles()
                 }
-                .font(.system(size: 16))
-            }, footer: { })
+            })
             /// file name
             Section(content: {
                NavigationLink(destination: LazyView {
-                   NCFileNameView(model: NCFileNameModel())
+                   NCFileNameView(model: NCFileNameModel(controller: model.controller))
                }) {
                    Text(NSLocalizedString("_filenamemask_", comment: ""))
-                       .font(.system(size: 16))
                }
             }, footer: {
-                Text(NSLocalizedString("_filenamemask_footer_", comment: ""))
+                Text(fileNameMaskFooter)
             })
             /// Most Compatible & Enable Live Photo
             Section(content: {
                 Toggle(NSLocalizedString("_format_compatibility_", comment: ""), isOn: $model.mostCompatible)
-                    .tint(Color(NCBrandColor.shared.brandElement))
+                    .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                     .onChange(of: model.mostCompatible) { _ in
                         model.updateMostCompatible()
-                }
-                .font(.system(size: 16))
+                    }
+            }, footer: {
+                Text(NSLocalizedString("_format_compatibility_footer_", comment: ""))
+            })
+
+            Section(content: {
                 Toggle(NSLocalizedString("_upload_mov_livephoto_", comment: ""), isOn: $model.livePhoto)
-                    .tint(Color(NCBrandColor.shared.brandElement))
+                    .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                     .onChange(of: model.livePhoto) { _ in
                         model.updateLivePhoto()
-                }
-                .font(.system(size: 16))
+                    }
             }, footer: {
-                (
-                    Text(NSLocalizedString("_format_compatibility_footer_", comment: ""))
-                    +
-                    Text(NSLocalizedString("_upload_mov_livephoto_footer_", comment: ""))
-                ).font(.system(size: 12))
-                    .multilineTextAlignment(.leading)
+                Text(NSLocalizedString("_upload_mov_livephoto_footer_", comment: ""))
             })
+
             /// Remove from Camera Roll
             Section(content: {
                 Toggle(NSLocalizedString("_remove_photo_CameraRoll_", comment: ""), isOn: $model.removeFromCameraRoll)
-                    .tint(Color(NCBrandColor.shared.brandElement))
+                    .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                     .onChange(of: model.removeFromCameraRoll) { _ in
                         model.updateRemoveFromCameraRoll()
                 }
-                .font(.system(size: 16))
             }, footer: {
                 Text(NSLocalizedString("_remove_photo_CameraRoll_desc_", comment: ""))
-                    .font(.system(size: 12))
-                    .multilineTextAlignment(.leading)
             })
             /// Section : Files App
             if !NCBrandOptions.shared.disable_openin_file {
                 Section(content: {
                     Toggle(NSLocalizedString("_disable_files_app_", comment: ""), isOn: $model.appIntegration)
-                        .tint(Color(NCBrandColor.shared.brandElement))
+                        .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                         .onChange(of: model.appIntegration) { _ in
                             model.updateAppIntegration()
                     }
-                    .font(.system(size: 16))
                 }, footer: {
                     Text(NSLocalizedString("_disable_files_app_footer_", comment: ""))
-                        .font(.system(size: 12))
-                        .multilineTextAlignment(.leading)
                 })
             }
             /// Section: Privacy
             if !NCBrandOptions.shared.disable_crash_service {
                 Section(content: {
                     Toggle(NSLocalizedString("_crashservice_title_", comment: ""), isOn: $model.crashReporter)
-                        .tint(Color(NCBrandColor.shared.brandElement))
+                        .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                         .onChange(of: model.crashReporter) { _ in
                             model.updateCrashReporter()
                             showCrashReporter.toggle()
                     }
-                    .font(.system(size: 16))
                     .alert(NSLocalizedString("_crashservice_title_", comment: ""), isPresented: $showCrashReporter, actions: {
                         Button(NSLocalizedString("OK", comment: ""), role: .cancel) {
                             model.exitNextCloud(ext: showCrashReporter)
@@ -126,8 +116,6 @@ struct NCSettingsAdvancedView: View {
                     Text(NSLocalizedString("_privacy_", comment: ""))
                 }, footer: {
                     Text(NSLocalizedString("_privacy_footer_", comment: ""))
-                        .font(.system(size: 12))
-                        .multilineTextAlignment(.leading)
                 })
             }
             /// Section: Diagnostic LOG
@@ -141,12 +129,10 @@ struct NCSettingsAdvancedView: View {
                             Image(systemName: "doc.badge.gearshape")
                                 .resizable()
                                 .scaledToFit()
-                                .font(Font.system(.body).weight(.light))
                                 .frame(width: 25, height: 25)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             Text(NSLocalizedString("_view_log_", comment: ""))
                         }
-                        .font(.system(size: 16))
                     })
                     .tint(Color(UIColor.label))
                     /// Set Log Level()
@@ -155,7 +141,6 @@ struct NCSettingsAdvancedView: View {
                             Text(level.displayText).tag(level)
                         }
                     }
-                    .font(.system(size: 16))
                     .onChange(of: model.selectedLogLevel) { _ in
                         model.updateSelectedLogLevel()
                     }
@@ -167,12 +152,10 @@ struct NCSettingsAdvancedView: View {
                             Image(systemName: "xmark")
                                 .resizable()
                                 .scaledToFit()
-                                .font(Font.system(.body).weight(.light))
                                 .frame(width: 25, height: 15)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             Text(NSLocalizedString("_clear_log_", comment: ""))
                         }
-                        .font(.system(size: 16))
                     })
                     .tint(Color(UIColor.label))
                     .alert(NSLocalizedString("_log_file_clear_alert_", comment: ""), isPresented: $model.logFileCleared) {
@@ -185,18 +168,16 @@ struct NCSettingsAdvancedView: View {
                 if model.isAdminGroup {
                     Section(content: {
                         NavigationLink(destination: LazyView {
-                            NCCapabilitiesView(model: NCCapabilitiesModel())
+                            NCCapabilitiesView(model: NCCapabilitiesModel(controller: model.controller))
                         }) {
                             HStack {
                                 Image(systemName: "list.bullet")
                                     .resizable()
                                     .scaledToFit()
-                                    .font(Font.system(.body).weight(.light))
                                     .frame(width: 25, height: 25)
                                     .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                                 Text(NSLocalizedString("_capabilities_", comment: ""))
                             }
-                            .font(.system(size: 16))
                         }
                     }, header: {
                         Text(NSLocalizedString("_capabilities_", comment: ""))
@@ -212,11 +193,10 @@ struct NCSettingsAdvancedView: View {
                         Text(interval.displayText).tag(interval)
                     }
                 }
-                .font(.system(size: 16))
-                    .pickerStyle(.automatic)
-                    .onChange(of: model.selectedInterval) { _ in
-                        model.updateSelectedInterval()
-                    }
+                .pickerStyle(.automatic)
+                .onChange(of: model.selectedInterval) { _ in
+                    model.updateSelectedInterval()
+                }
                 Button(action: {
                     showCacheAlert.toggle()
                 }, label: {
@@ -224,12 +204,10 @@ struct NCSettingsAdvancedView: View {
                         Image(systemName: "xmark")
                             .resizable()
                             .scaledToFit()
-                            .font(Font.system(.body).weight(.light))
                             .frame(width: 15, height: 15)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_clear_cache_", comment: ""))
                     }
-                    .font(.system(size: 16))
                 })
                 .tint(Color(UIColor.label))
                 .alert(NSLocalizedString("_want_delete_cache_", comment: ""), isPresented: $showCacheAlert) {
@@ -242,7 +220,6 @@ struct NCSettingsAdvancedView: View {
                 Text(NSLocalizedString("_delete_files_desc_", comment: ""))
             }, footer: {
                 Text(model.footerTitle)
-                    .font(.system(size: 12))
                     .multilineTextAlignment(.leading)
             })
             /// Reset Application
@@ -254,13 +231,11 @@ struct NCSettingsAdvancedView: View {
                         Image(systemName: "xmark")
                             .resizable()
                             .scaledToFit()
-                            .font(Font.system(.body).weight(.light))
                             .frame(width: 15, height: 15)
                             .foregroundColor(Color(UIColor.systemRed))
                         Text(NSLocalizedString("_exit_", comment: ""))
                             .foregroundColor(Color(UIColor.systemRed))
                     }
-                    .font(.system(size: 16))
                 })
                 .tint(Color(UIColor.label))
                 .alert(NSLocalizedString("_want_exit_", comment: ""), isPresented: $showExitAlert) {
@@ -275,12 +250,26 @@ struct NCSettingsAdvancedView: View {
                 +
                 Text("\n\n")
                )
-                    .font(.system(size: 12))
-                    .multilineTextAlignment(.leading)
             })
         }
         .navigationBarTitle(NSLocalizedString("_advanced_", comment: ""))
         .defaultViewModifier(model)
+    }
+
+    private var fileNameMaskFooter: AttributedString {
+        let boldPart = NSLocalizedString("_filenamemask_format_", comment: "")
+        let localizedString = String(
+            format: NSLocalizedString("_filenamemask_footer_", comment: ""),
+            boldPart
+        )
+
+        var attributedString = AttributedString(localizedString)
+
+        if let range = attributedString.range(of: boldPart) {
+            attributedString[range].font = .footnote.weight(.semibold)
+        }
+
+        return attributedString
     }
 }
 

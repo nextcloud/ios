@@ -31,11 +31,13 @@ import NextcloudKit
 
 @objc class NCConfigServer: NSObject, UIActionSheetDelegate, URLSessionDelegate {
     // Start service
-    @objc func startService(url: URL) {
+    @objc func startService(url: URL, account: String) {
         let defaultSessionConfiguration = URLSessionConfiguration.default
         let defaultSession = URLSession(configuration: defaultSessionConfiguration, delegate: self, delegateQueue: .main)
         var urlRequest = URLRequest(url: url)
-        urlRequest.headers = NextcloudKit.shared.nkCommonInstance.getStandardHeaders()
+        if let headers = NextcloudKit.shared.nkCommonInstance.getStandardHeaders(account: account) {
+            urlRequest.headers = headers
+        }
 
         let dataTask = defaultSession.dataTask(with: urlRequest) { data, _, error in
             if let error = error {

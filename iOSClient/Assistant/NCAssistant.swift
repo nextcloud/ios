@@ -81,7 +81,7 @@ struct NCAssistant: View {
 }
 
 #Preview {
-    let model = NCAssistantTask()
+    let model = NCAssistantTask(controller: nil)
 
     return NCAssistant()
         .environmentObject(model)
@@ -125,7 +125,7 @@ struct TypeButton: View {
         .padding(.vertical, 7)
         .foregroundStyle(model.selectedType?.id == taskType?.id ? .white : .primary)
         .if(model.selectedType?.id == taskType?.id) { view in
-            view.background(Color(NCBrandColor.shared.brandElement))
+            view.background(Color(NCBrandColor.shared.getElement(account: model.controller?.account)))
         }
         .if(model.selectedType?.id != taskType?.id) { view in
             view.background(.ultraThinMaterial)

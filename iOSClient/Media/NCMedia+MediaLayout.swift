@@ -33,11 +33,15 @@ import RealmSwift
 
 extension NCMedia: NCMediaLayoutDelegate {
     func getColumnCount() -> Int {
-        let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")
-        if let column = layoutForView?.columnPhoto, column > 0 {
-            return column
+        if self.numberOfColumns == 0,
+           let layoutForView = database.getLayoutForView(account: session.account, key: global.layoutViewMedia, serverUrl: "") {
+            if layoutForView.columnPhoto > 0 {
+                self.numberOfColumns = layoutForView.columnPhoto
+            } else {
+                self.numberOfColumns = 3
+            }
         }
-        return 3
+        return self.numberOfColumns
     }
 
     func getLayout() -> String? {
@@ -46,14 +50,18 @@ extension NCMedia: NCMediaLayoutDelegate {
 
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, heightForHeaderInSection section: Int) -> Float {
         var height: Double = 0
-        if metadatas?.count ?? 0 == 0 {
-            height = NCGlobal.shared.getHeightHeaderEmptyData(view: view, portraitOffset: 0, landscapeOffset: -20)
+        if dataSource.metadatas.count == 0 {
+            height = utility.getHeightHeaderEmptyData(view: view, portraitOffset: 0, landscapeOffset: -20)
         }
         return Float(height)
     }
 
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, heightForFooterInSection section: Int) -> Float {
-        return .zero
+        if dataSource.metadatas.count == 0 {
+            return .zero
+        } else {
+            return 70.0
+        }
     }
 
     func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, insetForSection section: Int) -> UIEdgeInsets {
@@ -72,18 +80,17 @@ extension NCMedia: NCMediaLayoutDelegate {
         return 1.0
     }
 
-    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: NSIndexPath, columnCount: Int, typeLayout: String) -> CGSize {
-        let size = CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
-        if typeLayout == NCGlobal.shared.mediaLayoutRatio {
-            guard let metadatas = self.metadatas,
-                  let metadata = metadatas[indexPath.row] else { return size }
+    func collectionView(_ collectionView: UICollectionView, layout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: IndexPath, columnCount: Int, typeLayout: String) -> CGSize {
+        if typeLayout == global.mediaLayoutSquare {
+            return CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
+        } else {
+            guard let metadata = dataSource.getMetadata(indexPath: indexPath) else { return .zero }
 
             if metadata.imageSize != CGSize.zero {
                 return metadata.imageSize
-            } else if let size = imageCache.getPreviewSizeCache(ocId: metadata.ocId, etag: metadata.etag) {
-                return size
+            } else {
+                return CGSize(width: collectionView.frame.width / CGFloat(columnCount), height: collectionView.frame.width / CGFloat(columnCount))
             }
         }
-        return size
     }
 }

@@ -25,7 +25,6 @@
 import Foundation
 import UIKit
 import NextcloudKit
-import JGProgressHUD
 
 class NCMenuAction {
     let title: String
@@ -99,7 +98,7 @@ extension NCMenuAction {
     }
 
     /// Delete files either from cache or from Nextcloud
-    static func deleteAction(selectedMetadatas: [tableMetadata], indexPaths: [IndexPath], metadataFolder: tableMetadata? = nil, viewController: UIViewController, order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
+    static func deleteAction(selectedMetadatas: [tableMetadata], metadataFolder: tableMetadata? = nil, controller: NCMainTabBarController?, order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
         var titleDelete = NSLocalizedString("_delete_", comment: "")
         var message = NSLocalizedString("_want_delete_", comment: "")
         var icon = "trash"
@@ -147,22 +146,21 @@ extension NCMenuAction {
             icon: NCUtility().loadImage(named: icon, colors: [color]),
             order: order,
             action: { _ in
-                let alertController = UIAlertController.deleteFileOrFolder(titleString: titleDelete + "?", message: message + fileList, canDeleteServer: canDeleteServer, selectedMetadatas: selectedMetadatas) { _ in
+                let alertController = UIAlertController.deleteFileOrFolder(titleString: titleDelete + "?", message: message + fileList, canDeleteServer: canDeleteServer, selectedMetadatas: selectedMetadatas, sceneIdentifier: controller?.sceneIdentifier) { _ in
                     completion?()
                 }
 
-                viewController.present(alertController, animated: true, completion: nil)
+                controller?.present(alertController, animated: true, completion: nil)
             })
     }
 
     /// Open "share view" (activity VC) to open files in another app
-    static func share(selectedMetadatas: [tableMetadata], viewController: UIViewController, order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
+    static func share(selectedMetadatas: [tableMetadata], controller: NCMainTabBarController?, order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
         NCMenuAction(
             title: NSLocalizedString("_share_", comment: ""),
             icon: NCUtility().loadImage(named: "square.and.arrow.up", colors: [NCBrandColor.shared.iconImageColor]),
             order: order,
             action: { _ in
-                let controller = viewController.tabBarController as? NCMainTabBarController
                 NCActionCenter.shared.openActivityViewController(selectedMetadata: selectedMetadatas, controller: controller)
                 completion?()
             }
@@ -195,7 +193,7 @@ extension NCMenuAction {
         )
     }
     /// Open view that lets the user move or copy the files within Nextcloud
-    static func moveOrCopyAction(selectedMetadatas: [tableMetadata], viewController: UIViewController, indexPath: [IndexPath], order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
+    static func moveOrCopyAction(selectedMetadatas: [tableMetadata], viewController: UIViewController, order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
         NCMenuAction(
             title: NSLocalizedString("_move_or_copy_", comment: ""),
             icon: NCUtility().loadImage(named: "rectangle.portrait.and.arrow.right", colors: [NCBrandColor.shared.iconImageColor]),
@@ -204,7 +202,10 @@ extension NCMenuAction {
                 var fileNameError: NKError?
 
                 for metadata in selectedMetadatas {
-                    if let checkError = FileNameValidator.shared.checkFileName(metadata.fileNameView) {
+                    if let sceneIdentifier = metadata.sceneIdentifier,
+                       let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier),
+                       let checkError = FileNameValidator.shared.checkFileName(metadata.fileNameView, account: controller.account) {
+
                         fileNameError = checkError
                         break
                     }

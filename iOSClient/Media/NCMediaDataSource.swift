@@ -23,137 +23,280 @@
 
 import UIKit
 import NextcloudKit
+import RealmSwift
 
 extension NCMedia {
-    func reloadDataSource() {
-        self.metadatas = imageCache.getMediaMetadatas(account: activeAccount.account, predicate: self.getPredicate())
-        self.collectionViewReloadData()
+    func loadDataSource(completion: @escaping () -> Void = {}) {
+        let session = self.session
+        DispatchQueue.global().async {
+            if let metadatas = self.database.getResultsMetadatas(predicate: self.imageCache.getMediaPredicate(filterLivePhotoFile: true, session: session, showOnlyImages: self.showOnlyImages, showOnlyVideos: self.showOnlyVideos), sortedByKeyPath: "date") {
+                self.dataSource = NCMediaDataSource(metadatas: metadatas)
+            }
+            self.collectionViewReloadData()
+            completion()
+        }
     }
 
     func collectionViewReloadData() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+        DispatchQueue.main.async {
             self.collectionView.reloadData()
+            self.refreshControl.endRefreshing()
             self.setTitleDate()
         }
     }
 
     // MARK: - Search media
 
-    @objc func searchMediaUI() {
-        var lessDate: Date?
-        var greaterDate: Date?
-        let firstMetadataDate = metadatas?.first?.date as? Date
-        let lastMetadataDate = metadatas?.last?.date as? Date
-        let countMetadatas = self.metadatas?.count ?? 0
-
-        guard loadingTask == nil,
+    @objc func searchMediaUI(_ distant: Bool = false) {
+        let session = self.session
+        guard self.isViewActived,
+              !self.hasRunSearchMedia,
+              !self.isPinchGestureActive,
+              !self.showOnlyImages,
+              !self.showOnlyVideos,
               !isEditMode,
-              self.viewIfLoaded?.window != nil,
-              let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) })
-        else {
-            return
-        }
+              NCNetworking.shared.downloadThumbnailQueue.operationCount == 0,
+              let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account))
+        else { return }
+        let limit = max(self.collectionView.visibleCells.count * 3, 300)
+        let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) })
 
-        // first date
-        let firstCellDate = (visibleCells.first as? NCGridMediaCell)?.date
-        if firstCellDate == firstMetadataDate {
-            lessDate = Date.distantFuture
-        } else {
-            if let date = firstCellDate {
-                lessDate = Calendar.current.date(byAdding: .second, value: 1, to: date)!
-            } else {
-                lessDate = Date.distantFuture
+        DispatchQueue.global(qos: .background).async {
+            self.semaphoreSearchMedia.wait()
+            self.hasRunSearchMedia = true
+
+            var lessDate = Date.distantFuture
+            var greaterDate = Date.distantPast
+            let countMetadatas = self.dataSource.metadatas.count
+            let options = NKRequestOptions(timeout: 120, taskDescription: self.global.taskDescriptionRetrievesProperties, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+            var firstCellDate: Date?
+            var lastCellDate: Date?
+
+            if countMetadatas == 0 {
+                self.collectionViewReloadData()
             }
-        }
-        // last date
-        let lastCellDate = (visibleCells.last as? NCGridMediaCell)?.date
-        if lastCellDate == lastMetadataDate {
-            greaterDate = Date.distantPast
-        } else {
-            if let date = lastCellDate {
-                greaterDate = Calendar.current.date(byAdding: .second, value: -1, to: date)!
-            } else {
-                greaterDate = Date.distantPast
-            }
-        }
 
-        if lessDate == Date.distantFuture,
-           greaterDate == Date.distantPast,
-           (self.metadatas?.count ?? 0) > visibleCells.count {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media oops. something is bad (distantFuture, distantPast): \(self.activeAccount.account), \(self.appDelegate.account), \(self.metadatas?.count ?? 0)")
-            return
-        }
-
-        if let lessDate, let greaterDate {
-            activityIndicator.startAnimating()
-            loadingTask = Task.detached {
-                if countMetadatas == 0 {
-                    await self.collectionViewReloadData()
+            if let visibleCells, !distant {
+                firstCellDate = (visibleCells.first as? NCMediaCell)?.date
+                if firstCellDate == self.dataSource.metadatas.first?.date {
+                    lessDate = Date.distantFuture
+                } else {
+                    if let date = firstCellDate {
+                        lessDate = Calendar.current.date(byAdding: .second, value: 1, to: date)!
+                    } else {
+                        lessDate = Date.distantFuture
+                    }
                 }
-                let results = await self.searchMedia(lessDate: lessDate, greaterDate: greaterDate)
-                if results.error == .success {
-                    Task { @MainActor in
-                        if results.lessDate == Date.distantFuture, results.greaterDate == Date.distantPast, !results.isChanged, results.metadatasCount == 0 {
-                            self.metadatas = nil
+
+                lastCellDate = (visibleCells.last as? NCMediaCell)?.date
+                if lastCellDate == self.dataSource.metadatas.last?.date {
+                    greaterDate = Date.distantPast
+                } else {
+                    if let date = lastCellDate {
+                        greaterDate = Calendar.current.date(byAdding: .second, value: -1, to: date)!
+                    } else {
+                        greaterDate = Date.distantPast
+                    }
+                }
+            }
+
+            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate), limit \(limit)")
+
+            DispatchQueue.main.async {
+                self.activityIndicator.startAnimating()
+            }
+
+            NextcloudKit.shared.searchMedia(path: tableAccount.mediaPath,
+                                            lessDate: lessDate,
+                                            greaterDate: greaterDate,
+                                            elementDate: "d:getlastmodified/",
+                                            limit: limit,
+                                            showHiddenFiles: NCKeychain().showHiddenFiles,
+                                            account: self.session.account,
+                                            options: options) { account, files, _, error in
+
+                if error == .success, let files, session.account == account, !self.showOnlyImages, !self.showOnlyVideos {
+                    /// No files, remove all
+                    if lessDate == Date.distantFuture, greaterDate == Date.distantPast, files.isEmpty {
+                        self.dataSource.metadatas.removeAll()
+                        self.collectionViewReloadData()
+                    }
+
+                    self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: false) { _, metadatas in
+                        let metadatas = metadatas.filter { metadata in
+                            if let tableMetadata = self.database.getMetadataFromOcId(metadata.ocId) {
+                                return tableMetadata.status == self.global.metadataStatusNormal
+                            } else {
+                                return true
+                            }
+                        }
+                        self.database.addMetadatas(metadatas)
+
+                        if self.dataSource.addMetadatas(metadatas) {
                             self.collectionViewReloadData()
-                            print("searchMediaUI: metadatacount 0")
-                        } else if results.isChanged {
-                            self.reloadDataSource()
-                            print("searchMediaUI: changed")
-                        } else {
-                            print("searchMediaUI: nothing")
+                        }
+
+                        DispatchQueue.main.async {
+                            if let firstCellDate, let lastCellDate, self.isViewActived {
+                                DispatchQueue.global().async {
+                                    let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [ NSPredicate(format: "date >= %@ AND date =< %@", lastCellDate as NSDate, firstCellDate as NSDate), self.imageCache.getMediaPredicate(filterLivePhotoFile: false, session: session, showOnlyImages: self.showOnlyImages, showOnlyVideos: self.showOnlyVideos)])
+
+                                    if let resultsMetadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: predicate) {
+                                        for metadata in resultsMetadatas where !self.filesExists.contains(metadata.ocId) {
+                                            if NCNetworking.shared.fileExistsQueue.operations.filter({ ($0 as? NCOperationFileExists)?.ocId == metadata.ocId }).isEmpty {
+                                                NCNetworking.shared.fileExistsQueue.addOperation(NCOperationFileExists(metadata: metadata))
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 } else {
-                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(results.error.errorCode) " + results.error.errorDescription)
+                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(error.errorCode) " + error.errorDescription)
+                    self.collectionViewReloadData()
                 }
-                Task { @MainActor in
-                    self.loadingTask = nil
+
+                self.semaphoreSearchMedia.signal()
+
+                DispatchQueue.main.async {
                     self.activityIndicator.stopAnimating()
+                    self.hasRunSearchMedia = false
+
+                    if self.dataSource.metadatas.isEmpty {
+                        self.collectionViewReloadData()
+                    }
                 }
             }
         }
     }
+}
 
-    private func searchMedia(lessDate: Date, greaterDate: Date, limit: Int = 300, timeout: TimeInterval = 120) async -> (lessDate: Date?, greaterDate: Date?, metadatasCount: Int, isChanged: Bool, error: NKError) {
-        if UIApplication.shared.applicationState == .background {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Media not reload datasource network with the application in background")
-            return(lessDate, greaterDate, 0, false, NKError())
-        }
+// MARK: -
 
-        guard let mediaPath = NCManageDatabase.shared.getActiveAccount()?.mediaPath else {
-            return(lessDate, greaterDate, 0, false, NKError())
-        }
-        NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate)")
-        let options = NKRequestOptions(timeout: timeout, taskDescription: self.taskDescriptionRetrievesProperties, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-        let results = await NCNetworking.shared.searchMedia(path: mediaPath, lessDate: lessDate, greaterDate: greaterDate, elementDate: "d:getlastmodified/", limit: limit, showHiddenFiles: NCKeychain().showHiddenFiles, includeHiddenFiles: [], account: activeAccount.account, options: options)
-        if results.account != self.activeAccount.account {
-            let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "User changed")
-            return(lessDate, greaterDate, 0, false, error)
-        } else if results.error == .success {
-            let metadatas = await NCManageDatabase.shared.convertFilesToMetadatas(results.files, useFirstAsMetadataFolder: false).metadatas
-            var predicate = NSPredicate(format: "date > %@ AND date < %@", greaterDate as NSDate, lessDate as NSDate)
-            predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate, getPredicate(showAll: true)])
-            let resultsUpdate = NCManageDatabase.shared.updateMetadatas(metadatas, predicate: predicate)
-            let isChaged: Bool = (resultsUpdate.metadatasDifferentCount != 0 || resultsUpdate.metadatasModified != 0)
-            NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] End searchMedia UpdateMetadatas with differentCount \(resultsUpdate.metadatasDifferentCount), modified \(resultsUpdate.metadatasModified)")
-            return(lessDate, greaterDate, metadatas.count, isChaged, results.error)
-        } else {
-            return(lessDate, greaterDate, 0, false, results.error)
+public class NCMediaDataSource: NSObject {
+    public class Metadata: NSObject {
+        let date: Date
+        let etag: String
+        let imageSize: CGSize
+        let isImage: Bool
+        let isLivePhoto: Bool
+        let isVideo: Bool
+        let ocId: String
+
+        init(date: Date,
+             etag: String,
+             imageSize: CGSize,
+             isImage: Bool,
+             isLivePhoto: Bool,
+             isVideo: Bool,
+             ocId: String) {
+            self.date = date
+            self.etag = etag
+            self.imageSize = imageSize
+            self.isImage = isImage
+            self.isLivePhoto = isLivePhoto
+            self.isVideo = isVideo
+            self.ocId = ocId
         }
     }
 
-    private func getPredicate(showAll: Bool = false) -> NSPredicate {
-        let startServerUrl = NCUtilityFileSystem().getHomeServer(urlBase: activeAccount.urlBase, userId: activeAccount.userId) + activeAccount.mediaPath
+    private let utilityFileSystem = NCUtilityFileSystem()
+    private let global = NCGlobal.shared
+    var metadatas: [Metadata] = []
 
-        if showAll {
-            return NSPredicate(format: imageCache.showAllPredicateMediaString, activeAccount.account, startServerUrl)
-        } else if showOnlyImages {
-            return NSPredicate(format: imageCache.showOnlyPredicateMediaString, activeAccount.account, startServerUrl, NKCommon.TypeClassFile.image.rawValue)
-        } else if showOnlyVideos {
-            return NSPredicate(format: imageCache.showOnlyPredicateMediaString, activeAccount.account, startServerUrl, NKCommon.TypeClassFile.video.rawValue)
-        } else {
-            return NSPredicate(format: imageCache.showBothPredicateMediaString, activeAccount.account, startServerUrl)
+    override init() { super.init() }
+
+    init(metadatas: Results<tableMetadata>) {
+        super.init()
+
+        self.metadatas.removeAll()
+        metadatas.forEach { metadata in
+            let metadata = getMetadataFromTableMetadata(metadata)
+            self.metadatas.append(metadata)
         }
+    }
+
+    private func insertInMetadatas(metadata: Metadata) {
+        for i in 0..<self.metadatas.count {
+            if (metadata.date as Date) > self.metadatas[i].date {
+                self.metadatas.insert(metadata, at: i)
+                return
+            }
+        }
+
+        self.metadatas.append(metadata)
+    }
+
+    private func getMetadataFromTableMetadata(_ metadata: tableMetadata) -> Metadata {
+        return Metadata(date: metadata.date as Date,
+                        etag: metadata.etag,
+                        imageSize: CGSize(width: metadata.width, height: metadata.height),
+                        isImage: metadata.classFile == NKCommon.TypeClassFile.image.rawValue,
+                        isLivePhoto: !metadata.livePhotoFile.isEmpty,
+                        isVideo: metadata.classFile == NKCommon.TypeClassFile.video.rawValue,
+                        ocId: metadata.ocId)
+    }
+
+    // MARK: -
+
+    func getMetadata(indexPath: IndexPath) -> Metadata? {
+        if indexPath.row < self.metadatas.count {
+            return self.metadatas[indexPath.row]
+        }
+
+        return nil
+    }
+
+    func getMetadatas(indexPaths: [IndexPath]) -> [Metadata] {
+        var metadatas: [Metadata] = []
+        for indexPath in indexPaths {
+            if indexPath.row < self.metadatas.count {
+                metadatas.append(self.metadatas[indexPath.row])
+            }
+        }
+
+        return metadatas
+    }
+
+    func removeMetadata(_ ocId: [String]) {
+        self.metadatas.removeAll { item in
+            ocId.contains(item.ocId)
+        }
+    }
+
+    func addMetadatas(_ metadatas: [tableMetadata]) -> Bool {
+        var metadatasToInsert: [Metadata] = []
+
+        for tableMetadata in metadatas {
+            let metadata = getMetadataFromTableMetadata(tableMetadata)
+
+            if metadata.isLivePhoto, metadata.isVideo { continue }
+
+            if let index = self.metadatas.firstIndex(where: { $0.ocId == tableMetadata.ocId }) {
+                self.metadatas[index] = metadata
+            } else {
+                metadatasToInsert.append(metadata)
+            }
+        }
+
+        // • For many new elements (e.g., hundreds or thousands): It might be more efficient to add all the elements and then sort, especially if the sorting cost  O(n \log n)  is manageable and the final sort is preferable to handling many individual insertions.
+        // • For a few new elements (fewer than 100): Inserting each element into the correct position might be simpler and less costly, particularly if the array isn’t too large.
+
+        if !metadatasToInsert.isEmpty {
+            if metadatasToInsert.count < 100 {
+                for metadata in metadatasToInsert {
+                    self.insertInMetadatas(metadata: metadata)
+                }
+            } else {
+                for metadata in metadatasToInsert {
+                    self.metadatas.append(metadata)
+                }
+                self.metadatas = self.metadatas.sorted { $0.date > $1.date }
+            }
+            return true
+        }
+
+        return false
     }
 }

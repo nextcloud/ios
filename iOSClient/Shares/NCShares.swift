@@ -33,7 +33,7 @@ class NCShares: NCCollectionViewCommon {
         layoutKey = NCGlobal.shared.layoutViewShares
         enableSearchBar = false
         headerRichWorkspaceDisable = true
-        emptyImage = utility.loadImage(named: "person.fill.badge.plus", colors: [NCBrandColor.shared.brandElement])
+        emptyImageName = "person.fill.badge.plus"
         emptyTitle = "_list_shares_no_files_"
         emptyDescription = "_tutorial_list_shares_view_"
     }
@@ -42,70 +42,68 @@ class NCShares: NCCollectionViewCommon {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if dataSource.metadatas.isEmpty {
-            reloadDataSource()
-        }
-        reloadDataSourceNetwork()
+
+        reloadDataSource()
     }
 
-    // MARK: - DataSource + NC Endpoint
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
 
-    override func queryDB() {
-        super.queryDB()
+        getServerData()
+    }
 
-        var metadatas: [tableMetadata] = []
+    // MARK: - DataSource
 
-        func reload() {
-            self.dataSource = NCDataSource(metadatas: metadatas, account: appDelegate.account, layoutForView: layoutForView, providers: providers, searchResults: searchResults)
-            DispatchQueue.main.async {
-                self.refreshControl.endRefreshing()
-                self.collectionView.reloadData()
-            }
-        }
+    override func reloadDataSource() {
+        var ocId: [String] = []
+        let sharess = self.database.getTableShares(account: session.account)
 
-        let sharess = NCManageDatabase.shared.getTableShares(account: appDelegate.account)
         for share in sharess {
-            if let metadata = NCManageDatabase.shared.getMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", appDelegate.account, share.serverUrl, share.fileName)) {
-                if !(metadatas.contains { $0.ocId == metadata.ocId }) {
-                    metadatas.append(metadata)
+            if let result = self.database.getResultMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@ AND fileName == %@", session.account, share.serverUrl, share.fileName)) {
+                if !(ocId.contains { $0 == result.ocId }) {
+                    ocId.append(result.ocId)
                 }
             } else {
                 let serverUrlFileName = share.serverUrl + "/" + share.fileName
-                NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: appDelegate.account) { task in
+                NCNetworking.shared.readFile(serverUrlFileName: serverUrlFileName, account: session.account) { task in
                     self.dataSourceTask = task
-                    self.collectionView.reloadData()
+                    if self.dataSource.isEmpty() {
+                        self.collectionView.reloadData()
+                    }
                 } completion: { _, metadata, _ in
                     if let metadata {
-                        NCManageDatabase.shared.addMetadata(metadata)
-                        if !(metadatas.contains { $0.ocId == metadata.ocId }) {
-                            metadatas.append(metadata)
-                            reload()
+                        self.database.addMetadata(metadata)
+                        if !(ocId.contains { $0 == metadata.ocId }) {
+                            ocId.append(metadata.ocId)
                         }
                     }
                 }
             }
         }
 
-        reload()
+        let metadatas = self.database.getResultsMetadatasPredicate(NSPredicate(format: "ocId IN %@", ocId), layoutForView: layoutForView)
+
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView)
+
+        super.reloadDataSource()
     }
 
-    override func reloadDataSourceNetwork(withQueryDB: Bool = false) {
-        super.reloadDataSourceNetwork()
-
-        NextcloudKit.shared.readShares(parameters: NKShareParameter(), account: appDelegate.account) { task in
+    override func getServerData() {
+        NextcloudKit.shared.readShares(parameters: NKShareParameter(), account: session.account) { task in
             self.dataSourceTask = task
-            self.collectionView.reloadData()
+            if self.dataSource.isEmpty() {
+                self.collectionView.reloadData()
+            }
         } completion: { account, shares, _, error in
             if error == .success {
-                NCManageDatabase.shared.deleteTableShare(account: account)
+                self.database.deleteTableShare(account: account)
                 if let shares = shares, !shares.isEmpty {
-                    let home = self.utilityFileSystem.getHomeServer(urlBase: self.appDelegate.urlBase, userId: self.appDelegate.userId)
-                    NCManageDatabase.shared.addShare(account: self.appDelegate.account, home: home, shares: shares)
+                    let home = self.utilityFileSystem.getHomeServer(session: self.session)
+                    self.database.addShare(account: account, home: home, shares: shares)
                 }
                 self.reloadDataSource()
-            } else {
-                self.reloadDataSource(withQueryDB: withQueryDB)
             }
+            self.refreshControl.endRefreshing()
         }
     }
 }

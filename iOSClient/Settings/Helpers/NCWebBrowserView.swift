@@ -22,7 +22,7 @@
 //
 
 import SwiftUI
-import WebKit
+@preconcurrency import WebKit
 
 /// Returns a WebView preferably for Sheets in SwiftUI, using a UIViewRepresentable struct with WebKit library
 ///

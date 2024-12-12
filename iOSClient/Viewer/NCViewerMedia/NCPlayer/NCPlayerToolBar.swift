@@ -29,7 +29,6 @@ import AVKit
 import MediaPlayer
 import MobileVLCKit
 import FloatingPanel
-import JGProgressHUD
 import Alamofire
 
 class NCPlayerToolBar: UIView {
@@ -59,13 +58,14 @@ class NCPlayerToolBar: UIView {
     var isFullscreen: Bool = false
     var playRepeat: Bool = false
 
-    private let hud = JGProgressHUD()
+    private let hud = NCHud()
     private var ncplayer: NCPlayer?
     private var metadata: tableMetadata?
     private let audioSession = AVAudioSession.sharedInstance()
     private var pointSize: CGFloat = 0
     private let utilityFileSystem = NCUtilityFileSystem()
     private let utility = NCUtility()
+    private let database = NCManageDatabase.shared
     private weak var viewerMediaPage: NCViewerMediaPage?
     private var buttonImage = UIImage()
 
@@ -127,14 +127,12 @@ class NCPlayerToolBar: UIView {
     }
 
     deinit {
-
         print("deinit NCPlayerToolBar")
     }
 
     // MARK: -
 
     func setBarPlayer(position: Float, ncplayer: NCPlayer? = nil, metadata: tableMetadata? = nil, viewerMediaPage: NCViewerMediaPage? = nil) {
-
         if let ncplayer = ncplayer {
             self.ncplayer = ncplayer
         }
@@ -165,9 +163,7 @@ class NCPlayerToolBar: UIView {
     }
 
     public func update() {
-
         guard let ncplayer = self.ncplayer, let length = ncplayer.player.media?.length.intValue else { return }
-
         let position = ncplayer.player.position
         let positionInSecond = position * Float(length / 1000)
 
@@ -183,7 +179,6 @@ class NCPlayerToolBar: UIView {
     }
 
     public func updateTopToolBar(videoSubTitlesIndexes: [Any], audioTrackIndexes: [Any]) {
-
         if let metadata = metadata, metadata.isVideo {
             self.subtitleButton.isEnabled = true
             self.audioButton.isEnabled = true
@@ -193,7 +188,6 @@ class NCPlayerToolBar: UIView {
     // MARK: -
 
     public func show() {
-
         UIView.animate(withDuration: 0.5, animations: {
             self.alpha = 1
         }, completion: { (_: Bool) in
@@ -202,7 +196,6 @@ class NCPlayerToolBar: UIView {
     }
 
     func hide() {
-
         UIView.animate(withDuration: 0.5, animations: {
             self.alpha = 0
         }, completion: { (_: Bool) in
@@ -225,7 +218,6 @@ class NCPlayerToolBar: UIView {
     // MARK: - Event / Gesture
 
     @objc func playbackValChanged(slider: UISlider, event: UIEvent) {
-
         guard let ncplayer = ncplayer else { return }
         let newPosition = playbackSlider.value
 
@@ -257,7 +249,6 @@ class NCPlayerToolBar: UIView {
     @objc func tap(gestureRecognizer: UITapGestureRecognizer) { }
 
     @IBAction func tapFullscreen(_ sender: Any) {
-
         isFullscreen = !isFullscreen
         if isFullscreen {
             fullscreenButton.setImage(utility.loadImage(named: "arrow.down.right.and.arrow.up.left", colors: [.white]), for: .normal)
@@ -268,9 +259,7 @@ class NCPlayerToolBar: UIView {
     }
 
     @IBAction func tapSubTitle(_ sender: Any) {
-
         guard let player = ncplayer?.player else { return }
-
         let spuTracks = player.videoSubTitlesNames
         let spuTrackIndexes = player.videoSubTitlesIndexes
 
@@ -278,9 +267,7 @@ class NCPlayerToolBar: UIView {
     }
 
     @IBAction func tapAudio(_ sender: Any) {
-
         guard let player = ncplayer?.player else { return }
-
         let audioTracks = player.audioTrackNames
         let audioTrackIndexes = player.audioTrackIndexes
 
@@ -290,7 +277,7 @@ class NCPlayerToolBar: UIView {
     @IBAction func tapPlayerPause(_ sender: Any) {
         guard let ncplayer = ncplayer else { return }
 
-        if ncplayer.isPlay() {
+        if ncplayer.isPlaying() {
             ncplayer.playerPause()
         } else {
             ncplayer.playerPlay()
@@ -300,25 +287,20 @@ class NCPlayerToolBar: UIView {
     }
 
     @IBAction func tapForward(_ sender: Any) {
-
         guard let ncplayer = ncplayer else { return }
 
         ncplayer.jumpForward(10)
-
         self.viewerMediaPage?.startTimerAutoHide()
     }
 
     @IBAction func tapBack(_ sender: Any) {
-
         guard let ncplayer = ncplayer else { return }
 
         ncplayer.jumpBackward(10)
-
         self.viewerMediaPage?.startTimerAutoHide()
     }
 
     @IBAction func tapRepeat(_ sender: Any) {
-
         if playRepeat {
             playRepeat = false
             repeatButton.setImage(utility.loadImage(named: "repeat", colors: [NCBrandColor.shared.iconImageColor2]), for: .normal)
@@ -330,13 +312,11 @@ class NCPlayerToolBar: UIView {
 }
 
 extension NCPlayerToolBar {
-
     func toggleMenuSubTitle(spuTracks: [Any], spuTrackIndexes: [Any]) {
-
         var actions = [NCMenuAction]()
         var subTitleIndex: Int?
 
-        if let data = NCManageDatabase.shared.getVideo(metadata: metadata), let idx = data.currentVideoSubTitleIndex {
+        if let data = self.database.getVideo(metadata: metadata), let idx = data.currentVideoSubTitleIndex {
             subTitleIndex = idx
         } else if let idx = ncplayer?.player.currentVideoSubTitleIndex {
             subTitleIndex = Int(idx)
@@ -357,7 +337,7 @@ extension NCPlayerToolBar {
                         on: (subTitleIndex ?? -9999) == idx,
                         action: { _ in
                             self.ncplayer?.player.currentVideoSubTitleIndex = idx
-                            NCManageDatabase.shared.addVideo(metadata: metadata, currentVideoSubTitleIndex: Int(idx))
+                            self.database.addVideo(metadata: metadata, currentVideoSubTitleIndex: Int(idx))
                         }
                     )
                 )
@@ -387,6 +367,7 @@ extension NCPlayerToolBar {
                         viewController.enableSelectFile = true
                         viewController.type = "subtitle"
                         viewController.serverUrl = metadata.serverUrl
+                        viewController.session = NCSession.shared.getSession(account: metadata.account)
 
                         self.viewerMediaPage?.present(navigationController, animated: true, completion: nil)
                     }
@@ -398,11 +379,10 @@ extension NCPlayerToolBar {
     }
 
     func toggleMenuAudio(audioTracks: [Any], audioTrackIndexes: [Any]) {
-
         var actions = [NCMenuAction]()
         var audioIndex: Int?
 
-        if let data = NCManageDatabase.shared.getVideo(metadata: metadata), let idx = data.currentAudioTrackIndex {
+        if let data = self.database.getVideo(metadata: metadata), let idx = data.currentAudioTrackIndex {
             audioIndex = idx
         } else if let idx = ncplayer?.player.currentAudioTrackIndex {
             audioIndex = Int(idx)
@@ -410,9 +390,7 @@ extension NCPlayerToolBar {
 
         if !audioTracks.isEmpty {
             for index in 0...audioTracks.count - 1 {
-
                 guard let title = audioTracks[index] as? String, let idx = audioTrackIndexes[index] as? Int32, let metadata = self.metadata else { return }
-
                 actions.append(
                     NCMenuAction(
                         title: title,
@@ -423,7 +401,7 @@ extension NCPlayerToolBar {
                         on: (audioIndex ?? -9999) == idx,
                         action: { _ in
                             self.ncplayer?.player.currentAudioTrackIndex = idx
-                            NCManageDatabase.shared.addVideo(metadata: metadata, currentAudioTrackIndex: Int(idx))
+                            self.database.addVideo(metadata: metadata, currentAudioTrackIndex: Int(idx))
                         }
                     )
                 )
@@ -441,7 +419,6 @@ extension NCPlayerToolBar {
                 selected: false,
                 on: false,
                 action: { _ in
-
                     guard let metadata = self.metadata else { return }
                     let storyboard = UIStoryboard(name: "NCSelect", bundle: nil)
                     if let navigationController = storyboard.instantiateInitialViewController() as? UINavigationController,
@@ -453,6 +430,7 @@ extension NCPlayerToolBar {
                         viewController.enableSelectFile = true
                         viewController.type = "audio"
                         viewController.serverUrl = metadata.serverUrl
+                        viewController.session = NCSession.shared.getSession(account: metadata.account)
 
                         self.viewerMediaPage?.present(navigationController, animated: true, completion: nil)
                     }
@@ -465,11 +443,8 @@ extension NCPlayerToolBar {
 }
 
 extension NCPlayerToolBar: NCSelectDelegate {
-
-    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool) {
-
+    func dismissSelect(serverUrl: String?, metadata: tableMetadata?, type: String, items: [Any], overwrite: Bool, copy: Bool, move: Bool, session: NCSession.Session) {
         if let metadata = metadata, let viewerMediaPage = viewerMediaPage {
-
             let serverUrlFileName = metadata.serverUrl + "/" + metadata.fileName
             let fileNameLocalPath = NCUtilityFileSystem().getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
 
@@ -477,32 +452,26 @@ extension NCPlayerToolBar: NCSelectDelegate {
                 addPlaybackSlave(type: type, metadata: metadata)
             } else {
                 var downloadRequest: DownloadRequest?
-                hud.indicatorView = JGProgressHUDRingIndicatorView()
-                hud.textLabel.text = NSLocalizedString("_downloading_", comment: "")
-                hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
-                hud.detailTextLabel.textColor = NCBrandColor.shared.iconImageColor2
-                if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
-                    indicatorView.ringWidth = 1.5
-                    indicatorView.ringColor = NCBrandColor.shared.brandElement
-                }
-                hud.tapOnHUDViewBlock = { _ in
+                hud.initHudRing(view: viewerMediaPage.view,
+                                text: NSLocalizedString("_downloading_", comment: ""),
+                                tapToCancelDetailText: true) {
                     if let request = downloadRequest {
                         request.cancel()
                     }
                 }
-                hud.show(in: viewerMediaPage.view)
 
-                NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account ,requestHandler: { request in
+                NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account, requestHandler: { request in
                     downloadRequest = request
                 }, taskHandler: { _ in
                 }, progressHandler: { progress in
-                    self.hud.progress = Float(progress.fractionCompleted)
+                    self.hud.progress(progress.fractionCompleted)
                 }) { _, _, _, _, _, _, error in
                     self.hud.dismiss()
                     if error == .success {
+                        self.hud.success()
                         self.addPlaybackSlave(type: type, metadata: metadata)
                     } else if error.errorCode != 200 {
-                        NCContentPresenter().showError(error: error)
+                        self.hud.error(text: error.errorDescription)
                     }
                 }
             }
@@ -512,7 +481,6 @@ extension NCPlayerToolBar: NCSelectDelegate {
     // swiftlint:disable inclusive_language
     func addPlaybackSlave(type: String, metadata: tableMetadata) {
     // swiftlint:enable inclusive_language
-
         let fileNameLocalPath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
 
         if type == "subtitle" {
@@ -526,7 +494,6 @@ extension NCPlayerToolBar: NCSelectDelegate {
 // https://stackoverflow.com/questions/13196263/custom-uislider-increase-hot-spot-size
 //
 class NCPlayerToolBarSlider: UISlider {
-
     private var thumbTouchSize = CGSize(width: 100, height: 100)
 
     override func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
@@ -544,15 +511,15 @@ class NCPlayerToolBarSlider: UISlider {
     }
 
     public func addTapGesture() {
-
         let tap = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
+
         addGestureRecognizer(tap)
     }
 
     @objc private func handleTap(_ sender: UITapGestureRecognizer) {
-
         let location = sender.location(in: self)
         let percent = minimumValue + Float(location.x / bounds.width) * (maximumValue - minimumValue)
+
         setValue(percent, animated: true)
         sendActions(for: .valueChanged)
     }

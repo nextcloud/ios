@@ -25,12 +25,9 @@
 import Foundation
 import UIKit
 import SwiftUI
-import TOPasscodeViewController
 import LocalAuthentication
 
 class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
-    /// AppDelegate
-    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     /// Keychain access
     var keychain = NCKeychain()
     /// State to control the lock on/off section
@@ -51,6 +48,12 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
     var footerApp = ""
     var footerServer = ""
     var footerSlogan = ""
+    /// Get session
+    var session: NCSession.Session {
+        NCSession.shared.getSession(controller: controller)
+    }
+
+    var changePasscode = false
 
     /// Initializes the view model with default values.
     init(controller: NCMainTabBarController?) {
@@ -60,6 +63,7 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
 
     /// Triggered when the view appears.
     func onViewAppear() {
+        let capabilities = NCCapabilities.shared.getCapabilities(account: self.controller?.account)
         isLockActive = (keychain.passcode != nil)
         enableTouchID = keychain.touchFaceID
         lockScreen = !keychain.requestPasscodeAtStart
@@ -67,8 +71,8 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
         resetWrongAttempts = keychain.resetAppCounterFail
         accountRequest = keychain.accountRequest
         footerApp = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility().getVersionApp(withBuild: true)) + "\n\n"
-        footerServer = String(format: NCBrandOptions.shared.textCopyrightNextcloudServer, NCGlobal.shared.capabilityServerVersion) + "\n"
-        footerSlogan = NCGlobal.shared.capabilityThemingName + " - " + NCGlobal.shared.capabilityThemingSlogan + "\n\n"
+        footerServer = String(format: NCBrandOptions.shared.textCopyrightNextcloudServer, capabilities.capabilityServerVersion) + "\n"
+        footerSlogan = capabilities.capabilityThemingName + " - " + capabilities.capabilityThemingSlogan + "\n\n"
     }
 
     // MARK: - All functions
@@ -96,104 +100,16 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
     /// This function initiates a service call to download the configuration files
     /// using the URL provided in the `configLink` property.
     func getConfigFiles() {
-        let configLink = appDelegate.urlBase + NCBrandOptions.shared.mobileconfig
+        let session = NCSession.shared.getSession(controller: controller)
+        let configLink = session.urlBase + NCBrandOptions.shared.mobileconfig
         let configServer = NCConfigServer()
         if let url = URL(string: configLink) {
-            configServer.startService(url: url)
+            configServer.startService(url: url, account: session.account)
         }
     }
 
     /// Function to update Account request on start
     func updateAccountRequest() {
         keychain.accountRequest = accountRequest
-    }
-}
-
-struct PasscodeView: UIViewControllerRepresentable {
-    @Binding var isLockActive: Bool
-
-    func makeUIViewController(context: Context) -> UIViewController {
-        let laContext = LAContext()
-        var error: NSError?
-        if NCKeychain().passcode != nil {
-            let passcodeViewController = TOPasscodeViewController(passcodeType: .sixDigits, allowCancel: true)
-            passcodeViewController.keypadButtonShowLettering = false
-            if NCKeychain().touchFaceID && laContext.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
-                if error == nil {
-                    if laContext.biometryType == .faceID {
-                        passcodeViewController.biometryType = .faceID
-                        passcodeViewController.allowBiometricValidation = true
-                        passcodeViewController.automaticallyPromptForBiometricValidation = true
-                    } else if laContext.biometryType == .touchID {
-                        passcodeViewController.biometryType = .touchID
-                        passcodeViewController.allowBiometricValidation = true
-                        passcodeViewController.automaticallyPromptForBiometricValidation = true
-                    } else {
-                        print("No Biometric support")
-                    }
-                }
-            }
-            passcodeViewController.delegate = context.coordinator
-            return passcodeViewController
-        } else {
-            let passcodeSettingsViewController = TOPasscodeSettingsViewController()
-            passcodeSettingsViewController.hideOptionsButton = true
-            passcodeSettingsViewController.requireCurrentPasscode = false
-            passcodeSettingsViewController.passcodeType = .sixDigits
-            passcodeSettingsViewController.delegate = context.coordinator
-            return passcodeSettingsViewController
-        }
-    }
-
-    func updateUIViewController(_ uiViewController: UIViewController, context: Context) {
-        // Update the view controller if needed
-    }
-
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
-
-    class Coordinator: NSObject, TOPasscodeSettingsViewControllerDelegate, TOPasscodeViewControllerDelegate {
-        var parent: PasscodeView
-        init(_ parent: PasscodeView) {
-            self.parent = parent
-        }
-
-        func didPerformBiometricValidationRequest(in passcodeViewController: TOPasscodeViewController) {
-            let context = LAContext()
-            var error: NSError?
-
-            if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
-                context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: NCBrandOptions.shared.brand) { success, _ in
-                    DispatchQueue.main.async {
-                        if success {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                NCKeychain().passcode = nil
-                                passcodeViewController.dismiss(animated: true)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        func passcodeSettingsViewController(_ passcodeSettingsViewController: TOPasscodeSettingsViewController, didChangeToNewPasscode passcode: String, of type: TOPasscodeType) {
-            NCKeychain().passcode = passcode
-            self.parent.isLockActive = true
-            passcodeSettingsViewController.dismiss(animated: true)
-        }
-
-        func didTapCancel(in passcodeViewController: TOPasscodeViewController) {
-            passcodeViewController.dismiss(animated: true)
-        }
-
-        func passcodeViewController(_ passcodeViewController: TOPasscodeViewController, isCorrectCode code: String) -> Bool {
-            if code == NCKeychain().passcode {
-                self.parent.isLockActive = false
-                NCKeychain().passcode = nil
-                return true
-            }
-            return false
-        }
     }
 }

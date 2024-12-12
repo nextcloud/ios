@@ -22,10 +22,11 @@
 //
 
 import Foundation
+import UIKit
 import RealmSwift
 import NextcloudKit
 
-class tableAccount: Object, NCUserBaseUrl {
+class tableAccount: Object {
     @objc dynamic var account = ""
     @objc dynamic var active: Bool = false
     @objc dynamic var address = ""
@@ -38,6 +39,7 @@ class tableAccount: Object, NCUserBaseUrl {
     @objc dynamic var autoUploadFull: Bool = false
     @objc dynamic var autoUploadImage: Bool = false
     @objc dynamic var autoUploadVideo: Bool = false
+    @objc dynamic var autoUploadFavoritesOnly: Bool = false
     @objc dynamic var autoUploadWWAnPhoto: Bool = false
     @objc dynamic var autoUploadWWAnVideo: Bool = false
     @objc dynamic var backend = ""
@@ -84,13 +86,16 @@ extension NCManageDatabase {
         do {
             let realm = try Realm()
             try realm.write {
-                let addObject = tableAccount()
-                addObject.account = account
+                if let result = realm.objects(tableAccount.self).filter("account == %@", account).first {
+                    realm.delete(result)
+                }
+                let tableAccount = tableAccount()
+                tableAccount.account = account
                 NCKeychain().setPassword(account: account, password: password)
-                addObject.urlBase = urlBase
-                addObject.user = user
-                addObject.userId = userId
-                realm.add(addObject, update: .all)
+                tableAccount.urlBase = urlBase
+                tableAccount.user = user
+                tableAccount.userId = userId
+                realm.add(tableAccount, update: .all)
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
@@ -108,22 +113,21 @@ extension NCManageDatabase {
         }
     }
 
-    func deleteAccount(_ account: String) {
-        do {
-            let realm = try Realm()
-            try realm.write {
-                let result = realm.objects(tableAccount.self).filter("account == %@", account)
-                realm.delete(result)
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
-        }
-    }
-
-    func getActiveAccount() -> tableAccount? {
+    func getActiveTableAccount() -> tableAccount? {
         do {
             let realm = try Realm()
             guard let result = realm.objects(tableAccount.self).filter("active == true").first else { return nil }
+            return tableAccount.init(value: result)
+        } catch let error as NSError {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
+        }
+        return nil
+    }
+
+    func getTableAccount(account: String) -> tableAccount? {
+        do {
+            let realm = try Realm()
+            guard let result = realm.objects(tableAccount.self).filter("account == %@", account).first else { return nil }
             return tableAccount.init(value: result)
         } catch let error as NSError {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
@@ -144,7 +148,7 @@ extension NCManageDatabase {
         return nil
     }
 
-    func getAccount(predicate: NSPredicate) -> tableAccount? {
+    func getTableAccount(predicate: NSPredicate) -> tableAccount? {
         do {
             let realm = try Realm()
             guard let result = realm.objects(tableAccount.self).filter(predicate).first else { return nil }
@@ -155,7 +159,7 @@ extension NCManageDatabase {
         return nil
     }
 
-    func getAllAccount() -> [tableAccount] {
+    func getAllTableAccount() -> [tableAccount] {
         do {
             let realm = try Realm()
             let sorted = [SortDescriptor(keyPath: "active", ascending: false), SortDescriptor(keyPath: "user", ascending: true)]
@@ -194,16 +198,16 @@ extension NCManageDatabase {
         return ""
     }
 
-    func getAccountAutoUploadDirectory(urlBase: String, userId: String, account: String) -> String {
+    func getAccountAutoUploadDirectory(session: NCSession.Session) -> String {
         do {
             let realm = try Realm()
             guard let result = realm.objects(tableAccount.self).filter("active == true").first else { return "" }
             if result.autoUploadDirectory.isEmpty {
-                return utilityFileSystem.getHomeServer(urlBase: urlBase, userId: userId)
+                return utilityFileSystem.getHomeServer(session: session)
             } else {
                 // FIX change webdav -> /dav/files/
                 if result.autoUploadDirectory.contains("/webdav") {
-                    return utilityFileSystem.getHomeServer(urlBase: urlBase, userId: userId)
+                    return utilityFileSystem.getHomeServer(session: session)
                 } else {
                     return result.autoUploadDirectory
                 }
@@ -214,9 +218,9 @@ extension NCManageDatabase {
         return ""
     }
 
-    func getAccountAutoUploadPath(urlBase: String, userId: String, account: String) -> String {
+    func getAccountAutoUploadPath(session: NCSession.Session) -> String {
         let cameraFileName = self.getAccountAutoUploadFileName()
-        let cameraDirectory = self.getAccountAutoUploadDirectory(urlBase: urlBase, userId: userId, account: account)
+        let cameraDirectory = self.getAccountAutoUploadDirectory(session: session)
         let folderPhotos = utilityFileSystem.stringAppendServerUrl(cameraDirectory, addFileName: cameraFileName)
         return folderPhotos
     }
@@ -232,9 +236,7 @@ extension NCManageDatabase {
         return NCGlobal.shared.subfolderGranularityMonthly
     }
 
-    func setAccountActive(_ account: String) -> tableAccount? {
-        var accountReturn = tableAccount()
-
+    func setAccountActive(_ account: String) {
         do {
             let realm = try Realm()
             try realm.write {
@@ -242,25 +244,9 @@ extension NCManageDatabase {
                 for result in results {
                     if result.account == account {
                         result.active = true
-                        accountReturn = result
                     } else {
                         result.active = false
                     }
-                }
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
-            return nil
-        }
-        return tableAccount.init(value: accountReturn)
-    }
-
-    func removePasswordAccount(_ account: String) {
-        do {
-            let realm = try Realm()
-            try realm.write {
-                if let result = realm.objects(tableAccount.self).filter("account == %@", account).first {
-                    result.password = "********"
                 }
             }
         } catch let error {
@@ -309,7 +295,7 @@ extension NCManageDatabase {
         }
     }
 
-    func setAccountAutoUploadDirectory(_ serverUrl: String?, urlBase: String, userId: String, account: String) {
+    func setAccountAutoUploadDirectory(_ serverUrl: String?, session: NCSession.Session) {
         do {
             let realm = try Realm()
             try realm.write {
@@ -317,7 +303,7 @@ extension NCManageDatabase {
                     if let serverUrl = serverUrl {
                         result.autoUploadDirectory = serverUrl
                     } else {
-                        result.autoUploadDirectory = self.getAccountAutoUploadDirectory(urlBase: urlBase, userId: userId, account: account)
+                        result.autoUploadDirectory = self.getAccountAutoUploadDirectory(session: session)
                     }
                 }
             }

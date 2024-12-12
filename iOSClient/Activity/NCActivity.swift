@@ -25,6 +25,7 @@
 import UIKit
 import SwiftRichString
 import NextcloudKit
+import SVGKit
 
 class NCActivity: UIViewController, NCSharePagingContent {
     @IBOutlet weak var viewContainerConstraint: NSLayoutConstraint!
@@ -36,9 +37,9 @@ class NCActivity: UIViewController, NCSharePagingContent {
     var metadata: tableMetadata?
     var showComments: Bool = false
 
-    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
+    let database = NCManageDatabase.shared
     var allItems: [DateCompareable] = []
     var sectionDates: [Date] = []
     var dataSourceTask: URLSessionTask?
@@ -46,12 +47,21 @@ class NCActivity: UIViewController, NCSharePagingContent {
     var insets = UIEdgeInsets(top: 8, left: 0, bottom: 0, right: 0)
     var didSelectItemEnable: Bool = true
     var objectType: String?
+    var account: String = ""
 
     var isFetchingActivity = false
     var hasActivityToLoad = true {
         didSet { tableView.tableFooterView?.isHidden = hasActivityToLoad }
     }
     var dateAutomaticFetch: Date?
+
+    var session: NCSession.Session {
+        if account.isEmpty {
+            NCSession.shared.getSession(controller: tabBarController)
+        } else {
+            NCSession.shared.getSession(account: account)
+        }
+    }
 
     // MARK: - View Life Cycle
 
@@ -74,15 +84,12 @@ class NCActivity: UIViewController, NCSharePagingContent {
 
     func setupComments() {
         // Display Name & Quota
-        guard let activeAccount = NCManageDatabase.shared.getActiveAccount(), height > 0 else {
-            return
-        }
-
+        guard let metadata else { return }
         tableView.register(UINib(nibName: "NCShareCommentsCell", bundle: nil), forCellReuseIdentifier: "cell")
         commentView = Bundle.main.loadNibNamed("NCActivityCommentView", owner: self, options: nil)?.first as? NCActivityCommentView
-        commentView?.setup(urlBase: appDelegate, account: activeAccount) { newComment in
+        commentView?.setup(account: metadata.account) { newComment in
             guard let newComment = newComment, !newComment.isEmpty, let metadata = self.metadata else { return }
-            NextcloudKit.shared.putComments(fileId: metadata.fileId, message: newComment, account: self.appDelegate.account) { _, error in
+            NextcloudKit.shared.putComments(fileId: metadata.fileId, message: newComment, account: metadata.account) { _, _, error in
                 if error == .success {
                     self.commentView?.newCommentField.text?.removeAll()
                     self.loadComments()
@@ -145,7 +152,7 @@ extension NCActivity: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 80
+        return 80.0
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -209,33 +216,48 @@ extension NCActivity: UITableViewDataSource {
     }
 
     func makeCommentCell(_ comment: tableComments, for indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? NCShareCommentsCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? NCShareCommentsCell,
+              let metadata else {
             return UITableViewCell()
         }
 
         cell.indexPath = indexPath
         cell.tableComments = comment
         cell.delegate = self
-        cell.sizeToFit()
 
-        // Image
-        let fileName = appDelegate.userBaseUrl + "-" + comment.actorId + ".png"
-        NCNetworking.shared.downloadAvatar(user: comment.actorId, dispalyName: comment.actorDisplayName, fileName: fileName, cell: cell, view: tableView)
+        // Avatar
+        let fileName = NCSession.shared.getFileName(urlBase: metadata.urlBase, user: comment.actorId)
+        let results = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName)
+
+        if results.image == nil {
+            cell.fileAvatarImageView?.image = utility.loadUserImage(for: comment.actorId, displayName: comment.actorDisplayName, urlBase: NCSession.shared.getSession(account: account).urlBase)
+        } else {
+            cell.fileAvatarImageView?.image = results.image
+        }
+
+        if let tableAvatar = results.tableAvatar,
+           !tableAvatar.loaded,
+           NCNetworking.shared.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
+            NCNetworking.shared.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: comment.actorId, fileName: fileName, account: account, view: tableView))
+        }
+
         // Username
         cell.labelUser.text = comment.actorDisplayName
         cell.labelUser.textColor = NCBrandColor.shared.textColor
         // Date
         cell.labelDate.text = utility.dateDiff(comment.creationDateTime as Date)
-        cell.labelDate.textColor = .systemGray4
+        cell.labelDate.textColor = .lightGray
         // Message
         cell.labelMessage.text = comment.message
         cell.labelMessage.textColor = NCBrandColor.shared.textColor
         // Button Menu
-        if comment.actorId == appDelegate.userId {
+        if comment.actorId == metadata.userId {
             cell.buttonMenu.isHidden = false
         } else {
             cell.buttonMenu.isHidden = true
         }
+
+        cell.sizeToFit()
 
         return cell
     }
@@ -247,6 +269,7 @@ extension NCActivity: UITableViewDataSource {
         var orderKeysId: [String] = []
 
         cell.idActivity = activity.idActivity
+        cell.account = activity.account
         cell.indexPath = indexPath
         cell.avatar.image = nil
         cell.avatar.isHidden = true
@@ -256,18 +279,21 @@ extension NCActivity: UITableViewDataSource {
 
         // icon
         if !activity.icon.isEmpty {
+            activity.icon = activity.icon.replacingOccurrences(of: ".png", with: ".svg")
             let fileNameIcon = (activity.icon as NSString).lastPathComponent
             let fileNameLocalPath = utilityFileSystem.directoryUserData + "/" + fileNameIcon
 
             if FileManager.default.fileExists(atPath: fileNameLocalPath) {
-                if let image = UIImage(contentsOfFile: fileNameLocalPath) {
+                let image = fileNameIcon.contains(".svg") ? SVGKImage(contentsOfFile: fileNameLocalPath)?.uiImage : UIImage(contentsOfFile: fileNameLocalPath)
+
+                if let image {
                     cell.icon.image = image.withTintColor(NCBrandColor.shared.textColor, renderingMode: .alwaysOriginal)
                 }
             } else {
-                NextcloudKit.shared.downloadContent(serverUrl: activity.icon, account: appDelegate.account) { _, data, error in
-                    if error == .success {
+                NextcloudKit.shared.downloadContent(serverUrl: activity.icon, account: activity.account) { _, responseData, error in
+                    if error == .success, let data = responseData?.data {
                         do {
-                            try data!.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
+                            try data.write(to: NSURL(fileURLWithPath: fileNameLocalPath) as URL, options: .atomic)
                             self.tableView.reloadData()
                         } catch { return }
                     }
@@ -276,12 +302,24 @@ extension NCActivity: UITableViewDataSource {
         }
 
         // avatar
-        if !activity.user.isEmpty && activity.user != appDelegate.userId {
+        if !activity.user.isEmpty && activity.user != session.userId {
             cell.avatar.isHidden = false
             cell.fileUser = activity.user
-            let fileName = appDelegate.userBaseUrl + "-" + activity.user + ".png"
-            NCNetworking.shared.downloadAvatar(user: activity.user, dispalyName: nil, fileName: fileName, cell: cell, view: tableView)
             cell.subjectLeadingConstraint.constant = 15
+
+            let fileName = NCSession.shared.getFileName(urlBase: session.urlBase, user: activity.user)
+            let results = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName)
+
+            if results.image == nil {
+                cell.fileAvatarImageView?.image = utility.loadUserImage(for: activity.user, displayName: nil, urlBase: session.urlBase)
+            } else {
+                cell.fileAvatarImageView?.image = results.image
+            }
+
+            if !(results.tableAvatar?.loaded ?? false),
+               NCNetworking.shared.downloadAvatarQueue.operations.filter({ ($0 as? NCOperationDownloadAvatar)?.fileName == fileName }).isEmpty {
+                NCNetworking.shared.downloadAvatarQueue.addOperation(NCOperationDownloadAvatar(user: activity.user, fileName: fileName, account: session.account, view: tableView))
+            }
         } else {
             cell.subjectLeadingConstraint.constant = -30
         }
@@ -300,7 +338,7 @@ extension NCActivity: UITableViewDataSource {
             }
 
             for key in keys {
-                if let result = NCManageDatabase.shared.getActivitySubjectRich(account: appDelegate.account, idActivity: activity.idActivity, key: key) {
+                if let result = database.getActivitySubjectRich(account: session.account, idActivity: activity.idActivity, key: key) {
                     orderKeysId.append(result.id)
                     subject = subject.replacingOccurrences(of: "{\(key)}", with: "<bold>" + result.name + "</bold>")
                 }
@@ -344,7 +382,7 @@ extension NCActivity {
         var bottom: CGFloat = 0
 
         if let mainTabBar = self.tabBarController?.tabBar as? NCMainTabBar {
-            bottom = -mainTabBar.getHeight()
+           bottom = -mainTabBar.getHeight()
         }
         NCActivityIndicator.shared.start(backgroundView: self.view, bottom: bottom - 35, style: .medium)
 
@@ -371,13 +409,13 @@ extension NCActivity {
     func loadDataSource() {
         var newItems = [DateCompareable]()
 
-        if showComments, let metadata = metadata, let account = NCManageDatabase.shared.getActiveAccount() {
-            let comments = NCManageDatabase.shared.getComments(account: account.account, objectId: metadata.fileId)
+        if showComments, let metadata {
+            let comments = database.getComments(account: metadata.account, objectId: metadata.fileId)
             newItems += comments
         }
 
-        let activities = NCManageDatabase.shared.getActivity(
-            predicate: NSPredicate(format: "account == %@", appDelegate.account),
+        let activities = database.getActivity(
+            predicate: NSPredicate(format: "account == %@", session.account),
             filterFileId: metadata?.fileId)
         newItems += activities.filter
 
@@ -395,7 +433,7 @@ extension NCActivity {
 
         NextcloudKit.shared.getComments(fileId: metadata.fileId, account: metadata.account) { _, comments, _, error in
             if error == .success, let comments = comments {
-                NCManageDatabase.shared.addComments(comments, account: metadata.account, objectId: metadata.fileId)
+                self.database.addComments(comments, account: metadata.account, objectId: metadata.fileId)
             } else if error.errorCode != NCGlobal.shared.errorResourceNotFound {
                 NCContentPresenter().showError(error: error)
             }
@@ -410,7 +448,7 @@ extension NCActivity {
 
     /// Check if most recent activivities are loaded, if not trigger reload
     func checkRecentActivity(disptachGroup: DispatchGroup) {
-        guard let result = NCManageDatabase.shared.getLatestActivityId(account: appDelegate.account), metadata == nil, hasActivityToLoad else {
+        guard let result = database.getLatestActivityId(account: session.account), metadata == nil, hasActivityToLoad else {
             return self.loadActivity(idActivity: 0, disptachGroup: disptachGroup)
         }
         let resultActivityId = max(result.activityFirstKnown, result.activityLastGiven)
@@ -423,14 +461,14 @@ extension NCActivity {
             objectId: nil,
             objectType: objectType,
             previews: true,
-            account: appDelegate.account) { task in
+            account: session.account) { task in
                 self.dataSourceTask = task
             } completion: { account, _, activityFirstKnown, activityLastGiven, _, error in
                 defer { disptachGroup.leave() }
 
                 let largestActivityId = max(activityFirstKnown, activityLastGiven)
                 guard error == .success,
-                      account == self.appDelegate.account,
+                      account == self.session.account,
                       largestActivityId > resultActivityId
                 else {
                     self.hasActivityToLoad = error.errorCode == NCGlobal.shared.errorNotModified ? false : self.hasActivityToLoad
@@ -452,26 +490,26 @@ extension NCActivity {
             objectId: metadata?.fileId,
             objectType: objectType,
             previews: true,
-            account: appDelegate.account) { task in
+            account: session.account) { task in
                 self.dataSourceTask = task
             } completion: { account, activities, activityFirstKnown, activityLastGiven, _, error in
                 defer { disptachGroup.leave() }
                 guard error == .success,
-                      account == self.appDelegate.account,
+                      account == self.session.account,
                       !activities.isEmpty
                 else {
                     self.hasActivityToLoad = error.errorCode == NCGlobal.shared.errorNotModified ? false : self.hasActivityToLoad
                     return
                 }
-                NCManageDatabase.shared.addActivity(activities, account: account)
+                self.database.addActivity(activities, account: account)
 
                 // update most recently loaded activity only when all activities are loaded (not filtered)
                 let largestActivityId = max(activityFirstKnown, activityLastGiven)
-                if let result = NCManageDatabase.shared.getLatestActivityId(account: self.appDelegate.account) {
+                if let result = self.database.getLatestActivityId(account: self.session.account) {
                     resultActivityId = max(result.activityFirstKnown, result.activityLastGiven)
                 }
                 if self.metadata == nil, largestActivityId > resultActivityId {
-                    NCManageDatabase.shared.updateLatestActivityId(activityFirstKnown: activityFirstKnown, activityLastGiven: activityLastGiven, account: account)
+                    self.database.updateLatestActivityId(activityFirstKnown: activityFirstKnown, activityLastGiven: activityLastGiven, account: account)
                 }
             }
     }
@@ -482,7 +520,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
         guard let tableComment = tableComment else {
             return
         }
-        self.showProfileMenu(userId: tableComment.actorId)
+        self.showProfileMenu(userId: tableComment.actorId, session: session)
     }
 
     func tapMenu(with tableComments: tableComments?, sender: Any) {
@@ -509,7 +547,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
                     alert.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
                         guard let message = alert.textFields?.first?.text, !message.isEmpty else { return }
 
-                        NextcloudKit.shared.updateComments(fileId: metadata.fileId, messageId: tableComments.messageId, message: message, account: self.appDelegate.account) { _, error in
+                        NextcloudKit.shared.updateComments(fileId: metadata.fileId, messageId: tableComments.messageId, message: message, account: metadata.account) { _, _, error in
                             if error == .success {
                                 self.loadComments()
                             } else {
@@ -531,7 +569,7 @@ extension NCActivity: NCShareCommentsCellDelegate {
                 action: { _ in
                     guard let metadata = self.metadata, let tableComments = tableComments else { return }
 
-                    NextcloudKit.shared.deleteComments(fileId: metadata.fileId, messageId: tableComments.messageId, account: metadata.account) { _, error in
+                    NextcloudKit.shared.deleteComments(fileId: metadata.fileId, messageId: tableComments.messageId, account: metadata.account) { _, _, error in
                         if error == .success {
                             self.loadComments()
                         } else {

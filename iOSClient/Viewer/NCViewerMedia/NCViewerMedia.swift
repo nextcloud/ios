@@ -27,7 +27,6 @@ import NextcloudKit
 import EasyTipView
 import SwiftUI
 import MobileVLCKit
-import JGProgressHUD
 import Alamofire
 
 public protocol NCViewerMediaViewDelegate: AnyObject {
@@ -49,6 +48,7 @@ class NCViewerMedia: UIViewController {
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     let utilityFileSystem = NCUtilityFileSystem()
     let utility = NCUtility()
+    let database = NCManageDatabase.shared
     weak var viewerMediaPage: NCViewerMediaPage?
     var playerToolBar: NCPlayerToolBar?
     var ncplayer: NCPlayer?
@@ -79,7 +79,6 @@ class NCViewerMedia: UIViewController {
 
     deinit {
         print("deinit NCViewerMedia")
-
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterOpenMediaDetail), object: nil)
     }
 
@@ -92,7 +91,7 @@ class NCViewerMedia: UIViewController {
 
         view.addGestureRecognizer(doubleTapGestureRecognizer)
 
-        if NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata) != nil {
+        if self.database.getMetadataLivePhoto(metadata: metadata) != nil {
             statusViewImage.image = utility.loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor2])
             statusLabel.text = "LIVE"
         } else {
@@ -101,7 +100,6 @@ class NCViewerMedia: UIViewController {
         }
 
         if metadata.isAudioOrVideo {
-
             playerToolBar = Bundle.main.loadNibNamed("NCPlayerToolBar", owner: self, options: nil)?.first as? NCPlayerToolBar
             if let playerToolBar = playerToolBar {
                 view.addSubview(playerToolBar)
@@ -142,7 +140,7 @@ class NCViewerMedia: UIViewController {
         super.viewDidAppear(animated)
 
         // Set Last Opening Date
-        NCManageDatabase.shared.setLastOpeningDate(metadata: metadata)
+        self.database.setLastOpeningDate(metadata: metadata)
 
         viewerMediaPage?.clearCommandCenter()
 
@@ -155,44 +153,33 @@ class NCViewerMedia: UIViewController {
                         if error == .success, let url = url {
                             ncplayer.openAVPlayer(url: url, autoplay: autoplay)
                         } else {
-                            guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [self.metadata],
-                                                                                                           session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                                                                           selector: "") else { return }
+                            guard let metadata = self.database.setMetadatasSessionInWaitDownload(metadatas: [self.metadata],
+                                                                                                 session: NCNetworking.shared.sessionDownload,
+                                                                                                 selector: "") else { return }
                             var downloadRequest: DownloadRequest?
-                            let hud = JGProgressHUD()
-                            hud.indicatorView = JGProgressHUDRingIndicatorView()
-                            hud.textLabel.text = NSLocalizedString("_downloading_", comment: "")
-                            hud.detailTextLabel.text = NSLocalizedString("_tap_to_cancel_", comment: "")
-                            hud.detailTextLabel.textColor = NCBrandColor.shared.iconImageColor2
-                            if let indicatorView = hud.indicatorView as? JGProgressHUDRingIndicatorView {
-                                indicatorView.ringWidth = 1.5
-                                indicatorView.ringColor = NCBrandColor.shared.brandElement
-                            }
-                            hud.tapOnHUDViewBlock = { _ in
+                            let hud = NCHud(self.tabBarController?.view)
+                            hud.initHudRing(text: NSLocalizedString("_downloading_", comment: ""),
+                                            tapToCancelDetailText: true) {
                                 if let request = downloadRequest {
                                     request.cancel()
                                 }
                             }
-                            if let view = self.tabBarController?.view {
-                                hud.show(in: view)
-                            }
+
                             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: false) {
                             } requestHandler: { request in
                                 downloadRequest = request
                             } progressHandler: { progress in
-                                hud.progress = Float(progress.fractionCompleted)
+                                hud.progress(progress.fractionCompleted)
                             } completion: { _, error in
                                 DispatchQueue.main.async {
                                     if error == .success {
-                                        hud.dismiss()
+                                        hud.success()
                                         if self.utilityFileSystem.fileProviderStorageExists(self.metadata) {
                                             let url = URL(fileURLWithPath: self.utilityFileSystem.getDirectoryProviderStorageOcId(self.metadata.ocId, fileNameView: self.metadata.fileNameView))
                                             ncplayer.openAVPlayer(url: url, autoplay: autoplay)
                                         }
                                     } else {
-                                        hud.indicatorView = JGProgressHUDErrorIndicatorView()
-                                        hud.textLabel.text = error.errorDescription
-                                        hud.dismiss(afterDelay: NCGlobal.shared.dismissAfterSecond)
+                                        hud.error(text: error.errorDescription)
                                     }
                                 }
                             }
@@ -200,7 +187,7 @@ class NCViewerMedia: UIViewController {
                     }
                 } else {
                     var position: Float = 0
-                    if let result = NCManageDatabase.shared.getVideo(metadata: metadata), let resultPosition = result.position {
+                    if let result = self.database.getVideo(metadata: metadata), let resultPosition = result.position {
                         position = resultPosition
                     }
                     ncplayer.restartAVPlayer(position: position, pauseAfterPlay: true)
@@ -224,7 +211,7 @@ class NCViewerMedia: UIViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
-        if let ncplayer = ncplayer, ncplayer.isPlay() {
+        if let ncplayer = ncplayer, ncplayer.isPlaying() {
             ncplayer.playerPause()
         }
     }
@@ -262,90 +249,100 @@ class NCViewerMedia: UIViewController {
     // MARK: - Image
 
     func loadImage() {
-
-        guard let metadata = NCManageDatabase.shared.getMetadataFromOcId(metadata.ocId) else { return }
+        guard let metadata = self.database.getMetadataFromOcId(metadata.ocId) else { return }
         self.metadata = metadata
+        let fileNamePath = utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId, fileNameView: metadata.fileNameView)
+        let fileNameExtension = (metadata.fileNameView as NSString).pathExtension.uppercased()
 
         if metadata.isLivePhoto,
-           let metadata = NCManageDatabase.shared.getMetadataLivePhoto(metadata: metadata),
+           NCNetworking.shared.isOnline,
+           let metadata = self.database.getMetadataLivePhoto(metadata: metadata),
            !utilityFileSystem.fileProviderStorageExists(metadata),
-           let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                    session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                                                    selector: "") {
+           let metadata = self.database.setMetadatasSessionInWaitDownload(metadatas: [metadata], session: NCNetworking.shared.sessionDownload, selector: "") {
             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
         }
 
-        if metadata.isImage, (metadata.fileExtension.lowercased() == "gif" || metadata.fileExtension.lowercased() == "svg"), !utilityFileSystem.fileProviderStorageExists(metadata) {
+        if metadata.isImage, fileNameExtension == "GIF" || fileNameExtension == "SVG", !utilityFileSystem.fileProviderStorageExists(metadata) {
             downloadImage()
         }
 
-        // Get image
-        getImageMetadata(metadata) { image in
-            if self.metadata.ocId == metadata.ocId {
+        if metadata.isVideo && !metadata.hasPreview {
+            utility.createImageFileFrom(metadata: metadata)
+            let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024)
+            self.image = image
+            self.imageVideoContainer.image = self.image
+            return
+        } else if metadata.isAudio {
+            let image = utility.loadImage(named: "waveform", colors: [NCBrandColor.shared.iconImageColor2])
+            self.image = image
+            self.imageVideoContainer.image = self.image
+            return
+        } else if metadata.isImage {
+            if fileNameExtension == "GIF" {
+                if !NCUtility().existsImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024) {
+                    utility.createImageFileFrom(metadata: metadata)
+                }
+                if let image = UIImage.animatedImage(withAnimatedGIFURL: URL(fileURLWithPath: fileNamePath)) {
+                    self.image = image
+                    self.imageVideoContainer.image = self.image
+                } else {
+                    self.image = self.utility.loadImage(named: "photo.badge.arrow.down", colors: [NCBrandColor.shared.iconImageColor2])
+                    self.imageVideoContainer.image = self.image
+                }
+                return
+            } else if fileNameExtension == "SVG" {
+                if let svgImage = SVGKImage(contentsOfFile: fileNamePath) {
+                    svgImage.size = NCGlobal.shared.size1024
+                    if let image = svgImage.uiImage {
+                        if !NCUtility().existsImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024), let data = image.jpegData(compressionQuality: 1.0) {
+                            utility.createImageFileFrom(data: data, metadata: metadata)
+                        }
+                        self.image = image
+                        self.imageVideoContainer.image = self.image
+                        return
+                    }
+                }
+                self.image = self.utility.loadImage(named: "photo", colors: [NCBrandColor.shared.iconImageColor2])
+                self.imageVideoContainer.image = self.image
+                return
+            } else if let image = UIImage(contentsOfFile: fileNamePath) {
                 self.image = image
-                self.imageVideoContainer.image = image
+                self.imageVideoContainer.image = self.image
+                return
             }
         }
-    }
 
-    func getImageMetadata(_ metadata: tableMetadata, completion: @escaping (UIImage?) -> Void) {
-        if metadata.isVideo && !metadata.hasPreview {
-            utility.createImageFrom(fileNameView: metadata.fileNameView, ocId: metadata.ocId, etag: metadata.etag, classFile: metadata.classFile)
-        } else if metadata.isAudio {
-            return completion(utility.loadImage(named: "waveform", colors: [NCBrandColor.shared.iconImageColor2]))
-        } else if let image = utility.getImage(metadata: metadata) {
-            return completion(image)
-        }
-
-        if utilityFileSystem.fileProviderStoragePreviewIconExists(metadata.ocId, etag: metadata.etag) {
-            return completion(UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)))
+        if let image = UIImage(contentsOfFile: utilityFileSystem.getDirectoryProviderStorageImageOcId(metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024)) {
+            self.image = image
+            self.imageVideoContainer.image = self.image
         } else {
-            let fileNamePreviewLocalPath = utilityFileSystem.getDirectoryProviderStoragePreviewOcId(metadata.ocId, etag: metadata.etag)
-            let fileNameIconLocalPath = utilityFileSystem.getDirectoryProviderStorageIconOcId(metadata.ocId, etag: metadata.etag)
-            let sizePreview = NCUtility().getSizePreview(width: metadata.width, height: metadata.height)
-
-            NextcloudKit.shared.downloadPreview(fileId: metadata.fileId,
-                                                fileNamePreviewLocalPath: fileNamePreviewLocalPath,
-                                                fileNameIconLocalPath: fileNameIconLocalPath,
-                                                widthPreview: Int(sizePreview.width),
-                                                heightPreview: Int(sizePreview.height),
-                                                sizeIcon: NCGlobal.shared.sizeIcon,
-                                                account: metadata.account,
-                                                options: NKRequestOptions(queue: .main)) { _, imagePreview, _, _, etag, error in
-                if error == .success, let image = imagePreview {
-                    NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
-                    return completion(image)
+            NextcloudKit.shared.downloadPreview(fileId: metadata.fileId, account: metadata.account, options: NKRequestOptions(queue: .main)) { _, _, _, etag, responseData, error in
+                if error == .success, let data = responseData?.data {
+                    self.database.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
+                    let image = UIImage(data: data)
+                    self.image = image
+                    self.imageVideoContainer.image = self.image
                 } else {
-                    return completion(self.utility.loadImage(named: "photo", colors: [NCBrandColor.shared.iconImageColor2]))
+                    self.image = self.utility.loadImage(named: "photo", colors: [NCBrandColor.shared.iconImageColor2])
+                    self.imageVideoContainer.image = self.image
                 }
             }
         }
     }
 
-    func downloadImage(withSelector selector: String = "") {
-        guard let metadata = NCManageDatabase.shared.setMetadatasSessionInWaitDownload(metadatas: [metadata],
-                                                                                       session: NextcloudKit.shared.nkCommonInstance.sessionIdentifierDownload,
-                                                                                       selector: selector) else { return }
+    private func downloadImage(withSelector selector: String = "") {
+        guard let metadata = self.database.setMetadatasSessionInWaitDownload(metadatas: [metadata], session: NCNetworking.shared.sessionDownload, selector: selector) else { return }
         NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true) {
         } requestHandler: { _ in
             self.allowOpeningDetails = false
         } completion: { _, _ in
-            DispatchQueue.main.async {
-                self.getImageMetadata(self.metadata) { image in
-                    if self.metadata.ocId == metadata.ocId {
-                        self.image = image
-                        self.imageVideoContainer.image = image
-                        self.allowOpeningDetails = true
-                    }
-                }
-            }
+            self.allowOpeningDetails = true
         }
     }
 
     // MARK: - Live Photo
 
     func playLivePhoto(filePath: String) {
-
         updateViewConstraints()
         statusViewImage.isHidden = true
         statusLabel.isHidden = true
@@ -356,7 +353,6 @@ class NCViewerMedia: UIViewController {
     }
 
     func stopLivePhoto() {
-
         player.stop()
 
         statusViewImage.isHidden = false
@@ -366,9 +362,7 @@ class NCViewerMedia: UIViewController {
     // MARK: - Gesture
 
     @objc func didDoubleTapWith(gestureRecognizer: UITapGestureRecognizer) {
-
         guard metadata.isImage, !detailView.isShown else { return }
-
         let pointInView = gestureRecognizer.location(in: self.imageVideoContainer)
         var newZoomScale = self.scrollView.maximumZoomScale
 
@@ -385,9 +379,7 @@ class NCViewerMedia: UIViewController {
     }
 
     @objc func didPanWith(gestureRecognizer: UIPanGestureRecognizer) {
-
         guard metadata.isImage else { return }
-
         let currentLocation = gestureRecognizer.translation(in: self.view)
 
         switch gestureRecognizer.state {
@@ -531,16 +523,13 @@ extension NCViewerMedia {
 }
 
 extension NCViewerMedia: UIScrollViewDelegate {
-
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return imageVideoContainer
     }
 
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
-
         if scrollView.zoomScale > 1 {
             if let image = imageVideoContainer.image {
-
                 let ratioW = imageVideoContainer.frame.width / image.size.width
                 let ratioH = imageVideoContainer.frame.height / image.size.height
                 let ratio = ratioW < ratioH ? ratioW : ratioH
@@ -568,7 +557,7 @@ extension NCViewerMedia: NCViewerMediaDetailViewDelegate {
 
 extension NCViewerMedia: EasyTipViewDelegate {
     func showTip() {
-        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCViewerMediaDetailView) {
+        if !self.database.tipExists(NCGlobal.shared.tipNCViewerMediaDetailView) {
             var preferences = EasyTipView.Preferences()
             preferences.drawing.foregroundColor = .white
             preferences.drawing.backgroundColor = NCBrandColor.shared.nextcloud
@@ -590,14 +579,14 @@ extension NCViewerMedia: EasyTipViewDelegate {
     }
 
     func easyTipViewDidTap(_ tipView: EasyTipView) {
-        NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCViewerMediaDetailView)
+        self.database.addTip(NCGlobal.shared.tipNCViewerMediaDetailView)
     }
 
     func easyTipViewDidDismiss(_ tipView: EasyTipView) { }
 
     func dismissTip() {
-        if !NCManageDatabase.shared.tipExists(NCGlobal.shared.tipNCViewerMediaDetailView) {
-            NCManageDatabase.shared.addTip(NCGlobal.shared.tipNCViewerMediaDetailView)
+        if !self.database.tipExists(NCGlobal.shared.tipNCViewerMediaDetailView) {
+            self.database.addTip(NCGlobal.shared.tipNCViewerMediaDetailView)
         }
         appDelegate.tipView?.dismiss()
         appDelegate.tipView = nil

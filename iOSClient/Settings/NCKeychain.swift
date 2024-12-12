@@ -355,6 +355,30 @@ import KeychainAccess
         }
     }
 
+    var screenAwakeMode: AwakeMode {
+        get {
+            if let value = try? keychain.get("screenAwakeMode") {
+                if value == "off" {
+                    return .off
+                } else if value == "on" {
+                    return .on
+                } else {
+                    return .whileCharging
+                }
+            }
+            return .off
+        }
+        set {
+            if newValue == .off {
+                keychain["screenAwakeMode"] = "off"
+            } else if newValue == .on {
+                keychain["screenAwakeMode"] = "on"
+            } else {
+                keychain["screenAwakeMode"] = "whileCharging"
+            }
+        }
+    }
+
     var fileNameType: Bool {
         get {
             if let value = try? keychain.get("fileNameType"), let result = Bool(value) {
@@ -466,11 +490,12 @@ import KeychainAccess
     }
 
     func isEndToEndEnabled(account: String) -> Bool {
+        let capabilities = NCCapabilities.shared.getCapabilities(account: account)
         guard let certificate = getEndToEndCertificate(account: account), !certificate.isEmpty,
               let publicKey = getEndToEndPublicKey(account: account), !publicKey.isEmpty,
               let privateKey = getEndToEndPrivateKey(account: account), !privateKey.isEmpty,
               let passphrase = getEndToEndPassphrase(account: account), !passphrase.isEmpty,
-              NCGlobal.shared.e2eeVersions.contains(NCGlobal.shared.capabilityE2EEApiVersion) else { return false }
+              NCGlobal.shared.e2eeVersions.contains(capabilities.capabilityE2EEApiVersion) else { return false }
         return true
     }
 
