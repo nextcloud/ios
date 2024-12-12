@@ -40,7 +40,6 @@ struct NCAutoUploadView: View {
                     .onChange(of: model.autoUpload) { newValue in
                         model.handleAutoUploadChange(newValue: newValue)
                     }
-                    .font(.system(size: 16))
             }, footer: {
                 Text(NSLocalizedString("_autoupload_notice_", comment: ""))
             })
@@ -79,12 +78,10 @@ struct NCAutoUploadView: View {
                     Image(systemName: "folder")
                         .resizable()
                         .scaledToFit()
-                        .font(Font.system(.body).weight(.light))
                         .frame(width: 25, height: 25)
                         .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                     Text(NSLocalizedString("_autoupload_select_folder_", comment: ""))
                 }
-                .font(.system(size: 16))
             })
             .tint(Color(UIColor.label))
         }, footer: {
@@ -99,12 +96,10 @@ struct NCAutoUploadView: View {
                     Image(systemName: "person.2.crop.square.stack")
                         .resizable()
                         .scaledToFit()
-                        .font(Font.system(.body).weight(.light))
                         .frame(width: 25, height: 25)
                         .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                     Text(NSLocalizedString("_upload_from_", comment: ""))
                 }
-                .font(.system(size: 16))
             })
             .tint(Color(UIColor.label))
         }, footer: {
@@ -117,13 +112,11 @@ struct NCAutoUploadView: View {
                 .onChange(of: model.autoUploadImage) { newValue in
                     model.handleAutoUploadImageChange(newValue: newValue)
                 }
-                .font(.system(size: 16))
             Toggle(NSLocalizedString("_wifi_only_", comment: ""), isOn: $model.autoUploadWWAnPhoto)
                 .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                 .onChange(of: model.autoUploadWWAnPhoto) { newValue in
                     model.handleAutoUploadWWAnPhotoChange(newValue: newValue)
                 }
-                .font(.system(size: 16))
         })
         /// Auto Upload Video
         Section(content: {
@@ -132,13 +125,11 @@ struct NCAutoUploadView: View {
                 .onChange(of: model.autoUploadVideo) { newValue in
                     model.handleAutoUploadVideoChange(newValue: newValue)
                 }
-                .font(.system(size: 16))
             Toggle(NSLocalizedString("_wifi_only_", comment: ""), isOn: $model.autoUploadWWAnVideo)
                 .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                 .onChange(of: model.autoUploadWWAnVideo) { newValue in
                     model.handleAutoUploadWWAnVideoChange(newValue: newValue)
                 }
-                .font(.system(size: 16))
         })
         /// Only upload favorites if desired
         Section(content: {
@@ -147,7 +138,6 @@ struct NCAutoUploadView: View {
                 .onChange(of: model.autoUploadFavoritesOnly) { newValue in
                     model.handleAutoUploadFavoritesOnlyChange(newValue: newValue)
                 }
-                .font(.system(size: 16))
         })
         /// Auto Upload create subfolder
         Section(content: {
@@ -156,13 +146,11 @@ struct NCAutoUploadView: View {
                 .onChange(of: model.autoUploadCreateSubfolder) { newValue in
                     model.handleAutoUploadCreateSubfolderChange(newValue: newValue)
                 }
-                .font(.system(size: 16))
             Picker(NSLocalizedString("_autoupload_subfolder_granularity_", comment: ""), selection: $model.autoUploadSubfolderGranularity) {
                 Text(NSLocalizedString("_daily_", comment: "")).tag(Granularity.daily)
                 Text(NSLocalizedString("_monthly_", comment: "")).tag(Granularity.monthly)
                 Text(NSLocalizedString("_yearly_", comment: "")).tag(Granularity.yearly)
             }
-            .font(.system(size: 16))
             .onChange(of: model.autoUploadSubfolderGranularity) { newValue in
                 model.handleAutoUploadSubfolderGranularityChange(newValue: newValue)
             }
@@ -176,7 +164,6 @@ struct NCAutoUploadView: View {
                 .onChange(of: model.autoUploadFull) { newValue in
                     model.handleAutoUploadFullChange(newValue: newValue)
                 }
-                .font(.system(size: 16))
         }, footer: {
             Text(
                 NSLocalizedString("_autoupload_fullphotos_footer_", comment: "") + "\n \n")

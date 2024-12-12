@@ -11,23 +11,42 @@ import Photos
 
 struct SelectAlbumView: View {
     @ObservedObject var model: AlbumModel
+    @State private var oldMultiSelection = Set<String>()
+    @State private var multiSelection = Set<String>()
+    private let cameraRollTag = "-1"
 
     var body: some View {
         Text(NSLocalizedString("_select_autoupload_albums_", comment: ""))
-        List {
+
+        List(selection: $multiSelection) {
             Section {
                 HStack {
                     Image(systemName: "photo")
                     Text(NSLocalizedString("_camera_roll_", comment: ""))
                 }
+                .tag(cameraRollTag)
             }
 
             Section(NSLocalizedString("_smart_albums_", comment: "")) {
-                ForEach(model.smartAlbums, id: \.self) { album in
-                    Text(album.localizedTitle ?? "")
+                ForEach(model.smartAlbums, id: \.localIdentifier) { album in
+                    HStack {
+                        Text(album.localizedTitle)
+//                        Text(album.estimatedAssetCount)
+                    } // Tag each album for selection
+                    .tag(album.localIdentifier)
                 }
             }
 
+        }
+        .environment(\.editMode, .constant(EditMode.active))
+        .onChange(of: multiSelection) { newValue in
+            if newValue.count > 1, oldMultiSelection.contains(cameraRollTag) {
+                multiSelection.remove(cameraRollTag)
+            } else if newValue.contains(cameraRollTag) {
+                multiSelection = [cameraRollTag]
+            }
+
+            oldMultiSelection = newValue
         }
     }
 }
@@ -36,7 +55,7 @@ struct SelectAlbumView: View {
     SelectAlbumView(model: AlbumModel())
 }
 
-class AlbumModel: NSObject, ObservableObject {
+@MainActor class AlbumModel: NSObject, ObservableObject {
     @Published var allPhotos: PHFetchResult<PHAsset>!
     @Published var allPhotosCount = 0
     @Published var smartAlbums: [PHAssetCollection] = []
@@ -72,9 +91,12 @@ class AlbumModel: NSObject, ObservableObject {
 }
 
 extension AlbumModel: PHPhotoLibraryChangeObserver {
-    func photoLibraryDidChange(_ changeInstance: PHChange) {
-        if let changes = changeInstance.changeDetails(for: allPhotos) {
-            allPhotos = changes.fetchResultAfterChanges
+    nonisolated func photoLibraryDidChange(_ changeInstance: PHChange) {
+        Task { @MainActor in
+            if let changes = changeInstance.changeDetails(for: allPhotos) {
+                allPhotos = changes.fetchResultAfterChanges
+            }
         }
+
     }
 }
