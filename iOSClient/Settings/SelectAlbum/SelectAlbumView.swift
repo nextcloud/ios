@@ -11,14 +11,14 @@ import Photos
 
 struct SelectAlbumView: View {
     @ObservedObject var model: AlbumModel
-    @State private var oldMultiSelection = Set<String>()
-    @State private var multiSelection = Set<String>()
+    @State private var oldSelectedAlbums = Set<String>()
+    @Binding var selectedAlbums: Set<String>
     private let cameraRollTag = "-1"
 
     var body: some View {
         Text(NSLocalizedString("_select_autoupload_albums_", comment: ""))
 
-        List(selection: $multiSelection) {
+        List(selection: $selectedAlbums) {
             Section {
                 HStack {
                     Image(systemName: "photo")
@@ -27,42 +27,36 @@ struct SelectAlbumView: View {
                 .tag(cameraRollTag)
             }
 
-            Section(NSLocalizedString("_smart_albums_", comment: "")) {
-                ForEach(model.smartAlbums, id: \.localIdentifier) { album in
-                    HStack {
-                        Text(album.localizedTitle)
-//                        Text(album.estimatedAssetCount)
-                    } // Tag each album for selection
-                    .tag(album.localIdentifier)
-                }
-            }
+            SmartAlbums(model: model)
 
         }
         .environment(\.editMode, .constant(EditMode.active))
-        .onChange(of: multiSelection) { newValue in
-            if newValue.count > 1, oldMultiSelection.contains(cameraRollTag) {
-                multiSelection.remove(cameraRollTag)
+        .onChange(of: selectedAlbums) { newValue in
+            if newValue.count > 1, oldSelectedAlbums.contains(cameraRollTag) {
+                selectedAlbums.remove(cameraRollTag)
             } else if newValue.contains(cameraRollTag) {
-                multiSelection = [cameraRollTag]
+                selectedAlbums = [cameraRollTag]
             }
 
-            oldMultiSelection = newValue
+            oldSelectedAlbums = newValue
         }
     }
 }
 
 #Preview {
-    SelectAlbumView(model: AlbumModel())
+    SelectAlbumView(model: AlbumModel(albums: Albums()), selectedAlbums: .constant(Set()))
 }
 
 @MainActor class AlbumModel: NSObject, ObservableObject {
     @Published var allPhotos: PHFetchResult<PHAsset>!
     @Published var allPhotosCount = 0
     @Published var smartAlbums: [PHAssetCollection] = []
-    @Published var userCollections: PHFetchResult<PHCollection>!
+    @Published var albums: Albums
+//    @Published var userCollections: PHFetchResult<PHCollection>!
 //    let sectionLocalizedTitles = ["", NSLocalizedString("Smart Albums", comment: ""), NSLocalizedString("Albums", comment: "")]
 
-    override init() {
+    init(albums: Albums) {
+        self.albums = albums
         super.init()
 
         let allPhotosOptions = PHFetchOptions()
@@ -75,13 +69,12 @@ struct SelectAlbumView: View {
 
         allPhotosCount = allPhotos.count
 
-        let smartAlbums = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .any, options: nil)
+        let assetCollections = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .any, options: nil)
 
-        smartAlbums.enumerateObjects { collection, _, _ in
-            self.smartAlbums.append(collection)
+        assetCollections.enumerateObjects { collection, _, _ in
+            albums.smartAlbums.append(collection)
         }
 
-        userCollections = PHCollectionList.fetchTopLevelUserCollections(with: nil)
         PHPhotoLibrary.shared().register(self)
     }
 
@@ -98,5 +91,21 @@ extension AlbumModel: PHPhotoLibraryChangeObserver {
             }
         }
 
+    }
+}
+
+struct SmartAlbums: View {
+    @StateObject var model: AlbumModel
+
+    var body: some View {
+        Section(NSLocalizedString("_smart_albums_", comment: "")) {
+            ForEach(model.smartAlbums, id: \.localIdentifier) { album in
+                HStack {
+                    Text(album.localizedTitle ?? "")
+                    Text(String(album.assetCount))
+                } // Tag each album for selection
+                .tag(album.localIdentifier)
+            }
+        }
     }
 }

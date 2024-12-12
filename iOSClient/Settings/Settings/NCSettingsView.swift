@@ -46,7 +46,7 @@ struct NCSettingsView: View {
             /// `Auto Upload` Section
             Section(content: {
                 NavigationLink(destination: LazyView {
-                    NCAutoUploadView(model: NCAutoUploadModel(controller: model.controller))
+                    NCAutoUploadView(model: NCAutoUploadModel(controller: model.controller, albums: Albums()))
                 }) {
                     HStack {
                         Image(systemName: "photo.circle")
