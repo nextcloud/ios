@@ -342,6 +342,7 @@ class NCFiles: NCCollectionViewCommon {
 
     override func accountSettingsDidDismiss(tableAccount: tableAccount?, controller: NCMainTabBarController?) {
         let currentAccount = session.account
+
         if database.getAllTableAccount().isEmpty {
             appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
         } else if let account = tableAccount?.account, account != currentAccount {
@@ -350,5 +351,7 @@ class NCFiles: NCCollectionViewCommon {
             titleCurrentFolder = getNavigationTitle()
             navigationItem.title = titleCurrentFolder
         }
+
+        setNavigationLeftItems()
     }
 }
