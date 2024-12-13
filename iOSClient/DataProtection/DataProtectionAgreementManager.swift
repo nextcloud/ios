@@ -13,11 +13,8 @@ import Firebase
 
 class DataProtectionAgreementManager {
     private(set) static var shared = DataProtectionAgreementManager()
-    
-    private(set) var isViewVisible = false
-    private var window: UIWindow?
     private var dismissBlock: (() -> Void)?
-    
+
     var rootViewController: UIViewController
     
     struct DataProtectionKeys {
@@ -28,60 +25,27 @@ class DataProtectionAgreementManager {
         rootViewController = DataProtectionHostingController(rootView: DataProtectionAgreementScreen())
     }
     
-    private func instantiateWindow() {
-        guard let windowScene = UIApplication.shared.firstWindow?.windowScene else { return }
-        let window = UIWindow(windowScene: windowScene)
-        window.windowLevel = UIWindow.Level.alert
-        window.rootViewController = rootViewController
-        
-        self.window = window
-    }
-    
-    /// Remove the window from the stack making it not visible
     func dismissView() {
-        guard Thread.current.isMainThread else {
-            return DispatchQueue.main.async { [weak self] in
-                self?.dismissView()
-            }
-        }
-        guard isViewVisible else {
-            return
-        }
-        
-        isViewVisible = false
-        window?.isHidden = true
-        dismissBlock?()
+        rootViewController.dismiss(animated: false)
     }
     
-    /// Make the window visible
-    ///
-    /// - Parameter dismissBlock: Block to be called when `dismissView` is called
-    func showView(dismissBlock: @escaping () -> Void) {
+    func showView(viewController: UIViewController, dismissBlock: @escaping () -> Void) {
         guard Thread.current.isMainThread else {
             return DispatchQueue.main.async { [weak self] in
-                self?.showView(dismissBlock: dismissBlock)
+                self?.showView(viewController: viewController, dismissBlock: dismissBlock)
             }
         }
-        guard !isViewVisible else {
-            return
+        
+        if !rootViewController.isBeingPresented {
+            rootViewController.modalPresentationStyle = .fullScreen
+            viewController.present(rootViewController, animated: false)
         }
-        
-        self.dismissBlock = dismissBlock
-        
-        if (window == nil) {
-            instantiateWindow()
-        }
-        
-        isViewVisible = true
-        
-        window?.isHidden = false
-        window?.makeKeyAndVisible()
     }
     
-    func showAgreement() {
+    func showAgreement(viewController: UIViewController) {
         let wasAgreementShown = UserDefaults.standard.bool(forKey: DataProtectionKeys.agreementWasShown)
         if !wasAgreementShown {
-            showView { [weak self] in
+            showView(viewController: viewController) { [weak self] in
                 self?.setupAnalyticsCollection()
             }
         }
