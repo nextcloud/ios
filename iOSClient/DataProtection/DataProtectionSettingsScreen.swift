@@ -29,7 +29,7 @@ struct DataProtectionSettingsScreen: View {
             ScrollView {
                 VStack(alignment: .leading){
                     header()
-                        .padding(EdgeInsets(top: 0.0,
+                        .padding(EdgeInsets(top: 16.0,
                                             leading: 16.0,
                                             bottom: 32.0,
                                             trailing: 16.0))
