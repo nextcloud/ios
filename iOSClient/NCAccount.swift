@@ -99,7 +99,7 @@ class NCAccount: NSObject {
         completion()
     }
 
-    func deleteAccount(_ account: String, wipe: Bool = true) {
+    func deleteAccount(_ account: String, wipe: Bool = true, completion: () -> Void = {}) {
         UIApplication.shared.allSceneSessionDestructionExceptFirst()
 
         /// Unsubscribing Push Notification
@@ -129,6 +129,8 @@ class NCAccount: NSObject {
         NCKeychain().clearAllKeysPushNotification(account: account)
         /// Remove User Default Data
         NCNetworking.shared.removeAllKeyUserDefaultsData(account: account)
+
+        completion()
     }
 
     func deleteAllAccounts() {

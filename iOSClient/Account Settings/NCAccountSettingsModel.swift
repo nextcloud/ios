@@ -160,7 +160,13 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     }
 
     /// Function to change account after 1.5 sec of change
-    func setAccount(account: String) {
+    func setAccount(account: String?) {
+        guard let account
+        else {
+            self.tblAccount = nil
+            self.alias = ""
+            return
+        }
         if let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) {
             self.tblAccount = tableAccount
             self.alias = tableAccount.alias
@@ -170,14 +176,10 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     /// Function to delete the current account
     func deleteAccount() {
         if let tblAccount {
-            NCAccount().deleteAccount(tblAccount.account)
-            if let account = database.getAllTableAccount().first?.account {
-                NCAccount().changeAccount(account, userProfile: nil, controller: self.controller) {
-                    onViewAppear()
-                }
-            } else {
+            NCAccount().deleteAccount(tblAccount.account) {
+                let account = database.getAllTableAccount().first?.account
+                setAccount(account: account)
                 dismissView = true
-                appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
             }
         }
     }
