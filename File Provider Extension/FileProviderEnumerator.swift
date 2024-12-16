@@ -31,8 +31,11 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     var serverUrl: String?
     let providerUtility = fileProviderUtility()
     let database = NCManageDatabase.shared
-    var recordsPerPage: Int = 20
     var anchor: UInt64 = 0
+    // X-NC-PAGINATE
+    var recordsPerPage: Int = 100
+    var paginateToken: String?
+    var paginatedTotal: Int = 0
 
     init(enumeratedItemIdentifier: NSFileProviderItemIdentifier) {
         self.enumeratedItemIdentifier = enumeratedItemIdentifier
@@ -82,13 +85,13 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 observer.finishEnumerating(upTo: nil)
                 return
             }
-            var pageNumber = 1
+            var pageNumber = 0
             if let stringPage = String(data: page.rawValue, encoding: .utf8),
                let intPage = Int(stringPage) {
                 pageNumber = intPage
             }
 
-            self.fetchItemsForPage(serverUrl: serverUrl, pageNumber: pageNumber) { metadatas in
+            self.fetchItemsForPage(serverUrl: serverUrl, pageNumber: pageNumber) { metadatas, isPaginated in
                 if let metadatas {
                     for metadata in metadatas {
                         if metadata.e2eEncrypted || (!metadata.session.isEmpty && metadata.session != NCNetworking.shared.sessionUploadBackgroundExt) {
@@ -104,7 +107,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 observer.didEnumerate(items)
 
                 if let metadatas,
-                    metadatas.count == self.recordsPerPage {
+                   isPaginated,
+                   metadatas.count == self.recordsPerPage {
                     pageNumber += 1
                     let providerPage = NSFileProviderPage("\(pageNumber)".data(using: .utf8)!)
                     observer.finishEnumerating(upTo: providerPage)
@@ -157,27 +161,56 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         completionHandler(NSFileProviderSyncAnchor(data!))
     }
 
-    func fetchItemsForPage(serverUrl: String, pageNumber: Int, completionHandler: @escaping (_ metadatas: Results<tableMetadata>?) -> Void) {
-        let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.session.account, serverUrl)
+    func fetchItemsForPage(serverUrl: String, pageNumber: Int, completion: @escaping (_ metadatas: [tableMetadata]?, _ isPaginated: Bool) -> Void) {
+        var useFirstAsMetadataFolder: Bool = false
+        var isPaginated: Bool = false
+        var paginateCount = recordsPerPage
+        if pageNumber == 0 {
+            paginateCount += 1
+        }
+        var offset = pageNumber * recordsPerPage
+        if pageNumber > 0 {
+            offset += 1
+        }
+        let options = NKRequestOptions(paginate: true,
+                                       paginateToken: self.paginateToken,
+                                       paginateOffset: offset,
+                                       paginateCount: paginateCount,
+                                       queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
-        if pageNumber == 1 {
-            NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: NCKeychain().showHiddenFiles, account: fileProviderData.shared.session.account) { _, files, _, error in
-                if error == .success, let files {
-                    self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: true) { metadataFolder, metadatas in
-                        /// FOLDER
+        print("PAGINATE OFFSET: \(offset) COUNT: \(paginateCount) TOTAL: \(self.paginatedTotal)")
+
+        NextcloudKit.shared.readFileOrFolder(serverUrlFileName: serverUrl, depth: "1", showHiddenFiles: NCKeychain().showHiddenFiles, account: fileProviderData.shared.session.account, options: options) { _, files, responseData, error in
+            if let headers = responseData?.response?.allHeaderFields as? [String: String] {
+                let normalizedHeaders = Dictionary(uniqueKeysWithValues: headers.map { ($0.key.lowercased(), $0.value) })
+                isPaginated = Bool(normalizedHeaders["x-nc-paginate"] ?? "false") ?? false
+                self.paginateToken = normalizedHeaders["x-nc-paginate-token"]
+                self.paginatedTotal = Int(normalizedHeaders["x-nc-paginate-total"] ?? "0") ?? 0
+            }
+
+            if error == .success, let files {
+                if pageNumber == 0 {
+                    self.database.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.session.account, serverUrl))
+                    useFirstAsMetadataFolder = true
+                }
+                self.database.convertFilesToMetadatas(files, useFirstAsMetadataFolder: useFirstAsMetadataFolder) { metadataFolder, metadatas in
+                    /// FOLDER
+                    if useFirstAsMetadataFolder {
                         self.database.addMetadata(metadataFolder)
                         self.database.addDirectory(e2eEncrypted: metadataFolder.e2eEncrypted, favorite: metadataFolder.favorite, ocId: metadataFolder.ocId, fileId: metadataFolder.fileId, etag: metadataFolder.etag, permissions: metadataFolder.permissions, richWorkspace: metadataFolder.richWorkspace, serverUrl: serverUrl, account: metadataFolder.account)
-                        /// FILES
-                        self.database.deleteMetadata(predicate: predicate)
-                        self.database.addMetadatas(metadatas)
                     }
+                    /// FILES
+                    self.database.addMetadatas(metadatas)
+                    completion(metadatas, isPaginated)
                 }
-                let resultsMetadata = self.database.fetchPagedResults(ofType: tableMetadata.self, primaryKey: "ocId", recordsPerPage: self.recordsPerPage, pageNumber: pageNumber, filter: predicate, sortedByKeyPath: "fileName")
-                completionHandler(resultsMetadata)
+            } else {
+                if isPaginated {
+                    completion(nil, isPaginated)
+                } else {
+                    let metadatas = self.database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl == %@", fileProviderData.shared.session.account, serverUrl))
+                    completion(metadatas, isPaginated)
+                }
             }
-        } else {
-            let resultsMetadata = self.database.fetchPagedResults(ofType: tableMetadata.self, primaryKey: "ocId", recordsPerPage: recordsPerPage, pageNumber: pageNumber, filter: predicate, sortedByKeyPath: "fileName")
-            completionHandler(resultsMetadata)
         }
     }
 }

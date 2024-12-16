@@ -53,8 +53,8 @@ class NCMedia: UIViewController {
     var isTop: Bool = true
     var isEditMode = false
     var fileSelect: [String] = []
-    var filesExists: [String] = []
-    var ocIdDoNotExists: [String] = []
+    var filesExists: ThreadSafeArray<String> = ThreadSafeArray()
+    var ocIdDoNotExists: ThreadSafeArray<String> = ThreadSafeArray()
     var hasRunSearchMedia: Bool = false
     var attributesZoomIn: UIMenuElement.Attributes = []
     var attributesZoomOut: UIMenuElement.Attributes = []
@@ -292,10 +292,12 @@ class NCMedia: UIViewController {
             ocIdDoNotExists.append(ocId)
         }
 
-        if NCNetworking.shared.fileExistsQueue.operationCount == 0, !ocIdDoNotExists.isEmpty {
+        if NCNetworking.shared.fileExistsQueue.operationCount == 0,
+           !ocIdDoNotExists.isEmpty,
+           let ocIdDoNotExists = self.ocIdDoNotExists.getArray() {
             dataSource.removeMetadata(ocIdDoNotExists)
             database.deleteMetadataOcIds(ocIdDoNotExists)
-            ocIdDoNotExists.removeAll()
+            self.ocIdDoNotExists.removeAll()
             collectionViewReloadData()
         }
     }
