@@ -33,7 +33,6 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var labelInfo: UILabel!
     @IBOutlet weak var labelSubinfo: UILabel!
     @IBOutlet weak var buttonMore: UIButton!
-    @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
 
     var ocId = ""
     var ocIdTransfer = ""
@@ -102,17 +101,9 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         imageItem.image = nil
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
+
         imageSelect.isHidden = true
-        imageSelect.image = NCImageCache.shared.getImageCheckedYes()
-        imageStatus.image = nil
-        imageFavorite.image = nil
-        imageLocal.image = nil
-        labelTitle.text = ""
-        labelInfo.text = ""
-        labelSubinfo.text = ""
-        imageVisualEffect.layer.cornerRadius = 6
-        imageVisualEffect.clipsToBounds = true
-        imageVisualEffect.alpha = 0.5
+        imageSelect.image = NCImageCache.images.checkedYes
 
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPress(gestureRecognizer:)))
         longPressedGesture.minimumPressDuration = 0.5
@@ -189,11 +180,8 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         }
         if status {
             imageSelect.isHidden = false
-            imageSelect.image = NCImageCache.shared.getImageCheckedYes()
-            imageVisualEffect.isHidden = false
         } else {
             imageSelect.isHidden = true
-            imageVisualEffect.isHidden = true
         }
     }
 

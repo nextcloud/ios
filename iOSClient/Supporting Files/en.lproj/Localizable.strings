@@ -638,6 +638,13 @@
 "_servers_"                     = "Servers";
 "_select_server_"               = "Please select a server...";
 
+// MARK: Files Header
+
+"_select_selectionLabel_selectAll"			= "select all";
+"_select_selectionLabel_oneItemSelected"	= "one item selected";
+"_select_selectionLabel_manyItemsSelected"  = "%@ items selected";
+"_select_selectionLabel_deselectAll"		= "deselect all";
+
 // MARK: Share
 
 "_share_link_"                  = "Share link";

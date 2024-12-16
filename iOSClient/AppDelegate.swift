@@ -30,6 +30,7 @@ import WidgetKit
 import Queuer
 import EasyTipView
 import SwiftUI
+import FirebaseAnalytics
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
@@ -61,6 +62,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         UserDefaults.standard.register(defaults: ["UserAgent": userAgent])
         if !NCKeychain().disableCrashservice, !NCBrandOptions.shared.disable_crash_service {
             FirebaseApp.configure()
+            Analytics.setAnalyticsCollectionEnabled(true)
         }
 
         utilityFileSystem.createDirectoryStandard()
@@ -104,6 +106,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         BGTaskScheduler.shared.register(forTaskWithIdentifier: NCGlobal.shared.processingTask, using: nil) { task in
             self.handleProcessingTask(task)
         }
+        
+        UISwitch.appearance().onTintColor = NCBrandColor.shared.brandElement
 
         if NCBrandOptions.shared.enforce_passcode_lock {
             NCKeychain().requestPasscodeAtStart = true

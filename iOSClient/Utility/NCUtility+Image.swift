@@ -47,7 +47,7 @@ extension NCUtility {
             case NKCommon.TypeIconFile.txt.rawValue: image = UIImage(systemName: "doc.text", withConfiguration: UIImage.SymbolConfiguration(weight: .thin))?.applyingSymbolConfiguration(UIImage.SymbolConfiguration(paletteColors: [NCBrandColor.shared.iconImageColor2]))
             case NKCommon.TypeIconFile.url.rawValue: image = UIImage(systemName: "network", withConfiguration: UIImage.SymbolConfiguration(weight: .thin))?.applyingSymbolConfiguration(UIImage.SymbolConfiguration(paletteColors: [NCBrandColor.shared.iconImageColor2]))
             case NKCommon.TypeIconFile.xls.rawValue: image = UIImage(systemName: "tablecells", withConfiguration: UIImage.SymbolConfiguration(weight: .thin))?.applyingSymbolConfiguration(UIImage.SymbolConfiguration(paletteColors: [NCBrandColor.shared.spreadsheetIconColor]))
-            default: image = UIImage(systemName: "doc", withConfiguration: UIImage.SymbolConfiguration(weight: .thin))?.applyingSymbolConfiguration(UIImage.SymbolConfiguration(paletteColors: [NCBrandColor.shared.iconImageColor2]))
+            default: image = UIImage(resource: .fileUnsupported)
             }
         }
 

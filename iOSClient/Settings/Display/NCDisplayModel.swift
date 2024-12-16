@@ -12,8 +12,6 @@ import SwiftUI
 class NCDisplayModel: ObservableObject, ViewOnAppearHandling {
     /// Keychain access
     var keychain = NCKeychain()
-    /// Root View Controller
-    @Published var controller: NCMainTabBarController?
     /// State variable for enabling the automatic appreance
     @Published var appearanceAutomatic: Bool = false
 
@@ -30,8 +28,7 @@ class NCDisplayModel: ObservableObject, ViewOnAppearHandling {
     }
 
     /// Initializes the view model with default values.
-    init(controller: NCMainTabBarController?) {
-        self.controller = controller
+    init() {
         onViewAppear()
     }
 

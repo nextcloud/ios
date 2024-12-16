@@ -31,12 +31,11 @@ struct NavigationCollectionViewCommon {
 }
 
 class NCMainTabBarController: UITabBarController {
-    var sceneIdentifier: String = UUID().uuidString
-    var account = ""
     var documentPickerViewController: NCDocumentPickerViewController?
     let navigationCollectionViewCommon = ThreadSafeArray<NavigationCollectionViewCommon>()
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private var previousIndex: Int?
+    private(set) var burgerMenuController: BurgerMenuAttachController?
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
@@ -51,6 +50,15 @@ class NCMainTabBarController: UITabBarController {
         if #available(iOS 17.0, *) {
             traitOverrides.horizontalSizeClass = .compact
         }
+        burgerMenuController = BurgerMenuAttachController(with: self)
+    }
+    
+    func showBurgerMenu() {
+        burgerMenuController?.showMenu()
+    }
+    
+    func presentedNavigationController() -> UINavigationController? {
+        return presentedViewController as? UINavigationController
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -80,6 +88,9 @@ class NCMainTabBarController: UITabBarController {
     }
 
     func currentViewController() -> UIViewController? {
+        if let navVC = presentedNavigationController() {
+            return navVC.topViewController
+        }
         return (selectedViewController as? UINavigationController)?.topViewController
     }
 

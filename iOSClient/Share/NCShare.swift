@@ -71,6 +71,8 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         super.viewDidLoad()
 
         view.backgroundColor = .systemBackground
+        
+        btnContact.imageView?.contentMode = .scaleAspectFit
 
         viewContainerConstraint.constant = height
         searchFieldTopConstraint.constant = 0

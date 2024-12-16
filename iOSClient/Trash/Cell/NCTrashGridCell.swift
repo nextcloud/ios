@@ -35,7 +35,6 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
     @IBOutlet weak var labelInfo: UILabel!
     @IBOutlet weak var labelSubinfo: UILabel!
     @IBOutlet weak var buttonMore: UIButton!
-    @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
 
     weak var delegate: NCTrashGridCellDelegate?
     var objectId = ""
@@ -61,10 +60,6 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
 
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
-
-        imageVisualEffect.layer.cornerRadius = 6
-        imageVisualEffect.clipsToBounds = true
-        imageVisualEffect.alpha = 0.5
 
         labelTitle.text = ""
         labelInfo.text = ""
@@ -108,10 +103,8 @@ class NCTrashGridCell: UICollectionViewCell, NCTrashCellProtocol {
         if status {
             imageSelect.image = NCImageCache.shared.getImageCheckedYes()
             imageSelect.isHidden = false
-            imageVisualEffect.isHidden = false
         } else {
             imageSelect.isHidden = true
-            imageVisualEffect.isHidden = true
         }
     }
 

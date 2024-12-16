@@ -50,7 +50,7 @@ extension NCTrash: NCTrashSelectTabBarDelegate {
         } else {
             selectOcId = datasource.compactMap({ $0.fileId })
         }
-        tabBarSelect.update(selectOcId: selectOcId)
+        selectionToolbar.update(selectOcId: selectOcId)
         collectionView.reloadData()
     }
 

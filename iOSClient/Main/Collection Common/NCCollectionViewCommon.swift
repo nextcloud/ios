@@ -29,7 +29,10 @@ import EasyTipView
 
 class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCPhotoCellDelegate, NCSectionFirstHeaderDelegate, NCSectionFooterDelegate, NCSectionFirstHeaderEmptyDataDelegate, NCAccountSettingsModelDelegate, UIAdaptivePresentationControllerDelegate, UIContextMenuInteractionDelegate {
 
-    @IBOutlet weak var collectionView: UICollectionView!
+	@IBOutlet weak var collectionView: UICollectionView!
+	@IBOutlet weak var headerTop: NSLayoutConstraint?
+	@IBOutlet weak var collectionViewTop: NSLayoutConstraint?
+	@IBOutlet weak var fileActionsHeader: FileActionsHeader?
 
     let database = NCManageDatabase.shared
     let global = NCGlobal.shared
@@ -46,14 +49,27 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var searchController: UISearchController?
     var backgroundImageView = UIImageView()
     var serverUrl: String = ""
-    var isEditMode = false
+    var isEditMode = false {
+		didSet {
+			DispatchQueue.main.async { [weak self] in
+				self?.updateHeadersView()
+			}
+		}
+	}
     var isDirectoryEncrypted = false
     var fileSelect: [String] = []
+    var selectOcId: [String] = []
     var metadataFolder: tableMetadata?
     var richWorkspaceText: String?
     var sectionFirstHeader: NCSectionFirstHeader?
     var sectionFirstHeaderEmptyData: NCSectionFirstHeaderEmptyData?
-    var isSearchingMode: Bool = false
+	var isSearchingMode: Bool = false {
+		didSet {
+			DispatchQueue.main.async { [weak self] in
+				self?.updateHeadersView()
+			}
+		}
+	}
     var layoutForView: NCDBLayoutForView?
     var dataSourceTask: URLSessionTask?
     var providers: [NKSearchProvider]?
@@ -61,7 +77,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var listLayout = NCListLayout()
     var gridLayout = NCGridLayout()
     var mediaLayout = NCMediaLayout()
-    var layoutType = NCGlobal.shared.layoutList
+	var layoutType = NCGlobal.shared.layoutList {
+		didSet {
+			DispatchQueue.main.async { [weak self] in
+				self?.updateHeadersView()
+			}
+		}
+	}
     var literalSearch: String?
     var tabBarSelect: NCCollectionViewCommonSelectTabBar!
     var attributesZoomIn: UIMenuElement.Attributes = []
@@ -153,7 +175,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        tabBarSelect = NCCollectionViewCommonSelectTabBar(controller: self.controller, delegate: self)
+        commonSelectToolbar = NCCollectionViewCommonSelectToolbar(delegate: self)
         self.navigationController?.presentationController?.delegate = self
         collectionView.alwaysBounceVertical = true
 
@@ -170,6 +192,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             searchController?.searchBar.autocapitalizationType = .none
             navigationItem.searchController = searchController
             navigationItem.hidesSearchBarWhenScrolling = true
+            if #available(iOS 16.0, *) {
+                navigationItem.preferredSearchBarPlacement = .stacked
+            }
         }
 
         // Cell
@@ -226,7 +251,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         super.viewWillAppear(animated)
 
         navigationController?.setNavigationBarAppearance()
-        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationController?.navigationBar.prefersLargeTitles = false
         navigationController?.setNavigationBarHidden(false, animated: true)
         navigationItem.title = titleCurrentFolder
 
@@ -250,6 +275,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
 
         collectionView.reloadData()
+		updateHeadersView()
+		
+        // FIXME: iPAD PDF landscape mode iOS 16
+        DispatchQueue.main.async {
+            self.collectionView?.collectionViewLayout.invalidateLayout()
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -347,10 +378,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-
-        if let frame = tabBarController?.tabBar.frame {
-            tabBarSelect.hostingController?.view.frame = frame
-        }
     }
 
     // MARK: - NotificationCenter
@@ -622,76 +649,39 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             self.sectionFirstHeaderEmptyData?.setViewTransfer(isHidden: false, progress: transfer.progressNumber.floatValue)
         }
     }
-
+	
     // MARK: - Layout
 
     func setNavigationLeftItems() {
-        guard layoutKey == global.layoutViewFiles,
-              let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
-            return }
-        let image = utility.loadUserImage(for: tableAccount.user, displayName: tableAccount.displayName, urlBase: tableAccount.urlBase)
-        let accountButton = AccountSwitcherButton(type: .custom)
-        let accounts = database.getAllAccountOrderAlias()
-        var childrenAccountSubmenu: [UIMenuElement] = []
-
-        accountButton.setImage(image, for: .normal)
-        accountButton.setImage(image, for: .highlighted)
-        accountButton.semanticContentAttribute = .forceLeftToRight
-        accountButton.sizeToFit()
-
-        if !accounts.isEmpty {
-            let accountActions: [UIAction] = accounts.map { account in
-                let image = utility.loadUserImage(for: account.user, displayName: account.displayName, urlBase: account.urlBase)
-                var name: String = ""
-                var url: String = ""
-
-                if account.alias.isEmpty {
-                    name = account.displayName
-                    url = (URL(string: account.urlBase)?.host ?? "")
-                } else {
-                    name = account.alias
-                }
-
-                let action = UIAction(title: name, image: image, state: account.active ? .on : .off) { _ in
-                    if !account.active {
-                        NCAccount().changeAccount(account.account, userProfile: nil, controller: self.controller) { }
-                        self.setEditMode(false)
-                    }
-                }
-
-                action.subtitle = url
-                return action
+        if isSearchingMode && (UIDevice.current.userInterfaceIdiom == .phone) {
+            navigationItem.leftBarButtonItems = nil
+            return
+        }
+        
+        if layoutKey == NCGlobal.shared.layoutViewFiles {
+            navigationItem.leftItemsSupplementBackButton = true
+            if navigationController?.viewControllers.count == 1 {
+                let burgerMenuItem = UIBarButtonItem(image: UIImage(resource: .BurgerMenu.bars),
+                                                     style: .plain,
+                                                     action: { [weak self] in
+                    self?.showBurgerMenu()
+                })
+                burgerMenuItem.tintColor = UIColor(resource: .BurgerMenu.navigationBarButton)
+                navigationItem.setLeftBarButtonItems([burgerMenuItem], animated: true)
             }
-
-            let addAccountAction = UIAction(title: NSLocalizedString("_add_account_", comment: ""), image: utility.loadImage(named: "person.crop.circle.badge.plus", colors: NCBrandColor.shared.iconImageMultiColors)) { _ in
-                self.appDelegate.openLogin(selector: self.global.introLogin)
-            }
-
-            let settingsAccountAction = UIAction(title: NSLocalizedString("_account_settings_", comment: ""), image: utility.loadImage(named: "gear", colors: [NCBrandColor.shared.iconImageColor])) { _ in
-                let accountSettingsModel = NCAccountSettingsModel(controller: self.controller, delegate: self)
-                let accountSettingsView = NCAccountSettingsView(model: accountSettingsModel)
-                let accountSettingsController = UIHostingController(rootView: accountSettingsView)
-                self.present(accountSettingsController, animated: true, completion: nil)
-            }
-
-            if !NCBrandOptions.shared.disable_multiaccount {
-                childrenAccountSubmenu.append(addAccountAction)
-            }
-            childrenAccountSubmenu.append(settingsAccountAction)
-
-            let addAccountSubmenu = UIMenu(title: "", options: .displayInline, children: childrenAccountSubmenu)
-            let menu = UIMenu(children: accountActions + [addAccountSubmenu])
-
-            accountButton.menu = menu
-            accountButton.showsMenuAsPrimaryAction = true
-
-            accountButton.onMenuOpened = {
-                self.dismissTip()
+        } else if (layoutKey == NCGlobal.shared.layoutViewRecent) ||
+                    (layoutKey == NCGlobal.shared.layoutViewOffline) {
+            navigationItem.leftItemsSupplementBackButton = true
+            if navigationController?.viewControllers.count == 1 {
+                let closeButton = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""),
+                                                  style: .plain,
+                                                  action: { [weak self] in
+                    self?.dismiss(animated: true)
+                })
+                closeButton.tintColor = NCBrandColor.shared.iconImageColor
+                navigationItem.setLeftBarButtonItems([closeButton], animated: true)
             }
         }
-
-        navigationItem.leftItemsSupplementBackButton = true
-        navigationItem.setLeftBarButtonItems([UIBarButtonItem(customView: accountButton)], animated: true)
 
         if titlePreviusFolder != nil {
             navigationController?.navigationBar.topItem?.title = titlePreviusFolder
@@ -699,192 +689,105 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         navigationItem.title = titleCurrentFolder
     }
+    
+    func showBurgerMenu() {
+        self.mainTabBarController?.showBurgerMenu()
+    }
 
+	private func saveLayout(_ layoutForView: NCDBLayoutForView) {
+		NCManageDatabase.shared.setLayoutForView(layoutForView: layoutForView)
+		NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
+		setNavigationRightItems()
+		updateHeadersView()
+	}
+	
     func setNavigationRightItems() {
-        guard layoutKey != global.layoutViewTransfers else { return }
-        let isTabBarHidden = self.tabBarController?.tabBar.isHidden ?? true
-        let isTabBarSelectHidden = tabBarSelect.isHidden()
-
-        func createMenuActions() -> [UIMenuElement] {
-            guard let layoutForView = database.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl) else { return [] }
-
-            let select = UIAction(title: NSLocalizedString("_select_", comment: ""),
-                                  image: utility.loadImage(named: "checkmark.circle"),
-                                  attributes: (self.dataSource.isEmpty() || NCNetworking.shared.isOffline) ? .disabled : []) { _ in
-                self.setEditMode(true)
-                self.collectionView.reloadData()
-            }
-
-            let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: utility.loadImage(named: "list.bullet"), state: layoutForView.layout == global.layoutList ? .on : .off) { _ in
-
-                layoutForView.layout = self.global.layoutList
-
-                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
-                                                            object: nil,
-                                                            userInfo: ["account": self.session.account,
-                                                                       "serverUrl": self.serverUrl,
-                                                                       "layoutForView": layoutForView])
-            }
-
-            let grid = UIAction(title: NSLocalizedString("_icons_", comment: ""), image: utility.loadImage(named: "square.grid.2x2"), state: layoutForView.layout == global.layoutGrid ? .on : .off) { _ in
-
-                layoutForView.layout = self.global.layoutGrid
-
-                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
-                                                            object: nil,
-                                                            userInfo: ["account": self.session.account,
-                                                                       "serverUrl": self.serverUrl,
-                                                                       "layoutForView": layoutForView])
-            }
-
-            let mediaSquare = UIAction(title: NSLocalizedString("_media_square_", comment: ""), image: utility.loadImage(named: "square.grid.3x3"), state: layoutForView.layout == global.layoutPhotoSquare ? .on : .off) { _ in
-
-                layoutForView.layout = self.global.layoutPhotoSquare
-
-                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
-                                                            object: nil,
-                                                            userInfo: ["account": self.session.account,
-                                                                       "serverUrl": self.serverUrl,
-                                                                       "layoutForView": layoutForView])
-            }
-
-            let mediaRatio = UIAction(title: NSLocalizedString("_media_ratio_", comment: ""), image: utility.loadImage(named: "rectangle.grid.3x2"), state: layoutForView.layout == self.global.layoutPhotoRatio ? .on : .off) { _ in
-
-                layoutForView.layout = self.global.layoutPhotoRatio
-
-                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
-                                                            object: nil,
-                                                            userInfo: ["account": self.session.account,
-                                                                       "serverUrl": self.serverUrl,
-                                                                       "layoutForView": layoutForView])
-            }
-
-            let viewStyleSubmenu = UIMenu(title: "", options: .displayInline, children: [list, grid, mediaSquare, mediaRatio])
-
-            let ascending = layoutForView.ascending
-            let ascendingChevronImage = utility.loadImage(named: ascending ? "chevron.up" : "chevron.down")
-            let isName = layoutForView.sort == "fileName"
-            let isDate = layoutForView.sort == "date"
-            let isSize = layoutForView.sort == "size"
-
-            let byName = UIAction(title: NSLocalizedString("_name_", comment: ""), image: isName ? ascendingChevronImage : nil, state: isName ? .on : .off) { _ in
-
-                if isName { // repeated press
-                    layoutForView.ascending = !layoutForView.ascending
-                }
-                layoutForView.sort = "fileName"
-
-                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
-                                                            object: nil,
-                                                            userInfo: ["account": self.session.account,
-                                                                       "serverUrl": self.serverUrl,
-                                                                       "layoutForView": layoutForView])
-            }
-
-            let byNewest = UIAction(title: NSLocalizedString("_date_", comment: ""), image: isDate ? ascendingChevronImage : nil, state: isDate ? .on : .off) { _ in
-
-                if isDate { // repeated press
-                    layoutForView.ascending = !layoutForView.ascending
-                }
-                layoutForView.sort = "date"
-
-                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
-                                                            object: nil,
-                                                            userInfo: ["account": self.session.account,
-                                                                       "serverUrl": self.serverUrl,
-                                                                       "layoutForView": layoutForView])
-            }
-
-            let byLargest = UIAction(title: NSLocalizedString("_size_", comment: ""), image: isSize ? ascendingChevronImage : nil, state: isSize ? .on : .off) { _ in
-
-                if isSize { // repeated press
-                    layoutForView.ascending = !layoutForView.ascending
-                }
-                layoutForView.sort = "size"
-
-                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
-                                                            object: nil,
-                                                            userInfo: ["account": self.session.account,
-                                                                       "serverUrl": self.serverUrl,
-                                                                       "layoutForView": layoutForView])
-            }
-
-            let sortSubmenu = UIMenu(title: NSLocalizedString("_order_by_", comment: ""), options: .displayInline, children: [byName, byNewest, byLargest])
-
-            let foldersOnTop = UIAction(title: NSLocalizedString("_directory_on_top_no_", comment: ""), image: utility.loadImage(named: "folder"), state: layoutForView.directoryOnTop ? .on : .off) { _ in
-
-                layoutForView.directoryOnTop = !layoutForView.directoryOnTop
-
-                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
-                                                            object: nil,
-                                                            userInfo: ["account": self.session.account,
-                                                                       "serverUrl": self.serverUrl,
-                                                                       "layoutForView": layoutForView])
-            }
-
-            let personalFilesOnly = NCKeychain().getPersonalFilesOnly(account: session.account)
-            let personalFilesOnlyAction = UIAction(title: NSLocalizedString("_personal_files_only_", comment: ""), image: utility.loadImage(named: "folder.badge.person.crop", colors: NCBrandColor.shared.iconImageMultiColors), state: personalFilesOnly ? .on : .off) { _ in
-
-                NCKeychain().setPersonalFilesOnly(account: self.session.account, value: !personalFilesOnly)
-
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": self.serverUrl, "clearDataSource": true])
-                self.setNavigationRightItems()
-            }
-
-            let showDescriptionKeychain = NCKeychain().showDescription
-            let showDescription = UIAction(title: NSLocalizedString("_show_description_", comment: ""), image: utility.loadImage(named: "list.dash.header.rectangle"), attributes: richWorkspaceText == nil ? .disabled : [], state: showDescriptionKeychain && richWorkspaceText != nil ? .on : .off) { _ in
-
-                NCKeychain().showDescription = !showDescriptionKeychain
-
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": self.serverUrl, "clearDataSource": true])
-                self.setNavigationRightItems()
-            }
-            showDescription.subtitle = richWorkspaceText == nil ? NSLocalizedString("_no_description_available_", comment: "") : ""
-
-            if layoutKey == global.layoutViewRecent {
-                return [select]
-            } else {
-                var additionalSubmenu = UIMenu()
-                if layoutKey == global.layoutViewFiles {
-                    additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [foldersOnTop, personalFilesOnlyAction, showDescription])
-                } else {
-                    additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [foldersOnTop, showDescription])
-                }
-                return [select, viewStyleSubmenu, sortSubmenu, additionalSubmenu]
-            }
+        if isSearchingMode && (UIDevice.current.userInterfaceIdiom == .phone) {
+            navigationItem.rightBarButtonItems = nil
+            return
         }
 
+        guard layoutKey != NCGlobal.shared.layoutViewTransfers else { return }
+        let tabBar = self.tabBarController?.tabBar
+        let isTabBarHidden = tabBar?.isHidden ?? true
+        let isTabBarSelectHidden = commonSelectToolbar.isHidden()
+
         if isEditMode {
-            tabBarSelect.update(fileSelect: fileSelect, metadatas: getSelectedMetadatas(), userId: session.userId)
-            tabBarSelect.show()
-            let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) {
-                self.setEditMode(false)
-                self.collectionView.reloadData()
-            }
-            navigationItem.rightBarButtonItems = [select]
-        } else if navigationItem.rightBarButtonItems == nil || (!isEditMode && !tabBarSelect.isHidden()) {
-            tabBarSelect.hide()
-            let menuButton = UIBarButtonItem(image: utility.loadImage(named: "ellipsis.circle"), menu: UIMenu(children: createMenuActions()))
-            menuButton.tintColor = NCBrandColor.shared.iconImageColor
-            if layoutKey == global.layoutViewFiles {
-                let notification = UIBarButtonItem(image: utility.loadImage(named: "bell"), style: .plain) {
-                    if let viewController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? NCNotification {
-                        viewController.session = self.session
-                        self.navigationController?.pushViewController(viewController, animated: true)
-                    }
-                }
-                notification.tintColor = NCBrandColor.shared.iconImageColor
-                navigationItem.rightBarButtonItems = [menuButton, notification]
-            } else {
-                navigationItem.rightBarButtonItems = [menuButton]
-            }
+            commonSelectToolbar.update(selectOcId: selectOcId, metadatas: getSelectedMetadatas(), userId: appDelegate.userId)
+            commonSelectToolbar.show()
         } else {
-            navigationItem.rightBarButtonItems?.first?.menu = navigationItem.rightBarButtonItems?.first?.menu?.replacingChildren(createMenuActions())
+            commonSelectToolbar.hide()
+			navigationItem.rightBarButtonItems = layoutKey == NCGlobal.shared.layoutViewFiles ? [createAccountButton()] : []
         }
         // fix, if the tabbar was hidden before the update, set it in hidden
         if isTabBarHidden, isTabBarSelectHidden {
-            self.tabBarController?.tabBar.isHidden = true
+            tabBar?.isHidden = true
         }
+    }
+    
+    private func createAccountButton() -> UIBarButtonItem {
+        let activeAccount = NCManageDatabase.shared.getActiveAccount()
+        let image = utility.loadUserImage(for: appDelegate.user, displayName: activeAccount?.displayName, userBaseUrl: appDelegate)
+        let accountButton = AccountSwitcherButton(type: .custom)
+        let accounts = NCManageDatabase.shared.getAllAccountOrderAlias()
+        var childrenAccountSubmenu: [UIMenuElement] = []
+        
+        accountButton.setImage(image, for: .normal)
+        accountButton.setImage(image, for: .highlighted)
+        accountButton.semanticContentAttribute = .forceLeftToRight
+        accountButton.sizeToFit()
+        
+        if !accounts.isEmpty {
+            let accountActions: [UIAction] = accounts.map { account in
+                let image = utility.loadUserImage(for: account.user, displayName: account.displayName, userBaseUrl: account)
+                var name: String = ""
+                var url: String = ""
+                
+                if account.alias.isEmpty {
+                    name = account.displayName
+                    url = (URL(string: account.urlBase)?.host ?? "")
+                } else {
+                    name = account.alias
+                }
+                
+                let action = UIAction(title: name, image: image, state: account.active ? .on : .off) { _ in
+                    if !account.active {
+                        self.appDelegate.changeAccount(account.account, userProfile: nil) { }
+                        self.setEditMode(false)
+                    }
+                }
+                
+                action.subtitle = url
+                return action
+            }
+            
+            let addAccountAction = UIAction(title: NSLocalizedString("_add_account_", comment: ""), image: utility.loadImage(named: "person.crop.circle.badge.plus", colors: NCBrandColor.shared.iconImageMultiColors)) { _ in
+                self.appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
+            }
+            
+            let settingsAccountAction = UIAction(title: NSLocalizedString("_account_settings_", comment: ""), image: utility.loadImage(named: "gear", colors: [NCBrandColor.shared.iconImageColor])) { _ in
+                let accountSettingsModel = NCAccountSettingsModel(delegate: self)
+                let accountSettingsView = NCAccountSettingsView(model: accountSettingsModel)
+                let accountSettingsController = UIHostingController(rootView: accountSettingsView)
+                self.present(accountSettingsController, animated: true, completion: nil)
+            }
+            
+            if !NCBrandOptions.shared.disable_multiaccount {
+                childrenAccountSubmenu.append(addAccountAction)
+            }
+            childrenAccountSubmenu.append(settingsAccountAction)
+            
+            let addAccountSubmenu = UIMenu(title: "", options: .displayInline, children: childrenAccountSubmenu)
+            let menu = UIMenu(children: accountActions + [addAccountSubmenu])
+            
+            accountButton.menu = menu
+            accountButton.showsMenuAsPrimaryAction = true
+            
+            accountButton.onMenuOpened = {
+                self.dismissTip()
+            }
+        }
+        return UIBarButtonItem(customView: accountButton)
     }
 
     func getNavigationTitle() -> String {
@@ -902,12 +805,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func searchController(enabled: Bool) {
         guard enableSearchBar else { return }
-        searchController?.searchBar.isUserInteractionEnabled = enabled
         if enabled {
-            searchController?.searchBar.alpha = 1
+            navigationItem.searchController = searchController
         } else {
-            searchController?.searchBar.alpha = 0.3
-
+            navigationItem.searchController = nil
         }
     }
 
@@ -937,6 +838,18 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.providers?.removeAll()
         self.dataSource.removeAll()
         self.reloadDataSource()
+    }
+    
+    func willPresentSearchController(_ searchController: UISearchController) {
+        setNavigationLeftItems()
+        setNavigationRightItems()
+        navigationItem.title = nil
+    }
+    
+    func didDismissSearchController(_ searchController: UISearchController) {
+        setNavigationLeftItems()
+        setNavigationRightItems()
+        navigationItem.title = titleCurrentFolder
     }
 
     // MARK: - TAP EVENT
@@ -1231,6 +1144,167 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
         return size
     }
+}
+
+// MARK: -
+
+extension NCCollectionViewCommon {
+	// MARK: - Headers view
+	
+	private var sortTitle: String? {
+		guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl) else { return nil }
+		
+		switch layoutForView.sort {
+		case "fileName": return NSLocalizedString("_name_", comment: "")
+		case "date": return NSLocalizedString("_date_", comment: "")
+		case "size": return NSLocalizedString("_size_", comment: "")
+		default: return nil
+		}
+	}
+	private var sortDirectionImage: UIImage? {
+		guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl) else { return nil }
+		let imageName = layoutForView.ascending ? "arrow.up" : "arrow.down"
+		return UIImage(systemName: imageName, withConfiguration: UIImage.SymbolConfiguration(pointSize: 16, weight: .semibold))
+	}
+	
+	private var viewModeImage: UIImage? {
+		var imageName: String = ""
+		
+		switch layoutType {
+		case NCGlobal.shared.layoutList: imageName = "FileSelection/view_mode_list"
+		case NCGlobal.shared.layoutGrid, NCGlobal.shared.layoutPhotoRatio, NCGlobal.shared.layoutPhotoSquare: imageName = "FileSelection/view_mode_grid"
+		default: break
+		}
+		
+		return UIImage(named: imageName)
+	}
+	
+	private func updateHeadersView() {
+		fileActionsHeader?.isHidden = isSearchingMode
+		collectionViewTop?.constant = isSearchingMode ? 0 : fileActionsHeader?.bounds.height ?? 0
+		fileActionsHeader?.setIsEditingMode(isEditingMode: isEditMode)
+		
+		fileActionsHeader?.setSortingMenu(sortingMenuElements: createSortMenuActions(), title: sortTitle, image: sortDirectionImage)
+		fileActionsHeader?.setViewModeMenu(viewMenuElements: createViewModeMenuActions(), image: viewModeImage?.templateRendered())
+		
+		fileActionsHeader?.onSelectModeChange = { [weak self] isSelectionMode in
+			self?.setEditMode(isSelectionMode)
+			self?.setNavigationRightItems()
+			self?.updateHeadersView()
+			self?.fileActionsHeader?.setSelectionState(selectionState: .none)
+		}
+		
+		fileActionsHeader?.onSelectAll = { [weak self] in
+			guard let self = self else { return }
+			self.selectAll()
+			let selectionState: FileActionsHeaderSelectionState = self.selectOcId.count == 0 ? .none : .all
+			self.fileActionsHeader?.setSelectionState(selectionState: selectionState)
+		}
+	}
+	
+	private func createSortMenuActions() -> [UIMenuElement] {
+		guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl) else { return [] }
+		   
+		   let ascending = layoutForView.ascending
+		   let ascendingChevronImage = utility.loadImage(named: ascending ? "chevron.up" : "chevron.down")
+		   let isName = layoutForView.sort == "fileName"
+		   let isDate = layoutForView.sort == "date"
+		   let isSize = layoutForView.sort == "size"
+
+		   let byName = UIAction(title: NSLocalizedString("_name_", comment: ""), image: isName ? ascendingChevronImage : nil, state: isName ? .on : .off) { [weak self] _ in
+			   if isName { // repeated press
+				   layoutForView.ascending = !layoutForView.ascending
+			   }
+			   layoutForView.sort = "fileName"
+			   self?.saveLayout(layoutForView)
+		   }
+
+		   let byNewest = UIAction(title: NSLocalizedString("_date_", comment: ""), image: isDate ? ascendingChevronImage : nil, state: isDate ? .on : .off) { [weak self]  _ in
+			   if isDate { // repeated press
+				   layoutForView.ascending = !layoutForView.ascending
+			   }
+			   layoutForView.sort = "date"
+			   self?.saveLayout(layoutForView)
+		   }
+
+		   let byLargest = UIAction(title: NSLocalizedString("_size_", comment: ""), image: isSize ? ascendingChevronImage : nil, state: isSize ? .on : .off) { [weak self]  _ in
+			   if isSize { // repeated press
+				   layoutForView.ascending = !layoutForView.ascending
+			   }
+			   layoutForView.sort = "size"
+			   self?.saveLayout(layoutForView)
+		   }
+
+		   let sortSubmenu = UIMenu(title: NSLocalizedString("_order_by_", comment: ""), options: .displayInline, children: [byName, byNewest, byLargest])
+
+		   let foldersOnTop = UIAction(title: NSLocalizedString("_directory_on_top_no_", comment: ""), image: utility.loadImage(named: "folder"), state: layoutForView.directoryOnTop ? .on : .off) { [weak self]  _ in
+			   layoutForView.directoryOnTop = !layoutForView.directoryOnTop
+			   self?.saveLayout(layoutForView)
+		   }
+
+		   let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [foldersOnTop])
+		   return [sortSubmenu, additionalSubmenu]
+	   }
+	
+	func createViewModeMenuActions() -> [UIMenuElement] {
+		guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl) else { return [] }
+
+		let listImage = UIImage(named: "FileSelection/view_mode_list")?.templateRendered()
+		let gridImage = UIImage(named: "FileSelection/view_mode_grid")?.templateRendered()
+
+		let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: listImage, state: layoutForView.layout == NCGlobal.shared.layoutList ? .on : .off) { _ in
+			layoutForView.layout = NCGlobal.shared.layoutList
+			self.layoutForView = NCManageDatabase.shared.setLayoutForView(layoutForView: layoutForView)
+			self.layoutType = NCGlobal.shared.layoutList
+
+			self.collectionView.reloadData()
+			self.collectionView.collectionViewLayout.invalidateLayout()
+			self.collectionView.setCollectionViewLayout(self.listLayout, animated: true) {_ in self.isTransitioning = false }
+
+			self.setNavigationRightItems()
+		}
+
+		let grid = UIAction(title: NSLocalizedString("_icons_", comment: ""), image: gridImage, state: layoutForView.layout == NCGlobal.shared.layoutGrid ? .on : .off) { _ in
+			layoutForView.layout = NCGlobal.shared.layoutGrid
+			self.layoutForView = NCManageDatabase.shared.setLayoutForView(layoutForView: layoutForView)
+			self.layoutType = NCGlobal.shared.layoutGrid
+
+			self.collectionView.reloadData()
+			self.collectionView.collectionViewLayout.invalidateLayout()
+			self.collectionView.setCollectionViewLayout(self.gridLayout, animated: true) {_ in self.isTransitioning = false }
+
+			self.setNavigationRightItems()
+		}
+
+		let menuPhoto = UIMenu(title: "", options: .displayInline, children: [
+			UIAction(title: NSLocalizedString("_media_square_", comment: ""), image: gridImage, state: layoutForView.layout == NCGlobal.shared.layoutPhotoSquare ? .on : .off) { _ in
+				layoutForView.layout = NCGlobal.shared.layoutPhotoSquare
+				self.layoutForView = NCManageDatabase.shared.setLayoutForView(layoutForView: layoutForView)
+				self.layoutType = NCGlobal.shared.layoutPhotoSquare
+
+				self.collectionView.reloadData()
+				self.collectionView.collectionViewLayout.invalidateLayout()
+				self.collectionView.setCollectionViewLayout(self.mediaLayout, animated: true) {_ in self.isTransitioning = false }
+
+				self.reloadDataSource()
+				self.setNavigationRightItems()
+			},
+			UIAction(title: NSLocalizedString("_media_ratio_", comment: ""), image: gridImage, state: layoutForView.layout == NCGlobal.shared.layoutPhotoRatio ? .on : .off) { _ in
+				layoutForView.layout = NCGlobal.shared.layoutPhotoRatio
+				self.layoutForView = NCManageDatabase.shared.setLayoutForView(layoutForView: layoutForView)
+				self.layoutType = NCGlobal.shared.layoutPhotoRatio
+
+				self.collectionView.reloadData()
+				self.collectionView.collectionViewLayout.invalidateLayout()
+				self.collectionView.setCollectionViewLayout(self.mediaLayout, animated: true) {_ in self.isTransitioning = false }
+
+				self.reloadDataSource()
+				self.setNavigationRightItems()
+			}
+		])
+
+		return [list, grid, UIMenu(title: NSLocalizedString("_media_view_options_", comment: ""), children: [menuPhoto])]
+	}
 }
 
 // MARK: -

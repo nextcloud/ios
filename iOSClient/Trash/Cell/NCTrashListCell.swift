@@ -107,18 +107,9 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
             backgroundView = nil
         }
         if status {
-            var blurEffectView: UIView?
-            blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .systemMaterial))
-            blurEffectView?.backgroundColor = .lightGray
-            blurEffectView?.frame = self.bounds
-            blurEffectView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            imageSelect.image = NCImageCache.shared.getImageCheckedYes()
-            backgroundView = blurEffectView
-            separator.isHidden = true
+            imageSelect.image = NCImageCache.images.checkedYes?.withTintColor(NCBrandColor.shared.brandElement)
         } else {
-            imageSelect.image = NCImageCache.shared.getImageCheckedNo()
-            backgroundView = nil
-            separator.isHidden = false
+            imageSelect.image = NCImageCache.images.checkedNo?.withTintColor(UIColor(resource: .FileSelection.listItemDeselected))
         }
 
     }

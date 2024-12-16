@@ -48,6 +48,8 @@ class NCShareLinkCell: UITableViewCell {
         descriptionLabel.isHidden = !isInternalLink
         copyButton.isHidden = !isInternalLink && tableShare == nil
         copyButton.accessibilityLabel = NSLocalizedString("_copy_", comment: "")
+        copyButton.setImage(UIImage(resource: .Share.internalLink).withTintColor(NCBrandColor.shared.brandElement), for: .normal)
+        copyButton.imageView?.contentMode = .scaleAspectFit
         menuButton.accessibilityLabel = NSLocalizedString("_more_", comment: "")
 
         if isInternalLink {
@@ -65,8 +67,8 @@ class NCShareLinkCell: UITableViewCell {
                 menuButton.accessibilityLabel = NSLocalizedString("_add_", comment: "")
             }
 
-            imageItem.image = NCUtility().loadImage(named: "link.circle.fill", colors: [NCBrandColor.shared.getElement(account: tableShare?.account)])
-            menuButton.setImage(NCUtility().loadImage(named: menuImageName, colors: [NCBrandColor.shared.iconImageColor]), for: .normal)
+            imageItem.image = NCUtility().loadImage(named: "link.circle.fill", colors: [NCBrandColor.shared.brandElement])
+            menuButton.setImage(NCUtility().loadImage(named: menuImageName, colors: [NCBrandColor.shared.brandElement]), for: .normal)
         }
 
         labelTitle.textColor = NCBrandColor.shared.textColor

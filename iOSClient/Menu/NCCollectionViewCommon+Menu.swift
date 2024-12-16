@@ -80,7 +80,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_details_", comment: ""),
-                    icon: utility.loadImage(named: "info.circle", colors: [NCBrandColor.shared.iconImageColor]),
+                    icon: NCImagesRepository.menuIconDetails,
                     order: 10,
                     action: { _ in
                         NCActionCenter.shared.openShare(viewController: self, metadata: metadata, page: .activity)
@@ -130,7 +130,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_view_in_folder_", comment: ""),
-                    icon: utility.loadImage(named: "questionmark.folder", colors: [NCBrandColor.shared.iconImageColor]),
+                    icon: NCImagesRepository.menuIconViewInFolder,
                     order: 21,
                     action: { _ in
                         NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil, sceneIdentifier: sceneIdentifier)
@@ -157,7 +157,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_e2e_set_folder_encrypted_", comment: ""),
-                    icon: utility.loadImage(named: "lock", colors: [NCBrandColor.shared.iconImageColor]),
+                    icon: NCImagesRepository.menuIconLock,
                     order: 30,
                     action: { _ in
                         Task {
@@ -179,7 +179,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_e2e_remove_folder_encrypted_", comment: ""),
-                    icon: utility.loadImage(named: "lock", colors: [NCBrandColor.shared.iconImageColor]),
+                    icon: NCImagesRepository.menuIconLock,
                     order: 30,
                     action: { _ in
                         NextcloudKit.shared.markE2EEFolder(fileId: metadata.fileId, delete: true, account: metadata.account) { _, _, error in
@@ -202,11 +202,12 @@ extension NCCollectionViewCommon {
         // FAVORITE
         // FIXME: PROPPATCH doesn't work
         // https://github.com/nextcloud/files_lock/issues/68
-        if !metadata.lock {
+        if !metadata.lock {			
+            let favIcon = metadata.favorite ? NCImagesRepository.menuIconRemoveFromFavorite : NCImagesRepository.menuIconAddToFavorite
             actions.append(
                 NCMenuAction(
                     title: metadata.favorite ? NSLocalizedString("_remove_favorites_", comment: "") : NSLocalizedString("_add_favorites_", comment: ""),
-                    icon: utility.loadImage(named: metadata.favorite ? "star.slash" : "star", colors: [NCBrandColor.shared.yellowFavorite]),
+					icon: favIcon,
                     order: 50,
                     action: { _ in
                         NCNetworking.shared.favoriteMetadata(metadata) { error in
@@ -241,11 +242,11 @@ extension NCCollectionViewCommon {
         //
         if NCNetworking.shared.isOnline,
            let metadataMOV = database.getMetadataLivePhoto(metadata: metadata),
-           let hudView = self.tabBarController?.view {
+           let hudView = self.mainTabBarController?.view {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_livephoto_save_", comment: ""),
-                    icon: NCUtility().loadImage(named: "livephoto", colors: [NCBrandColor.shared.iconImageColor]),
+                    icon: NCImagesRepository.menuIconLivePhoto,
                     order: 100,
                     action: { _ in
                         NCNetworking.shared.saveLivePhotoQueue.addOperation(NCOperationSaveLivePhoto(metadata: metadata, metadataMOV: metadataMOV, hudView: hudView))
@@ -262,7 +263,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_save_as_scan_", comment: ""),
-                    icon: utility.loadImage(named: "doc.viewfinder", colors: [NCBrandColor.shared.iconImageColor]),
+                    icon: NCImagesRepository.menuIconSaveAsScan,
                     order: 110,
                     action: { _ in
                         if self.utilityFileSystem.fileProviderStorageExists(metadata) {
@@ -294,7 +295,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_rename_", comment: ""),
-                    icon: utility.loadImage(named: "text.cursor", colors: [NCBrandColor.shared.iconImageColor]),
+                    icon: NCImagesRepository.menuIconRename,
                     order: 120,
                     action: { _ in
                         self.present(UIAlertController.renameFile(metadata: metadata), animated: true)
@@ -318,7 +319,7 @@ extension NCCollectionViewCommon {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_modify_", comment: ""),
-                    icon: utility.loadImage(named: "pencil.tip.crop.circle", colors: [NCBrandColor.shared.iconImageColor]),
+                    icon: NCImagesRepository.menuIconModifyWithQuickLook,
                     order: 150,
                     action: { _ in
                         if self.utilityFileSystem.fileProviderStorageExists(metadata) {
@@ -337,28 +338,6 @@ extension NCCollectionViewCommon {
                                                                                                  selector: NCGlobal.shared.selectorLoadFileQuickLook,
                                                                                                  sceneIdentifier: sceneIdentifier) else { return }
                             NCNetworking.shared.download(metadata: metadata, withNotificationProgressTask: true)
-                        }
-                    }
-                )
-            )
-        }
-
-        //
-        // COLOR FOLDER
-        //
-        if self is NCFiles,
-           metadata.directory {
-            actions.append(
-                NCMenuAction(
-                    title: NSLocalizedString("_change_color_", comment: ""),
-                    icon: utility.loadImage(named: "paintpalette", colors: [NCBrandColor.shared.iconImageColor]),
-                    order: 160,
-                    action: { _ in
-                        if let picker = UIStoryboard(name: "NCColorPicker", bundle: nil).instantiateInitialViewController() as? NCColorPicker {
-                            picker.metadata = metadata
-                            let popup = NCPopupViewController(contentController: picker, popupWidth: 200, popupHeight: 320)
-                            popup.backgroundAlpha = 0
-                            self.present(popup, animated: true)
                         }
                     }
                 )

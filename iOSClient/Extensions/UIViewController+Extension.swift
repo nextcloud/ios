@@ -62,4 +62,12 @@ extension UIViewController {
             return false
         }
     }
+    
+    var mainTabBarController: NCMainTabBarController? {
+        self.view.window?.rootViewController as? NCMainTabBarController
+    }
+    
+    var sceneIdentifier: String? {
+        return (self.view.window?.windowScene?.delegate as? SceneDelegate)?.sceneIdentifier
+    }
 }

@@ -51,6 +51,11 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     var user = ""
 
     weak var listCellDelegate: NCListCellDelegate?
+    var namedButtonMore = ""
+    
+    var separatorBackground: UIColor? {
+       UIColor(named: "ListCell/Separator")
+    }
 
     var fileAvatarImageView: UIImageView? {
         return imageShared
@@ -146,6 +151,32 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         longPressedGesture.delegate = self
         longPressedGesture.delaysTouchesBegan = true
         self.addGestureRecognizer(longPressedGesture)
+
+        separator.backgroundColor = separatorBackground
+        separatorHeightConstraint.constant = 1
+
+        labelTitle.text = ""
+        labelInfo.text = ""
+        labelSubinfo.text = ""
+        labelTitle.textColor = NCBrandColor.shared.textColor
+        labelInfo.textColor = NCBrandColor.shared.textColor2
+        labelSubinfo.textColor = NCBrandColor.shared.textColor2
+
+        imageFavoriteBackground.isHidden = true
+    }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        imageItem.backgroundColor = nil
+        if fileFavoriteImage?.image != nil {
+            imageFavoriteBackground.isHidden = false
+        } else {
+            imageFavoriteBackground.isHidden = true
+        }
+
+        accessibilityHint = nil
+        accessibilityLabel = nil
+        accessibilityValue = nil
     }
 
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
@@ -200,6 +231,10 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         buttonShared.isHidden = status
     }
 
+    func hideSeparator(_ status: Bool) {
+        separator.isHidden = status
+    }
+	
     func selected(_ status: Bool, isEditMode: Bool) {
         if isEditMode {
             imageItemLeftConstraint.constant = 45
@@ -220,18 +255,9 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             setA11yActions()
         }
         if status {
-            var blurEffectView: UIView?
-            blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .systemMaterial))
-            blurEffectView?.backgroundColor = .lightGray
-            blurEffectView?.frame = self.bounds
-            blurEffectView?.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            imageSelect.image = NCImageCache.shared.getImageCheckedYes()
-            backgroundView = blurEffectView
-            separator.isHidden = true
+            imageSelect.image = NCImageCache.images.checkedYes?.withTintColor(NCBrandColor.shared.brandElement)
         } else {
-            imageSelect.image = NCImageCache.shared.getImageCheckedNo()
-            backgroundView = nil
-            separator.isHidden = false
+            imageSelect.image = NCImageCache.images.checkedNo?.withTintColor(UIColor(resource: .FileSelection.listItemDeselected))
         }
 
     }

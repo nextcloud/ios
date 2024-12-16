@@ -86,5 +86,5 @@ struct NCDisplayView: View {
 }
 
 #Preview {
-    NCDisplayView(model: NCDisplayModel(controller: nil))
+    NCDisplayView(model: NCDisplayModel())
 }

@@ -33,8 +33,7 @@ class NCFavorite: NCCollectionViewCommon {
         layoutKey = NCGlobal.shared.layoutViewFavorite
         enableSearchBar = false
         headerRichWorkspaceDisable = true
-        emptyImageName = "star.fill"
-        emptyImageColors = [NCBrandColor.shared.yellowFavorite]
+        emptyImage = NCImagesRepository.favorite
         emptyTitle = "_favorite_no_files_"
         emptyDescription = "_tutorial_favorite_view_"
     }

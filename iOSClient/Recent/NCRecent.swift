@@ -40,6 +40,11 @@ class NCRecent: NCCollectionViewCommon {
 
     // MARK: - View Life Cycle
 
+	override func viewDidLoad() {
+		super.viewDidLoad()
+		fileActionsHeader?.enableSorting(enable: false)
+	}
+	
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 

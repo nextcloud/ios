@@ -31,7 +31,7 @@ let userAgent: String = {
 
 @objc class NCBrandOptions: NSObject {
     @objc static let shared: NCBrandOptions = {
-        let instance = NCBrandOptions()
+        let instance = NCBrandOptionsIONOS()
         return instance
     }()
 
@@ -130,7 +130,7 @@ let userAgent: String = {
 
 class NCBrandColor: NSObject {
     static let shared: NCBrandColor = {
-        let instance = NCBrandColor()
+        let instance = NCBrandColorIONOS()
         return instance
     }()
 
@@ -144,9 +144,22 @@ class NCBrandColor: NSObject {
     private var themingColorElement = ThreadSafeDictionary<String, UIColor>()
     private var themingColorText = ThreadSafeDictionary<String, UIColor>()
 
-    var userColors: [CGColor] = []
     let nextcloud: UIColor = UIColor(red: 0.0 / 255.0, green: 130.0 / 255.0, blue: 201.0 / 255.0, alpha: 1.0)
     let yellowFavorite: UIColor = UIColor(red: 248.0 / 255.0, green: 205.0 / 255.0, blue: 70.0 / 255.0, alpha: 1.0)
+
+    var userColors: [CGColor] = []
+    var themingColor: String = ""
+    var themingColorElement: String = ""
+    var themingColorText: String = ""
+
+	var menuIconColor: UIColor {
+		iconImageColor
+	}
+	
+	var menuFolderIconColor: UIColor {
+		iconImageColor
+	}
+
     let iconImageColor: UIColor = .label
     let iconImageColor2: UIColor = .secondaryLabel
     let iconImageMultiColors: [UIColor] = [.secondaryLabel, .label]

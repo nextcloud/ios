@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>method</key>
+	<string>ad-hoc</string>
+	<key>signingStyle</key>
+	<string>manual</string>
+	<key>provisioningProfiles</key>
+	<dict>
+		<key>com.viseven.ionos.easystorage.Notification-Service-Extension</key>
+		<string>Ad Hoc Easy Storage Notification-Service-Extension</string>
+		<key>com.viseven.ionos.easystorage.File-Provider-Extension-UI</key>
+		<string>Ad Hoc Easy Storage File-Provider-Extension-UI</string>
+		<key>com.viseven.ionos.easystorage.Share</key>
+		<string>Ad Hoc Easy Storage Share</string>
+		<key>com.viseven.ionos.easystorage.Widget</key>
+		<string>Ad Hoc Easy Storage Widget</string>
+		<key>com.viseven.ionos.easystorage.File-Provider-Extension</key>
+		<string>Ad Hoc Easy Storage File-Provider-Extension</string>
+		<key>com.viseven.ionos.easystorage</key>
+		<string>Ad Hoc Easy Storage</string>
+		<key>com.viseven.ionos.easystorage.WidgetDashboardIntentHandler</key>
+		<string>Ad Hoc Easy Storage WidgetDashboardIntentHandler</string>
+	</dict>
+</dict>
+</plist>

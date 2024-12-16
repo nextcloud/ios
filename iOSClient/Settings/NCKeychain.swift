@@ -34,7 +34,7 @@ import KeychainAccess
             if let value = try? keychain.get("showDescription"), let result = Bool(value) {
                 return result
             }
-            return true
+            return false
         }
         set {
             keychain["showDescription"] = String(newValue)

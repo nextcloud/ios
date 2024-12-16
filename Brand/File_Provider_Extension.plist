@@ -28,7 +28,7 @@
 	<key>NSExtension</key>
 	<dict>
 		<key>NSExtensionFileProviderDocumentGroup</key>
-		<string>group.it.twsweb.Crypto-Cloud</string>
+		<string>group.com.viseven.ionos.easystorage</string>
 		<key>NSExtensionFileProviderSupportsEnumeration</key>
 		<true/>
 		<key>NSExtensionFileProviderSupportsPickingFolders</key>

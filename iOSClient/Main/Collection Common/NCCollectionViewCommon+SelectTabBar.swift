@@ -25,7 +25,7 @@ import UIKit
 import Foundation
 import NextcloudKit
 
-extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
+extension NCCollectionViewCommon: NCCollectionViewCommonSelectToolbarDelegate {
     func selectAll() {
         if !fileSelect.isEmpty, self.dataSource.getMetadatas().count == fileSelect.count {
             fileSelect = []
@@ -136,5 +136,13 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
         navigationItem.hidesBackButton = editMode
         searchController(enabled: !editMode)
         self.collectionView.reloadData()
+    }
+    
+    func toolbarWillAppear() {
+        self.tabBarController?.tabBar.isHidden = true
+    }
+    
+    func toolbarWillDisappear() {
+        self.tabBarController?.tabBar.isHidden = false
     }
 }

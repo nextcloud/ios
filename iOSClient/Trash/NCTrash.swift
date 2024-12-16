@@ -39,8 +39,8 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
     let utility = NCUtility()
     var isEditMode = false
     var selectOcId: [String] = []
-    var tabBarSelect: NCTrashSelectTabBar!
-    var datasource: Results<tableTrash>?
+    var selectionToolbar: NCTrashSelectToolBar!
+    var datasource: [tableTrash] = []
     var layoutForView: NCDBLayoutForView?
     var listLayout: NCListLayout!
     var gridLayout: NCGridLayout!
@@ -55,8 +55,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        tabBarSelect = NCTrashSelectTabBar(tabBarController: tabBarController, delegate: self)
+        selectionToolbar = NCTrashSelectToolBar(containerView: view, placeholderFrame: selectToolBarFrame, delegate: self)
 
         view.backgroundColor = .systemBackground
         self.navigationController?.navigationBar.prefersLargeTitles = true
@@ -81,6 +80,11 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadDataSource), object: nil)
     }
 
+	private var selectToolBarFrame: CGRect {
+		let toolbarHeight = AppScreenConstants.toolbarHeight
+		return CGRect(x: 0, y: view.bounds.size.height - toolbarHeight, width: view.bounds.size.width, height: toolbarHeight)
+	}
+	
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
@@ -97,6 +101,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
         isEditMode = false
         setNavigationRightItems()
+        setNavigationLeftItems()
 
         reloadDataSource()
         loadListingTrash()
@@ -112,10 +117,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-
-        if let frame = tabBarController?.tabBar.frame {
-            tabBarSelect.hostingController?.view.frame = frame
-        }
+		selectionToolbar.hostingController?.view.frame = selectToolBarFrame
     }
 
     // MARK: - Layout
@@ -141,18 +143,31 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
         }
 
         if isEditMode {
-            tabBarSelect.update(selectOcId: selectOcId)
-            tabBarSelect.show()
+            selectionToolbar.update(selectOcId: selectOcId)
+            selectionToolbar.show()
             let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) {
                 self.setEditMode(false)
             }
             navigationItem.rightBarButtonItems = [select]
-        } else if navigationItem.rightBarButtonItems == nil || (!isEditMode && !tabBarSelect.isHidden()) {
-            tabBarSelect.hide()
+        } else if navigationItem.rightBarButtonItems == nil || (!isEditMode && !selectionToolbar.isHidden()) {
+            selectionToolbar.hide()
             let menu = UIBarButtonItem(image: utility.loadImage(named: "ellipsis.circle", colors: [NCBrandColor.shared.iconImageColor]), menu: UIMenu(children: createMenuActions()))
             navigationItem.rightBarButtonItems = [menu]
         } else {
             navigationItem.rightBarButtonItems?.first?.menu = navigationItem.rightBarButtonItems?.first?.menu?.replacingChildren(createMenuActions())
+        }
+    }
+    
+    func setNavigationLeftItems() {
+        if layoutKey == NCGlobal.shared.layoutViewTrash {
+            navigationItem.leftItemsSupplementBackButton = true
+            if navigationController?.viewControllers.count == 1 {
+                navigationItem.setLeftBarButtonItems([UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""),
+                                                                      style: .plain,
+                                                                      action: { [weak self] in
+                    self?.dismiss(animated: true)
+                })], animated: true)
+            }
         }
     }
 

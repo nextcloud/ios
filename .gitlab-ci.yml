@@ -1,0 +1,109 @@
+variables:
+  outputDirPath: "./build/sym"
+  IPA_PATH: "${outputDirPath}/${scheme}.ipa"
+  DSYM_PATH: "*.dSYM.zip"
+  scheme: "Nextcloud"
+  archive_path: "${outputDirPath}/${scheme}"
+  exportOptionsPath: "./exportOptionsAdHoc.plist"
+
+
+stages:
+- build
+- deploy
+
+.mac_general_scripts: &mac_general_scripts
+  - security unlock-keychain -p $PASSWORD_BUILDE ~/Library/Keychains/login.keychain-db
+  - brew install carthage
+  - brew install jq
+  - fastlane -v
+  - xcodebuild -version
+  - date
+
+.install_carthage_dependencies: &install_carthage_dependencies
+  - carthage update --use-xcframeworks --platform iOS
+
+.download_google_info_plist: &download_google_info_plist
+  - curl 
+    --fail 
+    --location 
+    --request GET 
+    --url $FB_PLIST_PATH 
+    --header "Authorization:Bearer ${FB_PLIST_PROJECT_TOKEN}"  | jq -r '.content' | base64 --decode >> "./GoogleService-Info.plist"
+  
+
+.build_general_script: &build_general_script
+  - fastlane gym
+    --scheme $scheme
+    --output_directory $outputDirPath
+    --derived_data_path ./ipaDerivedData
+    --output_name $scheme
+    --archive_path $archive_path
+    --export_options $exportOptionsPath
+    --silent
+    --clean
+    
+.build_simulator_general_script: &build_simulator_general_script
+  - xcodebuild -configuration Debug -scheme $scheme -sdk iphonesimulator -derivedDataPath ./BuildForSimulator -quiet
+
+############## build ##############
+
+.build_general_params: &build_general_params
+  retry: 1
+  stage: build
+  tags:
+    - xcode15
+  before_script:
+    - *mac_general_scripts
+  artifacts:
+    paths:
+      - $IPA_PATH
+      - $DSYM_PATH
+    expire_in: 1 week
+
+build_develop_feature:
+  <<: *build_general_params
+  script:
+    - *install_carthage_dependencies
+    - *download_google_info_plist
+    - *build_general_script
+  only:
+    - develop
+    - /^feature/
+
+build_simulator:
+  <<: *build_general_params
+  when: manual
+  script:
+    - *install_carthage_dependencies
+    - *download_google_info_plist
+    - *build_simulator_general_script
+    - zip -r ./${scheme}.zip ./BuildForSimulator/Build/Products/Debug-iphonesimulator/${scheme}.app
+
+  only:
+    - develop
+    - /^feature/
+    - /^hotfix/
+    - /^release/
+  artifacts:
+    paths:
+      - Nextcloud.zip
+    expire_in: 1 week
+    
+############ deploy ###########
+    
+.deploy_general_params: &deploy_general_params
+  stage: deploy
+  image: ruby
+  tags:
+    - docker
+
+deploy_develop_feature:
+  <<: *deploy_general_params
+  script:
+    - curl $STORE_UPLOAD_URL -F token=$DEV_STORE_TOKEN -F bundle=@"${IPA_PATH}" -F comment=$CI_PIPELINE_ID
+  dependencies:
+    - build_develop_feature
+  needs: [build_develop_feature]
+  only:
+    - develop
+    - /^feature/
