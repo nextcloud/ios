@@ -67,7 +67,7 @@ struct DataProtectionAgreementScreen: View {
                     NavigationLink(destination: DataProtectionSettingsScreen(model: DataProtectionModel()), isActive: $isShowingSettingsView) { EmptyView() }
                         .navigationTitle("")
 
-                    Button(NSLocalizedString("_settings_", comment: "")) {
+                    Button(NSLocalizedString("_data_protection_settings_", comment: "")) {
                         isShowingSettingsView = true
                     }
                     .buttonStyle(ButtonStyleSecondary(maxWidth: 288.0))
