@@ -25,11 +25,11 @@ import NextcloudKit
 import SwiftUI
 
 struct NCLoginPoll: View {
-    let loginFlowV2Token: String
-    let loginFlowV2Endpoint: String
+    //    let loginFlowV2Token: String
+    //    let loginFlowV2Endpoint: String
     let loginFlowV2Login: String
 
-    var cancelButtonDisabled = false
+    //    var cancelButtonDisabled = false
 
     @ObservedObject var model: NCLoginPollModel
     @Environment(\.dismiss) private var dismiss
@@ -50,12 +50,12 @@ struct NCLoginPoll: View {
                 Button(NSLocalizedString("_cancel_", comment: "")) {
                     dismiss()
                 }
-                .disabled(model.isLoading || cancelButtonDisabled)
+                .disabled(model.isLoading)
                 .buttonStyle(.bordered)
                 .tint(.white)
 
                 Button(NSLocalizedString("_retry_", comment: "")) {
-                    model.openLoginInBrowser()
+                    model.openLoginInBrowser(loginFlowV2Login: loginFlowV2Login)
                 }
                 .buttonStyle(.borderedProminent)
                 .foregroundStyle(Color(NCBrandColor.shared.customer))
@@ -64,38 +64,10 @@ struct NCLoginPoll: View {
             .padding()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .onChange(of: model.pollFinished) { value in
-            if value {
-                let window = UIApplication.shared.firstWindow
-                if let controller = window?.rootViewController as? NCMainTabBarController {
-                    controller.account = model.account
-                    controller.dismiss(animated: true, completion: nil)
-                } else {
-                    if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
-                        controller.account = model.account
-                        controller.modalPresentationStyle = .fullScreen
-                        controller.view.alpha = 0
-
-                        window?.rootViewController = controller
-                        window?.makeKeyAndVisible()
-
-                        if let scene = window?.windowScene {
-                            SceneManager.shared.register(scene: scene, withRootViewController: controller)
-                        }
-
-                        UIView.animate(withDuration: 0.5) {
-                            controller.view.alpha = 1
-                        }
-                    }
-                }
-            }
-        }
         .background(Color(NCBrandColor.shared.customer))
         .onAppear {
-//            model.configure(loginFlowV2Token: loginFlowV2Token, loginFlowV2Endpoint: loginFlowV2Endpoint, loginFlowV2Login: loginFlowV2Login)
-
             if !isRunningForPreviews {
-                model.openLoginInBrowser()
+                model.openLoginInBrowser(loginFlowV2Login: loginFlowV2Login)
             }
         }
         .interactiveDismissDisabled()
@@ -103,5 +75,5 @@ struct NCLoginPoll: View {
 }
 
 #Preview {
-    NCLoginPoll(loginFlowV2Token: "", loginFlowV2Endpoint: "", loginFlowV2Login: "", model: NCLoginPollModel())
+    NCLoginPoll(loginFlowV2Login: "", model: NCLoginPollModel())
 }

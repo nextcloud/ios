@@ -9,15 +9,23 @@
 import Foundation
 
 class NCLoginPollModel: ObservableObject {
+
 //    var loginFlowV2Token = ""
 //    var loginFlowV2Endpoint = ""
-//    var loginFlowV2Login = ""
 
-    @Published var pollFinished = false
+//    @Published var pollFinished = false
     @Published var isLoading = false
-    @Published var account = ""
+//    @Published var account = ""
 
-    var timer: DispatchSourceTimer?
+//    var timer: DispatchSourceTimer?
+
+//    init(delegate: NCLoginPoll, pollFinished: Bool = false, isLoading: Bool = false, account: String = "", timer: DispatchSourceTimer? = nil) {
+//        self.delegate = delegate
+//        self.pollFinished = pollFinished
+//        self.isLoading = isLoading
+//        self.account = account
+//        self.timer = timer
+//    }
 
     func configure() {
 //        self.loginFlowV2Token = loginFlowV2Token
@@ -27,38 +35,11 @@ class NCLoginPollModel: ObservableObject {
 //        poll()
     }
 
-    func poll() {
-        let queue = DispatchQueue.global(qos: .background)
-        timer = DispatchSource.makeTimerSource(queue: queue)
-
-        guard let timer = timer else { return }
-
-        timer.schedule(deadline: .now(), repeating: .seconds(1), leeway: .seconds(1))
-        timer.setEventHandler(handler: {
-            DispatchQueue.main.async {
-                let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
-                NextcloudKit.shared.getLoginFlowV2Poll(token: self.loginFlowV2Token, endpoint: self.loginFlowV2Endpoint) { server, loginName, appPassword, _, error in
-                    if error == .success, let urlBase = server, let user = loginName, let appPassword {
-                        self.isLoading = true
-                        NCAccount().createAccount(urlBase: urlBase, user: user, password: appPassword, controller: controller) { account, error in
-                            if error == .success {
-                                self.account = account
-                                self.pollFinished = true
-                            }
-                        }
-                    }
-                }
-            }
-        })
-
-        timer.resume()
-    }
-
-    func onDisappear() {
-        timer?.cancel()
-    }
-
-    func openLoginInBrowser() {
+    func openLoginInBrowser(loginFlowV2Login: String = "") {
         UIApplication.shared.open(URL(string: loginFlowV2Login)!)
     }
+}
+
+protocol NCLoginDelegate: AnyObject {
+    func pollDidStart()
 }
