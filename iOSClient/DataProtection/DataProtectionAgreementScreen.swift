@@ -64,7 +64,7 @@ struct DataProtectionAgreementScreen: View {
                         NCBrowserWebView(urlBase: URL(string: NCBrandOptions.shared.privacy)!, browserTitle: NSLocalizedString("_privacy_legal_", comment: ""))
                     }
                     
-                    NavigationLink(destination: DataProtectionSettingsScreen(model: DataProtectionModel()), isActive: $isShowingSettingsView) { EmptyView() }
+                    NavigationLink(destination: DataProtectionSettingsScreen(model: DataProtectionModel(), isShowing: $isShowingSettingsView), isActive: $isShowingSettingsView) { EmptyView() }
                         .navigationTitle("")
 
                     Button(NSLocalizedString("_data_protection_settings_", comment: "")) {

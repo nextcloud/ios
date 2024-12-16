@@ -146,7 +146,7 @@ struct NCSettingsView: View {
                 }
                 
                 NavigationLink(destination: LazyView {
-                    DataProtectionSettingsScreen(model: DataProtectionModel(showFromSettings: true))
+                    DataProtectionSettingsScreen(model: DataProtectionModel(showFromSettings: true), isShowing: .constant(true))
                 }) {
                     HStack {
                         Image(.Settings.dataprivacy)
