@@ -60,13 +60,14 @@ struct NCAutoUploadView: View {
         }
         .sheet(isPresented: $showUploadFolder) {
             SelectView(serverUrl: $model.serverUrl, session: model.session)
-            .onDisappear {
-                model.setAutoUploadDirectory(serverUrl: model.serverUrl)
-            }
+                .onDisappear {
+                    model.setAutoUploadDirectory(serverUrl: model.serverUrl)
+                }
         }
         .sheet(isPresented: $showSelectAlbums) {
             SelectAlbumView(model: albumModel)
         }
+        .tint(.primary)
     }
 
     @ViewBuilder
@@ -84,29 +85,29 @@ struct NCAutoUploadView: View {
                     Text(NSLocalizedString("_autoupload_select_folder_", comment: ""))
                 }
             })
-            .tint(Color(UIColor.label))
         }, footer: {
             Text("\(NSLocalizedString("_autoupload_current_folder_", comment: "")): \(model.returnPath())")
         })
 
         Section(content: {
-            Button(action: {
-                showSelectAlbums.toggle()
-            }, label: {
-                HStack {
-                    Image(systemName: "person.2.crop.square.stack")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 25, height: 25)
-                        .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
-                    Text(NSLocalizedString("_upload_from_", comment: ""))
-                }
-            })
-            .tint(Color(UIColor.label))
-        }, footer: {
-//            Text("\(NSLocalizedString("_upload_from_", comment: "")): \(model.returnPath())")
-            Text(albumModel.selectedSmartAlbums.compactMap({$0.localizedTitle}).joined())
+            NavigationLink(destination: SelectAlbumView(model: albumModel)) {
+                Button(action: {
+                    showSelectAlbums.toggle()
+                }, label: {
+                    HStack {
+                        Image(systemName: "person.2.crop.square.stack")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 25, height: 25)
+                            .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
+                        Text(NSLocalizedString("_upload_from_", comment: ""))
+                        Text(NSLocalizedString(albumModel.smartAlbums.isEmpty ? "_camera_roll_" : "_multiple_albums_", comment: ""))
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                    }
+                })
+            }
         })
+
         /// Auto Upload Photo
         Section(content: {
             Toggle(NSLocalizedString("_autoupload_photos_", comment: ""), isOn: $model.autoUploadImage)
@@ -164,7 +165,7 @@ struct NCAutoUploadView: View {
             Toggle(NSLocalizedString("_autoupload_fullphotos_", comment: ""), isOn: $model.autoUploadFull)
                 .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                 .onChange(of: model.autoUploadFull) { newValue in
-                    model.handleAutoUploadFullChange(newValue: newValue)
+                    model.handleAutoUploadFullChange(newValue: newValue, assetCollections: albumModel.selectedSmartAlbums)
                 }
         }, footer: {
             Text(

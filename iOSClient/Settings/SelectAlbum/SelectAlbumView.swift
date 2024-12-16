@@ -16,8 +16,6 @@ struct SelectAlbumView: View {
     private let cameraRollTag = "-1"
 
     var body: some View {
-        Text(NSLocalizedString("_select_autoupload_albums_", comment: ""))
-
         List {
             Section {
                 SelectionButton(tag: cameraRollTag, selection: $selectedAlbums) {
@@ -40,7 +38,6 @@ struct SelectAlbumView: View {
 
             model.getAlbums(selectedAlbums: selectedAlbums)
         }
-
     }
 }
 

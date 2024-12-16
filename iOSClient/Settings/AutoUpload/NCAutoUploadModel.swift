@@ -163,14 +163,15 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     }
 
     /// Updates the auto-upload full content setting.
-    func handleAutoUploadFullChange(newValue: Bool) {
+    func handleAutoUploadFullChange(newValue: Bool, assetCollections: [PHAssetCollection]) {
         updateAccountProperty(\.autoUploadFull, value: newValue)
         if newValue {
-//            print(albums.smartAlbums)
-//            if albums.userCollections {
-//                NCAutoUpload.shared.autoUploadFullPhotos(controller: self.controller, log: "Auto upload full", account: session.account)
-//            }
-            NCAutoUpload.shared.autoUploadFullPhotos(controller: self.controller, log: "Auto upload full", account: session.account)
+            //            print(albums.smartAlbums)
+            if !assetCollections.isEmpty  {
+                NCAutoUpload.shared.autoUploadSelectedAlbums(controller: self.controller, assetCollections: assetCollections, log: "Auto upload selected albums", account: session.account)
+            } else {
+                NCAutoUpload.shared.autoUploadFullPhotos(controller: self.controller, log: "Auto upload full", account: session.account)
+            }
         } else {
             self.database.clearMetadatasUpload(account: session.account)
         }
@@ -219,12 +220,6 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         }
         onViewAppear()
     }
-
-//    func getAlbums(selectedAlbums: Set<String>) -> [PHAssetCollection] {
-//        selectedAlbums.compactMap { selectedAlbum in
-//            return albums.smartAlbums.first(where: { $0.localIdentifier == selectedAlbum })
-//        }
-//    }
 }
 
 /// An enum that represents the granularity of the subfolders for auto upload

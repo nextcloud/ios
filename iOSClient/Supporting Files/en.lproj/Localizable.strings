@@ -1136,3 +1136,8 @@
 "_file_name_new_extension_" = "Changing the extension might cause this file to open in a different application.";
 "_please_rename_file_" = "Please rename the file or folder.";
 "hidden_file_name_warning" = "Name will result in a hidden file.";
+
+"_select_autoupload_albums_" = "Select albums";
+"_upload_from_" = "Upload from:";
+"_multiple_albums_" = "Multiple albums";
+"_smart_albums_" = "Smart albums";
