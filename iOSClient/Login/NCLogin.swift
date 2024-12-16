@@ -46,7 +46,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     private var activeTextField = UITextField()
 
     private var shareAccounts: [NKShareAccounts.DataAccounts]?
-    
+
     /// The URL that will show up on the URL field when this screen appears
     var urlBase = ""
 
@@ -59,9 +59,11 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     private var p12Data: Data?
     private var p12Password: String?
 
-    private var useInAppBrowser = false
+    private var useInAppBrowser = true
 
     var pollTimer: DispatchSourceTimer?
+
+    var ncLoginPollModel = NCLoginPollModel()
 
     // MARK: - View Life Cycle
 
@@ -183,11 +185,11 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             enforceServersButton.menu = .init(title: NSLocalizedString("_servers_", comment: ""), children: actions)
             enforceServersButton.showsMenuAsPrimaryAction = true
             enforceServersButton.configuration?.titleTextAttributesTransformer =
-               UIConfigurationTextAttributesTransformer { incoming in
-                 var outgoing = incoming
-                 outgoing.font = UIFont.systemFont(ofSize: 13)
-                 return outgoing
-             }
+            UIConfigurationTextAttributesTransformer { incoming in
+                var outgoing = incoming
+                outgoing.font = UIFont.systemFont(ofSize: 13)
+                return outgoing
+            }
         }
     }
 
@@ -290,7 +292,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     }
 
     @IBAction func actionQRCode(_ sender: Any) {
-
         let qrCode = NCLoginQRCode(delegate: self)
         qrCode.scan()
     }
@@ -350,15 +351,12 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                         if useInAppBrowser {
                             vc = SFSafariViewController(url: url)
                         } else {
-                            vc = UIHostingController(rootView: NCLoginPoll(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login, model: NCLoginPollModel()))
+                            vc = UIHostingController(rootView: NCLoginPoll(loginFlowV2Login: login, model: ncLoginPollModel))
                         }
 
-                        present(vc, animated: true)
-
-//                        let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
-//                        controller?.present(sfSafariController, animated: true)
-//                        self.present(vc, animated: true)
                         poll(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login)
+
+                        present(vc, animated: true)
                     } else if serverInfo.versionMajor < NCGlobal.shared.nextcloudVersion12 { // No login flow available
                         let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_webflow_not_available_", comment: ""), preferredStyle: .alert)
                         alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
@@ -494,7 +492,6 @@ extension NCLogin: ClientCertificateDelegate, UIDocumentPickerDelegate {
         let alertEnterPassword = UIAlertController(title: NSLocalizedString("_client_cert_enter_password_", comment: ""), message: "", preferredStyle: .alert)
         alertEnterPassword.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
         alertEnterPassword.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in
-            // let documentProviderMenu = UIDocumentPickerViewController(forOpeningContentTypes: [UTType.pkcs12])
             NCNetworking.shared.p12Data = try? Data(contentsOf: urls[0])
             NCNetworking.shared.p12Password = alertEnterPassword.textFields?[0].text
             self.login()
@@ -523,37 +520,34 @@ extension NCLogin: ClientCertificateDelegate, UIDocumentPickerDelegate {
         timer.setEventHandler(handler: {
             DispatchQueue.main.async {
                 let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
-                NextcloudKit.shared.getLoginFlowV2Poll(token: loginFlowV2Token, endpoint: loginFlowV2Endpoint) { server, loginName, appPassword, _, error in
+                NextcloudKit.shared.getLoginFlowV2Poll(token: loginFlowV2Token, endpoint: loginFlowV2Endpoint) { [self] server, loginName, appPassword, _, error in
                     if error == .success, let urlBase = server, let user = loginName, let appPassword {
-//                        self.isLoading = true
+                        ncLoginPollModel.isLoading = true
+
                         NCAccount().createAccount(urlBase: urlBase, user: user, password: appPassword, controller: controller) { account, error in
                             if error == .success {
-//                                self.account = account
-//                                if value {
-                                    let window = UIApplication.shared.firstWindow
-                                    if let controller = window?.rootViewController as? NCMainTabBarController {
+                                let window = UIApplication.shared.firstWindow
+                                if let controller = window?.rootViewController as? NCMainTabBarController {
+                                    controller.account = account
+                                    controller.dismiss(animated: true, completion: nil)
+                                } else {
+                                    if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
                                         controller.account = account
-                                        controller.dismiss(animated: true, completion: nil)
-                                    } else {
-                                        if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
-                                            controller.account = account
-                                            controller.modalPresentationStyle = .fullScreen
-                                            controller.view.alpha = 0
+                                        controller.modalPresentationStyle = .fullScreen
+                                        controller.view.alpha = 0
 
-                                            window?.rootViewController = controller
-                                            window?.makeKeyAndVisible()
+                                        window?.rootViewController = controller
+                                        window?.makeKeyAndVisible()
 
-                                            if let scene = window?.windowScene {
-                                                SceneManager.shared.register(scene: scene, withRootViewController: controller)
-                                            }
-
-                                            UIView.animate(withDuration: 0.5) {
-                                                controller.view.alpha = 1
-                                            }
+                                        if let scene = window?.windowScene {
+                                            SceneManager.shared.register(scene: scene, withRootViewController: controller)
                                         }
-//                                    }
+
+                                        UIView.animate(withDuration: 0.5) {
+                                            controller.view.alpha = 1
+                                        }
+                                    }
                                 }
-//                                self.pollFinished = true
                             }
                         }
                     }
@@ -564,3 +558,5 @@ extension NCLogin: ClientCertificateDelegate, UIDocumentPickerDelegate {
         timer.resume()
     }
 }
+
+
