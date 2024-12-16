@@ -26,6 +26,7 @@ import UIKit
 import NextcloudKit
 import SwiftEntryKit
 import SwiftUI
+import SafariServices
 
 class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     @IBOutlet weak var imageBrand: UIImageView!
@@ -45,11 +46,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     private var activeTextField = UITextField()
 
     private var shareAccounts: [NKShareAccounts.DataAccounts]?
-
-    var loginFlowV2Token = ""
-    var loginFlowV2Endpoint = ""
-    var loginFlowV2Login = ""
-
+    
     /// The URL that will show up on the URL field when this screen appears
     var urlBase = ""
 
@@ -61,6 +58,10 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     private var p12Data: Data?
     private var p12Password: String?
+
+    private var useInAppBrowser = false
+
+    var pollTimer: DispatchSourceTimer?
 
     // MARK: - View Life Cycle
 
@@ -204,6 +205,12 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         }
     }
 
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        pollTimer?.cancel()
+    }
+
     private func handleLoginWithAppConfig() {
         let accountCount = NCManageDatabase.shared.getAccounts()?.count ?? 0
 
@@ -332,16 +339,30 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 if let host = URL(string: url)?.host {
                     NCNetworking.shared.writeCertificate(host: host)
                 }
-                NextcloudKit.shared.getLoginFlowV2(serverUrl: url) { token, endpoint, login, _, error in
+                NextcloudKit.shared.getLoginFlowV2(serverUrl: url) { [self] token, endpoint, login, _, error in
                     self.loginButton.isEnabled = true
                     // Login Flow V2
                     if error == .success, let token, let endpoint, let login {
-                        let vc = UIHostingController(rootView: NCLoginPoll(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login))
-                        self.present(vc, animated: true)
+
+                        guard let url = URL(string: login) else { return }
+                        let vc: UIViewController
+
+                        if useInAppBrowser {
+                            vc = SFSafariViewController(url: url)
+                        } else {
+                            vc = UIHostingController(rootView: NCLoginPoll(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login, model: NCLoginPollModel()))
+                        }
+
+                        present(vc, animated: true)
+
+//                        let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
+//                        controller?.present(sfSafariController, animated: true)
+//                        self.present(vc, animated: true)
+                        poll(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login)
                     } else if serverInfo.versionMajor < NCGlobal.shared.nextcloudVersion12 { // No login flow available
                         let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_webflow_not_available_", comment: ""), preferredStyle: .alert)
                         alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-                        self.present(alertController, animated: true, completion: { })
+                        present(alertController, animated: true, completion: { })
                     }
                 }
             case .failure(let error):
@@ -490,5 +511,56 @@ extension NCLogin: ClientCertificateDelegate, UIDocumentPickerDelegate {
         let alertWrongPassword = UIAlertController(title: NSLocalizedString("_client_cert_wrong_password_", comment: ""), message: "", preferredStyle: .alert)
         alertWrongPassword.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default))
         present(alertWrongPassword, animated: true)
+    }
+
+    func poll(loginFlowV2Token: String, loginFlowV2Endpoint: String, loginFlowV2Login: String) {
+        let queue = DispatchQueue.global(qos: .background)
+        pollTimer = DispatchSource.makeTimerSource(queue: queue)
+
+        guard let timer = pollTimer else { return }
+
+        timer.schedule(deadline: .now(), repeating: .seconds(1), leeway: .seconds(1))
+        timer.setEventHandler(handler: {
+            DispatchQueue.main.async {
+                let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
+                NextcloudKit.shared.getLoginFlowV2Poll(token: loginFlowV2Token, endpoint: loginFlowV2Endpoint) { server, loginName, appPassword, _, error in
+                    if error == .success, let urlBase = server, let user = loginName, let appPassword {
+//                        self.isLoading = true
+                        NCAccount().createAccount(urlBase: urlBase, user: user, password: appPassword, controller: controller) { account, error in
+                            if error == .success {
+//                                self.account = account
+//                                if value {
+                                    let window = UIApplication.shared.firstWindow
+                                    if let controller = window?.rootViewController as? NCMainTabBarController {
+                                        controller.account = account
+                                        controller.dismiss(animated: true, completion: nil)
+                                    } else {
+                                        if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+                                            controller.account = account
+                                            controller.modalPresentationStyle = .fullScreen
+                                            controller.view.alpha = 0
+
+                                            window?.rootViewController = controller
+                                            window?.makeKeyAndVisible()
+
+                                            if let scene = window?.windowScene {
+                                                SceneManager.shared.register(scene: scene, withRootViewController: controller)
+                                            }
+
+                                            UIView.animate(withDuration: 0.5) {
+                                                controller.view.alpha = 1
+                                            }
+                                        }
+//                                    }
+                                }
+//                                self.pollFinished = true
+                            }
+                        }
+                    }
+                }
+            }
+        })
+
+        timer.resume()
     }
 }
