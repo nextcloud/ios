@@ -65,6 +65,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     var ncLoginPollModel = NCLoginPollModel()
 
+    var loginFlowInProgress = false
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -206,12 +208,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             }
         }
     }
-
-//    override func viewDidDisappear(_ animated: Bool) {
-//        super.viewDidDisappear(animated)
-//
-//        pollTimer?.cancel()
-//    }
 
     private func handleLoginWithAppConfig() {
         let accountCount = NCManageDatabase.shared.getAccounts()?.count ?? 0
