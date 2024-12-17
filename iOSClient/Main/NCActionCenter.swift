@@ -362,7 +362,7 @@ class NCActionCenter: NSObject, UIDocumentInteractionControllerDelegate, NCSelec
         var items: [URL] = []
         var downloadMetadata: [(tableMetadata, URL)] = []
         
-        let currentViewController = controller.presentedNavigationController() ?? mainTabBarController
+        let currentViewController = controller.presentedNavigationController() ?? controller
         let isMainTabBarPresentingViewController = controller.presentedNavigationController() != nil
         let viewToPresentFrom = isMainTabBarPresentingViewController ? controller.view : mainTabBar
         let rectToPresentFrom = isMainTabBarPresentingViewController ? controller.view.bottomCenter : mainTabBar.menuRect

@@ -58,7 +58,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     let database = NCManageDatabase.shared
     @Published var autoUploadPath = "\(NCManageDatabase.shared.getAccountAutoUploadFileName())"
     /// Root View Controller
-    private var viewController: UIViewController?
+    var controller: NCMainTabBarController?
     /// A variable user for change the auto upload directory
     var serverUrl: String = ""
     /// Get session
@@ -67,8 +67,8 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     }
 
     /// Initialization code to set up the ViewModel with the active account
-    init(viewController: UIViewController?) {
-        self.viewController = viewController
+    init(controller: NCMainTabBarController?) {
+        self.controller = controller
         onViewAppear()
     }
 

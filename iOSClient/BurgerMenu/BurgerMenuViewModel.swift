@@ -24,9 +24,16 @@ class BurgerMenuViewModel: ObservableObject {
         
     @Published var isVisible: Bool = false
     
+    private let database = NCManageDatabase.shared
+    
+    weak var controller: NCMainTabBarController?
+    private var session: NCSession.Session {
+        NCSession.shared.getSession(controller: controller)
+    }
+    
     let appearingAnimationIntervalInSec = 0.5
     
-    init(delegate: BurgerMenuViewModelDelegate?) {
+    init(delegate: BurgerMenuViewModelDelegate?, controller: NCMainTabBarController?) {
         self.delegate = delegate
     }
     
@@ -60,7 +67,7 @@ class BurgerMenuViewModel: ObservableObject {
     }
     
     private func getUsedSpaceMessage() -> String {
-        guard let activeAccount = NCManageDatabase.shared.getActiveAccount() else {
+        guard let activeAccount = getActiveAccount() else {
             return ""
         }
         
@@ -84,9 +91,13 @@ class BurgerMenuViewModel: ObservableObject {
     }
     
     private func getUsedSpaceProgress() -> Double {
-        if let activeAccount = NCManageDatabase.shared.getActiveAccount(), activeAccount.quotaRelative > 0 {
+        if let activeAccount = getActiveAccount(), activeAccount.quotaRelative > 0 {
             return activeAccount.quotaRelative/100.0
         }
         return 0
+    }
+    
+    private func getActiveAccount() -> tableAccount? {
+        return self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account))
     }
 }

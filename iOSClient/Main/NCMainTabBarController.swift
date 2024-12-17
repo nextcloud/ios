@@ -31,6 +31,7 @@ struct NavigationCollectionViewCommon {
 }
 
 class NCMainTabBarController: UITabBarController {
+    var account = ""
     var documentPickerViewController: NCDocumentPickerViewController?
     let navigationCollectionViewCommon = ThreadSafeArray<NavigationCollectionViewCommon>()
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!

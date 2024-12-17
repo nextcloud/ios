@@ -148,9 +148,6 @@ class NCBrandColor: NSObject {
     let yellowFavorite: UIColor = UIColor(red: 248.0 / 255.0, green: 205.0 / 255.0, blue: 70.0 / 255.0, alpha: 1.0)
 
     var userColors: [CGColor] = []
-    var themingColor: String = ""
-    var themingColorElement: String = ""
-    var themingColorText: String = ""
 
 	var menuIconColor: UIColor {
 		iconImageColor
@@ -348,4 +345,7 @@ class NCBrandColor: NSObject {
         }
         return .white
     }
+    
+    
+    var brandElement = UIColor(red: 20.0 / 255.0, green: 116.0 / 255.0, blue: 196.0 / 255.0, alpha: 1.0) // BLUE IONOS : #1474C4
 }

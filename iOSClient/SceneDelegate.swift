@@ -207,7 +207,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
               let url = URLContexts.first?.url,
               let sceneIdentifier = controller.sceneIdentifier else { return }
 
-        let account = appDelegate.account
         let scheme = url.scheme
         let action = url.host
         let session = SceneManager.shared.getSession(scene: scene)
@@ -334,7 +333,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 }
 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    NCActionCenter.shared.openFileViewInFolder(serverUrl: serverUrl, fileNameBlink: nil, fileNameOpen: fileName, sceneIdentifier: controller.sceneIdentifier)
+                    NCActionCenter.shared.openFileViewInFolder(serverUrl: serverUrl, fileNameBlink: nil, fileNameOpen: fileName, sceneIdentifier: controller.sceneIdentifier!)
                 }
             }
             return

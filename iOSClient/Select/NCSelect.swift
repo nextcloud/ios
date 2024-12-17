@@ -110,7 +110,6 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
             }
             self.view.addSubview(selectCommandViewSelect!)
 
-            selectCommandViewSelect?.setColor(account: session.account)
             selectCommandViewSelect?.selectView = self
             selectCommandViewSelect?.translatesAutoresizingMaskIntoConstraints = false
 
@@ -126,7 +125,6 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
             selectCommandViewSelect = Bundle.main.loadNibNamed("NCSelectCommandViewCopyMove", owner: self, options: nil)?.first as? NCSelectCommandView
             self.view.addSubview(selectCommandViewSelect!)
 
-            selectCommandViewSelect?.setColor(account: session.account)
             selectCommandViewSelect?.selectView = self
             selectCommandViewSelect?.translatesAutoresizingMaskIntoConstraints = false
             if items.contains(where: { $0.lock }) {

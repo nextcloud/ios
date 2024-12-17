@@ -175,7 +175,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        commonSelectToolbar = NCCollectionViewCommonSelectToolbar(delegate: self)
+        tabBarSelect = NCCollectionViewCommonSelectTabBar(controller: self.controller, delegate: self)
         self.navigationController?.presentationController?.delegate = self
         collectionView.alwaysBounceVertical = true
 
@@ -710,13 +710,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard layoutKey != NCGlobal.shared.layoutViewTransfers else { return }
         let tabBar = self.tabBarController?.tabBar
         let isTabBarHidden = tabBar?.isHidden ?? true
-        let isTabBarSelectHidden = commonSelectToolbar.isHidden()
+        let isTabBarSelectHidden = tabBarSelect.isHidden()
 
         if isEditMode {
-            commonSelectToolbar.update(selectOcId: selectOcId, metadatas: getSelectedMetadatas(), userId: appDelegate.userId)
-            commonSelectToolbar.show()
+            tabBarSelect.update(fileSelect: fileSelect, metadatas: getSelectedMetadatas(), userId: session.userId)
+            tabBarSelect.show()
         } else {
-            commonSelectToolbar.hide()
+            tabBarSelect.hide()
 			navigationItem.rightBarButtonItems = layoutKey == NCGlobal.shared.layoutViewFiles ? [createAccountButton()] : []
         }
         // fix, if the tabbar was hidden before the update, set it in hidden
@@ -726,67 +726,70 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
     
     private func createAccountButton() -> UIBarButtonItem {
-        let activeAccount = NCManageDatabase.shared.getActiveAccount()
-        let image = utility.loadUserImage(for: appDelegate.user, displayName: activeAccount?.displayName, userBaseUrl: appDelegate)
+        guard let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
+            return UIBarButtonItem()
+        }
+        let image = utility.loadUserImage(for: tableAccount.user, displayName: tableAccount.displayName, urlBase: tableAccount.urlBase)
         let accountButton = AccountSwitcherButton(type: .custom)
-        let accounts = NCManageDatabase.shared.getAllAccountOrderAlias()
+        let accounts = database.getAllAccountOrderAlias()
         var childrenAccountSubmenu: [UIMenuElement] = []
-        
+
         accountButton.setImage(image, for: .normal)
         accountButton.setImage(image, for: .highlighted)
         accountButton.semanticContentAttribute = .forceLeftToRight
         accountButton.sizeToFit()
-        
+
         if !accounts.isEmpty {
             let accountActions: [UIAction] = accounts.map { account in
-                let image = utility.loadUserImage(for: account.user, displayName: account.displayName, userBaseUrl: account)
+                let image = utility.loadUserImage(for: account.user, displayName: account.displayName, urlBase: account.urlBase)
                 var name: String = ""
                 var url: String = ""
-                
+
                 if account.alias.isEmpty {
                     name = account.displayName
                     url = (URL(string: account.urlBase)?.host ?? "")
                 } else {
                     name = account.alias
                 }
-                
+
                 let action = UIAction(title: name, image: image, state: account.active ? .on : .off) { _ in
                     if !account.active {
-                        self.appDelegate.changeAccount(account.account, userProfile: nil) { }
+                        NCAccount().changeAccount(account.account, userProfile: nil, controller: self.controller) { }
                         self.setEditMode(false)
                     }
                 }
-                
+
                 action.subtitle = url
                 return action
             }
-            
+
             let addAccountAction = UIAction(title: NSLocalizedString("_add_account_", comment: ""), image: utility.loadImage(named: "person.crop.circle.badge.plus", colors: NCBrandColor.shared.iconImageMultiColors)) { _ in
-                self.appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
+                self.appDelegate.openLogin(selector: self.global.introLogin)
             }
-            
+
             let settingsAccountAction = UIAction(title: NSLocalizedString("_account_settings_", comment: ""), image: utility.loadImage(named: "gear", colors: [NCBrandColor.shared.iconImageColor])) { _ in
-                let accountSettingsModel = NCAccountSettingsModel(delegate: self)
+                let accountSettingsModel = NCAccountSettingsModel(controller: self.controller, delegate: self)
                 let accountSettingsView = NCAccountSettingsView(model: accountSettingsModel)
                 let accountSettingsController = UIHostingController(rootView: accountSettingsView)
                 self.present(accountSettingsController, animated: true, completion: nil)
             }
-            
+
             if !NCBrandOptions.shared.disable_multiaccount {
                 childrenAccountSubmenu.append(addAccountAction)
             }
             childrenAccountSubmenu.append(settingsAccountAction)
-            
+
             let addAccountSubmenu = UIMenu(title: "", options: .displayInline, children: childrenAccountSubmenu)
             let menu = UIMenu(children: accountActions + [addAccountSubmenu])
-            
+
             accountButton.menu = menu
             accountButton.showsMenuAsPrimaryAction = true
-            
+
             accountButton.onMenuOpened = {
                 self.dismissTip()
             }
         }
+
         return UIBarButtonItem(customView: accountButton)
     }
 
@@ -1152,7 +1155,7 @@ extension NCCollectionViewCommon {
 	// MARK: - Headers view
 	
 	private var sortTitle: String? {
-		guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl) else { return nil }
+        guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl) else { return nil }
 		
 		switch layoutForView.sort {
 		case "fileName": return NSLocalizedString("_name_", comment: "")
@@ -1162,7 +1165,7 @@ extension NCCollectionViewCommon {
 		}
 	}
 	private var sortDirectionImage: UIImage? {
-		guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl) else { return nil }
+		guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl) else { return nil }
 		let imageName = layoutForView.ascending ? "arrow.up" : "arrow.down"
 		return UIImage(systemName: imageName, withConfiguration: UIImage.SymbolConfiguration(pointSize: 16, weight: .semibold))
 	}
@@ -1203,7 +1206,7 @@ extension NCCollectionViewCommon {
 	}
 	
 	private func createSortMenuActions() -> [UIMenuElement] {
-		guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl) else { return [] }
+        guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl) else { return [] }
 		   
 		   let ascending = layoutForView.ascending
 		   let ascendingChevronImage = utility.loadImage(named: ascending ? "chevron.up" : "chevron.down")
@@ -1247,7 +1250,7 @@ extension NCCollectionViewCommon {
 	   }
 	
 	func createViewModeMenuActions() -> [UIMenuElement] {
-		guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl) else { return [] }
+        guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl) else { return [] }
 
 		let listImage = UIImage(named: "FileSelection/view_mode_list")?.templateRendered()
 		let gridImage = UIImage(named: "FileSelection/view_mode_grid")?.templateRendered()
@@ -1259,7 +1262,7 @@ extension NCCollectionViewCommon {
 
 			self.collectionView.reloadData()
 			self.collectionView.collectionViewLayout.invalidateLayout()
-			self.collectionView.setCollectionViewLayout(self.listLayout, animated: true) {_ in self.isTransitioning = false }
+//			self.collectionView.setCollectionViewLayout(self.listLayout, animated: true) {_ in self.isTransitioning = false }
 
 			self.setNavigationRightItems()
 		}
@@ -1271,7 +1274,7 @@ extension NCCollectionViewCommon {
 
 			self.collectionView.reloadData()
 			self.collectionView.collectionViewLayout.invalidateLayout()
-			self.collectionView.setCollectionViewLayout(self.gridLayout, animated: true) {_ in self.isTransitioning = false }
+//			self.collectionView.setCollectionViewLayout(self.gridLayout, animated: true) {_ in self.isTransitioning = false }
 
 			self.setNavigationRightItems()
 		}
@@ -1284,7 +1287,7 @@ extension NCCollectionViewCommon {
 
 				self.collectionView.reloadData()
 				self.collectionView.collectionViewLayout.invalidateLayout()
-				self.collectionView.setCollectionViewLayout(self.mediaLayout, animated: true) {_ in self.isTransitioning = false }
+//				self.collectionView.setCollectionViewLayout(self.mediaLayout, animated: true) {_ in self.isTransitioning = false }
 
 				self.reloadDataSource()
 				self.setNavigationRightItems()
@@ -1296,7 +1299,7 @@ extension NCCollectionViewCommon {
 
 				self.collectionView.reloadData()
 				self.collectionView.collectionViewLayout.invalidateLayout()
-				self.collectionView.setCollectionViewLayout(self.mediaLayout, animated: true) {_ in self.isTransitioning = false }
+//				self.collectionView.setCollectionViewLayout(self.mediaLayout, animated: true) {_ in self.isTransitioning = false }
 
 				self.reloadDataSource()
 				self.setNavigationRightItems()

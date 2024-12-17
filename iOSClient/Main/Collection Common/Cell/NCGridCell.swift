@@ -103,7 +103,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         imageItem.layer.masksToBounds = true
 
         imageSelect.isHidden = true
-        imageSelect.image = NCImageCache.images.checkedYes
+        imageSelect.image = NCImageCache.shared.getImageCheckedYes()
 
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPress(gestureRecognizer:)))
         longPressedGesture.minimumPressDuration = 0.5

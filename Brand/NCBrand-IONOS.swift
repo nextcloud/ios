@@ -37,12 +37,4 @@ class NCBrandColorIONOS: NCBrandColor {
     override init() {
         super.init()
     }
-    
-    override func settingThemingColor(account: String) {
-        super.settingThemingColor(account: account)
-        // it's the stub to ignore the server's theme color until
-        // the portal will have banned setting theme color by a user
-        // and set the IONOS theme color for all users
-        self.brandElement = UIColor(red: 20.0 / 255.0, green: 116.0 / 255.0, blue: 196.0 / 255.0, alpha: 1.0) // BLUE IONOS : #1474C4
-    }
 }

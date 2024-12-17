@@ -283,5 +283,5 @@ struct NCAccountSettingsView: View {
 }
 
 #Preview {
-    NCAccountSettingsView(model: NCAccountSettingsModel(delegate: nil))
+    NCAccountSettingsView(model: NCAccountSettingsModel(controller: nil, delegate: nil))
 }

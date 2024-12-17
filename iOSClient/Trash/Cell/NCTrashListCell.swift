@@ -107,9 +107,9 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
             backgroundView = nil
         }
         if status {
-            imageSelect.image = NCImageCache.images.checkedYes?.withTintColor(NCBrandColor.shared.brandElement)
+            imageSelect.image = NCImageCache.shared.getImageCheckedYes().withTintColor(NCBrandColor.shared.brandElement)
         } else {
-            imageSelect.image = NCImageCache.images.checkedNo?.withTintColor(UIColor(resource: .FileSelection.listItemDeselected))
+            imageSelect.image = NCImageCache.shared.getImageCheckedNo().withTintColor(UIColor(resource: .FileSelection.listItemDeselected))
         }
 
     }

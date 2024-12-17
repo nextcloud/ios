@@ -206,11 +206,11 @@ class NCImageCache: NSObject {
     }
 
     func getImageCheckedYes() -> UIImage {
-        return UIImage(named: "FileSelection/list_item_selected")
+        return UIImage(resource: .FileSelection.listItemSelected)
     }
 
     func getImageCheckedNo() -> UIImage {
-        return UIImage(named: "FileSelection/list_item_deselected")
+        return UIImage(resource: .FileSelection.listItemDeselected)
     }
 
     func getImageButtonMore() -> UIImage {

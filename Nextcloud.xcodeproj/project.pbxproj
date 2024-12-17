@@ -91,7 +91,7 @@
 		D5C5133E2C919B8500AE35CA /* NCImagesRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C5133A2C91970B00AE35CA /* NCImagesRepository.swift */; };
 		F310B1EF2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = F310B1EE2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift */; };
 		F314F1142A30E2DE00BC7FAB /* View+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7E8A390295DC5E0006CB2D0 /* View+Extension.swift */; };
-		F321DA8A2B71205A00DDA0E6 /* NCTrashSelectTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F321DA892B71205A00DDA0E6 /* NCTrashSelectTabBar.swift */; };
+		F321DA8A2B71205A00DDA0E6 /* NCTrashSelectToolBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F321DA892B71205A00DDA0E6 /* NCTrashSelectToolBar.swift */; };
 		F33918C42C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F33918C32C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift */; };
 		F33918C52C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F33918C32C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift */; };
 		F33918C62C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F33918C32C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift */; };
@@ -99,7 +99,6 @@
 		F33918C82C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F33918C32C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift */; };
 		F33918C92C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F33918C32C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift */; };
 		F33918CA2C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F33918C32C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift */; };
-		F321DA8A2B71205A00DDA0E6 /* NCTrashSelectToolBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F321DA892B71205A00DDA0E6 /* NCTrashSelectToolBar.swift */; };
 		F3391B082B4C52C5001C0C4B /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B072B4C52C5001C0C4B /* FirebaseDatabase */; };
 		F3391B0A2B4C52CB001C0C4B /* JGProgressHUD in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B092B4C52CB001C0C4B /* JGProgressHUD */; };
 		F3391B0C2B4C52D5001C0C4B /* SVGKit in Frameworks */ = {isa = PBXBuildFile; productRef = F3391B0B2B4C52D5001C0C4B /* SVGKit */; };
@@ -587,8 +586,8 @@
 		F76882282C0DD1E7001CF441 /* NCEndToEndInitialize.swift in Sources */ = {isa = PBXBuildFile; fileRef = F768820F2C0DD1E7001CF441 /* NCEndToEndInitialize.swift */; };
 		F76882292C0DD1E7001CF441 /* NCManageE2EEModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76882102C0DD1E7001CF441 /* NCManageE2EEModel.swift */; };
 		F768822A2C0DD1E7001CF441 /* NCSettingsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76882112C0DD1E7001CF441 /* NCSettingsModel.swift */; };
+		F768822B2C0DD1E7001CF441 /* (null) in Resources */ = {isa = PBXBuildFile; };
 		F768822C2C0DD1E7001CF441 /* NCKeychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76882132C0DD1E7001CF441 /* NCKeychain.swift */; };
-		F768822B2C0DD1E7001CF441 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F76882122C0DD1E7001CF441 /* Settings.bundle */; };
 		F768822D2C0DD1E7001CF441 /* Acknowledgements.rtf in Resources */ = {isa = PBXBuildFile; fileRef = F76882142C0DD1E7001CF441 /* Acknowledgements.rtf */; };
 		F768822E2C0DD1E7001CF441 /* NCSettingsBundleHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76882152C0DD1E7001CF441 /* NCSettingsBundleHelper.swift */; };
 		F768822F2C0DD1E7001CF441 /* NCAutoUploadModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76882172C0DD1E7001CF441 /* NCAutoUploadModel.swift */; };
@@ -1170,11 +1169,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		08DC3BD41E64727E00F036D3 /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
-		08EA97441E6554FC004C83FA /* FirebaseAnalytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseAnalytics.framework; sourceTree = "<group>"; };
-		08EA97451E6554FC004C83FA /* FirebaseCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseCore.framework; sourceTree = "<group>"; };
-		08EA97461E6554FC004C83FA /* FirebaseInstanceID.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FirebaseInstanceID.framework; sourceTree = "<group>"; };
-		08EA97471E6554FC004C83FA /* GoogleToolboxForMac.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleToolboxForMac.framework; sourceTree = "<group>"; };
 		0F5090CD2C786F04009348D9 /* FileActionsHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileActionsHeader.swift; sourceTree = "<group>"; };
 		0F8B9A5A2C7887F60041C17D /* FileActionsHeader.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = FileActionsHeader.xib; sourceTree = "<group>"; };
 		0F9F524E2C8F46D7004717E0 /* AppScreenConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppScreenConstants.swift; sourceTree = "<group>"; };
@@ -1240,15 +1234,10 @@
 		C04E2F222A17BB4D001BAD85 /* FilesIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilesIntegrationTests.swift; sourceTree = "<group>"; };
 		D51C00402C2C1B4D00A04554 /* NCBrand-IONOS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCBrand-IONOS.swift"; sourceTree = "<group>"; };
 		D5B6AA7727200C7200D49C24 /* NCActivityTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCActivityTableViewCell.swift; sourceTree = "<group>"; };
-		F310B1EE2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCViewerMedia+VisionKit.swift"; sourceTree = "<group>"; };
-		F321DA892B71205A00DDA0E6 /* NCTrashSelectTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTrashSelectTabBar.swift; sourceTree = "<group>"; };
-		F33918C32C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileNameValidator+Extensions.swift"; sourceTree = "<group>"; };
 		D5C5133A2C91970B00AE35CA /* NCImagesRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCImagesRepository.swift; sourceTree = "<group>"; };
-		F30A96042A27299D00D7BCFE /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/iPhoneOS.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		F310B1EE2BA862F1001C42F5 /* NCViewerMedia+VisionKit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NCViewerMedia+VisionKit.swift"; sourceTree = "<group>"; };
-		F3131ED82B038DB20018DB28 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/iOSSupport/System/Library/Frameworks/SwiftUI.framework; sourceTree = DEVELOPER_DIR; };
-		F3131EDA2B038DB90018DB28 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.0.sdk/System/iOSSupport/System/Library/Frameworks/WidgetKit.framework; sourceTree = DEVELOPER_DIR; };
 		F321DA892B71205A00DDA0E6 /* NCTrashSelectToolBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCTrashSelectToolBar.swift; sourceTree = "<group>"; };
+		F33918C32C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileNameValidator+Extensions.swift"; sourceTree = "<group>"; };
 		F33EE6F12BF4C9B200CA1A51 /* PKCS12.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PKCS12.swift; sourceTree = "<group>"; };
 		F343A4B22A1E01FF00DDA874 /* PHAsset+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PHAsset+Extension.swift"; sourceTree = "<group>"; };
 		F343A4BA2A1E734600DDA874 /* Optional+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Optional+Extension.swift"; sourceTree = "<group>"; };
@@ -3845,7 +3834,7 @@
 				F7CB689A2541676B0050EC94 /* NCMore.storyboard in Resources */,
 				F77B0F7D1D118A16002130FE /* Images.xcassets in Resources */,
 				42F504802C6F553D001AA432 /* Colors.xcassets in Resources */,
-				F768822B2C0DD1E7001CF441 /* Settings.bundle in Resources */,
+				F768822B2C0DD1E7001CF441 /* (null) in Resources */,
 				F73CB3B222E072A000AD728E /* NCShareHeaderView.xib in Resources */,
 				F7AE00FA230E81EB007ACF8A /* NCBrowserWeb.storyboard in Resources */,
 				F7EDE514262DC2CD00414FE6 /* NCSelectCommandViewSelect+CreateFolder.xib in Resources */,
@@ -4382,7 +4371,6 @@
 				F702F30825EE5D47008F8E80 /* NCPopupViewController.swift in Sources */,
 				F733598125C1C188002ABA72 /* NCAskAuthorization.swift in Sources */,
 				370D26AF248A3D7A00121797 /* NCCellProtocol.swift in Sources */,
-				F70D87D025EE6E58008CBBBD /* NCRenameFile.swift in Sources */,
 				F768822C2C0DD1E7001CF441 /* NCKeychain.swift in Sources */,
 				F7BFFD282C8846020029A201 /* NCHud.swift in Sources */,
 				F71CD6CA2930D7B1006C95C1 /* NCApplicationHandle.swift in Sources */,
@@ -5223,9 +5211,8 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_INSTALL_OBJC_HEADER = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "";
-				SWIFT_PRECOMPILE_BRIDGING_HEADER = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/iOSClient/Nextcloud-Bridging-Header.h";
+				SWIFT_PRECOMPILE_BRIDGING_HEADER = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Nextcloud.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Nextcloud";

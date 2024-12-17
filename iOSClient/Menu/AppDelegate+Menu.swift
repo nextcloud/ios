@@ -64,7 +64,7 @@ extension AppDelegate {
             )
         )
 
-        if NCKeychain().isEndToEndEnabled(account: appDelegate.account) {
+        if NCKeychain().isEndToEndEnabled(account: session.account) {
             actions.append(.seperator(order: 0))
         }
 

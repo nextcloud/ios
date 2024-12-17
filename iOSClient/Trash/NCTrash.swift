@@ -40,7 +40,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
     var isEditMode = false
     var selectOcId: [String] = []
     var selectionToolbar: NCTrashSelectToolBar!
-    var datasource: [tableTrash] = []
+    var datasource: Results<tableTrash>?
     var layoutForView: NCDBLayoutForView?
     var listLayout: NCListLayout!
     var gridLayout: NCGridLayout!

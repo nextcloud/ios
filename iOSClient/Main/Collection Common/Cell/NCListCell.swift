@@ -161,22 +161,13 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         labelTitle.textColor = NCBrandColor.shared.textColor
         labelInfo.textColor = NCBrandColor.shared.textColor2
         labelSubinfo.textColor = NCBrandColor.shared.textColor2
-
-        imageFavoriteBackground.isHidden = true
-    }
-
-    override func prepareForReuse() {
-        super.prepareForReuse()
+        
         imageItem.backgroundColor = nil
         if fileFavoriteImage?.image != nil {
             imageFavoriteBackground.isHidden = false
         } else {
             imageFavoriteBackground.isHidden = true
         }
-
-        accessibilityHint = nil
-        accessibilityLabel = nil
-        accessibilityValue = nil
     }
 
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
@@ -255,9 +246,9 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             setA11yActions()
         }
         if status {
-            imageSelect.image = NCImageCache.images.checkedYes?.withTintColor(NCBrandColor.shared.brandElement)
+            imageSelect.image = NCImageCache.shared.getImageCheckedYes().withTintColor(NCBrandColor.shared.brandElement)
         } else {
-            imageSelect.image = NCImageCache.images.checkedNo?.withTintColor(UIColor(resource: .FileSelection.listItemDeselected))
+            imageSelect.image = NCImageCache.shared.getImageCheckedNo().withTintColor(UIColor(resource: .FileSelection.listItemDeselected))
         }
 
     }

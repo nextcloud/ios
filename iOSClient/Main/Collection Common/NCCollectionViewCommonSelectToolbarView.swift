@@ -10,7 +10,7 @@
 import SwiftUI
 
 struct NCCollectionViewCommonSelectToolbarView: View {
-    @ObservedObject var tabBarSelect: NCCollectionViewCommonSelectToolbar
+    @ObservedObject var tabBarSelect: NCCollectionViewCommonSelectTabBar
     @Environment(\.verticalSizeClass) var sizeClass
 
     var body: some View {
@@ -130,6 +130,6 @@ private struct CustomBackgroundOnPressButtonStyle: ButtonStyle {
 }
 
 #Preview {
-    NCCollectionViewCommonSelectToolbarView(tabBarSelect: NCCollectionViewCommonSelectToolbar())
+    NCCollectionViewCommonSelectToolbarView(tabBarSelect: NCCollectionViewCommonSelectTabBar())
 }
 
