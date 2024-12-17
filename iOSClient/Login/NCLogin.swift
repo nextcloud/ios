@@ -207,11 +207,11 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         }
     }
 
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-
-        pollTimer?.cancel()
-    }
+//    override func viewDidDisappear(_ animated: Bool) {
+//        super.viewDidDisappear(animated)
+//
+//        pollTimer?.cancel()
+//    }
 
     private func handleLoginWithAppConfig() {
         let accountCount = NCManageDatabase.shared.getAccounts()?.count ?? 0
@@ -344,9 +344,10 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     self.loginButton.isEnabled = true
                     // Login Flow V2
                     if error == .success, let token, let endpoint, let login {
-
                         guard let url = URL(string: login) else { return }
                         let vc: UIViewController
+
+                        poll(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login)
 
                         if useInAppBrowser {
                             vc = SFSafariViewController(url: url)
@@ -354,7 +355,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                             vc = UIHostingController(rootView: NCLoginPoll(loginFlowV2Login: login, model: ncLoginPollModel))
                         }
 
-                        poll(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login)
 
                         present(vc, animated: true)
                     } else if serverInfo.versionMajor < NCGlobal.shared.nextcloudVersion12 { // No login flow available
@@ -558,5 +558,3 @@ extension NCLogin: ClientCertificateDelegate, UIDocumentPickerDelegate {
         timer.resume()
     }
 }
-
-
