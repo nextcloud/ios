@@ -149,13 +149,16 @@ class NCService: NSObject {
                                            avatarSizeRounded: NCGlobal.shared.avatarSizeRounded,
                                            etag: etag,
                                            account: account,
-                                           options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, _, _, etag, _, error in
-            if let etag = etag, error == .success {
-                self.database.addAvatar(fileName: fileName, etag: etag)
+                                           options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, _, _, newEtag, _, error in
+            if let newEtag,
+               etag != newEtag,
+               error == .success {
+                self.database.addAvatar(fileName: fileName, etag: newEtag)
+
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: ["error": error])
             } else if error.errorCode == NCGlobal.shared.errorNotModified {
                 self.database.setAvatarLoaded(fileName: fileName)
             }
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadAvatar, userInfo: ["error": error])
         }
     }
 
