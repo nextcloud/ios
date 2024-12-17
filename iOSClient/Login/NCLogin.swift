@@ -324,6 +324,9 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         guard var url = baseUrlTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines) else { return }
         if url.hasSuffix("/") { url = String(url.dropLast()) }
         if url.isEmpty { return }
+
+        loginButton.hideButtonAndShowSpinner()
+
         // Check whether baseUrl contain protocol. If not add https:// by default.
         if url.hasPrefix("https") == false && url.hasPrefix("http") == false {
             url = "https://" + url
@@ -334,7 +337,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     func isUrlValid(url: String, user: String? = nil) {
         loginButton.isEnabled = false
-        NextcloudKit.shared.getServerStatus(serverUrl: url) { _, serverInfoResult in
+        NextcloudKit.shared.getServerStatus(serverUrl: url) { [self] _, serverInfoResult in
             switch serverInfoResult {
             case .success(let serverInfo):
                 if let host = URL(string: url)?.host {
@@ -350,11 +353,12 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                         poll(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login)
 
                         if useInAppBrowser {
-                            vc = SFSafariViewController(url: url)
+                            let safariVC = SFSafariViewController(url: url)
+                            safariVC.delegate = self
+                            vc = safariVC
                         } else {
                             vc = UIHostingController(rootView: NCLoginPoll(loginFlowV2Login: login, model: ncLoginPollModel))
                         }
-
 
                         present(vc, animated: true)
                     } else if serverInfo.versionMajor < NCGlobal.shared.nextcloudVersion12 { // No login flow available
@@ -364,7 +368,9 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     }
                 }
             case .failure(let error):
+                loginButton.hideSpinnerAndShowButton()
                 self.loginButton.isEnabled = true
+
                 if error.errorCode == NSURLErrorServerCertificateUntrusted {
                     let alertController = UIAlertController(title: NSLocalizedString("_ssl_certificate_untrusted_", comment: ""), message: NSLocalizedString("_connect_server_anyway_", comment: ""), preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { _ in
@@ -523,8 +529,10 @@ extension NCLogin: ClientCertificateDelegate, UIDocumentPickerDelegate {
                 NextcloudKit.shared.getLoginFlowV2Poll(token: loginFlowV2Token, endpoint: loginFlowV2Endpoint) { [self] server, loginName, appPassword, _, error in
                     if error == .success, let urlBase = server, let user = loginName, let appPassword {
                         ncLoginPollModel.isLoading = true
-
+                        print("TEST: GET LOGIN FLOW")
                         NCAccount().createAccount(urlBase: urlBase, user: user, password: appPassword, controller: controller) { account, error in
+                            print("TEST: CREATE ACCOUNT")
+
                             if error == .success {
                                 let window = UIApplication.shared.firstWindow
                                 if let controller = window?.rootViewController as? NCMainTabBarController {
@@ -556,5 +564,11 @@ extension NCLogin: ClientCertificateDelegate, UIDocumentPickerDelegate {
         })
 
         timer.resume()
+    }
+}
+
+extension NCLogin: SFSafariViewControllerDelegate {
+    func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
+        loginButton.hideSpinnerAndShowButton()
     }
 }
