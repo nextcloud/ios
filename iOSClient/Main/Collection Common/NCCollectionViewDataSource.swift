@@ -290,9 +290,7 @@ class NCCollectionViewDataSource: NSObject {
                 counter += 1
             }
 
-            DispatchQueue.main.async {
-                return completion(updated)
-            }
+            return completion(updated)
         }
     }
 
