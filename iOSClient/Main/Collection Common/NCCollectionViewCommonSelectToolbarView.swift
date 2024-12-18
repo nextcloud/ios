@@ -10,7 +10,7 @@
 import SwiftUI
 
 struct NCCollectionViewCommonSelectToolbarView: View {
-    @ObservedObject var tabBarSelect: NCCollectionViewCommonSelectToolbar
+    @ObservedObject var tabBarSelect: NCCollectionViewCommonSelectTabBar
 
     var body: some View {
         GeometryReader { geometry in

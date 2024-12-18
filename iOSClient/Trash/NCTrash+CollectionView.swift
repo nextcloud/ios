@@ -28,7 +28,7 @@ import RealmSwift
 extension NCTrash: UICollectionViewDelegate {
 	var selectionState: FileActionsHeaderSelectionState {
 		let selectedItemsCount = selectOcId.count
-		if selectedItemsCount == datasource.count {
+        if selectedItemsCount == datasource?.count {
 			return .all
 		}
 		

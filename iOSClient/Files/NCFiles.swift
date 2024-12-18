@@ -320,20 +320,6 @@ class NCFiles: NCCollectionViewCommon {
             }
         }
     }
-
-    // MARK: - NCAccountSettingsModelDelegate
-
-    override func accountSettingsDidDismiss(tableAccount: tableAccount?, controller: NCMainTabBarController?) {
-        let currentAccount = session.account
-        if database.getAllTableAccount().isEmpty {
-            appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
-        } else if let account = tableAccount?.account, account != currentAccount {
-            NCAccount().changeAccount(account, userProfile: nil, controller: controller) { }
-        } else if isRoot {
-            titleCurrentFolder = getNavigationTitle()
-            navigationItem.title = titleCurrentFolder
-        }
-    }
     
     private func isOpenedFromSearchResults() -> Bool {
         return self.navigationController?.viewControllers.contains(where: { viewController in

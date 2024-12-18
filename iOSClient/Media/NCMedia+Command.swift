@@ -26,16 +26,20 @@ import UIKit
 import NextcloudKit
 
 extension NCMedia {
-    func setEditMode(_ editMode: Bool) {
-        isEditMode = editMode
-        updateHeadersView()
-        updateTabBarOnEditModeChange()
-        setNavigationLeftItems()
+    @IBAction func selectOrCancelButtonPressed(_ sender: UIButton) {
+        isEditMode = !isEditMode
+        setSelectcancelButton()
     }
 
-    func updateTabBarOnEditModeChange() {
-        selectOcId.removeAll()
-        tabBarSelect.update(selectOcId: selectOcId)
+    func setEditMode(_ editMode: Bool) {
+        isEditMode = editMode
+        setSelectcancelButton()
+    }
+
+    func setSelectcancelButton() {
+        fileSelect.removeAll()
+        tabBarSelect.selectCount = fileSelect.count
+
         if let visibleCells = self.collectionView?.indexPathsForVisibleItems.compactMap({ self.collectionView?.cellForItem(at: $0) }) {
             for case let cell as NCMediaCell in visibleCells {
                 cell.selected(false)
@@ -43,30 +47,64 @@ extension NCMedia {
         }
 
         if isEditMode {
+            activityIndicatorTrailing.constant = 150
+            selectOrCancelButton.setTitle( NSLocalizedString("_cancel_", comment: ""), for: .normal)
+            selectOrCancelButtonTrailing.constant = 10
+            selectOrCancelButton.isHidden = false
+            menuButton.isHidden = true
             tabBarSelect.show()
         } else {
+            activityIndicatorTrailing.constant = 150
+            selectOrCancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
+            selectOrCancelButtonTrailing.constant = 50
+            selectOrCancelButton.isHidden = false
+            menuButton.isHidden = false
             tabBarSelect.hide()
         }
     }
 
-    func createMenuElements() -> [UIMenuElement] {
-        let layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: NCGlobal.shared.layoutViewMedia, serverUrl: "")
-        let columnPhoto = layoutForView?.columnPhoto ?? 3
-        let layout = layoutForView?.layout ?? NCGlobal.shared.mediaLayoutRatio
-        let layoutTitle = (layout == NCGlobal.shared.mediaLayoutRatio) ? NSLocalizedString("_media_square_", comment: "") : NSLocalizedString("_media_ratio_", comment: "")
-        let layoutImage = (layout == NCGlobal.shared.mediaLayoutRatio) ? utility.loadImage(named: "square.grid.3x3") : utility.loadImage(named: "rectangle.grid.3x2")
-        
-        if CGFloat(columnPhoto) >= maxImageGrid - 1 {
-            self.attributesZoomIn = []
-            self.attributesZoomOut = .disabled
-        } else if columnPhoto <= 1 {
-            self.attributesZoomIn = .disabled
-            self.attributesZoomOut = []
-        } else {
-            self.attributesZoomIn = []
-            self.attributesZoomOut = []
+    func setTitleDate() {
+        if let layoutAttributes = collectionView.collectionViewLayout.layoutAttributesForElements(in: collectionView.bounds) {
+            let sortedAttributes = layoutAttributes.sorted { $0.frame.minY < $1.frame.minY || ($0.frame.minY == $1.frame.minY && $0.frame.minX < $1.frame.minX) }
+
+            if let firstAttribute = sortedAttributes.first, let metadata = dataSource.getMetadata(indexPath: firstAttribute.indexPath) {
+                titleDate?.text = utility.getTitleFromDate(metadata.date as Date)
+                return
+            }
         }
-        
+
+        titleDate?.text = ""
+    }
+
+    func setColor() {
+        if isTop {
+            UIView.animate(withDuration: 0.3) { [self] in
+                gradientView.alpha = 0
+                titleDate?.textColor = NCBrandColor.shared.textColor
+                activityIndicator.color = NCBrandColor.shared.textColor
+                selectOrCancelButton.setTitleColor(NCBrandColor.shared.textColor, for: .normal)
+                menuButton.setImage(NCUtility().loadImage(named: "ellipsis", colors: [NCBrandColor.shared.textColor]), for: .normal)
+            }
+        } else {
+            UIView.animate(withDuration: 0.3) { [self] in
+                gradientView.alpha = 1
+                titleDate?.textColor = .white
+                activityIndicator.color = .white
+                selectOrCancelButton.setTitleColor(.white, for: .normal)
+                menuButton.setImage(NCUtility().loadImage(named: "ellipsis", colors: [.white]), for: .normal)
+            }
+        }
+    }
+
+    func createMenu() {
+        let layoutForView = database.getLayoutForView(account: session.account, key: global.layoutViewMedia, serverUrl: "")
+        var layout = layoutForView?.layout ?? global.mediaLayoutRatio
+        /// Overwrite default value
+        if layout == global.layoutList { layout = global.mediaLayoutRatio }
+        ///
+        let layoutTitle = (layout == global.mediaLayoutRatio) ? NSLocalizedString("_media_square_", comment: "") : NSLocalizedString("_media_ratio_", comment: "")
+        let layoutImage = (layout == global.mediaLayoutRatio) ? utility.loadImage(named: "square.grid.3x3") : utility.loadImage(named: "rectangle.grid.3x2")
+
         let viewFilterMenu = UIMenu(title: "", options: .displayInline, children: [
             UIAction(title: NSLocalizedString("_media_viewimage_show_", comment: ""), image: utility.loadImage(named: "photo")) { _ in
                 self.showOnlyImages = true
@@ -113,12 +151,12 @@ extension NCMedia {
                 self.present(navigationController, animated: true)
             })
         ])
-        
+
         let playFile = UIAction(title: NSLocalizedString("_play_from_files_", comment: ""), image: utility.loadImage(named: "play.circle")) { _ in
             guard let controller = self.controller else { return }
             self.documentPickerViewController = NCDocumentPickerViewController(controller: controller, isViewerMedia: true, allowsMultipleSelection: false, viewController: self)
         }
-        
+
         let playURL = UIAction(title: NSLocalizedString("_play_from_url_", comment: ""), image: utility.loadImage(named: "link")) { _ in
             let alert = UIAlertController(title: NSLocalizedString("_valid_video_url_", comment: ""), message: nil, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel, handler: nil))
@@ -141,12 +179,12 @@ extension NCMedia {
             }))
             self.present(alert, animated: true)
         }
-        
-        return [viewOptionsMedia, playFile, playURL]
+
+        menuButton.menu = UIMenu(title: "", children: [viewFilterMenu, viewLayoutMenu, viewFolderMedia, playFile, playURL])
     }
 }
 
-extension NCMedia: NCCollectionViewCommonSelectToolbarDelegate {
+extension NCMedia: NCMediaSelectTabBarDelegate {
     func delete() {
         let ocIds = self.fileSelect.map { $0 }
         var alertStyle = UIAlertController.Style.actionSheet
@@ -158,35 +196,38 @@ extension NCMedia: NCCollectionViewCommonSelectToolbarDelegate {
         if !ocIds.isEmpty {
             let indices = dataSource.metadatas.enumerated().filter { ocIds.contains($0.element.ocId) }.map { $0.offset }
             let alertController = UIAlertController(title: nil, message: nil, preferredStyle: alertStyle)
-            alertController.view.backgroundColor = NCBrandColor.shared.appBackgroundColor
+
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_delete_selected_photos_", comment: ""), style: .destructive) { (_: UIAlertAction) in
-                Task {
-                    var error = NKError()
-                    var ocIds: [String] = []
-                    for ocId in selectOcId where error == .success {
-                        if let metadata = NCManageDatabase.shared.getMetadataFromOcId(ocId) {
-                            error = await NCNetworking.shared.deleteMetadata(metadata, onlyLocalCache: false)
-                            if error == .success {
-                                ocIds.append(metadata.ocId)
-                            }
-                        }
+                self.isEditMode = false
+                self.setSelectcancelButton()
+
+                for ocId in ocIds {
+                    if let metadata = self.database.getMetadataFromOcId(ocId) {
+                        metadatas.append(metadata)
                     }
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDeleteFile, userInfo: ["ocId": ocIds, "onlyLocalCache": false, "error": error])
                 }
-                self.setEditMode(false)
+
+                NCNetworking.shared.deleteMetadatas(metadatas, sceneIdentifier: self.controller?.sceneIdentifier)
+
+                for index in indices {
+                    let indexPath = IndexPath(row: index, section: 0)
+                    if let cell = self.collectionView.cellForItem(at: indexPath) as? NCMediaCell,
+                       self.dataSource.metadatas[index].ocId == cell.ocId {
+                        indexPaths.append(indexPath)
+                    }
+                }
+
+                self.dataSource.removeMetadata(ocIds)
+                if indexPaths.count == ocIds.count {
+                    self.collectionView.deleteItems(at: indexPaths)
+                } else {
+                    self.collectionViewReloadData()
+                }
             })
 
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_cancel_", comment: ""), style: .cancel) { (_: UIAlertAction) in })
 
             present(alertController, animated: true, completion: { })
         }
-    }
-    
-    func toolbarWillAppear() {
-        self.tabBarController?.tabBar.isHidden = true
-    }
-    
-    func toolbarWillDisappear() {
-        self.tabBarController?.tabBar.isHidden = false
     }
 }

@@ -369,4 +369,5 @@ class NCBrandColor: NSObject {
     
     
     var brandElement = UIColor(red: 20.0 / 255.0, green: 116.0 / 255.0, blue: 196.0 / 255.0, alpha: 1.0) // BLUE IONOS : #1474C4
+    var brandText: UIColor = .white
 }

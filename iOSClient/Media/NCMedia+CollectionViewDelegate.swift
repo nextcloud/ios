@@ -26,25 +26,19 @@ import NextcloudKit
 import RealmSwift
 
 extension NCMedia: UICollectionViewDelegate {
-    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let metadata = dataSource.getMetadata(indexPath: indexPath),
               let cell = collectionView.cellForItem(at: indexPath) as? NCMediaCell else { return }
 
-                if let index = selectOcId.firstIndex(of: metadata.ocId) {
-                    selectOcId.remove(at: index)
-                    mediaCell?.selected(false)
-                } else {
-                    selectOcId.append(metadata.ocId)
-                    mediaCell?.selected(true)
-
-                }
-                fileActionsHeader?.setSelectionState(selectionState: selectionState)
-                tabBarSelect.update(selectOcId: selectOcId)
+        if isEditMode {
+            if let index = fileSelect.firstIndex(of: metadata.ocId) {
+                fileSelect.remove(at: index)
+                cell.selected(false)
             } else {
                 fileSelect.append(metadata.ocId)
                 cell.selected(true)
             }
+//            fileActionsHeader?.setSelectionState(selectionState: selectionState)
             tabBarSelect.selectCount = fileSelect.count
         } else if let metadata = database.getMetadataFromOcId(metadata.ocId) {
             let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt1024)

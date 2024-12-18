@@ -749,13 +749,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
         return NCBrandOptions.shared.brand
     }
-
-    func accountSettingsDidDismiss(tableAccount: tableAccount?, controller: NCMainTabBarController?) { }
-        guard let userAlias = activeAccount?.alias, !userAlias.isEmpty else {
-            return NCBrandOptions.shared.brand
-        }
-        return userAlias
-    }
     
     private func isCurrentScreenInMainTabBar() -> Bool {
         return self.tabBarController is NCMainTabBarController

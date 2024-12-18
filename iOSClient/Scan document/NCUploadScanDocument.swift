@@ -437,9 +437,9 @@ struct UploadScanDocumentView: View {
                                     }
                                 }
                             }
-                            .disabled(fileName.isEmpty || !footer.isEmpty)
-                            .buttonStyle(.primary)
                         }
+                        .disabled(fileName.isEmpty || !footer.isEmpty)
+                        .buttonStyle(.primary)
                     }
                     .applyGlobalFormSectionStyle()
 

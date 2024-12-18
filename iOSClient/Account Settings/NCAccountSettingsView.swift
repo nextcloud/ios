@@ -40,15 +40,12 @@ struct NCAccountSettingsView: View {
         NavigationView {
             Form {
                   Section {
-                    if let activeAccount = model.activeAccount {
+                      if let activeAccount = model.tblAccount {
                         let userStatus = model.getUserStatus()
                         AccountView(account: activeAccount, userStatus: userStatus).listRowSeparator(.hidden)
                         PersonalDataView(account: activeAccount)
                     }
                     changeAliasSection
-                    if NCGlobal.shared.capabilityUserStatusEnabled {
-                        userStatusButtonView
-                    }
                     if model.isAdminGroup() {
                         sertificateDetailsButtonView
                         sertificatePNButtonView
@@ -108,31 +105,6 @@ extension NCAccountSettingsView {
         }
     }
     
-    private var userStatusButtonView: some View {
-        Button(action: {
-            showUserStatus = true
-        }, label: {
-            HStack {
-                Image(systemName: "moon.fill")
-                    .resizable()
-                    .scaledToFit()
-                    .font(Font.system(.body).weight(.light))
-                    .frame(width: 20, height: 20)
-                    .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
-                Text(NSLocalizedString("_set_user_status_", comment: ""))
-                    .lineLimit(1)
-                    .truncationMode(.middle)
-                    .foregroundStyle(Color(NCBrandColor.shared.textColor))
-                    .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
-            }
-            .font(.system(size: 14))
-        })
-        .sheet(isPresented: $showUserStatus) {
-            UserStatusView(showUserStatus: $showUserStatus)
-        }
-        .onChange(of: showUserStatus) { _ in }
-    }
-    
     private var sertificateDetailsButtonView: some View {
         Button(action: {
             showServerCertificate.toggle()
@@ -153,7 +125,7 @@ extension NCAccountSettingsView {
             .font(.system(size: 14))
         })
         .sheet(isPresented: $showServerCertificate) {
-            if let url = URL(string: model.activeAccount?.urlBase), let host = url.host {
+            if let url = URL(string: model.tblAccount?.urlBase), let host = url.host {
                 certificateDetailsView(host: host, title: NSLocalizedString("_certificate_view_", comment: ""))
             }
         }
@@ -186,13 +158,13 @@ extension NCAccountSettingsView {
     }
     
     private var switchAccountSection: some View {
-        let allAccounts = model.accounts
+        let allAccounts = model.tblAccounts
         return ForEach(0..<allAccounts.count, id: \.self) { index in
             let tableAccount = allAccounts[index]
             Button(action: {
                 model.setAccount(account: tableAccount.account)
             }) {
-                SwitchAccountRowView(account:tableAccount, isSelected: tableAccount.account == model.activeAccount?.account)
+                SwitchAccountRowView(account:tableAccount, isSelected: tableAccount.account == model.tblAccount?.account)
             }
         }
     }
@@ -253,7 +225,7 @@ struct AccountView: View {
     let userStatus: (statusImage: UIImage?, statusMessage: String, descriptionMessage: String)
 
     var body: some View {
-        let userAvatar = NCUtility().loadUserImage(for: account.user, displayName: account.displayName, userBaseUrl: account)
+        let userAvatar = NCUtility().loadUserImage(for: account.user, displayName: account.displayName, urlBase: account.urlBase)
 
         VStack {
             UserImageView(avatar: userAvatar, onlineStatus: userStatus.statusImage)
@@ -339,7 +311,7 @@ struct SwitchAccountRowView: View {
 
     var body: some View {
         let userName = account.alias.isEmpty ? account.displayName : account.alias
-        let userAvatar = NCUtility().loadUserImage(for: account.user, displayName: account.displayName, userBaseUrl: account)
+        let userAvatar = NCUtility().loadUserImage(for: account.user, displayName: account.displayName, urlBase: account.urlBase)
         
         HStack {
             Image(uiImage: UIImage(resource:.accountCheckmark))

@@ -105,12 +105,12 @@ class NCPhotoCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProt
     }
 
     func setButtonMore(image: UIImage) {
-        buttonMore.setImage(image, for: .normal)
+//        buttonMore.setImage(image, for: .normal)
         setA11yActions()
     }
 
     func hideButtonMore(_ status: Bool) {
-        buttonMore.isHidden = status
+//        buttonMore.isHidden = status
     }
 
     func hideImageStatus(_ status: Bool) {

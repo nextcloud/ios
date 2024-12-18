@@ -35,6 +35,14 @@ protocol NCCollectionViewCommonSelectTabBarDelegate: AnyObject {
 }
 
 class NCCollectionViewCommonSelectTabBar: ObservableObject {
+    enum TabButton {
+        case share
+        case moveOrCopy
+        case delete
+        case download
+        case lockOrUnlock
+    }
+    
     var controller: NCMainTabBarController?
     var hostingController: UIViewController?
     open weak var delegate: NCCollectionViewCommonSelectTabBarDelegate?
@@ -51,7 +59,9 @@ class NCCollectionViewCommonSelectTabBar: ObservableObject {
     let displayedButtons: [TabButton]
 
 
-    init(controller: NCMainTabBarController? = nil, delegate: NCCollectionViewCommonSelectTabBarDelegate? = nil) {
+    init(controller: NCMainTabBarController? = nil, delegate: NCCollectionViewCommonSelectTabBarDelegate? = nil, displayedButtons: [TabButton] = [.share, .moveOrCopy, .delete, .download, .lockOrUnlock]) {
+        self.displayedButtons = displayedButtons
+        
         let rootView = NCCollectionViewCommonSelectTabBarView(tabBarSelect: self)
         hostingController = UIHostingController(rootView: rootView)
 

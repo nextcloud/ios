@@ -49,9 +49,7 @@ extension NCMedia: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        var numberOfItemsInSection = 0
-        if let metadatas { numberOfItemsInSection = metadatas.count }
-        return numberOfItemsInSection
+        return dataSource.metadatas.count
     }
 
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {

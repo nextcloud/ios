@@ -57,9 +57,9 @@ struct NCSettingsView: View {
                         Text(NSLocalizedString("_settings_autoupload_", comment: ""))
                     }
                 }
-                    .font(.system(size: 16))
-                }
-            }).listRowBackground(Color(NCBrandColor.shared.formRowBackgroundColor))
+            })
+            .font(.system(size: 16))
+            .listRowBackground(Color(NCBrandColor.shared.formRowBackgroundColor))
             /// `Privacy` Section
             Section(content: {
                 Button(action: {
@@ -77,7 +77,7 @@ struct NCSettingsView: View {
                 })
                 .tint(Color(NCBrandColor.shared.textColor))
                 .sheet(isPresented: $showPasscode) {
-                    PasscodeView(isLockActive: $model.isLockActive)
+                    SetupPasscodeView(isLockActive: $model.isLockActive)
                 }
                 /// Enable Touch ID
                 Toggle(NSLocalizedString("_enable_touch_face_id_", comment: ""), isOn: $model.enableTouchID)

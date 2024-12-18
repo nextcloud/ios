@@ -28,7 +28,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
     @IBOutlet weak var imageFavorite: UIImageView!
-    @IBOutlet weak var imageFavoriteBackground: UIImageView!
     @IBOutlet weak var imageLocal: UIImageView!
     @IBOutlet weak var labelTitle: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
@@ -38,6 +37,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var buttonShared: UIButton!
     @IBOutlet weak var imageMore: UIImageView!
     @IBOutlet weak var buttonMore: UIButton!
+    @IBOutlet weak var progressView: UIProgressView!
     @IBOutlet weak var separator: UIView!
     @IBOutlet weak var tag0: UILabel!
     @IBOutlet weak var tag1: UILabel!
@@ -45,6 +45,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     @IBOutlet weak var imageItemLeftConstraint: NSLayoutConstraint!
     @IBOutlet weak var separatorHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var titleTrailingConstraint: NSLayoutConstraint!
+    @IBOutlet weak var subInfoTrailingConstraint: NSLayoutConstraint!
 
     var ocId = ""
     var ocIdTransfer = ""
@@ -132,9 +133,9 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         imageItem.image = nil
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
+        imageItem.backgroundColor = nil
         imageStatus.image = nil
         imageFavorite.image = nil
-        imageFavoriteBackground.isHidden = true
         imageLocal.image = nil
         labelTitle.text = ""
         labelInfo.text = ""
@@ -161,18 +162,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         labelTitle.textColor = UIColor(resource: .ListCell.title)
         labelInfo.textColor = UIColor(resource: .ListCell.subtitle)
         labelSubinfo.textColor = UIColor(resource: .ListCell.subtitle)
-
-        imageFavoriteBackground.isHidden = true
-    }
-
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        imageItem.backgroundColor = nil
-        if fileFavoriteImage?.image != nil {
-            imageFavoriteBackground.isHidden = false
-        } else {
-            imageFavoriteBackground.isHidden = true
-        }
     }
 
     override func snapshotView(afterScreenUpdates afterUpdates: Bool) -> UIView? {
@@ -250,7 +239,7 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             backgroundView = nil
             setA11yActions()
         }
-        if status {
+        if isSelected {
             imageSelect.image = NCImageCache.shared.getImageCheckedYes().withTintColor(NCBrandColor.shared.brandElement)
         } else {
             imageSelect.image = NCImageCache.shared.getImageCheckedNo().withTintColor(UIColor(resource: .FileSelection.listItemDeselected))
@@ -291,8 +280,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
     }
 
     func setIconOutlines() {
-        imageFavoriteBackground.isHidden = fileFavoriteImage?.image == nil
-
         if imageStatus.image != nil {
             imageStatus.makeCircularBackground(withColor: .systemBackground)
         } else {

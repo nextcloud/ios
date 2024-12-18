@@ -127,11 +127,11 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
 
     /// Func to set alias
     func setAlias(_ value: String) {
-        guard let activeAccount else { return }
-		NCManageDatabase.shared.setAccountAlias(activeAccount.account, alias: alias) {
+        guard let tblAccount else { return }
+		NCManageDatabase.shared.setAccountAlias(tblAccount.account, alias: alias) {
 			[weak self] in
             guard let self = self else { return }
-            self.tableAccounts = getAllAccountsOrderByEmail()
+            self.tblAccounts = getAllAccountsOrderByEmail()
 		}
     }
 
@@ -176,7 +176,7 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     }
     
     func openLogin() {
-        self.appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
+        self.appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
     }
 
     /// Function to delete the current account

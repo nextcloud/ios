@@ -13,8 +13,10 @@ import NextcloudKit
 import EasyTipView
 
 class AccountButtonFactory {
+    let database = NCManageDatabase.shared
     let utility = NCUtility()
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+    var controller: NCMainTabBarController?
     
     private var onAccountDetailsOpen: (() -> Void)
     private var presentVC: ((UIViewController) -> Void)
@@ -29,8 +31,11 @@ class AccountButtonFactory {
     }
     
     func createAccountButton() -> UIBarButtonItem {
-        let activeAccount = NCManageDatabase.shared.getActiveAccount()
-        let image = utility.loadUserImage(for: appDelegate.user, displayName: activeAccount?.displayName, userBaseUrl: appDelegate)
+        let session = NCSession.shared.getSession(controller: controller)
+        guard let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
+            return UIBarButtonItem()
+        }
+        let image = utility.loadUserImage(for: tableAccount.account, displayName: tableAccount.displayName, urlBase: tableAccount.urlBase)
         let accountButton = AccountSwitcherButton(type: .custom)
         let accounts = NCManageDatabase.shared.getAllAccountOrderAlias()
         
@@ -38,22 +43,24 @@ class AccountButtonFactory {
         accountButton.setImage(image, for: .highlighted)
         accountButton.semanticContentAttribute = .forceLeftToRight
         accountButton.sizeToFit()
-        accountButton.action(for: .touchUpInside, { _ in
-            let accountSettingsModel = NCAccountSettingsModel(delegate: self)
+        accountButton.action(for: .touchUpInside, { [weak self] _ in
+            let accountSettingsModel = NCAccountSettingsModel(controller: self?.controller, delegate: self)
             let accountSettingsView = NCAccountSettingsView(model: accountSettingsModel)
             let accountSettingsController = UIHostingController(rootView: accountSettingsView)
-            self.presentVC(accountSettingsController)
+            self?.presentVC(accountSettingsController)
         })
         return UIBarButtonItem(customView: accountButton)
     }
 }
 
 extension AccountButtonFactory: NCAccountSettingsModelDelegate {
-    func accountSettingsDidDismiss(tableAccount: tableAccount?) {
-        if NCManageDatabase.shared.getAllAccount().isEmpty {
-            appDelegate.openLogin(selector: NCGlobal.shared.introLogin, openLoginWeb: false)
-        } else if let account = tableAccount?.account, account != appDelegate.account {
-            appDelegate.changeAccount(account, userProfile: nil) { }
+    func accountSettingsDidDismiss(tableAccount: tableAccount?, controller: NCMainTabBarController?) {
+        let session = NCSession.shared.getSession(controller: controller)
+        let currentAccount = session.account
+        if database.getAllTableAccount().isEmpty {
+            appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
+        } else if let account = tableAccount?.account, account != currentAccount {
+            NCAccount().changeAccount(account, userProfile: nil, controller: controller) { }
         }
     }
 }
