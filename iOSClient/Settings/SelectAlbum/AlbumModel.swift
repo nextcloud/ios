@@ -8,38 +8,40 @@
 
 import Photos
 
-@MainActor class AlbumModel: NSObject, ObservableObject {
+@MainActor class AlbumModel: NSObject, ObservableObject, ViewOnAppearHandling {
     @Published var allPhotos: PHFetchResult<PHAsset>!
     @Published var allPhotosCount = 0
     @Published var smartAlbums: [PHAssetCollection] = []
     @Published var selectedSmartAlbums: [PHAssetCollection] = []
-//    @Published var albums: Albums
-//    @Published var userCollections: PHFetchResult<PHCollection>!
-//    let sectionLocalizedTitles = ["", NSLocalizedString("Smart Albums", comment: ""), NSLocalizedString("Albums", comment: "")]
+    @Published var controller: NCMainTabBarController?
 
-    override init() {
+    init(controller: NCMainTabBarController?) {
+        self.controller = controller
         super.init()
-
-        let allPhotosOptions = PHFetchOptions()
-        allPhotosOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
-        allPhotos = PHAsset.fetchAssets(with: allPhotosOptions)
-
-//        allPhotos.enumerateObjects { asset, _, _ in
-//            self.allPhotos.append(asset)
-//        }
-
-        allPhotosCount = allPhotos.count
-
-        let assetCollections = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .any, options: nil)
-
-        assetCollections.enumerateObjects { collection, _, _ in
-            self.smartAlbums.append(collection)
-        }
-
+        
         PHPhotoLibrary.shared().register(self)
     }
 
-    func getAlbums(selectedAlbums: Set<String>) {
+    nonisolated func onViewAppear() {
+        Task { @MainActor in
+            let allPhotosOptions = PHFetchOptions()
+            allPhotosOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
+            allPhotos = PHAsset.fetchAssets(with: allPhotosOptions)
+
+            allPhotosCount = allPhotos.count
+
+            let assetCollections = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .any, options: nil)
+
+            assetCollections.enumerateObjects { collection, _, _ in
+                self.smartAlbums.append(collection)
+            }
+        }
+    }
+
+    func getSelectedAlbums(selectedAlbums: Set<String>) {
+        guard let account = controller?.account else { return }
+
+        NCKeychain().setAutoUploadAlbumIds(account: account, albumIds: Array(selectedAlbums))
         selectedSmartAlbums = selectedAlbums.compactMap { selectedAlbum in
             return smartAlbums.first(where: { $0.localIdentifier == selectedAlbum })
         }

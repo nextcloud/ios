@@ -175,5 +175,5 @@ struct NCAutoUploadView: View {
 }
 
 #Preview {
-    NCAutoUploadView(model: NCAutoUploadModel(controller: nil), albumModel: AlbumModel())
+    NCAutoUploadView(model: NCAutoUploadModel(controller: nil), albumModel: AlbumModel(controller: nil))
 }

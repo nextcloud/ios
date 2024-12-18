@@ -147,7 +147,7 @@ class NCDeepLinkHandler {
         guard let navigationController = controller.viewControllers?[controller.selectedIndex] as? UINavigationController else { return }
 
         Task { @MainActor in
-            let autoUploadView = NCAutoUploadView(model: NCAutoUploadModel(controller: controller), albumModel: AlbumModel())
+            let autoUploadView = NCAutoUploadView(model: NCAutoUploadModel(controller: controller), albumModel: AlbumModel(controller: controller))
             let autoUploadController = UIHostingController(rootView: autoUploadView)
             navigationController.pushViewController(autoUploadController, animated: true)
         }

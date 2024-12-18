@@ -166,8 +166,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     func handleAutoUploadFullChange(newValue: Bool, assetCollections: [PHAssetCollection]) {
         updateAccountProperty(\.autoUploadFull, value: newValue)
         if newValue {
-            //            print(albums.smartAlbums)
-            if !assetCollections.isEmpty  {
+            if !assetCollections.isEmpty {
                 NCAutoUpload.shared.autoUploadSelectedAlbums(controller: self.controller, assetCollections: assetCollections, log: "Auto upload selected albums", account: session.account)
             } else {
                 NCAutoUpload.shared.autoUploadFullPhotos(controller: self.controller, log: "Auto upload full", account: session.account)

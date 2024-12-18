@@ -36,13 +36,13 @@ struct SelectAlbumView: View {
 
             oldSelectedAlbums = newValue
 
-            model.getAlbums(selectedAlbums: selectedAlbums)
+            model.getSelectedAlbums(selectedAlbums: selectedAlbums)
         }
     }
 }
 
 #Preview {
-    SelectAlbumView(model: AlbumModel())
+    SelectAlbumView(model: AlbumModel(controller: nil))
 }
 
 struct SmartAlbums: View {
