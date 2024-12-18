@@ -122,10 +122,14 @@ class NCFiles: NCCollectionViewCommon {
     // MARK: - DataSource
 
     override func reloadDataSource() {
-        guard !isSearchingMode else {
+        guard !isSearchingMode
+        else {
             return super.reloadDataSource()
         }
-        self.semaphoreReloadDataSource.wait()
+
+        if self.semaphoreReloadDataSource.wait(timeout: .now() + 5) == .timedOut {
+            self.semaphoreReloadDataSource.signal()
+        }
 
         var predicate = self.defaultPredicate
         let predicateDirectory = NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, self.serverUrl)

@@ -255,9 +255,14 @@ class NCMedia: UIViewController {
 
     @objc func deleteFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let error = userInfo["error"] as? NKError else { return }
+              let error = userInfo["error"] as? NKError
+        else {
+            return
+        }
 
-        semaphoreNotificationCenter.wait()
+        if self.semaphoreNotificationCenter.wait(timeout: .now() + 5) == .timedOut {
+            self.semaphoreNotificationCenter.signal()
+        }
 
         if error.errorCode == self.global.errorResourceNotFound,
            let ocId = userInfo["ocId"] as? String {
