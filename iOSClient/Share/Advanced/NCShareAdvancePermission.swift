@@ -42,6 +42,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
                 style: .destructive,
                 handler: { _ in self.navigationController?.popViewController(animated: true) }))
             alert.addAction(UIAlertAction(title: NSLocalizedString("_continue_editing_", comment: ""), style: .default))
+            alert.view.backgroundColor = NCBrandColor.shared.appBackgroundColor
             self.present(alert, animated: true)
             return
         }
@@ -78,6 +79,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
         super.viewDidLoad()
         self.shareConfig = NCShareConfig(parentMetadata: metadata, share: share)
 
+        tableView.backgroundColor = NCBrandColor.shared.appBackgroundColor
         tableView.estimatedRowHeight = tableView.rowHeight
         tableView.rowHeight = UITableView.automaticDimension
         self.setNavigationTitle()
@@ -151,6 +153,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
             noteCell.detailTextLabel?.numberOfLines = 0
             return noteCell
         }
+        cell.backgroundColor = NCBrandColor.shared.formRowBackgroundColor
         if let cell = cell as? NCShareDateCell { cell.onReload = tableView.reloadData }
         return cell
     }

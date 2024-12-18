@@ -26,7 +26,6 @@ import UIKit
 class NCMediaCell: UICollectionViewCell {
 
     @IBOutlet weak var imageItem: UIImageView!
-    @IBOutlet weak var imageVisualEffect: UIVisualEffectView!
     @IBOutlet weak var imageSelect: UIImageView!
     @IBOutlet weak var imageStatus: UIImageView!
 
@@ -46,17 +45,12 @@ class NCMediaCell: UICollectionViewCell {
     func initCell() {
         imageStatus.image = nil
         imageItem.image = nil
-        imageVisualEffect.alpha = 0.4
-        imageSelect.image = NCImageCache.shared.getImageCheckedYes()
+        imageSelect.image = UIImage(resource: .FileSelection.gridItemSelected)
+        imageSelect.isHidden = true
     }
 
-    func selected(_ status: Bool) {
-        if status {
-            imageSelect.isHidden = false
-            imageVisualEffect.isHidden = false
-        } else {
-            imageSelect.isHidden = true
-            imageVisualEffect.isHidden = true
-        }
+    func selected(_ isSelected: Bool) {
+        setBorderForGridViewCell(isSelected: isSelected)
+        imageSelect.isHidden = !isSelected
     }
 }

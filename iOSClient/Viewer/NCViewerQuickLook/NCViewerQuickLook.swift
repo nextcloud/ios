@@ -196,7 +196,7 @@ private var hasChangesQuickLook: Bool = false
 
         let cropViewController = Mantis.cropViewController(image: image, config: config, cropToolbar: toolbar)
         cropViewController.delegate = self
-        cropViewController.backgroundColor = .systemBackground
+        cropViewController.backgroundColor = NCBrandColor.shared.appBackgroundColor
         cropViewController.modalPresentationStyle = .fullScreen
 
         self.present(cropViewController, animated: true)

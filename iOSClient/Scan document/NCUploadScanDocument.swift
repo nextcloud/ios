@@ -406,19 +406,22 @@ struct UploadScanDocumentView: View {
                         }
                         HStack {
                             Toggle(NSLocalizedString("_text_recognition_", comment: ""), isOn: $isTextRecognition)
-                                .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.getElement(account: model.session.account))))
+                                .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.switchColor)))
                                 .onChange(of: isTextRecognition) { newValue in
                                     NCKeychain().textRecognitionStatus = newValue
                                 }
                         }
                     }
+                    .applyGlobalFormSectionStyle()
+                    .listRowSeparator(.hidden)
+
                     .complexModifier { view in
                         view.listRowSeparator(.hidden)
                     }
 
                     VStack(spacing: 20) {
                         Toggle(NSLocalizedString("_delete_all_scanned_images_", comment: ""), isOn: $removeAllFiles)
-                            .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.getElement(account: model.session.account))))
+                            .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.switchColor)))
                             .onChange(of: removeAllFiles) { newValue in
                                 NCKeychain().deleteAllScanImages = newValue
                             }
@@ -431,16 +434,14 @@ struct UploadScanDocumentView: View {
                                     if error {
                                         print("error")
                                     } else if openConflictViewController {
-                                        isPresentedUploadConflict = true
-                                    } else {
-                                        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDismissScanDocument)
                                     }
                                 }
                             }
+                            .disabled(fileName.isEmpty || !footer.isEmpty)
+                            .buttonStyle(.primary)
                         }
-                        .buttonStyle(ButtonRounded(disabled: fileName.isEmpty || !footer.isEmpty, account: model.session.account))
-                        .disabled(fileName.isEmpty || !footer.isEmpty)
                     }
+                    .applyGlobalFormSectionStyle()
 
                     Section(header: Text(NSLocalizedString("_quality_image_title_", comment: ""))) {
                         VStack {
@@ -454,16 +455,15 @@ struct UploadScanDocumentView: View {
                         PDFKitRepresentedView(quality: $quality, isTextRecognition: $isTextRecognition, uploadScanDocument: model)
                             .frame(maxWidth: .infinity, minHeight: geo.size.height / 2)
                     }
-                    .complexModifier { view in
-                        view.listRowSeparator(.hidden)
-                    }
+                    .applyGlobalFormSectionStyle()
+                    .listRowSeparator(.hidden)
                 }
                 NCHUDView(showHUD: $model.showHUD, textLabel: NSLocalizedString("_wait_", comment: ""), image: "doc.badge.arrow.up", color: NCBrandColor.shared.getElement(account: model.session.account))
                     .offset(y: model.showHUD ? 5 : -200)
                     .animation(.easeOut, value: model.showHUD)
             }
         }
-        .background(Color(UIColor.systemGroupedBackground))
+        .applyGlobalFormStyle()
         .sheet(isPresented: $isPresentedSelect) {
             NCSelectViewControllerRepresentable(delegate: model, session: model.session)
         }

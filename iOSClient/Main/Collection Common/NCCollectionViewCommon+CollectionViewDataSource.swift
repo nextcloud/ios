@@ -204,6 +204,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             } else {
                 cell.fileInfoLabel?.text = metadata.subline
             }
+            cell.fileSubinfoLabel?.text = nil
             cell.fileSubinfoLabel?.isHidden = true
         } else if !metadata.sessionError.isEmpty, metadata.status != global.metadataStatusNormal {
             cell.fileSubinfoLabel?.isHidden = false
@@ -428,8 +429,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         cell.setAccessibility(label: metadata.fileNameView + ", " + (cell.fileInfoLabel?.text ?? "") + (cell.fileSubinfoLabel?.text ?? ""), value: a11yValues.joined(separator: ", "))
 
         // Color string find in search
-        cell.fileTitleLabel?.textColor = NCBrandColor.shared.textColor
-        cell.fileTitleLabel?.font = .systemFont(ofSize: 15)
+        cell.fileTitleLabel?.textColor = UIColor(resource: .ListCell.title)
+        cell.fileTitleLabel?.font = .systemFont(ofSize: 12, weight: .medium)
 
         if isSearchingMode, let literalSearch = self.literalSearch, let title = cell.fileTitleLabel?.text {
             let longestWordRange = (title.lowercased() as NSString).range(of: literalSearch)

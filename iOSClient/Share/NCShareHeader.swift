@@ -60,6 +60,8 @@ class NCShareHeader: UIView {
         info.text = utilityFileSystem.transformedSize(metadata.size) + ", " + NCUtility().dateDiff(metadata.date as Date)
 
         tagListView.addTags(Array(metadata.tags))
+        
+        tagListView.backgroundColor = .clear
 
         setNeedsLayout()
         layoutIfNeeded()

@@ -156,6 +156,7 @@ class NCContextMenu: NSObject {
                 alertStyle = .alert
             }
             let alertController = UIAlertController(title: nil, message: nil, preferredStyle: alertStyle)
+            alertController.view.backgroundColor = NCBrandColor.shared.appBackgroundColor
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_delete_file_", comment: ""), style: .destructive) { _ in
                 NCNetworking.shared.deleteMetadatas([metadata], sceneIdentifier: sceneIdentifier)
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)

@@ -20,7 +20,13 @@ import UIKit
         disable_intro = true
         disable_request_login_url = true
 
+#if BETA
+        capabilitiesGroup = "group.de.strato.ionos.easystorage.beta"
+#elseif APPSTORE
+        capabilitiesGroup = "group.de.ionos.easystorage"
+#else
         capabilitiesGroup = "group.com.viseven.ionos.easystorage"
+#endif
     }
 }
 
@@ -33,6 +39,30 @@ class NCBrandColorIONOS: NCBrandColor {
 	override var menuFolderIconColor: UIColor {
 		UIColor(named: "FileMenu/FolderIcon") ?? iconImageColor
 	}
+    
+    override var appBackgroundColor: UIColor {
+        UIColor(named: "AppBackground/Main") ?? super.appBackgroundColor
+    }
+    
+    override var formBackgroundColor: UIColor {
+        UIColor(named: "AppBackground/Form") ?? super.formBackgroundColor
+    }
+    
+    override var formRowBackgroundColor: UIColor {
+        UIColor(named: "AppBackground/FormRow") ?? super.formRowBackgroundColor
+    }
+    
+    override var formSeparatorColor: UIColor {
+        UIColor(named: "formSeparator") ?? super.formSeparatorColor
+    }
+    
+    override var switchColor: UIColor {
+        return UIColor { traits in
+            let light = self.brandElement
+            let dark = UIColor(red: 17.0 / 255.0, green: 199.0 / 255.0, blue: 230.0 / 255.0, alpha: 1.0)
+            return traits.userInterfaceStyle == .dark ? dark : light
+        }
+    }
 	
     override init() {
         super.init()

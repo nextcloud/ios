@@ -49,24 +49,24 @@ struct NCSettingsView: View {
                     NCAutoUploadView(model: NCAutoUploadModel(controller: model.controller))
                 }) {
                     HStack {
-                        Image(systemName: "photo.circle")
+                        Image(.Settings.camera)
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 25, height: 25)
+                            .frame(width: 20, height: 20)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_settings_autoupload_", comment: ""))
                     }
                 }
-            }, footer: {
-                Text(NSLocalizedString("_autoupload_description_", comment: ""))
-            })
+                    .font(.system(size: 16))
+                }
+            }).listRowBackground(Color(NCBrandColor.shared.formRowBackgroundColor))
             /// `Privacy` Section
             Section(content: {
                 Button(action: {
                     showPasscode.toggle()
                 }, label: {
                     HStack {
-                        Image(systemName: model.isLockActive ? "lock" : "lock.open")
+						lockImage(isLocked: model.isLockActive)
                             .resizable()
                             .scaledToFit()
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
@@ -76,61 +76,31 @@ struct NCSettingsView: View {
                     }
                 })
                 .tint(Color(NCBrandColor.shared.textColor))
-                .disabled(NCBrandOptions.shared.enforce_passcode_lock)
-            }, header: {
-                Text(NSLocalizedString("_privacy_", comment: ""))
-            }, footer: {
-                if NCBrandOptions.shared.enforce_passcode_lock {
-                    Text(NSLocalizedString("_lock_cannot_disable_mdm_", comment: ""))
+                .sheet(isPresented: $showPasscode) {
+                    PasscodeView(isLockActive: $model.isLockActive)
                 }
-            })
-
-            if model.isLockActive {
-                Section(content: {
-                    Group {
-                        // Change passcode
-                        Button(action: {
-                            showChangePasscode.toggle()
-                        }, label: {
-                            VStack {
-                                Text(NSLocalizedString("_change_lock_passcode_", comment: ""))
-                                    .tint(Color(NCBrandColor.shared.textColor))
-                            }
-                        })
-                        /// Enable Touch ID
-                        Toggle(NSLocalizedString("_enable_touch_face_id_", comment: ""), isOn: $model.enableTouchID)
-                            .onChange(of: model.enableTouchID) { _ in
-                                model.updateTouchIDSetting()
-                            }
-
-                        if !NCBrandOptions.shared.enforce_passcode_lock {
-                            /// Do not ask for passcode on startup
-                            Toggle(NSLocalizedString("_lock_protection_no_screen_", comment: ""), isOn: $model.lockScreen)
-                                .onChange(of: model.lockScreen) { _ in
-                                    model.updateLockScreenSetting()
-                                }
-                        }
-
-                        /// Reset app wrong attempts
-                        Toggle(NSLocalizedString("_reset_wrong_passcode_option_", comment: ""), isOn: $model.resetWrongAttempts)
-                            .onChange(of: model.resetWrongAttempts) { _ in
-                                model.updateResetWrongAttemptsSetting()
-                            }
+                /// Enable Touch ID
+                Toggle(NSLocalizedString("_enable_touch_face_id_", comment: ""), isOn: $model.enableTouchID)
+                    .tint(Color(NCBrandColor.shared.switchColor))
+                    .font(.system(size: 16))
+                    .onChange(of: model.enableTouchID) { _ in
+                        model.updateTouchIDSetting()
                     }
-                }, footer: {
-                    Text(String(format: NSLocalizedString("_reset_wrong_passcode_desc_", comment: ""), NCBrandOptions.shared.resetAppPasscodeAttempts))
-                })
-                .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-            }
-
-            Section {
-                /// Splash screen when app inactive
-                Toggle(NSLocalizedString("_privacy_screen_", comment: ""), isOn: $model.privacyScreen)
-                    .onChange(of: model.privacyScreen) { _ in
-                        model.updatePrivacyScreenSetting()
+                /// Reset app wrong attempts
+                Toggle(NSLocalizedString("_reset_wrong_passcode_", comment: ""), isOn: $model.resetWrongAttempts)
+                    .tint(Color(NCBrandColor.shared.switchColor))
+                    .font(.system(size: 16))
+                    .onChange(of: model.resetWrongAttempts) { _ in
+                        model.updateResetWrongAttemptsSetting()
                     }
-            }
-            .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
+            }, header: {
+                Text(NSLocalizedString("_privacy_", comment: "")).listRowBackground(Color.clear)
+            }, footer: {
+                Text(String(format: NSLocalizedString("_reset_wrong_passcode_desc_", comment: ""), NCBrandOptions.shared.resetAppPasscodeAttempts))
+                    .font(.system(size: 12))
+                    .listRowBackground(Color.clear)
+                    .lineSpacing(1)
+            }).applyGlobalFormSectionStyle()
             /// Calender & Contacts
             if !NCBrandOptions.shared.disable_mobileconfig {
                 Section(content: {
@@ -138,10 +108,10 @@ struct NCSettingsView: View {
                         model.getConfigFiles()
                     }, label: {
                         HStack {
-                            Image(systemName: "calendar.badge.plus")
+							Image(.Settings.calendarUser)
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: 25, height: 25)
+                                .frame(width: 23, height: 20)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                             Text(NSLocalizedString("_mobile_config_", comment: ""))
                         }
@@ -154,25 +124,10 @@ struct NCSettingsView: View {
                         Text(NSLocalizedString("_calendar_contacts_footer_warning_", comment: ""))
                         Spacer()
                         Text(NSLocalizedString("_calendar_contacts_footer_", comment: ""))
-                    }
+                            .font(.system(size: 12))
+                    }.listRowBackground(Color.clear)
 
-                })
-            }
-            /// Users
-            Section(content: {
-                Toggle(NSLocalizedString("_settings_account_request_", comment: ""), isOn: $model.accountRequest)
-                    .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                    .onChange(of: model.accountRequest, perform: { _ in
-                        model.updateAccountRequest()
-                    })
-            }, header: {
-                Text(NSLocalizedString("_users_", comment: ""))
-            }, footer: {
-                Text(NSLocalizedString("_users_footer_", comment: ""))
-            })
-            /// E2EEncryption` Section
-            if capabilities.capabilityE2EEEnabled && NCGlobal.shared.e2eeVersions.contains(capabilities.capabilityE2EEApiVersion) {
-                E2EESection(model: model)
+                }).applyGlobalFormSectionStyle()
             }
             /// `Advanced` Section
             Section {
@@ -180,15 +135,15 @@ struct NCSettingsView: View {
                     NCSettingsAdvancedView(model: NCSettingsAdvancedModel(controller: model.controller), showExitAlert: false, showCacheAlert: false)
                 }) {
                     HStack {
-                        Image(systemName: "gear")
+						Image(.Settings.gear)
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 25, height: 25)
+                            .frame(width: 20, height: 20)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_advanced_", comment: ""))
                     }
                 }
-            }
+            }.applyGlobalFormSectionStyle()
             /// `Information` Section
             Section(header: Text(NSLocalizedString("_information_", comment: "")), content: {
                 // Acknowledgements
@@ -196,27 +151,27 @@ struct NCSettingsView: View {
                     showAcknowledgements.toggle()
                 }, label: {
                     HStack {
-                        Image("acknowledgements")
+						Image(.Settings.handshake)
                             .resizable()
-                            .renderingMode(.template)
-                            .frame(width: 25, height: 25)
-                            .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
+							.scaledToFit()
+                            .frame(width: 25, height: 20)
+							.foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_acknowledgements_", comment: ""))
                     }
                 })
                 .tint(Color(NCBrandColor.shared.textColor))
                 .sheet(isPresented: $showAcknowledgements) {
-                    NCAcknowledgementsView(browserTitle: NSLocalizedString("_acknowledgements_", comment: ""))
+                    NCBrowserWebView(urlBase: URL(string: NCBrandOptions.shared.acknowloedgements)!, browserTitle: NSLocalizedString("_acknowledgements_", comment: ""))
                 }
                 /// Terms & Privacy Conditions
                 Button(action: {
                     showBrowser.toggle()
                 }, label: {
                     HStack {
-                        Image(systemName: "shield.checkerboard")
+						Image(.Settings.shieldHalved)
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 25, height: 25)
+                            .frame(width: 20, height: 20)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_privacy_legal_", comment: ""))
                     }
@@ -225,31 +180,29 @@ struct NCSettingsView: View {
                 .sheet(isPresented: $showBrowser) {
                     NCBrowserWebView(urlBase: URL(string: NCBrandOptions.shared.privacy)!, browserTitle: NSLocalizedString("_privacy_legal_", comment: ""))
                 }
-                /// Source Code Nextcloud App
-                if !NCBrandOptions.shared.disable_source_code_in_settings {
-                    Button(action: {
-                        showSourceCode.toggle()
-                    }, label: {
-                        HStack {
-                            Image("gitHub")
-                                .resizable()
-                                .renderingMode(.template)
-                                .frame(width: 25, height: 25)
-                                .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
-                            Text(NSLocalizedString("_source_code_", comment: ""))
-                        }
-                    })
-                    .tint(Color(NCBrandColor.shared.textColor))
-                    .sheet(isPresented: $showSourceCode) {
-                        NCBrowserWebView(urlBase: URL(string: NCBrandOptions.shared.sourceCode)!, browserTitle: NSLocalizedString("_source_code_", comment: ""))
+                /// Source Code
+                Button(action: {
+                    showSourceCode.toggle()
+                }, label: {
+                    HStack {
+						Image(.Settings.github)
+                            .resizable()
+                            .frame(width: 20, height: 20)
+                            .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
+                        Text(NSLocalizedString("_source_code_", comment: ""))
                     }
+                    .font(.system(size: 16))
+                })
+                .tint(Color(NCBrandColor.shared.textColor))
+                .sheet(isPresented: $showSourceCode) {
+                    NCBrowserWebView(urlBase: URL(string: NCBrandOptions.shared.sourceCode)!, browserTitle: NSLocalizedString("_source_code_", comment: ""))
                 }
-            })
+            }).applyGlobalFormSectionStyle()
             /// `Watermark` Section
             Section(content: {
             }, footer: {
-                Text(model.footerApp + model.footerServer + model.footerSlogan)
-            })
+                Text(model.footerApp + model.footerServer).listRowBackground(Color.clear)
+            }).applyGlobalFormSectionStyle()
         }
         .sheet(isPresented: $showPasscode) {
             SetupPasscodeView(isLockActive: $model.isLockActive)
@@ -259,7 +212,12 @@ struct NCSettingsView: View {
         }
         .navigationBarTitle(NSLocalizedString("_settings_", comment: ""))
         .defaultViewModifier(model)
+        .applyGlobalFormStyle()
     }
+	
+	private func lockImage(isLocked: Bool) -> Image {
+		isLocked ? Image(.itemLock) : Image(.itemLockOpen)
+	}
 }
 
 struct E2EESection: View {

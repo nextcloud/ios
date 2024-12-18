@@ -76,7 +76,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
                 navigationItem.rightBarButtonItem = UIBarButtonItem(image: NCImageCache.shared.getImageButtonMore(), style: .plain, target: self, action: #selector(self.openMenuMore))
             }
         }
-        defaultBackgroundColor = pdfView.backgroundColor
+        defaultBackgroundColor = NCBrandColor.shared.appBackgroundColor
         view.backgroundColor = defaultBackgroundColor
 
         navigationController?.navigationBar.prefersLargeTitles = false
@@ -166,6 +166,7 @@ class NCViewerPDF: UIViewController, NCViewerPDFSearchDelegate {
 
         pdfThumbnailView.translatesAutoresizingMaskIntoConstraints = false
         pdfThumbnailView.pdfView = pdfView
+        pdfThumbnailView.pdfView?.backgroundColor = NCBrandColor.shared.appBackgroundColor
         pdfThumbnailView.layoutMode = .vertical
         pdfThumbnailView.thumbnailSize = CGSize(width: thumbnailViewHeight, height: thumbnailViewHeight)
         pdfThumbnailView.backgroundColor = .clear

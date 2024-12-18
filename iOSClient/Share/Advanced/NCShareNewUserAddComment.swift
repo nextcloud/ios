@@ -37,6 +37,9 @@ class NCShareNewUserAddComment: UIViewController, NCShareDetail {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.setNavigationTitle()
+        
+        self.view.backgroundColor = NCBrandColor.shared.appBackgroundColor
+        self.headerContainerView.backgroundColor = .clear
 
         NotificationCenter.default.addObserver(self, selector: #selector(adjustForKeyboard), name: UIResponder.keyboardWillHideNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(adjustForKeyboard), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)

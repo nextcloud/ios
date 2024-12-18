@@ -133,20 +133,21 @@ struct NCUploadAssetsView: View {
                             }
                         }
                     }
+                    .applyGlobalFormSectionStyle()
 
                     Section {
                         Toggle(isOn: $model.useAutoUploadFolder, label: {
                             Text(NSLocalizedString("_use_folder_auto_upload_", comment: ""))
                                 .font(.system(size: 15))
                         })
-                        .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.getElement(account: metadata?.account))))
+                        .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.switchColor)))
 
                         if model.useAutoUploadFolder {
                             Toggle(isOn: $model.useAutoUploadSubFolder, label: {
                                 Text(NSLocalizedString("_autoupload_create_subfolder_", comment: ""))
                                     .font(.system(size: 15))
                             })
-                            .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.getElement(account: metadata?.account))))
+                            .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.switchColor)))
                         }
 
                         if !model.useAutoUploadFolder {
@@ -175,6 +176,7 @@ struct NCUploadAssetsView: View {
                             }
                         }
                     }
+                    .applyGlobalFormSectionStyle()
 
                     Section {
                         Button(NSLocalizedString("_save_", comment: "")) {
@@ -212,6 +214,8 @@ struct NCUploadAssetsView: View {
             NCHUDView(showHUD: $model.showHUD, textLabel: NSLocalizedString("_wait_", comment: ""), image: "doc.badge.arrow.up", color: NCBrandColor.shared.getElement(account: model.session.account))
                 .offset(y: model.showHUD ? 5 : -200)
                 .animation(.easeOut, value: model.showHUD)
+            }
+            .applyGlobalFormStyle()
         }
         .navigationViewStyle(StackNavigationViewStyle())
         .sheet(isPresented: $showSelect) {

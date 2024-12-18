@@ -47,13 +47,6 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
     /// Footer
     var footerApp = ""
     var footerServer = ""
-    var footerSlogan = ""
-    /// Get session
-    var session: NCSession.Session {
-        NCSession.shared.getSession(controller: controller)
-    }
-
-    var changePasscode = false
 
     /// Initializes the view model with default values.
     init(controller: NCMainTabBarController?) {
@@ -71,8 +64,7 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
         resetWrongAttempts = keychain.resetAppCounterFail
         accountRequest = keychain.accountRequest
         footerApp = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility().getVersionApp(withBuild: true)) + "\n\n"
-        footerServer = String(format: NCBrandOptions.shared.textCopyrightNextcloudServer, capabilities.capabilityServerVersion) + "\n"
-        footerSlogan = capabilities.capabilityThemingName + " - " + capabilities.capabilityThemingSlogan + "\n\n"
+        footerServer = String(format: NCBrandOptions.shared.textCopyrightNextcloudServer, NCGlobal.shared.capabilityServerVersion) + "\n"
     }
 
     // MARK: - All functions

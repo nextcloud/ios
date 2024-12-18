@@ -9,8 +9,10 @@
 import SwiftUI
 
 private enum _Constants {
-    static let font = Font.system(size: 18)
-    static let spacingBetweenItems: CGFloat = 17
+    static let font = Font.system(size: 16).weight(.medium)
+    static let buttonPressedFont = font.weight(.semibold)
+    static let spacingBetweenItems: CGFloat = 12
+    static let buttonLeadingPadding: CGFloat = 12
 }
 
 struct BurgerMenuView: View {
@@ -30,7 +32,7 @@ struct BurgerMenuView: View {
                         Image(.ionosEasyStorageLogo)
                             .resizable()
                             .renderingMode(.template)
-                            .foregroundStyle(Color(.BurgerMenu.logoTint))
+                            .foregroundStyle(Color(.NavigationBar.logoTint))
                             .scaledToFit()
                             .padding(EdgeInsets(top: 24,
                                                 leading: 0,
@@ -41,16 +43,17 @@ struct BurgerMenuView: View {
                             viewModel.hideMenu()
                         }, label: {
                             HStack(spacing: 12) {
-                                Image(systemName: "chevron.left")
+                                Image(.chevronLeft)
+                                    .renderingMode(.template)
                                     .resizable()
                                     .scaledToFit()
-                                    .frame(width: 12, height: 20)
-                                Text(NSLocalizedString("_back_", comment: ""))
+                                    .frame(width: 10, height: 16)
+                                Text(NSLocalizedString("_previous_", tableName: nil, bundle: Bundle.main, value: "Previous", comment: ""))
                                     .font(_Constants.font)
                             }
-                            .foregroundStyle(Color(.BurgerMenu.backButton))
+                            .foregroundStyle(Color(.BurgerMenu.buttonForeground))
                         })
-                        .padding(EdgeInsets(top: 3, leading: 2.5, bottom: 3, trailing: 2.5))
+                        .frame(height: 48)
                         if #available(iOS 16.4, *) {
                             BurgerMenuMainSectionView(viewModel: viewModel)
                                 .scrollBounceBehavior(.basedOnSize)
@@ -58,8 +61,8 @@ struct BurgerMenuView: View {
                             BurgerMenuMainSectionView(viewModel: viewModel)
                         }
                     }
-                    .padding(EdgeInsets(top: 0, leading: 19, bottom: 0, trailing: 28))
-                    .frame(width: min(width*0.85, 400), alignment: .leading)
+                    .padding(EdgeInsets(top: 0, leading: 24, bottom: 0, trailing: 24))
+                    .frame(width: min(width*0.75, 300), alignment: .leading)
                     .background(Color(.BurgerMenu.background))
                     .offset(x: viewModel.isVisible ? 0 : -width)
                 })
@@ -107,20 +110,20 @@ private struct BurgerMenuMainSectionView: View {
                         HStack(spacing: 12, content: {
                             Image(.BurgerMenu.cloud)
                                 .buttonIconStyled()
-                            Text(NSLocalizedString("_used_space_",
+                            Text(NSLocalizedString("_storage_used_", tableName: nil, bundle: Bundle.main, value: "Storage used",
                                                    comment: ""))
                             .font(_Constants.font.weight(.semibold))
                         })
-                        Spacer().frame(height: 11)
+                        .frame(height: 48)
                         CustomProgressView(progress: viewModel.progressUsedSpace)
-                        Spacer().frame(height: 16)
+                        Spacer().frame(height: 8)
                         Text(viewModel.messageUsedSpace)
-                            .font(_Constants.font)
+                            .font(.system(size: 16))
                     })
-                    .padding(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 0))
                     .foregroundStyle(Color(.BurgerMenu.buttonForeground))
+                    .padding(EdgeInsets(top: 0, leading: _Constants.buttonLeadingPadding, bottom: 0, trailing: 0))
                 })
-                .padding(EdgeInsets(top: 0, leading: 0, bottom: 60, trailing: 0))
+                .padding(EdgeInsets(top: 0, leading: 0, bottom: 24, trailing: 0))
                 .frame(minHeight: geometry.size.height)
             }
         }
@@ -135,17 +138,16 @@ private struct BurgerMenuViewButton: View {
         Button(action: {
             action()
         }, label: {
-            HStack(spacing: 13) {
+            HStack(spacing: 12) {
                 Image(image)
                     .buttonIconStyled()
                 Text(title)
-                    .font(_Constants.font)
                 Spacer()
             }
             .makeAllButtonSpaceTappable()
             .foregroundStyle(Color(.BurgerMenu.buttonForeground))
-            .frame(height: 51)
-            .padding(EdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 0))
+            .frame(height: 48)
+            .padding(EdgeInsets(top: 0, leading: _Constants.buttonLeadingPadding, bottom: 0, trailing: 0))
         })
         .buttonStyle(CustomBackgroundOnPressButtonStyle())
     }
@@ -155,6 +157,7 @@ private struct CustomBackgroundOnPressButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration
             .label
+            .font(configuration.isPressed ? _Constants.buttonPressedFont : _Constants.font)
             .background {
                 if configuration.isPressed {
                     GeometryReader { geometry in
@@ -210,7 +213,7 @@ private extension Image {
             .renderingMode(.template)
             .resizable()
             .aspectRatio(contentMode: .fit)
-            .frame(width: 28, height: 28)
+            .frame(width: 16, height: 16)
     }
 }
 
@@ -226,7 +229,7 @@ private extension View {
                       controller: NCMainTabBarController?) {
             super.init(delegate: delegate, controller: nil)
             progressUsedSpace = 0.3
-            messageUsedSpace = "You are using 62,5 MB of 607,21 GB"
+            messageUsedSpace = "62,5 MB of 607,21 GB used"
             isVisible = true
         }
     }

@@ -103,7 +103,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         imageItem.layer.masksToBounds = true
 
         imageSelect.isHidden = true
-        imageSelect.image = NCImageCache.shared.getImageCheckedYes()
+        imageSelect.image = UIImage(resource: .FileSelection.gridItemSelected)
 
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPress(gestureRecognizer:)))
         longPressedGesture.minimumPressDuration = 0.5
@@ -170,7 +170,7 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         buttonMore.isHidden = status
     }
 
-    func selected(_ status: Bool, isEditMode: Bool) {
+    func selected(_ isSelected: Bool, isEditMode: Bool) {
         if isEditMode {
             buttonMore.isHidden = true
             accessibilityCustomActions = nil
@@ -178,11 +178,8 @@ class NCGridCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
             buttonMore.isHidden = false
             setA11yActions()
         }
-        if status {
-            imageSelect.isHidden = false
-        } else {
-            imageSelect.isHidden = true
-        }
+        setBorderForGridViewCell(isSelected: isSelected)
+        imageSelect.isHidden = !isSelected
     }
 
     func writeInfoDateSize(date: NSDate, size: Int64) {

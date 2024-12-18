@@ -47,6 +47,9 @@ class NCCollectionViewCommonSelectTabBar: ObservableObject {
     @Published var canUnlock = true
     @Published var enableLock = false
     @Published var isSelectedEmpty = true
+    
+    let displayedButtons: [TabButton]
+
 
     init(controller: NCMainTabBarController? = nil, delegate: NCCollectionViewCommonSelectTabBarDelegate? = nil) {
         let rootView = NCCollectionViewCommonSelectTabBarView(tabBarSelect: self)

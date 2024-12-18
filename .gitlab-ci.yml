@@ -3,9 +3,10 @@ variables:
   IPA_PATH: "${outputDirPath}/${scheme}.ipa"
   DSYM_PATH: "*.dSYM.zip"
   scheme: "Nextcloud"
+  dev_configuration: "Release"
+  beta_configuration: "Beta"
   archive_path: "${outputDirPath}/${scheme}"
-  exportOptionsPath: "./exportOptionsAdHoc.plist"
-
+  export_method: "ad-hoc"
 
 stages:
 - build
@@ -29,16 +30,37 @@ stages:
     --request GET 
     --url $FB_PLIST_PATH 
     --header "Authorization:Bearer ${FB_PLIST_PROJECT_TOKEN}"  | jq -r '.content' | base64 --decode >> "./GoogleService-Info.plist"
-  
+ 
+.download_google_info_plist_beta: &download_google_info_plist_beta
+  - curl
+    --fail
+    --location
+    --request GET
+    --url $FB_BETA_PLIST_PATH
+    --header "Authorization:Bearer ${FB_PLIST_PROJECT_TOKEN}"  | jq -r '.content' | base64 --decode >> "./GoogleService-Info.plist"
+
 
 .build_general_script: &build_general_script
   - fastlane gym
     --scheme $scheme
+    --configuration $dev_configuration
     --output_directory $outputDirPath
     --derived_data_path ./ipaDerivedData
     --output_name $scheme
     --archive_path $archive_path
-    --export_options $exportOptionsPath
+    --export_method $export_method
+    --silent
+    --clean
+    
+.build_general_script_beta: &build_general_script_beta
+  - fastlane gym
+    --scheme $scheme
+    --configuration $beta_configuration
+    --output_directory $outputDirPath
+    --derived_data_path ./ipaDerivedData
+    --output_name $scheme
+    --archive_path $archive_path
+    --export_method $export_method
     --silent
     --clean
     
@@ -69,6 +91,18 @@ build_develop_feature:
   only:
     - develop
     - /^feature/
+    
+build_beta:
+  <<: *build_general_params
+  when: manual
+  script:
+    - *install_carthage_dependencies
+    - *download_google_info_plist_beta
+    - *build_general_script_beta
+  only:
+    - develop
+    - /^feature/
+    - /^release/
 
 build_simulator:
   <<: *build_general_params
@@ -107,3 +141,15 @@ deploy_develop_feature:
   only:
     - develop
     - /^feature/
+    
+deploy_beta:
+  <<: *deploy_general_params
+  script:
+    - curl $STORE_UPLOAD_URL -F token=$DEV_STORE_TOKEN -F bundle=@"${IPA_PATH}" -F comment=$CI_PIPELINE_ID
+  dependencies:
+    - build_beta
+  needs: [build_beta]
+  only:
+    - develop
+    - /^feature/
+    - /^release/

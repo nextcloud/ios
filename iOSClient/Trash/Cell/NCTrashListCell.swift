@@ -72,13 +72,13 @@ class NCTrashListCell: UICollectionViewCell, NCTrashCellProtocol {
 
         ]
 
-        imageRestore.image = NCUtility().loadImage(named: "arrow.circlepath", colors: [NCBrandColor.shared.iconImageColor])
-        imageMore.image = NCUtility().loadImage(named: "trash", colors: [.red])
+        imageRestore.image = UIImage(resource: .restoreFromDeleted).withTintColor(NCBrandColor.shared.iconImageColor)
+		imageMore.image = NCImagesRepository.menuIconTrash.image(color: .red)
         imageItem.layer.cornerRadius = 6
         imageItem.layer.masksToBounds = true
 
-        separator.backgroundColor = .separator
-        separatorHeightConstraint.constant = 0.5
+		separator.backgroundColor = UIColor(resource: .ListCell.separator)
+        separatorHeightConstraint.constant = 1
     }
 
     @IBAction func touchUpInsideMore(_ sender: Any) {

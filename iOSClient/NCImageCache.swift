@@ -198,7 +198,7 @@ class NCImageCache: NSObject {
     }
 
     func getImageOfflineFlag() -> UIImage {
-        return utility.loadImage(named: "arrow.down.circle.fill", colors: [.systemGreen])
+        return utility.loadImage(named: "arrow.down.circle.fill", colors: [NCBrandColor.shared.brandElement])
     }
 
     func getImageLocal() -> UIImage {
@@ -214,7 +214,7 @@ class NCImageCache: NSObject {
     }
 
     func getImageButtonMore() -> UIImage {
-        return utility.loadImage(named: "ellipsis", colors: [NCBrandColor.shared.iconImageColor])
+        return UIImage(resource: .more).withTintColor(NCBrandColor.shared.brandElement)
     }
 
     func getImageButtonStop() -> UIImage {

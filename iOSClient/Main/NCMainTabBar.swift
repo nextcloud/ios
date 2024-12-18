@@ -31,8 +31,8 @@ class NCMainTabBar: UITabBar {
     private let centerButtonY: CGFloat = -28
     public var color = NCBrandColor.shared.customer
 
-	private var centerButtonColor: UIColor? {
-		UIColor(named: "Tabbar/FabButton")
+	private var centerButtonColor: UIColor {
+        UIColor(resource: .Tabbar.fabButton)
 	}
     
     private var customBackgroundColor: UIColor? {
@@ -52,9 +52,16 @@ class NCMainTabBar: UITabBar {
 
         NotificationCenter.default.addObserver(self, selector: #selector(updateBadgeNumber(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterUpdateBadgeNumber), object: nil)
 
-        if let activeTableAccount = NCManageDatabase.shared.getActiveTableAccount() {
-            self.color = NCBrandColor.shared.brandElement
-            tintColor = color
+        changeTheming()
+    }
+
+    @objc func changeTheming() {
+        layer.shadowOffset = CGSize(width: 0, height: 0)
+        layer.shadowRadius = 2.0
+        layer.shadowOpacity = 0.5
+        tintColor = UIColor(resource: .Tabbar.activeItem)
+        if let centerButton = self.viewWithTag(99) {
+            centerButton.backgroundColor = centerButtonColor
         }
     }
 
