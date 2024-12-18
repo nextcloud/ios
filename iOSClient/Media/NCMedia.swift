@@ -260,6 +260,8 @@ class NCMedia: UIViewController {
             return
         }
 
+        // This is only a fail safe "dead lock", I don't think the timeout will ever be called but at least nothing gets stuck, if after 5 sec. (which is a long time in this routine), the semaphore is still locked
+        //
         if self.semaphoreNotificationCenter.wait(timeout: .now() + 5) == .timedOut {
             self.semaphoreNotificationCenter.signal()
         }
