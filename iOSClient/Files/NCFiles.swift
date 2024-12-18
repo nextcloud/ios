@@ -125,13 +125,7 @@ class NCFiles: NCCollectionViewCommon {
         guard !isSearchingMode else {
             return super.reloadDataSource()
         }
-        // self.semaphoreReloadDataSource.wait()
-
-        if self.semaphoreReloadDataSource.wait(timeout: .now() + 2) == .success {
-            self.semaphoreReloadDataSource.signal()
-        } else {
-            self.semaphoreReloadDataSource.signal()
-        }
+        self.semaphoreReloadDataSource.wait()
 
         var predicate = self.defaultPredicate
         let predicateDirectory = NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, self.serverUrl)
