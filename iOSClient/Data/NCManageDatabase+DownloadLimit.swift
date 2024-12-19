@@ -17,7 +17,7 @@ class tableDownloadLimit: Object {
     @objc dynamic var count: Int = 0
 
     ///
-    /// Total number of allowed downloas.
+    /// Total number of allowed downloads.
     ///
     @Persisted
     @objc dynamic var limit: Int = 0
