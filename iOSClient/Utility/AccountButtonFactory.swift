@@ -42,6 +42,7 @@ class AccountButtonFactory {
             let accountSettingsModel = NCAccountSettingsModel(delegate: self)
             let accountSettingsView = NCAccountSettingsView(model: accountSettingsModel)
             let accountSettingsController = UIHostingController(rootView: accountSettingsView)
+            accountSettingsController.modalPresentationStyle = .fullScreen
             self.presentVC(accountSettingsController)
         })
         return UIBarButtonItem(customView: accountButton)

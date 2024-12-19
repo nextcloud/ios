@@ -91,6 +91,10 @@ class DataProtectionAgreementManager {
         agreementWasShown(false)
     }
     
+    func onAccountChanged() {
+        agreementWasShown(false)
+    }
+    
     private func agreementWasShown(_ wasShown: Bool) {
         UserDefaults.standard.set(wasShown, forKey: DataProtectionKeys.agreementWasShown)
     }

@@ -542,6 +542,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         )
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeUser)
+        DataProtectionAgreementManager.shared.onAccountChanged()
         completion()
     }
 
