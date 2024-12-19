@@ -38,6 +38,7 @@ struct SelectAlbumView: View {
 
             model.getSelectedAlbums(selectedAlbums: selectedAlbums)
         }
+        .defaultViewModifier(model)
     }
 }
 
@@ -82,16 +83,5 @@ struct SelectionButton<Content: View>: View {
             }
         }
         .foregroundColor(.primary)
-    }
-}
-
-extension AlbumModel: PHPhotoLibraryChangeObserver {
-    nonisolated func photoLibraryDidChange(_ changeInstance: PHChange) {
-        Task { @MainActor in
-            if let changes = changeInstance.changeDetails(for: allPhotos) {
-                allPhotos = changes.fetchResultAfterChanges
-            }
-        }
-
     }
 }
