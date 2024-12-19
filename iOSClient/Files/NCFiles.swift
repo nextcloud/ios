@@ -126,6 +126,7 @@ class NCFiles: NCCollectionViewCommon {
         else {
             return super.reloadDataSource()
         }
+        self.semaphoreReloadDataSource.wait()
 
         // This is only a fail safe "dead lock", I don't think the timeout will ever be called but at least nothing gets stuck, if after 5 sec. (which is a long time in this routine), the semaphore is still locked
         //
