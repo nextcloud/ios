@@ -95,6 +95,24 @@ extension NCNetworking {
             let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
             let metadata = self.database.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
 
+            // Remove all known download limits from shares related to the given file.
+            // This avoids obsolete download limit objects to stay around.
+            // Afterwards create new download limits, should any such be returned for the known shares.
+
+            let shares = self.database.getTableShares(account: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName)
+
+            do {
+                try shares.forEach { share in
+                    try self.database.deleteDownloadLimit(byShareToken: share.token)
+
+                    if let receivedDownloadLimit = file.downloadLimits.first(where: { $0.token == share.token }) {
+                        try self.database.createDownloadLimit(count: receivedDownloadLimit.count, limit: receivedDownloadLimit.limit, token: receivedDownloadLimit.token)
+                    }
+                }
+            } catch {
+                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not update download limits: \(error)")
+            }
+
             completion(account, metadata, error)
         }
     }
