@@ -31,7 +31,7 @@ class NCFiles: NCCollectionViewCommon {
     internal var fileNameBlink: String?
     internal var fileNameOpen: String?
     internal var matadatasHash: String = ""
-    internal var reloadDataSourceInProgress: Bool = false
+    internal var semaphoreReloadDataSource = DispatchSemaphore(value: 1)
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -122,12 +122,16 @@ class NCFiles: NCCollectionViewCommon {
     // MARK: - DataSource
 
     override func reloadDataSource() {
-        guard !isSearchingMode,
-              !reloadDataSourceInProgress
+        guard !isSearchingMode
         else {
             return super.reloadDataSource()
         }
-        reloadDataSourceInProgress = true
+
+        // This is only a fail safe "dead lock", I don't think the timeout will ever be called but at least nothing gets stuck, if after 5 sec. (which is a long time in this routine), the semaphore is still locked
+        //
+        if self.semaphoreReloadDataSource.wait(timeout: .now() + 5) == .timedOut {
+            self.semaphoreReloadDataSource.signal()
+        }
 
         var predicate = self.defaultPredicate
         let predicateDirectory = NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, self.serverUrl)
@@ -145,14 +149,16 @@ class NCFiles: NCCollectionViewCommon {
         self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView)
 
         if metadatas.isEmpty {
-            reloadDataSourceInProgress = false
+            self.semaphoreReloadDataSource.signal()
             return super.reloadDataSource()
         }
 
         self.dataSource.caching(metadatas: metadatas, dataSourceMetadatas: dataSourceMetadatas) { updated in
-            self.reloadDataSourceInProgress = false
-            if updated || self.isNumberOfItemsInAllSectionsNull || self.numberOfItemsInAllSections != metadatas.count {
-                super.reloadDataSource()
+            self.semaphoreReloadDataSource.signal()
+            DispatchQueue.main.async {
+                if updated || self.isNumberOfItemsInAllSectionsNull || self.numberOfItemsInAllSections != metadatas.count {
+                    super.reloadDataSource()
+                }
             }
         }
     }

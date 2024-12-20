@@ -36,6 +36,9 @@ class NCMedia: UIViewController {
     @IBOutlet weak var menuButton: UIButton!
     @IBOutlet weak var gradientView: UIView!
 
+    let semaphoreSearchMedia = DispatchSemaphore(value: 1)
+    let semaphoreNotificationCenter = DispatchSemaphore(value: 1)
+
     let layout = NCMediaLayout()
     var layoutType = NCGlobal.shared.mediaLayoutRatio
     var documentPickerViewController: NCDocumentPickerViewController?
@@ -257,13 +260,25 @@ class NCMedia: UIViewController {
             return
         }
 
+        // This is only a fail safe "dead lock", I don't think the timeout will ever be called but at least nothing gets stuck, if after 5 sec. (which is a long time in this routine), the semaphore is still locked
+        //
+        if self.semaphoreNotificationCenter.wait(timeout: .now() + 5) == .timedOut {
+            self.semaphoreNotificationCenter.signal()
+        }
+
         if error.errorCode == self.global.errorResourceNotFound,
            let ocId = userInfo["ocId"] as? String {
             self.database.deleteMetadataOcId(ocId)
-            self.loadDataSource()
+            self.loadDataSource {
+                self.semaphoreNotificationCenter.signal()
+            }
         } else if error != .success {
             NCContentPresenter().showError(error: error)
-            self.loadDataSource()
+            self.loadDataSource {
+                self.semaphoreNotificationCenter.signal()
+            }
+        } else {
+            semaphoreNotificationCenter.signal()
         }
     }
 
