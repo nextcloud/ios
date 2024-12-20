@@ -749,23 +749,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     private func isCurrentScreenInMainTabBar() -> Bool {
         return self.tabBarController is NCMainTabBarController
     }
-	
-	private func setViewLayout() {
-		layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl)
-		if layoutForView?.layout == NCGlobal.shared.layoutList {
-			collectionView?.collectionViewLayout = listLayout
-			self.layoutType = NCGlobal.shared.layoutList
-		} else if layoutForView?.layout == NCGlobal.shared.layoutGrid {
-			collectionView?.collectionViewLayout = gridLayout
-			self.layoutType = NCGlobal.shared.layoutGrid
-		} else if layoutForView?.layout == NCGlobal.shared.layoutPhotoRatio {
-			collectionView?.collectionViewLayout = mediaLayout
-			self.layoutType = NCGlobal.shared.layoutPhotoRatio
-		} else if layoutForView?.layout == NCGlobal.shared.layoutPhotoSquare {
-			collectionView?.collectionViewLayout = mediaLayout
-			self.layoutType = NCGlobal.shared.layoutPhotoSquare
-		}
-	}
 
     // MARK: - SEARCH
 

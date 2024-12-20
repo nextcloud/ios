@@ -156,12 +156,12 @@ struct DashboardWidgetView: View {
                         .scaledToFit()
                         .frame(width: 15, height: 15)
                         .font(Font.system(.body).weight(.light))
-                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : UIColor(resource: .brandElement))
+                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(.brandElement))
 
                     Text(entry.footerText)
                         .font(.caption2)
                         .lineLimit(1)
-                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : UIColor(resource: .brandElement))
+                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(.brandElement))
                 }
                 .padding(.horizontal, 15.0)
                 .frame(maxWidth: geo.size.width, maxHeight: geo.size.height - 2, alignment: .bottomTrailing)

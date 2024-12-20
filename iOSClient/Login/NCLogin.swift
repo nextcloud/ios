@@ -286,7 +286,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 let user = valueArray[0].replacingOccurrences(of: "user:", with: "")
                 let password = valueArray[1].replacingOccurrences(of: "password:", with: "")
                 let urlBase = valueArray[2].replacingOccurrences(of: "server:", with: "")
-                let serverUrl = urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav
+                let serverUrl = urlBase + "/remote.php/dav"
                 spinner.startAnimating()
                 loginButton.isEnabled = false
                 qrCode.isEnabled = false

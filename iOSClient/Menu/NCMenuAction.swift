@@ -101,6 +101,7 @@ extension NCMenuAction {
 
     /// Delete files either from cache or from Nextcloud
     static func deleteAction(selectedMetadatas: [tableMetadata], metadataFolder: tableMetadata? = nil, controller: NCMainTabBarController?, order: Int = 0, completion: (() -> Void)? = nil) -> NCMenuAction {
+        var isDestructive = true
         var titleDelete = NSLocalizedString("_delete_", comment: "")
         var message = NSLocalizedString("_want_delete_", comment: "")
         var icon = NCImagesRepository.menuIconDelete

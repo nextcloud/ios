@@ -96,7 +96,7 @@ extension NCMedia {
         }
     }
 
-    func createMenu() {
+    func createMenuElements() -> [UIMenuElement] {
         let layoutForView = database.getLayoutForView(account: session.account, key: global.layoutViewMedia, serverUrl: "")
         var layout = layoutForView?.layout ?? global.mediaLayoutRatio
         /// Overwrite default value
@@ -135,7 +135,6 @@ extension NCMedia {
                     self.database.setLayoutForView(account: self.session.account, key: self.global.layoutViewMedia, serverUrl: "", layout: self.global.mediaLayoutRatio)
                     self.layoutType = self.global.mediaLayoutRatio
                 }
-                self.createMenu()
                 self.collectionViewReloadData()
             }
         ])
@@ -180,7 +179,7 @@ extension NCMedia {
             self.present(alert, animated: true)
         }
 
-        menuButton.menu = UIMenu(title: "", children: [viewFilterMenu, viewLayoutMenu, viewFolderMedia, playFile, playURL])
+        return [viewFilterMenu, viewLayoutMenu, viewFolderMedia, playFile, playURL]
     }
 }
 

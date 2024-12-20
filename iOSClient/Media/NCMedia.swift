@@ -35,6 +35,7 @@ class NCMedia: UIViewController {
     @IBOutlet weak var selectOrCancelButtonTrailing: NSLayoutConstraint!
     @IBOutlet weak var menuButton: UIButton!
     @IBOutlet weak var gradientView: UIView!
+    @IBOutlet weak var fileActionsHeader: FileActionsHeader?
 
     let semaphoreSearchMedia = DispatchSemaphore(value: 1)
     let semaphoreNotificationCenter = DispatchSemaphore(value: 1)
@@ -69,6 +70,8 @@ class NCMedia: UIViewController {
     var photoImage = UIImage()
     var videoImage = UIImage()
     var pinchGesture: UIPinchGestureRecognizer = UIPinchGestureRecognizer()
+    
+    var accountButtonFactory: AccountButtonFactory!
 
     var lastScale: CGFloat = 1.0
     var currentScale: CGFloat = 1.0
@@ -98,6 +101,15 @@ class NCMedia: UIViewController {
 
     var isPinchGestureActive: Bool {
         return pinchGesture.state == .began || pinchGesture.state == .changed
+    }
+    
+    var selectionState: FileActionsHeaderSelectionState {
+        let selectedItemsCount = fileSelect.count
+        if selectedItemsCount == dataSource.metadatas.count {
+            return .all
+        }
+        
+        return selectedItemsCount == 0 ? .none : .some(selectedItemsCount)
     }
 
     // MARK: - View Life Cycle
@@ -175,6 +187,9 @@ class NCMedia: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource(_:)), name: NSNotification.Name(rawValue: global.notificationCenterReloadDataSource), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(networkRemoveAll), name: UIApplication.didEnterBackgroundNotification, object: nil)
+        
+        accountButtonFactory = AccountButtonFactory(onAccountDetailsOpen: { [weak self] in self?.setEditMode(false) },
+                                                          presentVC: { [weak self] vc in self?.present(vc, animated: true) })
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -197,7 +212,6 @@ class NCMedia: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(enterForeground(_:)), name: UIApplication.willEnterForegroundNotification, object: nil)
 
         searchNewMedia()
-        createMenu()
     }
 
     override func viewDidDisappear(_ animated: Bool) {
@@ -253,17 +267,17 @@ class NCMedia: UIViewController {
         fileActionsHeader?.onSelectAll = { [weak self] in
             guard let self = self else { return }
             self.selectAllOrDeselectAll()
-            tabBarSelect.update(selectOcId: selectOcId)
+            tabBarSelect.selectCount = fileSelect.count
             self.fileActionsHeader?.setSelectionState(selectionState: selectionState)
         }
     }
     
     func selectAllOrDeselectAll() {
-        guard let metadatas = self.metadatas else {return}
-        if !selectOcId.isEmpty, metadatas.count == selectOcId.count {
-            selectOcId = []
+        let metadatas = self.dataSource.metadatas
+        if !filesExists.isEmpty, metadatas.count == filesExists.count {
+            filesExists = []
         } else {
-            selectOcId = metadatas.compactMap({ $0.ocId })
+            filesExists = metadatas.compactMap({ $0.ocId })
         }
         collectionView.reloadData()
     }

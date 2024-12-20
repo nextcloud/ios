@@ -36,7 +36,7 @@ struct FilesWidgetView: View {
 					.frame(width: geo.size.width, height: geo.size.height)
 			}
 			
-			HeaderView(title: entry.title)
+            HeaderView(title: entry.tile)
 				.padding(.top, 7)
 				
 			VStack(spacing: 5) {

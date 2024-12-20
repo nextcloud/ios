@@ -58,6 +58,14 @@ class NCMainTabBarController: UITabBarController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         DataProtectionAgreementManager.shared.showAgreement(viewController: self)
+        
+        previousIndex = selectedIndex
+        if NCBrandOptions.shared.enforce_passcode_lock && NCKeychain().passcode.isEmptyOrNil {
+            let vc = UIHostingController(rootView: SetupPasscodeView(isLockActive: .constant(false)))
+            vc.isModalInPresentation = true
+
+            present(vc, animated: true)
+        }
     }
 	
 	private func setupTabBarView() {
@@ -76,18 +84,6 @@ class NCMainTabBarController: UITabBarController {
     
     func presentedNavigationController() -> UINavigationController? {
         return presentedViewController as? UINavigationController
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        previousIndex = selectedIndex
-
-        if NCBrandOptions.shared.enforce_passcode_lock && NCKeychain().passcode.isEmptyOrNil {
-            let vc = UIHostingController(rootView: SetupPasscodeView(isLockActive: .constant(false)))
-            vc.isModalInPresentation = true
-
-            present(vc, animated: true)
-        }
     }
 
     @objc func changeTheming(_ notification: NSNotification) {
