@@ -91,6 +91,12 @@ class NCFiles: NCCollectionViewCommon {
         if isRoot {
             serverUrl = utilityFileSystem.getHomeServer(session: session)
             titleCurrentFolder = getNavigationTitle()
+            //
+            // Recommended Files
+            //
+            NextcloudKit.shared.getRecommendedFiles(account: session.account) { account, recommendations, responseData, error in
+
+            }
         }
         super.viewWillAppear(animated)
 
@@ -198,6 +204,9 @@ class NCFiles: NCCollectionViewCommon {
                 } else if error.errorCode == self.global.errorForbidden {
                     DispatchQueue.main.async {
                         if self.presentedViewController == nil {
+                            //
+                            // Terms Of Service
+                            //
                             NextcloudKit.shared.getTermsOfService(account: self.session.account) { _, tos, _, error in
                                 if error == .success, let tos {
                                     let termOfServiceModel = NCTermOfServiceModel(controller: self.controller, tos: tos)
