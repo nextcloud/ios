@@ -226,7 +226,7 @@ class NCImageCache: NSObject {
     }
 
     func getFolder(account: String) -> UIImage {
-        return UIImage(named: "folder")!.image(color: NCBrandColor.shared.brandElement)
+        return UIImage(resource: .folder)
     }
 
     func getFolderEncrypted(account: String) -> UIImage {
@@ -234,15 +234,15 @@ class NCImageCache: NSObject {
     }
 
     func getFolderSharedWithMe(account: String) -> UIImage {
-        return UIImage(named: "folder_shared_with_me")!.image(color: NCBrandColor.shared.brandElement)
+        return UIImage(resource: .folderGroup)
     }
 
     func getFolderPublic(account: String) -> UIImage {
-        return UIImage(named: "folder_public")!.image(color: NCBrandColor.shared.brandElement)
+        return UIImage(resource: .folderGroup)
     }
 
     func getFolderGroup(account: String) -> UIImage {
-        return UIImage(named: "folder_group")!.image(color: NCBrandColor.shared.brandElement)
+        return UIImage(resource: .folderGroup)
     }
 
     func getFolderExternal(account: String) -> UIImage {
@@ -250,6 +250,6 @@ class NCImageCache: NSObject {
     }
 
     func getFolderAutomaticUpload(account: String) -> UIImage {
-        return UIImage(named: "folderAutomaticUpload")!.image(color: NCBrandColor.shared.brandElement)
+        return UIImage(resource: .folderAutomaticUpload)
     }
 }
