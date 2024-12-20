@@ -30,7 +30,6 @@ import WidgetKit
 import Queuer
 import EasyTipView
 import SwiftUI
-import FirebaseAnalytics
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
@@ -60,10 +59,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCSettingsBundleHelper.checkAndExecuteSettings(delay: 0)
 
         UserDefaults.standard.register(defaults: ["UserAgent": userAgent])
-        if !NCKeychain().disableCrashservice, !NCBrandOptions.shared.disable_crash_service {
-            FirebaseApp.configure()
-            Analytics.setAnalyticsCollectionEnabled(true)
-        }
+        
+        FirebaseApp.configure()
+        DataProtectionAgreementManager.shared.setupAnalyticsCollection()
 
         utilityFileSystem.createDirectoryStandard()
         utilityFileSystem.emptyTemporaryDirectory()

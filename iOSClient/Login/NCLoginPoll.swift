@@ -28,64 +28,64 @@ struct NCLoginPoll: View {
     let loginFlowV2Token: String
     let loginFlowV2Endpoint: String
     let loginFlowV2Login: String
-
+    
     var cancelButtonDisabled = false
-
-	var isIPad: Bool {
-		UIDevice.current.userInterfaceIdiom == .pad
-	}
-	
+    
+    var isIPad: Bool {
+        UIDevice.current.userInterfaceIdiom == .pad
+    }
+    
     @ObservedObject private var loginManager = LoginManager()
     @Environment(\.dismiss) private var dismiss
-
+    
     var body: some View {
-		GeometryReader { geometry in
-			let size = geometry.size
-			let welcomeLabelWidthRatio = isIPad ? 0.6 : 0.78
-			let descriptionFont = Font.system(size: isIPad ? 36.0 : 16.0)
-			
-			VStack {
-				Image(.logo)
-					.resizable()
-					.aspectRatio(159/22, contentMode: .fit)
-					.frame(width: size.width * 0.45)
-					.padding(.top, size.height * 0.12)
-				Text(NSLocalizedString("_poll_desc_", comment: ""))
-					.font(descriptionFont)
-					.multilineTextAlignment(.center)
-					.foregroundStyle(.white)
-					.frame(width: size.width * welcomeLabelWidthRatio)
-					.padding(.top, size.height * 0.1)
-				
-				Spacer()
-				CircleItemSpinner()
-					.tint(.white)
-				Spacer()
-
-				HStack(spacing: 15) {
-					Button(NSLocalizedString("_cancel_", comment: "")) {
-						dismiss()
-					}
-					.disabled(loginManager.isLoading || cancelButtonDisabled)
+        GeometryReader { geometry in
+            let size = geometry.size
+            let welcomeLabelWidthRatio = isIPad ? 0.6 : 0.78
+            let descriptionFont = Font.system(size: isIPad ? 36.0 : 16.0)
+            
+            VStack {
+                Image(.logo)
+                    .resizable()
+                    .aspectRatio(159/22, contentMode: .fit)
+                    .frame(width: size.width * 0.45)
+                    .padding(.top, size.height * 0.12)
+                Text(NSLocalizedString("_poll_desc_", comment: ""))
+                    .font(descriptionFont)
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(.white)
+                    .frame(width: size.width * welcomeLabelWidthRatio)
+                    .padding(.top, size.height * 0.1)
+                
+                Spacer()
+                CircleItemSpinner()
+                    .tint(.white)
+                Spacer()
+                
+                HStack(spacing: 15) {
+                    Button(NSLocalizedString("_cancel_", comment: "")) {
+                        dismiss()
+                    }
+                    .disabled(loginManager.isLoading || cancelButtonDisabled)
                     .buttonStyle(ButtonStyleSecondary(maxWidth: .infinity))
-					
-					Button(NSLocalizedString("_retry_", comment: "")) {
-						loginManager.openLoginInBrowser()
-					}
+                    
+                    Button(NSLocalizedString("_retry_", comment: "")) {
+                        loginManager.openLoginInBrowser()
+                    }
                     .buttonStyle(ButtonStylePrimary(maxWidth: .infinity))
                     
 				}
-                .frame(width: 210)
+                .frame(width: size.width * (isIPad ? 0.60 : 0.80))
 				.padding(.bottom, size.height * 0.15)
                 .environment(\.colorScheme, .dark)
-			}
-			.frame(maxWidth: .infinity, maxHeight: .infinity)
-			.background {
-				Image(.gradientBackground)
-					.resizable()
-					.ignoresSafeArea()
-			}
-		}
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background {
+                Image(.gradientBackground)
+                    .resizable()
+                    .ignoresSafeArea()
+            }
+        }
         .onChange(of: loginManager.pollFinished) { value in
             if value {
                 let window = UIApplication.shared.firstWindow

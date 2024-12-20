@@ -64,7 +64,7 @@ class NCSharePaging: UIViewController {
         pagingViewController.selectedBackgroundColor = NCBrandColor.shared.appBackgroundColor
         pagingViewController.indicatorColor = NCBrandColor.shared.brandElement
         pagingViewController.textColor = NCBrandColor.shared.textColor
-        pagingViewController.selectedTextColor = NCBrandColor.shared.getElement(account: metadata.account)
+        pagingViewController.selectedTextColor = UIColor(resource: .Share.tabTitle)
 
         // Pagination
         addChild(pagingViewController)

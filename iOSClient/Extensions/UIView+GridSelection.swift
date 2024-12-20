@@ -13,9 +13,11 @@ extension UIView {
         if isSelected {
             layer.borderWidth = 2
             layer.borderColor = NCBrandColor.shared.brandElement.cgColor
+            layer.cornerRadius = 4
         } else {
             layer.borderWidth = 0
             layer.borderColor = UIColor.clear.cgColor
+            layer.cornerRadius = 0
         }
     }
 }

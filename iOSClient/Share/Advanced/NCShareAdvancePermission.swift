@@ -79,11 +79,15 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
         super.viewDidLoad()
         self.shareConfig = NCShareConfig(parentMetadata: metadata, share: share)
 
-        tableView.backgroundColor = NCBrandColor.shared.appBackgroundColor
+        tableView.backgroundColor = UIColor(resource: .Share.Advanced.background)
+        tableView.separatorColor = UIColor(resource: .Share.Advanced.tableCellSeparator)
         tableView.estimatedRowHeight = tableView.rowHeight
         tableView.rowHeight = UITableView.automaticDimension
+        
         self.setNavigationTitle()
         self.navigationItem.hidesBackButton = true
+        self.navigationController?.setNavigationBarAppearance(backround: UIColor(resource: .Share.Advanced.background))
+        
         // disbale pull to dimiss
         isModalInPresentation = true
     }
@@ -121,13 +125,24 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
         headerView.heightAnchor.constraint(equalTo: container.heightAnchor).isActive = true
         headerView.widthAnchor.constraint(equalTo: container.widthAnchor).isActive = true
     }
-
-    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if section == 0 {
-            return NSLocalizedString("_permissions_", comment: "")
-        } else if section == 1 {
-            return NSLocalizedString("_advanced_", comment: "")
-        } else { return nil }
+    
+    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        return UITableViewHeaderFooterView()
+    }
+    
+    override func tableView(_ tableView: UITableView, willDisplayHeaderView view: UIView, forSection section: Int) {
+        guard let headerView = view as? UITableViewHeaderFooterView else { return }
+        
+        var contentConfiguration = UIListContentConfiguration.plainHeader()
+        contentConfiguration.text = titleForHeader(in: section)
+        contentConfiguration.textProperties.color = UIColor(resource: .Share.Advanced.sectionTitle)
+        headerView.contentConfiguration = contentConfiguration
+        
+        headerView.configurationUpdateHandler = { (headerFooterView: UITableViewHeaderFooterView, state: UIViewConfigurationState) -> Void in
+            var backgroundConfiguration = UIBackgroundConfiguration.clear()
+            backgroundConfiguration.backgroundColor = state.isPinned ? UIColor(resource: .Share.Advanced.sectionTitleBackground) : .clear
+            headerView.backgroundConfiguration = backgroundConfiguration
+        }
     }
 
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -153,8 +168,15 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
             noteCell.detailTextLabel?.numberOfLines = 0
             return noteCell
         }
-        cell.backgroundColor = NCBrandColor.shared.formRowBackgroundColor
+        
+        cell.configurationUpdateHandler = { (cell: UITableViewCell, state: UICellConfigurationState) -> Void in
+            var backgroundConfiguration = UIBackgroundConfiguration.clear()
+            backgroundConfiguration.backgroundColor = UIColor(resource: state.isHighlighted ? .Share.Advanced.Cell.backgroundHighlighted : .Share.Advanced.Cell.backgroundNormal)
+            cell.backgroundConfiguration = backgroundConfiguration
+        }
+        
         if let cell = cell as? NCShareDateCell { cell.onReload = tableView.reloadData }
+        
         return cell
     }
 
@@ -204,5 +226,13 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
             }
             self.present(alertController, animated: true)
         }
+    }
+    
+    private func titleForHeader(in section: Int) -> String? {
+        if section == 0 {
+            return NSLocalizedString("_permissions_", comment: "")
+        } else if section == 1 {
+            return NSLocalizedString("_advanced_", comment: "")
+        } else { return nil }
     }
 }

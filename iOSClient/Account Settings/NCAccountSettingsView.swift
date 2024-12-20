@@ -225,7 +225,7 @@ struct AccountView: View {
     let userStatus: (statusImage: UIImage?, statusMessage: String, descriptionMessage: String)
 
     var body: some View {
-        let userAvatar = NCUtility().loadUserImage(for: account.user, displayName: account.displayName, urlBase: account.urlBase)
+		let userAvatar = Image(.userAvatar)
 
         VStack {
             UserImageView(avatar: userAvatar, onlineStatus: userStatus.statusImage)
@@ -277,13 +277,13 @@ struct PersonalDataRow: View {
 }
 
 struct UserImageView: View {
-    let avatar: UIImage?
+    let avatar: Image?
     let onlineStatus: UIImage?
 
     var body: some View {
         ZStack {
             if let avatar = avatar {
-                Image(uiImage: avatar)
+                avatar
                     .resizable()
                     .scaledToFit()
                     .frame(width: 75, height: 75)

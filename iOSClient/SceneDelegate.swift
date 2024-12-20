@@ -41,6 +41,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene),
               let appDelegate else { return }
         self.window = UIWindow(windowScene: windowScene)
+		setupUIAppearance()
 
         if let activeTableAccount = self.database.getActiveTableAccount() {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Account active \(activeTableAccount.account)")
@@ -85,6 +86,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
     }
 
+	private func setupUIAppearance() {
+		NCMainTabBar.setupAppearance()
+	}
+	
     func sceneDidDisconnect(_ scene: UIScene) {
         print("[DEBUG] Scene did disconnect")
     }
@@ -104,6 +109,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         hidePrivacyProtectionWindow()
         if let window = SceneManager.shared.getWindow(scene: scene), let controller = SceneManager.shared.getController(scene: scene) {
             window.rootViewController = controller
+            
+            DataProtectionAgreementManager.shared.showAgreement(viewController: controller)
+            
             if NCKeychain().presentPasscode {
                 NCPasscode.shared.presentPasscode(viewController: controller, delegate: self) {
                     NCPasscode.shared.enableTouchFaceID()

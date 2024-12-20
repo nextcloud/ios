@@ -25,6 +25,9 @@ import UIKit
 import NextcloudKit
 
 class NCMainTabBar: UITabBar {
+
+	private let heightForDevicesWithRectCornersDisplay: CGFloat = 64.0
+
     private var fillColor: UIColor!
     private var shapeLayer: CALayer?
     private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
@@ -35,6 +38,16 @@ class NCMainTabBar: UITabBar {
         UIColor(resource: .Tabbar.fabButton)
 	}
     
+	override open func sizeThatFits(_ size: CGSize) -> CGSize {
+		guard !UIDevice.current.hasComplexSaveArea else {
+			return super.sizeThatFits(size)
+		}
+		
+		var sizeThatFits = super.sizeThatFits(size)
+		sizeThatFits.height = heightForDevicesWithRectCornersDisplay
+		return sizeThatFits
+	}
+	
     private var customBackgroundColor: UIColor? {
         UIColor(named: "Tabbar/Background")
     }
@@ -102,6 +115,17 @@ class NCMainTabBar: UITabBar {
         self.addSubview(backgroundView)
     }
 
+	private func setupSizeClasses() {
+		if #available(iOS 17.0, *) {
+			traitOverrides.horizontalSizeClass = .compact
+		}
+	}
+
+	override var traitCollection: UITraitCollection {
+		guard UIDevice.current.userInterfaceIdiom == .pad else { return super.traitCollection }
+		return UITraitCollection(traitsFrom: [super.traitCollection, UITraitCollection(horizontalSizeClass: .compact)])
+	}
+	
     private func createPath() -> CGPath {
 
         let height: CGFloat = 28

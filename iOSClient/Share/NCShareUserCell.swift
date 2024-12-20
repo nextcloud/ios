@@ -155,7 +155,9 @@ class NCSearchUserDropDownCell: DropDownCell, NCCellProtocol {
     func setupCell(sharee: NKSharee, session: NCSession.Session) {
         let utility = NCUtility()
         imageItem.image = NCShareCommon().getImageShareType(shareType: sharee.shareType)
-        imageShareeType.image = NCShareCommon().getImageShareType(shareType: sharee.shareType)
+        imageShareeType.image = NCShareCommon().getImageShareType(shareType: sharee.shareType)?
+            .withRenderingMode(.alwaysTemplate)
+        imageShareeType.tintColor = UIColor(resource: .Share.SearchUserCell.userType)
         let status = utility.getUserStatus(userIcon: sharee.userIcon, userStatus: sharee.userStatus, userMessage: sharee.userMessage)
 
         if let statusImage = status.statusImage {

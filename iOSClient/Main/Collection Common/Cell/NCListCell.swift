@@ -285,12 +285,6 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         } else {
             imageStatus.backgroundColor = .clear
         }
-
-        if imageLocal.image != nil {
-            imageLocal.makeCircularBackground(withColor: .systemBackground)
-        } else {
-            imageLocal.backgroundColor = .clear
-        }
     }
 }
 
@@ -303,7 +297,7 @@ protocol NCListCellDelegate: AnyObject {
 // MARK: - List Layout
 
 class NCListLayout: UICollectionViewFlowLayout {
-    var itemHeight: CGFloat = 48
+    var itemHeight: CGFloat = 64
 
     override init() {
         super.init()

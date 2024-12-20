@@ -4,11 +4,11 @@
 <dict>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.de.ionos.easystorage</string>
+		<string>group.com.ionos.hidrivenext</string>
 	</array>
 	<key>keychain-access-groups</key>
 	<array>
-		<string>$(AppIdentifierPrefix)de.ionos.easystorage</string>
+		<string>$(AppIdentifierPrefix)com.ionos.hidrivenext</string>
 	</array>
 </dict>
 </plist>

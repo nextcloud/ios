@@ -262,12 +262,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         navigationController?.setNavigationBarHidden(false, animated: true)
         navigationItem.title = titleCurrentFolder
         
-        if isCurrentScreenInMainTabBar() && (navigationController?.viewControllers.count == 1) {
-            let logo = UIImage(resource: .ionosEasyStorageLogo).withTintColor(UIColor(resource: .NavigationBar.logoTint))
-            navigationItem.titleView = UIImageView(image: logo)
-        }
-
-        isEditMode = false
+		isEditMode = false
+		setNavigationBarLogoIfNeeded()
         setNavigationLeftItems()
         setNavigationRightItems()
 
@@ -753,6 +749,23 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     private func isCurrentScreenInMainTabBar() -> Bool {
         return self.tabBarController is NCMainTabBarController
     }
+	
+	private func setViewLayout() {
+		layoutForView = NCManageDatabase.shared.getLayoutForView(account: appDelegate.account, key: layoutKey, serverUrl: serverUrl)
+		if layoutForView?.layout == NCGlobal.shared.layoutList {
+			collectionView?.collectionViewLayout = listLayout
+			self.layoutType = NCGlobal.shared.layoutList
+		} else if layoutForView?.layout == NCGlobal.shared.layoutGrid {
+			collectionView?.collectionViewLayout = gridLayout
+			self.layoutType = NCGlobal.shared.layoutGrid
+		} else if layoutForView?.layout == NCGlobal.shared.layoutPhotoRatio {
+			collectionView?.collectionViewLayout = mediaLayout
+			self.layoutType = NCGlobal.shared.layoutPhotoRatio
+		} else if layoutForView?.layout == NCGlobal.shared.layoutPhotoSquare {
+			collectionView?.collectionViewLayout = mediaLayout
+			self.layoutType = NCGlobal.shared.layoutPhotoSquare
+		}
+	}
 
     // MARK: - SEARCH
 
@@ -1152,6 +1165,12 @@ extension NCCollectionViewCommon {
 			self.selectAll()
 			let selectionState: FileActionsHeaderSelectionState = self.selectOcId.count == 0 ? .none : .all
 			self.fileActionsHeader?.setSelectionState(selectionState: selectionState)
+		}
+	}
+	
+	private func setNavigationBarLogoIfNeeded() {
+		if  isCurrentScreenInMainTabBar() && self.navigationController?.viewControllers.count == 1 {
+			setNavigationBarLogo()
 		}
 	}
 	

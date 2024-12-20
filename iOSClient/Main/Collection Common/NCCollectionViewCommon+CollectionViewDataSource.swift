@@ -323,7 +323,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         // image Favorite
         if metadata.favorite {
-            cell.fileFavoriteImage?.image = imageCache.getImageFavorite()
+            cell.fileFavoriteImage?.image = UIImage(resource: .FileFolderCell.star)
             a11yValues.append(NSLocalizedString("_favorite_short_", comment: ""))
         }
 
@@ -430,7 +430,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         // Color string find in search
         cell.fileTitleLabel?.textColor = UIColor(resource: .ListCell.title)
-        cell.fileTitleLabel?.font = .systemFont(ofSize: 12, weight: .medium)
+        cell.fileTitleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
 
         if isSearchingMode, let literalSearch = self.literalSearch, let title = cell.fileTitleLabel?.text {
             let longestWordRange = (title.lowercased() as NSString).range(of: literalSearch)

@@ -29,7 +29,8 @@ import SwiftUI
 
 class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 	
-    @IBOutlet weak var loginButton: UIButton!
+    @IBOutlet weak var loginButton: PrimaryButton!
+    @IBOutlet weak var qrCode: SecondaryButton!
 	@IBOutlet weak var lblWelcome: UILabel!
 	@IBOutlet weak var lblDescription: UILabel!
 	@IBOutlet weak var loginContentView: UIView!
@@ -63,10 +64,14 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.overrideUserInterfaceStyle = .dark
 		
 		// Login Button
 		loginButton.setTitle(NSLocalizedString("_login_", comment: ""), for: .normal)
-        loginButton.overrideUserInterfaceStyle = .dark
+        
+        // qrcode
+        qrCode.setTitle(NSLocalizedString("_login_with_qrcode_", tableName: nil, bundle: Bundle.main, value:  "Scan QR code", comment: ""), for: .normal)
 		
 		// Labels
 		lblWelcome.text = NSLocalizedString("_login_welcome_", tableName: nil, bundle: Bundle.main, value: "Welcome to the cloud storage", comment: "")
@@ -177,6 +182,11 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         NCNetworking.shared.p12Password = nil
         login()
     }
+    
+    @IBAction func actionButtonQRCode(_ sender: Any) {
+        let qrCode = NCLoginQRCode(delegate: self)
+        qrCode.scan()
+    }
 
     // MARK: - Share accounts View Controller
 
@@ -220,6 +230,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 NextcloudKit.shared.getLoginFlowV2(serverUrl: url) { token, endpoint, login, _, error in
 					self?.spinner.stopAnimating()
                     self?.loginButton.isEnabled = true
+                    self?.qrCode.isEnabled = true
                     // Login Flow V2
                     if error == .success, let token, let endpoint, let login {
 						let loginPoll = NCLoginPoll(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login)
@@ -235,6 +246,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
             case .failure(let error):
 				self?.spinner.stopAnimating()
                 self?.loginButton.isEnabled = true
+                self?.qrCode.isEnabled = true
                 if error.errorCode == NSURLErrorServerCertificateUntrusted {
                     let alertController = UIAlertController(title: NSLocalizedString("_ssl_certificate_untrusted_", comment: ""), message: NSLocalizedString("_connect_server_anyway_", comment: ""), preferredStyle: .alert)
                     alertController.addAction(UIAlertAction(title: NSLocalizedString("_yes_", comment: ""), style: .default, handler: { _ in
@@ -274,10 +286,14 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 let user = valueArray[0].replacingOccurrences(of: "user:", with: "")
                 let password = valueArray[1].replacingOccurrences(of: "password:", with: "")
                 let urlBase = valueArray[2].replacingOccurrences(of: "server:", with: "")
-                let serverUrl = urlBase + "/remote.php/dav"
+                let serverUrl = urlBase + "/" + NextcloudKit.shared.nkCommonInstance.dav
+                spinner.startAnimating()
                 loginButton.isEnabled = false
+                qrCode.isEnabled = false
                 NextcloudKit.shared.checkServer(serverUrl: serverUrl) { _, error in
+                    self.spinner.stopAnimating()
                     self.loginButton.isEnabled = true
+                    self.qrCode.isEnabled = true
                     if error == .success {
                         self.createAccount(urlBase: urlBase, user: user, password: password)
                     } else {
@@ -287,6 +303,14 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     }
                 }
             }
+        } else {
+            let alertController = UIAlertController(title: NSLocalizedString( "_error_", comment: ""),
+                                                    message: NSLocalizedString("_login_wrong_QR_format_", comment: ""),
+                                                    preferredStyle: .alert)
+            alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""),
+                                                    style: .default,
+                                                    handler: nil))
+            self.present(alertController, animated: true)
         }
     }
 

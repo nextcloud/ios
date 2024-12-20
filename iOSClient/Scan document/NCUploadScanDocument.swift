@@ -356,7 +356,8 @@ struct UploadScanDocumentView: View {
                                     .renderingMode(.template)
                                     .resizable()
                                     .scaledToFit()
-                                    .foregroundColor(Color(NCBrandColor.shared.getElement(account: model.session.account)))
+                                    .foregroundColor(Color(.Share.commonIconTint))
+                                
                             }
                         }
                         .contentShape(Rectangle())

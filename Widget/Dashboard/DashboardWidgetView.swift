@@ -29,39 +29,14 @@ struct DashboardWidgetView: View {
     var body: some View {
         GeometryReader { geo in
             if entry.isEmpty {
-                VStack(alignment: .center) {
-                    Image(systemName: "checkmark")
-                        .resizable()
-                        .scaledToFit()
-                        .font(Font.system(.body).weight(.light))
-                        .frame(width: 50, height: 50)
-                    Text(NSLocalizedString("_no_items_", comment: ""))
-                        .font(.system(size: 25))
-                        .padding()
-                    Text(NSLocalizedString("_check_back_later_", comment: ""))
-                        .font(.system(size: 15))
-                }
-                .frame(width: geo.size.width, height: geo.size.height)
+				EmptyWidgetContentView()
+					.frame(width: geo.size.width, height: geo.size.height)
             }
 
             ZStack(alignment: .topLeading) {
-                HStack {
-                    Image(uiImage: entry.titleImage)
-                        .renderingMode(.template)
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 20, height: 20)
-
-                    Text(entry.title)
-                        .font(.system(size: 15))
-                        .fontWeight(.bold)
-                        .multilineTextAlignment(.center)
-                        .textCase(.uppercase)
-                        .lineLimit(1)
-                }
-                .frame(width: geo.size.width - 20)
-                .padding([.top, .leading, .trailing], 10)
-
+				HeaderView(title: entry.title)
+					.padding(.top, 7)
+				
                 if !entry.isEmpty {
 
                     VStack(alignment: .leading) {
@@ -74,12 +49,11 @@ struct DashboardWidgetView: View {
 
                                     HStack {
 
-                                        let subTitleColor = Color(white: 0.5)
-
                                         if entry.isPlaceholder {
                                             Circle()
                                                 .fill(Color(.systemGray4))
-                                                .frame(width: 35, height: 35)
+                                                .frame(width: WidgetConstants.elementIconWidthHeight,
+													   height: WidgetConstants.elementIconWidthHeight)
                                         } else if let color = element.imageColor {
                                             Image(uiImage: element.icon)
                                                 .renderingMode(.template)
@@ -102,36 +76,38 @@ struct DashboardWidgetView: View {
                                                     .renderingMode(.template)
                                                     .resizable()
                                                     .scaledToFill()
-                                                    .frame(width: 25, height: 25)
+                                                    .frame(width: WidgetConstants.elementIconWidthHeight,
+														   height: WidgetConstants.elementIconWidthHeight)
+                                                    .foregroundStyle(Color(uiColor:NCBrandColor.shared.iconImageColor2))
                                                     .clipped()
-                                                    .cornerRadius(5)
                                             }
                                         } else {
                                             if entry.dashboard?.itemIconsRound ?? false || element.avatar {
                                                 Image(uiImage: element.icon)
                                                     .resizable()
                                                     .scaledToFill()
-                                                    .frame(width: 35, height: 35)
+                                                    .frame(width: WidgetConstants.elementIconWidthHeight,
+														   height: WidgetConstants.elementIconWidthHeight)
                                                     .clipShape(Circle())
                                             } else {
                                                 Image(uiImage: element.icon)
                                                     .resizable()
                                                     .scaledToFill()
-                                                    .frame(width: 35, height: 35)
+                                                    .frame(width: WidgetConstants.elementIconWidthHeight,
+														   height: WidgetConstants.elementIconWidthHeight)
                                                     .clipped()
-                                                    .cornerRadius(5)
                                             }
                                         }
 
-                                        VStack(alignment: .leading, spacing: 2) {
-
-                                            Text(element.title)
-                                                .font(.system(size: 12))
-                                                .fontWeight(.regular)
-
-                                            Text(element.subTitle)
-                                                .font(.system(size: CGFloat(10)))
-                                                .foregroundColor(subTitleColor)
+										VStack(alignment: .leading, spacing: 2) {
+											Text(element.title)
+												.font(WidgetConstants.elementTileFont)
+												.foregroundStyle(Color(UIColor(resource: .title)))
+                                            if !element.subTitle.isEmpty {
+                                                Text(element.subTitle)
+                                                    .font(WidgetConstants.elementSubtitleFont)
+                                                    .foregroundStyle(Color(UIColor(resource: .subtitle)))
+                                            }
                                         }
                                         Spacer()
                                     }
@@ -140,20 +116,21 @@ struct DashboardWidgetView: View {
                                 }
                                 if element != entry.datas.last {
                                     Divider()
-                                        .padding(.leading, 54)
+										.overlay(Color(UIColor(resource: .divider)))
                                 }
                             }
                         }
                     }
-                    .padding(.top, 35)
+                    .padding(.top, 40)
                     .redacted(reason: entry.isPlaceholder ? .placeholder : [])
                 }
 
                 if let buttons = entry.buttons, !buttons.isEmpty, !entry.isPlaceholder {
 
                     HStack(spacing: 10) {
-                        let brandColor = Color(NCBrandColor.shared.getElement(account: entry.account))
-                        let brandTextColor = Color(NCBrandColor.shared.getText(account: entry.account))
+
+                        let brandColor = Color(UIColor(resource: .brandElement))
+                        let brandTextColor = Color(NCBrandColor.shared.brandText)
 
                         ForEach(buttons, id: \.index) { element in
                             Link(destination: URL(string: element.link)!, label: {
@@ -165,6 +142,7 @@ struct DashboardWidgetView: View {
                                     .foregroundColor(brandTextColor)
                                     .border(brandColor, width: 1)
                                     .cornerRadius(.infinity)
+                                    .padding(.bottom, 12)
                             })
                         }
                     }
@@ -178,18 +156,18 @@ struct DashboardWidgetView: View {
                         .scaledToFit()
                         .frame(width: 15, height: 15)
                         .font(Font.system(.body).weight(.light))
-                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getElement(account: entry.account)))
+                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : UIColor(resource: .brandElement))
 
                     Text(entry.footerText)
                         .font(.caption2)
                         .lineLimit(1)
-                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getElement(account: entry.account)))
+                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : UIColor(resource: .brandElement))
                 }
                 .padding(.horizontal, 15.0)
                 .frame(maxWidth: geo.size.width, maxHeight: geo.size.height - 2, alignment: .bottomTrailing)
             }
         }
-        .widgetBackground(Color(UIColor.systemBackground))
+		.widgetBackground(Color(UIColor(resource: .background)))
     }
 }
 
@@ -198,7 +176,7 @@ struct DashboardWidget_Previews: PreviewProvider {
         let datas = Array(dashboardDatasTest[0...4])
         let title = "Dashboard"
         let titleImage = UIImage(named: "widget")!
-        let entry = DashboardDataEntry(date: Date(), datas: datas, dashboard: nil, buttons: nil, isPlaceholder: false, isEmpty: true, titleImage: titleImage, title: title, footerImage: "checkmark.icloud", footerText: "Nextcloud widget", account: "")
+        let entry = DashboardDataEntry(date: Date(), datas: datas, dashboard: nil, buttons: nil, isPlaceholder: false, isEmpty: true, titleImage: titleImage, title: title, footerImage: "Cloud_Checkmark", footerText: "Nextcloud widget", account: "")
         DashboardWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
     }
 }

@@ -115,6 +115,11 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         searchField.searchTextField.font = .systemFont(ofSize: 14)
         searchField.delegate = self
     }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.setNavigationBarAppearance()
+    }
 
     func makeNewLinkShare() {
         guard
@@ -245,13 +250,15 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         let blurEffectView = UIVisualEffectView(effect: blurEffect)
         blurEffectView.frame = CGRect(x: 0, y: 0, width: 500, height: 20)
 
-        appearance.backgroundColor = NCBrandColor.shared.appBackgroundColor
+        appearance.backgroundColor = UIColor(resource: .Share.SearchUserCell.Background.normal)
+        appearance.selectionBackgroundColor = UIColor(resource: .Share.SearchUserCell.Background.pressed)
         appearance.cornerRadius = 10
         appearance.shadowColor = .black
         appearance.shadowOpacity = 0.2
         appearance.shadowRadius = 30
         appearance.animationduration = 0.25
-        appearance.textColor = .darkGray
+        appearance.textColor = UIColor(resource: .Share.SearchUserCell.title)
+		appearance.selectedTextColor = UIColor(resource: .Share.SearchUserCell.title)
 
         for sharee in sharees {
             var label = sharee.label
@@ -288,6 +295,12 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         }
 
         dropDown.show()
+    }
+    
+    func showOKAlert(title: String?, message: String?) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
+        return present(alertController, animated: true)
     }
 }
 

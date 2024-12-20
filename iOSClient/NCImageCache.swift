@@ -198,7 +198,7 @@ class NCImageCache: NSObject {
     }
 
     func getImageOfflineFlag() -> UIImage {
-        return utility.loadImage(named: "arrow.down.circle.fill", colors: [NCBrandColor.shared.brandElement])
+        return UIImage(resource: .offlineFlag)
     }
 
     func getImageLocal() -> UIImage {

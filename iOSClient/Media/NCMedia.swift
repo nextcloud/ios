@@ -179,11 +179,14 @@ class NCMedia: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
-//        navigationController?.setMediaAppreance()
-        if dataSource.metadatas.isEmpty {
-            loadDataSource()
-        }
+        
+        navigationController?.setNavigationBarAppearance()
+        navigationItem.largeTitleDisplayMode = .never
+        
+        setNavigationRightItems()
+        setNavigationLeftItems()
+        updateHeadersView()
+		setNavigationBarLogoIfNeeded()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -228,7 +231,71 @@ class NCMedia: UIViewController {
 
     func searchNewMedia() {
         timerSearchNewMedia?.invalidate()
-        timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchMediaUI(_:)), userInfo: nil, repeats: false)
+        timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchMediaUI), userInfo: nil, repeats: false)
+    }
+	
+	private func setNavigationBarLogoIfNeeded() {
+		if self.navigationController?.viewControllers.count == 1 {
+			setNavigationBarLogo()
+		}
+	}
+    
+    func updateHeadersView() {
+        fileActionsHeader?.showViewModeButton(false)
+        fileActionsHeader?.setIsEditingMode(isEditingMode: isEditMode)
+        updateHeadersMenu()
+        fileActionsHeader?.onSelectModeChange = { [weak self] isSelectionMode in
+            self?.setEditMode(isSelectionMode)
+            self?.updateHeadersView()
+            self?.fileActionsHeader?.setSelectionState(selectionState: .none)
+        }
+        
+        fileActionsHeader?.onSelectAll = { [weak self] in
+            guard let self = self else { return }
+            self.selectAllOrDeselectAll()
+            tabBarSelect.update(selectOcId: selectOcId)
+            self.fileActionsHeader?.setSelectionState(selectionState: selectionState)
+        }
+    }
+    
+    func selectAllOrDeselectAll() {
+        guard let metadatas = self.metadatas else {return}
+        if !selectOcId.isEmpty, metadatas.count == selectOcId.count {
+            selectOcId = []
+        } else {
+            selectOcId = metadatas.compactMap({ $0.ocId })
+        }
+        collectionView.reloadData()
+    }
+    
+    func updateHeadersMenu() {
+        fileActionsHeader?.setSortingMenu(sortingMenuElements: createMenuElements(), title: NSLocalizedString("_media_options_", tableName: nil, bundle: Bundle.main, value: "Media Options", comment: ""), image: nil)
+    }
+    
+    func setNavigationLeftItems() {
+        if isEditMode {
+            navigationItem.setLeftBarButtonItems(nil, animated: true)
+            return
+        }
+        let burgerMenuItem = UIBarButtonItem(image: UIImage(resource: .BurgerMenu.bars),
+                                             style: .plain,
+                                             action: { [weak self] in
+            self?.showBurgerMenu()
+        })
+        burgerMenuItem.tintColor = UIColor(resource: .BurgerMenu.navigationBarButton)
+        navigationItem.setLeftBarButtonItems([burgerMenuItem], animated: true)
+    }
+    
+    func showBurgerMenu() {
+        self.mainTabBarController?.showBurgerMenu()
+    }
+    
+    func setNavigationRightItems() {
+        navigationItem.rightBarButtonItems = [createAccountButton()]
+    }
+    
+    private func createAccountButton() -> UIBarButtonItem {
+        accountButtonFactory.createAccountButton()
     }
 
     // MARK: - NotificationCenter

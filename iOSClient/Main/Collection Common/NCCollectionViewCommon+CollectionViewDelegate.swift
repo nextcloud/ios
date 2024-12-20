@@ -71,6 +71,10 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
 
         if metadata.directory {
             pushMetadata(metadata)
+        } else if metadata.isURL,
+                  let url = URL(string: metadata.serverUrl)?.appendingPathComponent(metadata.url),
+                  UIApplication.shared.canOpenURL(url) {
+            UIApplication.shared.open(url)
         } else {
             let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt1024)
 

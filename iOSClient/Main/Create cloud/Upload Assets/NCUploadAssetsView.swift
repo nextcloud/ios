@@ -166,7 +166,8 @@ struct NCUploadAssetsView: View {
                                         .renderingMode(.template)
                                         .resizable()
                                         .scaledToFit()
-                                        .foregroundColor(Color(NCBrandColor.shared.getElement(account: metadata?.account)))
+                                        .foregroundColor(Color(.Share.commonIconTint))
+                                    
                                 }
                             }
                             .contentShape(Rectangle())

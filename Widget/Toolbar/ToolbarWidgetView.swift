@@ -40,60 +40,56 @@ struct ToolbarWidgetView: View {
         GeometryReader { geo in
 
             ZStack(alignment: .topLeading) {
-
+				
                 HStack(spacing: 0) {
-
-                    let sizeButton: CGFloat = 65
+					
+					let sizeButton: CGFloat = 60
 
                     Link(destination: entry.isPlaceholder ? linkNoAction : linkActionUploadAsset, label: {
-                        Image("addImage")
+						Image(uiImage: UIImage(resource: .media))
                             .resizable()
                             .renderingMode(.template)
-                            .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getText(account: entry.account)))
-                            .padding()
-                            .background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getElement(account: entry.account)))
+                            .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandText))
+							.background(entry.isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .brandElement)))
                             .clipShape(Circle())
                             .scaledToFit()
                             .frame(width: geo.size.width / 4, height: sizeButton)
                     })
 
                     Link(destination: entry.isPlaceholder ? linkNoAction : linkActionScanDocument, label: {
-                        Image(systemName: "doc.text.viewfinder")
+						Image(uiImage: UIImage(resource: .scan))
                             .resizable()
                             .renderingMode(.template)
                             .font(Font.system(.body).weight(.light))
-                            .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getText(account: entry.account)))
-                            .padding()
-                            .background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getElement(account: entry.account)))
+                            .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandText))
+							.background(entry.isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .brandElement)))
                             .clipShape(Circle())
                             .scaledToFit()
                             .frame(width: geo.size.width / 4, height: sizeButton)
                     })
+					
+					Link(destination: entry.isPlaceholder ? linkNoAction : linkActionVoiceMemo, label: {
+						Image(uiImage: UIImage(resource: .mic))
+							.resizable()
+							.foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandText))
+							.background(entry.isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .brandElement)))
+							.clipShape(Circle())
+							.scaledToFit()
+							.frame(width: geo.size.width / 4, height: sizeButton)
+					})
 
                     Link(destination: entry.isPlaceholder ? linkNoAction : linkActionTextDocument, label: {
-                        Image("note.text")
+						Image(uiImage: UIImage(resource: .note))
                             .resizable()
-                            .renderingMode(.template)
-                            .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getText(account: entry.account)))
-                            .padding()
-                            .background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getElement(account: entry.account)))
-                            .clipShape(Circle())
-                            .scaledToFit()
-                            .frame(width: geo.size.width / 4, height: sizeButton)
-                    })
-
-                    Link(destination: entry.isPlaceholder ? linkNoAction : linkActionVoiceMemo, label: {
-                        Image("microphone")
-                            .resizable()
-                            .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getText(account: entry.account)))
-                            .padding()
-                            .background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getElement(account: entry.account)))
+							.foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandText))
+							.background(entry.isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .brandElement)))
                             .clipShape(Circle())
                             .scaledToFit()
                             .frame(width: geo.size.width / 4, height: sizeButton)
                     })
                 }
                 .frame(width: geo.size.width, height: geo.size.height, alignment: .center)
+				.padding(.vertical, geo.size.height / 2 * -0.25)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
 
                 HStack {
@@ -112,13 +108,13 @@ struct ToolbarWidgetView: View {
                 .frame(maxWidth: geo.size.width - 5, maxHeight: geo.size.height - 2, alignment: .bottomTrailing)
             }
         }
-        .widgetBackground(Color.black.opacity(0.9))
+		.widgetBackground(Color(UIColor(resource: .background)))
     }
 }
 
 struct ToolbarWidget_Previews: PreviewProvider {
     static var previews: some View {
-        let entry = ToolbarDataEntry(date: Date(), isPlaceholder: false, userId: "", url: "", account: "", footerImage: "checkmark.icloud", footerText: NCBrandOptions.shared.brand + " toolbar")
+        let entry = ToolbarDataEntry(date: Date(), isPlaceholder: false, userId: "", url: "", account: "", footerImage: "Cloud_Checkmark", footerText: NCBrandOptions.shared.brand + " toolbar")
         ToolbarWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemMedium))
     }
 }
