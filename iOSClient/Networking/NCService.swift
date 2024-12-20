@@ -223,6 +223,13 @@ class NCService: NSObject {
                     NextcloudKit.shared.nkCommonInstance.addInternalTypeIdentifier(typeIdentifier: directEditing.mimetype, classFile: NKCommon.TypeClassFile.document.rawValue, editor: directEditing.editor, iconName: NKCommon.TypeIconFile.document.rawValue, name: "document", account: account)
                 }
             }
+
+            // Recommended Files
+            if capability.capabilityRecommendations {
+                NextcloudKit.shared.getRecommendedFiles(account: account) { account, recommendations, responseData, error in
+
+                }
+            }
         }
     }
 

@@ -194,6 +194,7 @@
 		F702F30125EE5D2C008F8E80 /* NYMnemonic.m in Sources */ = {isa = PBXBuildFile; fileRef = F702F2FD25EE5D2C008F8E80 /* NYMnemonic.m */; };
 		F702F30225EE5D2C008F8E80 /* english.txt in Resources */ = {isa = PBXBuildFile; fileRef = F702F2FF25EE5D2C008F8E80 /* english.txt */; };
 		F702F30825EE5D47008F8E80 /* NCPopupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F702F30725EE5D47008F8E80 /* NCPopupViewController.swift */; };
+		F70420012D15BB9F00EF900D /* NCManageDatabase+RecommendedFiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70420002D15BB9F00EF900D /* NCManageDatabase+RecommendedFiles.swift */; };
 		F70460522499061800BB98A7 /* NotificationCenter+MainThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70460512499061800BB98A7 /* NotificationCenter+MainThread.swift */; };
 		F70460532499095400BB98A7 /* NotificationCenter+MainThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70460512499061800BB98A7 /* NotificationCenter+MainThread.swift */; };
 		F70460542499095400BB98A7 /* NotificationCenter+MainThread.swift in Sources */ = {isa = PBXBuildFile; fileRef = F70460512499061800BB98A7 /* NotificationCenter+MainThread.swift */; };
@@ -1237,6 +1238,7 @@
 		F702F2FF25EE5D2C008F8E80 /* english.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = english.txt; sourceTree = "<group>"; };
 		F702F30025EE5D2C008F8E80 /* NYMnemonic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NYMnemonic.h; sourceTree = "<group>"; };
 		F702F30725EE5D47008F8E80 /* NCPopupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCPopupViewController.swift; sourceTree = "<group>"; };
+		F70420002D15BB9F00EF900D /* NCManageDatabase+RecommendedFiles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCManageDatabase+RecommendedFiles.swift"; sourceTree = "<group>"; };
 		F70460512499061800BB98A7 /* NotificationCenter+MainThread.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationCenter+MainThread.swift"; sourceTree = "<group>"; };
 		F704B5E22430AA6F00632F5F /* NCCreateFormUploadConflict.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCCreateFormUploadConflict.storyboard; sourceTree = "<group>"; };
 		F704B5E42430AA8000632F5F /* NCCreateFormUploadConflict.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCreateFormUploadConflict.swift; sourceTree = "<group>"; };
@@ -2726,6 +2728,7 @@
 				F73EF7DE2B02266C0087E6E9 /* NCManageDatabase+Trash.swift */,
 				F73EF7E62B0226B90087E6E9 /* NCManageDatabase+UserStatus.swift */,
 				F7E98C1527E0D0FC001F9F19 /* NCManageDatabase+Video.swift */,
+				F70420002D15BB9F00EF900D /* NCManageDatabase+RecommendedFiles.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -4526,6 +4529,7 @@
 				F7BC288026663F85004D46C5 /* NCViewCertificateDetails.swift in Sources */,
 				F78B87E92B62550800C65ADC /* NCMediaDownloadThumbnail.swift in Sources */,
 				F73EF7AF2B0224350087E6E9 /* NCManageDatabase+DirectEditing.swift in Sources */,
+				F70420012D15BB9F00EF900D /* NCManageDatabase+RecommendedFiles.swift in Sources */,
 				D5B6AA7827200C7200D49C24 /* NCActivityTableViewCell.swift in Sources */,
 				F745B253222D88AE00346520 /* NCLoginQRCode.swift in Sources */,
 				F769454822E9F20D000A798A /* NCShareNetworking.swift in Sources */,
