@@ -12,16 +12,17 @@ import Photos
     @Published var allPhotos: PHFetchResult<PHAsset>!
     @Published var allPhotosCount = 0
     @Published var smartAlbums: [PHAssetCollection] = []
+    @Published var userAlbums: [PHAssetCollection] = []
     @Published var selectedSmartAlbums: [PHAssetCollection] = []
     @Published var controller: NCMainTabBarController?
 
-    var assetCollections: PHFetchResult<PHAssetCollection>?
+    var smartAlbumAssetCollections: PHFetchResult<PHAssetCollection>?
+    var userAlbumAssetCollections: PHFetchResult<PHAssetCollection>?
 
     init(controller: NCMainTabBarController?) {
         self.controller = controller
-    }
-
-    nonisolated func onViewAppear() {
+        super.init()
+        
         Task { @MainActor in
             let allPhotosOptions = PHFetchOptions()
             allPhotosOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
@@ -29,12 +30,22 @@ import Photos
 
             allPhotosCount = allPhotos.count
 
-            assetCollections = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .any, options: nil)
+            smartAlbumAssetCollections = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .any, options: nil)
 
-            assetCollections?.enumerateObjects { collection, _, _ in
-                self.smartAlbums.append(collection)
+            smartAlbumAssetCollections?.enumerateObjects { [self] collection, _, _ in
+                smartAlbums.append(collection)
+            }
+
+            userAlbumAssetCollections = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .any, options: nil)
+
+            userAlbumAssetCollections?.enumerateObjects { [self] collection, _, _ in
+                userAlbums.append(collection)
             }
         }
+    }
+
+    nonisolated func onViewAppear() {
+
     }
 
     func getSelectedAlbums(selectedAlbums: Set<String>) {
@@ -46,6 +57,14 @@ import Photos
         }
     }
 
+    func getSavedAlbumIds() -> Set<String> {
+        guard let account = controller?.account else { return [] }
+
+        let albumIds = NCKeychain().getAutoUploadAlbumIds(account: account) ?? []
+
+        return Set(albumIds)
+    }
+
     deinit {
         PHPhotoLibrary.shared().unregisterChangeObserver(self)
     }
@@ -54,39 +73,32 @@ import Photos
 extension AlbumModel: PHPhotoLibraryChangeObserver {
     nonisolated func photoLibraryDidChange(_ changeInstance: PHChange) {
         // Change notifications may originate from a background queue.
-              // Re-dispatch to the main queue before acting on the change,
-              // so you can update the UI.
+        // Re-dispatch to the main queue before acting on the change,
+        // so you can update the UI.
         Task { @MainActor in
-                  // Check each of the three top-level fetches for changes.
-                  if let changeDetails = changeInstance.changeDetails(for: allPhotos) {
-                      // Update the cached fetch result.
-                      allPhotos = changeDetails.fetchResultAfterChanges
-                      // Don't update the table row that always reads "All Photos."
-                  }
+            if let changeDetails = changeInstance.changeDetails(for: allPhotos) {
+                allPhotos = changeDetails.fetchResultAfterChanges
+            }
 
-//                  let assetCollections = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .any, options: nil)
-
-                  // Update the cached fetch results, and reload the table sections to match.
-            if let assetCollections, let changeDetails = changeInstance.changeDetails(for: assetCollections) {
-                      var results = changeDetails.fetchResultAfterChanges
-
-                smartAlbums.removeAll()
-
-                assetCollections.enumerateObjects { collection, _, _ in
-                    self.smartAlbums.append(collection)
-                }
-//                      tableView.reloadSections(IndexSet(integer: Section.smartAlbums.rawValue), with: .automatic)
-                  }
-//                  if let changeDetails = changeInstance.changeDetails(for: userCollections) {
-//                      userCollections = changeDetails.fetchResultAfterChanges
-//                      tableView.reloadSections(IndexSet(integer: Section.userCollections.rawValue), with: .automatic)
-//                  }
-              }
-//        Task { @MainActor in
-//            if let changes = changeInstance.changeDetails(for: allPhotos) {
-//                allPhotos = changes.fetchResultAfterChanges
+//            if let smartAlbumAssetCollections, let changeDetails = changeInstance.changeDetails(for: smartAlbumAssetCollections) {
+//                var results = changeDetails.fetchResultAfterChanges
+//
+//                smartAlbums.removeAll()
+//
+//                smartAlbumAssetCollections.enumerateObjects { collection, _, _ in
+//                    self.smartAlbums.append(collection)
+//                }
 //            }
-//        }
-
+//
+//            if let userAlbumAssetCollections, let changeDetails = changeInstance.changeDetails(for: userAlbumAssetCollections) {
+//                var results = changeDetails.fetchResultAfterChanges
+//
+//                userAlbums.removeAll()
+//
+//                userAlbumAssetCollections.enumerateObjects { collection, _, _ in
+//                    self.userAlbums.append(collection)
+//                }
+//            }
+        }
     }
 }

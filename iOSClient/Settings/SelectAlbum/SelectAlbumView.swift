@@ -25,8 +25,8 @@ struct SelectAlbumView: View {
             }
 
             SmartAlbums(model: model, selectedAlbums: $selectedAlbums)
+            UserAlbums(model: model, selectedAlbums: $selectedAlbums)
         }
-        .environment(\.editMode, .constant(EditMode.active))
         .onChange(of: selectedAlbums) { newValue in
             if newValue.count > 1, oldSelectedAlbums.contains(cameraRollTag) {
                 selectedAlbums.remove(cameraRollTag)
@@ -38,6 +38,9 @@ struct SelectAlbumView: View {
 
             model.getSelectedAlbums(selectedAlbums: selectedAlbums)
         }
+        .onAppear {
+            selectedAlbums = model.getSavedAlbumIds()
+        }
         .defaultViewModifier(model)
     }
 }
@@ -47,12 +50,28 @@ struct SelectAlbumView: View {
 }
 
 struct SmartAlbums: View {
-    @StateObject var model: AlbumModel
+    @ObservedObject var model: AlbumModel
     @Binding var selectedAlbums: Set<String>
 
     var body: some View {
         Section(NSLocalizedString("_smart_albums_", comment: "")) {
             ForEach(model.smartAlbums, id: \.localIdentifier) { album in
+                SelectionButton(tag: album.localIdentifier, selection: $selectedAlbums) {
+                    Text(album.localizedTitle ?? "")
+                    Text(String(album.assetCount))
+                }
+            }
+        }
+    }
+}
+
+struct UserAlbums: View {
+    @ObservedObject var model: AlbumModel
+    @Binding var selectedAlbums: Set<String>
+
+    var body: some View {
+        Section(NSLocalizedString("_albums_", comment: "")) {
+            ForEach(model.userAlbums, id: \.localIdentifier) { album in
                 SelectionButton(tag: album.localIdentifier, selection: $selectedAlbums) {
                     Text(album.localizedTitle ?? "")
                     Text(String(album.assetCount))

@@ -46,13 +46,17 @@ class NCAutoUpload: NSObject {
                 return completion(0)
             }
 
-            NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { hasPermission in
+            NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { [self] hasPermission in
                 guard hasPermission else {
                     self.database.setAccountAutoUploadProperty("autoUpload", state: false)
                     return completion(0)
                 }
 
-                self.uploadAssetsNewAndFull(controller: controller, selector: NCGlobal.shared.selectorUploadAutoUpload, log: "Init Auto Upload", account: account) { num in
+                let albumIds = NCKeychain().getAutoUploadAlbumIds(account: account) ?? []
+
+                let selectedAlbums = PHAssetCollection.allAlbums.filter({albumIds.contains($0.localIdentifier)})
+
+                self.uploadAssetsNewAndFull(controller: controller, assetCollections: selectedAlbums, selector: NCGlobal.shared.selectorUploadAutoUpload, log: "Init Auto Upload", account: account) { num in
                     completion(num)
                 }
             }

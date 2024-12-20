@@ -14,4 +14,22 @@ extension PHAssetCollection {
         let result = PHAsset.fetchAssets(in: self, options: fetchOptions)
         return result.count
     }
+
+    static var allAlbums: [PHAssetCollection] {
+        let smartAlbumAssetCollections = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .any, options: nil)
+        var smartAlbums: [PHAssetCollection] = []
+
+        smartAlbumAssetCollections.enumerateObjects { collection, _, _ in
+            smartAlbums.append(collection)
+        }
+
+        let userAlbumAssetCollections = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .any, options: nil)
+        var userAlbums: [PHAssetCollection] = []
+
+        userAlbumAssetCollections.enumerateObjects { collection, _, _ in
+            userAlbums.append(collection)
+        }
+
+        return smartAlbums + userAlbums
+    }
 }

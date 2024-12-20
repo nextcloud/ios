@@ -65,6 +65,10 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         NCSession.shared.getSession(controller: controller)
     }
 
+    var autoUploadAlbumIds: [String] {
+        NCKeychain().getAutoUploadAlbumIds(account: controller?.account ?? "") ?? []
+    }
+
     /// Initialization code to set up the ViewModel with the active account
     init(controller: NCMainTabBarController?) {
         self.controller = controller
@@ -218,6 +222,14 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
             }
         }
         onViewAppear()
+    }
+
+    func createAlbumTitle() -> String {
+        if autoUploadAlbumIds.count == 1 {
+            return PHAssetCollection.allAlbums.first?.localizedTitle ?? ""
+        } else {
+            return NSLocalizedString("_multiple_albums_", comment: "")
+        }
     }
 }
 
