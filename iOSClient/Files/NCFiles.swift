@@ -91,12 +91,6 @@ class NCFiles: NCCollectionViewCommon {
         if isRoot {
             serverUrl = utilityFileSystem.getHomeServer(session: session)
             titleCurrentFolder = getNavigationTitle()
-            //
-            // Recommended Files
-            //
-            NextcloudKit.shared.getRecommendedFiles(account: session.account) { account, recommendations, responseData, error in
-
-            }
         }
         super.viewWillAppear(animated)
 
