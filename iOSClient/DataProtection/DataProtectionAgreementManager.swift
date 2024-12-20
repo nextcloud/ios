@@ -87,11 +87,7 @@ class DataProtectionAgreementManager {
         }
     }
     
-    func onAccountDeleted() {
-        agreementWasShown(false)
-    }
-    
-    func onAccountChanged() {
+    func onAccountCreated() {
         agreementWasShown(false)
     }
     

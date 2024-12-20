@@ -472,6 +472,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         var urlBase = urlBase
         if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
         let account: String = "\(user) \(urlBase)"
+        
+        DataProtectionAgreementManager.shared.onAccountCreated()
 
         NextcloudKit.shared.setup(account: account, user: user, userId: user, password: password, urlBase: urlBase)
         NextcloudKit.shared.getUserProfile(account: account) { account, userProfile, _, error in
@@ -542,7 +544,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         )
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeUser)
-        DataProtectionAgreementManager.shared.onAccountChanged()
         completion()
     }
 
@@ -563,7 +564,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCKeychain().clearAllKeysEndToEnd(account: account)
         NCKeychain().clearAllKeysPushNotification(account: account)
         NCKeychain().setPassword(account: account, password: nil)
-        DataProtectionAgreementManager.shared.onAccountDeleted()
 
         self.account = ""
         self.urlBase = ""
