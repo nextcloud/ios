@@ -101,6 +101,7 @@ extension NCManageDatabase {
                         let groupfolders: GroupFolders?
                         let securityguard: SecurityGuard?
                         let assistant: Assistant?
+                        let recommendations: Recommendations?
 
                         enum CodingKeys: String, CodingKey {
                             case downloadLimit = "downloadlimit"
@@ -112,6 +113,7 @@ extension NCManageDatabase {
                             case external, groupfolders
                             case securityguard = "security_guard"
                             case assistant
+                            case recommendations
                         }
 
                         struct DownloadLimit: Codable {
@@ -287,6 +289,10 @@ extension NCManageDatabase {
                             let enabled: Bool?
                             let version: String?
                         }
+
+                        struct Recommendations: Codable {
+                            let enabled: Bool?
+                        }
                     }
                 }
             }
@@ -391,6 +397,8 @@ extension NCManageDatabase {
             capabilities.capabilityForbiddenFileNameBasenames = data.capabilities.files?.forbiddenFileNameBasenames ?? []
             capabilities.capabilityForbiddenFileNameCharacters = data.capabilities.files?.forbiddenFileNameCharacters ?? []
             capabilities.capabilityForbiddenFileNameExtensions = data.capabilities.files?.forbiddenFileNameExtensions ?? []
+
+            capabilities.capabilityRecommendations = data.capabilities.recommendations?.enabled ?? false
 
             NCCapabilities.shared.appendCapabilities(account: account, capabilities: capabilities)
 
