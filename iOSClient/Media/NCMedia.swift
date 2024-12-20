@@ -36,9 +36,6 @@ class NCMedia: UIViewController {
     @IBOutlet weak var menuButton: UIButton!
     @IBOutlet weak var gradientView: UIView!
 
-    let semaphoreSearchMedia = DispatchSemaphore(value: 1)
-    let semaphoreNotificationCenter = DispatchSemaphore(value: 1)
-
     let layout = NCMediaLayout()
     var layoutType = NCGlobal.shared.mediaLayoutRatio
     var documentPickerViewController: NCDocumentPickerViewController?
@@ -55,7 +52,7 @@ class NCMedia: UIViewController {
     var fileSelect: [String] = []
     var filesExists: ThreadSafeArray<String> = ThreadSafeArray()
     var ocIdDoNotExists: ThreadSafeArray<String> = ThreadSafeArray()
-    var hasRunSearchMedia: Bool = false
+    var searchMediaInProgress: Bool = false
     var attributesZoomIn: UIMenuElement.Attributes = []
     var attributesZoomOut: UIMenuElement.Attributes = []
     let gradient: CAGradientLayer = CAGradientLayer()
@@ -255,23 +252,18 @@ class NCMedia: UIViewController {
 
     @objc func deleteFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let error = userInfo["error"] as? NKError else { return }
-
-        semaphoreNotificationCenter.wait()
+              let error = userInfo["error"] as? NKError
+        else {
+            return
+        }
 
         if error.errorCode == self.global.errorResourceNotFound,
            let ocId = userInfo["ocId"] as? String {
             self.database.deleteMetadataOcId(ocId)
-            self.loadDataSource {
-                self.semaphoreNotificationCenter.signal()
-            }
+            self.loadDataSource()
         } else if error != .success {
             NCContentPresenter().showError(error: error)
-            self.loadDataSource {
-                self.semaphoreNotificationCenter.signal()
-            }
-        } else {
-            semaphoreNotificationCenter.signal()
+            self.loadDataSource()
         }
     }
 
