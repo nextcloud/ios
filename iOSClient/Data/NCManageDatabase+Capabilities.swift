@@ -114,11 +114,14 @@ extension NCManageDatabase {
                             case securityguard = "security_guard"
                             case assistant
                             case recommendations
+<<<<<<< HEAD
                         }
 
                         struct DownloadLimit: Codable {
                             let enabled: Bool?
                             let defaultLimit: Int?
+=======
+>>>>>>> 19ccb5d64cecf9b174f91f9def7ac13798a54905
                         }
 
                         struct FilesSharing: Codable {
