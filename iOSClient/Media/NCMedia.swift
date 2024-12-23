@@ -272,9 +272,10 @@ class NCMedia: UIViewController {
     func selectAllOrDeselectAll() {
         let metadatas = self.dataSource.metadatas
         if !filesExists.isEmpty, metadatas.count == filesExists.count {
-            filesExists = []
+            filesExists.removeAll()
         } else {
-            filesExists = metadatas.compactMap({ $0.ocId })
+            filesExists.removeAll()
+            filesExists.append(metadatas.compactMap({ $0.ocId }))
         }
         collectionView.reloadData()
     }
