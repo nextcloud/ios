@@ -13,7 +13,7 @@ struct SelectAlbumView: View {
     @ObservedObject var model: AlbumModel
     @State private var oldSelectedAlbums = Set<String>()
     @State var selectedAlbums = Set<String>()
-    private let cameraRollTag = "-1"
+    static let cameraRollTag = "-1"
 
     var body: some View {
         List {

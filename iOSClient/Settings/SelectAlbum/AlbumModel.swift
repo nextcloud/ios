@@ -22,7 +22,7 @@ import Photos
     init(controller: NCMainTabBarController?) {
         self.controller = controller
         super.init()
-        
+
         Task { @MainActor in
             let allPhotosOptions = PHFetchOptions()
             allPhotosOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
@@ -50,7 +50,6 @@ import Photos
 
     func getSelectedAlbums(selectedAlbums: Set<String>) {
         guard let account = controller?.account else { return }
-
         NCKeychain().setAutoUploadAlbumIds(account: account, albumIds: Array(selectedAlbums))
         selectedSmartAlbums = selectedAlbums.compactMap { selectedAlbum in
             return smartAlbums.first(where: { $0.localIdentifier == selectedAlbum })

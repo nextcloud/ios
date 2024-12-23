@@ -101,7 +101,7 @@ struct NCAutoUploadView: View {
                             .frame(width: 25, height: 25)
                             .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
                         Text(NSLocalizedString("_upload_from_", comment: ""))
-                        Text(NSLocalizedString(model.autoUploadAlbumIds.isEmpty ? "_camera_roll_" : model.createAlbumTitle(), comment: ""))
+                        Text(NSLocalizedString(model.createAlbumTitle(), comment: ""))
                             .frame(maxWidth: .infinity, alignment: .trailing)
                     }
                 })

@@ -225,8 +225,10 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     }
 
     func createAlbumTitle() -> String {
-        if autoUploadAlbumIds.count == 1 {
-            return PHAssetCollection.allAlbums.first?.localizedTitle ?? ""
+        if autoUploadAlbumIds.count == 1 && autoUploadAlbumIds.first == SelectAlbumView.cameraRollTag {
+            return NSLocalizedString("_camera_roll_", comment: "")
+        } else if autoUploadAlbumIds.count == 1 {
+            return PHAssetCollection.allAlbums.first(where: { autoUploadAlbumIds.first == $0.localIdentifier })?.localizedTitle ?? ""
         } else {
             return NSLocalizedString("_multiple_albums_", comment: "")
         }
