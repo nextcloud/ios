@@ -71,6 +71,7 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
     var share: NCTableShareable!
     var isNewShare: Bool { share is NCTableShareOptions }
     var metadata: tableMetadata!
+    var downloadLimit: tableDownloadLimit?
     var shareConfig: NCShareConfig!
     var networking: NCShareNetworking?
 
@@ -165,6 +166,14 @@ class NCShareAdvancePermission: UITableViewController, NCShareAdvanceFotterDeleg
         }
 
         switch cellConfig {
+        case .limitDownload:
+            let storyboard = UIStoryboard(name: "NCShare", bundle: nil)
+            guard let viewController = storyboard.instantiateViewController(withIdentifier: "NCShareDownloadLimit") as? NCShareDownloadLimitViewController else { return }
+            viewController.downloadLimit = self.downloadLimit
+            viewController.metadata = self.metadata
+            viewController.share = self.share
+            viewController.onDismiss = tableView.reloadData
+            self.navigationController?.pushViewController(viewController, animated: true)
         case .hideDownload:
             share.hideDownload.toggle()
             tableView.reloadData()

@@ -122,10 +122,16 @@ class NCFiles: NCCollectionViewCommon {
     // MARK: - DataSource
 
     override func reloadDataSource() {
-        guard !isSearchingMode else {
+        guard !isSearchingMode
+        else {
             return super.reloadDataSource()
         }
-        self.semaphoreReloadDataSource.wait()
+
+        // This is only a fail safe "dead lock", I don't think the timeout will ever be called but at least nothing gets stuck, if after 5 sec. (which is a long time in this routine), the semaphore is still locked
+        //
+        if self.semaphoreReloadDataSource.wait(timeout: .now() + 5) == .timedOut {
+            self.semaphoreReloadDataSource.signal()
+        }
 
         var predicate = self.defaultPredicate
         let predicateDirectory = NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, self.serverUrl)
@@ -149,8 +155,10 @@ class NCFiles: NCCollectionViewCommon {
 
         self.dataSource.caching(metadatas: metadatas, dataSourceMetadatas: dataSourceMetadatas) { updated in
             self.semaphoreReloadDataSource.signal()
-            if updated || self.isNumberOfItemsInAllSectionsNull || self.numberOfItemsInAllSections != metadatas.count {
-                super.reloadDataSource()
+            DispatchQueue.main.async {
+                if updated || self.isNumberOfItemsInAllSectionsNull || self.numberOfItemsInAllSections != metadatas.count {
+                    super.reloadDataSource()
+                }
             }
         }
     }

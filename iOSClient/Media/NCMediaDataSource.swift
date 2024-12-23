@@ -50,7 +50,7 @@ extension NCMedia {
     @objc func searchMediaUI(_ distant: Bool = false) {
         let session = self.session
         guard self.isViewActived,
-              !self.hasRunSearchMedia,
+              !self.searchMediaInProgress,
               !self.isPinchGestureActive,
               !self.showOnlyImages,
               !self.showOnlyVideos,
@@ -63,7 +63,7 @@ extension NCMedia {
 
         DispatchQueue.global(qos: .background).async {
             self.semaphoreSearchMedia.wait()
-            self.hasRunSearchMedia = true
+            self.searchMediaInProgress = true
 
             var lessDate = Date.distantFuture
             var greaterDate = Date.distantPast
@@ -161,7 +161,7 @@ extension NCMedia {
 
                 DispatchQueue.main.async {
                     self.activityIndicator.stopAnimating()
-                    self.hasRunSearchMedia = false
+                    self.searchMediaInProgress = false
 
                     if self.dataSource.metadatas.isEmpty {
                         self.collectionViewReloadData()
