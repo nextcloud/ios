@@ -50,7 +50,7 @@ struct NCAccountSettingsView: View {
                                 Image(uiImage: avatar)
                                     .resizable()
                                     .scaledToFit()
-                                    .frame(width: UIScreen.main.bounds.width, height: 75)
+                                    .frame(width: UIScreen.main.bounds.width, height: 65)
                                 if let statusImage = status.statusImage {
                                     ZStack {
                                         Circle()

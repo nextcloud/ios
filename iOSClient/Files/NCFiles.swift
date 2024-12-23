@@ -24,12 +24,14 @@
 import UIKit
 import NextcloudKit
 import RealmSwift
+import SwiftUI
 
 class NCFiles: NCCollectionViewCommon {
     internal var isRoot: Bool = true
     internal var fileNameBlink: String?
     internal var fileNameOpen: String?
     internal var matadatasHash: String = ""
+    internal var reloadDataSourceInProgress: Bool = false
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -120,9 +122,12 @@ class NCFiles: NCCollectionViewCommon {
     // MARK: - DataSource
 
     override func reloadDataSource() {
-        guard !isSearchingMode else {
+        guard !isSearchingMode,
+              !reloadDataSourceInProgress
+        else {
             return super.reloadDataSource()
         }
+        reloadDataSourceInProgress = true
 
         var predicate = self.defaultPredicate
         let predicateDirectory = NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, self.serverUrl)
@@ -140,10 +145,12 @@ class NCFiles: NCCollectionViewCommon {
         self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView)
 
         if metadatas.isEmpty {
+            reloadDataSourceInProgress = false
             return super.reloadDataSource()
         }
 
         self.dataSource.caching(metadatas: metadatas, dataSourceMetadatas: dataSourceMetadatas) { updated in
+            self.reloadDataSourceInProgress = false
             if updated || self.isNumberOfItemsInAllSectionsNull || self.numberOfItemsInAllSections != metadatas.count {
                 super.reloadDataSource()
             }
@@ -186,6 +193,19 @@ class NCFiles: NCCollectionViewCommon {
                     for metadata in metadatas where !metadata.directory && downloadMetadata(metadata) {
                         if NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
                             NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile))
+                        }
+                    }
+                } else if error.errorCode == self.global.errorForbidden {
+                    DispatchQueue.main.async {
+                        if self.presentedViewController == nil {
+                            NextcloudKit.shared.getTermsOfService(account: self.session.account) { _, tos, _, error in
+                                if error == .success, let tos {
+                                    let termOfServiceModel = NCTermOfServiceModel(controller: self.controller, tos: tos)
+                                    let termOfServiceView = NCTermOfServiceModelView(model: termOfServiceModel)
+                                    let termOfServiceController = UIHostingController(rootView: termOfServiceView)
+                                    self.present(termOfServiceController, animated: true, completion: nil)
+                                }
+                            }
                         }
                     }
                 }
@@ -324,6 +344,7 @@ class NCFiles: NCCollectionViewCommon {
 
     override func accountSettingsDidDismiss(tableAccount: tableAccount?, controller: NCMainTabBarController?) {
         let currentAccount = session.account
+
         if database.getAllTableAccount().isEmpty {
             appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
         } else if let account = tableAccount?.account, account != currentAccount {
@@ -332,5 +353,7 @@ class NCFiles: NCCollectionViewCommon {
             titleCurrentFolder = getNavigationTitle()
             navigationItem.title = titleCurrentFolder
         }
+
+        setNavigationLeftItems()
     }
 }
