@@ -1181,7 +1181,6 @@
 		AAF806B32CE25EFE009C2D43 /* NCShareToggleCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareToggleCell.swift; sourceTree = "<group>"; };
 		AAF806B52CE34C72009C2D43 /* NCShareDownloadLimitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareDownloadLimitViewController.swift; sourceTree = "<group>"; };
 		AAF806B72CE37C15009C2D43 /* NCShareDownloadLimitTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareDownloadLimitTableViewController.swift; sourceTree = "<group>"; };
-		AAF806B92CE38BB2009C2D43 /* NextcloudKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = NextcloudKit; path = ../NextcloudKit; sourceTree = SOURCE_ROOT; };
 		AF1A9B6327D0CA1E00F17A9E /* UIAlertController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIAlertController+Extension.swift"; sourceTree = "<group>"; };
 		AF22B20B277C6F4D00DAB0CC /* NCShareCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareCell.swift; sourceTree = "<group>"; };
 		AF22B215277D196700DAB0CC /* NCShareExtension+DataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NCShareExtension+DataSource.swift"; sourceTree = "<group>"; };
@@ -3069,7 +3068,6 @@
 		F7F67B9F1A24D27800EE80DA = {
 			isa = PBXGroup;
 			children = (
-				AAF806B92CE38BB2009C2D43 /* NextcloudKit */,
 				F7B8B82F25681C3400967775 /* GoogleService-Info.plist */,
 				F7C1CDD91E6DFC6F005D92BE /* Brand */,
 				F7F67BAA1A24D27800EE80DA /* iOSClient */,
