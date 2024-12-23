@@ -374,7 +374,6 @@ struct UploadScanDocumentView: View {
                         HStack {
                             Text(NSLocalizedString("_filename_", comment: ""))
                             TextField(NSLocalizedString("_enter_filename_", comment: ""), text: $fileName)
-                                .modifier(TextFieldClearButton(text: $fileName))
                                 .multilineTextAlignment(.trailing)
                                 .onChange(of: fileName) { _ in
                                     let controller = (UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController)
@@ -420,27 +419,32 @@ struct UploadScanDocumentView: View {
                         view.listRowSeparator(.hidden)
                     }
 
-                    VStack(spacing: 20) {
-                        Toggle(NSLocalizedString("_delete_all_scanned_images_", comment: ""), isOn: $removeAllFiles)
-                            .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.switchColor)))
-                            .onChange(of: removeAllFiles) { newValue in
-                                NCKeychain().deleteAllScanImages = newValue
-                            }
-                        Button(NSLocalizedString("_save_", comment: "")) {
-                            let fileName = model.fileName(fileName)
-                            if !fileName.isEmpty {
-                                model.showHUD.toggle()
-                                model.save(fileName: fileName, password: password, isTextRecognition: isTextRecognition, removeAllFiles: removeAllFiles, quality: quality) { openConflictViewController, error in
+                    Section {
+                        VStack(spacing: 20) {
+                            Toggle(NSLocalizedString("_delete_all_scanned_images_", comment: ""), isOn: $removeAllFiles)
+                                .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.getElement(account: model.session.account))))
+                                .onChange(of: removeAllFiles) { newValue in
+                                    NCKeychain().deleteAllScanImages = newValue
+                                }
+                            Button(NSLocalizedString("_save_", comment: "")) {
+                                let fileName = model.fileName(fileName)
+                                if !fileName.isEmpty {
                                     model.showHUD.toggle()
-                                    if error {
-                                        print("error")
-                                    } else if openConflictViewController {
+                                    model.save(fileName: fileName, password: password, isTextRecognition: isTextRecognition, removeAllFiles: removeAllFiles, quality: quality) { openConflictViewController, error in
+                                        model.showHUD.toggle()
+                                        if error {
+                                            print("error")
+                                        } else if openConflictViewController {
+                                            isPresentedUploadConflict = true
+                                        } else {
+                                            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterDismissScanDocument)
+                                        }
                                     }
                                 }
                             }
+                            .buttonStyle(.primary)
+                            .disabled(fileName.isEmpty || !footer.isEmpty)
                         }
-                        .disabled(fileName.isEmpty || !footer.isEmpty)
-                        .buttonStyle(.primary)
                     }
                     .applyGlobalFormSectionStyle()
 
@@ -470,8 +474,6 @@ struct UploadScanDocumentView: View {
         }
         .sheet(isPresented: $isPresentedUploadConflict) {
             UploadConflictView(delegate: model, serverUrl: model.serverUrl, metadatasUploadInConflict: [model.metadata], metadatasNOConflict: [])
-        }.onTapGesture {
-            UIApplication.shared.connectedScenes.flatMap { ($0 as? UIWindowScene)?.windows ?? [] }.filter { $0.isKeyWindow }.first?.endEditing(true)
         }
     }
 }

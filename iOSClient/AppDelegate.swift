@@ -283,14 +283,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func nextcloudPushNotificationAction(data: [String: AnyObject]) {
-        guard let data = NCApplicationHandle().nextcloudPushNotificationAction(data: data),
-              let account = data["account"] as? String
+        guard let data = NCApplicationHandle().nextcloudPushNotificationAction(data: data)
         else {
             return
         }
+        let account = data["account"] as? String ?? "unavailable"
+        let app = data["app"] as? String
 
         func openNotification(controller: NCMainTabBarController) {
-            if let viewController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? NCNotification {
+            if app == NCGlobal.shared.termsOfServiceName {
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterGetServerData, second: 0.5)
+            } else if let viewController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? NCNotification {
                 viewController.session = NCSession.shared.getSession(account: account)
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     let navigationController = UINavigationController(rootViewController: viewController)

@@ -55,6 +55,7 @@ class NCGlobal: NSObject {
     let talkName                                    = "talk-message"
     let spreedName                                  = "spreed"
     let twoFactorNotificatioName                    = "twofactor_nextcloud_notification"
+    let termsOfServiceName                          = "terms_of_service"
 
     // Nextcloud version
     //

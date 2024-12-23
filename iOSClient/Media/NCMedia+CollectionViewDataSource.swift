@@ -30,7 +30,7 @@ extension NCMedia: UICollectionViewDataSource {
         if kind == mediaSectionHeader {
             guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeaderEmptyData", for: indexPath) as? NCSectionFirstHeaderEmptyData else { return NCSectionFirstHeaderEmptyData() }
             header.emptyImage.image = utility.loadImage(named: "photo", colors: [NCBrandColor.shared.getElement(account: session.account)])
-            if self.hasRunSearchMedia {
+            if self.searchMediaInProgress {
                 header.emptyTitle.text = NSLocalizedString("_search_in_progress_", comment: "")
             } else {
                 header.emptyTitle.text = NSLocalizedString("_tutorial_photo_view_", comment: "")
