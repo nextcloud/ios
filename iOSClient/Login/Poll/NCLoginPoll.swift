@@ -25,11 +25,7 @@ import NextcloudKit
 import SwiftUI
 
 struct NCLoginPoll: View {
-    //    let loginFlowV2Token: String
-    //    let loginFlowV2Endpoint: String
     let loginFlowV2Login: String
-
-    //    var cancelButtonDisabled = false
 
     @ObservedObject var model: NCLoginPollModel
     @Environment(\.dismiss) private var dismiss

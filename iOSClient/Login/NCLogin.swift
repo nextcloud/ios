@@ -59,8 +59,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     private var p12Data: Data?
     private var p12Password: String?
 
-    private var useInAppBrowser = true
-
     var pollTimer: DispatchSourceTimer?
 
     var ncLoginPollModel = NCLoginPollModel()
@@ -321,8 +319,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         if url.hasSuffix("/") { url = String(url.dropLast()) }
         if url.isEmpty { return }
 
-        loginButton.hideButtonAndShowSpinner()
-
         // Check whether baseUrl contain protocol. If not add https:// by default.
         if url.hasPrefix("https") == false && url.hasPrefix("http") == false {
             url = "https://" + url
@@ -333,6 +329,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     func isUrlValid(url: String, user: String? = nil) {
         loginButton.isEnabled = false
+        loginButton.hideButtonAndShowSpinner()
+
         NextcloudKit.shared.getServerStatus(serverUrl: url) { [self] _, serverInfoResult in
             switch serverInfoResult {
             case .success(let serverInfo):
@@ -340,7 +338,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                     NCNetworking.shared.writeCertificate(host: host)
                 }
                 NextcloudKit.shared.getLoginFlowV2(serverUrl: url) { [self] token, endpoint, login, _, error in
-                    self.loginButton.isEnabled = true
                     // Login Flow V2
                     if error == .success, let token, let endpoint, let login {
                         guard let url = URL(string: login) else { return }
@@ -348,7 +345,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
                         poll(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login)
 
-                        if useInAppBrowser {
+                        if NCBrandOptions.shared.use_in_app_browser_for_login {
                             let safariVC = SFSafariViewController(url: url)
                             safariVC.delegate = self
                             vc = safariVC
@@ -365,7 +362,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 }
             case .failure(let error):
                 loginButton.hideSpinnerAndShowButton()
-                self.loginButton.isEnabled = true
+                loginButton.isEnabled = true
 
                 if error.errorCode == NSURLErrorServerCertificateUntrusted {
                     let alertController = UIAlertController(title: NSLocalizedString("_ssl_certificate_untrusted_", comment: ""), message: NSLocalizedString("_connect_server_anyway_", comment: ""), preferredStyle: .alert)
@@ -524,10 +521,10 @@ extension NCLogin: ClientCertificateDelegate, UIDocumentPickerDelegate {
                 let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
                 NextcloudKit.shared.getLoginFlowV2Poll(token: loginFlowV2Token, endpoint: loginFlowV2Endpoint) { [self] server, loginName, appPassword, _, error in
                     if error == .success, let urlBase = server, let user = loginName, let appPassword {
+                        loginFlowInProgress = true
                         ncLoginPollModel.isLoading = true
-                        print("TEST: GET LOGIN FLOW")
+
                         NCAccount().createAccount(urlBase: urlBase, user: user, password: appPassword, controller: controller) { account, error in
-                            print("TEST: CREATE ACCOUNT")
 
                             if error == .success {
                                 let window = UIApplication.shared.firstWindow
@@ -565,6 +562,9 @@ extension NCLogin: ClientCertificateDelegate, UIDocumentPickerDelegate {
 
 extension NCLogin: SFSafariViewControllerDelegate {
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
-        loginButton.hideSpinnerAndShowButton()
+        if !loginFlowInProgress {
+            loginButton.isEnabled = true
+            loginButton.hideSpinnerAndShowButton()
+        }
     }
 }
