@@ -147,7 +147,7 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
                 completionHandler(URLSession.AuthChallengeDisposition.useCredential, creds)
             } else {
                 self.certificateDelegate?.didAskForClientCertificate()
-                completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
+                completionHandler(URLSession.AuthChallengeDisposition.cancelAuthenticationChallenge, nil)
             }
         } else {
             self.checkTrustedChallenge(session, didReceive: challenge, completionHandler: completionHandler)
