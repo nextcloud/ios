@@ -169,6 +169,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     /// Updates the auto-upload full content setting.
     func handleAutoUploadFullChange(newValue: Bool, assetCollections: [PHAssetCollection]) {
         updateAccountProperty(\.autoUploadFull, value: newValue)
+
         if newValue {
             if !assetCollections.isEmpty {
                 NCAutoUpload.shared.autoUploadSelectedAlbums(controller: self.controller, assetCollections: assetCollections, log: "Auto upload selected albums", account: session.account)
@@ -220,7 +221,8 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
             if let path = NCUtilityFileSystem().deleteLastPath(serverUrlPath: serverUrl, home: home) {
                 self.database.setAccountAutoUploadDirectory(path, session: session)
             }
-        } 
+        }
+        
         onViewAppear()
     }
 

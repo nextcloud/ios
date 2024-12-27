@@ -45,7 +45,7 @@ struct NCAutoUploadView: View {
                 Text(NSLocalizedString("_autoupload_notice_", comment: ""))
             })
             /// If `autoUpload` state will be true, we will animate out the whole `autoUploadOnView` section
-            if !model.autoUpload {
+            if model.autoUpload {
                 autoUploadOnView
                     .transition(.slide)
                     .animation(.easeInOut, value: model.autoUpload)
@@ -165,7 +165,8 @@ struct NCAutoUploadView: View {
             Toggle(NSLocalizedString("_autoupload_fullphotos_", comment: ""), isOn: $model.autoUploadFull)
                 .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                 .onChange(of: model.autoUploadFull) { newValue in
-                    model.handleAutoUploadFullChange(newValue: newValue, assetCollections: albumModel.selectedSmartAlbums)
+                    albumModel.populateSelectedAlbums()
+                    model.handleAutoUploadFullChange(newValue: newValue, assetCollections: albumModel.selectedAlbums)
                 }
         }, footer: {
             Text(

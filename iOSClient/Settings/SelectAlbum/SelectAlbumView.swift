@@ -18,7 +18,7 @@ struct SelectAlbumView: View {
     var body: some View {
         List {
             Section {
-                SelectionButton(tag: SelectAlbumView.cameraRollTag, selection: $selectedAlbums) {
+                SelectionButton(tag: SelectAlbumView.cameraRollTag, album: <#T##PHAssetCollection#>  selection: $selectedAlbums) {
                     Image(systemName: "photo")
                     Text(NSLocalizedString("_camera_roll_", comment: ""))
                 }
@@ -35,8 +35,8 @@ struct SelectAlbumView: View {
             }
 
             oldSelectedAlbums = newValue
-
-            model.getSelectedAlbums(selectedAlbums: selectedAlbums)
+            model.setSavedAlbumIds(selectedAlbums: selectedAlbums)
+            model.populateSelectedAlbums()
         }
         .onAppear {
             selectedAlbums = model.getSavedAlbumIds()
@@ -56,10 +56,7 @@ struct SmartAlbums: View {
     var body: some View {
         Section(NSLocalizedString("_smart_albums_", comment: "")) {
             ForEach(model.smartAlbums, id: \.localIdentifier) { album in
-                SelectionButton(tag: album.localIdentifier, selection: $selectedAlbums) {
-                    Text(album.localizedTitle ?? "")
-                    Text(String(album.assetCount))
-                }
+                SelectionButton(tag: album.localIdentifier, album: album, selection: $selectedAlbums)
             }
         }
     }
@@ -72,19 +69,25 @@ struct UserAlbums: View {
     var body: some View {
         Section(NSLocalizedString("_albums_", comment: "")) {
             ForEach(model.userAlbums, id: \.localIdentifier) { album in
-                SelectionButton(tag: album.localIdentifier, selection: $selectedAlbums) {
-                    Text(album.localizedTitle ?? "")
-                    Text(String(album.assetCount))
-                }
+                SelectionButton(tag: album.localIdentifier, album: album, selection: $selectedAlbums)
             }
         }
     }
 }
 
-struct SelectionButton<Content: View>: View {
+struct SelectionButton: View {
     let tag: String
+    let title: String
+    let assetCount: String
+
     @Binding var selection: Set<String>
-    @ViewBuilder var content: Content
+
+    init(tag: String, album: PHAssetCollection, selection: Binding<Set<String>>) {
+        self.tag = tag
+        self.title = album.localizedTitle ?? ""
+        self.assetCount = String(album.assetCount)
+        self._selection = selection
+    }
 
     var body: some View {
         Button(action: {
@@ -98,7 +101,9 @@ struct SelectionButton<Content: View>: View {
         }) {
             HStack {
                 Image(systemName: selection.contains(tag) ? "checkmark.circle.fill" : "circle")
-                content
+                Text(title)
+                Text(assetCount)
+
             }
         }
         .foregroundColor(.primary)

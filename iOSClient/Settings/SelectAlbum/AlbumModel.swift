@@ -13,7 +13,7 @@ import Photos
     @Published var allPhotosCount = 0
     @Published var smartAlbums: [PHAssetCollection] = []
     @Published var userAlbums: [PHAssetCollection] = []
-    @Published var selectedSmartAlbums: [PHAssetCollection] = []
+    @Published var selectedAlbums: [PHAssetCollection] = []
     @Published var controller: NCMainTabBarController?
 
     var smartAlbumAssetCollections: PHFetchResult<PHAssetCollection>?
@@ -48,12 +48,18 @@ import Photos
 
     }
 
-    func getSelectedAlbums(selectedAlbums: Set<String>) {
-        guard let account = controller?.account else { return }
-        NCKeychain().setAutoUploadAlbumIds(account: account, albumIds: Array(selectedAlbums))
-        selectedSmartAlbums = selectedAlbums.compactMap { selectedAlbum in
+    func populateSelectedAlbums() {
+        let savedAlbums = getSavedAlbumIds()
+
+        selectedAlbums = savedAlbums.compactMap { selectedAlbum in
             return smartAlbums.first(where: { $0.localIdentifier == selectedAlbum })
         }
+    }
+
+    func setSavedAlbumIds(selectedAlbums: Set<String>) {
+        guard let account = controller?.account else { return }
+
+        NCKeychain().setAutoUploadAlbumIds(account: account, albumIds: Array(selectedAlbums))
     }
 
     func getSavedAlbumIds() -> Set<String> {
@@ -62,6 +68,28 @@ import Photos
         let albumIds = NCKeychain().getAutoUploadAlbumIds(account: account) ?? []
 
         return Set(albumIds)
+    }
+
+    func fetchLastPhoto(resizeTo size: CGSize?, imageCallback: ImageCallback) {
+        let fetchOptions = PHFetchOptions()
+        fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
+        fetchOptions.fetchLimit = 1
+
+        let fetchResult = PHAsset.fetchAssetsWithMediaType(.Image, options: fetchOptions)
+        //`fetchResult` is not nil here (without using `if-let`)
+        if let asset = fetchResult.firstObject as? PHAsset {
+            let manager = PHImageManager.defaultManager()
+            let targetSize = size == nil ? CGSize(width: asset.pixelWidth, height: asset.pixelHeight) : size!
+            manager.requestImageForAsset(asset,
+                                         targetSize: targetSize,
+                                         contentMode: .AspectFit,
+                                         options: nil,
+                                         resultHandler: { image, info in
+                                            imageCallback(image)
+            })
+        } else {
+            imageCallback(nil)
+        }
     }
 
     deinit {
