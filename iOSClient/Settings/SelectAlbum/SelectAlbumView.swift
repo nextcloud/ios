@@ -18,7 +18,7 @@ struct SelectAlbumView: View {
     var body: some View {
         List {
             Section {
-                SelectionButton(tag: cameraRollTag, selection: $selectedAlbums) {
+                SelectionButton(tag: SelectAlbumView.cameraRollTag, selection: $selectedAlbums) {
                     Image(systemName: "photo")
                     Text(NSLocalizedString("_camera_roll_", comment: ""))
                 }
@@ -28,10 +28,10 @@ struct SelectAlbumView: View {
             UserAlbums(model: model, selectedAlbums: $selectedAlbums)
         }
         .onChange(of: selectedAlbums) { newValue in
-            if newValue.count > 1, oldSelectedAlbums.contains(cameraRollTag) {
-                selectedAlbums.remove(cameraRollTag)
-            } else if newValue.contains(cameraRollTag) {
-                selectedAlbums = [cameraRollTag]
+            if newValue.count > 1, oldSelectedAlbums.contains(SelectAlbumView.cameraRollTag) {
+                selectedAlbums.remove(SelectAlbumView.cameraRollTag)
+            } else if newValue.contains(SelectAlbumView.cameraRollTag) {
+                selectedAlbums = [SelectAlbumView.cameraRollTag]
             }
 
             oldSelectedAlbums = newValue

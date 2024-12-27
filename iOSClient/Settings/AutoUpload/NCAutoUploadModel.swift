@@ -220,7 +220,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
             if let path = NCUtilityFileSystem().deleteLastPath(serverUrlPath: serverUrl, home: home) {
                 self.database.setAccountAutoUploadDirectory(path, session: session)
             }
-        }
+        } 
         onViewAppear()
     }
 
