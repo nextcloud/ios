@@ -54,6 +54,7 @@ extension NCShare {
                     advancePermission.share = tableShare(value: share)
                     advancePermission.oldTableShare = tableShare(value: share)
                     advancePermission.metadata = self.metadata
+                    advancePermission.downloadLimit = try? self.database.getDownloadLimit(byShareToken: share.token)
                     navigationController.pushViewController(advancePermission, animated: true)
                 }
             )
