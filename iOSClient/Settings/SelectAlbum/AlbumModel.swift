@@ -70,28 +70,6 @@ import Photos
         return Set(albumIds)
     }
 
-    func fetchLastPhoto(resizeTo size: CGSize?, imageCallback: ImageCallback) {
-        let fetchOptions = PHFetchOptions()
-        fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-        fetchOptions.fetchLimit = 1
-
-        let fetchResult = PHAsset.fetchAssetsWithMediaType(.Image, options: fetchOptions)
-        //`fetchResult` is not nil here (without using `if-let`)
-        if let asset = fetchResult.firstObject as? PHAsset {
-            let manager = PHImageManager.defaultManager()
-            let targetSize = size == nil ? CGSize(width: asset.pixelWidth, height: asset.pixelHeight) : size!
-            manager.requestImageForAsset(asset,
-                                         targetSize: targetSize,
-                                         contentMode: .AspectFit,
-                                         options: nil,
-                                         resultHandler: { image, info in
-                                            imageCallback(image)
-            })
-        } else {
-            imageCallback(nil)
-        }
-    }
-
     deinit {
         PHPhotoLibrary.shared().unregisterChangeObserver(self)
     }
