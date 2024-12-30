@@ -24,19 +24,19 @@ import Photos
         super.init()
 
         Task { @MainActor in
-            let allPhotosOptions = PHFetchOptions()
-            allPhotosOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
-            allPhotos = PHAsset.fetchAssets(with: allPhotosOptions)
-
+            allPhotos = PHAsset.fetchAssets(with: nil)
             allPhotosCount = allPhotos.count
 
             smartAlbumAssetCollections = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .any, options: nil)
-
             smartAlbumAssetCollections?.enumerateObjects { [self] collection, _, _ in
-                smartAlbums.append(collection)
+                if collection.assetCount > 0 {
+                    smartAlbums.append(collection)
+                }
             }
 
-            userAlbumAssetCollections = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .any, options: nil)
+            let options = PHFetchOptions()
+            options.predicate = NSPredicate(format: "estimatedAssetCount > 0") // Only normal albums have an estimated asset count. Smart albums do not and must be calculated manually via .assetCount
+            userAlbumAssetCollections = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .any, options: options)
 
             userAlbumAssetCollections?.enumerateObjects { [self] collection, _, _ in
                 userAlbums.append(collection)

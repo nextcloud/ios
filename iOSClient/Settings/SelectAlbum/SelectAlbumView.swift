@@ -18,25 +18,27 @@ struct SelectAlbumView: View {
     var body: some View {
         List {
             Section {
-                SelectionButton(tag: SelectAlbumView.cameraRollTag, album: nil, loader: ImageLoader(), selection: $selectedAlbums)
+                SelectionButton(tag: SelectAlbumView.cameraRollTag, album: nil, isSmartAlbum: false, selection: $selectedAlbums)
             }
 
             SmartAlbums(model: model, selectedAlbums: $selectedAlbums)
             UserAlbums(model: model, selectedAlbums: $selectedAlbums)
         }
         .onChange(of: selectedAlbums) { newValue in
-////            if newValue.count > 1, oldSelectedAlbums.contains(SelectAlbumView.cameraRollTag) {
-////                selectedAlbums.remove(SelectAlbumView.cameraRollTag)
-////            } else if newValue.contains(SelectAlbumView.cameraRollTag) {
-////                selectedAlbums = [SelectAlbumView.cameraRollTag]
-//            }
-//
-////            oldSelectedAlbums = newValue
-////            model.setSavedAlbumIds(selectedAlbums: selectedAlbums)
-////            model.populateSelectedAlbums()
+            if newValue.count > 1, oldSelectedAlbums.contains(SelectAlbumView.cameraRollTag) {
+                selectedAlbums.remove(SelectAlbumView.cameraRollTag)
+            } else if newValue.contains(SelectAlbumView.cameraRollTag) {
+                selectedAlbums = [SelectAlbumView.cameraRollTag]
+            } else if newValue.isEmpty {
+                selectedAlbums = [SelectAlbumView.cameraRollTag]
+            }
+
+            oldSelectedAlbums = newValue
+            model.setSavedAlbumIds(selectedAlbums: selectedAlbums)
+            model.populateSelectedAlbums()
         }
         .onAppear {
-//            selectedAlbums = model.getSavedAlbumIds()
+            selectedAlbums = model.getSavedAlbumIds()
         }
 //        .defaultViewModifier(model)
     }
@@ -53,7 +55,7 @@ struct SmartAlbums: View {
     var body: some View {
         Section(NSLocalizedString("_smart_albums_", comment: "")) {
             ForEach(model.smartAlbums, id: \.localIdentifier) { album in
-                SelectionButton(tag: album.localIdentifier, album: album, loader: ImageLoader(), selection: $selectedAlbums)
+                SelectionButton(tag: album.localIdentifier, album: album, isSmartAlbum: true, selection: $selectedAlbums)
             }
         }
     }
@@ -66,7 +68,7 @@ struct UserAlbums: View {
     var body: some View {
         Section(NSLocalizedString("_albums_", comment: "")) {
             ForEach(model.userAlbums, id: \.localIdentifier) { album in
-                SelectionButton(tag: album.localIdentifier, album: album, loader: ImageLoader(), selection: $selectedAlbums)
+                SelectionButton(tag: album.localIdentifier, album: album, isSmartAlbum: false, selection: $selectedAlbums)
             }
         }
     }
@@ -75,7 +77,8 @@ struct UserAlbums: View {
 struct SelectionButton: View {
     let tag: String
     let album: PHAssetCollection?
-    @ObservedObject var loader: ImageLoader
+    let isSmartAlbum: Bool
+    @StateObject var loader: ImageLoader = ImageLoader()
     @Binding var selection: Set<String>
 
     var body: some View {
@@ -97,7 +100,7 @@ struct SelectionButton: View {
                     .clipped()
 
                 Text(album?.localizedTitle ?? NSLocalizedString("_camera_roll_", comment: ""))
-                Text(String(album?.assetCount ?? 0))
+                Text(String(isSmartAlbum ? (album?.assetCount ?? 0) : (album?.estimatedAssetCount ?? 0))) // Only normal albums have an estimated asset count. Smart albums do not and must be calculated manually via .assetCount
             }
         }
         .foregroundColor(.primary)
@@ -107,19 +110,15 @@ struct SelectionButton: View {
     }
 }
 
-class ImageLoader: ObservableObject {
+@MainActor class ImageLoader: ObservableObject {
     @Published var image: UIImage?
 
     func loadImage(from album: PHAssetCollection?, targetSize: CGSize) {
         guard let album else { return }
 
         let fetchOptions = PHFetchOptions()
-//        options.isSynchronous = false
-//        options.deliveryMode = .highQualityFormat
+        fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
         fetchOptions.fetchLimit = 1
-
-//        let fetchOptions = PHFetchOptions()
-//        fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
 
         let assets = PHAsset.fetchAssets(in: album, options: fetchOptions)
 
@@ -128,11 +127,5 @@ class ImageLoader: ObservableObject {
         PHImageManager.default().requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFill, options: nil) { [weak self] image, _ in
             self?.image = image
         }
-
-//        PHImageManager.default().requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFill, options: options) { [weak self] image, _ in
-//            DispatchQueue.main.async {
-//                self?.image = image
-//            }
-//        }
     }
 }

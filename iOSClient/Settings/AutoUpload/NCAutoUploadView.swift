@@ -27,8 +27,8 @@ import UIKit
 
 /// A view that allows the user to configure the `auto upload settings for Nextcloud`
 struct NCAutoUploadView: View {
-    @ObservedObject var model: NCAutoUploadModel
-    @ObservedObject var albumModel: AlbumModel
+    @StateObject var model: NCAutoUploadModel
+    @StateObject var albumModel: AlbumModel
     @State private var showUploadFolder: Bool = false
     @State private var showSelectAlbums: Bool = false
 
