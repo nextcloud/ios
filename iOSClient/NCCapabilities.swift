@@ -73,6 +73,7 @@ public class NCCapabilities: NSObject {
         var capabilityForbiddenFileNameBasenames: [String]          = []
         var capabilityForbiddenFileNameCharacters: [String]         = []
         var capabilityForbiddenFileNameExtensions: [String]         = []
+        var capabilityRecommendations: Bool                         = false
     }
 
     private var capabilities = ThreadSafeDictionary<String, Capabilities>()
