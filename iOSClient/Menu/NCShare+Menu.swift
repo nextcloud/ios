@@ -4,6 +4,7 @@
 //
 //  Created by Henrik Storch on 16.03.22.
 //  Copyright © 2022 Henrik Storch. All rights reserved.
+//  Copyright © 2024 STRATO AG
 //
 //  Author Henrik Storch <henrik.storch@nextcloud.com>
 //

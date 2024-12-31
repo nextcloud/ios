@@ -5,6 +5,7 @@
 //  Created by Philippe Weidmann on 24.01.20.
 //  Copyright © 2020 Philippe Weidmann. All rights reserved.
 //  Copyright © 2020 Marino Faggiana All rights reserved.
+//  Copyright © 2024 STRATO AG
 //
 //  Author Philippe Weidmann <philippe.weidmann@infomaniak.com>
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
