@@ -1,4 +1,6 @@
-
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2024 Marino Faggiana
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import Foundation
 import UIKit
@@ -6,6 +8,21 @@ import RealmSwift
 import NextcloudKit
 
 class tableRecommendedFiles: Object {
+    override func isEqual(_ object: Any?) -> Bool {
+        if let object = object as? tableRecommendedFiles,
+           self.timestamp == object.timestamp,
+           self.name == object.name,
+           self.directory == object.directory,
+           self.extensionType == object.extensionType,
+           self.mimeType == object.mimeType,
+           self.hasPreview == object.hasPreview,
+           self.reason == object.reason {
+            return true
+        } else {
+            return false
+        }
+    }
+
     @Persisted var account = ""
     @Persisted var id = ""
     @Persisted(primaryKey: true) var primaryKey = ""
