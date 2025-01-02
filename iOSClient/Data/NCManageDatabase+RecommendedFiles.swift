@@ -117,7 +117,7 @@ extension NCManageDatabase {
         }
     }
 
-    func compareNKRecommendation(account: String, newObjects: [NKRecommendation]) -> (changed: [NKRecommendation], added: [NKRecommendation], deleted: [NKRecommendation]) {
+    func compareRecommendations(account: String, newObjects: [NKRecommendation]) -> (changed: [NKRecommendation], added: [NKRecommendation], deleted: [NKRecommendation]) {
         var changed = [NKRecommendation]()
         var added = [NKRecommendation]()
         var deleted = [NKRecommendation]()
