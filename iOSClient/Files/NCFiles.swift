@@ -45,15 +45,6 @@ class NCFiles: NCCollectionViewCommon {
         emptyDescription = "_no_file_pull_down_"
     }
 
-    /*
-     // Recommended Files
-     if capability.capabilityRecommendations {
-         NextcloudKit.shared.getRecommendedFiles(account: account) { account, recommendations, responseData, error in
-
-         }
-     }
-     */
-
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
