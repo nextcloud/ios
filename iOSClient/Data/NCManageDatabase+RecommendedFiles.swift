@@ -78,4 +78,35 @@ extension NCManageDatabase {
 
         return nil
     }
+
+    func compareObjectsRecommendedFiles(existingObjects: [tableRecommendedFiles], newObjects: [tableRecommendedFiles]) -> (changed: [tableRecommendedFiles], added: [tableRecommendedFiles], deleted: [tableRecommendedFiles]) {
+        var changed = [tableRecommendedFiles]()
+        var added = [tableRecommendedFiles]()
+        var deleted = [tableRecommendedFiles]()
+
+        let existingDictionary = Dictionary(uniqueKeysWithValues: existingObjects.map { ($0.primaryKey, $0) })
+        let newDictionary = Dictionary(uniqueKeysWithValues: newObjects.map { ($0.primaryKey, $0) })
+
+        // Verify objects changed or deleted
+        for (primaryKey, existingObject) in existingDictionary {
+            if let newObject = newDictionary[primaryKey] {
+                // If exists, verify if is changed
+                if !existingObject.isEqual(newObject) {
+                    changed.append(newObject)
+                }
+            } else {
+                // if do not exists, it's deleted
+                deleted.append(existingObject)
+            }
+        }
+
+        // verify new objects
+        for (primaryKey, newObject) in newDictionary {
+            if existingDictionary[primaryKey] == nil {
+                added.append(newObject)
+            }
+        }
+
+        return (changed, added, deleted)
+    }
 }
