@@ -55,9 +55,12 @@ extension NCManageDatabase {
             let realm = try Realm()
 
             try realm.write {
+                // Removed all objct for account
                 let results = realm.objects(tableRecommendedFiles.self).filter("account == %@", account)
 
                 realm.delete(results)
+
+                // Added the new recommendations
                 for recommendation in recommendations {
                     let recommendedFile = tableRecommendedFiles(account: account, id: recommendation.id, timestamp: recommendation.timestamp, name: recommendation.name, directory: recommendation.directory, extensionType: recommendation.extensionType, mimeType: recommendation.mimeType, hasPreview: recommendation.hasPreview, reason: recommendation.reason)
                     realm.add(recommendedFile)
