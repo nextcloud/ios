@@ -9,8 +9,8 @@
 import Photos
 
 @MainActor class AlbumModel: NSObject, ObservableObject, ViewOnAppearHandling {
-    @Published var allPhotos: PHFetchResult<PHAsset>!
-    @Published var allPhotosCount = 0
+    @Published var allPhotosCollection: PHAssetCollection?
+//    @Published var allPhotosCount = 0
     @Published var smartAlbums: [PHAssetCollection] = []
     @Published var userAlbums: [PHAssetCollection] = []
     @Published var selectedAlbums: [PHAssetCollection] = []
@@ -24,12 +24,14 @@ import Photos
         super.init()
 
         Task { @MainActor in
-            allPhotos = PHAsset.fetchAssets(with: nil)
-            allPhotosCount = allPhotos.count
+//            allPhotos = PHAsset.fetchAssets(with: nil)
+//            allPhotosCount = allPhotos.count
 
             smartAlbumAssetCollections = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .any, options: nil)
             smartAlbumAssetCollections?.enumerateObjects { [self] collection, _, _ in
-                if collection.assetCount > 0 {
+                if collection.assetCollectionSubtype == .smartAlbumUserLibrary {
+                    allPhotosCollection = collection
+                } else if collection.assetCount > 0 {
                     smartAlbums.append(collection)
                 }
             }
@@ -81,9 +83,9 @@ extension AlbumModel: PHPhotoLibraryChangeObserver {
         // Re-dispatch to the main queue before acting on the change,
         // so you can update the UI.
         Task { @MainActor in
-            if let changeDetails = changeInstance.changeDetails(for: allPhotos) {
-                allPhotos = changeDetails.fetchResultAfterChanges
-            }
+//            if let changeDetails = changeInstance.changeDetails(for: allPhotos) {
+//                allPhotos = changeDetails.fetchResultAfterChanges
+//            }
 
 //            if let smartAlbumAssetCollections, let changeDetails = changeInstance.changeDetails(for: smartAlbumAssetCollections) {
 //                var results = changeDetails.fetchResultAfterChanges

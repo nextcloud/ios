@@ -171,11 +171,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         updateAccountProperty(\.autoUploadFull, value: newValue)
 
         if newValue {
-            if !assetCollections.isEmpty {
-                NCAutoUpload.shared.autoUploadSelectedAlbums(controller: self.controller, assetCollections: assetCollections, log: "Auto upload selected albums", account: session.account)
-            } else {
-                NCAutoUpload.shared.autoUploadFullPhotos(controller: self.controller, log: "Auto upload full", account: session.account)
-            }
+            NCAutoUpload.shared.autoUploadSelectedAlbums(controller: self.controller, assetCollections: assetCollections, log: "Auto upload selected albums", account: session.account)
         } else {
             self.database.clearMetadatasUpload(account: session.account)
         }
@@ -222,15 +218,15 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
                 self.database.setAccountAutoUploadDirectory(path, session: session)
             }
         }
-        
+
         onViewAppear()
     }
 
     func createAlbumTitle() -> String {
-        if autoUploadAlbumIds.count == 1 && autoUploadAlbumIds.first == SelectAlbumView.cameraRollTag {
-            return NSLocalizedString("_camera_roll_", comment: "")
-        } else if autoUploadAlbumIds.count == 1 {
-            return PHAssetCollection.allAlbums.first(where: { autoUploadAlbumIds.first == $0.localIdentifier })?.localizedTitle ?? ""
+
+        if autoUploadAlbumIds.count == 1 {
+            let album = PHAssetCollection.allAlbums.first(where: { autoUploadAlbumIds.first == $0.localIdentifier })
+            return (album?.assetCollectionSubtype == .smartAlbumUserLibrary) ? NSLocalizedString("_camera_roll_", comment: "") : (album?.localizedTitle ?? "")
         } else {
             return NSLocalizedString("_multiple_albums_", comment: "")
         }

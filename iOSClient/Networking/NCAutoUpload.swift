@@ -71,20 +71,6 @@ class NCAutoUpload: NSObject {
         })
     }
 
-    func autoUploadFullPhotos(controller: NCMainTabBarController?, log: String, account: String) {
-        applicationState = UIApplication.shared.applicationState
-        hud.initHudRing(view: controller?.view, text: nil, detailText: nil, tapToCancelDetailText: false)
-
-        NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { hasPermission in
-            guard hasPermission else { return }
-            DispatchQueue.global().async {
-                self.uploadAssetsNewAndFull(controller: controller, selector: NCGlobal.shared.selectorUploadAutoUploadAll, log: log, account: account) { _ in
-                    self.hud.dismiss()
-                }
-            }
-        }
-    }
-
     func autoUploadSelectedAlbums(controller: NCMainTabBarController?, assetCollections: [PHAssetCollection], log: String, account: String) {
         applicationState = UIApplication.shared.applicationState
         hud.initHudRing(view: controller?.view, text: nil, detailText: nil, tapToCancelDetailText: false)
