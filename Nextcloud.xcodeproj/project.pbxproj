@@ -30,6 +30,8 @@
 		4240DB502C5648E300E72FC0 /* BurgerMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4240DB4F2C5648E300E72FC0 /* BurgerMenuViewController.swift */; };
 		4240DB522C5649A900E72FC0 /* BurgerMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4240DB512C5649A900E72FC0 /* BurgerMenuView.swift */; };
 		42678ABE2C57C5FB00307DEF /* BurgerMenuViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42678ABD2C57C5FB00307DEF /* BurgerMenuViewModel.swift */; };
+		426D0F892D2826D600F76A65 /* HiDriveCollectionViewCommonSelectToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 426D0F872D2826D600F76A65 /* HiDriveCollectionViewCommonSelectToolbar.swift */; };
+		426D0F8A2D2826D600F76A65 /* HiDriveCollectionViewCommonSelectToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 426D0F882D2826D600F76A65 /* HiDriveCollectionViewCommonSelectToolbarView.swift */; };
 		428C41682D15862700F3A917 /* NCAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 428C41672D15862700F3A917 /* NCAccount.swift */; };
 		4294B88B2CA5550B002E6FED /* LinkButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4294B88A2CA5550B002E6FED /* LinkButton.swift */; };
 		42C684B42CA1806000DD46F0 /* SecondaryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42C684B32CA1806000DD46F0 /* SecondaryButton.swift */; };
@@ -1213,6 +1215,8 @@
 		4240DB4F2C5648E300E72FC0 /* BurgerMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BurgerMenuViewController.swift; sourceTree = "<group>"; };
 		4240DB512C5649A900E72FC0 /* BurgerMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BurgerMenuView.swift; sourceTree = "<group>"; };
 		42678ABD2C57C5FB00307DEF /* BurgerMenuViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BurgerMenuViewModel.swift; sourceTree = "<group>"; };
+		426D0F872D2826D600F76A65 /* HiDriveCollectionViewCommonSelectToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HiDriveCollectionViewCommonSelectToolbar.swift; sourceTree = "<group>"; };
+		426D0F882D2826D600F76A65 /* HiDriveCollectionViewCommonSelectToolbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HiDriveCollectionViewCommonSelectToolbarView.swift; sourceTree = "<group>"; };
 		428C41672D15862700F3A917 /* NCAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCAccount.swift; sourceTree = "<group>"; };
 		4294B88A2CA5550B002E6FED /* LinkButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkButton.swift; sourceTree = "<group>"; };
 		42C684B32CA1806000DD46F0 /* SecondaryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondaryButton.swift; sourceTree = "<group>"; };
@@ -1910,6 +1914,15 @@
 				4240DB512C5649A900E72FC0 /* BurgerMenuView.swift */,
 			);
 			path = BurgerMenu;
+			sourceTree = "<group>";
+		};
+		426D0F862D2826B200F76A65 /* Toolbar */ = {
+			isa = PBXGroup;
+			children = (
+				426D0F872D2826D600F76A65 /* HiDriveCollectionViewCommonSelectToolbar.swift */,
+				426D0F882D2826D600F76A65 /* HiDriveCollectionViewCommonSelectToolbarView.swift */,
+			);
+			path = Toolbar;
 			sourceTree = "<group>";
 		};
 		42C684B52CA1A17300DD46F0 /* Buttons */ = {
@@ -3081,6 +3094,7 @@
 		F7F67BAA1A24D27800EE80DA /* iOSClient */ = {
 			isa = PBXGroup;
 			children = (
+				426D0F862D2826B200F76A65 /* Toolbar */,
 				D5E1D4FA2CF4A86F00813AB6 /* DataProtection */,
 				D5C2D21D2C9DC0D800E7579D /* Components */,
 				F702F2CC25EE5B4F008F8E80 /* AppDelegate.swift */,
@@ -4370,6 +4384,8 @@
 				F72408332B8A27C900F128E2 /* NCMedia+Command.swift in Sources */,
 				0F9F524F2C8F46D7004717E0 /* AppScreenConstants.swift in Sources */,
 				F755CB402B8CB13C00CE27E9 /* NCMediaLayout.swift in Sources */,
+				426D0F892D2826D600F76A65 /* HiDriveCollectionViewCommonSelectToolbar.swift in Sources */,
+				426D0F8A2D2826D600F76A65 /* HiDriveCollectionViewCommonSelectToolbarView.swift in Sources */,
 				F73EF7B72B0224AB0087E6E9 /* NCManageDatabase+ExternalSites.swift in Sources */,
 				D51C00412C2C1B4D00A04554 /* NCBrand-IONOS.swift in Sources */,
 				AF4BF61927562A4B0081CEEF /* NCManageDatabase+Metadata.swift in Sources */,

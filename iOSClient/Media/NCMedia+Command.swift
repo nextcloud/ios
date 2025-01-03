@@ -40,7 +40,7 @@ extension NCMedia {
 
     func setSelectcancelButton() {
         fileSelect.removeAll()
-        tabBarSelect.selectCount = fileSelect.count
+        tabBarSelect.update(fileSelect: fileSelect)
 
         if let visibleCells = self.collectionView?.indexPathsForVisibleItems.compactMap({ self.collectionView?.cellForItem(at: $0) }) {
             for case let cell as NCMediaCell in visibleCells {
@@ -143,7 +143,7 @@ extension NCMedia {
     }
 }
 
-extension NCMedia: NCMediaSelectTabBarDelegate {
+extension NCMedia: HiDriveCollectionViewCommonSelectToolbarDelegate {
     func delete() {
         let ocIds = self.fileSelect.map { $0 }
         var alertStyle = UIAlertController.Style.actionSheet
@@ -187,5 +187,13 @@ extension NCMedia: NCMediaSelectTabBarDelegate {
 
             present(alertController, animated: true, completion: { })
         }
+    }
+    
+    func toolbarWillAppear() {
+        self.tabBarController?.tabBar.isHidden = true
+    }
+    
+    func toolbarWillDisappear() {
+        self.tabBarController?.tabBar.isHidden = false
     }
 }

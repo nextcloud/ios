@@ -33,7 +33,7 @@ class NCMedia: UIViewController {
     let layout = NCMediaLayout()
     var layoutType = NCGlobal.shared.mediaLayoutRatio
     var documentPickerViewController: NCDocumentPickerViewController?
-    var tabBarSelect: NCMediaSelectTabBar!
+    var tabBarSelect: HiDriveCollectionViewCommonSelectToolbar!
     let utilityFileSystem = NCUtilityFileSystem()
     let global = NCGlobal.shared
     let utility = NCUtility()
@@ -114,7 +114,7 @@ class NCMedia: UIViewController {
         collectionView.collectionViewLayout = layout
         layoutType = database.getLayoutForView(account: session.account, key: global.layoutViewMedia, serverUrl: "")?.layout ?? global.mediaLayoutRatio
 
-        tabBarSelect = NCMediaSelectTabBar(tabBarController: self.tabBarController, delegate: self)
+        tabBarSelect = HiDriveCollectionViewCommonSelectToolbar(controller: controller, delegate: self, displayedButtons: [.delete])
 
         gradient.startPoint = CGPoint(x: 0, y: 0.1)
         gradient.endPoint = CGPoint(x: 0, y: 1)
@@ -203,7 +203,7 @@ class NCMedia: UIViewController {
         super.viewWillLayoutSubviews()
 
         if let frame = tabBarController?.tabBar.frame {
-            tabBarSelect.hostingController.view.frame = frame
+            tabBarSelect.hostingController?.view.frame = frame
         }
     }
 
@@ -390,7 +390,7 @@ extension NCMedia {
         fileActionsHeader?.onSelectAll = { [weak self] in
             guard let self = self else { return }
             self.selectAllOrDeselectAll()
-            tabBarSelect.selectCount = fileSelect.count
+            tabBarSelect.update(fileSelect: fileSelect)
             self.fileActionsHeader?.setSelectionState(selectionState: selectionState)
         }
     }

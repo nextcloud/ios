@@ -87,7 +87,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 		}
 	}
     var literalSearch: String?
-    var tabBarSelect: NCCollectionViewCommonSelectTabBar!
+    var tabBarSelect: HiDriveCollectionViewCommonSelectToolbar!
     var attributesZoomIn: UIMenuElement.Attributes = []
     var attributesZoomOut: UIMenuElement.Attributes = []
 
@@ -177,7 +177,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        tabBarSelect = NCCollectionViewCommonSelectTabBar(controller: self.controller, delegate: self)
+        tabBarSelect = HiDriveCollectionViewCommonSelectToolbar(controller: controller, delegate: self)
         self.navigationController?.presentationController?.delegate = self
         collectionView.alwaysBounceVertical = true
 

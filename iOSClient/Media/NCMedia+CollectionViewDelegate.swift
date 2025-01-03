@@ -39,7 +39,7 @@ extension NCMedia: UICollectionViewDelegate {
                 cell.selected(true)
             }
             fileActionsHeader?.setSelectionState(selectionState: selectionState)
-            tabBarSelect.selectCount = fileSelect.count
+            tabBarSelect.update(fileSelect: fileSelect)
         } else if let metadata = database.getMetadataFromOcId(metadata.ocId) {
             let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt1024)
             let ocIds = dataSource.metadatas.map { $0.ocId }

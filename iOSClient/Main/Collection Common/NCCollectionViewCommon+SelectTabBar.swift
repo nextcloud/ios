@@ -25,7 +25,7 @@ import UIKit
 import Foundation
 import NextcloudKit
 
-extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
+extension NCCollectionViewCommon: HiDriveCollectionViewCommonSelectToolbarDelegate {
     func selectAll() {
         if !fileSelect.isEmpty, self.dataSource.getMetadatas().count == fileSelect.count {
             fileSelect = []
