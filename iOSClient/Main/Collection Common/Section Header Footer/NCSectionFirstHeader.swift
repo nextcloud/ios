@@ -88,6 +88,8 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
 
         transferSeparatorBottom.backgroundColor = .separator
         transferSeparatorBottomHeightConstraint.constant = 0.5
+
+        viewRecommendationHeightConstraint.constant = 0
     }
 
     override func layoutSublayers(of layer: CALayer) {
