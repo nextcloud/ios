@@ -29,21 +29,24 @@ protocol NCSectionFirstHeaderDelegate: AnyObject {
 }
 
 class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegate {
-    @IBOutlet weak var buttonTransfer: UIButton!
+    @IBOutlet weak var viewRichWorkspace: UIView!
+    @IBOutlet weak var viewRecommendation: UIView!
+    @IBOutlet weak var viewTransfer: UIView!
+    @IBOutlet weak var viewSection: UIView!
+
+    @IBOutlet weak var viewRichWorkspaceHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var viewRecommendationHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var viewTransferHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var viewSectionHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var transferSeparatorBottomHeightConstraint: NSLayoutConstraint!
+
+    @IBOutlet weak var textViewRichWorkspace: UITextView!
+    @IBOutlet weak var collectionViewRecommendation: UICollectionView!
     @IBOutlet weak var imageTransfer: UIImageView!
     @IBOutlet weak var labelTransfer: UILabel!
     @IBOutlet weak var progressTransfer: UIProgressView!
     @IBOutlet weak var transferSeparatorBottom: UIView!
-    @IBOutlet weak var textViewRichWorkspace: UITextView!
     @IBOutlet weak var labelSection: UILabel!
-    @IBOutlet weak var viewTransfer: UIView!
-    @IBOutlet weak var viewRichWorkspace: UIView!
-    @IBOutlet weak var viewSection: UIView!
-
-    @IBOutlet weak var viewTransferHeightConstraint: NSLayoutConstraint!
-    @IBOutlet weak var viewRichWorkspaceHeightConstraint: NSLayoutConstraint!
-    @IBOutlet weak var viewSectionHeightConstraint: NSLayoutConstraint!
-    @IBOutlet weak var transferSeparatorBottomHeightConstraint: NSLayoutConstraint!
 
     weak var delegate: NCSectionFirstHeaderDelegate?
     let utility = NCUtility()
