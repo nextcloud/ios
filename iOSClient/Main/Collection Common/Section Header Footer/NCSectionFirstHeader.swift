@@ -57,8 +57,6 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
     override func awakeFromNib() {
         super.awakeFromNib()
 
-        backgroundColor = .clear
-
         //
         // RichWorkspace
         //
@@ -105,13 +103,13 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
         super.layoutSublayers(of: layer)
 
         richWorkspaceGradient.frame = viewRichWorkspace.bounds
-        setInterfaceColor()
+        setRichWorkspaceColor()
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
 
-        setInterfaceColor()
+        setRichWorkspaceColor()
     }
 
     // MARK: - RichWorkspace
@@ -126,7 +124,7 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
         }
     }
 
-    func setInterfaceColor() {
+    private func setRichWorkspaceColor() {
         if traitCollection.userInterfaceStyle == .dark {
             richWorkspaceGradient.colors = [UIColor(white: 0, alpha: 0).cgColor, UIColor.black.cgColor]
         } else {
