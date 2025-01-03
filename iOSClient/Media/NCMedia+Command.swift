@@ -47,52 +47,9 @@ extension NCMedia {
         }
 
         if isEditMode {
-            activityIndicatorTrailing.constant = 150
-            selectOrCancelButton.setTitle( NSLocalizedString("_cancel_", comment: ""), for: .normal)
-            selectOrCancelButtonTrailing.constant = 10
-            selectOrCancelButton.isHidden = false
-            menuButton.isHidden = true
             tabBarSelect.show()
         } else {
-            activityIndicatorTrailing.constant = 150
-            selectOrCancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
-            selectOrCancelButtonTrailing.constant = 50
-            selectOrCancelButton.isHidden = false
-            menuButton.isHidden = false
             tabBarSelect.hide()
-        }
-    }
-
-    func setTitleDate() {
-        if let layoutAttributes = collectionView.collectionViewLayout.layoutAttributesForElements(in: collectionView.bounds) {
-            let sortedAttributes = layoutAttributes.sorted { $0.frame.minY < $1.frame.minY || ($0.frame.minY == $1.frame.minY && $0.frame.minX < $1.frame.minX) }
-
-            if let firstAttribute = sortedAttributes.first, let metadata = dataSource.getMetadata(indexPath: firstAttribute.indexPath) {
-                titleDate?.text = utility.getTitleFromDate(metadata.date as Date)
-                return
-            }
-        }
-
-        titleDate?.text = ""
-    }
-
-    func setColor() {
-        if isTop {
-            UIView.animate(withDuration: 0.3) { [self] in
-                gradientView.alpha = 0
-                titleDate?.textColor = NCBrandColor.shared.textColor
-                activityIndicator.color = NCBrandColor.shared.textColor
-                selectOrCancelButton.setTitleColor(NCBrandColor.shared.textColor, for: .normal)
-                menuButton.setImage(NCUtility().loadImage(named: "ellipsis", colors: [NCBrandColor.shared.textColor]), for: .normal)
-            }
-        } else {
-            UIView.animate(withDuration: 0.3) { [self] in
-                gradientView.alpha = 1
-                titleDate?.textColor = .white
-                activityIndicator.color = .white
-                selectOrCancelButton.setTitleColor(.white, for: .normal)
-                menuButton.setImage(NCUtility().loadImage(named: "ellipsis", colors: [.white]), for: .normal)
-            }
         }
     }
 
@@ -135,6 +92,7 @@ extension NCMedia {
                     self.database.setLayoutForView(account: self.session.account, key: self.global.layoutViewMedia, serverUrl: "", layout: self.global.mediaLayoutRatio)
                     self.layoutType = self.global.mediaLayoutRatio
                 }
+                self.updateHeadersMenu()
                 self.collectionViewReloadData()
             }
         ])

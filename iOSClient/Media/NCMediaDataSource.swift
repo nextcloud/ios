@@ -41,7 +41,6 @@ extension NCMedia {
         DispatchQueue.main.async {
             self.collectionView.reloadData()
             self.refreshControl.endRefreshing()
-            self.setTitleDate()
         }
     }
 
@@ -101,10 +100,6 @@ extension NCMedia {
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate), limit \(limit)")
 
-            DispatchQueue.main.async {
-                self.activityIndicator.startAnimating()
-            }
-
             NextcloudKit.shared.searchMedia(path: tableAccount.mediaPath,
                                             lessDate: lessDate,
                                             greaterDate: greaterDate,
@@ -157,7 +152,6 @@ extension NCMedia {
                 }
 
                 DispatchQueue.main.async {
-                    self.activityIndicator.stopAnimating()
                     self.searchMediaInProgress = false
 
                     if self.dataSource.metadatas.isEmpty {
