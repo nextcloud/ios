@@ -94,7 +94,6 @@ extension NCManageDatabase {
             for result in results {
                 let recommendation = NKRecommendation(id: result.id, timestamp: result.timestamp, name: result.name, directory: result.directory, extensionType: result.extensionType, mimeType: result.mimeType, hasPreview: result.hasPreview, reason: result.reason)
                 recommendations.append(recommendation)
-
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
