@@ -299,7 +299,7 @@ class NCMedia: UIViewController {
     }
     
     func showBurgerMenu() {
-        self.mainTabBarController?.showBurgerMenu()
+		(self.tabBarController as? NCMainTabBarController)?.showBurgerMenu()
     }
     
     func setNavigationRightItems() {
