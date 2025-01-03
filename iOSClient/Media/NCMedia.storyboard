@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="EFX-fO-Oip">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="EFX-fO-Oip">
     <device id="retina5_9" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -16,15 +16,15 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="812"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4sT-gk-J9e" userLabel="Headers" customClass="FileActionsHeader" customModule="Nextcloud" customModuleProvider="target">
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Es3-34-NJO" userLabel="Headers" customClass="FileActionsHeader" customModule="Nextcloud" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="50" width="375" height="48"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="48" id="yrF-BK-jWR"/>
+                                    <constraint firstAttribute="height" constant="48" id="Wup-kY-fM6"/>
                                 </constraints>
                             </view>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="Zaz-Cl-qpZ">
-                                <rect key="frame" x="0.0" y="100" width="375" height="712"/>
+                                <rect key="frame" x="0.0" y="98" width="375" height="714"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="fF1-wd-0xN">
                                     <size key="itemSize" width="0.0" height="0.0"/>
@@ -43,17 +43,17 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="Zaz-Cl-qpZ" firstAttribute="leading" secondItem="QEs-gO-Cmp" secondAttribute="leading" id="1bp-sm-u0X"/>
-                            <constraint firstItem="4sT-gk-J9e" firstAttribute="width" secondItem="Meh-VD-wWh" secondAttribute="width" id="7Oc-Ar-Oiw"/>
+                            <constraint firstItem="Es3-34-NJO" firstAttribute="leading" secondItem="Meh-VD-wWh" secondAttribute="leading" id="1lM-KY-qFa"/>
+                            <constraint firstItem="Zaz-Cl-qpZ" firstAttribute="top" secondItem="Es3-34-NJO" secondAttribute="bottom" id="BN5-4Y-zIl"/>
+                            <constraint firstItem="Es3-34-NJO" firstAttribute="trailing" secondItem="Meh-VD-wWh" secondAttribute="trailing" id="HjM-VS-FMD"/>
+                            <constraint firstItem="Es3-34-NJO" firstAttribute="top" secondItem="Meh-VD-wWh" secondAttribute="top" id="TMB-Rh-5NJ"/>
                             <constraint firstAttribute="trailing" secondItem="Zaz-Cl-qpZ" secondAttribute="trailing" id="aNd-UL-hmu"/>
                             <constraint firstAttribute="bottom" secondItem="Zaz-Cl-qpZ" secondAttribute="bottom" id="aNr-tf-2AH"/>
-                            <constraint firstItem="4sT-gk-J9e" firstAttribute="top" secondItem="Meh-VD-wWh" secondAttribute="top" id="cD5-1n-cOd"/>
-                            <constraint firstItem="4sT-gk-J9e" firstAttribute="centerX" secondItem="Meh-VD-wWh" secondAttribute="centerX" id="hgT-JH-bCD"/>
-                            <constraint firstItem="Meh-VD-wWh" firstAttribute="top" secondItem="Zaz-Cl-qpZ" secondAttribute="top" constant="-50" id="wSZ-gW-e2x"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="collectionView" destination="Zaz-Cl-qpZ" id="8oA-Gx-z7T"/>
-                        <outlet property="fileActionsHeader" destination="4sT-gk-J9e" id="jXP-fS-4TT"/>
+                        <outlet property="fileActionsHeader" destination="Es3-34-NJO" id="bFM-2P-nY9"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JJ0-Le-6eT" userLabel="First Responder" sceneMemberID="firstResponder"/>

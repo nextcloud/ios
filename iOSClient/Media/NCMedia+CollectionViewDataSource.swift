@@ -49,6 +49,7 @@ extension NCMedia: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        self.numberOfColumns = getColumnCount()
         return dataSource.metadatas.count
     }
 

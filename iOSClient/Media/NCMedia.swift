@@ -28,13 +28,6 @@ import RealmSwift
 
 class NCMedia: UIViewController {
     @IBOutlet weak var collectionView: UICollectionView!
-    @IBOutlet weak var titleDate: UILabel!
-    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
-    @IBOutlet weak var activityIndicatorTrailing: NSLayoutConstraint!
-    @IBOutlet weak var selectOrCancelButton: UIButton!
-    @IBOutlet weak var selectOrCancelButtonTrailing: NSLayoutConstraint!
-    @IBOutlet weak var menuButton: UIButton!
-    @IBOutlet weak var gradientView: UIView!
     @IBOutlet weak var fileActionsHeader: FileActionsHeader?
 
     let layout = NCMediaLayout()
@@ -61,7 +54,6 @@ class NCMedia: UIViewController {
     var showOnlyVideos = false
     var timeIntervalSearchNewMedia: TimeInterval = 2.0
     var timerSearchNewMedia: Timer?
-    let insetsTop: CGFloat = 75
     let livePhotoImage = NCUtility().loadImage(named: "livephoto", colors: [.white])
     let playImage = NCUtility().loadImage(named: "play.fill", colors: [.white])
     var photoImage = UIImage()
@@ -99,15 +91,6 @@ class NCMedia: UIViewController {
     var isPinchGestureActive: Bool {
         return pinchGesture.state == .began || pinchGesture.state == .changed
     }
-    
-    var selectionState: FileActionsHeaderSelectionState {
-        let selectedItemsCount = fileSelect.count
-        if selectedItemsCount == dataSource.metadatas.count {
-            return .all
-        }
-        
-        return selectedItemsCount == 0 ? .none : .some(selectedItemsCount)
-    }
 
     // MARK: - View Life Cycle
 
@@ -120,7 +103,7 @@ class NCMedia: UIViewController {
         collectionView.register(UINib(nibName: "NCSectionFooter", bundle: nil), forSupplementaryViewOfKind: mediaSectionFooter, withReuseIdentifier: "sectionFooter")
         collectionView.register(UINib(nibName: "NCMediaCell", bundle: nil), forCellWithReuseIdentifier: "mediaCell")
         collectionView.alwaysBounceVertical = true
-        collectionView.contentInset = UIEdgeInsets(top: insetsTop, left: 0, bottom: 50, right: 0)
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 50, right: 0)
         collectionView.backgroundColor = .systemBackground
         collectionView.prefetchDataSource = self
         collectionView.dragInteractionEnabled = true
@@ -133,27 +116,9 @@ class NCMedia: UIViewController {
 
         tabBarSelect = NCMediaSelectTabBar(tabBarController: self.tabBarController, delegate: self)
 
-        titleDate.text = ""
-
-        selectOrCancelButton.backgroundColor = .clear
-        selectOrCancelButton.layer.cornerRadius = 15
-        selectOrCancelButton.layer.masksToBounds = true
-        selectOrCancelButton.setTitle( NSLocalizedString("_select_", comment: ""), for: .normal)
-        selectOrCancelButton.addBlur(style: .systemUltraThinMaterial)
-
-        menuButton.backgroundColor = .clear
-        menuButton.layer.cornerRadius = 15
-        menuButton.layer.masksToBounds = true
-        menuButton.showsMenuAsPrimaryAction = true
-        menuButton.configuration = UIButton.Configuration.plain()
-        menuButton.setImage(NCUtility().loadImage(named: "ellipsis"), for: .normal)
-        menuButton.changesSelectionAsPrimaryAction = false
-        menuButton.addBlur(style: .systemUltraThinMaterial)
-
         gradient.startPoint = CGPoint(x: 0, y: 0.1)
         gradient.endPoint = CGPoint(x: 0, y: 1)
         gradient.colors = [UIColor.black.withAlphaComponent(UIAccessibility.isReduceTransparencyEnabled ? 0.8 : 0.4).cgColor, UIColor.clear.cgColor]
-        gradientView.layer.insertSublayer(gradient, at: 0)
 
         collectionView.refreshControl = refreshControl
         refreshControl.action(for: .valueChanged) { _ in
@@ -191,9 +156,12 @@ class NCMedia: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+
         navigationController?.setNavigationBarAppearance()
         navigationItem.largeTitleDisplayMode = .never
+        if dataSource.metadatas.isEmpty {
+            loadDataSource()
+        }
         
         setNavigationRightItems()
         setNavigationLeftItems()
@@ -237,77 +205,11 @@ class NCMedia: UIViewController {
         if let frame = tabBarController?.tabBar.frame {
             tabBarSelect.hostingController.view.frame = frame
         }
-        gradient.frame = gradientView.bounds
     }
 
     func searchNewMedia() {
         timerSearchNewMedia?.invalidate()
-        timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchMediaUI), userInfo: nil, repeats: false)
-    }
-	
-	private func setNavigationBarLogoIfNeeded() {
-		if self.navigationController?.viewControllers.count == 1 {
-			setNavigationBarLogo()
-		}
-	}
-    
-    func updateHeadersView() {
-        fileActionsHeader?.showViewModeButton(false)
-        fileActionsHeader?.setIsEditingMode(isEditingMode: isEditMode)
-        updateHeadersMenu()
-        fileActionsHeader?.onSelectModeChange = { [weak self] isSelectionMode in
-            self?.setEditMode(isSelectionMode)
-            self?.updateHeadersView()
-            self?.fileActionsHeader?.setSelectionState(selectionState: .none)
-        }
-        
-        fileActionsHeader?.onSelectAll = { [weak self] in
-            guard let self = self else { return }
-            self.selectAllOrDeselectAll()
-            tabBarSelect.selectCount = fileSelect.count
-            self.fileActionsHeader?.setSelectionState(selectionState: selectionState)
-        }
-    }
-    
-    func selectAllOrDeselectAll() {
-        let metadatas = self.dataSource.metadatas
-        if !filesExists.isEmpty, metadatas.count == filesExists.count {
-            filesExists.removeAll()
-        } else {
-            filesExists.removeAll()
-            filesExists.append(metadatas.compactMap({ $0.ocId }))
-        }
-        collectionView.reloadData()
-    }
-    
-    func updateHeadersMenu() {
-        fileActionsHeader?.setSortingMenu(sortingMenuElements: createMenuElements(), title: NSLocalizedString("_media_options_", tableName: nil, bundle: Bundle.main, value: "Media Options", comment: ""), image: nil)
-    }
-    
-    func setNavigationLeftItems() {
-        if isEditMode {
-            navigationItem.setLeftBarButtonItems(nil, animated: true)
-            return
-        }
-        let burgerMenuItem = UIBarButtonItem(image: UIImage(resource: .BurgerMenu.bars),
-                                             style: .plain,
-                                             action: { [weak self] in
-            self?.showBurgerMenu()
-        })
-        burgerMenuItem.tintColor = UIColor(resource: .BurgerMenu.navigationBarButton)
-        navigationItem.setLeftBarButtonItems([burgerMenuItem], animated: true)
-    }
-    
-    func showBurgerMenu() {
-		(self.tabBarController as? NCMainTabBarController)?.showBurgerMenu()
-    }
-    
-    func setNavigationRightItems() {
-        navigationItem.rightBarButtonItems = [createAccountButton()]
-    }
-    
-    private func createAccountButton() -> UIBarButtonItem {
-        accountButtonFactory.createAccountButton()
+        timerSearchNewMedia = Timer.scheduledTimer(timeInterval: timeIntervalSearchNewMedia, target: self, selector: #selector(searchMediaUI(_:)), userInfo: nil, repeats: false)
     }
 
     // MARK: - NotificationCenter
@@ -411,19 +313,6 @@ class NCMedia: UIViewController {
 // MARK: -
 
 extension NCMedia: UIScrollViewDelegate {
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        if !dataSource.metadatas.isEmpty {
-            isTop = scrollView.contentOffset.y <= -(insetsTop + view.safeAreaInsets.top - 25)
-            setColor()
-            setTitleDate()
-            setNeedsStatusBarAppearanceUpdate()
-        } else {
-            setColor()
-        }
-    }
-
-    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-    }
 
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if !decelerate {
@@ -435,11 +324,6 @@ extension NCMedia: UIScrollViewDelegate {
 
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         searchNewMedia()
-    }
-
-    func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
-        let y = view.safeAreaInsets.top
-        scrollView.contentOffset.y = -(insetsTop + y)
     }
 }
 
@@ -456,5 +340,81 @@ extension NCMedia: NCSelectDelegate {
         imageCache.removeAll()
         loadDataSource()
         searchNewMedia()
+    }
+}
+
+// MARK: -
+extension NCMedia {
+    func setNavigationRightItems() {
+        navigationItem.rightBarButtonItems = [createAccountButton()]
+    }
+    
+    private func createAccountButton() -> UIBarButtonItem {
+        accountButtonFactory.createAccountButton()
+    }
+    
+    func setNavigationLeftItems() {
+        if isEditMode {
+            navigationItem.setLeftBarButtonItems(nil, animated: true)
+            return
+        }
+        let burgerMenuItem = UIBarButtonItem(image: UIImage(resource: .BurgerMenu.bars),
+                                             style: .plain,
+                                             action: { [weak self] in
+            self?.showBurgerMenu()
+        })
+        burgerMenuItem.tintColor = UIColor(resource: .BurgerMenu.navigationBarButton)
+        navigationItem.setLeftBarButtonItems([burgerMenuItem], animated: true)
+    }
+    
+    func showBurgerMenu() {
+        self.controller?.showBurgerMenu()
+    }
+    
+    private func setNavigationBarLogoIfNeeded() {
+        if self.navigationController?.viewControllers.count == 1 {
+            setNavigationBarLogo()
+        }
+    }
+    
+    func updateHeadersView() {
+        fileActionsHeader?.showViewModeButton(false)
+        fileActionsHeader?.setIsEditingMode(isEditingMode: isEditMode)
+        updateHeadersMenu()
+        fileActionsHeader?.onSelectModeChange = { [weak self] isSelectionMode in
+            self?.setEditMode(isSelectionMode)
+            self?.updateHeadersView()
+            self?.fileActionsHeader?.setSelectionState(selectionState: .none)
+        }
+        
+        fileActionsHeader?.onSelectAll = { [weak self] in
+            guard let self = self else { return }
+            self.selectAllOrDeselectAll()
+            tabBarSelect.selectCount = fileSelect.count
+            self.fileActionsHeader?.setSelectionState(selectionState: selectionState)
+        }
+    }
+    
+    var selectionState: FileActionsHeaderSelectionState {
+        let selectedItemsCount = fileSelect.count
+        if selectedItemsCount == self.dataSource.metadatas.count {
+            return .all
+        }
+        
+        return selectedItemsCount == 0 ? .none : .some(selectedItemsCount)
+    }
+    
+    func selectAllOrDeselectAll() {
+        let metadatas = self.dataSource.metadatas
+        if !fileSelect.isEmpty, metadatas.count == fileSelect.count {
+            fileSelect = []
+        } else {
+            fileSelect = metadatas.compactMap({ $0.ocId })
+        }
+        collectionView.reloadData()
+    }
+    
+    func updateHeadersMenu() {
+        fileActionsHeader?.setSortingMenu(sortingMenuElements: createMenuElements(), title: NSLocalizedString("_media_options_", tableName: nil, bundle: Bundle.main, value: "Media Options", comment: ""), image: nil)
     }
 }
