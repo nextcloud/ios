@@ -4,7 +4,6 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
-        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -26,7 +25,6 @@
                             <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                         </textView>
                     </subviews>
-                    <color key="backgroundColor" name="darkBlue"/>
                     <constraints>
                         <constraint firstItem="pYo-pF-MGv" firstAttribute="top" secondItem="NC1-5C-E5z" secondAttribute="top" id="PgU-fC-vEG"/>
                         <constraint firstAttribute="height" constant="50" id="eT3-4m-mJ6"/>
@@ -85,7 +83,6 @@
                             <rect key="frame" x="-1" y="46" width="576" height="4"/>
                         </progressView>
                     </subviews>
-                    <color key="backgroundColor" name="yellow"/>
                     <constraints>
                         <constraint firstAttribute="trailing" secondItem="FOe-YO-km8" secondAttribute="trailing" constant="-1" id="3gk-sW-WeV"/>
                         <constraint firstAttribute="bottom" secondItem="McE-3D-mc5" secondAttribute="bottom" id="697-ky-07J"/>
@@ -111,7 +108,6 @@
                             <nil key="highlightedColor"/>
                         </label>
                     </subviews>
-                    <color key="backgroundColor" systemColor="systemRedColor"/>
                     <constraints>
                         <constraint firstAttribute="trailing" secondItem="mB5-5n-AL9" secondAttribute="trailing" constant="10" id="Cct-8N-ghQ"/>
                         <constraint firstAttribute="height" constant="20" id="ZcL-Wd-xhN"/>
@@ -157,20 +153,11 @@
     </objects>
     <resources>
         <image name="icloud.and.arrow.up" catalog="system" width="128" height="117"/>
-        <namedColor name="darkBlue">
-            <color red="0.28600001335144043" green="0.38400000333786011" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
-        <namedColor name="yellow">
-            <color red="1" green="0.72500002384185791" blue="0.23899999260902405" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
         <systemColor name="labelColor">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-        </systemColor>
-        <systemColor name="systemRedColor">
-            <color red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
