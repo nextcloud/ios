@@ -109,6 +109,7 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
 
     func setRichWorkspaceHeight(_ size: CGFloat) {
         viewRichWorkspaceHeightConstraint.constant = size
+
         if size == 0 {
             viewRichWorkspace.isHidden = true
         } else {
@@ -132,6 +133,8 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
             self.richWorkspaceText = text
         }
     }
+
+    // MARK: - Recommendation
 
     // MARK: - Transfer
 
