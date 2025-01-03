@@ -34,6 +34,8 @@ extension NCMedia {
     func setEditMode(_ editMode: Bool) {
         isEditMode = editMode
         setSelectcancelButton()
+        updateHeadersView()
+        setNavigationLeftItems()
     }
 
     func setSelectcancelButton() {
@@ -155,8 +157,7 @@ extension NCMedia: NCMediaSelectTabBarDelegate {
             let alertController = UIAlertController(title: nil, message: nil, preferredStyle: alertStyle)
 
             alertController.addAction(UIAlertAction(title: NSLocalizedString("_delete_selected_photos_", comment: ""), style: .destructive) { (_: UIAlertAction) in
-                self.isEditMode = false
-                self.setSelectcancelButton()
+                self.setEditMode(false)
 
                 for ocId in ocIds {
                     if let metadata = self.database.getMetadataFromOcId(ocId) {
