@@ -52,18 +52,19 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
     let utility = NCUtility()
     private var markdownParser = MarkdownParser()
     private var richWorkspaceText: String?
-    private var textViewColor: UIColor?
-    private let gradient: CAGradientLayer = CAGradientLayer()
+    private let richWorkspaceGradient: CAGradientLayer = CAGradientLayer()
 
     override func awakeFromNib() {
         super.awakeFromNib()
 
         backgroundColor = .clear
 
-        // Gradient
-        gradient.startPoint = CGPoint(x: 0, y: 0.8)
-        gradient.endPoint = CGPoint(x: 0, y: 0.9)
-        viewRichWorkspace.layer.addSublayer(gradient)
+        //
+        // RichWorkspace
+        //
+        richWorkspaceGradient.startPoint = CGPoint(x: 0, y: 0.8)
+        richWorkspaceGradient.endPoint = CGPoint(x: 0, y: 0.9)
+        viewRichWorkspace.layer.addSublayer(richWorkspaceGradient)
 
         let tap = UITapGestureRecognizer(target: self, action: #selector(touchUpInsideViewRichWorkspace(_:)))
         tap.delegate = self
@@ -74,11 +75,15 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
         if let richWorkspaceText = richWorkspaceText {
             textViewRichWorkspace.attributedText = markdownParser.parse(richWorkspaceText)
         }
-        textViewColor = NCBrandColor.shared.textColor
 
-        labelSection.text = ""
-        viewSectionHeightConstraint.constant = 0
+        //
+        // Recommendation
+        //
+        viewRecommendationHeightConstraint.constant = 0
 
+        //
+        // Transfer
+        //
         imageTransfer.tintColor = NCBrandColor.shared.iconImageColor
         imageTransfer.image = NCUtility().loadImage(named: "icloud.and.arrow.up")
 
@@ -89,13 +94,17 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
         transferSeparatorBottom.backgroundColor = .separator
         transferSeparatorBottomHeightConstraint.constant = 0.5
 
-        viewRecommendationHeightConstraint.constant = 0
+        //
+        // Section
+        //
+        labelSection.text = ""
+        viewSectionHeightConstraint.constant = 0
     }
 
     override func layoutSublayers(of layer: CALayer) {
         super.layoutSublayers(of: layer)
 
-        gradient.frame = viewRichWorkspace.bounds
+        richWorkspaceGradient.frame = viewRichWorkspace.bounds
         setInterfaceColor()
     }
 
@@ -119,9 +128,9 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
 
     func setInterfaceColor() {
         if traitCollection.userInterfaceStyle == .dark {
-            gradient.colors = [UIColor(white: 0, alpha: 0).cgColor, UIColor.black.cgColor]
+            richWorkspaceGradient.colors = [UIColor(white: 0, alpha: 0).cgColor, UIColor.black.cgColor]
         } else {
-            gradient.colors = [UIColor(white: 1, alpha: 0).cgColor, UIColor.white.cgColor]
+            richWorkspaceGradient.colors = [UIColor(white: 1, alpha: 0).cgColor, UIColor.white.cgColor]
         }
     }
 
@@ -134,7 +143,21 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
         }
     }
 
+    @objc func touchUpInsideViewRichWorkspace(_ sender: Any) {
+        delegate?.tapRichWorkspace(sender)
+    }
+
     // MARK: - Recommendation
+
+    func setRecommendationHeight(_ size: CGFloat) {
+        viewRecommendationHeightConstraint.constant = size
+
+        if size == 0 {
+            viewRecommendation.isHidden = true
+        } else {
+            viewRecommendation.isHidden = false
+        }
+    }
 
     // MARK: - Transfer
 
@@ -173,66 +196,5 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
         } else {
             viewSection.isHidden = false
         }
-    }
-
-    // MARK: - Action
-
-    @objc func touchUpInsideViewRichWorkspace(_ sender: Any) {
-        delegate?.tapRichWorkspace(sender)
-    }
-}
-
-// https://stackoverflow.com/questions/16278463/darken-an-uiimage
-public extension UIImage {
-
-    private enum BlendMode {
-        case multiply // This results in colors that are at least as dark as either of the two contributing sample colors
-        case screen // This results in colors that are at least as light as either of the two contributing sample colors
-    }
-
-    // A level of zero yeilds the original image, a level of 1 results in black
-    func darken(level: CGFloat = 0.5) -> UIImage? {
-        return blend(mode: .multiply, level: level)
-    }
-
-    // A level of zero yeilds the original image, a level of 1 results in white
-    func lighten(level: CGFloat = 0.5) -> UIImage? {
-        return blend(mode: .screen, level: level)
-    }
-
-    private func blend(mode: BlendMode, level: CGFloat) -> UIImage? {
-        let context = CIContext(options: nil)
-
-        var level = level
-        if level < 0 {
-            level = 0
-        } else if level > 1 {
-            level = 1
-        }
-
-        let filterName: String
-        switch mode {
-        case .multiply: // As the level increases we get less white
-            level = abs(level - 1.0)
-            filterName = "CIMultiplyBlendMode"
-        case .screen: // As the level increases we get more white
-            filterName = "CIScreenBlendMode"
-        }
-
-        let blender = CIFilter(name: filterName)!
-        let backgroundColor = CIColor(color: UIColor(white: level, alpha: 1))
-
-        guard let inputImage = CIImage(image: self) else { return nil }
-        blender.setValue(inputImage, forKey: kCIInputImageKey)
-
-        guard let backgroundImageGenerator = CIFilter(name: "CIConstantColorGenerator") else { return nil }
-        backgroundImageGenerator.setValue(backgroundColor, forKey: kCIInputColorKey)
-        guard let backgroundImage = backgroundImageGenerator.outputImage?.cropped(to: CGRect(origin: CGPoint.zero, size: self.size)) else { return nil }
-        blender.setValue(backgroundImage, forKey: kCIInputBackgroundImageKey)
-
-        guard let blendedImage = blender.outputImage else { return nil }
-
-        guard let cgImage = context.createCGImage(blendedImage, from: blendedImage.extent) else { return nil }
-        return UIImage(cgImage: cgImage)
     }
 }
