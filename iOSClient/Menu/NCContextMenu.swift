@@ -33,7 +33,7 @@ class NCContextMenu: NSObject {
 
     func viewMenu(ocId: String, viewController: UIViewController, image: UIImage?) -> UIMenu {
         guard let metadata = self.database.getMetadataFromOcId(ocId),
-              let sceneIdentifier = (viewController.mainTabBarController as? NCMainTabBarController)?.sceneIdentifier else { return UIMenu() }
+			  let sceneIdentifier = (viewController.tabBarController as? NCMainTabBarController)?.sceneIdentifier else { return UIMenu() }
         var downloadRequest: DownloadRequest?
         var titleDeleteConfirmFile = NSLocalizedString("_delete_file_", comment: "")
         let metadataMOV = self.database.getMetadataLivePhoto(metadata: metadata)

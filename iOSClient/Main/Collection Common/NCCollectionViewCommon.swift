@@ -699,7 +699,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
     
     func showBurgerMenu() {
-        self.mainTabBarController?.showBurgerMenu()
+		(self.tabBarController as? NCMainTabBarController)?.showBurgerMenu()
     }
 
 	private func saveLayout(_ layoutForView: NCDBLayoutForView) {

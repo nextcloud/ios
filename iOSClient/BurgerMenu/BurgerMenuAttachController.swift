@@ -18,7 +18,7 @@ class BurgerMenuAttachController {
     }
     
     func showMenu() {
-        sideMenu = BurgerMenuViewController(delegate: self)
+		sideMenu = BurgerMenuViewController(delegate: self, mainTabBarController: presentingScreen)
         guard let sideMenu = sideMenu else {
             return
         }

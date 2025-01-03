@@ -243,7 +243,7 @@ extension NCCollectionViewCommon {
         //
         if NCNetworking.shared.isOnline,
            let metadataMOV = database.getMetadataLivePhoto(metadata: metadata),
-           let hudView = self.mainTabBarController?.view {
+		   let hudView = self.tabBarController?.view {
             actions.append(
                 NCMenuAction(
                     title: NSLocalizedString("_livephoto_save_", comment: ""),
