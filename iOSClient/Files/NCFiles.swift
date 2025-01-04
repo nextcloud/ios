@@ -27,7 +27,6 @@ import RealmSwift
 import SwiftUI
 
 class NCFiles: NCCollectionViewCommon {
-    internal var isRoot: Bool = true
     internal var fileNameBlink: String?
     internal var fileNameOpen: String?
     internal var matadatasHash: String = ""
@@ -50,7 +49,14 @@ class NCFiles: NCCollectionViewCommon {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if isRoot {
+        if self.serverUrl.isEmpty {
+
+            ///
+            /// Set ServerURL when start (isEmpty)
+            ///
+            self.serverUrl = utilityFileSystem.getHomeServer(session: session)
+            self.titleCurrentFolder = getNavigationTitle()
+
             NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { notification in
 
                 if let userInfo = notification.userInfo, let account = userInfo["account"] as? String {
@@ -88,10 +94,6 @@ class NCFiles: NCCollectionViewCommon {
     }
 
     override func viewWillAppear(_ animated: Bool) {
-        if isRoot {
-            serverUrl = utilityFileSystem.getHomeServer(session: session)
-            titleCurrentFolder = getNavigationTitle()
-        }
         super.viewWillAppear(animated)
 
         reloadDataSource()
@@ -185,7 +187,7 @@ class NCFiles: NCCollectionViewCommon {
         }
 
         DispatchQueue.global().async {
-            if self.isRoot,
+            if self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session),
                NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityRecommendations {
                 NextcloudKit.shared.getRecommendedFiles(account: self.session.account) { account, recommendations, responseData, error in
 
@@ -361,9 +363,9 @@ class NCFiles: NCCollectionViewCommon {
             appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
         } else if let account = tableAccount?.account, account != currentAccount {
             NCAccount().changeAccount(account, userProfile: nil, controller: controller) { }
-        } else if isRoot {
-            titleCurrentFolder = getNavigationTitle()
-            navigationItem.title = titleCurrentFolder
+        } else if self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session) {
+            self.titleCurrentFolder = getNavigationTitle()
+            navigationItem.title = self.titleCurrentFolder
         }
 
         setNavigationLeftItems()
