@@ -71,17 +71,17 @@ extension NCManageDatabase {
         }
     }
 
-    func getResultsRecommendedFiles(account: String) -> Results<tableRecommendedFiles>? {
+    func getResultsRecommendedFiles(account: String) -> [tableRecommendedFiles] {
         do {
             let realm = try Realm()
             let results = realm.objects(tableRecommendedFiles.self).filter("account == %@", account)
 
-            return results
+            return Array(results)
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
 
-        return nil
+        return []
     }
 
     func getNKRecommendation(account: String) -> [NKRecommendation] {

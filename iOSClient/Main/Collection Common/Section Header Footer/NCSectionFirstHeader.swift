@@ -53,6 +53,7 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
     private var markdownParser = MarkdownParser()
     private var richWorkspaceText: String?
     private let richWorkspaceGradient: CAGradientLayer = CAGradientLayer()
+    private var recommendations: [tableRecommendedFiles] = []
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -147,8 +148,9 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
 
     // MARK: - Recommendation
 
-    func setRecommendationsHeight(_ size: CGFloat) {
+    func setRecommendations(size: CGFloat, recommendations: [tableRecommendedFiles]) {
         viewRecommendationsHeightConstraint.constant = size
+        self.recommendations = recommendations
 
         if size == 0 {
             viewRecommendations.isHidden = true

@@ -540,7 +540,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 header.setRichWorkspaceHeight(heightHeaderRichWorkspace)
                 header.setRichWorkspaceText(richWorkspaceText)
 
-                header.setRecommendationsHeight(heightHeaderRecommendations)
+                let tableRecommendedFiles = self.database.getResultsRecommendedFiles(account: self.session.account)
+                header.setRecommendations(size: heightHeaderRecommendations, recommendations: tableRecommendedFiles)
 
                 header.setSectionHeight(heightHeaderSection)
                 if heightHeaderSection == 0 {
