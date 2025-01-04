@@ -1179,8 +1179,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         return nil
     }
 
-    func getHeaderHeight(section: Int) -> (heightHeaderCommands: CGFloat, heightHeaderRichWorkspace: CGFloat, heightHeaderSection: CGFloat) {
+    func getHeaderHeight(section: Int) -> (heightHeaderCommands: CGFloat,
+                                           heightHeaderRichWorkspace: CGFloat,
+                                           heightHeaderRecommendations: CGFloat,
+                                           heightHeaderSection: CGFloat) {
         var heightHeaderRichWorkspace: CGFloat = 0
+        var heightHeaderRecommendations: CGFloat = 0
 
         func getHeightHeaderCommands() -> CGFloat {
             var size: CGFloat = 0
@@ -1201,14 +1205,21 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
         }
 
+        if self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session),
+           NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityRecommendations,
+           !isSearchingMode,
+           self.database.getResultsRecommendedFiles(account: self.session.account)?.count ?? 0 > 0 {
+            heightHeaderRecommendations = self.global.heightHeaderRecommendations
+        }
+
         if isSearchingMode || layoutForView?.groupBy != "none" || self.dataSource.numberOfSections() > 1 {
             if section == 0 {
-                return (getHeightHeaderCommands(), heightHeaderRichWorkspace, global.heightSection)
+                return (getHeightHeaderCommands(), heightHeaderRichWorkspace, heightHeaderRecommendations, global.heightSection)
             } else {
-                return (0, 0, global.heightSection)
+                return (0, 0, 0, global.heightSection)
             }
         } else {
-            return (getHeightHeaderCommands(), heightHeaderRichWorkspace, 0)
+            return (getHeightHeaderCommands(), heightHeaderRichWorkspace, heightHeaderRecommendations, 0)
         }
     }
 
@@ -1222,8 +1233,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         } else if isEditMode || (isLandscape && isIphone) {
             return CGSize.zero
         } else {
-            let (heightHeaderCommands, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: section)
-            height = heightHeaderCommands + heightHeaderRichWorkspace + heightHeaderSection
+            let (heightHeaderCommands, heightHeaderRichWorkspace, heightHeaderRecommendations, heightHeaderSection) = getHeaderHeight(section: section)
+            height = heightHeaderCommands + heightHeaderRichWorkspace + heightHeaderRecommendations + heightHeaderSection
         }
 
         return CGSize(width: collectionView.frame.width, height: height)
