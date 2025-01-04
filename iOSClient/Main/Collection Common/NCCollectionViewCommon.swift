@@ -1180,9 +1180,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func getHeaderHeight(section: Int) -> (heightHeaderCommands: CGFloat, heightHeaderRichWorkspace: CGFloat, heightHeaderSection: CGFloat) {
-        var headerRichWorkspace: CGFloat = 0
+        var heightHeaderRichWorkspace: CGFloat = 0
 
-        func getHeaderHeight() -> CGFloat {
+        func getHeightHeaderCommands() -> CGFloat {
             var size: CGFloat = 0
 
             if isHeaderMenuTransferViewEnabled() != nil {
@@ -1190,24 +1190,25 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     size += global.heightHeaderTransfer
                 }
             }
+
             return size
         }
 
         if let richWorkspaceText = richWorkspaceText, showDescription {
             let trimmed = richWorkspaceText.trimmingCharacters(in: .whitespaces)
             if !trimmed.isEmpty && !isSearchingMode {
-                headerRichWorkspace = UIScreen.main.bounds.size.height / 6
+                heightHeaderRichWorkspace = UIScreen.main.bounds.size.height / 6
             }
         }
 
         if isSearchingMode || layoutForView?.groupBy != "none" || self.dataSource.numberOfSections() > 1 {
             if section == 0 {
-                return (getHeaderHeight(), headerRichWorkspace, global.heightSection)
+                return (getHeightHeaderCommands(), heightHeaderRichWorkspace, global.heightSection)
             } else {
                 return (0, 0, global.heightSection)
             }
         } else {
-            return (getHeaderHeight(), headerRichWorkspace, 0)
+            return (getHeightHeaderCommands(), heightHeaderRichWorkspace, 0)
         }
     }
 
