@@ -1198,11 +1198,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             return size
         }
 
-        if let richWorkspaceText = richWorkspaceText, showDescription {
-            let trimmed = richWorkspaceText.trimmingCharacters(in: .whitespaces)
-            if !trimmed.isEmpty && !isSearchingMode {
-                heightHeaderRichWorkspace = UIScreen.main.bounds.size.height / 6
-            }
+        if showDescription,
+           !isSearchingMode,
+           let richWorkspaceText = richWorkspaceText,
+           !richWorkspaceText.trimmingCharacters(in: .whitespaces).isEmpty {
+            heightHeaderRichWorkspace = UIScreen.main.bounds.size.height / 6
         }
 
         if self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session),
