@@ -30,18 +30,18 @@ protocol NCSectionFirstHeaderDelegate: AnyObject {
 
 class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegate {
     @IBOutlet weak var viewRichWorkspace: UIView!
-    @IBOutlet weak var viewRecommendation: UIView!
+    @IBOutlet weak var viewRecommendations: UIView!
     @IBOutlet weak var viewTransfer: UIView!
     @IBOutlet weak var viewSection: UIView!
 
     @IBOutlet weak var viewRichWorkspaceHeightConstraint: NSLayoutConstraint!
-    @IBOutlet weak var viewRecommendationHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var viewRecommendationsHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewTransferHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewSectionHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var transferSeparatorBottomHeightConstraint: NSLayoutConstraint!
 
     @IBOutlet weak var textViewRichWorkspace: UITextView!
-    @IBOutlet weak var collectionViewRecommendation: UICollectionView!
+    @IBOutlet weak var collectionViewRecommendations: UICollectionView!
     @IBOutlet weak var imageTransfer: UIImageView!
     @IBOutlet weak var labelTransfer: UILabel!
     @IBOutlet weak var progressTransfer: UIProgressView!
@@ -75,9 +75,9 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
         }
 
         //
-        // Recommendation
+        // Recommendations
         //
-        viewRecommendationHeightConstraint.constant = 0
+        viewRecommendationsHeightConstraint.constant = 0
 
         //
         // Transfer
@@ -147,13 +147,13 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
 
     // MARK: - Recommendation
 
-    func setRecommendationHeight(_ size: CGFloat) {
-        viewRecommendationHeightConstraint.constant = size
+    func setRecommendationsHeight(_ size: CGFloat) {
+        viewRecommendationsHeightConstraint.constant = size
 
         if size == 0 {
-            viewRecommendation.isHidden = true
+            viewRecommendations.isHidden = true
         } else {
-            viewRecommendation.isHidden = false
+            viewRecommendations.isHidden = false
         }
     }
 

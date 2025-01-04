@@ -540,6 +540,8 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 header.setRichWorkspaceHeight(heightHeaderRichWorkspace)
                 header.setRichWorkspaceText(richWorkspaceText)
 
+                header.setRecommendationsHeight(heightHeaderRecommendations)
+
                 header.setSectionHeight(heightHeaderSection)
                 if heightHeaderSection == 0 {
                     header.labelSection.text = ""

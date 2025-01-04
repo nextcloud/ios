@@ -131,7 +131,7 @@
                 <constraint firstItem="eYW-bR-S5m" firstAttribute="bottom" secondItem="I6b-6a-TKg" secondAttribute="top" id="z4X-ac-ejV"/>
             </constraints>
             <connections>
-                <outlet property="collectionViewRecommendation" destination="RSN-Ag-FbR" id="H0w-la-eLd"/>
+                <outlet property="collectionViewRecommendations" destination="RSN-Ag-FbR" id="K3X-Mw-GfM"/>
                 <outlet property="imageTransfer" destination="Pgk-le-540" id="Vh0-IE-XMP"/>
                 <outlet property="labelSection" destination="mB5-5n-AL9" id="uxf-bN-nZA"/>
                 <outlet property="labelTransfer" destination="eER-Zj-8iK" id="ARz-bB-Hg9"/>
@@ -139,8 +139,8 @@
                 <outlet property="textViewRichWorkspace" destination="pYo-pF-MGv" id="2h4-LP-T1z"/>
                 <outlet property="transferSeparatorBottom" destination="McE-3D-mc5" id="kJU-kh-04F"/>
                 <outlet property="transferSeparatorBottomHeightConstraint" destination="bJs-JY-WbC" id="P9i-Em-ycA"/>
-                <outlet property="viewRecommendation" destination="eYW-bR-S5m" id="laH-pO-v7c"/>
-                <outlet property="viewRecommendationHeightConstraint" destination="XCr-rB-tJu" id="22G-A2-5v0"/>
+                <outlet property="viewRecommendations" destination="eYW-bR-S5m" id="xj7-Rm-pad"/>
+                <outlet property="viewRecommendationsHeightConstraint" destination="XCr-rB-tJu" id="DNH-n4-o3p"/>
                 <outlet property="viewRichWorkspace" destination="NC1-5C-E5z" id="NyN-tr-sJl"/>
                 <outlet property="viewRichWorkspaceHeightConstraint" destination="eT3-4m-mJ6" id="agb-tE-jhw"/>
                 <outlet property="viewSection" destination="f9U-NY-4OS" id="idM-C9-2nP"/>
