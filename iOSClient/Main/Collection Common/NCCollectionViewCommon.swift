@@ -1217,14 +1217,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         let isLandscape = view.bounds.width > view.bounds.height
         let isIphone = UIDevice.current.userInterfaceIdiom == .phone
 
-        if isEditMode || (isLandscape && isIphone) {
-            return CGSize.zero
-        } else if self.dataSource.isEmpty() {
+        if self.dataSource.isEmpty() {
             height = utility.getHeightHeaderEmptyData(view: view, portraitOffset: emptyDataPortaitOffset, landscapeOffset: emptyDataLandscapeOffset, isHeaderMenuTransferViewEnabled: isHeaderMenuTransferViewEnabled() != nil)
+        } else if isEditMode || (isLandscape && isIphone) {
+            return CGSize.zero
         } else {
             let (heightHeaderCommands, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: section)
             height = heightHeaderCommands + heightHeaderRichWorkspace + heightHeaderSection
         }
+
         return CGSize(width: collectionView.frame.width, height: height)
     }
 
