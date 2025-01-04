@@ -1214,8 +1214,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     func sizeForHeaderInSection(section: Int) -> CGSize {
         var height: CGFloat = 0
+        let isLandscape = view.bounds.width > view.bounds.height
+        let isIphone = UIDevice.current.userInterfaceIdiom == .phone
 
-        if isEditMode {
+        if isEditMode || (isLandscape && isIphone) {
             return CGSize.zero
         } else if self.dataSource.isEmpty() {
             height = utility.getHeightHeaderEmptyData(view: view, portraitOffset: emptyDataPortaitOffset, landscapeOffset: emptyDataLandscapeOffset, isHeaderMenuTransferViewEnabled: isHeaderMenuTransferViewEnabled() != nil)
