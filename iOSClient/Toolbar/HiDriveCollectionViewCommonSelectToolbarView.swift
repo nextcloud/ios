@@ -37,6 +37,15 @@ struct HiDriveCollectionViewCommonSelectToolbarView: View {
                             isOneRowStyle: isWideScreen
                         )
                     }
+                    if tabBarSelect.displayedButtons.contains(.restore) {
+                        TabButton(
+                            action: { tabBarSelect.delegate?.recover() },
+                            image: .restoreFromTrash,
+                            label: "_restore_" ,
+                            isDisabled: tabBarSelect.isSelectedEmpty,
+                            isOneRowStyle: isWideScreen
+                        )
+                    }
                     if tabBarSelect.displayedButtons.contains(.delete) {
                         TabButton(
                             action: {tabBarSelect.delegate?.delete()},
@@ -69,6 +78,47 @@ struct HiDriveCollectionViewCommonSelectToolbarView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
 			.background(Color(.Tabbar.background))
+        }
+    }
+}
+
+struct TabButton: View {
+    let action: (() -> Void)?
+    let image: ImageResource
+    let label: String
+    let isDisabled: Bool
+    let isOneRowStyle: Bool
+    
+    var body: some View {
+        Button(action: {
+            action?()
+        }, label: {
+            if isOneRowStyle {
+                HStack {
+                    IconWithText(image: image, label: label)
+                }
+                .frame(maxWidth: .infinity)
+            } else {
+                VStack {
+                    IconWithText(image: image, label: label)
+                }
+                .frame(maxWidth: .infinity)
+            }
+        })
+        .frame(maxWidth: .infinity)
+        .buttonStyle(CustomBackgroundOnPressButtonStyle(isDisabled: isDisabled))
+        .disabled(isDisabled)
+        .complexModifier{ view in
+            // ios 15 fix: didn't tap on ios 15
+            if #available(iOS 16.0, *) {
+                view
+            } else {
+                view.onTapGesture {
+                    if !isDisabled {
+                        action?()
+                    }
+                }
+            }
         }
     }
 }

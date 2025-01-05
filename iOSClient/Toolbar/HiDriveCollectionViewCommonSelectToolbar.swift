@@ -24,17 +24,6 @@
 import Foundation
 import SwiftUI
 
-protocol HiDriveCollectionViewCommonSelectToolbarDelegate: AnyObject {
-    func selectAll()
-    func delete()
-    func move()
-    func share()
-    func saveAsAvailableOffline(isAnyOffline: Bool)
-    func lock(isAnyLocked: Bool)
-    func toolbarWillAppear()
-    func toolbarWillDisappear()
-}
-
 class HiDriveCollectionViewCommonSelectToolbar: ObservableObject {
     enum TabButton {
         case share
@@ -42,6 +31,7 @@ class HiDriveCollectionViewCommonSelectToolbar: ObservableObject {
         case delete
         case download
         case lockOrUnlock
+        case restore
     }
     
     private(set) var hostingController: UIViewController?
@@ -202,13 +192,4 @@ class HiDriveCollectionViewCommonSelectToolbar: ObservableObject {
             isAnyOffline = localFile.offline
         }
     }
-}
-
-extension HiDriveCollectionViewCommonSelectToolbarDelegate {
-    func selectAll() { }
-    func delete() { }
-    func move() { }
-    func share() { }
-    func saveAsAvailableOffline(isAnyOffline: Bool) { }
-    func lock(isAnyLocked: Bool) { }
 }

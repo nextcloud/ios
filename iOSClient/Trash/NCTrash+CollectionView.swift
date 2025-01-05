@@ -45,7 +45,7 @@ extension NCTrash: UICollectionViewDelegate {
             }
 			vHeader.setSelectionState(selectionState: selectionState)
             collectionView.reloadItems(at: [indexPath])
-            selectionToolbar.update(selectOcId: selectOcId)
+            selectionToolbar.update(fileSelect: selectOcId)
             return
         }
 

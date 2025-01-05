@@ -45,7 +45,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 		}
 	}
     var selectOcId: [String] = []
-    var selectionToolbar: NCTrashSelectToolBar!
+    var selectionToolbar: HiDriveCollectionViewCommonSelectToolbar!
     var datasource: Results<tableTrash>?
     var layoutForView: NCDBLayoutForView?
     var listLayout: NCListLayout!
@@ -61,7 +61,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        selectionToolbar = NCTrashSelectToolBar(containerView: view, placeholderFrame: selectToolBarFrame, delegate: self)
+        selectionToolbar = HiDriveCollectionViewCommonSelectToolbar(controller: nil, delegate: self, displayedButtons: [.restore, .delete])
 
         view.backgroundColor = NCBrandColor.shared.appBackgroundColor
         self.navigationController?.navigationBar.prefersLargeTitles = false
@@ -151,7 +151,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
     func updateSelectionToolbar() {
         if isEditMode {
-            selectionToolbar.update(selectOcId: selectOcId)
+            selectionToolbar.update(fileSelect: selectOcId)
             selectionToolbar.show()
         } else if navigationItem.rightBarButtonItems == nil || (!isEditMode && !selectionToolbar.isHidden()) {
             selectionToolbar.hide()

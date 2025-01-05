@@ -22,7 +22,7 @@
 import Foundation
 import UIKit
 
-extension NCTrash: NCTrashSelectTabBarDelegate {
+extension NCTrash: HiDriveCollectionViewCommonSelectToolbarDelegate {
     func onListSelected() {
         if layoutForView?.layout == NCGlobal.shared.layoutGrid {
             layoutForView?.layout = NCGlobal.shared.layoutList
@@ -50,7 +50,7 @@ extension NCTrash: NCTrashSelectTabBarDelegate {
         } else {
             selectOcId = datasource.compactMap({ $0.fileId })
         }
-        selectionToolbar.update(selectOcId: selectOcId)
+        selectionToolbar.update(fileSelect: selectOcId)
         collectionView.reloadData()
     }
 
