@@ -171,6 +171,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         tabBarSelect = NCCollectionViewCommonSelectTabBar(controller: self.controller, delegate: self)
         self.navigationController?.presentationController?.delegate = self
         collectionView.alwaysBounceVertical = true
+        collectionView.accessibilityIdentifier = "NCCollectionViewCommon"
 
         view.backgroundColor = .systemBackground
         collectionView.backgroundColor = .systemBackground

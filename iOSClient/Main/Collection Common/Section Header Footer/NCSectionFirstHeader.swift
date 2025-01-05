@@ -157,6 +157,8 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
         } else {
             viewRecommendations.isHidden = false
         }
+
+        collectionViewRecommendations.reloadData()
     }
 
     // MARK: - Transfer
