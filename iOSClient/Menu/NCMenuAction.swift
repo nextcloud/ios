@@ -213,7 +213,7 @@ extension NCMenuAction {
                 if let fileNameError {
                     viewController.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true, completion: nil)
                 } else {
-					let controller = viewController.tabBarController as? NCMainTabBarController
+                    let controller = viewController.mainTabBarController
                     NCActionCenter.shared.openSelectView(items: selectedMetadatas, controller: controller)
                     completion?()
                 }

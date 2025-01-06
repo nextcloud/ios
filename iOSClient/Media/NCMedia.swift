@@ -368,7 +368,7 @@ extension NCMedia {
     }
     
     func showBurgerMenu() {
-        self.controller?.showBurgerMenu()
+		mainTabBarController?.showBurgerMenu()
     }
     
     private func setNavigationBarLogoIfNeeded() {

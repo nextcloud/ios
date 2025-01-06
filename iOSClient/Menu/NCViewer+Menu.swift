@@ -57,7 +57,7 @@ extension NCViewer {
                     title: NSLocalizedString("_view_in_folder_", comment: ""),
                     icon: NCImagesRepository.menuIconViewInFolder,
                     action: { _ in
-                        NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil, sceneIdentifier: controller.sceneIdentifier)
+                        NCActionCenter.shared.openFileViewInFolder(serverUrl: metadata.serverUrl, fileNameBlink: metadata.fileName, fileNameOpen: nil, sceneIdentifier: controller.sceneIdentifier!)
                     }
                 )
             )

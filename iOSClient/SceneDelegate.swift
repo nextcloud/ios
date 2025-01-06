@@ -211,9 +211,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-		guard let controller = SceneManager.shared.getController(scene: scene),
-              let url = URLContexts.first?.url else { return }
-		let sceneIdentifier = controller.sceneIdentifier
+        guard let controller = SceneManager.shared.getController(scene: scene) as? NCMainTabBarController,
+              let url = URLContexts.first?.url,
+              let sceneIdentifier = controller.sceneIdentifier else { return }
+
         let scheme = url.scheme
         let action = url.host
         let session = SceneManager.shared.getSession(scene: scene)
@@ -340,7 +341,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 }
 
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-					NCActionCenter.shared.openFileViewInFolder(serverUrl: serverUrl, fileNameBlink: nil, fileNameOpen: fileName, sceneIdentifier: controller.sceneIdentifier)
+                    NCActionCenter.shared.openFileViewInFolder(serverUrl: serverUrl, fileNameBlink: nil, fileNameOpen: fileName, sceneIdentifier: controller.sceneIdentifier!)
                 }
             }
             return
@@ -479,7 +480,10 @@ class SceneManager {
     func getSceneIdentifier() -> [String] {
         var results: [String] = []
         for controller in sceneController.keys {
-            results.append(controller.sceneIdentifier)
+            guard let sceneIdentifier = controller.sceneIdentifier else {
+                continue
+            }
+            results.append(sceneIdentifier)
         }
         return results
     }

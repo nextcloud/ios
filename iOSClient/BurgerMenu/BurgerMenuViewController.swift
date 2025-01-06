@@ -12,10 +12,10 @@ class BurgerMenuViewController: UIHostingController<BurgerMenuView> {
     
     private var viewModel: BurgerMenuViewModel?
         
-	convenience init(delegate: BurgerMenuViewModelDelegate?, mainTabBarController: NCMainTabBarController?) {
+    convenience init(delegate: BurgerMenuViewModelDelegate?) {
         let viewModel = BurgerMenuViewModel(delegate: delegate, controller: nil)
         self.init(rootView: BurgerMenuView(viewModel: viewModel))
-        viewModel.controller = mainTabBarController
+        viewModel.controller = self.mainTabBarController
         self.viewModel = viewModel
     }
     
