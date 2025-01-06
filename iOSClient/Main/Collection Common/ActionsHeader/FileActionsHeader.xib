@@ -100,8 +100,12 @@
                             </constraints>
                             <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                             <state key="normal" backgroundImage="FileSelection/list_item_deselected"/>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BP3-pT-Bei" userLabel="btnSelectAllTouchArea">
+                            <rect key="frame" x="0.0" y="0.0" width="50" height="48"/>
+                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                             <connections>
-                                <action selector="onBtnSelectAllTap:" destination="-1" eventType="touchUpInside" id="DID-ON-AlT"/>
+                                <action selector="onBtnSelectAllTap:" destination="-1" eventType="touchUpInside" id="abF-CE-NrD"/>
                             </connections>
                         </button>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iLM-7O-AFE" userLabel="lblSelectionDescription">
@@ -121,17 +125,32 @@
                                 <action selector="onBtnCloseSelectionTap:" destination="-1" eventType="touchUpInside" id="DqT-hE-ND8"/>
                             </connections>
                         </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ggu-ul-34L" userLabel="btnCloseAllTouchArea">
+                            <rect key="frame" x="348" y="0.0" width="45" height="48"/>
+                            <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                            <connections>
+                                <action selector="onBtnCloseSelectionTap:" destination="-1" eventType="touchUpInside" id="OAW-7v-XIC"/>
+                            </connections>
+                        </button>
                     </subviews>
                     <color key="backgroundColor" name="FileActionsHeader/SelectionModeHeaderBackground"/>
                     <constraints>
                         <constraint firstItem="aiH-0h-GkD" firstAttribute="leading" secondItem="SEO-fb-HgO" secondAttribute="leading" constant="15" id="1rf-K0-yRX"/>
+                        <constraint firstItem="Ggu-ul-34L" firstAttribute="leading" secondItem="iLM-7O-AFE" secondAttribute="trailing" id="4cJ-Dj-a8M"/>
                         <constraint firstItem="uIk-II-rrq" firstAttribute="leading" secondItem="iLM-7O-AFE" secondAttribute="trailing" constant="10" id="8zi-Zv-ag1"/>
+                        <constraint firstAttribute="trailing" secondItem="Ggu-ul-34L" secondAttribute="trailing" id="9yp-8B-sOE"/>
                         <constraint firstAttribute="trailing" secondItem="uIk-II-rrq" secondAttribute="trailing" constant="15" id="BXW-FI-cae"/>
                         <constraint firstItem="iLM-7O-AFE" firstAttribute="height" secondItem="SEO-fb-HgO" secondAttribute="height" id="FmR-qM-lra"/>
+                        <constraint firstItem="Ggu-ul-34L" firstAttribute="top" secondItem="SEO-fb-HgO" secondAttribute="top" id="IG3-24-u2E"/>
                         <constraint firstItem="iLM-7O-AFE" firstAttribute="centerY" secondItem="SEO-fb-HgO" secondAttribute="centerY" id="XQa-da-ZVw"/>
                         <constraint firstItem="aiH-0h-GkD" firstAttribute="centerY" secondItem="SEO-fb-HgO" secondAttribute="centerY" id="dVC-8n-Yzx"/>
+                        <constraint firstItem="BP3-pT-Bei" firstAttribute="leading" secondItem="SEO-fb-HgO" secondAttribute="leading" id="eRp-Aq-aaG"/>
+                        <constraint firstAttribute="bottom" secondItem="BP3-pT-Bei" secondAttribute="bottom" id="ez6-QS-qNy"/>
+                        <constraint firstItem="iLM-7O-AFE" firstAttribute="leading" secondItem="BP3-pT-Bei" secondAttribute="trailing" id="hUR-nA-oou"/>
+                        <constraint firstItem="BP3-pT-Bei" firstAttribute="top" secondItem="SEO-fb-HgO" secondAttribute="top" id="kKL-El-kWX"/>
                         <constraint firstItem="uIk-II-rrq" firstAttribute="centerY" secondItem="SEO-fb-HgO" secondAttribute="centerY" id="qLt-CM-g0v"/>
                         <constraint firstItem="iLM-7O-AFE" firstAttribute="leading" secondItem="aiH-0h-GkD" secondAttribute="trailing" constant="15" id="t4Q-xO-2a4"/>
+                        <constraint firstAttribute="bottom" secondItem="Ggu-ul-34L" secondAttribute="bottom" id="tQ9-TB-EtW"/>
                     </constraints>
                 </view>
             </subviews>

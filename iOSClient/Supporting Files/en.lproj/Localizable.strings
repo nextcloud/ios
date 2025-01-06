@@ -630,10 +630,10 @@
 
 // MARK: Files Header
 
-"_select_selectionLabel_selectAll_"			= "select all";
-"_select_selectionLabel_oneItemSelected_"	= "one item selected";
-"_select_selectionLabel_manyItemsSelected_"  = "%@ items selected";
-"_select_selectionLabel_deselectAll_"		= "deselect all";
+"_select_selectionLabel_selectAll_" = "select all";
+"_select_selectionLabel_oneItemSelected_" = "one item selected";
+"_select_selectionLabel_manyItemsSelected_" = "%@ items selected";
+"_select_selectionLabel_deselectAll_" = "deselect all";
 
 // MARK: Share
 
@@ -1108,22 +1108,23 @@
 "_please_rename_file_"      = "Please rename the file or folder.";
 
 //MARK: Login
-"_login_welcome_"				 	= "Welcome to the cloud storage";
-"_login_description_"               = "You need to login over browser";
-"_login_wrong_QR_format_" 		    = "QR code format is incorrect";
+"_login_welcome_" = "Welcome to the cloud storage";
+"_login_description_" = "You need to login over browser";
+"_login_wrong_QR_format_" = "QR code format is incorrect";
 
 //MARK: Burger menu
 "_previous_" = "Previous";
-"_storage_used_"                 = "Storage used";
-"_used_of_space_"                = "%@ of %@ used";
+"_storage_used_" = "Storage used";
+"_used_of_space_" = "%@ of %@ used";
 
 //MARK: Data Protection Screens
 "_agree_" = "Agree";
 "_privacy_settings_" = "Privacy Settings";
 "_privacy_settings_description_" = "This application uses cookies and similar technologies. By clicking on Agree, you consent to the processing of your data and also to its transfer to third parties. \nVisit our [Privacy Policy](link://privacypolicy) for more information, also on data processing by third party providers.\nClick on [Reject](link://reject) to prevent use of the tool, or change your selection at any time in Settings.";
+"_data_protection_settings_" = "Settings";
 "_data_usage_for_app_optimization_description_" = "We collect anonymized data to optimize our app.\nWe use software solutions by various partners for this purpose. Our intention is to offer full transparency and allow you to decide how your anonymized data is collected and used. You can also change your settings at any time later on under the Privacy menu item. Please note, however, that data collection contributes significantly to optimizing this app and that you would prevent these improvements by rejecting the transfer of data.";
 "_required_data_collection_" = "Necessary data collection";
-"_required_data_collection_description_" = "This data helps us to optimize your user experience and to identify system crashes and bugs.";
+"_required_data_collection_description_" = "Data collection is necessary in order to use key functions of the app.";
 "_analysis_of_data_collection_" = "Data analysis for needs-based design";
 "_analysis_of_data_collection_description_" = "This data helps us to optimize your user experience and to identify system crashes and bugs.";
 "_data_protection_" = "Data Privacy";
