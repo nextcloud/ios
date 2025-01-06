@@ -45,7 +45,7 @@ class NCMainTabBarController: UITabBarController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        DataProtectionAgreementManager.shared.showAgreement()
+        DataProtectionAgreementManager.shared.showAgreement(viewController: self)
     }
 	
 	private func setupTabBarView() {

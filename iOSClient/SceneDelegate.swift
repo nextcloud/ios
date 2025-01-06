@@ -84,6 +84,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         hidePrivacyProtectionWindow()
         if let window = SceneManager.shared.getWindow(scene: scene), let controller = SceneManager.shared.getController(scene: scene) {
             window.rootViewController = controller
+            
+            DataProtectionAgreementManager.shared.showAgreement(viewController: controller)
+            
             if NCKeychain().presentPasscode {
                 NCPasscode.shared.presentPasscode(viewController: controller, delegate: self) {
                     NCPasscode.shared.enableTouchFaceID()
@@ -242,14 +245,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 case NCGlobal.shared.actionTextDocument:
 
                     let directEditingCreators = NCManageDatabase.shared.getDirectEditingCreators(account: appDelegate.account)
-                    let directEditingCreator = directEditingCreators!.first(where: { $0.editor == NCGlobal.shared.editorText})!
-                    let serverUrl = controller.currentServerUrl()
-
-                    Task {
-                        let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + ".md", account: appDelegate.account, serverUrl: serverUrl)
-                        let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
-
-                        NCCreateDocument().createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: NCGlobal.shared.editorText, creatorId: directEditingCreator.identifier, templateId: NCGlobal.shared.templateDocument)
+                    if let directEditingCreator = directEditingCreators?.first(where: { $0.editor == NCGlobal.shared.editorText}) {
+                        let serverUrl = controller.currentServerUrl()
+                        
+                        Task {
+                            let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + ".md", account: appDelegate.account, serverUrl: serverUrl)
+                            let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: serverUrl, urlBase: appDelegate.urlBase, userId: appDelegate.userId)
+                            
+                            NCCreateDocument().createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: NCGlobal.shared.editorText, creatorId: directEditingCreator.identifier, templateId: NCGlobal.shared.templateDocument)
+                        }
                     }
 
                 case NCGlobal.shared.actionVoiceMemo:

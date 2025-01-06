@@ -11,6 +11,7 @@ import SwiftUI
 struct DataProtectionSettingsScreen: View {
     
     @ObservedObject var model: DataProtectionModel
+    @Binding var isShowing: Bool
     
     var isIPad: Bool {
         UIDevice.current.userInterfaceIdiom == .pad
@@ -29,7 +30,7 @@ struct DataProtectionSettingsScreen: View {
             ScrollView {
                 VStack(alignment: .leading){
                     header()
-                        .padding(EdgeInsets(top: 0.0,
+                        .padding(EdgeInsets(top: 16.0,
                                             leading: 16.0,
                                             bottom: 32.0,
                                             trailing: 16.0))
@@ -174,6 +175,7 @@ struct DataProtectionSettingsScreen: View {
     
     private func saveSettingsButton() -> some View {
         Button(NSLocalizedString("_save_settings_", comment: "")) {
+            isShowing = false
             model.saveSettings()
         }
         .buttonStyle(ButtonStylePrimary(maxWidth: 288.0))
@@ -183,5 +185,5 @@ struct DataProtectionSettingsScreen: View {
 }
 
 #Preview {
-    DataProtectionSettingsScreen(model: DataProtectionModel())
+    DataProtectionSettingsScreen(model: DataProtectionModel(), isShowing: .constant(true))
 }
