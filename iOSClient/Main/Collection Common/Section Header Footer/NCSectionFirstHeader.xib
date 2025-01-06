@@ -45,6 +45,10 @@
                                 <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                 <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                             </collectionViewFlowLayout>
+                            <connections>
+                                <outlet property="dataSource" destination="tys-A2-nDX" id="kQ6-Mq-oeE"/>
+                                <outlet property="delegate" destination="tys-A2-nDX" id="qdD-AY-JUm"/>
+                            </connections>
                         </collectionView>
                     </subviews>
                     <constraints>

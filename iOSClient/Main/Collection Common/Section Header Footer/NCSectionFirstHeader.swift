@@ -200,3 +200,20 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
         }
     }
 }
+
+extension NCSectionFirstHeader: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        self.recommendations.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+
+    }
+}
+
+extension NCSectionFirstHeader: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: 120, height: 120) // Dimensioni delle celle
+    }
+}
+
