@@ -79,6 +79,12 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
         // Recommendations
         //
         viewRecommendationsHeightConstraint.constant = 0
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.minimumLineSpacing = 10
+        layout.minimumInteritemSpacing = 10
+        collectionViewRecommendations.collectionViewLayout = layout
+        collectionViewRecommendations.register(UINib(nibName: "NCRecommendationsCell", bundle: nil), forCellWithReuseIdentifier: "cell")
 
         //
         // Transfer
@@ -205,9 +211,10 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         self.recommendations.count
     }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
+        return cell
     }
 }
 
@@ -216,4 +223,3 @@ extension NCSectionFirstHeader: UICollectionViewDelegateFlowLayout {
         return CGSize(width: 120, height: 120) // Dimensioni delle celle
     }
 }
-
