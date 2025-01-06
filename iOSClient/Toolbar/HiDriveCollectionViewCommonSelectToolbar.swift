@@ -35,7 +35,7 @@ class HiDriveCollectionViewCommonSelectToolbar: ObservableObject {
     }
     
     private(set) var hostingController: UIViewController?
-    private(set) weak var controller: NCMainTabBarController?
+    weak var controller: NCMainTabBarController?
     
     open weak var delegate: HiDriveCollectionViewCommonSelectToolbarDelegate?
     

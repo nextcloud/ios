@@ -120,7 +120,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var lastNumberOfColumns: Int = 0
 
     var session: NCSession.Session {
-        NCSession.shared.getSession(controller: tabBarController)
+        NCSession.shared.getSession(controller: controller)
     }
 
     var isLayoutPhoto: Bool {
@@ -316,6 +316,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NotificationCenter.default.addObserver(self, selector: #selector(uploadCancelFile(_:)), name: NSNotification.Name(rawValue: global.notificationCenterUploadCancelFile), object: nil)
 
         NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: global.notificationCenterProgressTask), object: nil)
+        
+        tabBarSelect.controller = controller
     }
 
     override func viewWillDisappear(_ animated: Bool) {
