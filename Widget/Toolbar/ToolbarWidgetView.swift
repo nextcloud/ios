@@ -49,8 +49,8 @@ struct ToolbarWidgetView: View {
 						Image(uiImage: UIImage(resource: .media))
                             .resizable()
                             .renderingMode(.template)
-                            .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandText))
-							.background(entry.isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .brandElement)))
+                            .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(.text))
+                            .background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandElement))
                             .clipShape(Circle())
                             .scaledToFit()
                             .frame(width: geo.size.width / 4, height: sizeButton)
@@ -61,8 +61,8 @@ struct ToolbarWidgetView: View {
                             .resizable()
                             .renderingMode(.template)
                             .font(Font.system(.body).weight(.light))
-                            .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandText))
-							.background(entry.isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .brandElement)))
+                            .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(.text))
+                            .background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandElement))
                             .clipShape(Circle())
                             .scaledToFit()
                             .frame(width: geo.size.width / 4, height: sizeButton)
@@ -71,8 +71,8 @@ struct ToolbarWidgetView: View {
 					Link(destination: entry.isPlaceholder ? linkNoAction : linkActionVoiceMemo, label: {
 						Image(uiImage: UIImage(resource: .mic))
 							.resizable()
-							.foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandText))
-							.background(entry.isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .brandElement)))
+							.foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(.text))
+							.background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandElement))
 							.clipShape(Circle())
 							.scaledToFit()
 							.frame(width: geo.size.width / 4, height: sizeButton)
@@ -81,8 +81,8 @@ struct ToolbarWidgetView: View {
                     Link(destination: entry.isPlaceholder ? linkNoAction : linkActionTextDocument, label: {
 						Image(uiImage: UIImage(resource: .note))
                             .resizable()
-							.foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandText))
-							.background(entry.isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .brandElement)))
+							.foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(.text))
+							.background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandElement))
                             .clipShape(Circle())
                             .scaledToFit()
                             .frame(width: geo.size.width / 4, height: sizeButton)
@@ -102,7 +102,7 @@ struct ToolbarWidgetView: View {
                            alignment: .bottomTrailing)
             }
         }
-		.widgetBackground(Color(UIColor(resource: .background)))
+        .widgetBackground(Color(.background))
     }
 }
 

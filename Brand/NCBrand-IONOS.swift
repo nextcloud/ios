@@ -15,7 +15,9 @@ import UIKit
         super.init()
         
         brand = "IONOS HiDrive Next"
-        loginBaseUrl = "https://easy-qa-1.nextcloud-ionos.com"
+        loginBaseUrl = "https://nextcloud-aio.iocaste45.de"
+        privacy = "https://nextcloud.com/privacy"
+        sourceCode = "https://github.com/nextcloud/ios"
 
         disable_intro = true
         disable_request_login_url = true
@@ -31,41 +33,61 @@ import UIKit
     }
 }
 
+extension NCBrandOptions {
+    var acknowloedgements: String {
+        "https://wl.hidrive.com/easy/0171"
+    }
+}
+
 class NCBrandColorIONOS: NCBrandColor {
     
-	override var menuIconColor: UIColor {
-		UIColor(named: "FileMenu/Icon") ?? iconImageColor
-	}
+    static let ionosBrand = UIColor(red: 20.0 / 255.0, green: 116.0 / 255.0, blue: 196.0 / 255.0, alpha: 1.0) // BLUE IONOS : #1474C4
 	
-	override var menuFolderIconColor: UIColor {
-		UIColor(named: "FileMenu/FolderIcon") ?? iconImageColor
-	}
-    
-    override var appBackgroundColor: UIColor {
-        UIColor(named: "AppBackground/Main") ?? super.appBackgroundColor
+    override init() {
+        super.init()
     }
     
-    override var formBackgroundColor: UIColor {
-        UIColor(named: "AppBackground/Form") ?? super.formBackgroundColor
+    override func getElement(account: String?) -> UIColor {
+        return NCBrandColorIONOS.ionosBrand
+    }
+}
+
+extension NCBrandColor {
+    var brandElement: UIColor {
+        return NCBrandColorIONOS.ionosBrand
     }
     
-    override var formRowBackgroundColor: UIColor {
-        UIColor(named: "AppBackground/FormRow") ?? super.formRowBackgroundColor
+#if !EXTENSION || EXTENSION_SHARE
+    var menuIconColor: UIColor {
+        UIColor(resource: .FileMenu.icon)
     }
     
-    override var formSeparatorColor: UIColor {
-        UIColor(named: "formSeparator") ?? super.formSeparatorColor
+    var menuFolderIconColor: UIColor {
+        UIColor(resource: .FileMenu.folderIcon)
     }
     
-    override var switchColor: UIColor {
+    var appBackgroundColor: UIColor {
+        UIColor(resource: .AppBackground.main)
+    }
+    
+    var formBackgroundColor: UIColor {
+        UIColor(resource: .AppBackground.form)
+    }
+    
+    var formRowBackgroundColor: UIColor {
+        UIColor(resource: .AppBackground.formRow)
+    }
+    
+    var formSeparatorColor: UIColor {
+        UIColor(resource: .formSeparator)
+    }
+#endif
+    
+    var switchColor: UIColor {
         return UIColor { traits in
             let light = self.brandElement
             let dark = UIColor(red: 17.0 / 255.0, green: 199.0 / 255.0, blue: 230.0 / 255.0, alpha: 1.0)
             return traits.userInterfaceStyle == .dark ? dark : light
         }
-    }
-	
-    override init() {
-        super.init()
     }
 }

@@ -271,7 +271,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
 		case NKCommon.TypeIconFile.ppt.rawValue: return NCBrandColor.shared.presentationIconColor
 		case NKCommon.TypeIconFile.xls.rawValue: return NCBrandColor.shared.spreadsheetIconColor
 			
-		default: return UIColor(resource: .brandElement)
+        default: return NCBrandColor.shared.brandElement
 		}
 	}
 }

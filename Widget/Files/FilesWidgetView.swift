@@ -65,7 +65,7 @@ struct FilesWidgetView: View {
 						   alignment: .bottomTrailing)
 			}
 		}
-		.widgetBackground(Color(UIColor(resource: .background)))
+        .widgetBackground(Color(.background))
     }
 }
 
@@ -99,10 +99,10 @@ fileprivate struct WidgetContentView: View {
 							VStack(alignment: .leading, spacing: 2) {
 								Text(element.title)
 									.font(WidgetConstants.elementTileFont)
-									.foregroundStyle(Color(UIColor(resource: .title)))
+                                    .foregroundStyle(Color(.title))
 								Text(element.subTitle)
 									.font(WidgetConstants.elementSubtitleFont)
-									.foregroundStyle(Color(UIColor(resource: .subtitle)))
+                                    .foregroundStyle(Color(.subtitle))
 							}
 							Spacer()
 						}
@@ -111,7 +111,7 @@ fileprivate struct WidgetContentView: View {
 					}
 					if element != entry.datas.last {
 						Divider()
-							.overlay(Color(UIColor(resource: .divider)))
+                            .overlay(Color(.divider))
 					}
 				}
 			}
@@ -140,8 +140,8 @@ struct LinkActionsToolbarView: View {
 				Image(uiImage: UIImage(resource: .media))
 					.resizable()
 					.renderingMode(.template)
-					.foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandText))
-					.background(entry.isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .brandElement)))
+                    .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(.text))
+					.background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandElement))
 					.clipShape(Circle())
 					.scaledToFit()
 					.frame(width: width, height: height)
@@ -151,8 +151,8 @@ struct LinkActionsToolbarView: View {
 				Image(uiImage: UIImage(resource: .scan))
 					.resizable()
 					.renderingMode(.template)
-					.foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandText))
-					.background(entry.isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .brandElement)))
+					.foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(.text))
+                    .background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandElement))
 					.clipShape(Circle())
 					.scaledToFit()
 					.font(Font.system(.body).weight(.light))
@@ -163,8 +163,8 @@ struct LinkActionsToolbarView: View {
 				Image(uiImage: UIImage(resource: .mic))
 					.resizable()
 					.renderingMode(.template)
-					.foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandText))
-					.background(entry.isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .brandElement)))
+					.foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(.text))
+					.background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandElement))
 					.clipShape(Circle())
 					.scaledToFit()
 					.frame(width: width, height: height)
@@ -174,8 +174,8 @@ struct LinkActionsToolbarView: View {
 				Image(uiImage: UIImage(resource: .note))
 					.resizable()
 					.renderingMode(.template)
-					.foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandText))
-					.background(entry.isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .brandElement)))
+					.foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(.text))
+					.background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandElement))
 					.clipShape(Circle())
 					.scaledToFit()
 					.frame(width: width, height: height)

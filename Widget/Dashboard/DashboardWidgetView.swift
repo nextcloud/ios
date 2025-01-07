@@ -102,11 +102,11 @@ struct DashboardWidgetView: View {
 										VStack(alignment: .leading, spacing: 2) {
 											Text(element.title)
 												.font(WidgetConstants.elementTileFont)
-												.foregroundStyle(Color(UIColor(resource: .title)))
+                                                .foregroundStyle(Color(.title))
                                             if !element.subTitle.isEmpty {
                                                 Text(element.subTitle)
                                                     .font(WidgetConstants.elementSubtitleFont)
-                                                    .foregroundStyle(Color(UIColor(resource: .subtitle)))
+                                                    .foregroundStyle(Color(.subtitle))
                                             }
                                         }
                                         Spacer()
@@ -116,7 +116,7 @@ struct DashboardWidgetView: View {
                                 }
                                 if element != entry.datas.last {
                                     Divider()
-										.overlay(Color(UIColor(resource: .divider)))
+                                        .overlay(Color(.divider))
                                 }
                             }
                         }
@@ -129,8 +129,8 @@ struct DashboardWidgetView: View {
 
                     HStack(spacing: 10) {
 
-                        let brandColor = Color(UIColor(resource: .brandElement))
-                        let brandTextColor = Color(NCBrandColor.shared.brandText)
+                        let brandColor = Color(NCBrandColor.shared.brandElement)
+                        let brandTextColor = Color(.text)
 
                         ForEach(buttons, id: \.index) { element in
                             Link(destination: URL(string: element.link)!, label: {
@@ -159,7 +159,7 @@ struct DashboardWidgetView: View {
                            alignment: .bottomTrailing)
             }
         }
-		.widgetBackground(Color(UIColor(resource: .background)))
+        .widgetBackground(Color(.background))
     }
 }
 

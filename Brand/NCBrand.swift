@@ -43,9 +43,8 @@ let userAgent: String = {
     var linkLoginHost: String = "https://nextcloud.com/install"
     var linkloginPreferredProviders: String = "https://nextcloud.com/signup-ios"
     var webLoginAutenticationProtocol: String = "nc://"                                                // example "abc://"
-    var privacy: String = "https://wl.hidrive.com/easy/ios/privacy.html"
-    var acknowloedgements: String = "https://wl.hidrive.com/easy/0171"
-    var sourceCode: String = "https://wl.hidrive.com/easy/0181"
+    var privacy: String = "https://nextcloud.com/privacy"
+    var sourceCode: String = "https://github.com/nextcloud/ios"
     var mobileconfig: String = "/remote.php/dav/provisioning/apple-provisioning.mobileconfig"
     var appStoreUrl: String = "https://apps.apple.com/in/app/nextcloud/id1125420102"
 
@@ -145,39 +144,9 @@ class NCBrandColor: NSObject {
     private var themingColorElement = ThreadSafeDictionary<String, UIColor>()
     private var themingColorText = ThreadSafeDictionary<String, UIColor>()
 
+    var userColors: [CGColor] = []
     let nextcloud: UIColor = UIColor(red: 0.0 / 255.0, green: 130.0 / 255.0, blue: 201.0 / 255.0, alpha: 1.0)
     let yellowFavorite: UIColor = UIColor(red: 248.0 / 255.0, green: 205.0 / 255.0, blue: 70.0 / 255.0, alpha: 1.0)
-
-    var userColors: [CGColor] = []
-
-	var menuIconColor: UIColor {
-		iconImageColor
-	}
-	
-	var menuFolderIconColor: UIColor {
-		iconImageColor
-	}
-    
-    var appBackgroundColor: UIColor {
-        .systemBackground
-    }
-    
-    var formBackgroundColor: UIColor {
-        .systemBackground
-    }
-    
-    var formRowBackgroundColor: UIColor {
-        .secondarySystemGroupedBackground
-    }
-    
-    var formSeparatorColor: UIColor {
-        .separator
-    }
-    
-    var switchColor: UIColor {
-        brandElement
-    }
-
     let iconImageColor: UIColor = .label
     let iconImageColor2: UIColor = .secondaryLabel
     let iconImageMultiColors: [UIColor] = [.secondaryLabel, .label]
@@ -366,8 +335,4 @@ class NCBrandColor: NSObject {
         }
         return .white
     }
-    
-    
-    var brandElement = UIColor(red: 20.0 / 255.0, green: 116.0 / 255.0, blue: 196.0 / 255.0, alpha: 1.0) // BLUE IONOS : #1474C4
-    var brandText: UIColor = .white
 }

@@ -24,15 +24,15 @@ struct EmptyWidgetContentView: View {
 				.resizable()
 				.scaledToFit()
 				.font(Font.system(.body).weight(.light))
-				.foregroundStyle(Color(UIColor(resource: .title)))
+                .foregroundStyle(Color(.title))
 				.frame(width: 50, height: 50)
 			Text(NSLocalizedString("_no_items_", comment: ""))
 				.font(.system(size: 25))
-				.foregroundStyle(Color(UIColor(resource: .title)))
+				.foregroundStyle(Color(.title))
 				.padding()
 			Text(NSLocalizedString("_check_back_later_", comment: ""))
 				.font(.system(size: 15))
-				.foregroundStyle(Color(UIColor(resource: .title)))
+				.foregroundStyle(Color(.title))
 		}
 	}
 }
@@ -43,7 +43,7 @@ struct HeaderView: View {
 	var body: some View {
         Text(title.firstUppercased)
 			.font(WidgetConstants.titleTextFont)
-			.foregroundStyle(Color(UIColor(resource: .title)))
+			.foregroundStyle(Color(.title))
 			.minimumScaleFactor(0.7)
 			.lineLimit(1)
 			.padding(.leading, 13)
@@ -64,13 +64,13 @@ struct FooterView: View {
 				.frame(width: WidgetConstants.bottomImageWidthHeight,
 					   height: WidgetConstants.bottomImageWidthHeight)
 				.font(Font.system(.body).weight(.light))
-				.foregroundColor(isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .bottomElementForeground)))
+                .foregroundColor(isPlaceholder ? Color(.systemGray4) : Color(.bottomElementForeground))
 			
 			Text(text)
 				.font(WidgetConstants.bottomTextFont)
 				.lineLimit(1)
 				.minimumScaleFactor(0.7)
-				.foregroundColor(isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .bottomElementForeground)))
+                .foregroundColor(isPlaceholder ? Color(.systemGray4) : Color(.bottomElementForeground))
 		}
 	}
 }
