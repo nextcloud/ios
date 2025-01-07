@@ -91,12 +91,10 @@ struct DashboardWidgetView: View {
                                                     .clipShape(Circle())
                                             } else {
                                                 Image(uiImage: element.icon)
-                                                    .renderingMode(.template)
                                                     .resizable()
                                                     .scaledToFill()
                                                     .frame(width: WidgetConstants.elementIconWidthHeight,
 														   height: WidgetConstants.elementIconWidthHeight)
-                                                    .foregroundStyle(Color(uiColor:NCBrandColor.shared.iconImageColor2))
                                                     .clipped()
                                             }
                                         }
