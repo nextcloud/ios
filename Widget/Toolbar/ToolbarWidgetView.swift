@@ -92,20 +92,14 @@ struct ToolbarWidgetView: View {
 				.padding(.vertical, geo.size.height / 2 * -0.25)
                 .redacted(reason: entry.isPlaceholder ? .placeholder : [])
 
-                HStack {
-                    Image(systemName: entry.footerImage)
-                        .resizable()
-                        .font(Font.system(.body).weight(.light))
-                        .scaledToFit()
-                        .frame(width: 15, height: 15)
-                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getElement(account: entry.account)))
-
-                    Text(entry.footerText)
-                        .font(.caption2)
-                        .padding(.trailing, 13.0)
-                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.getElement(account: entry.account)))
-                }
-                .frame(maxWidth: geo.size.width - 5, maxHeight: geo.size.height - 2, alignment: .bottomTrailing)
+                FooterView(imageName: entry.footerImage,
+                           text: entry.footerText,
+                           isPlaceholder: entry.isPlaceholder)
+                    .padding(.horizontal, 15.0)
+                    .padding(.bottom, 10.0)
+                    .frame(maxWidth: geo.size.width - 5,
+                           maxHeight: geo.size.height - 2,
+                           alignment: .bottomTrailing)
             }
         }
 		.widgetBackground(Color(UIColor(resource: .background)))

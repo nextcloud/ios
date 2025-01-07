@@ -91,10 +91,12 @@ struct DashboardWidgetView: View {
                                                     .clipShape(Circle())
                                             } else {
                                                 Image(uiImage: element.icon)
+                                                    .renderingMode(.template)
                                                     .resizable()
                                                     .scaledToFill()
                                                     .frame(width: WidgetConstants.elementIconWidthHeight,
 														   height: WidgetConstants.elementIconWidthHeight)
+                                                    .foregroundStyle(Color(uiColor:NCBrandColor.shared.iconImageColor2))
                                                     .clipped()
                                             }
                                         }
@@ -149,22 +151,14 @@ struct DashboardWidgetView: View {
                     .frame(width: geo.size.width - 10, height: geo.size.height - 25, alignment: .bottomTrailing)
                 }
 
-                HStack {
-
-                    Image(systemName: entry.footerImage)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 15, height: 15)
-                        .font(Font.system(.body).weight(.light))
-                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(.brandElement))
-
-                    Text(entry.footerText)
-                        .font(.caption2)
-                        .lineLimit(1)
-                        .foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(.brandElement))
-                }
-                .padding(.horizontal, 15.0)
-                .frame(maxWidth: geo.size.width, maxHeight: geo.size.height - 2, alignment: .bottomTrailing)
+                FooterView(imageName: entry.footerImage,
+                           text: entry.footerText,
+                           isPlaceholder: entry.isPlaceholder)
+                    .padding(.horizontal, 15.0)
+                    .padding(.bottom, 10.0)
+                    .frame(maxWidth: geo.size.width,
+                           maxHeight: geo.size.height - 2,
+                           alignment: .bottomTrailing)
             }
         }
 		.widgetBackground(Color(UIColor(resource: .background)))
