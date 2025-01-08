@@ -74,29 +74,48 @@ Do you want to try the latest version in development of Nextcloud iOS ? Simple, 
 
 ## Testing
 
-#### Note: If a Unit or Integration test exclusively uses and tests NextcloudKit functions and components, then write that test in the NextcloudKit repo. NextcloudKit is used in many other repos as an API, and it's better if such tests are located there.
+**Note: If a unit or integration test exclusively uses and tests NextcloudKit functions and components, then add that test to the NextcloudKit project instead. NextcloudKit is used in many other projects as an API, and it's better if such tests are located there.**
 
-### Unit tests:
+### Unit Tests
 
-There are currently no preresquites for unit testing that need to be done. Mock everything that's not needed. 
+There are currently no prerequisites for unit testing. Mock everything which not needed. 
 
-### Integration tests:
-To run integration tests, you need a docker instance of a Nextcloud test server. [This](https://github.com/szaimen/nextcloud-easy-test) is a good start.
+### Integration Tests
 
-1. In `TestConstants.swift` you must specify your instance credentials. App Token is automatically generated.
+In `TestConstants.swift` you must specify your credentials for the server you want to test against.
+[The Nextcloud Docker image](https://github.com/nextcloud/docker) maintained by the community is an easy and fast way to spin up a Nextcloud server to test against. 
+[This shallow CI server image](https://github.com/nextcloud/docker-ci/pkgs/container/continuous-integration-shallow-server) is also used by the Android project for automated tests in the GitHub pipeline.
+This latter one will be referred to from here on.
+With the following commands, you have will set up a new Nextcloud available on local HTTP port 8080, once the Docker image was initially pulled.
 
+```sh
+#!/usr/bin/env zsh
+
+# The fixed Docker container name for the Nextcloud server.
+CONTAINER_NAME="xcode-ui-test-server"
+
+# Check for environment variable of server version to use including a default value.
+SERVER_VERSION=${SERVER_VERSION:-"stable30"}
+
+# Launch Nextcloud Server in Docker Container.
+docker run \
+    --detach \
+    --name $CONTAINER_NAME \
+    --publish 8080:80 \
+    ghcr.io/nextcloud/continuous-integration-shallow-server:latest
+
+# Enable File Download Limit App.
+docker exec $CONTAINER_NAME su www-data -c "git clone --depth 1 -b $SERVER_VERSION https://github.com/nextcloud/files_downloadlimit.git /var/www/html/apps/files_downloadlimit/"
+docker exec $CONTAINER_NAME su www-data -c "php /var/www/html/occ app:enable files_downloadlimit"
 ```
-public class TestConstants {
-    static let timeoutLong: Double = 400
-    static let server = "http://localhost:8080"
-    static let username = "admin"
-    static let password = "admin"
-    static let account = "\(username) \(server)"
-}
-```
 
-2. Run the integration tests. 
+As of now, you need to launch it manually once before running any tests.
+The instance is reused for all unit tests.
+Though, a long term goal is to automatically create and discard container _per test_ to ensure maximum test isolation and a clean test environment.
+Note that plain HTTP is used in this case to circumvent certificate issues and simplify the sign-in flow in automation.
 
-### UI tests
+### UI Tests
 
-UI tests also use the docker server, but besides that there is nothing else you need to do.
+UI tests also require a Nextcloud server to test against just like integration tests.
+**Important**: Additionally, UI tests assume your test device (regardless whether physical or Simulator) is set to US English.
+This is required because in some parts of the user interface the automation has no other choice than to rely on localized texts for control.

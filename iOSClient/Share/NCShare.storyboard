@@ -247,6 +247,121 @@
             </objects>
             <point key="canvasLocation" x="4261" y="-168"/>
         </scene>
+        <!--Share Download Limit View Controller-->
+        <scene sceneID="htO-RU-Zuq">
+            <objects>
+                <viewController storyboardIdentifier="NCShareDownloadLimit" id="Mo3-9m-pYX" customClass="NCShareDownloadLimitViewController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="ODc-Pp-29W">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="kCx-WL-m3f">
+                                <rect key="frame" x="0.0" y="20" width="414" height="716"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="aOt-y7-Fc9">
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="200"/>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="200" id="5MK-r1-81S"/>
+                                        </constraints>
+                                    </view>
+                                    <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QF6-o7-CuW">
+                                        <rect key="frame" x="0.0" y="200" width="414" height="516"/>
+                                        <connections>
+                                            <segue destination="z7r-s7-nxD" kind="embed" id="xjC-2g-i9X"/>
+                                        </connections>
+                                    </containerView>
+                                </subviews>
+                            </stackView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="i58-we-TZn"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="kCx-WL-m3f" firstAttribute="leading" secondItem="i58-we-TZn" secondAttribute="leading" id="5Xp-cY-6Wf"/>
+                            <constraint firstAttribute="trailing" secondItem="kCx-WL-m3f" secondAttribute="trailing" id="f6a-Qa-OSX"/>
+                            <constraint firstAttribute="bottom" secondItem="kCx-WL-m3f" secondAttribute="bottom" id="hWv-wm-Q31"/>
+                            <constraint firstItem="kCx-WL-m3f" firstAttribute="top" secondItem="i58-we-TZn" secondAttribute="top" id="lI5-1R-nU7"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="headerContainerView" destination="aOt-y7-Fc9" id="VB5-qx-GGN"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="l38-Wd-mtP" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="5018.840579710145" y="-170.38043478260872"/>
+        </scene>
+        <!--Share Download Limit Table View Controller-->
+        <scene sceneID="xXY-6h-qd9">
+            <objects>
+                <tableViewController id="z7r-s7-nxD" customClass="NCShareDownloadLimitTableViewController" customModule="Nextcloud" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" scrollEnabled="NO" dataMode="static" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" id="GIS-yz-DEq">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="516"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <sections>
+                            <tableViewSection footerTitle="X remaining downloads allowed" id="eag-Ek-kyv">
+                                <cells>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="Nhk-Fc-G3o">
+                                        <rect key="frame" x="0.0" y="50" width="414" height="44.333332061767578"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Nhk-Fc-G3o" id="qUd-cW-Bvy">
+                                            <rect key="frame" x="0.0" y="0.0" width="414" height="44.333332061767578"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </tableViewCellContentView>
+                                        <listContentConfiguration key="contentConfiguration" text="Limit Downloads" secondaryText=""/>
+                                        <connections>
+                                            <outlet property="accessoryView" destination="nFs-et-CHB" id="8Sm-24-xgE"/>
+                                        </connections>
+                                    </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="tvZ-6P-X8V">
+                                        <rect key="frame" x="0.0" y="94.333332061767578" width="414" height="44.333332061767578"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="tvZ-6P-X8V" id="gDL-8G-sHX">
+                                            <rect key="frame" x="0.0" y="0.0" width="414" height="44.333332061767578"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </tableViewCellContentView>
+                                        <listContentConfiguration key="contentConfiguration" text="Allowed Downloads" secondaryText=""/>
+                                        <connections>
+                                            <outlet property="accessoryView" destination="XQ1-Wz-Q84" id="YQu-MJ-xGi"/>
+                                        </connections>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
+                        </sections>
+                        <connections>
+                            <outlet property="dataSource" destination="z7r-s7-nxD" id="bcZ-EG-Ns9"/>
+                            <outlet property="delegate" destination="z7r-s7-nxD" id="CYZ-nh-TPG"/>
+                        </connections>
+                    </tableView>
+                    <connections>
+                        <outlet property="limitSwitch" destination="nFs-et-CHB" id="VPn-S5-HsB"/>
+                        <outlet property="limitTextField" destination="XQ1-Wz-Q84" id="Wr9-ib-xta"/>
+                    </connections>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="xFX-mf-2eM" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="nFs-et-CHB">
+                    <rect key="frame" x="0.0" y="0.0" width="51" height="31"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <accessibility key="accessibilityConfiguration" identifier="downloadLimitSwitch"/>
+                    <connections>
+                        <action selector="switchDownloadLimit:" destination="z7r-s7-nxD" eventType="valueChanged" id="BgD-7W-XjM"/>
+                    </connections>
+                </switch>
+                <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="right" contentVerticalAlignment="center" text="1" textAlignment="right" adjustsFontForContentSizeCategory="YES" minimumFontSize="17" id="XQ1-Wz-Q84">
+                    <rect key="frame" x="0.0" y="0.0" width="97" height="34"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <accessibility key="accessibilityConfiguration" identifier="downloadLimitTextField"/>
+                    <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                    <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="numberPad" returnKeyType="done"/>
+                    <connections>
+                        <action selector="editingAllowedDownloadsDidBegin:" destination="z7r-s7-nxD" eventType="editingDidBegin" id="aN8-OV-iMc"/>
+                        <action selector="editingAllowedDownloadsDidEnd:" destination="z7r-s7-nxD" eventType="editingDidEnd" id="hqq-ag-KN9"/>
+                    </connections>
+                </textField>
+            </objects>
+            <point key="canvasLocation" x="6554" y="-170"/>
+        </scene>
         <!--Share Advance Permission-->
         <scene sceneID="59b-BB-FLA">
             <objects>
