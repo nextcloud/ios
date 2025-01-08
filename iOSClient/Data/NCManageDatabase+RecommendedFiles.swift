@@ -7,21 +7,6 @@ import RealmSwift
 import NextcloudKit
 
 class tableRecommendedFiles: Object {
-    override func isEqual(_ object: Any?) -> Bool {
-        if let object = object as? tableRecommendedFiles,
-           self.timestamp == object.timestamp,
-           self.name == object.name,
-           self.directory == object.directory,
-           self.extensionType == object.extensionType,
-           self.mimeType == object.mimeType,
-           self.hasPreview == object.hasPreview,
-           self.reason == object.reason {
-            return true
-        } else {
-            return false
-        }
-    }
-
     @Persisted var account = ""
     @Persisted var id = ""
     @Persisted(primaryKey: true) var primaryKey = ""
@@ -133,7 +118,7 @@ extension NCManageDatabase {
         for (primaryKey, existingObject) in existingDictionary {
             if let newObject = newDictionary[primaryKey] {
                 // If exists, verify if is changed
-                if !existingObject.isEqual(newObject) {
+                if existingObject.timestamp != newObject.timestamp {
                     changed.append(newObject)
                 }
             } else {

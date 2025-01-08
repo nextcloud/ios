@@ -186,19 +186,22 @@ class NCFiles: NCCollectionViewCommon {
             return false
         }
 
-        DispatchQueue.global().async {
-            if self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session),
-               NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityRecommendations {
-                NextcloudKit.shared.getRecommendedFiles(account: self.session.account) { _, recommendations, _, error in
-                    if error == .success,
-                       let recommendations,
-                       !recommendations.isEmpty {
-                        Task {
-                            await NCService().createRecommendations(session: self.session, recommendations: recommendations, collectionView: self.collectionView)
-                        }
+        if self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session),
+           NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityRecommendations {
+            let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+
+            NextcloudKit.shared.getRecommendedFiles(account: self.session.account, options: options) { _, recommendations, _, error in
+                if error == .success,
+                   let recommendations,
+                   !recommendations.isEmpty {
+                    Task.detached {
+                        await self.createRecommendations(recommendations)
                     }
                 }
             }
+        }
+
+        DispatchQueue.global().async {
             self.networkReadFolder { metadatas, isChanged, error in
                 DispatchQueue.main.async {
                     self.refreshControl.endRefreshing()
@@ -356,6 +359,41 @@ class NCFiles: NCCollectionViewCommon {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     self.collectionView(self.collectionView, didSelectItemAt: indexPath)
                 }
+            }
+        }
+    }
+
+    private func createRecommendations(_ recommendations: [NKRecommendation]) async {
+        let home = self.utilityFileSystem.getHomeServer(session: self.session)
+        var recommendationsToInsert: [NKRecommendation] = []
+
+        for recommendation in recommendations {
+            let serverUrlFileName = home + recommendation.directory + recommendation.name
+            let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles, account: session.account)
+
+            if results.error == .success, let file = results.files?.first {
+                let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
+                let metadata = self.database.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
+
+                self.database.addMetadata(metadata)
+                recommendationsToInsert.append(recommendation)
+
+                if recommendation.hasPreview,
+                   !self.utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag) {
+                    let result = await NCNetworking.shared.downloadPreview(fileId: file.fileId, account: session.account)
+
+                    if result.error == .success, let data = result.responseData?.data {
+                        self.utility.createImageFileFrom(data: data, ocId: file.ocId, etag: file.etag)
+                    }
+                }
+            }
+        }
+
+        let results = self.database.compareRecommendations(account: session.account, newObjects: recommendationsToInsert)
+        if results.added.count + results.changed.count + results.deleted.count > 0 {
+            self.database.createRecommendedFiles(account: session.account, recommendations: recommendationsToInsert)
+            Task { @MainActor in
+                self.collectionView.reloadData()
             }
         }
     }
