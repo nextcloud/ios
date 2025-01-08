@@ -1219,7 +1219,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         if self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session),
            NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityRecommendations,
            !isSearchingMode,
-           !self.database.getResultsRecommendedFiles(account: self.session.account).isEmpty {
+           !self.database.getResultsRecommendedFiles(account: self.session.account).isEmpty,
+           NCKeychain().showRecommendedFiles {
             heightHeaderRecommendations = self.global.heightHeaderRecommendations
         }
 
