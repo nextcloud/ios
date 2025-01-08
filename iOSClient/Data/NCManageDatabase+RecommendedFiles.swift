@@ -50,7 +50,7 @@ class tableRecommendedFiles: Object {
 }
 
 extension NCManageDatabase {
-    func addRecommendedFiles(account: String, recommendations: [NKRecommendation]) {
+    func createRecommendedFiles(account: String, recommendations: [NKRecommendation]) {
         do {
             let realm = try Realm()
 

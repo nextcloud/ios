@@ -189,8 +189,14 @@ class NCFiles: NCCollectionViewCommon {
         DispatchQueue.global().async {
             if self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session),
                NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityRecommendations {
-                NextcloudKit.shared.getRecommendedFiles(account: self.session.account) { account, recommendations, responseData, error in
-
+                NextcloudKit.shared.getRecommendedFiles(account: self.session.account) { _, recommendations, _, error in
+                    if error == .success,
+                       let recommendations,
+                       !recommendations.isEmpty {
+                        Task {
+                            await NCService().createRecommendations(session: self.session, recommendations: recommendations, collectionView: self.collectionView)
+                        }
+                    }
                 }
             }
             self.networkReadFolder { metadatas, isChanged, error in
