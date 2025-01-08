@@ -578,6 +578,7 @@
 "_directory_on_top_yes_"        = "✓ Folders on top";
 "_directory_on_top_no_"         = "Folders on top";
 "_show_description_"            = "Show description";
+"_show_recommended_files_"      = "Show recommended files";
 "_no_description_available_"    = "No description available for this folder";
 "_folder_automatic_upload_"     = "Folder for \"Auto upload\"";
 "_search_no_record_found_"      = "No result";

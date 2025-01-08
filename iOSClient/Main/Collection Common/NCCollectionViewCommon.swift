@@ -857,14 +857,24 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
             showDescription.subtitle = richWorkspaceText == nil ? NSLocalizedString("_no_description_available_", comment: "") : ""
 
+            let showRecommendedFilesKeychain = NCKeychain().showRecommendedFiles
+            let capabilityRecommendations = NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityRecommendations
+            let showRecommendedFiles = UIAction(title: NSLocalizedString("_show_recommended_files_", comment: ""), image: utility.loadImage(named: "list.dash.header.rectangle"), attributes: !capabilityRecommendations ? .disabled : [], state: showRecommendedFilesKeychain ? .on : .off) { _ in
+
+                NCKeychain().showRecommendedFiles = !showRecommendedFilesKeychain
+
+                self.collectionView.reloadData()
+                self.setNavigationRightItems()
+            }
+
             if layoutKey == global.layoutViewRecent {
                 return [select]
             } else {
                 var additionalSubmenu = UIMenu()
                 if layoutKey == global.layoutViewFiles {
-                    additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [foldersOnTop, personalFilesOnlyAction, showDescription])
+                    additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [foldersOnTop, personalFilesOnlyAction, showDescription, showRecommendedFiles])
                 } else {
-                    additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [foldersOnTop, showDescription])
+                    additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [foldersOnTop, showDescription, showRecommendedFiles])
                 }
                 return [select, viewStyleSubmenu, sortSubmenu, additionalSubmenu]
             }
