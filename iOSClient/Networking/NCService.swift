@@ -236,14 +236,18 @@ class NCService: NSObject {
         for recommendation in recommendations {
             let serverUrlFileName = home + recommendation.directory + recommendation.name
             let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles, account: session.account)
+
             if results.error == .success, let file = results.files?.first {
                 let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
                 let metadata = self.database.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
+
                 self.database.addMetadata(metadata)
                 recommendationsToInsert.append(recommendation)
+
                 if recommendation.hasPreview,
                    !self.utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag) {
                     let result = await NCNetworking.shared.downloadPreview(fileId: file.fileId, account: session.account)
+
                     if result.error == .success, let data = result.responseData?.data {
                         self.utility.createImageFileFrom(data: data, ocId: file.ocId, etag: file.etag)
                     }
