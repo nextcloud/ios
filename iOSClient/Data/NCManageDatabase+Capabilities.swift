@@ -88,6 +88,7 @@ extension NCManageDatabase {
                     }
 
                     struct Capabilities: Codable {
+                        let downloadLimit: DownloadLimit?
                         let filessharing: FilesSharing?
                         let theming: Theming?
                         let endtoendencryption: EndToEndEncryption?
@@ -103,6 +104,7 @@ extension NCManageDatabase {
                         let recommendations: Recommendations?
 
                         enum CodingKeys: String, CodingKey {
+                            case downloadLimit = "downloadlimit"
                             case filessharing = "files_sharing"
                             case theming
                             case endtoendencryption = "end-to-end-encryption"
@@ -112,6 +114,11 @@ extension NCManageDatabase {
                             case securityguard = "security_guard"
                             case assistant
                             case recommendations
+                        }
+
+                        struct DownloadLimit: Codable {
+                            let enabled: Bool?
+                            let defaultLimit: Int?
                         }
 
                         struct FilesSharing: Codable {
@@ -333,6 +340,8 @@ extension NCManageDatabase {
             capabilities.capabilityFileSharingInternalExpireDateDays = data.capabilities.filessharing?.ncpublic?.expiredateinternal?.days ?? 0
             capabilities.capabilityFileSharingRemoteExpireDateEnforced = data.capabilities.filessharing?.ncpublic?.expiredateremote?.enforced ?? false
             capabilities.capabilityFileSharingRemoteExpireDateDays = data.capabilities.filessharing?.ncpublic?.expiredateremote?.days ?? 0
+            capabilities.capabilityFileSharingDownloadLimit = data.capabilities.downloadLimit?.enabled ?? false
+            capabilities.capabilityFileSharingDownloadLimitDefaultLimit = data.capabilities.downloadLimit?.defaultLimit ?? 1
 
             capabilities.capabilityThemingColor = data.capabilities.theming?.color ?? ""
             capabilities.capabilityThemingColorElement = data.capabilities.theming?.colorelement ?? ""

@@ -30,7 +30,7 @@ import NextcloudKit
 import MarqueeLabel
 import ContactsUI
 
-class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent {
+class NCShare: UIViewController, NCSharePagingContent {
     @IBOutlet weak var viewContainerConstraint: NSLayoutConstraint!
     @IBOutlet weak var sharedWithYouByView: UIView!
     @IBOutlet weak var sharedWithYouByImage: UIImageView!
@@ -120,7 +120,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
             let navigationController = self.navigationController else { return }
         self.checkEnforcedPassword(shareType: shareCommon.SHARE_TYPE_LINK) { password in
             advancePermission.networking = self.networking
-            advancePermission.share = NCTableShareOptions.shareLink(metadata: self.metadata, password: password)
+            advancePermission.share = TransientShare.shareLink(metadata: self.metadata, password: password)
             advancePermission.metadata = self.metadata
             navigationController.pushViewController(advancePermission, animated: true)
         }
@@ -214,8 +214,11 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         cnPicker.predicateForSelectionOfProperty = NSPredicate(format: "emailAddresses.@count > 0")
         self.present(cnPicker, animated: true)
     }
-    // MARK: - NCShareNetworkingDelegate
+}
 
+// MARK: - NCShareNetworkingDelegate
+
+extension NCShare: NCShareNetworkingDelegate {
     func readShareCompleted() {
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataNCShare)
     }
@@ -277,7 +280,7 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
                 let advancePermission = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "NCShareAdvancePermission") as? NCShareAdvancePermission,
                 let navigationController = self.navigationController else { return }
             self.checkEnforcedPassword(shareType: sharee.shareType) { password in
-                let shareOptions = NCTableShareOptions(sharee: sharee, metadata: self.metadata, password: password)
+                let shareOptions = TransientShare(sharee: sharee, metadata: self.metadata, password: password)
                 advancePermission.share = shareOptions
                 advancePermission.networking = self.networking
                 advancePermission.metadata = self.metadata
@@ -286,6 +289,14 @@ class NCShare: UIViewController, NCShareNetworkingDelegate, NCSharePagingContent
         }
 
         dropDown.show()
+    }
+
+    func downloadLimitRemoved(by token: String) {
+        database.deleteDownloadLimit(byAccount: metadata.account, shareToken: token)
+    }
+
+    func downloadLimitSet(to limit: Int, by token: String) {
+        database.createDownloadLimit(account: metadata.account, count: 0, limit: limit, token: token)
     }
 }
 
@@ -383,7 +394,7 @@ extension NCShare: UITableViewDataSource {
     }
 }
 
-// MARK: CNContactPickerDelegate
+// MARK: - CNContactPickerDelegate
 
 extension NCShare: CNContactPickerDelegate {
     func contactPicker(_ picker: CNContactPickerViewController, didSelect contact: CNContact) {
@@ -416,6 +427,8 @@ extension NCShare: CNContactPickerDelegate {
         }
     }
 }
+
+// MARK: - UISearchBarDelegate
 
 extension NCShare: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {

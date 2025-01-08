@@ -46,6 +46,8 @@ final public class NCCapabilities: Sendable {
         var capabilityFileSharingRemoteExpireDateEnforced: Bool     = false
         var capabilityFileSharingRemoteExpireDateDays: Int          = 0
         var capabilityFileSharingDefaultPermission: Int             = 0
+        var capabilityFileSharingDownloadLimit: Bool                = false
+        var capabilityFileSharingDownloadLimitDefaultLimit: Int     = 1
         var capabilityThemingColor: String                          = ""
         var capabilityThemingColorElement: String                   = ""
         var capabilityThemingColorText: String                      = ""

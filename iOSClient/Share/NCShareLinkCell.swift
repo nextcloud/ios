@@ -53,7 +53,9 @@ class NCShareLinkCell: UITableViewCell {
             copyButton.setImage(UIImage(systemName: "doc.on.doc")?.withTintColor(.label, renderingMode: .alwaysOriginal), for: .normal)
         }
         copyButton.accessibilityLabel = NSLocalizedString("_copy_", comment: "")
+
         menuButton.accessibilityLabel = NSLocalizedString("_more_", comment: "")
+        menuButton.accessibilityIdentifier = "showShareLinkDetails"
 
         if isInternalLink {
             labelTitle.text = NSLocalizedString("_share_internal_link_", comment: "")
@@ -68,6 +70,7 @@ class NCShareLinkCell: UITableViewCell {
             } else {
                 menuImageName = "plus"
                 menuButton.accessibilityLabel = NSLocalizedString("_add_", comment: "")
+                menuButton.accessibilityIdentifier = "addShareLink"
             }
 
             imageItem.image = NCUtility().loadImage(named: "link.circle.fill", colors: [NCBrandColor.shared.getElement(account: tableShare?.account)])

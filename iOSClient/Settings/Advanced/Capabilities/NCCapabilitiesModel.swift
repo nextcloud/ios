@@ -10,6 +10,11 @@ import Foundation
 import UIKit
 import SwiftUI
 
+///
+ /// Data model for ``NCCapabilitiesView``.
+ ///
+ /// Compiles capabilities, their availability and symbol images for display.
+ ///
 class NCCapabilitiesModel: ObservableObject, ViewOnAppearHandling {
     struct Capability: Identifiable, Hashable {
         let id = UUID()
@@ -43,6 +48,9 @@ class NCCapabilitiesModel: ObservableObject, ViewOnAppearHandling {
 
         var image = utility.loadImage(named: "person.fill.badge.plus")
         capabililies.append(Capability(text: "File sharing", image: image, resize: false, available: capability.capabilityFileSharingApiEnabled))
+
+        image = utility.loadImage(named: "gauge.with.dots.needle.bottom.100percent")
+        capabililies.append(Capability(text: "Download Limit", image: image, resize: false, available: capability.capabilityFileSharingDownloadLimit))
 
         image = utility.loadImage(named: "network")
         capabililies.append(Capability(text: "External site", image: image, resize: false, available: capability.capabilityExternalSites))

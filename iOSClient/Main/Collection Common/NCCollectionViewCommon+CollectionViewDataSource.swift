@@ -476,6 +476,10 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         cell.setIconOutlines()
+
+        cell.accessibilityLabel = metadata.fileName
+        cell.accessibilityIdentifier = "Cell/\(metadata.fileName)"
+
         return cell
     }
 

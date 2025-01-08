@@ -108,6 +108,19 @@ class NCListCell: UICollectionViewCell, UIGestureRecognizerDelegate, NCCellProto
         set { separator = newValue }
     }
 
+    override var accessibilityIdentifier: String? {
+        get {
+            super.accessibilityIdentifier
+        }
+        set {
+            super.accessibilityIdentifier = newValue
+
+            if let newValue {
+                buttonShared.accessibilityIdentifier = "\(newValue)/shareButton"
+            }
+        }
+    }
+
     override func awakeFromNib() {
         super.awakeFromNib()
         initCell()
