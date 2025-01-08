@@ -28,6 +28,9 @@
 		4240DB4E2C5646B400E72FC0 /* BurgerMenuAttachController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4240DB4D2C5646B400E72FC0 /* BurgerMenuAttachController.swift */; };
 		4240DB502C5648E300E72FC0 /* BurgerMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4240DB4F2C5648E300E72FC0 /* BurgerMenuViewController.swift */; };
 		4240DB522C5649A900E72FC0 /* BurgerMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4240DB512C5649A900E72FC0 /* BurgerMenuView.swift */; };
+		425F57AF2D2E83DB006D5FD1 /* IonosImages.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 425F57AE2D2E83DA006D5FD1 /* IonosImages.xcassets */; };
+		425F57B02D2E83DB006D5FD1 /* IonosImages.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 425F57AE2D2E83DA006D5FD1 /* IonosImages.xcassets */; };
+		425F57B12D2E83DB006D5FD1 /* IonosImages.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 425F57AE2D2E83DA006D5FD1 /* IonosImages.xcassets */; };
 		42678ABE2C57C5FB00307DEF /* BurgerMenuViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42678ABD2C57C5FB00307DEF /* BurgerMenuViewModel.swift */; };
 		4294B88B2CA5550B002E6FED /* LinkButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4294B88A2CA5550B002E6FED /* LinkButton.swift */; };
 		42C684B42CA1806000DD46F0 /* SecondaryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42C684B32CA1806000DD46F0 /* SecondaryButton.swift */; };
@@ -1139,6 +1142,7 @@
 		4240DB4D2C5646B400E72FC0 /* BurgerMenuAttachController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BurgerMenuAttachController.swift; sourceTree = "<group>"; };
 		4240DB4F2C5648E300E72FC0 /* BurgerMenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BurgerMenuViewController.swift; sourceTree = "<group>"; };
 		4240DB512C5649A900E72FC0 /* BurgerMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BurgerMenuView.swift; sourceTree = "<group>"; };
+		425F57AE2D2E83DA006D5FD1 /* IonosImages.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = IonosImages.xcassets; sourceTree = "<group>"; };
 		42678ABD2C57C5FB00307DEF /* BurgerMenuViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BurgerMenuViewModel.swift; sourceTree = "<group>"; };
 		4294B88A2CA5550B002E6FED /* LinkButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkButton.swift; sourceTree = "<group>"; };
 		42C684B32CA1806000DD46F0 /* SecondaryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecondaryButton.swift; sourceTree = "<group>"; };
@@ -2966,6 +2970,7 @@
 				F73CB5771ED46807005F2A5A /* NCBridgeSwift.h */,
 				F70F96AF2874394B006C8379 /* Nextcloud-Bridging-Header.h */,
 				F7F67BB81A24D27800EE80DA /* Images.xcassets */,
+				425F57AE2D2E83DA006D5FD1 /* IonosImages.xcassets */,
 				42F5047F2C6F553D001AA432 /* Colors.xcassets */,
 				0F08D6B52C9426B800136502 /* Style */,
 				4240DB4C2C56446D00E72FC0 /* BurgerMenu */,
@@ -3631,6 +3636,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				42D3D0972C94284C008A5AD4 /* Colors.xcassets in Resources */,
+				425F57B12D2E83DB006D5FD1 /* IonosImages.xcassets in Resources */,
 				F714803B262EBE3900693E51 /* MainInterface.storyboard in Resources */,
 				F7148054262ED51000693E51 /* NCListCell.xib in Resources */,
 				F7D57C8626317BDA00DE301D /* NCAccountRequest.storyboard in Resources */,
@@ -3655,6 +3661,7 @@
 				F7C7B25028B8AD4500E7115D /* Localizable.strings in Resources */,
 				FC930DC52CEDE33000C9B237 /* Colors.xcassets in Resources */,
 				F7E4022A2BA85D1D007E5609 /* PrivacyInfo.xcprivacy in Resources */,
+				425F57B02D2E83DB006D5FD1 /* IonosImages.xcassets in Resources */,
 				F7346E2328B0FEBA006CE2D2 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -3744,6 +3751,7 @@
 				F774264A22EB4D0000B23912 /* NCSearchUserDropDownCell.xib in Resources */,
 				F7CB689A2541676B0050EC94 /* NCMore.storyboard in Resources */,
 				F77B0F7D1D118A16002130FE /* Images.xcassets in Resources */,
+				425F57AF2D2E83DB006D5FD1 /* IonosImages.xcassets in Resources */,
 				42F504802C6F553D001AA432 /* Colors.xcassets in Resources */,
 				F768822B2C0DD1E7001CF441 /* Settings.bundle in Resources */,
 				F73CB3B222E072A000AD728E /* NCShareHeaderView.xib in Resources */,
