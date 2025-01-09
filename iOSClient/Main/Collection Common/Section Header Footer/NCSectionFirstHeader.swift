@@ -238,6 +238,12 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
     }
 }
 
+extension NCSectionFirstHeader: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+    }
+}
+
 extension NCSectionFirstHeader: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: NCGlobal.shared.heightHeaderRecommendations + 50, height: NCGlobal.shared.heightHeaderRecommendations)
