@@ -217,6 +217,15 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as? NCRecommendationsCell,
               let metadata = NCManageDatabase.shared.getResultMetadataFromFileId(recommendation.id) else { fatalError() }
 
+        var image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512)
+
+        if image == nil {
+            cell.image.contentMode = .scaleAspectFit
+        } else {
+            cell.image.contentMode = .scaleAspectFill
+        }
+
+        cell.image.image = image
         cell.labelFilename.text = recommendation.name
         cell.labelInfo.text = recommendation.reason
 
@@ -226,6 +235,6 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
 
 extension NCSectionFirstHeader: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: NCGlobal.shared.heightHeaderRecommendations, height: NCGlobal.shared.heightHeaderRecommendations)
+        return CGSize(width: NCGlobal.shared.heightHeaderRecommendations + 50, height: NCGlobal.shared.heightHeaderRecommendations)
     }
 }
