@@ -226,6 +226,6 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
 
 extension NCSectionFirstHeader: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 120, height: 120) // Dimensioni delle celle
+        return CGSize(width: NCGlobal.shared.heightHeaderRecommendations, height: NCGlobal.shared.heightHeaderRecommendations)
     }
 }
