@@ -185,6 +185,12 @@ class NCFiles: NCCollectionViewCommon {
         }
 
         DispatchQueue.global().async {
+            if self.isRoot,
+               NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityRecommendations {
+                NextcloudKit.shared.getRecommendedFiles(account: self.session.account) { account, recommendations, responseData, error in
+
+                }
+            }
             self.networkReadFolder { metadatas, isChanged, error in
                 DispatchQueue.main.async {
                     self.refreshControl.endRefreshing()

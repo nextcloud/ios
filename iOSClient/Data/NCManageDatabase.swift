@@ -84,8 +84,7 @@ class NCManageDatabase: NSObject {
                                 tableDashboardWidget.self,
                                 tableDashboardWidgetButton.self,
                                 NCDBLayoutForView.self,
-                                TableSecurityGuardDiagnostics.self,
-                                tableDownloadLimit.self]
+                                TableSecurityGuardDiagnostics.self]
 
         // Disable file protection for directory DB
         // https://docs.mongodb.com/realm/sdk/ios/examples/configure-and-open-a-realm/#std-label-ios-open-a-local-realm
@@ -198,6 +197,8 @@ class NCManageDatabase: NSObject {
         self.clearTable(tableTrash.self, account: account)
         self.clearTable(tableUserStatus.self, account: account)
         self.clearTable(tableVideo.self, account: account)
+        self.clearTable(tableDownloadLimit.self, account: account)
+        self.clearTable(tableRecommendedFiles.self, account: account)
     }
 
     func clearTablesE2EE(account: String?) {
