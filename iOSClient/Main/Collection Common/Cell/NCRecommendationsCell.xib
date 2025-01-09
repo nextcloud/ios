@@ -4,6 +4,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -36,9 +37,16 @@
                         <nil key="highlightedColor"/>
                     </label>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="O9D-jq-8Iz">
-                        <rect key="frame" x="338" y="10" width="50" height="35"/>
+                        <rect key="frame" x="378" y="2" width="20" height="20"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="20" id="0SN-I9-Ijm"/>
+                            <constraint firstAttribute="height" constant="20" id="kOs-wF-5Nm"/>
+                        </constraints>
+                        <color key="tintColor" systemColor="labelColor"/>
                         <state key="normal" title="Button"/>
-                        <buttonConfiguration key="configuration" style="plain" image="ellipsis.circle.fill" catalog="system"/>
+                        <buttonConfiguration key="configuration" style="plain">
+                            <imageReference key="image" image="ellipsis.circle.fill" catalog="system" symbolScale="medium"/>
+                        </buttonConfiguration>
                         <connections>
                             <action selector="touchUpInsideButtonMenu:" destination="vf1-Kf-9uL" eventType="touchUpInside" id="3fA-II-5LZ"/>
                         </connections>
@@ -48,12 +56,12 @@
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="0pg-4i-UyV" secondAttribute="trailing" constant="10" id="1bq-87-crR"/>
                 <constraint firstAttribute="bottom" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="50" id="8aV-2N-Kxz"/>
-                <constraint firstItem="O9D-jq-8Iz" firstAttribute="top" secondItem="vf1-Kf-9uL" secondAttribute="top" constant="10" id="9CX-Ek-lXy"/>
+                <constraint firstItem="O9D-jq-8Iz" firstAttribute="top" secondItem="vf1-Kf-9uL" secondAttribute="top" constant="2" id="9CX-Ek-lXy"/>
                 <constraint firstItem="ixP-qo-bb5" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" constant="5" id="B8v-xz-Iyo"/>
                 <constraint firstItem="0pg-4i-UyV" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" constant="5" id="Mx3-Fj-oyX"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="top" secondItem="vf1-Kf-9uL" secondAttribute="top" constant="2" id="Ouj-ZD-UFm"/>
                 <constraint firstItem="0pg-4i-UyV" firstAttribute="top" secondItem="ixP-qo-bb5" secondAttribute="bottom" constant="5" id="T5a-p1-tUh"/>
-                <constraint firstAttribute="trailing" secondItem="O9D-jq-8Iz" secondAttribute="trailing" constant="12" id="Vq9-GY-Ckg"/>
+                <constraint firstAttribute="trailing" secondItem="O9D-jq-8Iz" secondAttribute="trailing" constant="2" id="Vq9-GY-Ckg"/>
                 <constraint firstAttribute="bottom" secondItem="0pg-4i-UyV" secondAttribute="bottom" constant="3" id="WAu-kD-blD"/>
                 <constraint firstAttribute="trailing" secondItem="ixP-qo-bb5" secondAttribute="trailing" constant="10" id="lO4-ab-Pcr"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="centerX" secondItem="vf1-Kf-9uL" secondAttribute="centerX" id="laJ-b9-Tcy"/>
@@ -70,6 +78,9 @@
     </objects>
     <resources>
         <image name="ellipsis.circle.fill" catalog="system" width="128" height="123"/>
+        <systemColor name="labelColor">
+            <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
         <systemColor name="systemGray2Color">
             <color red="0.68235294120000001" green="0.68235294120000001" blue="0.69803921570000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
