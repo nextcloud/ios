@@ -213,7 +213,13 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
+        let recommendation = self.recommendations[indexPath.row]
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as? NCRecommendationsCell,
+              let metadata = NCManageDatabase.shared.getResultMetadataFromFileId(recommendation.id) else { fatalError() }
+
+        cell.labelFilename.text = recommendation.name
+        cell.labelInfo.text = recommendation.reason
+
         return cell
     }
 }

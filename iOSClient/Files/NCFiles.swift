@@ -129,7 +129,7 @@ class NCFiles: NCCollectionViewCommon {
             return super.reloadDataSource()
         }
 
-        // This is only a fail safe "dead lock", I don't think the timeout will ever be called but at least nothing gets stuck, if after 5 sec. (which is a long time in this routine), the semaphore is still locked
+        // Watchdog: this is only a fail safe "dead lock", I don't think the timeout will ever be called but at least nothing gets stuck, if after 5 sec. (which is a long time in this routine), the semaphore is still locked
         //
         if self.semaphoreReloadDataSource.wait(timeout: .now() + 5) == .timedOut {
             self.semaphoreReloadDataSource.signal()
@@ -186,6 +186,9 @@ class NCFiles: NCCollectionViewCommon {
             return false
         }
 
+        ///
+        /// Recommended files
+        ///
         if self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session),
            NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityRecommendations {
             let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)

@@ -9,5 +9,7 @@
 import UIKit
 
 class NCRecommendationsCell: UICollectionViewCell {
-
+    @IBOutlet weak var image: UIImageView!
+    @IBOutlet weak var labelFilename: UILabel!
+    @IBOutlet weak var labelInfo: UILabel!
 }
