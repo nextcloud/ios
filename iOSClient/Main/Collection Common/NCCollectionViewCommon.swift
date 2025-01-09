@@ -859,7 +859,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
             let showRecommendedFilesKeychain = NCKeychain().showRecommendedFiles
             let capabilityRecommendations = NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityRecommendations
-            let showRecommendedFiles = UIAction(title: NSLocalizedString("_show_recommended_files_", comment: ""), image: utility.loadImage(named: "list.dash.header.rectangle"), attributes: !capabilityRecommendations ? .disabled : [], state: showRecommendedFilesKeychain ? .on : .off) { _ in
+            let showRecommendedFiles = UIAction(title: NSLocalizedString("_show_recommended_files_", comment: ""), image: utility.loadImage(named: "sparkles"), attributes: !capabilityRecommendations ? .disabled : [], state: showRecommendedFilesKeychain ? .on : .off) { _ in
 
                 NCKeychain().showRecommendedFiles = !showRecommendedFilesKeychain
 
