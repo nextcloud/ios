@@ -188,6 +188,7 @@ class NCAccountSettingsModel: ObservableObject, ViewOnAppearHandling {
     /// Function to delete the current account
     func deleteAccount() {
         if let tblAccount {
+			NCAccount().deleteAccount(tblAccount.account)
             if let account = getAllAccountsOrderByEmail().first?.account {
                 NCAccount().changeAccount(account, userProfile: nil, controller: self.controller) {
                     onViewAppear()

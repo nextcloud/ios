@@ -46,6 +46,9 @@ struct NCAccountSettingsView: View {
                         PersonalDataView(account: activeAccount)
                     }
                     changeAliasSection
+                    if NCCapabilities.shared.getCapabilities(account: model.tblAccount?.account).capabilityUserStatusEnabled {
+                        userStatusButtonView
+                    }
                     if model.isAdminGroup() {
                         sertificateDetailsButtonView
                         sertificatePNButtonView
@@ -84,25 +87,51 @@ struct NCAccountSettingsView: View {
 extension NCAccountSettingsView {
     
     private var changeAliasSection: some View {
-        VStack {
-            HStack {
-                Text(NSLocalizedString("_alias_", comment: "") + ":")
-                    .font(.system(size: 17))
-                    .fontWeight(.medium)
-                Spacer()
-                TextField(NSLocalizedString("_alias_placeholder_", comment: ""), text: $model.alias)
-                    .font(.system(size: 16))
-                    .multilineTextAlignment(.trailing)
-                    .onChange(of: model.alias) { newValue in
-                        model.setAlias(newValue)
-                    }
-            }
-            Text(NSLocalizedString("_alias_footer_", comment: ""))
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .font(.system(size: 12))
-                .lineLimit(2)
-                .foregroundStyle(Color(UIColor.lightGray))
-        }
+		VStack {
+			HStack {
+				Text(NSLocalizedString("_alias_", comment: "") + ":")
+					.fontWeight(.medium)
+				Spacer()
+				TextField(NSLocalizedString("_alias_placeholder_", comment: ""), text: $model.alias)
+					.font(.callout)
+					.multilineTextAlignment(.trailing)
+					.onChange(of: model.alias) { newValue in
+						model.setAlias(newValue)
+					}
+			}
+			Text(NSLocalizedString("_alias_footer_", comment: ""))
+				.frame(maxWidth: .infinity, alignment: .leading)
+				.font(.caption)
+				.lineLimit(2)
+				.foregroundStyle(Color(UIColor.lightGray))
+		}
+    }
+    
+    private var userStatusButtonView: some View {
+		Button(action: {
+			showUserStatus = true
+		}, label: {
+			HStack {
+				Image(systemName: "moon.fill")
+					.resizable()
+					.scaledToFit()
+					.font(Font.system(.body).weight(.light))
+					.frame(width: 20, height: 20)
+					.foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
+				Text(NSLocalizedString("_set_user_status_", comment: ""))
+					.lineLimit(1)
+					.truncationMode(.middle)
+					.foregroundStyle(Color(NCBrandColor.shared.textColor))
+					.padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 20))
+			}
+			.font(.system(size: 14))
+		})
+		.sheet(isPresented: $showUserStatus) {
+			if let account = model.tblAccount?.account {
+				UserStatusView(showUserStatus: $showUserStatus, account: account)
+			}
+		}
+		.onChange(of: showUserStatus) { _ in }
     }
     
     private var sertificateDetailsButtonView: some View {
