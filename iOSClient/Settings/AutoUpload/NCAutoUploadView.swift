@@ -33,41 +33,51 @@ struct NCAutoUploadView: View {
     @State private var showSelectAlbums: Bool = false
 
     var body: some View {
-        Form {
-            /// Auto Upload
-            Section(content: {
-                Toggle(NSLocalizedString("_autoupload_", comment: ""), isOn: $model.autoUpload)
-                    .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                    .onChange(of: model.autoUpload) { newValue in
-                        model.handleAutoUploadChange(newValue: newValue)
-                    }
-            }, footer: {
-                Text(NSLocalizedString("_autoupload_notice_", comment: ""))
-            })
-            /// If `autoUpload` state will be true, we will animate out the whole `autoUploadOnView` section
-            if model.autoUpload {
-                autoUploadOnView
-                    .transition(.slide)
-                    .animation(.easeInOut, value: model.autoUpload)
-            }
-        }
-        .navigationBarTitle(NSLocalizedString("_auto_upload_folder_", comment: ""))
-        .onAppear {
-            model.onViewAppear()
-        }
-        .alert(model.error, isPresented: $model.showErrorAlert) {
-            Button(NSLocalizedString("_ok_", comment: ""), role: .cancel) { }
-        }
-        .sheet(isPresented: $showUploadFolder) {
-            SelectView(serverUrl: $model.serverUrl, session: model.session)
-                .onDisappear {
-                    model.setAutoUploadDirectory(serverUrl: model.serverUrl)
+        VStack {
+            Form {
+                /// Auto Upload
+                Section(content: {
+                    Toggle(NSLocalizedString("_autoupload_", comment: ""), isOn: $model.autoUpload)
+                        .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
+                        .onChange(of: model.autoUpload) { newValue in
+                            model.handleAutoUploadChange(newValue: newValue)
+                        }
+                }, footer: {
+                    Text(NSLocalizedString("_autoupload_notice_", comment: ""))
+                })
+                /// If `autoUpload` state will be true, we will animate out the whole `autoUploadOnView` section
+                if model.autoUpload {
+                    autoUploadOnView
+                        .transition(.slide)
+                        .animation(.easeInOut, value: model.autoUpload)
                 }
+            }
+            .navigationBarTitle(NSLocalizedString("_auto_upload_folder_", comment: ""))
+            .onAppear {
+                model.onViewAppear()
+            }
+            .alert(model.error, isPresented: $model.showErrorAlert) {
+                Button(NSLocalizedString("_ok_", comment: ""), role: .cancel) { }
+            }
+            .sheet(isPresented: $showUploadFolder) {
+                SelectView(serverUrl: $model.serverUrl, session: model.session)
+                    .onDisappear {
+                        model.setAutoUploadDirectory(serverUrl: model.serverUrl)
+                    }
+            }
+            .sheet(isPresented: $showSelectAlbums) {
+                SelectAlbumView(model: albumModel)
+            }
+            .tint(.primary)
         }
-        .sheet(isPresented: $showSelectAlbums) {
-            SelectAlbumView(model: albumModel)
-        }
-        .tint(.primary)
+
+//        Toggle(NSLocalizedString("_autoupload_fullphotos_", comment: ""), isOn: $model.autoUploadFull)
+//            .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
+//            .onChange(of: model.autoUploadFull) { newValue in
+//                albumModel.populateSelectedAlbums()
+//                model.handleAutoUploadFullChange(newValue: newValue, assetCollections: albumModel.selectedAlbums)
+//            }
+//            .toggleStyle(.button)
     }
 
     @ViewBuilder
@@ -89,6 +99,7 @@ struct NCAutoUploadView: View {
             Text("\(NSLocalizedString("_autoupload_current_folder_", comment: "")): \(model.returnPath())")
         })
 
+        Group {
         Section(content: {
             NavigationLink(destination: SelectAlbumView(model: albumModel)) {
                 Button(action: {
@@ -109,69 +120,82 @@ struct NCAutoUploadView: View {
         })
 
         /// Auto Upload Photo
-        Section(content: {
-            Toggle(NSLocalizedString("_autoupload_photos_", comment: ""), isOn: $model.autoUploadImage)
-                .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                .onChange(of: model.autoUploadImage) { newValue in
-                    model.handleAutoUploadImageChange(newValue: newValue)
+            Section(content: {
+                Toggle(NSLocalizedString("_autoupload_photos_", comment: ""), isOn: $model.autoUploadImage)
+                    .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
+                    .onChange(of: model.autoUploadImage) { newValue in
+                        model.handleAutoUploadImageChange(newValue: newValue)
+                    }
+                Toggle(NSLocalizedString("_wifi_only_", comment: ""), isOn: $model.autoUploadWWAnPhoto)
+                    .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
+                    .onChange(of: model.autoUploadWWAnPhoto) { newValue in
+                        model.handleAutoUploadWWAnPhotoChange(newValue: newValue)
+                    }
+            })
+            /// Auto Upload Video
+            Section(content: {
+                Toggle(NSLocalizedString("_autoupload_videos_", comment: ""), isOn: $model.autoUploadVideo)
+                    .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
+                    .onChange(of: model.autoUploadVideo) { newValue in
+                        model.handleAutoUploadVideoChange(newValue: newValue)
+                    }
+                Toggle(NSLocalizedString("_wifi_only_", comment: ""), isOn: $model.autoUploadWWAnVideo)
+                    .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
+                    .onChange(of: model.autoUploadWWAnVideo) { newValue in
+                        model.handleAutoUploadWWAnVideoChange(newValue: newValue)
+                    }
+            })
+            /// Only upload favorites if desired
+            Section(content: {
+                Toggle(NSLocalizedString("_autoupload_favorites_", comment: ""), isOn: $model.autoUploadFavoritesOnly)
+                    .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
+                    .onChange(of: model.autoUploadFavoritesOnly) { newValue in
+                        model.handleAutoUploadFavoritesOnlyChange(newValue: newValue)
+                    }
+            })
+            /// Auto Upload create subfolder
+            Section(content: {
+                Toggle(NSLocalizedString("_autoupload_create_subfolder_", comment: ""), isOn: $model.autoUploadCreateSubfolder)
+                    .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
+                    .onChange(of: model.autoUploadCreateSubfolder) { newValue in
+                        model.handleAutoUploadCreateSubfolderChange(newValue: newValue)
+                    }
+                Picker(NSLocalizedString("_autoupload_subfolder_granularity_", comment: ""), selection: $model.autoUploadSubfolderGranularity) {
+                    Text(NSLocalizedString("_daily_", comment: "")).tag(Granularity.daily)
+                    Text(NSLocalizedString("_monthly_", comment: "")).tag(Granularity.monthly)
+                    Text(NSLocalizedString("_yearly_", comment: "")).tag(Granularity.yearly)
                 }
-            Toggle(NSLocalizedString("_wifi_only_", comment: ""), isOn: $model.autoUploadWWAnPhoto)
-                .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                .onChange(of: model.autoUploadWWAnPhoto) { newValue in
-                    model.handleAutoUploadWWAnPhotoChange(newValue: newValue)
+                .onChange(of: model.autoUploadSubfolderGranularity) { newValue in
+                    model.handleAutoUploadSubfolderGranularityChange(newValue: newValue)
                 }
-        })
-        /// Auto Upload Video
-        Section(content: {
-            Toggle(NSLocalizedString("_autoupload_videos_", comment: ""), isOn: $model.autoUploadVideo)
-                .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                .onChange(of: model.autoUploadVideo) { newValue in
-                    model.handleAutoUploadVideoChange(newValue: newValue)
-                }
-            Toggle(NSLocalizedString("_wifi_only_", comment: ""), isOn: $model.autoUploadWWAnVideo)
-                .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                .onChange(of: model.autoUploadWWAnVideo) { newValue in
-                    model.handleAutoUploadWWAnVideoChange(newValue: newValue)
-                }
-        })
-        /// Only upload favorites if desired
-        Section(content: {
-            Toggle(NSLocalizedString("_autoupload_favorites_", comment: ""), isOn: $model.autoUploadFavoritesOnly)
-                .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                .onChange(of: model.autoUploadFavoritesOnly) { newValue in
-                    model.handleAutoUploadFavoritesOnlyChange(newValue: newValue)
-                }
-        })
-        /// Auto Upload create subfolder
-        Section(content: {
-            Toggle(NSLocalizedString("_autoupload_create_subfolder_", comment: ""), isOn: $model.autoUploadCreateSubfolder)
-                .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                .onChange(of: model.autoUploadCreateSubfolder) { newValue in
-                    model.handleAutoUploadCreateSubfolderChange(newValue: newValue)
-                }
-            Picker(NSLocalizedString("_autoupload_subfolder_granularity_", comment: ""), selection: $model.autoUploadSubfolderGranularity) {
-                Text(NSLocalizedString("_daily_", comment: "")).tag(Granularity.daily)
-                Text(NSLocalizedString("_monthly_", comment: "")).tag(Granularity.monthly)
-                Text(NSLocalizedString("_yearly_", comment: "")).tag(Granularity.yearly)
-            }
-            .onChange(of: model.autoUploadSubfolderGranularity) { newValue in
-                model.handleAutoUploadSubfolderGranularityChange(newValue: newValue)
-            }
-        }, footer: {
-            Text(NSLocalizedString("_autoupload_create_subfolder_footer_", comment: ""))
-        })
+            }, footer: {
+                Text(NSLocalizedString("_autoupload_create_subfolder_footer_", comment: ""))
+            })
+        }
+        .disabled(model.autoUploadFull)
+
         /// Auto Upload Full
         Section(content: {
-            Toggle(NSLocalizedString("_autoupload_fullphotos_", comment: ""), isOn: $model.autoUploadFull)
-                .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                .onChange(of: model.autoUploadFull) { newValue in
-                    albumModel.populateSelectedAlbums()
-                    model.handleAutoUploadFullChange(newValue: newValue, assetCollections: albumModel.selectedAlbums)
-                }
+            Toggle(isOn: $model.autoUploadFull) {
+                Text(model.autoUploadFull ? "_stop_autoupload_" : "_start_autoupload_")
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 10)
+            }
+            .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
+            .onChange(of: model.autoUploadFull) { newValue in
+                albumModel.populateSelectedAlbums()
+                model.handleAutoUploadFullChange(newValue: newValue, assetCollections: albumModel.selectedAlbums)
+            }
+            .font(.headline)
+            .toggleStyle(.button)
+            .buttonStyle(.bordered)
         }, footer: {
-            Text(
-                NSLocalizedString("_autoupload_fullphotos_footer_", comment: "") + "\n \n")
+            Text(NSLocalizedString("_autoupload_fullphotos_footer_", comment: "") + "\n \n")
+                .padding(5)
         })
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+        .listRowInsets(EdgeInsets())
+        .background(Color(UIColor.systemGroupedBackground))
     }
 }
 

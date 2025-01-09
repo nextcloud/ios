@@ -8,25 +8,21 @@
 
 import Photos
 
-@MainActor class AlbumModel: NSObject, ObservableObject, ViewOnAppearHandling {
+@MainActor class AlbumModel: NSObject, ObservableObject {
     @Published var allPhotosCollection: PHAssetCollection?
-//    @Published var allPhotosCount = 0
     @Published var smartAlbums: [PHAssetCollection] = []
     @Published var userAlbums: [PHAssetCollection] = []
     @Published var selectedAlbums: [PHAssetCollection] = []
     @Published var controller: NCMainTabBarController?
 
-    var smartAlbumAssetCollections: PHFetchResult<PHAssetCollection>?
-    var userAlbumAssetCollections: PHFetchResult<PHAssetCollection>?
+    var smartAlbumAssetCollections: PHFetchResult<PHAssetCollection>!
+    var userAlbumAssetCollections: PHFetchResult<PHAssetCollection>!
 
     init(controller: NCMainTabBarController?) {
         self.controller = controller
         super.init()
 
         Task { @MainActor in
-//            allPhotos = PHAsset.fetchAssets(with: nil)
-//            allPhotosCount = allPhotos.count
-
             smartAlbumAssetCollections = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .any, options: nil)
             smartAlbumAssetCollections?.enumerateObjects { [self] collection, _, _ in
                 if collection.assetCollectionSubtype == .smartAlbumUserLibrary {
@@ -46,15 +42,11 @@ import Photos
         }
     }
 
-    nonisolated func onViewAppear() {
-
-    }
-
     func populateSelectedAlbums() {
         let savedAlbums = getSavedAlbumIds()
 
         selectedAlbums = savedAlbums.compactMap { selectedAlbum in
-            return smartAlbums.first(where: { $0.localIdentifier == selectedAlbum })
+            return smartAlbums.first(where: { $0.localIdentifier == selectedAlbum }) ?? userAlbums.first(where: { $0.localIdentifier == selectedAlbum })
         }
     }
 
@@ -79,33 +71,27 @@ import Photos
 
 extension AlbumModel: PHPhotoLibraryChangeObserver {
     nonisolated func photoLibraryDidChange(_ changeInstance: PHChange) {
-        // Change notifications may originate from a background queue.
-        // Re-dispatch to the main queue before acting on the change,
-        // so you can update the UI.
         Task { @MainActor in
-//            if let changeDetails = changeInstance.changeDetails(for: allPhotos) {
-//                allPhotos = changeDetails.fetchResultAfterChanges
-//            }
+            // Update the cached fetch results, and reload the table sections to match.
+            if let changeDetails = changeInstance.changeDetails(for: smartAlbumAssetCollections) {
+                smartAlbumAssetCollections = changeDetails.fetchResultAfterChanges
+                smartAlbums.removeAll()
+                smartAlbumAssetCollections?.enumerateObjects { [self] collection, _, _ in
+                    if collection.assetCollectionSubtype == .smartAlbumUserLibrary {
+                        allPhotosCollection = collection
+                    } else if collection.assetCount > 0 {
+                        smartAlbums.append(collection)
+                    }
+                }
+            }
 
-//            if let smartAlbumAssetCollections, let changeDetails = changeInstance.changeDetails(for: smartAlbumAssetCollections) {
-//                var results = changeDetails.fetchResultAfterChanges
-//
-//                smartAlbums.removeAll()
-//
-//                smartAlbumAssetCollections.enumerateObjects { collection, _, _ in
-//                    self.smartAlbums.append(collection)
-//                }
-//            }
-//
-//            if let userAlbumAssetCollections, let changeDetails = changeInstance.changeDetails(for: userAlbumAssetCollections) {
-//                var results = changeDetails.fetchResultAfterChanges
-//
-//                userAlbums.removeAll()
-//
-//                userAlbumAssetCollections.enumerateObjects { collection, _, _ in
-//                    self.userAlbums.append(collection)
-//                }
-//            }
+            if let changeDetails = changeInstance.changeDetails(for: userAlbumAssetCollections) {
+                userAlbumAssetCollections = changeDetails.fetchResultAfterChanges
+                userAlbums.removeAll()
+                userAlbumAssetCollections?.enumerateObjects { [self] collection, _, _ in
+                    userAlbums.append(collection)
+                }
+            }
         }
     }
 }

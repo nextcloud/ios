@@ -242,7 +242,7 @@ class NCAutoUpload: NSObject {
             fetchOptions.predicate = predicate
 
             if assetCollections.isEmpty {
-                let assetCollection = PHAssetCollection.fetchAssetCollections(with: PHAssetCollectionType.smartAlbum, subtype: PHAssetCollectionSubtype.smartAlbumUserLibrary, options: nil)
+                let assetCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: PHAssetCollectionSubtype.smartAlbumUserLibrary, options: nil)
                 guard let assetCollection = assetCollection.firstObject else { return completion(nil) }
 
                 let assets: PHFetchResult<PHAsset> = PHAsset.fetchAssets(in: assetCollection, options: fetchOptions)
@@ -269,9 +269,6 @@ class NCAutoUpload: NSObject {
                     }
                 }
             } else {
-                let assetCollection = PHAssetCollection.fetchAssetCollections(with: PHAssetCollectionType.smartAlbum, subtype: PHAssetCollectionSubtype.smartAlbumUserLibrary, options: nil)
-                guard let assetCollection = assetCollection.firstObject else { return completion(nil) }
-
                 for assetCollection in assetCollections {
                     let assets: PHFetchResult<PHAsset> = PHAsset.fetchAssets(in: assetCollection, options: fetchOptions)
 

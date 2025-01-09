@@ -405,7 +405,8 @@
 "_autoupload_change_location_footer_" = "Change folder used for \"Automatic upload of camera photos\" (if the option is enabled)";
 "_autoupload_not_select_home_"      = "Select a folder";
 "_autoupload_save_album_"           = "Copy photo or video into the photo album";
-"_autoupload_fullphotos_"           = "Upload the whole camera roll";
+"_start_autoupload_"                = "Start auto uploading";
+"_stop_autoupload_"                 = "Stop auto uploading";
 "_autoupload_fullphotos_footer_"    = "Adjust the options above before uploading.";
 "_autoupload_create_subfolder_"     = "Use subfolders";
 "_autoupload_create_subfolder_footer_"  = "Store in subfolders based on year, month or daily.";
