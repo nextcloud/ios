@@ -16,6 +16,8 @@ import UIKit
         
         brand = "IONOS HiDrive Next"
         loginBaseUrl = "https://nextcloud-aio.iocaste45.de"
+        privacy = "https://nextcloud.com/privacy"
+        sourceCode = "https://github.com/nextcloud/ios"
 
         disable_intro = true
         disable_request_login_url = true
