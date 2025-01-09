@@ -32,7 +32,6 @@ struct NextcloudWidgetBundle: WidgetBundle {
     var body: some Widget {
         FilesWidget()
         ToolbarWidget()
-        LockscreenWidget()
     }
 }
 
