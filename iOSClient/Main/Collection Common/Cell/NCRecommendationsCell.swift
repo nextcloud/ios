@@ -22,6 +22,24 @@ class NCRecommendationsCell: UICollectionViewCell {
     var metadata: tableMetadata = tableMetadata()
     var recommendedFiles: tableRecommendedFiles = tableRecommendedFiles()
 
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        initCell()
+    }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        initCell()
+    }
+
+    func initCell() {
+        contentView.layer.cornerRadius = 10
+        contentView.layer.masksToBounds = true
+
+        contentView.layer.borderWidth = 1
+        contentView.layer.borderColor = UIColor.systemGray5.cgColor
+    }
+
     @IBAction func touchUpInsideButtonMenu(_ sender: Any) {
         self.delegate?.touchUpInsideButtonMenu(with: self.metadata, recommendedFiles: self.recommendedFiles, image: image.image)
     }

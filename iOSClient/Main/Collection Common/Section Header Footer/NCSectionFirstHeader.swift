@@ -240,13 +240,18 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
 
 extension NCSectionFirstHeader: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let recommendedFiles = self.recommendations[indexPath.row]
+        guard let metadata = NCManageDatabase.shared.getResultMetadataFromFileId(recommendedFiles.id) else {
+            return
+        }
+
         
     }
 }
 
 extension NCSectionFirstHeader: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: NCGlobal.shared.heightHeaderRecommendations + 50, height: NCGlobal.shared.heightHeaderRecommendations)
+        return CGSize(width: NCGlobal.shared.heightHeaderRecommendations + 25, height: NCGlobal.shared.heightHeaderRecommendations)
     }
 }
 

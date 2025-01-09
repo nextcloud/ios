@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina5_5" orientation="portrait" appearance="light"/>
+    <device id="retina6_0" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
-        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -36,37 +35,32 @@
                         <color key="textColor" systemColor="systemGray2Color"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="r62-EJ-fh1">
-                        <rect key="frame" x="380" y="2" width="20" height="20"/>
-                        <constraints>
-                            <constraint firstAttribute="width" constant="20" id="5qT-W9-Nbo"/>
-                            <constraint firstAttribute="height" constant="20" id="d9l-D5-N5s"/>
-                        </constraints>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="O9D-jq-8Iz">
+                        <rect key="frame" x="338" y="10" width="50" height="35"/>
                         <state key="normal" title="Button"/>
                         <buttonConfiguration key="configuration" style="plain" image="ellipsis.circle.fill" catalog="system"/>
                         <connections>
-                            <action selector="touchUpInsideButtonMenu:" destination="vf1-Kf-9uL" eventType="touchUpInside" id="jc6-zB-fYi"/>
+                            <action selector="touchUpInsideButtonMenu:" destination="vf1-Kf-9uL" eventType="touchUpInside" id="3fA-II-5LZ"/>
                         </connections>
                     </button>
                 </subviews>
             </view>
-            <color key="backgroundColor" name="yellow"/>
             <constraints>
-                <constraint firstAttribute="trailing" secondItem="r62-EJ-fh1" secondAttribute="trailing" id="0CX-Fw-p1Z"/>
                 <constraint firstAttribute="trailing" secondItem="0pg-4i-UyV" secondAttribute="trailing" constant="10" id="1bq-87-crR"/>
                 <constraint firstAttribute="bottom" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="50" id="8aV-2N-Kxz"/>
+                <constraint firstItem="O9D-jq-8Iz" firstAttribute="top" secondItem="vf1-Kf-9uL" secondAttribute="top" constant="10" id="9CX-Ek-lXy"/>
                 <constraint firstItem="ixP-qo-bb5" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" constant="5" id="B8v-xz-Iyo"/>
                 <constraint firstItem="0pg-4i-UyV" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" constant="5" id="Mx3-Fj-oyX"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="top" secondItem="vf1-Kf-9uL" secondAttribute="top" constant="2" id="Ouj-ZD-UFm"/>
                 <constraint firstItem="0pg-4i-UyV" firstAttribute="top" secondItem="ixP-qo-bb5" secondAttribute="bottom" constant="5" id="T5a-p1-tUh"/>
+                <constraint firstAttribute="trailing" secondItem="O9D-jq-8Iz" secondAttribute="trailing" constant="12" id="Vq9-GY-Ckg"/>
                 <constraint firstAttribute="bottom" secondItem="0pg-4i-UyV" secondAttribute="bottom" constant="3" id="WAu-kD-blD"/>
                 <constraint firstAttribute="trailing" secondItem="ixP-qo-bb5" secondAttribute="trailing" constant="10" id="lO4-ab-Pcr"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="centerX" secondItem="vf1-Kf-9uL" secondAttribute="centerX" id="laJ-b9-Tcy"/>
-                <constraint firstItem="r62-EJ-fh1" firstAttribute="top" secondItem="vf1-Kf-9uL" secondAttribute="top" constant="2" id="nws-y3-lMn"/>
             </constraints>
             <size key="customSize" width="409" height="311"/>
             <connections>
-                <outlet property="buttonMenu" destination="r62-EJ-fh1" id="sX6-sf-EPE"/>
+                <outlet property="buttonMenu" destination="O9D-jq-8Iz" id="FSF-c5-a5a"/>
                 <outlet property="image" destination="5Ci-V1-hf5" id="9fB-pr-AEY"/>
                 <outlet property="labelFilename" destination="ixP-qo-bb5" id="pE6-wq-gyk"/>
                 <outlet property="labelInfo" destination="0pg-4i-UyV" id="m3d-P8-Yhf"/>
@@ -76,9 +70,6 @@
     </objects>
     <resources>
         <image name="ellipsis.circle.fill" catalog="system" width="128" height="123"/>
-        <namedColor name="yellow">
-            <color red="1" green="0.72500002384185791" blue="0.23899999260902405" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-        </namedColor>
         <systemColor name="systemGray2Color">
             <color red="0.68235294120000001" green="0.68235294120000001" blue="0.69803921570000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
