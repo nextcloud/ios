@@ -26,6 +26,7 @@ import MarkdownKit
 
 protocol NCSectionFirstHeaderDelegate: AnyObject {
     func tapRichWorkspace(_ sender: Any)
+    func tapRecommendationsButtonMenu(with metadata: tableMetadata, recommendedFiles: tableRecommendedFiles, image: UIImage?)
 }
 
 class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegate {
@@ -229,6 +230,7 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
         cell.labelFilename.text = recommendedFiles.name
         cell.labelInfo.text = recommendedFiles.reason
 
+        cell.delegate = self
         cell.metadata = metadata
         cell.recommendedFiles = recommendedFiles
 
@@ -239,5 +241,11 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
 extension NCSectionFirstHeader: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: NCGlobal.shared.heightHeaderRecommendations + 50, height: NCGlobal.shared.heightHeaderRecommendations)
+    }
+}
+
+extension NCSectionFirstHeader: NCRecommendationsCellDelegate {
+    func touchUpInsideButtonMenu(with metadata: tableMetadata, recommendedFiles: tableRecommendedFiles, image: UIImage?) {
+        self.delegate?.tapRecommendationsButtonMenu(with: metadata, recommendedFiles: recommendedFiles, image: image)
     }
 }

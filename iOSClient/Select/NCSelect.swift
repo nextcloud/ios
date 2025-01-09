@@ -229,6 +229,8 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
     func tapRichWorkspace(_ sender: Any) { }
 
+    func tapRecommendationsButtonMenu(with metadata: tableMetadata, recommendedFiles: tableRecommendedFiles, image: UIImage?) { }
+
     // MARK: - Push metadata
 
     func pushMetadata(_ metadata: tableMetadata) {

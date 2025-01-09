@@ -999,6 +999,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
+    func tapRecommendationsButtonMenu(with metadata: tableMetadata, recommendedFiles: tableRecommendedFiles, image: UIImage?) {
+        toggleMenu(metadata: metadata, image: image)
+    }
+
     func tapButtonSection(_ sender: Any, metadataForSection: NCMetadataForSection?) {
         unifiedSearchMore(metadataForSection: metadataForSection)
     }
