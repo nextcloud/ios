@@ -69,12 +69,6 @@ class NCImagesRepository: NSObject {
             size: 20)
     }
     
-    static var livePhoto: UIImage {
-        utility.loadImage(
-            named: ImageName.livePhoto.rawValue,
-            colors: [NCBrandColor.shared.iconImageColor])
-    }
-    
     static var trash: UIImage {
         UIImage(resource: .deleted).withRenderingMode(.alwaysTemplate)
     }
