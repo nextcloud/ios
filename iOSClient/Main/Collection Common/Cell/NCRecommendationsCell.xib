@@ -4,6 +4,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -18,35 +19,47 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="5Ci-V1-hf5" userLabel="image">
-                        <rect key="frame" x="27.666666666666657" y="5" width="345" height="345"/>
+                        <rect key="frame" x="26" y="2" width="348" height="348"/>
                         <constraints>
                             <constraint firstAttribute="width" secondItem="5Ci-V1-hf5" secondAttribute="height" multiplier="1:1" id="Ipa-pH-HSa"/>
                         </constraints>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ixP-qo-bb5">
-                        <rect key="frame" x="5" y="368" width="385" height="12"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                        <rect key="frame" x="5" y="365.33333333333331" width="385" height="13.333333333333314"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="11"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0pg-4i-UyV">
-                        <rect key="frame" x="5" y="385" width="385" height="12"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                        <rect key="frame" x="5" y="383.66666666666669" width="385" height="13.333333333333314"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="11"/>
                         <color key="textColor" systemColor="systemGray2Color"/>
                         <nil key="highlightedColor"/>
                     </label>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="r62-EJ-fh1">
+                        <rect key="frame" x="380" y="2" width="20" height="20"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="20" id="5qT-W9-Nbo"/>
+                            <constraint firstAttribute="height" constant="20" id="d9l-D5-N5s"/>
+                        </constraints>
+                        <state key="normal" title="Button"/>
+                        <buttonConfiguration key="configuration" style="plain" image="ellipsis.circle.fill" catalog="system"/>
+                    </button>
                 </subviews>
             </view>
+            <color key="backgroundColor" name="yellow"/>
             <constraints>
+                <constraint firstAttribute="trailing" secondItem="r62-EJ-fh1" secondAttribute="trailing" id="0CX-Fw-p1Z"/>
                 <constraint firstAttribute="trailing" secondItem="0pg-4i-UyV" secondAttribute="trailing" constant="10" id="1bq-87-crR"/>
                 <constraint firstAttribute="bottom" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="50" id="8aV-2N-Kxz"/>
                 <constraint firstItem="ixP-qo-bb5" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" constant="5" id="B8v-xz-Iyo"/>
                 <constraint firstItem="0pg-4i-UyV" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" constant="5" id="Mx3-Fj-oyX"/>
-                <constraint firstItem="5Ci-V1-hf5" firstAttribute="top" secondItem="vf1-Kf-9uL" secondAttribute="top" constant="5" id="Ouj-ZD-UFm"/>
+                <constraint firstItem="5Ci-V1-hf5" firstAttribute="top" secondItem="vf1-Kf-9uL" secondAttribute="top" constant="2" id="Ouj-ZD-UFm"/>
                 <constraint firstItem="0pg-4i-UyV" firstAttribute="top" secondItem="ixP-qo-bb5" secondAttribute="bottom" constant="5" id="T5a-p1-tUh"/>
                 <constraint firstAttribute="bottom" secondItem="0pg-4i-UyV" secondAttribute="bottom" constant="3" id="WAu-kD-blD"/>
                 <constraint firstAttribute="trailing" secondItem="ixP-qo-bb5" secondAttribute="trailing" constant="10" id="lO4-ab-Pcr"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="centerX" secondItem="vf1-Kf-9uL" secondAttribute="centerX" id="laJ-b9-Tcy"/>
+                <constraint firstItem="r62-EJ-fh1" firstAttribute="top" secondItem="vf1-Kf-9uL" secondAttribute="top" constant="2" id="nws-y3-lMn"/>
             </constraints>
             <size key="customSize" width="409" height="311"/>
             <connections>
@@ -58,6 +71,10 @@
         </collectionViewCell>
     </objects>
     <resources>
+        <image name="ellipsis.circle.fill" catalog="system" width="128" height="123"/>
+        <namedColor name="yellow">
+            <color red="1" green="0.72500002384185791" blue="0.23899999260902405" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
         <systemColor name="systemGray2Color">
             <color red="0.68235294120000001" green="0.68235294120000001" blue="0.69803921570000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>

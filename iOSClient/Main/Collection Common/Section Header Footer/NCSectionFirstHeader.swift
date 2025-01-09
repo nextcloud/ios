@@ -213,9 +213,9 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let recommendation = self.recommendations[indexPath.row]
+        let recommendedFiles = self.recommendations[indexPath.row]
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as? NCRecommendationsCell,
-              let metadata = NCManageDatabase.shared.getResultMetadataFromFileId(recommendation.id) else { fatalError() }
+              let metadata = NCManageDatabase.shared.getResultMetadataFromFileId(recommendedFiles.id) else { fatalError() }
 
         var image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512)
 
@@ -226,8 +226,11 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
         }
 
         cell.image.image = image
-        cell.labelFilename.text = recommendation.name
-        cell.labelInfo.text = recommendation.reason
+        cell.labelFilename.text = recommendedFiles.name
+        cell.labelInfo.text = recommendedFiles.reason
+
+        cell.metadata = metadata
+        cell.recommendedFiles = recommendedFiles
 
         return cell
     }

@@ -12,4 +12,7 @@ class NCRecommendationsCell: UICollectionViewCell {
     @IBOutlet weak var image: UIImageView!
     @IBOutlet weak var labelFilename: UILabel!
     @IBOutlet weak var labelInfo: UILabel!
+
+    var metadata: tableMetadata = tableMetadata()
+    var recommendedFiles: tableRecommendedFiles = tableRecommendedFiles()
 }
