@@ -398,7 +398,8 @@ extension NCManageDatabase {
             capabilities.capabilityForbiddenFileNameCharacters = data.capabilities.files?.forbiddenFileNameCharacters ?? []
             capabilities.capabilityForbiddenFileNameExtensions = data.capabilities.files?.forbiddenFileNameExtensions ?? []
 
-            capabilities.capabilityRecommendations = data.capabilities.recommendations?.enabled ?? false
+            //TODO: not yet available (IN TEST)
+            //capabilities.capabilityRecommendations = data.capabilities.recommendations?.enabled ?? false
 
             NCCapabilities.shared.appendCapabilities(account: account, capabilities: capabilities)
 
