@@ -36,8 +36,8 @@ class NCRecommendationsCell: UICollectionViewCell {
         contentView.layer.cornerRadius = 10
         contentView.layer.masksToBounds = true
 
-        contentView.layer.borderWidth = 1
-        contentView.layer.borderColor = UIColor.systemGray5.cgColor
+        contentView.layer.borderWidth = 0.5
+        contentView.layer.borderColor = UIColor.separator.cgColor
     }
 
     @IBAction func touchUpInsideButtonMenu(_ sender: Any) {
