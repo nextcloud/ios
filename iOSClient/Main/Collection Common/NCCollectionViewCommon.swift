@@ -1008,7 +1008,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func tapRecommendations(with metadata: tableMetadata) {
-        
+        didSelectMetadata(metadata)
     }
 
     func longPressListItem(with ocId: String, ocIdTransfer: String, gestureRecognizer: UILongPressGestureRecognizer) { }
