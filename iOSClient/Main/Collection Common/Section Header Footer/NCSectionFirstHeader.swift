@@ -26,6 +26,7 @@ import MarkdownKit
 
 protocol NCSectionFirstHeaderDelegate: AnyObject {
     func tapRichWorkspace(_ sender: Any)
+    func tapRecommendations(with metadata: tableMetadata)
     func tapRecommendationsButtonMenu(with metadata: tableMetadata, image: UIImage?)
 }
 
@@ -250,7 +251,7 @@ extension NCSectionFirstHeader: UICollectionViewDelegate {
             return
         }
 
-        
+        self.delegate?.tapRecommendations(with: metadata)
     }
 }
 

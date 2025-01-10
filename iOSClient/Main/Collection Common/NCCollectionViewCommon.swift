@@ -1007,6 +1007,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         unifiedSearchMore(metadataForSection: metadataForSection)
     }
 
+    func tapRecommendations(with metadata: tableMetadata) {
+        
+    }
+
     func longPressListItem(with ocId: String, ocIdTransfer: String, gestureRecognizer: UILongPressGestureRecognizer) { }
 
     func longPressGridItem(with ocId: String, ocIdTransfer: String, gestureRecognizer: UILongPressGestureRecognizer) { }
