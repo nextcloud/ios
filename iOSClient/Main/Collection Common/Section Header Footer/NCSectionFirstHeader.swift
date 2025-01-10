@@ -222,8 +222,13 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
 
         if image == nil {
             cell.image.contentMode = .scaleAspectFit
+            if metadata.iconName.isEmpty {
+               image = NCImageCache.shared.getImageFile()
+            } else {
+                image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
+            }
         } else {
-            cell.image.contentMode = .scaleAspectFill
+            cell.image.contentMode = .scaleToFill
         }
 
         cell.image.image = image
