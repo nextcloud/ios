@@ -208,22 +208,30 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let session = SceneManager.shared.getSession(scene: scene)
         guard !session.account.isEmpty else { return }
 
-        func getMatchedAccount(userId: String, url: String) -> tableAccount? {
+        func getMatchedAccount(userId: String, url: String, completion: @escaping (_ tableAccount: tableAccount?) -> Void) {
+            var match: Bool = false
+
             if let activeTableAccount = self.database.getActiveTableAccount() {
                 let urlBase = URL(string: activeTableAccount.urlBase)
                 if url.contains(urlBase?.host ?? "") && userId == activeTableAccount.userId {
-                   return activeTableAccount
+                    completion(activeTableAccount)
                 } else {
                     for tableAccount in self.database.getAllTableAccount() {
                         let urlBase = URL(string: tableAccount.urlBase)
                         if url.contains(urlBase?.host ?? "") && userId == tableAccount.userId {
-                            NCAccount().changeAccount(tableAccount.account, userProfile: nil, controller: controller) { }
-                            return tableAccount
+                            match = true
+                            NCAccount().changeAccount(tableAccount.account, userProfile: nil, controller: controller) {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                    completion(tableAccount)
+                                }
+                            }
                         }
+                    }
+                    if !match {
+                        completion(nil)
                     }
                 }
             }
-            return nil
         }
 
         /*
@@ -231,65 +239,58 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
          */
 
         if scheme == NCGlobal.shared.appScheme && action == "open-action" {
-
             if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
                 let queryItems = urlComponents.queryItems
                 guard let actionScheme = queryItems?.filter({ $0.name == "action" }).first?.value,
                       let userScheme = queryItems?.filter({ $0.name == "user" }).first?.value,
                       let urlScheme = queryItems?.filter({ $0.name == "url" }).first?.value else { return }
-                if getMatchedAccount(userId: userScheme, url: urlScheme) == nil {
-                    let message = NSLocalizedString("_the_account_", comment: "") + " " + userScheme + NSLocalizedString("_of_", comment: "") + " " + urlScheme + " " + NSLocalizedString("_does_not_exist_", comment: "")
-                    let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
-                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
 
-                    controller.present(alertController, animated: true, completion: { })
-                    return
-                }
+                getMatchedAccount(userId: userScheme, url: urlScheme) { tableAccount in
+                    if tableAccount == nil {
+                        let message = NSLocalizedString("_the_account_", comment: "") + " " + userScheme + NSLocalizedString("_of_", comment: "") + " " + urlScheme + " " + NSLocalizedString("_does_not_exist_", comment: "")
+                        let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
+                        alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
 
-                switch actionScheme {
-                case NCGlobal.shared.actionUploadAsset:
-
-                    NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { hasPermission in
-                        if hasPermission {
-                            NCPhotosPickerViewController(controller: controller, maxSelectedAssets: 0, singleSelectedMode: false)
-                        }
+                        controller.present(alertController, animated: true, completion: { })
+                        return
                     }
 
-                case NCGlobal.shared.actionScanDocument:
-
-                    NCDocumentCamera.shared.openScannerDocument(viewController: controller)
-
-                case NCGlobal.shared.actionTextDocument:
-
-                    let directEditingCreators = self.database.getDirectEditingCreators(account: session.account)
-                    let directEditingCreator = directEditingCreators!.first(where: { $0.editor == NCGlobal.shared.editorText})!
-                    let serverUrl = controller.currentServerUrl()
-
-                    Task {
-                        let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + ".md", account: session.account, serverUrl: serverUrl)
-                        let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: serverUrl, session: session)
-
-                        NCCreateDocument().createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: NCGlobal.shared.editorText, creatorId: directEditingCreator.identifier, templateId: NCGlobal.shared.templateDocument, account: session.account)
-                    }
-
-                case NCGlobal.shared.actionVoiceMemo:
-
-                    NCAskAuthorization().askAuthorizationAudioRecord(viewController: controller) { hasPermission in
-                        if hasPermission {
-                            if let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as? NCAudioRecorderViewController {
-                                viewController.controller = controller
-                                viewController.modalTransitionStyle = .crossDissolve
-                                viewController.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
-                                controller.present(viewController, animated: true, completion: nil)
+                    switch actionScheme {
+                    case NCGlobal.shared.actionUploadAsset:
+                        NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { hasPermission in
+                            if hasPermission {
+                                NCPhotosPickerViewController(controller: controller, maxSelectedAssets: 0, singleSelectedMode: false)
                             }
                         }
-                    }
+                    case NCGlobal.shared.actionScanDocument:
+                        NCDocumentCamera.shared.openScannerDocument(viewController: controller)
+                    case NCGlobal.shared.actionTextDocument:
+                        let directEditingCreators = self.database.getDirectEditingCreators(account: session.account)
+                        let directEditingCreator = directEditingCreators!.first(where: { $0.editor == NCGlobal.shared.editorText})!
+                        let serverUrl = controller.currentServerUrl()
 
-                default:
-                    print("No action")
+                        Task {
+                            let fileName = await NCNetworking.shared.createFileName(fileNameBase: NSLocalizedString("_untitled_", comment: "") + ".md", account: session.account, serverUrl: serverUrl)
+                            let fileNamePath = NCUtilityFileSystem().getFileNamePath(String(describing: fileName), serverUrl: serverUrl, session: session)
+
+                            NCCreateDocument().createDocument(controller: controller, fileNamePath: fileNamePath, fileName: String(describing: fileName), editorId: NCGlobal.shared.editorText, creatorId: directEditingCreator.identifier, templateId: NCGlobal.shared.templateDocument, account: session.account)
+                        }
+                    case NCGlobal.shared.actionVoiceMemo:
+                        NCAskAuthorization().askAuthorizationAudioRecord(viewController: controller) { hasPermission in
+                            if hasPermission {
+                                if let viewController = UIStoryboard(name: "NCAudioRecorderViewController", bundle: nil).instantiateInitialViewController() as? NCAudioRecorderViewController {
+                                    viewController.controller = controller
+                                    viewController.modalTransitionStyle = .crossDissolve
+                                    viewController.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
+                                    controller.present(viewController, animated: true, completion: nil)
+                                }
+                            }
+                        }
+                    default:
+                        print("No action")
+                    }
                 }
             }
-            return
         }
 
         /*
@@ -297,9 +298,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
          */
 
         else if scheme == NCGlobal.shared.appScheme && action == "open-file" {
-
             if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) {
-
                 var serverUrl: String = ""
                 var fileName: String = ""
                 let queryItems = urlComponents.queryItems
@@ -307,32 +306,30 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                       let pathScheme = queryItems?.filter({ $0.name == "path" }).first?.value,
                       let linkScheme = queryItems?.filter({ $0.name == "link" }).first?.value else { return}
 
-                guard let matchedAccount = getMatchedAccount(userId: userScheme, url: linkScheme) else {
-                    guard let domain = URL(string: linkScheme)?.host else { return }
-                    fileName = (pathScheme as NSString).lastPathComponent
-                    let message = String(format: NSLocalizedString("_account_not_available_", comment: ""), userScheme, domain, fileName)
-                    let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
-                    alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
+                getMatchedAccount(userId: userScheme, url: linkScheme) { tableAccount in
+                    guard let tableAccount else {
+                        guard let domain = URL(string: linkScheme)?.host else { return }
+                        fileName = (pathScheme as NSString).lastPathComponent
+                        let message = String(format: NSLocalizedString("_account_not_available_", comment: ""), userScheme, domain, fileName)
+                        let alertController = UIAlertController(title: NSLocalizedString("_info_", comment: ""), message: message, preferredStyle: .alert)
+                        alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
 
-                    controller.present(alertController, animated: true, completion: { })
-                    return
-                }
+                        controller.present(alertController, animated: true, completion: { })
+                        return
+                    }
+                    let davFiles = "remote.php/dav/files/" + tableAccount.userId
 
-                let davFiles = "remote.php/dav/files/" + session.userId
+                    if pathScheme.contains("/") {
+                        fileName = (pathScheme as NSString).lastPathComponent
+                        serverUrl = tableAccount.urlBase + "/" + davFiles + "/" + (pathScheme as NSString).deletingLastPathComponent
+                    } else {
+                        fileName = pathScheme
+                        serverUrl = tableAccount.urlBase + "/" + davFiles
+                    }
 
-                if pathScheme.contains("/") {
-                    fileName = (pathScheme as NSString).lastPathComponent
-                    serverUrl = matchedAccount.urlBase + "/" + davFiles + "/" + (pathScheme as NSString).deletingLastPathComponent
-                } else {
-                    fileName = pathScheme
-                    serverUrl = matchedAccount.urlBase + "/" + davFiles
-                }
-
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     NCActionCenter.shared.openFileViewInFolder(serverUrl: serverUrl, fileNameBlink: nil, fileNameOpen: fileName, sceneIdentifier: controller.sceneIdentifier)
                 }
             }
-            return
 
         /*
          Example: nextcloud://open-and-switch-account?user=marinofaggiana&url=https://cloud.nextcloud.com
@@ -344,16 +341,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             guard let userScheme = queryItems?.filter({ $0.name == "user" }).first?.value,
                   let urlScheme = queryItems?.filter({ $0.name == "url" }).first?.value else { return }
             // If the account doesn't exist, return false which will open the app without switching
-            if getMatchedAccount(userId: userScheme, url: urlScheme) == nil {
-                return
-            }
-            // Otherwise open the app and switch accounts
-            return
+            getMatchedAccount(userId: userScheme, url: urlScheme) { _ in }
         } else if let action {
             if DeepLink(rawValue: action) != nil {
                 NCDeepLinkHandler().parseDeepLink(url, controller: controller)
             }
-            return
         } else {
             let applicationHandle = NCApplicationHandle()
             let isHandled = applicationHandle.applicationOpenURL(url)
