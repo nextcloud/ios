@@ -35,7 +35,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         }
 
 		var selectionState: FileActionsHeaderSelectionState {
-			let selectedItemsCount = selectOcId.count
+            let selectedItemsCount = fileSelect.count
 			if selectedItemsCount == dataSource.getMetadatas().count {
 				return .all
 			}

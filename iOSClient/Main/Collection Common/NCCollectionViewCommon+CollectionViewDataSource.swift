@@ -204,7 +204,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
             } else {
                 cell.fileInfoLabel?.text = metadata.subline
             }
-            cell.fileSubinfoLabel?.text = nil
             cell.fileSubinfoLabel?.isHidden = true
         } else if !metadata.sessionError.isEmpty, metadata.status != global.metadataStatusNormal {
             cell.fileSubinfoLabel?.isHidden = false
@@ -323,7 +322,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         // image Favorite
         if metadata.favorite {
-            cell.fileFavoriteImage?.image = UIImage(resource: .FileFolderCell.star)
+            cell.fileFavoriteImage?.image = imageCache.getImageFavorite()
             a11yValues.append(NSLocalizedString("_favorite_short_", comment: ""))
         }
 

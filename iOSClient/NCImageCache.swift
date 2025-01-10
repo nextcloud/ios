@@ -194,7 +194,7 @@ class NCImageCache: NSObject {
     }
 
     func getImageFavorite() -> UIImage {
-        return NCImagesRepository.favorite
+        return UIImage(resource: .FileFolderCell.star)
     }
 
     func getImageOfflineFlag() -> UIImage {

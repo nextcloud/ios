@@ -60,7 +60,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 	}
     var isDirectoryEncrypted = false
     var fileSelect: [String] = []
-    var selectOcId: [String] = []
     var metadataFolder: tableMetadata?
     var richWorkspaceText: String?
     var sectionFirstHeader: NCSectionFirstHeader?
@@ -195,9 +194,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             searchController?.searchBar.autocapitalizationType = .none
             navigationItem.searchController = searchController
             navigationItem.hidesSearchBarWhenScrolling = true
-            if #available(iOS 16.0, *) {
-                navigationItem.preferredSearchBarPlacement = .stacked
-            }
+            fixSearchBarPlacementForIOS16()
         }
 
         // Cell
@@ -283,12 +280,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
 
         collectionView.reloadData()
-		updateHeadersView()
-		
-        // FIXME: iPAD PDF landscape mode iOS 16
-        DispatchQueue.main.async {
-            self.collectionView?.collectionViewLayout.invalidateLayout()
-        }
+        updateHeadersView()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -388,6 +380,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
+
+        if let frame = tabBarController?.tabBar.frame {
+            tabBarSelect.hostingController?.view.frame = frame
+        }
     }
 
     // MARK: - NotificationCenter
@@ -446,6 +442,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.collectionView.collectionViewLayout.invalidateLayout()
 
         self.setNavigationRightItems()
+        self.updateHeadersView()
     }
 
     @objc func reloadDataSource(_ notification: NSNotification) {
@@ -704,13 +701,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.mainTabBarController?.showBurgerMenu()
     }
 
-	private func saveLayout(_ layoutForView: NCDBLayoutForView) {
-		NCManageDatabase.shared.setLayoutForView(layoutForView: layoutForView)
-		NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource)
-		setNavigationRightItems()
-		updateHeadersView()
-	}
-	
     func setNavigationRightItems() {
         if isSearchingMode && (UIDevice.current.userInterfaceIdiom == .phone) {
             navigationItem.rightBarButtonItems = nil
@@ -727,7 +717,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             tabBarSelect.show()
         } else {
             tabBarSelect.hide()
-			navigationItem.rightBarButtonItems = layoutKey == NCGlobal.shared.layoutViewFiles ? [createAccountButton()] : []
+            navigationItem.rightBarButtonItems = isCurrentScreenInMainTabBar() ? [createAccountButton()] : []
         }
         // fix, if the tabbar was hidden before the update, set it in hidden
         if isTabBarHidden, isTabBarSelectHidden {
@@ -789,18 +779,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.providers?.removeAll()
         self.dataSource.removeAll()
         self.reloadDataSource()
-    }
-    
-    func willPresentSearchController(_ searchController: UISearchController) {
-        setNavigationLeftItems()
-        setNavigationRightItems()
-        navigationItem.title = nil
-    }
-    
-    func didDismissSearchController(_ searchController: UISearchController) {
-        setNavigationLeftItems()
-        setNavigationRightItems()
-        navigationItem.title = titleCurrentFolder
     }
 
     // MARK: - TAP EVENT
@@ -1100,6 +1078,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 // MARK: -
 
 extension NCCollectionViewCommon {
+    
+    private func fixSearchBarPlacementForIOS16() {
+        if #available(iOS 16.0, *) {
+            navigationItem.preferredSearchBarPlacement = .stacked
+        }
+    }
+    
 	// MARK: - Headers view
 	
 	private var sortTitle: String? {
@@ -1119,15 +1104,18 @@ extension NCCollectionViewCommon {
 	}
 	
 	private var viewModeImage: UIImage? {
-		var imageName: String = ""
+        var imageResource: ImageResource?
 		
 		switch layoutType {
-		case NCGlobal.shared.layoutList: imageName = "FileSelection/view_mode_list"
-		case NCGlobal.shared.layoutGrid, NCGlobal.shared.layoutPhotoRatio, NCGlobal.shared.layoutPhotoSquare: imageName = "FileSelection/view_mode_grid"
+        case NCGlobal.shared.layoutList: imageResource = .FileSelection.viewModeList
+        case NCGlobal.shared.layoutGrid, NCGlobal.shared.layoutPhotoRatio, NCGlobal.shared.layoutPhotoSquare: imageResource = .FileSelection.viewModeGrid
 		default: break
 		}
 		
-		return UIImage(named: imageName)
+        if let imageResource {
+            return UIImage(resource: imageResource)
+        }
+        return nil
 	}
 	
 	private func updateHeadersView() {
@@ -1148,13 +1136,13 @@ extension NCCollectionViewCommon {
 		fileActionsHeader?.onSelectAll = { [weak self] in
 			guard let self = self else { return }
 			self.selectAll()
-			let selectionState: FileActionsHeaderSelectionState = self.selectOcId.count == 0 ? .none : .all
+            let selectionState: FileActionsHeaderSelectionState = self.fileSelect.count == 0 ? .none : .all
 			self.fileActionsHeader?.setSelectionState(selectionState: selectionState)
 		}
 	}
 	
 	private func setNavigationBarLogoIfNeeded() {
-		if  isCurrentScreenInMainTabBar() && self.navigationController?.viewControllers.count == 1 {
+		if isCurrentScreenInMainTabBar() && self.navigationController?.viewControllers.count == 1 {
 			setNavigationBarLogo()
 		}
 	}
@@ -1173,7 +1161,7 @@ extension NCCollectionViewCommon {
 				   layoutForView.ascending = !layoutForView.ascending
 			   }
 			   layoutForView.sort = "fileName"
-			   self?.saveLayout(layoutForView)
+			   self?.notifyAboutLayoutChange(layoutForView)
 		   }
 
 		   let byNewest = UIAction(title: NSLocalizedString("_date_", comment: ""), image: isDate ? ascendingChevronImage : nil, state: isDate ? .on : .off) { [weak self]  _ in
@@ -1181,7 +1169,7 @@ extension NCCollectionViewCommon {
 				   layoutForView.ascending = !layoutForView.ascending
 			   }
 			   layoutForView.sort = "date"
-			   self?.saveLayout(layoutForView)
+			   self?.notifyAboutLayoutChange(layoutForView)
 		   }
 
 		   let byLargest = UIAction(title: NSLocalizedString("_size_", comment: ""), image: isSize ? ascendingChevronImage : nil, state: isSize ? .on : .off) { [weak self]  _ in
@@ -1189,14 +1177,14 @@ extension NCCollectionViewCommon {
 				   layoutForView.ascending = !layoutForView.ascending
 			   }
 			   layoutForView.sort = "size"
-			   self?.saveLayout(layoutForView)
+			   self?.notifyAboutLayoutChange(layoutForView)
 		   }
 
 		   let sortSubmenu = UIMenu(title: NSLocalizedString("_order_by_", comment: ""), options: .displayInline, children: [byName, byNewest, byLargest])
 
 		   let foldersOnTop = UIAction(title: NSLocalizedString("_directory_on_top_no_", comment: ""), image: utility.loadImage(named: "folder"), state: layoutForView.directoryOnTop ? .on : .off) { [weak self]  _ in
 			   layoutForView.directoryOnTop = !layoutForView.directoryOnTop
-			   self?.saveLayout(layoutForView)
+			   self?.notifyAboutLayoutChange(layoutForView)
 		   }
 
 		   let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [foldersOnTop])
@@ -1206,60 +1194,38 @@ extension NCCollectionViewCommon {
 	func createViewModeMenuActions() -> [UIMenuElement] {
         guard let layoutForView = NCManageDatabase.shared.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl) else { return [] }
 
-		let listImage = UIImage(named: "FileSelection/view_mode_list")?.templateRendered()
-		let gridImage = UIImage(named: "FileSelection/view_mode_grid")?.templateRendered()
+        let listImage = UIImage(resource: .FileSelection.viewModeList).templateRendered()
+        let gridImage = UIImage(resource: .FileSelection.viewModeGrid).templateRendered()
 
 		let list = UIAction(title: NSLocalizedString("_list_", comment: ""), image: listImage, state: layoutForView.layout == NCGlobal.shared.layoutList ? .on : .off) { _ in
-			layoutForView.layout = NCGlobal.shared.layoutList
-			self.layoutForView = NCManageDatabase.shared.setLayoutForView(layoutForView: layoutForView)
-			self.layoutType = NCGlobal.shared.layoutList
-
-			self.collectionView.reloadData()
-			self.collectionView.collectionViewLayout.invalidateLayout()
-//			self.collectionView.setCollectionViewLayout(self.listLayout, animated: true) {_ in self.isTransitioning = false }
-
-			self.setNavigationRightItems()
+            layoutForView.layout = self.global.layoutList
+            self.notifyAboutLayoutChange(layoutForView)
 		}
 
 		let grid = UIAction(title: NSLocalizedString("_icons_", comment: ""), image: gridImage, state: layoutForView.layout == NCGlobal.shared.layoutGrid ? .on : .off) { _ in
-			layoutForView.layout = NCGlobal.shared.layoutGrid
-			self.layoutForView = NCManageDatabase.shared.setLayoutForView(layoutForView: layoutForView)
-			self.layoutType = NCGlobal.shared.layoutGrid
-
-			self.collectionView.reloadData()
-			self.collectionView.collectionViewLayout.invalidateLayout()
-//			self.collectionView.setCollectionViewLayout(self.gridLayout, animated: true) {_ in self.isTransitioning = false }
-
-			self.setNavigationRightItems()
+            layoutForView.layout = self.global.layoutGrid
+            self.notifyAboutLayoutChange(layoutForView)
 		}
 
 		let menuPhoto = UIMenu(title: "", options: .displayInline, children: [
 			UIAction(title: NSLocalizedString("_media_square_", comment: ""), image: gridImage, state: layoutForView.layout == NCGlobal.shared.layoutPhotoSquare ? .on : .off) { _ in
-				layoutForView.layout = NCGlobal.shared.layoutPhotoSquare
-				self.layoutForView = NCManageDatabase.shared.setLayoutForView(layoutForView: layoutForView)
-				self.layoutType = NCGlobal.shared.layoutPhotoSquare
-
-				self.collectionView.reloadData()
-				self.collectionView.collectionViewLayout.invalidateLayout()
-//				self.collectionView.setCollectionViewLayout(self.mediaLayout, animated: true) {_ in self.isTransitioning = false }
-
-				self.reloadDataSource()
-				self.setNavigationRightItems()
+                layoutForView.layout = self.global.layoutPhotoSquare
+                self.notifyAboutLayoutChange(layoutForView)
 			},
 			UIAction(title: NSLocalizedString("_media_ratio_", comment: ""), image: gridImage, state: layoutForView.layout == NCGlobal.shared.layoutPhotoRatio ? .on : .off) { _ in
-				layoutForView.layout = NCGlobal.shared.layoutPhotoRatio
-				self.layoutForView = NCManageDatabase.shared.setLayoutForView(layoutForView: layoutForView)
-				self.layoutType = NCGlobal.shared.layoutPhotoRatio
-
-				self.collectionView.reloadData()
-				self.collectionView.collectionViewLayout.invalidateLayout()
-//				self.collectionView.setCollectionViewLayout(self.mediaLayout, animated: true) {_ in self.isTransitioning = false }
-
-				self.reloadDataSource()
-				self.setNavigationRightItems()
+                layoutForView.layout = self.global.layoutPhotoRatio
+                self.notifyAboutLayoutChange(layoutForView)
 			}
 		])
 
 		return [list, grid, UIMenu(title: NSLocalizedString("_media_view_options_", comment: ""), children: [menuPhoto])]
 	}
+    
+    private func notifyAboutLayoutChange(_ layoutForView: NCDBLayoutForView) {
+        NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
+                                                    object: nil,
+                                                    userInfo: ["account": self.session.account,
+                                                               "serverUrl": self.serverUrl,
+                                                               "layoutForView": layoutForView])
+    }
 }
