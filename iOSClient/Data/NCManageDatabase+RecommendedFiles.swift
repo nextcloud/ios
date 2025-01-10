@@ -7,21 +7,6 @@ import RealmSwift
 import NextcloudKit
 
 class tableRecommendedFiles: Object {
-    override func isEqual(_ object: Any?) -> Bool {
-        if let object = object as? tableRecommendedFiles,
-           self.timestamp == object.timestamp,
-           self.name == object.name,
-           self.directory == object.directory,
-           self.extensionType == object.extensionType,
-           self.mimeType == object.mimeType,
-           self.hasPreview == object.hasPreview,
-           self.reason == object.reason {
-            return true
-        } else {
-            return false
-        }
-    }
-
     @Persisted var account = ""
     @Persisted var id = ""
     @Persisted(primaryKey: true) var primaryKey = ""
@@ -50,7 +35,7 @@ class tableRecommendedFiles: Object {
 }
 
 extension NCManageDatabase {
-    func addRecommendedFiles(account: String, recommendations: [NKRecommendation]) {
+    func createRecommendedFiles(account: String, recommendations: [NKRecommendation]) {
         do {
             let realm = try Realm()
 
@@ -71,17 +56,17 @@ extension NCManageDatabase {
         }
     }
 
-    func getResultsRecommendedFiles(account: String) -> Results<tableRecommendedFiles>? {
+    func getResultsRecommendedFiles(account: String) -> [tableRecommendedFiles] {
         do {
             let realm = try Realm()
             let results = realm.objects(tableRecommendedFiles.self).filter("account == %@", account)
 
-            return results
+            return Array(results)
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
 
-        return nil
+        return []
     }
 
     func getNKRecommendation(account: String) -> [NKRecommendation] {
@@ -94,7 +79,6 @@ extension NCManageDatabase {
             for result in results {
                 let recommendation = NKRecommendation(id: result.id, timestamp: result.timestamp, name: result.name, directory: result.directory, extensionType: result.extensionType, mimeType: result.mimeType, hasPreview: result.hasPreview, reason: result.reason)
                 recommendations.append(recommendation)
-
             }
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
@@ -134,7 +118,7 @@ extension NCManageDatabase {
         for (primaryKey, existingObject) in existingDictionary {
             if let newObject = newDictionary[primaryKey] {
                 // If exists, verify if is changed
-                if !existingObject.isEqual(newObject) {
+                if existingObject.timestamp != newObject.timestamp {
                     changed.append(newObject)
                 }
             } else {

@@ -171,6 +171,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         tabBarSelect = NCCollectionViewCommonSelectTabBar(controller: self.controller, delegate: self)
         self.navigationController?.presentationController?.delegate = self
         collectionView.alwaysBounceVertical = true
+        collectionView.accessibilityIdentifier = "NCCollectionViewCommon"
 
         view.backgroundColor = .systemBackground
         collectionView.backgroundColor = .systemBackground
@@ -856,14 +857,24 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
             showDescription.subtitle = richWorkspaceText == nil ? NSLocalizedString("_no_description_available_", comment: "") : ""
 
+            let showRecommendedFilesKeychain = NCKeychain().showRecommendedFiles
+            let capabilityRecommendations = NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityRecommendations
+            let showRecommendedFiles = UIAction(title: NSLocalizedString("_show_recommended_files_", comment: ""), image: utility.loadImage(named: "sparkles"), attributes: !capabilityRecommendations ? .disabled : [], state: showRecommendedFilesKeychain ? .on : .off) { _ in
+
+                NCKeychain().showRecommendedFiles = !showRecommendedFilesKeychain
+
+                self.collectionView.reloadData()
+                self.setNavigationRightItems()
+            }
+
             if layoutKey == global.layoutViewRecent {
                 return [select]
             } else {
                 var additionalSubmenu = UIMenu()
                 if layoutKey == global.layoutViewFiles {
-                    additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [foldersOnTop, personalFilesOnlyAction, showDescription])
+                    additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [foldersOnTop, personalFilesOnlyAction, showDescription, showRecommendedFiles])
                 } else {
-                    additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [foldersOnTop, showDescription])
+                    additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [foldersOnTop, showDescription, showRecommendedFiles])
                 }
                 return [select, viewStyleSubmenu, sortSubmenu, additionalSubmenu]
             }
@@ -988,8 +999,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
+    func tapRecommendationsButtonMenu(with metadata: tableMetadata, image: UIImage?) {
+        toggleMenu(metadata: metadata, image: image)
+    }
+
     func tapButtonSection(_ sender: Any, metadataForSection: NCMetadataForSection?) {
         unifiedSearchMore(metadataForSection: metadataForSection)
+    }
+
+    func tapRecommendations(with metadata: tableMetadata) {
+        didSelectMetadata(metadata)
     }
 
     func longPressListItem(with ocId: String, ocIdTransfer: String, gestureRecognizer: UILongPressGestureRecognizer) { }
@@ -1156,7 +1175,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             navigationController?.pushViewController(viewController, animated: true)
         } else {
             if let viewController: NCFiles = UIStoryboard(name: "NCFiles", bundle: nil).instantiateInitialViewController() as? NCFiles {
-                viewController.isRoot = false
                 viewController.serverUrl = serverUrlPush
                 viewController.titlePreviusFolder = navigationItem.title
                 viewController.titleCurrentFolder = metadata.fileNameView
@@ -1180,10 +1198,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         return nil
     }
 
-    func getHeaderHeight(section: Int) -> (heightHeaderCommands: CGFloat, heightHeaderRichWorkspace: CGFloat, heightHeaderSection: CGFloat) {
-        var headerRichWorkspace: CGFloat = 0
+    func getHeaderHeight(section: Int) -> (heightHeaderCommands: CGFloat,
+                                           heightHeaderRichWorkspace: CGFloat,
+                                           heightHeaderRecommendations: CGFloat,
+                                           heightHeaderSection: CGFloat) {
+        var heightHeaderRichWorkspace: CGFloat = 0
+        var heightHeaderRecommendations: CGFloat = 0
 
-        func getHeaderHeight() -> CGFloat {
+        func getHeightHeaderCommands() -> CGFloat {
             var size: CGFloat = 0
 
             if isHeaderMenuTransferViewEnabled() != nil {
@@ -1191,38 +1213,50 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                     size += global.heightHeaderTransfer
                 }
             }
+
             return size
         }
 
-        if let richWorkspaceText = richWorkspaceText, showDescription {
-            let trimmed = richWorkspaceText.trimmingCharacters(in: .whitespaces)
-            if !trimmed.isEmpty && !isSearchingMode {
-                headerRichWorkspace = UIScreen.main.bounds.size.height / 6
-            }
+        if showDescription,
+           !isSearchingMode,
+           let richWorkspaceText = richWorkspaceText,
+           !richWorkspaceText.trimmingCharacters(in: .whitespaces).isEmpty {
+            heightHeaderRichWorkspace = UIScreen.main.bounds.size.height / 6
+        }
+
+        if self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session),
+           NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityRecommendations,
+           !isSearchingMode,
+           !self.database.getResultsRecommendedFiles(account: self.session.account).isEmpty,
+           NCKeychain().showRecommendedFiles {
+            heightHeaderRecommendations = self.global.heightHeaderRecommendations
         }
 
         if isSearchingMode || layoutForView?.groupBy != "none" || self.dataSource.numberOfSections() > 1 {
             if section == 0 {
-                return (getHeaderHeight(), headerRichWorkspace, global.heightSection)
+                return (getHeightHeaderCommands(), heightHeaderRichWorkspace, heightHeaderRecommendations, global.heightSection)
             } else {
-                return (0, 0, global.heightSection)
+                return (0, 0, 0, global.heightSection)
             }
         } else {
-            return (getHeaderHeight(), headerRichWorkspace, 0)
+            return (getHeightHeaderCommands(), heightHeaderRichWorkspace, heightHeaderRecommendations, 0)
         }
     }
 
     func sizeForHeaderInSection(section: Int) -> CGSize {
         var height: CGFloat = 0
+        let isLandscape = view.bounds.width > view.bounds.height
+        let isIphone = UIDevice.current.userInterfaceIdiom == .phone
 
-        if isEditMode {
-            return CGSize.zero
-        } else if self.dataSource.isEmpty() {
+        if self.dataSource.isEmpty() {
             height = utility.getHeightHeaderEmptyData(view: view, portraitOffset: emptyDataPortaitOffset, landscapeOffset: emptyDataLandscapeOffset, isHeaderMenuTransferViewEnabled: isHeaderMenuTransferViewEnabled() != nil)
+        } else if isEditMode || (isLandscape && isIphone) {
+            return CGSize.zero
         } else {
-            let (heightHeaderCommands, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: section)
-            height = heightHeaderCommands + heightHeaderRichWorkspace + heightHeaderSection
+            let (heightHeaderCommands, heightHeaderRichWorkspace, heightHeaderRecommendations, heightHeaderSection) = getHeaderHeight(section: section)
+            height = heightHeaderCommands + heightHeaderRichWorkspace + heightHeaderRecommendations + heightHeaderSection
         }
+
         return CGSize(width: collectionView.frame.width, height: height)
     }
 

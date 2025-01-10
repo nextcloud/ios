@@ -27,7 +27,6 @@ import RealmSwift
 import SwiftUI
 
 class NCFiles: NCCollectionViewCommon {
-    internal var isRoot: Bool = true
     internal var fileNameBlink: String?
     internal var fileNameOpen: String?
     internal var matadatasHash: String = ""
@@ -50,7 +49,14 @@ class NCFiles: NCCollectionViewCommon {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if isRoot {
+        if self.serverUrl.isEmpty {
+
+            ///
+            /// Set ServerURL when start (isEmpty)
+            ///
+            self.serverUrl = utilityFileSystem.getHomeServer(session: session)
+            self.titleCurrentFolder = getNavigationTitle()
+
             NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { notification in
 
                 if let userInfo = notification.userInfo, let account = userInfo["account"] as? String {
@@ -88,10 +94,6 @@ class NCFiles: NCCollectionViewCommon {
     }
 
     override func viewWillAppear(_ animated: Bool) {
-        if isRoot {
-            serverUrl = utilityFileSystem.getHomeServer(session: session)
-            titleCurrentFolder = getNavigationTitle()
-        }
         super.viewWillAppear(animated)
 
         reloadDataSource()
@@ -127,7 +129,7 @@ class NCFiles: NCCollectionViewCommon {
             return super.reloadDataSource()
         }
 
-        // This is only a fail safe "dead lock", I don't think the timeout will ever be called but at least nothing gets stuck, if after 5 sec. (which is a long time in this routine), the semaphore is still locked
+        // Watchdog: this is only a fail safe "dead lock", I don't think the timeout will ever be called but at least nothing gets stuck, if after 5 sec. (which is a long time in this routine), the semaphore is still locked
         //
         if self.semaphoreReloadDataSource.wait(timeout: .now() + 5) == .timedOut {
             self.semaphoreReloadDataSource.signal()
@@ -184,13 +186,25 @@ class NCFiles: NCCollectionViewCommon {
             return false
         }
 
-        DispatchQueue.global().async {
-            if self.isRoot,
-               NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityRecommendations {
-                NextcloudKit.shared.getRecommendedFiles(account: self.session.account) { account, recommendations, responseData, error in
+        ///
+        /// Recommended files
+        ///
+        if self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session),
+           NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityRecommendations {
+            let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
+            NextcloudKit.shared.getRecommendedFiles(account: self.session.account, options: options) { _, recommendations, _, error in
+                if error == .success,
+                   let recommendations,
+                   !recommendations.isEmpty {
+                    Task.detached {
+                        await self.createRecommendations(recommendations)
+                    }
                 }
             }
+        }
+
+        DispatchQueue.global().async {
             self.networkReadFolder { metadatas, isChanged, error in
                 DispatchQueue.main.async {
                     self.refreshControl.endRefreshing()
@@ -352,6 +366,48 @@ class NCFiles: NCCollectionViewCommon {
         }
     }
 
+    private func createRecommendations(_ recommendations: [NKRecommendation]) async {
+        let home = self.utilityFileSystem.getHomeServer(session: self.session)
+        var recommendationsToInsert: [NKRecommendation] = []
+
+        for recommendation in recommendations {
+            var metadata = database.getResultMetadataFromFileId(recommendation.id)
+            if metadata == nil || metadata?.fileName != recommendation.name {
+                let serverUrlFileName = home + recommendation.directory + recommendation.name
+                let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles, account: session.account)
+
+                if results.error == .success, let file = results.files?.first {
+                    let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
+                    let metadataConverted = self.database.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
+                    metadata = metadataConverted
+
+                    self.database.addMetadata(metadataConverted)
+                    recommendationsToInsert.append(recommendation)
+                }
+            } else {
+                recommendationsToInsert.append(recommendation)
+            }
+
+            if let metadata,
+               recommendation.hasPreview,
+               !self.utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag) {
+                let result = await NCNetworking.shared.downloadPreview(fileId: metadata.fileId, account: session.account)
+
+                if result.error == .success, let data = result.responseData?.data {
+                    self.utility.createImageFileFrom(data: data, ocId: metadata.ocId, etag: metadata.etag)
+                }
+            }
+        }
+
+        let results = self.database.compareRecommendations(account: session.account, newObjects: recommendationsToInsert)
+        if results.added.count + results.changed.count + results.deleted.count > 0 {
+            self.database.createRecommendedFiles(account: session.account, recommendations: recommendationsToInsert)
+            Task { @MainActor in
+                self.collectionView.reloadData()
+            }
+        }
+    }
+
     // MARK: - NCAccountSettingsModelDelegate
 
     override func accountSettingsDidDismiss(tableAccount: tableAccount?, controller: NCMainTabBarController?) {
@@ -361,9 +417,9 @@ class NCFiles: NCCollectionViewCommon {
             appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
         } else if let account = tableAccount?.account, account != currentAccount {
             NCAccount().changeAccount(account, userProfile: nil, controller: controller) { }
-        } else if isRoot {
-            titleCurrentFolder = getNavigationTitle()
-            navigationItem.title = titleCurrentFolder
+        } else if self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session) {
+            self.titleCurrentFolder = getNavigationTitle()
+            navigationItem.title = self.titleCurrentFolder
         }
 
         setNavigationLeftItems()

@@ -527,7 +527,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
             } else if indexPath.section == 0 {
                 guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeader", for: indexPath) as? NCSectionFirstHeader else { return NCSectionFirstHeader() }
-                let (_, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: indexPath.section)
+                let (_, heightHeaderRichWorkspace, heightHeaderRecommendations, heightHeaderSection) = getHeaderHeight(section: indexPath.section)
                 self.sectionFirstHeader = header
                 header.delegate = self
 
@@ -539,6 +539,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
                 header.setRichWorkspaceHeight(heightHeaderRichWorkspace)
                 header.setRichWorkspaceText(richWorkspaceText)
+
+                let tableRecommendedFiles = self.database.getResultsRecommendedFiles(account: self.session.account)
+                header.setRecommendations(size: heightHeaderRecommendations, recommendations: tableRecommendedFiles)
 
                 header.setSectionHeight(heightHeaderSection)
                 if heightHeaderSection == 0 {
