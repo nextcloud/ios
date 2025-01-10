@@ -205,8 +205,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
               let url = URLContexts.first?.url else { return }
         let scheme = url.scheme
         let action = url.host
-        let session = SceneManager.shared.getSession(scene: scene)
-        guard !session.account.isEmpty else { return }
 
         func getMatchedAccount(userId: String, url: String, completion: @escaping (_ tableAccount: tableAccount?) -> Void) {
             var match: Bool = false
@@ -254,6 +252,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                         controller.present(alertController, animated: true, completion: { })
                         return
                     }
+                    let session = SceneManager.shared.getSession(scene: scene)
 
                     switch actionScheme {
                     case NCGlobal.shared.actionUploadAsset:
