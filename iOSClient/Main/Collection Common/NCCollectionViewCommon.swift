@@ -999,7 +999,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
-    func tapRecommendationsButtonMenu(with metadata: tableMetadata, recommendedFiles: tableRecommendedFiles, image: UIImage?) {
+    func tapRecommendationsButtonMenu(with metadata: tableMetadata, image: UIImage?) {
         toggleMenu(metadata: metadata, image: image)
     }
 

@@ -9,7 +9,7 @@
 import UIKit
 
 protocol NCRecommendationsCellDelegate: AnyObject {
-    func touchUpInsideButtonMenu(with metadata: tableMetadata, recommendedFiles: tableRecommendedFiles, image: UIImage?)
+    func touchUpInsideButtonMenu(with metadata: tableMetadata, image: UIImage?)
 }
 
 class NCRecommendationsCell: UICollectionViewCell {
@@ -41,6 +41,6 @@ class NCRecommendationsCell: UICollectionViewCell {
     }
 
     @IBAction func touchUpInsideButtonMenu(_ sender: Any) {
-        self.delegate?.touchUpInsideButtonMenu(with: self.metadata, recommendedFiles: self.recommendedFiles, image: image.image)
+        self.delegate?.touchUpInsideButtonMenu(with: self.metadata, image: image.image)
     }
 }
