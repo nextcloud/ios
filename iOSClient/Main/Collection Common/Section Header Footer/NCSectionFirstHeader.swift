@@ -28,6 +28,7 @@ protocol NCSectionFirstHeaderDelegate: AnyObject {
     func tapRichWorkspace(_ sender: Any)
     func tapRecommendations(with metadata: tableMetadata)
     func tapRecommendationsButtonMenu(with metadata: tableMetadata, image: UIImage?)
+    func longPressGestureRecognizedRecommendations(with metadata: tableMetadata, image: UIImage?)
 }
 
 class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegate {
@@ -264,5 +265,9 @@ extension NCSectionFirstHeader: UICollectionViewDelegateFlowLayout {
 extension NCSectionFirstHeader: NCRecommendationsCellDelegate {
     func touchUpInsideButtonMenu(with metadata: tableMetadata, image: UIImage?) {
         self.delegate?.tapRecommendationsButtonMenu(with: metadata, image: image)
+    }
+
+    func longPressGestureRecognized(with metadata: tableMetadata, image: UIImage?) {
+        self.delegate?.longPressGestureRecognizedRecommendations(with: metadata, image: image)
     }
 }
