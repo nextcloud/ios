@@ -45,6 +45,7 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
 
     @IBOutlet weak var textViewRichWorkspace: UITextView!
     @IBOutlet weak var collectionViewRecommendations: UICollectionView!
+    @IBOutlet weak var labelRecommendations: UILabel!
     @IBOutlet weak var imageTransfer: UIImageView!
     @IBOutlet weak var labelTransfer: UILabel!
     @IBOutlet weak var progressTransfer: UIProgressView!
@@ -88,6 +89,7 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
         layout.minimumInteritemSpacing = 10
         collectionViewRecommendations.collectionViewLayout = layout
         collectionViewRecommendations.register(UINib(nibName: "NCRecommendationsCell", bundle: nil), forCellWithReuseIdentifier: "cell")
+        labelRecommendations.text = NSLocalizedString("_recommended_files_", comment: "")
 
         //
         // Transfer
