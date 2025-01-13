@@ -527,7 +527,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
             } else if indexPath.section == 0 {
                 guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeader", for: indexPath) as? NCSectionFirstHeader else { return NCSectionFirstHeader() }
-                let (_, heightHeaderRichWorkspace, heightHeaderRecommendations, heightHeaderSection) = getHeaderHeight(section: indexPath.section)
+                let (heightHeaderRichWorkspace, heightHeaderRecommendations, _, heightHeaderSection) = getHeaderHeight(section: indexPath.section)
                 self.sectionFirstHeader = header
                 header.delegate = self
 
