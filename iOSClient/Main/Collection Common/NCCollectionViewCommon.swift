@@ -130,6 +130,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         !headerRichWorkspaceDisable && NCKeychain().showDescription
     }
 
+    var showRecommendation: Bool {
+        self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session) &&
+        NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityRecommendations &&
+        NCKeychain().showRecommendedFiles
+    }
+
     var infoLabelsSeparator: String {
         layoutForView?.layout == global.layoutList ? " - " : ""
     }
@@ -1208,6 +1214,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                                            heightHeaderSection: CGFloat) {
         var heightHeaderRichWorkspace: CGFloat = 0
         var heightHeaderRecommendations: CGFloat = 0
+        var heightHeaderSection: CGFloat = 0
 
         func getHeightHeaderTransfer() -> CGFloat {
             var size: CGFloat = 0
@@ -1228,12 +1235,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             heightHeaderRichWorkspace = UIScreen.main.bounds.size.height / 6
         }
 
-        if self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session),
-           NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityRecommendations,
+        if showRecommendation,
            !isSearchingMode,
            !self.database.getResultsRecommendedFiles(account: self.session.account).isEmpty,
            NCKeychain().showRecommendedFiles {
             heightHeaderRecommendations = self.global.heightHeaderRecommendations
+            heightHeaderSection = self.global.heightSection
         }
 
         if isSearchingMode || layoutForView?.groupBy != "none" || self.dataSource.numberOfSections() > 1 {
@@ -1243,7 +1250,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 return (0, 0, 0, global.heightSection)
             }
         } else {
-            return (heightHeaderRichWorkspace, heightHeaderRecommendations, getHeightHeaderTransfer(), global.heightSection)
+            return (heightHeaderRichWorkspace, heightHeaderRecommendations, getHeightHeaderTransfer(), heightHeaderSection)
         }
     }
 
