@@ -1243,7 +1243,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                 return (0, 0, 0, global.heightSection)
             }
         } else {
-            return (heightHeaderRichWorkspace, heightHeaderRecommendations, getHeightHeaderTransfer(), 0)
+            return (heightHeaderRichWorkspace, heightHeaderRecommendations, getHeightHeaderTransfer(), global.heightSection)
         }
     }
 

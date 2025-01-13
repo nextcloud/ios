@@ -544,11 +544,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 header.setRecommendations(size: heightHeaderRecommendations, recommendations: tableRecommendedFiles)
 
                 header.setSectionHeight(heightHeaderSection)
-                if heightHeaderSection == 0 {
-                    header.labelSection.text = ""
-                } else {
-                    header.labelSection.text = self.dataSource.getSectionValueLocalization(indexPath: indexPath)
+                var textSection = NSLocalizedString("_files_", comment: "")
+                if !self.dataSource.getSectionValueLocalization(indexPath: indexPath).isEmpty {
+                    textSection = self.dataSource.getSectionValueLocalization(indexPath: indexPath)
                 }
+                header.labelSection.text = textSection
                 header.labelSection.textColor = NCBrandColor.shared.textColor
 
                 return header
