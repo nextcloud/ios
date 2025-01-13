@@ -1,7 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "ellipsis.svg",
+      "filename" : "more_light.svg",
+      "idiom" : "universal"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "filename" : "more_dark.svg",
       "idiom" : "universal"
     }
   ],

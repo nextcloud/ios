@@ -1,7 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "offlineFlat.png",
+      "filename" : "offlineFlag_light.svg",
+      "idiom" : "universal"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "filename" : "offlineFlag_dark.svg",
       "idiom" : "universal"
     }
   ],

@@ -1,7 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "shared.svg",
+      "filename" : "shared_light.svg",
+      "idiom" : "universal"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "filename" : "shared_dark.svg",
       "idiom" : "universal"
     }
   ],

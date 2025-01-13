@@ -1,7 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "canShare.svg",
+      "filename" : "canShare_light.svg",
+      "idiom" : "universal"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "filename" : "canShare_dark.svg",
       "idiom" : "universal"
     }
   ],
