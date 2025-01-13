@@ -1,7 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "folder_lock_icon.pdf",
+      "filename" : "folder_icon_light_mode.svg",
+      "idiom" : "universal"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "filename" : "folder_icon_dark_mode.svg",
       "idiom" : "universal"
     }
   ],

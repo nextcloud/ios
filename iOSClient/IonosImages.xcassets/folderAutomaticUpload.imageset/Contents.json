@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "folder_auto_upload_icon_light_mode.svg",
+      "filename" : "folderAutomaticUpload_light.svg",
       "idiom" : "universal"
     },
     {
@@ -11,7 +11,7 @@
           "value" : "dark"
         }
       ],
-      "filename" : "folder_auto_upload_icon_dark_mode.svg",
+      "filename" : "folderAutomaticUpload_dark.svg",
       "idiom" : "universal"
     }
   ],
