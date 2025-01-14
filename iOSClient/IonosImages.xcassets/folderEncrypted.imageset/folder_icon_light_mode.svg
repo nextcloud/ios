@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="38"
+   height="36"
+   viewBox="0 0 38 36"
+   fill="none"
+   version="1.1"
+   id="svg1"
+   sodipodi:docname="folder_icon_light_mode.svg"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="4.9166667"
+     inkscape:cx="23.898305"
+     inkscape:cy="24"
+     inkscape:window-width="1312"
+     inkscape:window-height="449"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg1" />
+  <path
+     d="M 7,32 C 4.75,32 3,30.25 3,28 V 8 C 3,5.8125 4.75,4 7,4 h 8 c 1.25,0 2.4375,0.625 3.1875,1.625 L 19.375,7.25 C 19.75,7.75 20.3125,8 21,8 h 10 c 2.1875,0 4,1.8125 4,4 v 16 c 0,2.25 -1.8125,4 -4,4 z"
+     fill="#1474c4"
+     id="path1" />
+</svg>

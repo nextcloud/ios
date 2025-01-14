@@ -43,7 +43,7 @@ struct BurgerMenuView: View {
                             viewModel.hideMenu()
                         }, label: {
                             HStack(spacing: 12) {
-                                Image(.chevronLeft)
+                                Image(.BurgerMenu.chevronLeft)
                                     .renderingMode(.template)
                                     .resizable()
                                     .scaledToFit()

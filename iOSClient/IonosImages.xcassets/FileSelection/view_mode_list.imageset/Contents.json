@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "view_mode_list.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

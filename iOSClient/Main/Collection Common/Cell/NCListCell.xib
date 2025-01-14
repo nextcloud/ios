@@ -40,19 +40,19 @@
                         </constraints>
                     </imageView>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="star.fill" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="C4K-Nv-phA" userLabel="imageFavorite">
-                        <rect key="frame" x="79" y="5.6666666666666679" width="24" height="23.66666666666665"/>
+                        <rect key="frame" x="84" y="11.666666666666668" width="17" height="16.66666666666665"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstAttribute="width" constant="24" id="hXC-b9-Q2V"/>
-                            <constraint firstAttribute="height" constant="24" id="mPH-zc-eH5"/>
+                            <constraint firstAttribute="width" secondItem="C4K-Nv-phA" secondAttribute="height" id="3k2-5P-KtN"/>
+                            <constraint firstAttribute="height" constant="17" id="mPH-zc-eH5"/>
                         </constraints>
                     </imageView>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="H4E-G2-C1H" userLabel="imageLocal">
-                        <rect key="frame" x="79" y="34" width="24" height="24"/>
+                        <rect key="frame" x="84" y="35" width="17" height="17"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstAttribute="width" constant="24" id="BEs-Rd-5Ov"/>
-                            <constraint firstAttribute="height" constant="24" id="N8h-3R-JpE"/>
+                            <constraint firstAttribute="width" secondItem="H4E-G2-C1H" secondAttribute="height" multiplier="1:1" id="JkH-iC-K5h"/>
+                            <constraint firstAttribute="height" constant="17" id="N8h-3R-JpE"/>
                         </constraints>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" tag="101" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="middleTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="UtT-L6-mgW" userLabel="labelTitle">
@@ -120,7 +120,7 @@
                         </constraints>
                     </view>
                     <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="tag0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qnc-hI-Z9r" customClass="PaddedAndBorderedLabel" customModule="Nextcloud" customModuleProvider="target">
-                        <rect key="frame" x="109" y="37.666666666666664" width="26" height="14.333333333333336"/>
+                        <rect key="frame" x="109" y="35.666666666666664" width="36" height="16.333333333333336"/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <color key="textColor" systemColor="systemGrayColor"/>
                         <nil key="highlightedColor"/>
@@ -149,7 +149,7 @@
                         </userDefinedRuntimeAttributes>
                     </label>
                     <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="tag1" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jUe-8q-VJd" customClass="PaddedAndBorderedLabel" customModule="Nextcloud" customModuleProvider="target">
-                        <rect key="frame" x="140" y="37.666666666666664" width="24" height="14.333333333333336"/>
+                        <rect key="frame" x="150" y="35.666666666666664" width="34" height="16.333333333333336"/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <color key="textColor" systemColor="systemGrayColor"/>
                         <nil key="highlightedColor"/>
@@ -183,14 +183,14 @@
             <constraints>
                 <constraint firstItem="jUe-8q-VJd" firstAttribute="centerY" secondItem="qnc-hI-Z9r" secondAttribute="centerY" id="2Z4-Yh-1lR"/>
                 <constraint firstAttribute="trailing" secondItem="m2p-oJ-j15" secondAttribute="trailing" constant="90" id="2zI-li-v77"/>
-                <constraint firstItem="H4E-G2-C1H" firstAttribute="bottom" secondItem="w2m-Vw-hpd" secondAttribute="bottom" constant="6" id="3NI-s0-xYG"/>
+                <constraint firstItem="H4E-G2-C1H" firstAttribute="bottom" secondItem="w2m-Vw-hpd" secondAttribute="bottom" id="3NI-s0-xYG"/>
                 <constraint firstAttribute="bottom" secondItem="Egg-cb-EhZ" secondAttribute="bottom" id="81D-sw-EaX"/>
                 <constraint firstItem="qnc-hI-Z9r" firstAttribute="bottom" secondItem="w2m-Vw-hpd" secondAttribute="bottom" id="A1Q-I7-Kn9"/>
                 <constraint firstItem="AXX-71-9Q6" firstAttribute="leading" secondItem="w2m-Vw-hpd" secondAttribute="trailing" constant="12" id="Bxx-kv-KT3"/>
                 <constraint firstItem="Fu0-vg-6GU" firstAttribute="bottom" secondItem="w2m-Vw-hpd" secondAttribute="bottom" id="Coa-1i-ZhZ"/>
                 <constraint firstItem="Egg-cb-EhZ" firstAttribute="leading" secondItem="jxV-Pk-fPt" secondAttribute="leading" id="D89-PH-Nmx"/>
-                <constraint firstItem="H4E-G2-C1H" firstAttribute="trailing" secondItem="w2m-Vw-hpd" secondAttribute="trailing" constant="6" id="E71-dO-psG"/>
-                <constraint firstItem="C4K-Nv-phA" firstAttribute="trailing" secondItem="w2m-Vw-hpd" secondAttribute="trailing" constant="6" id="GsL-eR-DdW"/>
+                <constraint firstItem="H4E-G2-C1H" firstAttribute="trailing" secondItem="w2m-Vw-hpd" secondAttribute="trailing" constant="4" id="E71-dO-psG"/>
+                <constraint firstItem="C4K-Nv-phA" firstAttribute="trailing" secondItem="w2m-Vw-hpd" secondAttribute="trailing" constant="4" id="GsL-eR-DdW"/>
                 <constraint firstItem="o4u-0K-Qpt" firstAttribute="centerY" secondItem="jxV-Pk-fPt" secondAttribute="centerY" id="HFM-sM-wJr"/>
                 <constraint firstItem="dgL-g5-Nkc" firstAttribute="centerY" secondItem="yhy-xd-w5C" secondAttribute="centerY" id="OMy-Cu-HAx"/>
                 <constraint firstItem="AXX-71-9Q6" firstAttribute="bottom" secondItem="w2m-Vw-hpd" secondAttribute="bottom" id="Ob0-GP-RjN"/>
@@ -211,7 +211,7 @@
                 <constraint firstItem="w2m-Vw-hpd" firstAttribute="leading" secondItem="jxV-Pk-fPt" secondAttribute="leading" constant="57" id="mBb-ff-7HD"/>
                 <constraint firstItem="w2m-Vw-hpd" firstAttribute="leading" secondItem="7Q9-Tv-9yo" secondAttribute="trailing" constant="-10" id="mon-aq-gcP"/>
                 <constraint firstItem="Fu0-vg-6GU" firstAttribute="leading" secondItem="AXX-71-9Q6" secondAttribute="trailing" id="oEf-wb-lZr"/>
-                <constraint firstItem="C4K-Nv-phA" firstAttribute="top" secondItem="w2m-Vw-hpd" secondAttribute="top" constant="-6" id="owS-Oz-1Zj"/>
+                <constraint firstItem="C4K-Nv-phA" firstAttribute="top" secondItem="w2m-Vw-hpd" secondAttribute="top" id="owS-Oz-1Zj"/>
                 <constraint firstItem="w2m-Vw-hpd" firstAttribute="centerY" secondItem="jxV-Pk-fPt" secondAttribute="centerY" id="qKl-4Y-m5t"/>
                 <constraint firstAttribute="trailing" secondItem="yhy-xd-w5C" secondAttribute="trailing" constant="5" id="s2S-RP-cw5"/>
                 <constraint firstItem="AyA-hP-r6w" firstAttribute="centerY" secondItem="jxV-Pk-fPt" secondAttribute="centerY" id="sJp-0x-bdC"/>
@@ -246,19 +246,19 @@
     </objects>
     <designables>
         <designable name="jUe-8q-VJd">
-            <size key="intrinsicContentSize" width="24" height="14.333333333333334"/>
+            <size key="intrinsicContentSize" width="34" height="16.333333333333336"/>
         </designable>
         <designable name="qnc-hI-Z9r">
-            <size key="intrinsicContentSize" width="26" height="14.333333333333334"/>
+            <size key="intrinsicContentSize" width="36" height="16.333333333333336"/>
         </designable>
     </designables>
     <resources>
         <image name="star.fill" catalog="system" width="128" height="116"/>
         <systemColor name="systemGray5Color">
-            <color red="0.8980392157" green="0.8980392157" blue="0.91764705879999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.89803921568627454" green="0.89803921568627454" blue="0.91764705882352937" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGrayColor">
-            <color red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.55686274509803924" green="0.55686274509803924" blue="0.57647058823529407" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

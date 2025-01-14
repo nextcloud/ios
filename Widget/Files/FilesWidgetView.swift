@@ -129,12 +129,12 @@ struct LinkActionsToolbarView: View {
 		let linkNoAction: URL = URL(string: NCGlobal.shared.widgetActionNoAction + parameterLink) != nil ? URL(string: NCGlobal.shared.widgetActionNoAction + parameterLink)! : URL(string: NCGlobal.shared.widgetActionNoAction)!
 		let linkActionUploadAsset: URL = URL(string: NCGlobal.shared.widgetActionUploadAsset + parameterLink) != nil ? URL(string: NCGlobal.shared.widgetActionUploadAsset + parameterLink)! : URL(string: NCGlobal.shared.widgetActionUploadAsset)!
 		let linkActionScanDocument: URL = URL(string: NCGlobal.shared.widgetActionScanDocument + parameterLink) != nil ? URL(string: NCGlobal.shared.widgetActionScanDocument + parameterLink)! : URL(string: NCGlobal.shared.widgetActionScanDocument)!
-		let linkActionTextDocument: URL = URL(string: NCGlobal.shared.widgetActionTextDocument + parameterLink) != nil ? URL(string: NCGlobal.shared.widgetActionTextDocument + parameterLink)! : URL(string: NCGlobal.shared.widgetActionTextDocument)!
 		let linkActionVoiceMemo: URL = URL(string: NCGlobal.shared.widgetActionVoiceMemo + parameterLink) != nil ? URL(string: NCGlobal.shared.widgetActionVoiceMemo + parameterLink)! : URL(string: NCGlobal.shared.widgetActionVoiceMemo)!
 		
 		HStack(spacing: -6) {
+            
 			let height: CGFloat = 48
-			let width = geo.size.width / 4
+			let width = geo.size.width / 3
 									
 			Link(destination: entry.isPlaceholder ? linkNoAction : linkActionUploadAsset, label: {
 				Image(uiImage: UIImage(resource: .media))
@@ -161,17 +161,6 @@ struct LinkActionsToolbarView: View {
 			
 			Link(destination: entry.isPlaceholder ? linkNoAction : linkActionVoiceMemo, label: {
 				Image(uiImage: UIImage(resource: .mic))
-					.resizable()
-					.renderingMode(.template)
-					.foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(.text))
-					.background(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandElement))
-					.clipShape(Circle())
-					.scaledToFit()
-					.frame(width: width, height: height)
-			})
-			
-			Link(destination: entry.isPlaceholder ? linkNoAction : linkActionTextDocument, label: {
-				Image(uiImage: UIImage(resource: .note))
 					.resizable()
 					.renderingMode(.template)
 					.foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(.text))
