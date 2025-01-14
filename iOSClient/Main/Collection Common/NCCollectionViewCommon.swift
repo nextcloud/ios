@@ -97,6 +97,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     let heightHeaderTransfer: CGFloat = 50
     let heightHeaderRecommendations: CGFloat = 150
+    let heightHeaderSection: CGFloat = 30
 
     var session: NCSession.Session {
 #if DEBUG
@@ -1243,14 +1244,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
            !self.database.getResultsRecommendedFiles(account: self.session.account).isEmpty,
            NCKeychain().showRecommendedFiles {
             heightHeaderRecommendations = self.heightHeaderRecommendations
-            heightHeaderSection = self.global.heightSection
+            heightHeaderSection = self.heightHeaderSection
         }
 
         if isSearchingMode || layoutForView?.groupBy != "none" || self.dataSource.numberOfSections() > 1 {
             if section == 0 {
-                return (heightHeaderRichWorkspace, heightHeaderRecommendations, getHeightHeaderTransfer(), global.heightSection)
+                return (heightHeaderRichWorkspace, heightHeaderRecommendations, getHeightHeaderTransfer(), self.heightHeaderSection)
             } else {
-                return (0, 0, 0, global.heightSection)
+                return (0, 0, 0, self.heightHeaderSection)
             }
         } else {
             return (heightHeaderRichWorkspace, heightHeaderRecommendations, getHeightHeaderTransfer(), heightHeaderSection)
@@ -1284,13 +1285,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         var size = CGSize(width: collectionView.frame.width, height: 0)
 
         if section == sections - 1 {
-            size.height += global.endHeightFooter
+            size.height += 85
         } else {
-            size.height += global.heightFooter
+            size.height += 1
         }
 
         if isSearchingMode && isPaginated && metadatasCount > 0 {
-            size.height += global.heightFooterButton
+            size.height += 30
         }
         return size
     }
