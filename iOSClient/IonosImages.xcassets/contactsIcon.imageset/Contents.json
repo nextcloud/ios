@@ -1,7 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "contacts_icon.svg",
+      "filename" : "contactsIcon_light.svg",
+      "idiom" : "universal"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "filename" : "contactsIcon_dark.svg",
       "idiom" : "universal"
     }
   ],
