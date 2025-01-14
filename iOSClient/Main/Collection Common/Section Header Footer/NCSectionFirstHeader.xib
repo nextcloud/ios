@@ -11,11 +11,11 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <collectionReusableView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" reuseIdentifier="sectionFirstHeader" id="tys-A2-nDX" customClass="NCSectionFirstHeader" customModule="Nextcloud" customModuleProvider="target">
-            <rect key="frame" x="0.0" y="0.0" width="574" height="546"/>
+            <rect key="frame" x="0.0" y="0.0" width="574" height="593"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NC1-5C-E5z" userLabel="View RichWorkspace">
-                    <rect key="frame" x="0.0" y="326" width="574" height="50"/>
+                    <rect key="frame" x="0.0" y="373" width="574" height="50"/>
                     <subviews>
                         <textView clipsSubviews="YES" multipleTouchEnabled="YES" userInteractionEnabled="NO" contentMode="scaleToFill" editable="NO" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="pYo-pF-MGv">
                             <rect key="frame" x="12" y="0.0" width="550" height="50"/>
@@ -34,10 +34,10 @@
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="eYW-bR-S5m" userLabel="View Recommendation">
-                    <rect key="frame" x="0.0" y="376" width="574" height="100"/>
+                    <rect key="frame" x="0.0" y="423" width="574" height="100"/>
                     <subviews>
                         <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="RSN-Ag-FbR">
-                            <rect key="frame" x="15" y="37" width="544" height="48"/>
+                            <rect key="frame" x="15" y="40" width="544" height="45"/>
                             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="QUu-4T-fYx">
                                 <size key="itemSize" width="128" height="128"/>
@@ -51,7 +51,7 @@
                             </connections>
                         </collectionView>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lZq-pm-Ra6">
-                            <rect key="frame" x="15" y="-2" width="554" height="24"/>
+                            <rect key="frame" x="15" y="0.0" width="554" height="24"/>
                             <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
@@ -60,16 +60,16 @@
                     <constraints>
                         <constraint firstItem="RSN-Ag-FbR" firstAttribute="leading" secondItem="eYW-bR-S5m" secondAttribute="leading" constant="15" id="0No-Vn-12V"/>
                         <constraint firstAttribute="trailing" secondItem="lZq-pm-Ra6" secondAttribute="trailing" constant="5" id="821-w6-8Wq"/>
-                        <constraint firstItem="lZq-pm-Ra6" firstAttribute="top" secondItem="eYW-bR-S5m" secondAttribute="top" constant="-2" id="Ahw-Uf-jyj"/>
+                        <constraint firstItem="RSN-Ag-FbR" firstAttribute="top" secondItem="eYW-bR-S5m" secondAttribute="top" constant="40" id="8tm-jO-hGr"/>
+                        <constraint firstItem="lZq-pm-Ra6" firstAttribute="top" secondItem="eYW-bR-S5m" secondAttribute="top" id="Ahw-Uf-jyj"/>
                         <constraint firstAttribute="bottom" secondItem="RSN-Ag-FbR" secondAttribute="bottom" constant="15" id="Jh6-Ko-zfQ"/>
                         <constraint firstItem="lZq-pm-Ra6" firstAttribute="leading" secondItem="eYW-bR-S5m" secondAttribute="leading" constant="15" id="QaR-D3-plT"/>
                         <constraint firstAttribute="height" constant="100" id="XCr-rB-tJu"/>
-                        <constraint firstItem="RSN-Ag-FbR" firstAttribute="top" secondItem="lZq-pm-Ra6" secondAttribute="bottom" constant="15" id="ZfT-iJ-q52"/>
                         <constraint firstAttribute="trailing" secondItem="RSN-Ag-FbR" secondAttribute="trailing" constant="15" id="qZN-KA-Fol"/>
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="I6b-6a-TKg" userLabel="View Transfer">
-                    <rect key="frame" x="0.0" y="476" width="574" height="50"/>
+                    <rect key="frame" x="0.0" y="523" width="574" height="50"/>
                     <subviews>
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="McE-3D-mc5">
                             <rect key="frame" x="0.0" y="49" width="574" height="1"/>
@@ -112,7 +112,7 @@
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="f9U-NY-4OS">
-                    <rect key="frame" x="0.0" y="526" width="574" height="20"/>
+                    <rect key="frame" x="0.0" y="573" width="574" height="20"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mB5-5n-AL9">
                             <rect key="frame" x="10" y="-4" width="554" height="24"/>
@@ -162,7 +162,7 @@
                 <outlet property="viewTransfer" destination="I6b-6a-TKg" id="Hqx-QM-daQ"/>
                 <outlet property="viewTransferHeightConstraint" destination="86k-97-oGl" id="Pjb-mP-5dn"/>
             </connections>
-            <point key="canvasLocation" x="345.60000000000002" y="105.24737631184409"/>
+            <point key="canvasLocation" x="345.60000000000002" y="126.38680659670166"/>
         </collectionReusableView>
     </objects>
     <resources>
