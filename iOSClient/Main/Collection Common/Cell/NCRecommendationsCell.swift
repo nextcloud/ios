@@ -34,11 +34,11 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
     }
 
     func initCell() {
-        contentView.layer.cornerRadius = 10
-        contentView.layer.masksToBounds = true
-
-        contentView.layer.borderWidth = 0.5
-        contentView.layer.borderColor = UIColor.separator.cgColor
+        // contentView
+        image.layer.cornerRadius = 10
+        image.layer.masksToBounds = true
+        image.layer.borderWidth = 0.5
+        image.layer.borderColor = UIColor.separator.cgColor
 
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPress(gestureRecognizer:)))
         longPressedGesture.minimumPressDuration = 0.5

@@ -45,6 +45,7 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
 
     @IBOutlet weak var textViewRichWorkspace: UITextView!
     @IBOutlet weak var collectionViewRecommendations: UICollectionView!
+    @IBOutlet weak var labelRecommendations: UILabel!
     @IBOutlet weak var imageTransfer: UIImageView!
     @IBOutlet weak var labelTransfer: UILabel!
     @IBOutlet weak var progressTransfer: UIProgressView!
@@ -84,10 +85,11 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
         viewRecommendationsHeightConstraint.constant = 0
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-        layout.minimumLineSpacing = 10
+        layout.minimumLineSpacing = 0
         layout.minimumInteritemSpacing = 10
         collectionViewRecommendations.collectionViewLayout = layout
         collectionViewRecommendations.register(UINib(nibName: "NCRecommendationsCell", bundle: nil), forCellWithReuseIdentifier: "cell")
+        labelRecommendations.text = NSLocalizedString("_recommended_files_", comment: "")
 
         //
         // Transfer
@@ -172,14 +174,14 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
 
     // MARK: - Transfer
 
-    func setViewTransfer(isHidden: Bool, progress: Float? = nil) {
+    func setViewTransfer(isHidden: Bool, progress: Float? = nil, height: CGFloat) {
         viewTransfer.isHidden = isHidden
 
         if isHidden {
             viewTransferHeightConstraint.constant = 0
             progressTransfer.progress = 0
         } else {
-            viewTransferHeightConstraint.constant = NCGlobal.shared.heightHeaderTransfer
+            viewTransferHeightConstraint.constant = height
             if NCTransferProgress.shared.haveUploadInForeground() {
                 labelTransfer.text = String(format: NSLocalizedString("_upload_foreground_msg_", comment: ""), NCBrandOptions.shared.brand)
                 if let progress {
@@ -258,7 +260,10 @@ extension NCSectionFirstHeader: UICollectionViewDelegate {
 
 extension NCSectionFirstHeader: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: NCGlobal.shared.heightHeaderRecommendations + 25, height: NCGlobal.shared.heightHeaderRecommendations)
+        let cellHeight = collectionView.bounds.height
+        // let cellWidth = cellHeight * 1.5
+
+        return CGSize(width: cellHeight, height: cellHeight)
     }
 }
 

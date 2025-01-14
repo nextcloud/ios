@@ -19,16 +19,16 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="5Ci-V1-hf5" userLabel="image">
-                        <rect key="frame" x="0.0" y="2" width="400" height="358"/>
+                        <rect key="frame" x="0.0" y="0.0" width="400" height="365"/>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ixP-qo-bb5">
-                        <rect key="frame" x="7" y="368.33333333333331" width="386" height="13.333333333333314"/>
+                        <rect key="frame" x="7" y="371.33333333333331" width="386" height="13.333333333333314"/>
                         <fontDescription key="fontDescription" type="system" pointSize="11"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0pg-4i-UyV">
-                        <rect key="frame" x="7" y="383.66666666666669" width="386" height="13.333333333333314"/>
+                        <rect key="frame" x="7" y="386.66666666666669" width="386" height="13.333333333333314"/>
                         <fontDescription key="fontDescription" type="system" pointSize="11"/>
                         <color key="textColor" systemColor="systemGray2Color"/>
                         <nil key="highlightedColor"/>
@@ -52,33 +52,32 @@
             </view>
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="0pg-4i-UyV" secondAttribute="trailing" constant="7" id="1bq-87-crR"/>
-                <constraint firstAttribute="bottom" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="40" id="8aV-2N-Kxz"/>
+                <constraint firstAttribute="bottom" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="35" id="8aV-2N-Kxz"/>
                 <constraint firstItem="O9D-jq-8Iz" firstAttribute="top" secondItem="vf1-Kf-9uL" secondAttribute="top" constant="2" id="9CX-Ek-lXy"/>
                 <constraint firstItem="ixP-qo-bb5" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" constant="7" id="B8v-xz-Iyo"/>
                 <constraint firstAttribute="trailing" secondItem="5Ci-V1-hf5" secondAttribute="trailing" id="D9v-jw-FzB"/>
                 <constraint firstItem="0pg-4i-UyV" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" constant="7" id="Mx3-Fj-oyX"/>
-                <constraint firstItem="5Ci-V1-hf5" firstAttribute="top" secondItem="vf1-Kf-9uL" secondAttribute="top" constant="2" id="Ouj-ZD-UFm"/>
+                <constraint firstItem="5Ci-V1-hf5" firstAttribute="top" secondItem="vf1-Kf-9uL" secondAttribute="top" id="Ouj-ZD-UFm"/>
                 <constraint firstItem="0pg-4i-UyV" firstAttribute="top" secondItem="ixP-qo-bb5" secondAttribute="bottom" constant="2" id="T5a-p1-tUh"/>
                 <constraint firstAttribute="trailing" secondItem="O9D-jq-8Iz" secondAttribute="trailing" constant="2" id="Vq9-GY-Ckg"/>
-                <constraint firstAttribute="bottom" secondItem="0pg-4i-UyV" secondAttribute="bottom" constant="3" id="WAu-kD-blD"/>
+                <constraint firstAttribute="bottom" secondItem="0pg-4i-UyV" secondAttribute="bottom" id="WAu-kD-blD"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" id="i21-dW-38a"/>
                 <constraint firstAttribute="trailing" secondItem="ixP-qo-bb5" secondAttribute="trailing" constant="7" id="lO4-ab-Pcr"/>
-                <constraint firstItem="5Ci-V1-hf5" firstAttribute="centerX" secondItem="vf1-Kf-9uL" secondAttribute="centerX" id="laJ-b9-Tcy"/>
             </constraints>
-            <size key="customSize" width="409" height="311"/>
+            <size key="customSize" width="436" height="305"/>
             <connections>
                 <outlet property="buttonMenu" destination="O9D-jq-8Iz" id="FSF-c5-a5a"/>
                 <outlet property="image" destination="5Ci-V1-hf5" id="9fB-pr-AEY"/>
                 <outlet property="labelFilename" destination="ixP-qo-bb5" id="pE6-wq-gyk"/>
                 <outlet property="labelInfo" destination="0pg-4i-UyV" id="m3d-P8-Yhf"/>
             </connections>
-            <point key="canvasLocation" x="223.91304347826087" y="161.82065217391306"/>
+            <point key="canvasLocation" x="243.84615384615384" y="158.53080568720378"/>
         </collectionViewCell>
     </objects>
     <resources>
         <image name="ellipsis.circle.fill" catalog="system" width="128" height="123"/>
         <systemColor name="systemGray2Color">
-            <color red="0.68235294120000001" green="0.68235294120000001" blue="0.69803921570000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

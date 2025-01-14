@@ -95,6 +95,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var numberOfColumns: Int = 0
     var lastNumberOfColumns: Int = 0
 
+    let heightHeaderTransfer: CGFloat = 50
+    let heightHeaderRecommendations: CGFloat = 150
+    let heightHeaderSection: CGFloat = 30
+
     var session: NCSession.Session {
 #if DEBUG
         if Thread.isMainThread {
@@ -128,6 +132,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     var showDescription: Bool {
         !headerRichWorkspaceDisable && NCKeychain().showDescription
+    }
+
+    var showRecommendation: Bool {
+        self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session) &&
+        NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityRecommendations &&
+        NCKeychain().showRecommendedFiles
     }
 
     var infoLabelsSeparator: String {
@@ -634,8 +644,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         // HEADER
         if self.headerMenuTransferView, transfer.session.contains("upload") {
-            self.sectionFirstHeader?.setViewTransfer(isHidden: false, progress: transfer.progressNumber.floatValue)
-            self.sectionFirstHeaderEmptyData?.setViewTransfer(isHidden: false, progress: transfer.progressNumber.floatValue)
+            self.sectionFirstHeader?.setViewTransfer(isHidden: false, progress: transfer.progressNumber.floatValue, height: self.heightHeaderTransfer)
+            self.sectionFirstHeaderEmptyData?.setViewTransfer(isHidden: false, progress: transfer.progressNumber.floatValue, height: self.heightHeaderTransfer)
         }
     }
 
@@ -1202,19 +1212,20 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         return nil
     }
 
-    func getHeaderHeight(section: Int) -> (heightHeaderCommands: CGFloat,
-                                           heightHeaderRichWorkspace: CGFloat,
+    func getHeaderHeight(section: Int) -> (heightHeaderRichWorkspace: CGFloat,
                                            heightHeaderRecommendations: CGFloat,
+                                           heightHeaderTransfer: CGFloat,
                                            heightHeaderSection: CGFloat) {
         var heightHeaderRichWorkspace: CGFloat = 0
         var heightHeaderRecommendations: CGFloat = 0
+        var heightHeaderSection: CGFloat = 0
 
-        func getHeightHeaderCommands() -> CGFloat {
+        func getHeightHeaderTransfer() -> CGFloat {
             var size: CGFloat = 0
 
             if isHeaderMenuTransferViewEnabled() != nil {
                 if !isSearchingMode {
-                    size += global.heightHeaderTransfer
+                    size += self.heightHeaderTransfer
                 }
             }
 
@@ -1228,22 +1239,22 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             heightHeaderRichWorkspace = UIScreen.main.bounds.size.height / 6
         }
 
-        if self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session),
-           NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityRecommendations,
+        if showRecommendation,
            !isSearchingMode,
            !self.database.getResultsRecommendedFiles(account: self.session.account).isEmpty,
            NCKeychain().showRecommendedFiles {
-            heightHeaderRecommendations = self.global.heightHeaderRecommendations
+            heightHeaderRecommendations = self.heightHeaderRecommendations
+            heightHeaderSection = self.heightHeaderSection
         }
 
         if isSearchingMode || layoutForView?.groupBy != "none" || self.dataSource.numberOfSections() > 1 {
             if section == 0 {
-                return (getHeightHeaderCommands(), heightHeaderRichWorkspace, heightHeaderRecommendations, global.heightSection)
+                return (heightHeaderRichWorkspace, heightHeaderRecommendations, getHeightHeaderTransfer(), self.heightHeaderSection)
             } else {
-                return (0, 0, 0, global.heightSection)
+                return (0, 0, 0, self.heightHeaderSection)
             }
         } else {
-            return (getHeightHeaderCommands(), heightHeaderRichWorkspace, heightHeaderRecommendations, 0)
+            return (heightHeaderRichWorkspace, heightHeaderRecommendations, getHeightHeaderTransfer(), heightHeaderSection)
         }
     }
 
@@ -1257,8 +1268,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         } else if isEditMode || (isLandscape && isIphone) {
             return CGSize.zero
         } else {
-            let (heightHeaderCommands, heightHeaderRichWorkspace, heightHeaderRecommendations, heightHeaderSection) = getHeaderHeight(section: section)
-            height = heightHeaderCommands + heightHeaderRichWorkspace + heightHeaderRecommendations + heightHeaderSection
+            let (heightHeaderRichWorkspace, heightHeaderRecommendations, heightHeaderTransfer, heightHeaderSection) = getHeaderHeight(section: section)
+            height = heightHeaderRichWorkspace + heightHeaderRecommendations + heightHeaderTransfer + heightHeaderSection
         }
 
         return CGSize(width: collectionView.frame.width, height: height)
@@ -1274,13 +1285,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         var size = CGSize(width: collectionView.frame.width, height: 0)
 
         if section == sections - 1 {
-            size.height += global.endHeightFooter
+            size.height += 85
         } else {
-            size.height += global.heightFooter
+            size.height += 1
         }
 
         if isSearchingMode && isPaginated && metadatasCount > 0 {
-            size.height += global.heightFooterButton
+            size.height += 30
         }
         return size
     }
