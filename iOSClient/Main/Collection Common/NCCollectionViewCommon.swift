@@ -94,6 +94,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var transitionColumns = false
     var numberOfColumns: Int = 0
     var lastNumberOfColumns: Int = 0
+
+    let heightHeaderTransfer: CGFloat = 50
     let heightHeaderRecommendations: CGFloat = 150
 
     var session: NCSession.Session {
@@ -641,8 +643,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         // HEADER
         if self.headerMenuTransferView, transfer.session.contains("upload") {
-            self.sectionFirstHeader?.setViewTransfer(isHidden: false, progress: transfer.progressNumber.floatValue)
-            self.sectionFirstHeaderEmptyData?.setViewTransfer(isHidden: false, progress: transfer.progressNumber.floatValue)
+            self.sectionFirstHeader?.setViewTransfer(isHidden: false, progress: transfer.progressNumber.floatValue, height: self.heightHeaderTransfer)
+            self.sectionFirstHeaderEmptyData?.setViewTransfer(isHidden: false, progress: transfer.progressNumber.floatValue, height: self.heightHeaderTransfer)
         }
     }
 
@@ -1222,7 +1224,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
             if isHeaderMenuTransferViewEnabled() != nil {
                 if !isSearchingMode {
-                    size += global.heightHeaderTransfer
+                    size += self.heightHeaderTransfer
                 }
             }
 

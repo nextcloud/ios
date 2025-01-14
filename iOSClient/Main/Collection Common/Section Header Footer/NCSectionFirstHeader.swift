@@ -174,14 +174,14 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
 
     // MARK: - Transfer
 
-    func setViewTransfer(isHidden: Bool, progress: Float? = nil) {
+    func setViewTransfer(isHidden: Bool, progress: Float? = nil, height: CGFloat) {
         viewTransfer.isHidden = isHidden
 
         if isHidden {
             viewTransferHeightConstraint.constant = 0
             progressTransfer.progress = 0
         } else {
-            viewTransferHeightConstraint.constant = NCGlobal.shared.heightHeaderTransfer
+            viewTransferHeightConstraint.constant = height
             if NCTransferProgress.shared.haveUploadInForeground() {
                 labelTransfer.text = String(format: NSLocalizedString("_upload_foreground_msg_", comment: ""), NCBrandOptions.shared.brand)
                 if let progress {
