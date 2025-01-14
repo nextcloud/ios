@@ -260,7 +260,10 @@ extension NCSectionFirstHeader: UICollectionViewDelegate {
 
 extension NCSectionFirstHeader: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: NCGlobal.shared.heightHeaderRecommendations + 25, height: NCGlobal.shared.heightHeaderRecommendations)
+        let cellHeight = collectionView.bounds.height
+        let cellWidth = cellHeight * 16 / 9
+
+        return CGSize(width: cellWidth, height: cellHeight)
     }
 }
 

@@ -94,6 +94,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var transitionColumns = false
     var numberOfColumns: Int = 0
     var lastNumberOfColumns: Int = 0
+    let heightHeaderRecommendations: CGFloat = 150
 
     var session: NCSession.Session {
 #if DEBUG
@@ -1239,7 +1240,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
            !isSearchingMode,
            !self.database.getResultsRecommendedFiles(account: self.session.account).isEmpty,
            NCKeychain().showRecommendedFiles {
-            heightHeaderRecommendations = self.global.heightHeaderRecommendations
+            heightHeaderRecommendations = self.heightHeaderRecommendations
             heightHeaderSection = self.global.heightSection
         }
 
