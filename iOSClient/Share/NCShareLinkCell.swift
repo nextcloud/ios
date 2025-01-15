@@ -78,11 +78,7 @@ class NCShareLinkCell: UITableViewCell {
     
     private func setImageItemForInternalLink() {
         imageItem.contentMode = .scaleAspectFit
-        if traitCollection.userInterfaceStyle == .dark {
-            imageItem.image = UIImage(resource: .Share.squareAndArrowUpCircleFill)
-        } else {
-            imageItem.image = NCUtility().loadImage(named: "square.and.arrow.up.circle.fill", colors: [NCBrandColor.shared.iconImageColor2])
-        }
+        imageItem.image = UIImage(resource: .Share.squareAndArrowUpCircleFill)
     }
 
     @IBAction func touchUpCopy(_ sender: Any) {

@@ -40,7 +40,7 @@ struct HiDriveCollectionViewCommonSelectToolbarView: View {
                     if tabBarSelect.displayedButtons.contains(.restore) {
                         TabButton(
                             action: { tabBarSelect.delegate?.recover() },
-                            image: .restoreFromTrash,
+							image: .SelectTabBar.restoreFromTrash,
                             label: "_restore_" ,
                             isDisabled: tabBarSelect.isSelectedEmpty,
                             isOneRowStyle: isWideScreen
