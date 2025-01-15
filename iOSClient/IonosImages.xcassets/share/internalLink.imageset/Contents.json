@@ -1,7 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "internalLink.svg",
+      "filename" : "internalLink_light.svg",
+      "idiom" : "universal"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "filename" : "internalLink_dark.svg",
       "idiom" : "universal"
     }
   ],
