@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23094" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="dark"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23084"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -18,7 +18,7 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="5Ci-V1-hf5" userLabel="imageItem">
-                        <rect key="frame" x="-1" y="-1" width="402" height="402"/>
+                        <rect key="frame" x="0.0" y="0.0" width="400" height="400"/>
                     </imageView>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="a0p-rj-jnV" userLabel="imageStatus">
                         <rect key="frame" x="5" y="383" width="12" height="12"/>
@@ -53,9 +53,9 @@
             <constraints>
                 <constraint firstAttribute="bottom" secondItem="PfR-89-FqQ" secondAttribute="bottom" constant="8" id="0XY-5K-ZuW"/>
                 <constraint firstItem="DHy-Up-3Bh" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" constant="5" id="1T3-8p-uIW"/>
+                <constraint firstAttribute="trailing" secondItem="PfR-89-FqQ" secondAttribute="trailing" constant="5" id="7x9-fU-P0E"/>
                 <constraint firstAttribute="bottom" secondItem="a0p-rj-jnV" secondAttribute="bottom" constant="5" id="9Qc-jT-y8N"/>
                 <constraint firstItem="DHy-Up-3Bh" firstAttribute="top" secondItem="vf1-Kf-9uL" secondAttribute="top" constant="5" id="ESV-qE-tbO"/>
-                <constraint firstAttribute="bottom" secondItem="AKw-Xc-akO" secondAttribute="bottom" constant="2" id="JkG-ef-Hn5"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="top" secondItem="vf1-Kf-9uL" secondAttribute="top" id="Ouj-ZD-UFm"/>
                 <constraint firstAttribute="trailing" secondItem="5Ci-V1-hf5" secondAttribute="trailing" id="cHT-cP-NN6"/>
                 <constraint firstAttribute="bottom" secondItem="5Ci-V1-hf5" secondAttribute="bottom" id="eEC-eB-alE"/>
@@ -64,11 +64,9 @@
             </constraints>
             <size key="customSize" width="416" height="524"/>
             <connections>
-                <outlet property="buttonMore" destination="PfR-89-FqQ" id="HLQ-LA-nAi"/>
                 <outlet property="imageItem" destination="5Ci-V1-hf5" id="xky-Nw-NUb"/>
                 <outlet property="imageSelect" destination="DHy-Up-3Bh" id="mo9-rP-P4I"/>
                 <outlet property="imageStatus" destination="a0p-rj-jnV" id="6Dg-tf-evd"/>
-                <outlet property="labelTitle" destination="AKw-Xc-akO" id="f1O-Qv-Riz"/>
             </connections>
             <point key="canvasLocation" x="233.59999999999999" y="241.97901049475263"/>
         </collectionViewCell>
@@ -76,10 +74,10 @@
     <resources>
         <image name="ellipsis" catalog="system" width="128" height="37"/>
         <systemColor name="secondarySystemBackgroundColor">
-            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray2Color">
-            <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.68235294120000001" green="0.68235294120000001" blue="0.69803921570000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
