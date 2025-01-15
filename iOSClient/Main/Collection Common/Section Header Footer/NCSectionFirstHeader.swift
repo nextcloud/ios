@@ -230,24 +230,29 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as? NCRecommendationsCell,
               let metadata = NCManageDatabase.shared.getResultMetadataFromFileId(recommendedFiles.id) else { fatalError() }
 
-        var image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512)
-
-        if image == nil {
+        if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512) {
+            cell.image.image = image
             cell.image.contentMode = .scaleAspectFit
-            if metadata.iconName.isEmpty {
-               image = NCImageCache.shared.getImageFile()
-            } else {
-                image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
-            }
         } else {
+            cell.image.image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
             cell.image.contentMode = .scaleToFill
+            if recommendedFiles.hasPreview {
+                NextcloudKit.shared.downloadPreview(fileId: metadata.fileId, account: metadata.account) { _, _, _, _, responseData, error in
+                    if error == .success, let data = responseData?.data {
+                        self.utility.createImageFileFrom(data: data, ocId: metadata.ocId, etag: metadata.etag)
+                        if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512) {
+                            cell.image.image = image
+                            cell.image.contentMode = .scaleAspectFit
+                        }
+                    }
+                }
+            }
         }
 
         if metadata.hasPreview, metadata.classFile == NKCommon.TypeClassFile.document.rawValue {
             cell.setImageBorder()
         }
 
-        cell.image.image = image
         cell.labelFilename.text = recommendedFiles.name
         cell.labelInfo.text = recommendedFiles.reason
 
