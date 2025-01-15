@@ -193,8 +193,6 @@ class NCFiles: NCCollectionViewCommon {
            NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityRecommendations {
             let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadRecommendedFiles, userInfo: nil)
-
             NextcloudKit.shared.getRecommendedFiles(account: self.session.account, options: options) { _, recommendations, _, error in
                 if error == .success,
                    let recommendations,
