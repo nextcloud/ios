@@ -193,6 +193,8 @@ class NCFiles: NCCollectionViewCommon {
            NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityRecommendations {
             let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadRecommendedFiles, userInfo: nil)
+
             NextcloudKit.shared.getRecommendedFiles(account: self.session.account, options: options) { _, recommendations, _, error in
                 if error == .success,
                    let recommendations,
@@ -200,6 +202,8 @@ class NCFiles: NCCollectionViewCommon {
                     Task.detached {
                         await self.createRecommendations(recommendations)
                     }
+                } else {
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadRecommendedFiles, userInfo: nil)
                 }
             }
         }
@@ -387,20 +391,9 @@ class NCFiles: NCCollectionViewCommon {
             } else {
                 recommendationsToInsert.append(recommendation)
             }
-
-            if let metadata,
-               recommendation.hasPreview,
-               !self.utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag) {
-                let result = await NCNetworking.shared.downloadPreview(fileId: metadata.fileId, account: session.account)
-
-                if result.error == .success, let data = result.responseData?.data {
-                    self.utility.createImageFileFrom(data: data, ocId: metadata.ocId, etag: metadata.etag)
-                }
-            }
         }
 
         self.database.createRecommendedFiles(account: session.account, recommendations: recommendationsToInsert)
-
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadRecommendedFiles, userInfo: nil)
     }
 
