@@ -23,6 +23,7 @@
 
 import UIKit
 import MarkdownKit
+import NextcloudKit
 
 protocol NCSectionFirstHeaderDelegate: AnyObject {
     func tapRichWorkspace(_ sender: Any)
@@ -109,6 +110,13 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
         //
         labelSection.text = ""
         viewSectionHeightConstraint.constant = 0
+
+        //
+        // NotificationCenterReloadRecommendedFiles
+        //
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadRecommendedFiles), object: nil, queue: nil) { _ in
+            self.collectionViewRecommendations.reloadData()
+        }
     }
 
     override func layoutSublayers(of layer: CALayer) {
@@ -233,6 +241,10 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
             }
         } else {
             cell.image.contentMode = .scaleToFill
+        }
+
+        if metadata.hasPreview, metadata.classFile == NKCommon.TypeClassFile.document.rawValue {
+            cell.setImageBorder()
         }
 
         cell.image.image = image

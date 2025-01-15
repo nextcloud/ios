@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import NextcloudKit
 
 protocol NCRecommendationsCellDelegate: AnyObject {
     func touchUpInsideButtonMenu(with metadata: tableMetadata, image: UIImage?)
@@ -43,18 +42,18 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
         buttonMenu.layer.shadowOffset = CGSize(width: 2, height: 2)
         buttonMenu.layer.shadowRadius = 4
 
-        if metadata.hasPreview, metadata.classFile == NKCommon.TypeClassFile.document.rawValue {
-            image.layer.cornerRadius = 10
-            image.layer.masksToBounds = true
-            image.layer.borderWidth = 0.5
-            image.layer.borderColor = UIColor.separator.cgColor
-        }
-
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPress(gestureRecognizer:)))
         longPressedGesture.minimumPressDuration = 0.5
         longPressedGesture.delegate = self
         longPressedGesture.delaysTouchesBegan = true
         self.addGestureRecognizer(longPressedGesture)
+    }
+
+    func setImageBorder() {
+        image.layer.cornerRadius = 10
+        image.layer.masksToBounds = true
+        image.layer.borderWidth = 0.5
+        image.layer.borderColor = UIColor.separator.cgColor
     }
 
     @IBAction func touchUpInsideButtonMenu(_ sender: Any) {

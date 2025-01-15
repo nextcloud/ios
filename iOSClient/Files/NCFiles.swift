@@ -399,13 +399,9 @@ class NCFiles: NCCollectionViewCommon {
             }
         }
 
-        let results = self.database.compareRecommendations(account: session.account, newObjects: recommendationsToInsert)
-        if results.added.count + results.changed.count + results.deleted.count > 0 {
-            self.database.createRecommendedFiles(account: session.account, recommendations: recommendationsToInsert)
-            Task { @MainActor in
-                self.collectionView.reloadData()
-            }
-        }
+        self.database.createRecommendedFiles(account: session.account, recommendations: recommendationsToInsert)
+
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadRecommendedFiles, userInfo: nil)
     }
 
     // MARK: - NCAccountSettingsModelDelegate
