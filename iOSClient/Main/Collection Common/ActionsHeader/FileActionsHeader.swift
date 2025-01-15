@@ -145,7 +145,7 @@ class FileActionsHeader: UIView {
 			btnSelect?.layer.cornerRadius = selectionButtonWidth / 2
 		}
 		btnSelect?.imageView?.contentMode = .scaleToFill
-		btnSelect?.setImage(UIImage(named: "FileSelection/files_selection")?.templateRendered(), for: .normal)
+        btnSelect?.setImage(UIImage(resource: .FileSelection.filesSelection), for: .normal)
 	}
 }
 

@@ -1,7 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "square-check.svg",
+      "filename" : "files_selection_light.svg",
+      "idiom" : "universal"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "filename" : "files_selection_dark.svg",
       "idiom" : "universal"
     }
   ],
