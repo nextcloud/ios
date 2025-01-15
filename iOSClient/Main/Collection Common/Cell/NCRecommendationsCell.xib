@@ -22,24 +22,23 @@
                         <rect key="frame" x="0.0" y="0.0" width="400" height="365"/>
                     </imageView>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ixP-qo-bb5">
-                        <rect key="frame" x="7" y="371.33333333333331" width="386" height="13.333333333333314"/>
+                        <rect key="frame" x="0.0" y="371.33333333333331" width="393" height="13.333333333333314"/>
                         <fontDescription key="fontDescription" type="system" pointSize="11"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0pg-4i-UyV">
-                        <rect key="frame" x="7" y="386.66666666666669" width="386" height="13.333333333333314"/>
+                        <rect key="frame" x="0.0" y="386.66666666666669" width="393" height="13.333333333333314"/>
                         <fontDescription key="fontDescription" type="system" pointSize="11"/>
                         <color key="textColor" systemColor="systemGray2Color"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="O9D-jq-8Iz">
-                        <rect key="frame" x="378" y="2" width="20" height="20"/>
+                        <rect key="frame" x="377" y="3" width="20" height="20"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="20" id="0SN-I9-Ijm"/>
                             <constraint firstAttribute="height" constant="20" id="kOs-wF-5Nm"/>
                         </constraints>
-                        <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <state key="normal" title="Button"/>
                         <buttonConfiguration key="configuration" style="plain">
                             <imageReference key="image" image="ellipsis.circle.fill" catalog="system" symbolScale="medium"/>
@@ -53,13 +52,13 @@
             <constraints>
                 <constraint firstAttribute="trailing" secondItem="0pg-4i-UyV" secondAttribute="trailing" constant="7" id="1bq-87-crR"/>
                 <constraint firstAttribute="bottom" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="35" id="8aV-2N-Kxz"/>
-                <constraint firstItem="O9D-jq-8Iz" firstAttribute="top" secondItem="vf1-Kf-9uL" secondAttribute="top" constant="2" id="9CX-Ek-lXy"/>
-                <constraint firstItem="ixP-qo-bb5" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" constant="7" id="B8v-xz-Iyo"/>
+                <constraint firstItem="O9D-jq-8Iz" firstAttribute="top" secondItem="vf1-Kf-9uL" secondAttribute="top" constant="3" id="9CX-Ek-lXy"/>
+                <constraint firstItem="ixP-qo-bb5" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" id="B8v-xz-Iyo"/>
                 <constraint firstAttribute="trailing" secondItem="5Ci-V1-hf5" secondAttribute="trailing" id="D9v-jw-FzB"/>
-                <constraint firstItem="0pg-4i-UyV" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" constant="7" id="Mx3-Fj-oyX"/>
+                <constraint firstItem="0pg-4i-UyV" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" id="Mx3-Fj-oyX"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="top" secondItem="vf1-Kf-9uL" secondAttribute="top" id="Ouj-ZD-UFm"/>
                 <constraint firstItem="0pg-4i-UyV" firstAttribute="top" secondItem="ixP-qo-bb5" secondAttribute="bottom" constant="2" id="T5a-p1-tUh"/>
-                <constraint firstAttribute="trailing" secondItem="O9D-jq-8Iz" secondAttribute="trailing" constant="2" id="Vq9-GY-Ckg"/>
+                <constraint firstAttribute="trailing" secondItem="O9D-jq-8Iz" secondAttribute="trailing" constant="3" id="Vq9-GY-Ckg"/>
                 <constraint firstAttribute="bottom" secondItem="0pg-4i-UyV" secondAttribute="bottom" id="WAu-kD-blD"/>
                 <constraint firstItem="5Ci-V1-hf5" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" id="i21-dW-38a"/>
                 <constraint firstAttribute="trailing" secondItem="ixP-qo-bb5" secondAttribute="trailing" constant="7" id="lO4-ab-Pcr"/>

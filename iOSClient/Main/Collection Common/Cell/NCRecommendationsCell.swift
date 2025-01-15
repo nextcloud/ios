@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import NextcloudKit
 
 protocol NCRecommendationsCellDelegate: AnyObject {
     func touchUpInsideButtonMenu(with metadata: tableMetadata, image: UIImage?)
@@ -34,11 +35,18 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
     }
 
     func initCell() {
-        // contentView
-        image.layer.cornerRadius = 10
-        image.layer.masksToBounds = true
-        image.layer.borderWidth = 0.5
-        image.layer.borderColor = UIColor.separator.cgColor
+        if metadata.hasPreview, metadata.classFile == NKCommon.TypeClassFile.document.rawValue {
+            let imageButton = UIImage(systemName: "ellipsis.circle.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 15, weight: .thin))?.applyingSymbolConfiguration(UIImage.SymbolConfiguration(paletteColors: [.white, .black]))
+            buttonMenu.setImage(imageButton, for: .normal)
+
+            image.layer.cornerRadius = 10
+            image.layer.masksToBounds = true
+            image.layer.borderWidth = 0.5
+            image.layer.borderColor = UIColor.separator.cgColor
+        } else {
+            let imageButton = UIImage(systemName: "ellipsis.circle.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 15, weight: .thin))?.applyingSymbolConfiguration(UIImage.SymbolConfiguration(paletteColors: [.black, .white]))
+            buttonMenu.setImage(imageButton, for: .normal)
+        }
 
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPress(gestureRecognizer:)))
         longPressedGesture.minimumPressDuration = 0.5
