@@ -92,7 +92,7 @@ struct NCTrashSelectTabBarView: View {
 				HStack(alignment: .top) {
 					TabButton(
 						action: { tabBarSelect.delegate?.recover() },
-						image: .restoreFromTrash,
+                        image: .SelectTabBar.restoreFromTrash,
 						label: "_restore_" ,
 						isDisabled: tabBarSelect.isSelectedEmpty,
 						isOneRowStyle: isWideScreen
