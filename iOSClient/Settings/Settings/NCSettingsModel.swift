@@ -49,7 +49,6 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
     @Published var controller: NCMainTabBarController?
     /// Footer
     var footerApp = ""
-    var footerServer = ""
 
     /// Initializes the view model with default values.
     init(controller: NCMainTabBarController?) {
@@ -66,7 +65,6 @@ class NCSettingsModel: ObservableObject, ViewOnAppearHandling {
         resetWrongAttempts = keychain.resetAppCounterFail
         accountRequest = keychain.accountRequest
         footerApp = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, NCUtility().getVersionApp(withBuild: true)) + "\n\n"
-        footerServer = String(format: NCBrandOptions.shared.textCopyrightNextcloudServer, NCGlobal.shared.capabilityServerVersion) + "\n"
     }
 
     // MARK: - All functions
