@@ -7,21 +7,6 @@ import RealmSwift
 import NextcloudKit
 
 class tableRecommendedFiles: Object {
-    override func isEqual(_ object: Any?) -> Bool {
-        if let object = object as? tableRecommendedFiles,
-           self.timestamp == object.timestamp,
-           self.name == object.name,
-           self.directory == object.directory,
-           self.extensionType == object.extensionType,
-           self.mimeType == object.mimeType,
-           self.hasPreview == object.hasPreview,
-           self.reason == object.reason {
-            return true
-        } else {
-            return false
-        }
-    }
-
     @Persisted var account = ""
     @Persisted var id = ""
     @Persisted(primaryKey: true) var primaryKey = ""
@@ -50,7 +35,7 @@ class tableRecommendedFiles: Object {
 }
 
 extension NCManageDatabase {
-    func addRecommendedFiles(account: String, recommendations: [NKRecommendation]) {
+    func createRecommendedFiles(account: String, recommendations: [NKRecommendation]) {
         do {
             let realm = try Realm()
 
@@ -71,85 +56,16 @@ extension NCManageDatabase {
         }
     }
 
-    func getResultsRecommendedFiles(account: String) -> Results<tableRecommendedFiles>? {
+    func getRecommendedFiles(account: String) -> [tableRecommendedFiles] {
         do {
             let realm = try Realm()
             let results = realm.objects(tableRecommendedFiles.self).filter("account == %@", account)
 
-            return results
+            return Array(results.map { tableRecommendedFiles.init(value: $0) })
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
 
-        return nil
-    }
-
-    func getNKRecommendation(account: String) -> [NKRecommendation] {
-        var recommendations: [NKRecommendation] = []
-
-        do {
-            let realm = try Realm()
-            let results = realm.objects(tableRecommendedFiles.self).filter("account == %@", account)
-
-            for result in results {
-                let recommendation = NKRecommendation(id: result.id, timestamp: result.timestamp, name: result.name, directory: result.directory, extensionType: result.extensionType, mimeType: result.mimeType, hasPreview: result.hasPreview, reason: result.reason)
-                recommendations.append(recommendation)
-
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
-        }
-
-        return recommendations
-    }
-
-    func deleteRecommendedFiles(account: String, recommendations: [NKRecommendation]) {
-        do {
-            let realm = try Realm()
-
-            try realm.write {
-                for recommendation in recommendations {
-                    let primaryKey = account + recommendation.id
-                    let results = realm.objects(tableRecommendedFiles.self).filter("primaryKey == %@", primaryKey)
-
-                    realm.delete(results)
-                }
-            }
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not write to database: \(error)")
-        }
-    }
-
-    func compareRecommendations(account: String, newObjects: [NKRecommendation]) -> (changed: [NKRecommendation], added: [NKRecommendation], deleted: [NKRecommendation]) {
-        var changed = [NKRecommendation]()
-        var added = [NKRecommendation]()
-        var deleted = [NKRecommendation]()
-
-        let existingObjects = getNKRecommendation(account: account)
-
-        let existingDictionary = Dictionary(uniqueKeysWithValues: existingObjects.map { (account + $0.id, $0) })
-        let newDictionary = Dictionary(uniqueKeysWithValues: newObjects.map { (account + $0.id, $0) })
-
-        // Verify objects changed or deleted
-        for (primaryKey, existingObject) in existingDictionary {
-            if let newObject = newDictionary[primaryKey] {
-                // If exists, verify if is changed
-                if !existingObject.isEqual(newObject) {
-                    changed.append(newObject)
-                }
-            } else {
-                // if do not exists, it's deleted
-                deleted.append(existingObject)
-            }
-        }
-
-        // verify new objects
-        for (primaryKey, newObject) in newDictionary {
-            if existingDictionary[primaryKey] == nil {
-                added.append(newObject)
-            }
-        }
-
-        return (changed, added, deleted)
+        return []
     }
 }

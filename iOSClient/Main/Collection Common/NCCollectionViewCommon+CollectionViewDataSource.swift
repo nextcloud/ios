@@ -487,9 +487,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 header.delegate = self
 
                 if !isSearchingMode, headerMenuTransferView, isHeaderMenuTransferViewEnabled() != nil {
-                    header.setViewTransfer(isHidden: false)
+                    header.setViewTransfer(isHidden: false, height: self.heightHeaderTransfer)
                 } else {
-                    header.setViewTransfer(isHidden: true)
+                    header.setViewTransfer(isHidden: true, height: self.heightHeaderTransfer)
                 }
 
                 if isSearchingMode {
@@ -527,25 +527,28 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
             } else if indexPath.section == 0 {
                 guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeader", for: indexPath) as? NCSectionFirstHeader else { return NCSectionFirstHeader() }
-                let (_, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: indexPath.section)
+                let (heightHeaderRichWorkspace, heightHeaderRecommendations, _, heightHeaderSection) = getHeaderHeight(section: indexPath.section)
                 self.sectionFirstHeader = header
                 header.delegate = self
 
                 if !isSearchingMode, headerMenuTransferView, isHeaderMenuTransferViewEnabled() != nil {
-                    header.setViewTransfer(isHidden: false)
+                    header.setViewTransfer(isHidden: false, height: self.heightHeaderTransfer)
                 } else {
-                    header.setViewTransfer(isHidden: true)
+                    header.setViewTransfer(isHidden: true, height: self.heightHeaderTransfer)
                 }
 
                 header.setRichWorkspaceHeight(heightHeaderRichWorkspace)
                 header.setRichWorkspaceText(richWorkspaceText)
 
+                let tableRecommendedFiles = self.database.getRecommendedFiles(account: self.session.account)
+                header.setRecommendations(size: heightHeaderRecommendations, recommendations: tableRecommendedFiles)
+
                 header.setSectionHeight(heightHeaderSection)
-                if heightHeaderSection == 0 {
-                    header.labelSection.text = ""
-                } else {
-                    header.labelSection.text = self.dataSource.getSectionValueLocalization(indexPath: indexPath)
+                var textSection = NSLocalizedString("_home_", comment: "")
+                if !self.dataSource.getSectionValueLocalization(indexPath: indexPath).isEmpty {
+                    textSection = self.dataSource.getSectionValueLocalization(indexPath: indexPath)
                 }
+                header.labelSection.text = textSection
                 header.labelSection.textColor = NCBrandColor.shared.textColor
 
                 return header

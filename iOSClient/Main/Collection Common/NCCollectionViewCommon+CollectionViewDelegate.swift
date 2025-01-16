@@ -27,23 +27,7 @@ import NextcloudKit
 import Alamofire
 
 extension NCCollectionViewCommon: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath),
-              !metadata.isInvalidated
-        else {
-            return
-        }
-
-        if isEditMode {
-            if let index = fileSelect.firstIndex(of: metadata.ocId) {
-                fileSelect.remove(at: index)
-            } else {
-                fileSelect.append(metadata.ocId)
-            }
-            collectionView.reloadItems(at: [indexPath])
-            tabBarSelect.update(fileSelect: fileSelect, metadatas: getSelectedMetadatas(), userId: metadata.userId)
-            return
-        }
+    func didSelectMetadata(_ metadata: tableMetadata) {
 
         if metadata.e2eEncrypted {
             if NCCapabilities.shared.getCapabilities(account: metadata.account).capabilityE2EEEnabled {
@@ -114,6 +98,27 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 NCContentPresenter().showInfo(error: error)
             }
         }
+    }
+
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath),
+              !metadata.isInvalidated
+        else {
+            return
+        }
+
+        if isEditMode {
+            if let index = fileSelect.firstIndex(of: metadata.ocId) {
+                fileSelect.remove(at: index)
+            } else {
+                fileSelect.append(metadata.ocId)
+            }
+            collectionView.reloadItems(at: [indexPath])
+            tabBarSelect.update(fileSelect: fileSelect, metadatas: getSelectedMetadatas(), userId: metadata.userId)
+            return
+        }
+
+        self.didSelectMetadata(metadata)
     }
 
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {

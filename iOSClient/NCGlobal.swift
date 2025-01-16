@@ -154,15 +154,6 @@ class NCGlobal: NSObject {
     let buttonMoreMore                              = "more"
     let buttonMoreLock                              = "moreLock"
 
-    // Standard height sections header/footer
-    //
-    let heightButtonsView: CGFloat                  = 50
-    let heightHeaderTransfer: CGFloat               = 50
-    let heightSection: CGFloat                      = 30
-    let heightFooter: CGFloat                       = 1
-    let heightFooterButton: CGFloat                 = 30
-    let endHeightFooter: CGFloat                    = 85
-
     // Text -  OnlyOffice - Collabora - QuickLook
     //
     let editorText                                  = "text"
@@ -300,6 +291,7 @@ class NCGlobal: NSObject {
     let notificationCenterReloadDataNCShare                     = "reloadDataNCShare"
     let notificationCenterCloseRichWorkspaceWebView             = "closeRichWorkspaceWebView"
     let notificationCenterReloadAvatar                          = "reloadAvatar"
+    let notificationCenterReloadRecommendedFiles                = "reloadRecommendedFiles"
     let notificationCenterClearCache                            = "clearCache"
     let notificationCenterChangeLayout                          = "changeLayout"                    // userInfo: account, serverUrl, layoutForView
 

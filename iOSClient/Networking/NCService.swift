@@ -27,6 +27,7 @@ import RealmSwift
 
 class NCService: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
+    let utility = NCUtility()
     let database = NCManageDatabase.shared
 
     // MARK: -
@@ -168,9 +169,7 @@ class NCService: NSObject {
 
             data.printJson()
 
-            if NCNetworking.shared.isResponseDataChanged(account: account, responseData: presponseData) {
-                self.database.addCapabilitiesJSon(data, account: account)
-            }
+            self.database.addCapabilitiesJSon(data, account: account)
 
             guard let capability = self.database.setCapabilities(account: account, data: data) else { return }
 

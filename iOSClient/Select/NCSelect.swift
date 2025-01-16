@@ -229,6 +229,12 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
     func tapRichWorkspace(_ sender: Any) { }
 
+    func tapRecommendationsButtonMenu(with metadata: tableMetadata, image: UIImage?) { }
+
+    func tapRecommendations(with metadata: tableMetadata) { }
+
+    func longPressGestureRecognizedRecommendations(with metadata: tableMetadata, image: UIImage?) { }
+
     // MARK: - Push metadata
 
     func pushMetadata(_ metadata: tableMetadata) {
@@ -454,9 +460,9 @@ extension NCSelect: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
         let sections = self.dataSource.numberOfSections()
         if section == sections - 1 {
-            return CGSize(width: collectionView.frame.width, height: NCGlobal.shared.endHeightFooter)
+            return CGSize(width: collectionView.frame.width, height: 85)
         } else {
-            return CGSize(width: collectionView.frame.width, height: NCGlobal.shared.heightFooter)
+            return CGSize(width: collectionView.frame.width, height: 1)
         }
     }
 }
