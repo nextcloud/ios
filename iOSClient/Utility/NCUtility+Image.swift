@@ -81,26 +81,13 @@ extension NCUtility {
             return UIImage(systemName: "doc")!
         }
     }
+    
+    private var userImage: UIImage {
+        UIImage(resource: .userButtonIcon)
+    }
 
     func loadUserImage(for user: String, displayName: String?, urlBase: String) -> UIImage {
-        let fileName = NCSession.shared.getFileName(urlBase: urlBase, user: user)
-        let localFilePath = utilityFileSystem.directoryUserData + "/" + fileName
-
-        if var localImage = UIImage(contentsOfFile: localFilePath) {
-            let rect = CGRect(x: 0, y: 0, width: 30, height: 30)
-            UIGraphicsBeginImageContextWithOptions(rect.size, false, 3.0)
-            UIBezierPath(roundedRect: rect, cornerRadius: rect.size.height).addClip()
-            localImage.draw(in: rect)
-            localImage = UIGraphicsGetImageFromCurrentImageContext() ?? localImage
-            UIGraphicsEndImageContext()
-            return localImage
-        } else if let image = NCManageDatabase.shared.getImageAvatarLoaded(fileName: fileName).image {
-            return image
-        } else if let displayName = displayName, !displayName.isEmpty, let avatarImg = createAvatar(displayName: displayName, size: 30) {
-            return avatarImg
-        } else {
-            return loadImage(named: "person.crop.circle", colors: [NCBrandColor.shared.iconImageColor])
-        }
+        userImage
     }
 
     func imageFromVideo(url: URL, at time: TimeInterval) -> UIImage? {
