@@ -549,6 +549,8 @@ extension NCLogin: ClientCertificateDelegate, UIDocumentPickerDelegate {
                                         }
                                     }
                                 }
+
+                                timer.cancel()
                             }
                         }
                     }
