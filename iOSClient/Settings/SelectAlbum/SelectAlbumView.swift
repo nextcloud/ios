@@ -20,8 +20,13 @@ struct SelectAlbumView: View {
                 SelectionButton(album: model.allPhotosCollection, isSmartAlbum: true, customAssetCount: 0, selection: $selectedAlbums)
             }
 
-            SmartAlbums(model: model, selectedAlbums: $selectedAlbums)
-            UserAlbums(model: model, selectedAlbums: $selectedAlbums)
+            if !model.smartAlbums.isEmpty {
+                SmartAlbums(model: model, selectedAlbums: $selectedAlbums)
+            }
+
+            if !model.userAlbums.isEmpty {
+                UserAlbums(model: model, selectedAlbums: $selectedAlbums)
+            }
         }
         .onChange(of: selectedAlbums) { newValue in
             if newValue.count > 1, oldSelectedAlbums.contains(model.allPhotosCollection?.localIdentifier ?? "") {

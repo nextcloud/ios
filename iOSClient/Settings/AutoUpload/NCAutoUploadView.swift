@@ -41,6 +41,7 @@ struct NCAutoUploadView: View {
                         .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                         .onChange(of: model.autoUpload) { newValue in
                             model.handleAutoUploadChange(newValue: newValue)
+                            albumModel.initAlbums()
                         }
                 }, footer: {
                     Text(NSLocalizedString("_autoupload_notice_", comment: ""))
@@ -70,14 +71,6 @@ struct NCAutoUploadView: View {
             }
             .tint(.primary)
         }
-
-//        Toggle(NSLocalizedString("_autoupload_fullphotos_", comment: ""), isOn: $model.autoUploadFull)
-//            .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-//            .onChange(of: model.autoUploadFull) { newValue in
-//                albumModel.populateSelectedAlbums()
-//                model.handleAutoUploadFullChange(newValue: newValue, assetCollections: albumModel.selectedAlbums)
-//            }
-//            .toggleStyle(.button)
     }
 
     @ViewBuilder
@@ -100,26 +93,26 @@ struct NCAutoUploadView: View {
         })
 
         Group {
-        Section(content: {
-            NavigationLink(destination: SelectAlbumView(model: albumModel)) {
-                Button(action: {
-                    showSelectAlbums.toggle()
-                }, label: {
-                    HStack {
-                        Image(systemName: "person.2.crop.square.stack")
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 25, height: 25)
-                            .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
-                        Text(NSLocalizedString("_upload_from_", comment: ""))
-                        Text(NSLocalizedString(model.createAlbumTitle(), comment: ""))
-                            .frame(maxWidth: .infinity, alignment: .trailing)
-                    }
-                })
-            }
-        })
+            Section(content: {
+                NavigationLink(destination: SelectAlbumView(model: albumModel)) {
+                    Button(action: {
+                        showSelectAlbums.toggle()
+                    }, label: {
+                        HStack {
+                            Image(systemName: "person.2.crop.square.stack")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 25, height: 25)
+                                .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
+                            Text(NSLocalizedString("_upload_from_", comment: ""))
+                            Text(NSLocalizedString(model.createAlbumTitle(autoUploadAlbumIds: albumModel.autoUploadAlbumIds), comment: ""))
+                                .frame(maxWidth: .infinity, alignment: .trailing)
+                        }
+                    })
+                }
+            })
 
-        /// Auto Upload Photo
+            /// Auto Upload Photo
             Section(content: {
                 Toggle(NSLocalizedString("_autoupload_photos_", comment: ""), isOn: $model.autoUploadImage)
                     .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
@@ -184,7 +177,7 @@ struct NCAutoUploadView: View {
             .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
             .onChange(of: model.autoUploadFull) { newValue in
                 albumModel.populateSelectedAlbums()
-                model.handleAutoUploadFullChange(newValue: newValue, assetCollections: albumModel.selectedAlbums)
+                model.handleAutoUploadChange(newValue: newValue, assetCollections: albumModel.selectedAlbums)
             }
             .font(.headline)
             .toggleStyle(.button)

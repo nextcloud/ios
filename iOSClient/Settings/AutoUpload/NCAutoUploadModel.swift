@@ -65,9 +65,9 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         NCSession.shared.getSession(controller: controller)
     }
 
-    var autoUploadAlbumIds: [String] {
-        NCKeychain().getAutoUploadAlbumIds(account: controller?.account ?? "") ?? []
-    }
+//    var autoUploadAlbumIds: [String] {
+//        NCKeychain().getAutoUploadAlbumIds(account: controller?.account ?? "") ?? []
+//    }
 
     /// Initialization code to set up the ViewModel with the active account
     init(controller: NCMainTabBarController?) {
@@ -167,7 +167,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     }
 
     /// Updates the auto-upload full content setting.
-    func handleAutoUploadFullChange(newValue: Bool, assetCollections: [PHAssetCollection]) {
+    func handleAutoUploadChange(newValue: Bool, assetCollections: [PHAssetCollection]) {
         updateAccountProperty(\.autoUploadFull, value: newValue)
 
         if newValue {
@@ -222,8 +222,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         onViewAppear()
     }
 
-    func createAlbumTitle() -> String {
-
+    func createAlbumTitle(autoUploadAlbumIds: Set<String>) -> String {
         if autoUploadAlbumIds.count == 1 {
             let album = PHAssetCollection.allAlbums.first(where: { autoUploadAlbumIds.first == $0.localIdentifier })
             return (album?.assetCollectionSubtype == .smartAlbumUserLibrary) ? NSLocalizedString("_camera_roll_", comment: "") : (album?.localizedTitle ?? "")

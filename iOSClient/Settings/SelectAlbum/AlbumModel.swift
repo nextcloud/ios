@@ -18,10 +18,21 @@ import Photos
     var smartAlbumAssetCollections: PHFetchResult<PHAssetCollection>!
     var userAlbumAssetCollections: PHFetchResult<PHAssetCollection>!
 
+    var autoUploadAlbumIds: Set<String> {
+        getSavedAlbumIds()
+    }
+    
     init(controller: NCMainTabBarController?) {
         self.controller = controller
         super.init()
 
+        initAlbums()
+    }
+
+    func initAlbums() {
+        smartAlbums.removeAll()
+        userAlbums.removeAll()
+        
         Task { @MainActor in
             smartAlbumAssetCollections = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .any, options: nil)
             smartAlbumAssetCollections?.enumerateObjects { [self] collection, _, _ in
@@ -38,6 +49,10 @@ import Photos
 
             userAlbumAssetCollections?.enumerateObjects { [self] collection, _, _ in
                 userAlbums.append(collection)
+            }
+
+            if let allPhotosCollection, autoUploadAlbumIds.isEmpty {
+                setSavedAlbumIds(selectedAlbums: [allPhotosCollection.localIdentifier])
             }
         }
     }
