@@ -106,7 +106,7 @@ extension AppDelegate {
             let directEditingCreator = directEditingCreators!.first(where: { $0.editor == NCGlobal.shared.editorOnlyoffice && $0.identifier == NCGlobal.shared.onlyofficeDocx})!
             actions.append(
                 NCMenuAction(
-                    title: NSLocalizedString("_create_new_document_", comment: ""), icon: NCImagesRepository.menuIconCreateDocument, action: { _ in
+                    title: NSLocalizedString("_create_new_document_", comment: ""), icon: utility.loadImage(named: "doc.text", colors: [NCBrandColor.shared.documentIconColor]), action: { _ in
                         let createDocument = NCCreateDocument()
 
                         Task {
@@ -125,7 +125,7 @@ extension AppDelegate {
             let directEditingCreator = directEditingCreators!.first(where: { $0.editor == NCGlobal.shared.editorOnlyoffice && $0.identifier == NCGlobal.shared.onlyofficeXlsx})!
             actions.append(
                 NCMenuAction(
-                    title: NSLocalizedString("_create_new_spreadsheet_", comment: ""), icon: NCImagesRepository.menuIconCreateSpreadsheet, action: { _ in
+                    title: NSLocalizedString("_create_new_spreadsheet_", comment: ""), icon: utility.loadImage(named: "tablecells", colors: [NCBrandColor.shared.spreadsheetIconColor]), action: { _ in
                         let createDocument = NCCreateDocument()
 
                         Task {
@@ -144,7 +144,7 @@ extension AppDelegate {
             let directEditingCreator = directEditingCreators!.first(where: { $0.editor == NCGlobal.shared.editorOnlyoffice && $0.identifier == NCGlobal.shared.onlyofficePptx})!
             actions.append(
                 NCMenuAction(
-                    title: NSLocalizedString("_create_new_presentation_", comment: ""), icon: NCImagesRepository.menuIconCreatePresentation, action: { _ in
+                    title: NSLocalizedString("_create_new_presentation_", comment: ""), icon: utility.loadImage(named: "play.rectangle", colors: [NCBrandColor.shared.presentationIconColor]), action: { _ in
                         let createDocument = NCCreateDocument()
 
                         Task {
@@ -163,7 +163,7 @@ extension AppDelegate {
             if NextcloudKit.shared.isNetworkReachable() && !isDirectoryE2EE {
                 actions.append(
                     NCMenuAction(
-                        title: NSLocalizedString("_create_new_document_", comment: ""), icon: NCImagesRepository.menuIconCreateDocument, action: { _ in
+                        title: NSLocalizedString("_create_new_document_", comment: ""), icon: utility.loadImage(named: "doc.text", colors: [NCBrandColor.shared.documentIconColor]), action: { _ in
                             let createDocument = NCCreateDocument()
 
                             Task {
@@ -179,7 +179,7 @@ extension AppDelegate {
 
                 actions.append(
                     NCMenuAction(
-                        title: NSLocalizedString("_create_new_spreadsheet_", comment: ""), icon: NCImagesRepository.menuIconCreateSpreadsheet, action: { _ in
+                        title: NSLocalizedString("_create_new_spreadsheet_", comment: ""), icon: utility.loadImage(named: "tablecells", colors: [NCBrandColor.shared.spreadsheetIconColor]), action: { _ in
                             let createDocument = NCCreateDocument()
 
                             Task {
@@ -195,7 +195,7 @@ extension AppDelegate {
 
                 actions.append(
                     NCMenuAction(
-                        title: NSLocalizedString("_create_new_presentation_", comment: ""), icon: NCImagesRepository.menuIconCreatePresentation, action: { _ in
+                        title: NSLocalizedString("_create_new_presentation_", comment: ""), icon: utility.loadImage(named: "play.rectangle", colors: [NCBrandColor.shared.presentationIconColor]), action: { _ in
                             let createDocument = NCCreateDocument()
 
                             Task {
