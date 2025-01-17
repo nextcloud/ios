@@ -1,7 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "close_icon_frame_16px.svg",
+      "filename" : "selection_mode_close_light.svg",
+      "idiom" : "universal"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "filename" : "selection_mode_close_dark.svg",
       "idiom" : "universal"
     }
   ],

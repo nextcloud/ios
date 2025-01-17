@@ -215,7 +215,7 @@ struct NCSettingsView: View {
             /// `Watermark` Section
             Section(content: {
             }, footer: {
-                Text(model.footerApp + model.footerServer).listRowBackground(Color.clear)
+                Text(model.footerApp).listRowBackground(Color.clear)
             }).applyGlobalFormSectionStyle()
         }
         .sheet(isPresented: $showPasscode) {
