@@ -96,32 +96,15 @@ class HiDriveCollectionViewCommonSelectToolbar: ObservableObject {
     }
     
     func show() {
-        guard let hostingController, let controller = getTopViewController() else { return }
+        guard let hostingController, let currentViewController = controller?.currentViewController() else { return }
         
         if hostingController.view.isHidden {
             delegate?.toolbarWillAppear()
-            controller.view.addSubview(hostingController.view)
+            currentViewController.view.addSubview(hostingController.view)
             
             updateToolbarFrame(for: hostingController)
             animateToolbarAppearance(for: hostingController)
         }
-    }
-    
-    private func getTopViewController() -> UIViewController? {
-        guard let windowScene = UIApplication.shared.connectedScenes
-                .filter({ $0.activationState == .foregroundActive })
-                .first as? UIWindowScene,
-              let keyWindow = windowScene.windows.first(where: { $0.isKeyWindow }) else {
-            return nil
-        }
-        
-        var topController: UIViewController? = keyWindow.rootViewController
-        
-        while let presentedController = topController?.presentedViewController {
-            topController = presentedController
-        }
-        
-        return topController
     }
     
     private func animateToolbarAppearance(for hostingController: UIViewController) {
