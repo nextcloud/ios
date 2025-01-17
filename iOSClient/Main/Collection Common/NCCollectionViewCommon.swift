@@ -1018,7 +1018,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func tapRecommendations(with metadata: tableMetadata) {
-        didSelectMetadata(metadata)
+        didSelectMetadata(metadata, withOcIds: false)
     }
 
     func longPressGestureRecognizedRecommendations(with metadata: tableMetadata, image: UIImage?) {

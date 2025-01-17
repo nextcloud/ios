@@ -27,7 +27,7 @@ import NextcloudKit
 import Alamofire
 
 extension NCCollectionViewCommon: UICollectionViewDelegate {
-    func didSelectMetadata(_ metadata: tableMetadata) {
+    func didSelectMetadata(_ metadata: tableMetadata, withOcIds: Bool) {
 
         if metadata.e2eEncrypted {
             if NCCapabilities.shared.getCapabilities(account: metadata.account).capabilityE2EEEnabled {
@@ -54,7 +54,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                                                $0.classFile == NKCommon.TypeClassFile.video.rawValue ||
                                                $0.classFile == NKCommon.TypeClassFile.audio.rawValue }.map(\.ocId)
 
-                return NCViewer().view(viewController: self, metadata: metadata, ocIds: ocIds, image: image)
+                return NCViewer().view(viewController: self, metadata: metadata, ocIds: withOcIds ? ocIds : nil, image: image)
 
             } else if metadata.isAvailableEditorView ||
                       utilityFileSystem.fileProviderStorageExists(metadata) ||
@@ -118,7 +118,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             return
         }
 
-        self.didSelectMetadata(metadata)
+        self.didSelectMetadata(metadata, withOcIds: true)
     }
 
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
