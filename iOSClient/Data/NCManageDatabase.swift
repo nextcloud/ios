@@ -197,6 +197,7 @@ class NCManageDatabase: NSObject {
         self.clearTable(tableTrash.self, account: account)
         self.clearTable(tableUserStatus.self, account: account)
         self.clearTable(tableVideo.self, account: account)
+        self.clearTable(tableRecommendedFiles.self, account: account)
     }
 
     func clearTablesE2EE(account: String?) {

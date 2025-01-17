@@ -23,44 +23,52 @@
 
 import UIKit
 import MarkdownKit
+import NextcloudKit
 
 protocol NCSectionFirstHeaderDelegate: AnyObject {
     func tapRichWorkspace(_ sender: Any)
+    func tapRecommendations(with metadata: tableMetadata)
+    func tapRecommendationsButtonMenu(with metadata: tableMetadata, image: UIImage?)
+    func longPressGestureRecognizedRecommendations(with metadata: tableMetadata, image: UIImage?)
 }
 
 class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegate {
-    @IBOutlet weak var buttonTransfer: UIButton!
+    @IBOutlet weak var viewRichWorkspace: UIView!
+    @IBOutlet weak var viewRecommendations: UIView!
+    @IBOutlet weak var viewTransfer: UIView!
+    @IBOutlet weak var viewSection: UIView!
+
+    @IBOutlet weak var viewRichWorkspaceHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var viewRecommendationsHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var viewTransferHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var viewSectionHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var transferSeparatorBottomHeightConstraint: NSLayoutConstraint!
+
+    @IBOutlet weak var textViewRichWorkspace: UITextView!
+    @IBOutlet weak var collectionViewRecommendations: UICollectionView!
+    @IBOutlet weak var labelRecommendations: UILabel!
     @IBOutlet weak var imageTransfer: UIImageView!
     @IBOutlet weak var labelTransfer: UILabel!
     @IBOutlet weak var progressTransfer: UIProgressView!
     @IBOutlet weak var transferSeparatorBottom: UIView!
-    @IBOutlet weak var textViewRichWorkspace: UITextView!
     @IBOutlet weak var labelSection: UILabel!
-    @IBOutlet weak var viewTransfer: UIView!
-    @IBOutlet weak var viewRichWorkspace: UIView!
-    @IBOutlet weak var viewSection: UIView!
-
-    @IBOutlet weak var viewTransferHeightConstraint: NSLayoutConstraint!
-    @IBOutlet weak var viewRichWorkspaceHeightConstraint: NSLayoutConstraint!
-    @IBOutlet weak var viewSectionHeightConstraint: NSLayoutConstraint!
-    @IBOutlet weak var transferSeparatorBottomHeightConstraint: NSLayoutConstraint!
 
     weak var delegate: NCSectionFirstHeaderDelegate?
     let utility = NCUtility()
     private var markdownParser = MarkdownParser()
     private var richWorkspaceText: String?
-    private var textViewColor: UIColor?
-    private let gradient: CAGradientLayer = CAGradientLayer()
+    private let richWorkspaceGradient: CAGradientLayer = CAGradientLayer()
+    private var recommendations: [tableRecommendedFiles] = []
 
     override func awakeFromNib() {
         super.awakeFromNib()
 
-        backgroundColor = .clear
-
-        // Gradient
-        gradient.startPoint = CGPoint(x: 0, y: 0.8)
-        gradient.endPoint = CGPoint(x: 0, y: 0.9)
-        viewRichWorkspace.layer.addSublayer(gradient)
+        //
+        // RichWorkspace
+        //
+        richWorkspaceGradient.startPoint = CGPoint(x: 0, y: 0.8)
+        richWorkspaceGradient.endPoint = CGPoint(x: 0, y: 0.9)
+        viewRichWorkspace.layer.addSublayer(richWorkspaceGradient)
 
         let tap = UITapGestureRecognizer(target: self, action: #selector(touchUpInsideViewRichWorkspace(_:)))
         tap.delegate = self
@@ -71,11 +79,22 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
         if let richWorkspaceText = richWorkspaceText {
             textViewRichWorkspace.attributedText = markdownParser.parse(richWorkspaceText)
         }
-        textViewColor = NCBrandColor.shared.textColor
 
-        labelSection.text = ""
-        viewSectionHeightConstraint.constant = 0
+        //
+        // Recommendations
+        //
+        viewRecommendationsHeightConstraint.constant = 0
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.minimumLineSpacing = 0
+        layout.minimumInteritemSpacing = 10
+        collectionViewRecommendations.collectionViewLayout = layout
+        collectionViewRecommendations.register(UINib(nibName: "NCRecommendationsCell", bundle: nil), forCellWithReuseIdentifier: "cell")
+        labelRecommendations.text = NSLocalizedString("_recommended_files_", comment: "")
 
+        //
+        // Transfer
+        //
         imageTransfer.tintColor = NCBrandColor.shared.iconImageColor
         imageTransfer.image = NCUtility().loadImage(named: "icloud.and.arrow.up")
 
@@ -85,25 +104,39 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
 
         transferSeparatorBottom.backgroundColor = .separator
         transferSeparatorBottomHeightConstraint.constant = 0.5
+
+        //
+        // Section
+        //
+        labelSection.text = ""
+        viewSectionHeightConstraint.constant = 0
+
+        //
+        // NotificationCenterReloadRecommendedFiles
+        //
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadRecommendedFiles), object: nil, queue: nil) { _ in
+            self.collectionViewRecommendations.reloadData()
+        }
     }
 
     override func layoutSublayers(of layer: CALayer) {
         super.layoutSublayers(of: layer)
 
-        gradient.frame = viewRichWorkspace.bounds
-        setInterfaceColor()
+        richWorkspaceGradient.frame = viewRichWorkspace.bounds
+        setRichWorkspaceColor()
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
 
-        setInterfaceColor()
+        setRichWorkspaceColor()
     }
 
     // MARK: - RichWorkspace
 
     func setRichWorkspaceHeight(_ size: CGFloat) {
         viewRichWorkspaceHeightConstraint.constant = size
+
         if size == 0 {
             viewRichWorkspace.isHidden = true
         } else {
@@ -111,11 +144,11 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
         }
     }
 
-    func setInterfaceColor() {
+    private func setRichWorkspaceColor() {
         if traitCollection.userInterfaceStyle == .dark {
-            gradient.colors = [UIColor(white: 0, alpha: 0).cgColor, UIColor.black.cgColor]
+            richWorkspaceGradient.colors = [UIColor(white: 0, alpha: 0).cgColor, UIColor.black.cgColor]
         } else {
-            gradient.colors = [UIColor(white: 1, alpha: 0).cgColor, UIColor.white.cgColor]
+            richWorkspaceGradient.colors = [UIColor(white: 1, alpha: 0).cgColor, UIColor.white.cgColor]
         }
     }
 
@@ -128,16 +161,35 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
         }
     }
 
+    @objc func touchUpInsideViewRichWorkspace(_ sender: Any) {
+        delegate?.tapRichWorkspace(sender)
+    }
+
+    // MARK: - Recommendation
+
+    func setRecommendations(size: CGFloat, recommendations: [tableRecommendedFiles]) {
+        viewRecommendationsHeightConstraint.constant = size
+        self.recommendations = recommendations
+
+        if size == 0 {
+            viewRecommendations.isHidden = true
+        } else {
+            viewRecommendations.isHidden = false
+        }
+
+        collectionViewRecommendations.reloadData()
+    }
+
     // MARK: - Transfer
 
-    func setViewTransfer(isHidden: Bool, progress: Float? = nil) {
+    func setViewTransfer(isHidden: Bool, progress: Float? = nil, height: CGFloat) {
         viewTransfer.isHidden = isHidden
 
         if isHidden {
             viewTransferHeightConstraint.constant = 0
             progressTransfer.progress = 0
         } else {
-            viewTransferHeightConstraint.constant = NCGlobal.shared.heightHeaderTransfer
+            viewTransferHeightConstraint.constant = height
             if NCTransferProgress.shared.haveUploadInForeground() {
                 labelTransfer.text = String(format: NSLocalizedString("_upload_foreground_msg_", comment: ""), NCBrandOptions.shared.brand)
                 if let progress {
@@ -166,65 +218,78 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
             viewSection.isHidden = false
         }
     }
+}
 
-    // MARK: - Action
+extension NCSectionFirstHeader: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        self.recommendations.count
+    }
 
-    @objc func touchUpInsideViewRichWorkspace(_ sender: Any) {
-        delegate?.tapRichWorkspace(sender)
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let recommendedFiles = self.recommendations[indexPath.row]
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as? NCRecommendationsCell,
+              let metadata = NCManageDatabase.shared.getResultMetadataFromFileId(recommendedFiles.id) else { fatalError() }
+
+        if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512) {
+            cell.image.image = image
+            cell.image.contentMode = .scaleAspectFit
+        } else {
+            cell.image.image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
+            cell.image.contentMode = .scaleToFill
+            if recommendedFiles.hasPreview {
+                NextcloudKit.shared.downloadPreview(fileId: metadata.fileId, account: metadata.account) { _, _, _, _, responseData, error in
+                    if error == .success, let data = responseData?.data {
+                        self.utility.createImageFileFrom(data: data, ocId: metadata.ocId, etag: metadata.etag)
+                        if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512) {
+                            cell.image.image = image
+                            cell.image.contentMode = .scaleAspectFit
+                        }
+                    }
+                }
+            }
+        }
+
+        if metadata.hasPreview, metadata.classFile == NKCommon.TypeClassFile.document.rawValue {
+            cell.setImageBorder()
+        }
+
+        cell.labelFilename.text = recommendedFiles.name
+        cell.labelInfo.text = recommendedFiles.reason
+
+        cell.delegate = self
+        cell.metadata = metadata
+        cell.recommendedFiles = recommendedFiles
+
+        return cell
     }
 }
 
-// https://stackoverflow.com/questions/16278463/darken-an-uiimage
-public extension UIImage {
-
-    private enum BlendMode {
-        case multiply // This results in colors that are at least as dark as either of the two contributing sample colors
-        case screen // This results in colors that are at least as light as either of the two contributing sample colors
-    }
-
-    // A level of zero yeilds the original image, a level of 1 results in black
-    func darken(level: CGFloat = 0.5) -> UIImage? {
-        return blend(mode: .multiply, level: level)
-    }
-
-    // A level of zero yeilds the original image, a level of 1 results in white
-    func lighten(level: CGFloat = 0.5) -> UIImage? {
-        return blend(mode: .screen, level: level)
-    }
-
-    private func blend(mode: BlendMode, level: CGFloat) -> UIImage? {
-        let context = CIContext(options: nil)
-
-        var level = level
-        if level < 0 {
-            level = 0
-        } else if level > 1 {
-            level = 1
+extension NCSectionFirstHeader: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let recommendedFiles = self.recommendations[indexPath.row]
+        guard let metadata = NCManageDatabase.shared.getResultMetadataFromFileId(recommendedFiles.id) else {
+            return
         }
 
-        let filterName: String
-        switch mode {
-        case .multiply: // As the level increases we get less white
-            level = abs(level - 1.0)
-            filterName = "CIMultiplyBlendMode"
-        case .screen: // As the level increases we get more white
-            filterName = "CIScreenBlendMode"
-        }
+        self.delegate?.tapRecommendations(with: metadata)
+    }
+}
 
-        let blender = CIFilter(name: filterName)!
-        let backgroundColor = CIColor(color: UIColor(white: level, alpha: 1))
+extension NCSectionFirstHeader: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let cellHeight = collectionView.bounds.height
+        // let cellWidth = cellHeight * 1.5
 
-        guard let inputImage = CIImage(image: self) else { return nil }
-        blender.setValue(inputImage, forKey: kCIInputImageKey)
+        return CGSize(width: cellHeight, height: cellHeight)
+    }
+}
 
-        guard let backgroundImageGenerator = CIFilter(name: "CIConstantColorGenerator") else { return nil }
-        backgroundImageGenerator.setValue(backgroundColor, forKey: kCIInputColorKey)
-        guard let backgroundImage = backgroundImageGenerator.outputImage?.cropped(to: CGRect(origin: CGPoint.zero, size: self.size)) else { return nil }
-        blender.setValue(backgroundImage, forKey: kCIInputBackgroundImageKey)
+extension NCSectionFirstHeader: NCRecommendationsCellDelegate {
+    func touchUpInsideButtonMenu(with metadata: tableMetadata, image: UIImage?) {
+        self.delegate?.tapRecommendationsButtonMenu(with: metadata, image: image)
+    }
 
-        guard let blendedImage = blender.outputImage else { return nil }
-
-        guard let cgImage = context.createCGImage(blendedImage, from: blendedImage.extent) else { return nil }
-        return UIImage(cgImage: cgImage)
+    func longPressGestureRecognized(with metadata: tableMetadata, image: UIImage?) {
+        self.delegate?.longPressGestureRecognizedRecommendations(with: metadata, image: image)
     }
 }

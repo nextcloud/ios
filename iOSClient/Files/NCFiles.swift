@@ -27,11 +27,10 @@ import RealmSwift
 import SwiftUI
 
 class NCFiles: NCCollectionViewCommon {
-    internal var isRoot: Bool = true
     internal var fileNameBlink: String?
     internal var fileNameOpen: String?
     internal var matadatasHash: String = ""
-    internal var reloadDataSourceInProgress: Bool = false
+    internal var semaphoreReloadDataSource = DispatchSemaphore(value: 1)
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -50,7 +49,14 @@ class NCFiles: NCCollectionViewCommon {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if isRoot {
+        if self.serverUrl.isEmpty {
+
+            ///
+            /// Set ServerURL when start (isEmpty)
+            ///
+            self.serverUrl = utilityFileSystem.getHomeServer(session: session)
+            self.titleCurrentFolder = getNavigationTitle()
+
             NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { notification in
 
                 if let userInfo = notification.userInfo, let account = userInfo["account"] as? String {
@@ -88,10 +94,6 @@ class NCFiles: NCCollectionViewCommon {
     }
 
     override func viewWillAppear(_ animated: Bool) {
-        if isRoot {
-            serverUrl = utilityFileSystem.getHomeServer(session: session)
-            titleCurrentFolder = getNavigationTitle()
-        }
         super.viewWillAppear(animated)
 
         reloadDataSource()
@@ -122,12 +124,16 @@ class NCFiles: NCCollectionViewCommon {
     // MARK: - DataSource
 
     override func reloadDataSource() {
-        guard !isSearchingMode,
-              !reloadDataSourceInProgress
+        guard !isSearchingMode
         else {
             return super.reloadDataSource()
         }
-        reloadDataSourceInProgress = true
+
+        // Watchdog: this is only a fail safe "dead lock", I don't think the timeout will ever be called but at least nothing gets stuck, if after 5 sec. (which is a long time in this routine), the semaphore is still locked
+        //
+        if self.semaphoreReloadDataSource.wait(timeout: .now() + 5) == .timedOut {
+            self.semaphoreReloadDataSource.signal()
+        }
 
         var predicate = self.defaultPredicate
         let predicateDirectory = NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, self.serverUrl)
@@ -145,14 +151,16 @@ class NCFiles: NCCollectionViewCommon {
         self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView)
 
         if metadatas.isEmpty {
-            reloadDataSourceInProgress = false
+            self.semaphoreReloadDataSource.signal()
             return super.reloadDataSource()
         }
 
         self.dataSource.caching(metadatas: metadatas, dataSourceMetadatas: dataSourceMetadatas) { updated in
-            self.reloadDataSourceInProgress = false
-            if updated || self.isNumberOfItemsInAllSectionsNull || self.numberOfItemsInAllSections != metadatas.count {
-                super.reloadDataSource()
+            self.semaphoreReloadDataSource.signal()
+            DispatchQueue.main.async {
+                if updated || self.isNumberOfItemsInAllSectionsNull || self.numberOfItemsInAllSections != metadatas.count {
+                    super.reloadDataSource()
+                }
             }
         }
     }
@@ -176,6 +184,26 @@ class NCFiles: NCCollectionViewCommon {
                 }
             }
             return false
+        }
+
+        ///
+        /// Recommended files
+        ///
+        if self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session),
+           NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityRecommendations {
+            let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
+
+            NextcloudKit.shared.getRecommendedFiles(account: self.session.account, options: options) { _, recommendations, _, error in
+                if error == .success,
+                   let recommendations,
+                   !recommendations.isEmpty {
+                    Task.detached {
+                        await self.createRecommendations(recommendations)
+                    }
+                } else {
+                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadRecommendedFiles, userInfo: nil)
+                }
+            }
         }
 
         DispatchQueue.global().async {
@@ -340,6 +368,33 @@ class NCFiles: NCCollectionViewCommon {
         }
     }
 
+    private func createRecommendations(_ recommendations: [NKRecommendation]) async {
+        let home = self.utilityFileSystem.getHomeServer(session: self.session)
+        var recommendationsToInsert: [NKRecommendation] = []
+
+        for recommendation in recommendations {
+            var metadata = database.getResultMetadataFromFileId(recommendation.id)
+            if metadata == nil || metadata?.fileName != recommendation.name {
+                let serverUrlFileName = home + recommendation.directory + recommendation.name
+                let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles, account: session.account)
+
+                if results.error == .success, let file = results.files?.first {
+                    let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
+                    let metadataConverted = self.database.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
+                    metadata = metadataConverted
+
+                    self.database.addMetadata(metadataConverted)
+                    recommendationsToInsert.append(recommendation)
+                }
+            } else {
+                recommendationsToInsert.append(recommendation)
+            }
+        }
+
+        self.database.createRecommendedFiles(account: session.account, recommendations: recommendationsToInsert)
+        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadRecommendedFiles, userInfo: nil)
+    }
+
     // MARK: - NCAccountSettingsModelDelegate
 
     override func accountSettingsDidDismiss(tableAccount: tableAccount?, controller: NCMainTabBarController?) {
@@ -349,9 +404,9 @@ class NCFiles: NCCollectionViewCommon {
             appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
         } else if let account = tableAccount?.account, account != currentAccount {
             NCAccount().changeAccount(account, userProfile: nil, controller: controller) { }
-        } else if isRoot {
-            titleCurrentFolder = getNavigationTitle()
-            navigationItem.title = titleCurrentFolder
+        } else if self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session) {
+            self.titleCurrentFolder = getNavigationTitle()
+            navigationItem.title = self.titleCurrentFolder
         }
 
         setNavigationLeftItems()

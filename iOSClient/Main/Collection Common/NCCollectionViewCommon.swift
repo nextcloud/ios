@@ -95,8 +95,27 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var numberOfColumns: Int = 0
     var lastNumberOfColumns: Int = 0
 
+    let heightHeaderTransfer: CGFloat = 50
+    let heightHeaderRecommendations: CGFloat = 150
+    let heightHeaderSection: CGFloat = 30
+
     var session: NCSession.Session {
+#if DEBUG
+        if Thread.isMainThread {
+            return NCSession.shared.getSession(controller: tabBarController)
+        } else {
+            let semaphore = DispatchSemaphore(value: 0)
+            var session: NCSession.Session!
+            DispatchQueue.main.async {
+                session = NCSession.shared.getSession(controller: self.tabBarController)
+                semaphore.signal()
+            }
+            semaphore.wait()
+            return session
+        }
+#else
         NCSession.shared.getSession(controller: tabBarController)
+#endif
     }
 
     var isLayoutPhoto: Bool {
@@ -113,6 +132,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     var showDescription: Bool {
         !headerRichWorkspaceDisable && NCKeychain().showDescription
+    }
+
+    var showRecommendation: Bool {
+        self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session) &&
+        NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityRecommendations &&
+        NCKeychain().showRecommendedFiles
     }
 
     var infoLabelsSeparator: String {
@@ -156,6 +181,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         tabBarSelect = NCCollectionViewCommonSelectTabBar(controller: self.controller, delegate: self)
         self.navigationController?.presentationController?.delegate = self
         collectionView.alwaysBounceVertical = true
+        collectionView.accessibilityIdentifier = "NCCollectionViewCommon"
 
         view.backgroundColor = .systemBackground
         collectionView.backgroundColor = .systemBackground
@@ -618,8 +644,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         // HEADER
         if self.headerMenuTransferView, transfer.session.contains("upload") {
-            self.sectionFirstHeader?.setViewTransfer(isHidden: false, progress: transfer.progressNumber.floatValue)
-            self.sectionFirstHeaderEmptyData?.setViewTransfer(isHidden: false, progress: transfer.progressNumber.floatValue)
+            self.sectionFirstHeader?.setViewTransfer(isHidden: false, progress: transfer.progressNumber.floatValue, height: self.heightHeaderTransfer)
+            self.sectionFirstHeaderEmptyData?.setViewTransfer(isHidden: false, progress: transfer.progressNumber.floatValue, height: self.heightHeaderTransfer)
         }
     }
 
@@ -841,14 +867,24 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
             showDescription.subtitle = richWorkspaceText == nil ? NSLocalizedString("_no_description_available_", comment: "") : ""
 
+            let showRecommendedFilesKeychain = NCKeychain().showRecommendedFiles
+            let capabilityRecommendations = NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityRecommendations
+            let showRecommendedFiles = UIAction(title: NSLocalizedString("_show_recommended_files_", comment: ""), image: utility.loadImage(named: "sparkles"), attributes: !capabilityRecommendations ? .disabled : [], state: showRecommendedFilesKeychain ? .on : .off) { _ in
+
+                NCKeychain().showRecommendedFiles = !showRecommendedFilesKeychain
+
+                self.collectionView.reloadData()
+                self.setNavigationRightItems()
+            }
+
             if layoutKey == global.layoutViewRecent {
                 return [select]
             } else {
                 var additionalSubmenu = UIMenu()
                 if layoutKey == global.layoutViewFiles {
-                    additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [foldersOnTop, personalFilesOnlyAction, showDescription])
+                    additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [foldersOnTop, personalFilesOnlyAction, showDescription, showRecommendedFiles])
                 } else {
-                    additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [foldersOnTop, showDescription])
+                    additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [foldersOnTop, showDescription, showRecommendedFiles])
                 }
                 return [select, viewStyleSubmenu, sortSubmenu, additionalSubmenu]
             }
@@ -973,8 +1009,20 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
     }
 
+    func tapRecommendationsButtonMenu(with metadata: tableMetadata, image: UIImage?) {
+        toggleMenu(metadata: metadata, image: image)
+    }
+
     func tapButtonSection(_ sender: Any, metadataForSection: NCMetadataForSection?) {
         unifiedSearchMore(metadataForSection: metadataForSection)
+    }
+
+    func tapRecommendations(with metadata: tableMetadata) {
+        didSelectMetadata(metadata)
+    }
+
+    func longPressGestureRecognizedRecommendations(with metadata: tableMetadata, image: UIImage?) {
+
     }
 
     func longPressListItem(with ocId: String, ocIdTransfer: String, gestureRecognizer: UILongPressGestureRecognizer) { }
@@ -1141,7 +1189,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             navigationController?.pushViewController(viewController, animated: true)
         } else {
             if let viewController: NCFiles = UIStoryboard(name: "NCFiles", bundle: nil).instantiateInitialViewController() as? NCFiles {
-                viewController.isRoot = false
                 viewController.serverUrl = serverUrlPush
                 viewController.titlePreviusFolder = navigationItem.title
                 viewController.titleCurrentFolder = metadata.fileNameView
@@ -1165,49 +1212,66 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         return nil
     }
 
-    func getHeaderHeight(section: Int) -> (heightHeaderCommands: CGFloat, heightHeaderRichWorkspace: CGFloat, heightHeaderSection: CGFloat) {
-        var headerRichWorkspace: CGFloat = 0
+    func getHeaderHeight(section: Int) -> (heightHeaderRichWorkspace: CGFloat,
+                                           heightHeaderRecommendations: CGFloat,
+                                           heightHeaderTransfer: CGFloat,
+                                           heightHeaderSection: CGFloat) {
+        var heightHeaderRichWorkspace: CGFloat = 0
+        var heightHeaderRecommendations: CGFloat = 0
+        var heightHeaderSection: CGFloat = 0
 
-        func getHeaderHeight() -> CGFloat {
+        func getHeightHeaderTransfer() -> CGFloat {
             var size: CGFloat = 0
 
             if isHeaderMenuTransferViewEnabled() != nil {
                 if !isSearchingMode {
-                    size += global.heightHeaderTransfer
+                    size += self.heightHeaderTransfer
                 }
             }
+
             return size
         }
 
-        if let richWorkspaceText = richWorkspaceText, showDescription {
-            let trimmed = richWorkspaceText.trimmingCharacters(in: .whitespaces)
-            if !trimmed.isEmpty && !isSearchingMode {
-                headerRichWorkspace = UIScreen.main.bounds.size.height / 6
-            }
+        if showDescription,
+           !isSearchingMode,
+           let richWorkspaceText = richWorkspaceText,
+           !richWorkspaceText.trimmingCharacters(in: .whitespaces).isEmpty {
+            heightHeaderRichWorkspace = UIScreen.main.bounds.size.height / 6
+        }
+
+        if showRecommendation,
+           !isSearchingMode,
+           !self.database.getRecommendedFiles(account: self.session.account).isEmpty,
+           NCKeychain().showRecommendedFiles {
+            heightHeaderRecommendations = self.heightHeaderRecommendations
+            heightHeaderSection = self.heightHeaderSection
         }
 
         if isSearchingMode || layoutForView?.groupBy != "none" || self.dataSource.numberOfSections() > 1 {
             if section == 0 {
-                return (getHeaderHeight(), headerRichWorkspace, global.heightSection)
+                return (heightHeaderRichWorkspace, heightHeaderRecommendations, getHeightHeaderTransfer(), self.heightHeaderSection)
             } else {
-                return (0, 0, global.heightSection)
+                return (0, 0, 0, self.heightHeaderSection)
             }
         } else {
-            return (getHeaderHeight(), headerRichWorkspace, 0)
+            return (heightHeaderRichWorkspace, heightHeaderRecommendations, getHeightHeaderTransfer(), heightHeaderSection)
         }
     }
 
     func sizeForHeaderInSection(section: Int) -> CGSize {
         var height: CGFloat = 0
+        let isLandscape = view.bounds.width > view.bounds.height
+        let isIphone = UIDevice.current.userInterfaceIdiom == .phone
 
-        if isEditMode {
-            return CGSize.zero
-        } else if self.dataSource.isEmpty() {
+        if self.dataSource.isEmpty() {
             height = utility.getHeightHeaderEmptyData(view: view, portraitOffset: emptyDataPortaitOffset, landscapeOffset: emptyDataLandscapeOffset, isHeaderMenuTransferViewEnabled: isHeaderMenuTransferViewEnabled() != nil)
+        } else if isEditMode || (isLandscape && isIphone) {
+            return CGSize.zero
         } else {
-            let (heightHeaderCommands, heightHeaderRichWorkspace, heightHeaderSection) = getHeaderHeight(section: section)
-            height = heightHeaderCommands + heightHeaderRichWorkspace + heightHeaderSection
+            let (heightHeaderRichWorkspace, heightHeaderRecommendations, heightHeaderTransfer, heightHeaderSection) = getHeaderHeight(section: section)
+            height = heightHeaderRichWorkspace + heightHeaderRecommendations + heightHeaderTransfer + heightHeaderSection
         }
+
         return CGSize(width: collectionView.frame.width, height: height)
     }
 
@@ -1221,13 +1285,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         var size = CGSize(width: collectionView.frame.width, height: 0)
 
         if section == sections - 1 {
-            size.height += global.endHeightFooter
+            size.height += 85
         } else {
-            size.height += global.heightFooter
+            size.height += 1
         }
 
         if isSearchingMode && isPaginated && metadatasCount > 0 {
-            size.height += global.heightFooterButton
+            size.height += 30
         }
         return size
     }
