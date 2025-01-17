@@ -4,6 +4,7 @@
 //
 //  Created by Milen on 21.05.24.
 //  Copyright © 2024 Marino Faggiana. All rights reserved.
+//  Copyright © 2024 STRATO AG
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //

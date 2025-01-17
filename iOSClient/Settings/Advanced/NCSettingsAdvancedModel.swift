@@ -5,6 +5,7 @@
 //  Created by Aditya Tyagi on 08/03/24.
 //  Created by Marino Faggiana on 30/05/24.
 //  Copyright © 2024 Marino Faggiana. All rights reserved.
+//  Copyright © 2024 STRATO AG
 //
 //  Author Aditya Tyagi <adityagi02@yahoo.com>
 //

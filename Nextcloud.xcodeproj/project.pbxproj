@@ -3506,7 +3506,7 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastSwiftUpdateCheck = 1430;
 				LastUpgradeCheck = 1400;
-				ORGANIZATIONNAME = "Viseven Europe OÜ";
+				ORGANIZATIONNAME = "STRATO AG";
 				TargetAttributes = {
 					2C33C47E23E2C475005F963B = {
 						CreatedOnToolsVersion = 11.3.1;

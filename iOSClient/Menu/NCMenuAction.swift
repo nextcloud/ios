@@ -4,6 +4,7 @@
 //
 //  Created by Henrik Storch on 17.02.22.
 //  Copyright © 2022 Marino Faggiana. All rights reserved.
+//  Copyright © 2024 STRATO AG
 //
 //  Author Henrik Storch <henrik.storch@nextcloud.com>
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
