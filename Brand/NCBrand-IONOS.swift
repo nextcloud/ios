@@ -15,6 +15,7 @@ import UIKit
         super.init()
         
         brand = "IONOS HiDrive Next"
+        textCopyrightNextcloudiOS = "Nextcloud Hydrogen for iOS %@ © 2024"
         loginBaseUrl = "https://nextcloud-aio.iocaste45.de"
         privacy = "https://nextcloud.com/privacy"
         sourceCode = "https://github.com/nextcloud/ios"

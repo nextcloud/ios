@@ -36,7 +36,7 @@ let userAgent: String = {
     }()
 
     var brand: String = "Nextcloud"
-    var textCopyrightNextcloudiOS: String = "HiDrive Next iOS %@ © 2024"
+    var textCopyrightNextcloudiOS: String = "Nextcloud Hydrogen for iOS %@ © 2024"
     var textCopyrightNextcloudServer: String = "Nextcloud Server %@"
     var loginBaseUrl: String = "https://cloud.nextcloud.com"
     var pushNotificationServerProxy: String = "https://push-notifications.nextcloud.com"
