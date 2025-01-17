@@ -417,6 +417,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               serverUrl == self.serverUrl
         else { return }
 
+        defer {
+            self.setNavigationRightItems()
+            self.updateHeadersView()
+        }
+        
         if self.layoutForView?.layout == layoutForView.layout {
             self.layoutForView = self.database.setLayoutForView(layoutForView: layoutForView)
             self.reloadDataSource()
@@ -441,9 +446,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
 
         self.collectionView.collectionViewLayout.invalidateLayout()
-
-        self.setNavigationRightItems()
-        self.updateHeadersView()
     }
 
     @objc func reloadDataSource(_ notification: NSNotification) {
