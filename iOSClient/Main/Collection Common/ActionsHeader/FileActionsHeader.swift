@@ -3,7 +3,7 @@
 //  Nextcloud
 //
 //  Created by Vitaliy Tolkach on 23.08.2024.
-//  Copyright © 2024 Viseven Europe OÜ. All rights reserved.
+//  Copyright © 2024 STRATO AG
 //
 
 import UIKit

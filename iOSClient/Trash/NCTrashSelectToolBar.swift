@@ -4,6 +4,7 @@
 //
 //  Created by Milen on 05.02.24.
 //  Copyright © 2024 Marino Faggiana. All rights reserved.
+//  Copyright © 2024 STRATO AG
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
