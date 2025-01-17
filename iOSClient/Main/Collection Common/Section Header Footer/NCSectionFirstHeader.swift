@@ -86,8 +86,8 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
         viewRecommendationsHeightConstraint.constant = 0
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
-        layout.minimumLineSpacing = 0
-        layout.minimumInteritemSpacing = 10
+        layout.minimumInteritemSpacing = 200
+
         collectionViewRecommendations.collectionViewLayout = layout
         collectionViewRecommendations.register(UINib(nibName: "NCRecommendationsCell", bundle: nil), forCellWithReuseIdentifier: "cell")
         labelRecommendations.text = NSLocalizedString("_recommended_files_", comment: "")
@@ -230,12 +230,15 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as? NCRecommendationsCell,
               let metadata = NCManageDatabase.shared.getResultMetadataFromFileId(recommendedFiles.id) else { fatalError() }
 
-        if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512) {
+        if metadata.directory {
+            cell.image.image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
+            cell.image.contentMode = .scaleAspectFit
+        } else if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512) {
             cell.image.image = image
             cell.image.contentMode = .scaleAspectFit
         } else {
             cell.image.image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
-            cell.image.contentMode = .scaleToFill
+            cell.image.contentMode = .scaleAspectFill
             if recommendedFiles.hasPreview {
                 NextcloudKit.shared.downloadPreview(fileId: metadata.fileId, account: metadata.account) { _, _, _, _, responseData, error in
                     if error == .success, let data = responseData?.data {
@@ -250,7 +253,9 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
         }
 
         if metadata.hasPreview, metadata.classFile == NKCommon.TypeClassFile.document.rawValue {
-            cell.setImageBorder()
+            cell.setImageCorner(withBorder: true)
+        } else {
+            cell.setImageCorner(withBorder: false)
         }
 
         cell.labelFilename.text = recommendedFiles.name
@@ -281,6 +286,10 @@ extension NCSectionFirstHeader: UICollectionViewDelegateFlowLayout {
         // let cellWidth = cellHeight * 1.5
 
         return CGSize(width: cellHeight, height: cellHeight)
+    }
+
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 200
     }
 }
 

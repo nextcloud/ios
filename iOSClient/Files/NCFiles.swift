@@ -374,8 +374,14 @@ class NCFiles: NCCollectionViewCommon {
 
         for recommendation in recommendations {
             var metadata = database.getResultMetadataFromFileId(recommendation.id)
+            var serverUrlFileName = ""
+
             if metadata == nil || metadata?.fileName != recommendation.name {
-                let serverUrlFileName = home + recommendation.directory + recommendation.name
+                if recommendation.directory.last == "/" {
+                    serverUrlFileName = home + recommendation.directory + recommendation.name
+                } else {
+                    serverUrlFileName = home + recommendation.directory + "/" + recommendation.name
+                }
                 let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles, account: session.account)
 
                 if results.error == .success, let file = results.files?.first {
@@ -392,6 +398,7 @@ class NCFiles: NCCollectionViewCommon {
         }
 
         self.database.createRecommendedFiles(account: session.account, recommendations: recommendationsToInsert)
+
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadRecommendedFiles, userInfo: nil)
     }
 

@@ -49,11 +49,16 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
         self.addGestureRecognizer(longPressedGesture)
     }
 
-    func setImageBorder() {
+    func setImageCorner(withBorder: Bool) {
         image.layer.cornerRadius = 10
         image.layer.masksToBounds = true
-        image.layer.borderWidth = 0.5
-        image.layer.borderColor = UIColor.separator.cgColor
+        if withBorder {
+            image.layer.borderWidth = 0.5
+            image.layer.borderColor = UIColor.separator.cgColor
+        } else {
+            image.layer.borderWidth = 0
+            image.layer.borderColor = UIColor.clear.cgColor
+        }
     }
 
     @IBAction func touchUpInsideButtonMenu(_ sender: Any) {
