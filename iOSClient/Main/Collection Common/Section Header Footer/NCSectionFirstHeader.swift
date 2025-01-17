@@ -235,7 +235,7 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
             cell.image.contentMode = .scaleAspectFit
         } else if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512) {
             cell.image.image = image
-            cell.image.contentMode = .scaleAspectFit
+            cell.image.contentMode = .scaleToFill
         } else {
             cell.image.image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
             cell.image.contentMode = .scaleAspectFill
@@ -245,7 +245,7 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
                         self.utility.createImageFileFrom(data: data, ocId: metadata.ocId, etag: metadata.etag)
                         if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512) {
                             cell.image.image = image
-                            cell.image.contentMode = .scaleAspectFit
+                            cell.image.contentMode = .scaleToFill
                         }
                     }
                 }
