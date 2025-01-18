@@ -1237,8 +1237,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         if showRecommendation,
            !isSearchingMode,
-           !self.database.getRecommendedFiles(account: self.session.account).isEmpty,
-           NCKeychain().showRecommendedFiles {
+           NCKeychain().showRecommendedFiles,
+           !self.database.getRecommendedFiles(account: self.session.account).isEmpty {
             heightHeaderRecommendations = self.heightHeaderRecommendations
             heightHeaderSection = self.heightHeaderSection
         }
