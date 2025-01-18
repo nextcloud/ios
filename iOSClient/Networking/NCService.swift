@@ -165,13 +165,24 @@ class NCService: NSObject {
 
     private func requestServerCapabilities(account: String) {
         NextcloudKit.shared.getCapabilities(account: account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, presponseData, error in
-            guard error == .success, let data = presponseData?.data else { return }
+            guard error == .success, let data = presponseData?.data else {
+                return
+            }
 
             data.printJson()
 
             self.database.addCapabilitiesJSon(data, account: account)
 
-            guard let capability = self.database.setCapabilities(account: account, data: data) else { return }
+            guard let capability = self.database.setCapabilities(account: account, data: data) else {
+                return
+            }
+
+            // Recommendations
+            if NCCapabilities.shared.getCapabilities(account: account).capabilityRecommendations {
+                Task.detached {
+                    await NCNetworking.shared.createRecommendations(account: account)
+                }
+            }
 
             // Theming
             if NCBrandColor.shared.settingThemingColor(account: account) {

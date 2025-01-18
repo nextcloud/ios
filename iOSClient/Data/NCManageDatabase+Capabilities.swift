@@ -390,13 +390,6 @@ extension NCManageDatabase {
             capabilities.capabilityForbiddenFileNameExtensions = data.capabilities.files?.forbiddenFileNameExtensions ?? []
 
             capabilities.capabilityRecommendations = data.capabilities.recommendations?.enabled ?? false
-#if !EXTENSION
-            if capabilities.capabilityRecommendations {
-                Task.detached {
-                    await NCNetworking.shared.createRecommendations(account: account)
-                }
-            }
-#endif
 
             NCCapabilities.shared.appendCapabilities(account: account, capabilities: capabilities)
 

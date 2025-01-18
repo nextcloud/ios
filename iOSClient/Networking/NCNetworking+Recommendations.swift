@@ -44,9 +44,8 @@ extension NCNetworking {
                 }
             }
             self.database.createRecommendedFiles(account: account, recommendations: recommendationsToInsert)
+
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadRecommendedFiles, userInfo: nil)
         }
-
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadRecommendedFiles, userInfo: nil)
     }
-
 }

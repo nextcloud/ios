@@ -220,6 +220,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         refreshControl.action(for: .valueChanged) { _ in
             self.dataSource.removeAll()
             self.getServerData()
+            if self.showRecommendation {
+                Task.detached {
+                    await NCNetworking.shared.createRecommendations(account: self.session.account)
+                }
+            }
         }
 
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPressCollecationView(_:)))
