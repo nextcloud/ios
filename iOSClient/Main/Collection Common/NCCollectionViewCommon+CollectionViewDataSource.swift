@@ -479,36 +479,45 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         return cell
     }
 
-    func setContent(header: NCSectionFirstHeader, indexPath: IndexPath) {
-        let (heightHeaderRichWorkspace, heightHeaderRecommendations, heightHeaderTransfer, heightHeaderSection) = getHeaderHeight(section: indexPath.section)
-        let recommendations = self.database.getRecommendedFiles(account: self.session.account)
-        var sectionText = NSLocalizedString("_home_", comment: "")
-        var headerTransferIsHidden: Bool = true
+    func setContent(header: UICollectionReusableView, indexPath: IndexPath) {
+        if let header = header as? NCSectionFirstHeader {
+            let (heightHeaderRichWorkspace, heightHeaderRecommendations, heightHeaderTransfer, heightHeaderSection) = getHeaderHeight(section: indexPath.section)
+            let recommendations = self.database.getRecommendedFiles(account: self.session.account)
+            var sectionText = NSLocalizedString("_home_", comment: "")
+            var headerTransferIsHidden: Bool = true
 
-        if !isSearchingMode, headerMenuTransferView, isHeaderMenuTransferViewEnabled() != nil {
-            headerTransferIsHidden = false
+            if !isSearchingMode, headerMenuTransferView, isHeaderMenuTransferViewEnabled() != nil {
+                headerTransferIsHidden = false
+            }
+
+            if !self.dataSource.getSectionValueLocalization(indexPath: indexPath).isEmpty {
+                sectionText = self.dataSource.getSectionValueLocalization(indexPath: indexPath)
+            }
+
+            header.setContent(heightHeaderRichWorkspace: heightHeaderRichWorkspace,
+                              richWorkspaceText: richWorkspaceText,
+                              heightHeaderRecommendations: heightHeaderRecommendations,
+                              recommendations: recommendations,
+                              heightHeaderTransfer: heightHeaderTransfer,
+                              headerTransferIsHidden: headerTransferIsHidden,
+                              heightHeaderSection: heightHeaderSection,
+                              sectionText: sectionText,
+                              viewController: self,
+                              delegate: self)
+
+        } else if let header = header as? NCSectionFirstHeaderEmptyData {
+
+        } else if let header = header as? NCSectionHeader {
+            let text = self.dataSource.getSectionValueLocalization(indexPath: indexPath)
+            header.setContent(text: text)
         }
-
-        if !self.dataSource.getSectionValueLocalization(indexPath: indexPath).isEmpty {
-            sectionText = self.dataSource.getSectionValueLocalization(indexPath: indexPath)
-        }
-
-        header.setContent(heightHeaderRichWorkspace: heightHeaderRichWorkspace,
-                          richWorkspaceText: richWorkspaceText,
-                          heightHeaderRecommendations: heightHeaderRecommendations,
-                          recommendations: recommendations,
-                          heightHeaderTransfer: heightHeaderTransfer,
-                          headerTransferIsHidden: headerTransferIsHidden,
-                          heightHeaderSection: heightHeaderSection,
-                          sectionText: sectionText,
-                          viewController: self,
-                          delegate: self)
     }
 
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         if kind == UICollectionView.elementKindSectionHeader || kind == mediaSectionHeader {
             if self.dataSource.isEmpty() {
                 guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeaderEmptyData", for: indexPath) as? NCSectionFirstHeaderEmptyData else { return NCSectionFirstHeaderEmptyData() }
+                
                 self.sectionFirstHeaderEmptyData = header
                 header.delegate = self
 
@@ -549,19 +558,21 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                         header.emptyDescription.text = NSLocalizedString("_no_file_pull_down_", comment: "")
                     }
                 }
+
                 return header
 
             } else if indexPath.section == 0 {
                 guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeader", for: indexPath) as? NCSectionFirstHeader else { return NCSectionFirstHeader() }
 
                 self.sectionFirstHeader = header
+                self.setContent(header: header, indexPath: indexPath)
 
                 return header
+
             } else {
                 guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeader", for: indexPath) as? NCSectionHeader else { return NCSectionHeader() }
 
-                header.labelSection.text = self.dataSource.getSectionValueLocalization(indexPath: indexPath)
-                header.labelSection.textColor = NCBrandColor.shared.textColor
+                self.setContent(header: header, indexPath: indexPath)
 
                 return header
             }
