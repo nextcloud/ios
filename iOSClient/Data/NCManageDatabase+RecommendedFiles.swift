@@ -59,7 +59,7 @@ extension NCManageDatabase {
     func getRecommendedFiles(account: String) -> [tableRecommendedFiles] {
         do {
             let realm = try Realm()
-            let results = realm.objects(tableRecommendedFiles.self).filter("account == %@", account)
+            let results = realm.objects(tableRecommendedFiles.self).filter("account == %@", account).sorted(byKeyPath: "timestamp", ascending: false)
 
             return Array(results.map { tableRecommendedFiles.init(value: $0) })
         } catch let error {
