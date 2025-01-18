@@ -467,7 +467,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @objc func reloadReloadRecommendedFiles(_ notification: NSNotification) {
         if showRecommendation {
-            print("")
+            collectionView.reloadSections(IndexSet(integer: 0))
         }
     }
 
