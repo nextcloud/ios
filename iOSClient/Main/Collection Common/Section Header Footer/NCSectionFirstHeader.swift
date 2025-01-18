@@ -52,8 +52,7 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
     @IBOutlet weak var transferSeparatorBottom: UIView!
     @IBOutlet weak var labelSection: UILabel!
 
-    weak var delegate: NCSectionFirstHeaderDelegate?
-
+    private weak var delegate: NCSectionFirstHeaderDelegate?
     private let utility = NCUtility()
     private var markdownParser = MarkdownParser()
     private var richWorkspaceText: String?
@@ -126,17 +125,56 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
         setRichWorkspaceColor()
     }
 
-    // MARK: - RichWorkspace
+    func setContent(heightHeaderRichWorkspace: CGFloat,
+                    richWorkspaceText: String?,
+                    heightHeaderRecommendations: CGFloat,
+                    recommendations: [tableRecommendedFiles],
+                    heightHeaderTransfer: CGFloat,
+                    headerTransferIsHidden: Bool,
+                    heightHeaderSection: CGFloat,
+                    sectionText: String?,
+                    viewController: UIViewController?,
+                    delegate: NCSectionFirstHeaderDelegate?) {
+        viewRichWorkspaceHeightConstraint.constant = heightHeaderRichWorkspace
+        viewRecommendationsHeightConstraint.constant = heightHeaderRecommendations
+        viewSectionHeightConstraint.constant = heightHeaderSection
 
-    func setRichWorkspaceHeight(_ size: CGFloat) {
-        viewRichWorkspaceHeightConstraint.constant = size
+        if let richWorkspaceText, richWorkspaceText != self.richWorkspaceText {
+            textViewRichWorkspace.attributedText = markdownParser.parse(richWorkspaceText)
+            self.richWorkspaceText = richWorkspaceText
+        }
+        setRichWorkspaceColor()
+        self.recommendations = recommendations
+        self.labelSection.text = sectionText
+        self.viewController = viewController
+        self.delegate = delegate
 
-        if size == 0 {
-            viewRichWorkspace.isHidden = true
-        } else {
+        if heightHeaderRichWorkspace != 0, let richWorkspaceText, !richWorkspaceText.isEmpty {
             viewRichWorkspace.isHidden = false
+        } else {
+            viewRichWorkspace.isHidden = true
+        }
+
+        if heightHeaderRecommendations != 0 && !recommendations.isEmpty {
+            viewRecommendations.isHidden = false
+        } else {
+            viewRecommendations.isHidden = true
+        }
+
+        setViewTransfer(isHidden: headerTransferIsHidden, height: heightHeaderTransfer)
+
+        if heightHeaderSection == 0 {
+            viewSection.isHidden = true
+        } else {
+            viewSection.isHidden = false
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            self.collectionViewRecommendations.reloadData()
         }
     }
+
+    // MARK: - RichWorkspace
 
     private func setRichWorkspaceColor() {
         if traitCollection.userInterfaceStyle == .dark {
@@ -146,35 +184,8 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
         }
     }
 
-    func setRichWorkspaceText(_ text: String?) {
-        guard let text = text else { return }
-
-        if text != self.richWorkspaceText {
-            textViewRichWorkspace.attributedText = markdownParser.parse(text)
-            self.richWorkspaceText = text
-        }
-    }
-
     @objc func touchUpInsideViewRichWorkspace(_ sender: Any) {
         delegate?.tapRichWorkspace(sender)
-    }
-
-    // MARK: - Recommendation
-
-    func setRecommendations(size: CGFloat, recommendations: [tableRecommendedFiles], viewController: UIViewController?) {
-        viewRecommendationsHeightConstraint.constant = size
-        self.recommendations = recommendations
-        self.viewController = viewController
-
-        if size == 0 {
-            viewRecommendations.isHidden = true
-        } else {
-            viewRecommendations.isHidden = false
-        }
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            self.collectionViewRecommendations.reloadData()
-        }
     }
 
     // MARK: - Transfer
@@ -201,18 +212,6 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
                 progressTransfer.progress = 0.0
             }
 
-        }
-    }
-
-    // MARK: - Section
-
-    func setSectionHeight(_ size: CGFloat) {
-        viewSectionHeightConstraint.constant = size
-
-        if size == 0 {
-            viewSection.isHidden = true
-        } else {
-            viewSection.isHidden = false
         }
     }
 }

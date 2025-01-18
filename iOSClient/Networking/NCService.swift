@@ -177,14 +177,14 @@ class NCService: NSObject {
                 return
             }
 
-            // Recommendations
+            // Recommendations + Reload Capabilities
             if NCCapabilities.shared.getCapabilities(account: account).capabilityRecommendations {
                 Task.detached {
                     await NCNetworking.shared.createRecommendations(account: account)
                 }
             } else {
                 self.database.deleteAllRecommendedFiles(account: account)
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadRecommendedFiles, userInfo: nil)
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadCapabilities, userInfo: ["account": account])
             }
 
             // Theming

@@ -247,7 +247,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming(_:)), name: NSNotification.Name(rawValue: global.notificationCenterChangeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource(_:)), name: NSNotification.Name(rawValue: global.notificationCenterReloadDataSource), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(getServerData(_:)), name: NSNotification.Name(rawValue: global.notificationCenterGetServerData), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(reloadReloadRecommendedFiles(_:)), name: NSNotification.Name(rawValue: global.notificationCenterReloadRecommendedFiles), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadReloadCapabilities(_:)), name: NSNotification.Name(rawValue: global.notificationCenterReloadCapabilities), object: nil)
 
         DispatchQueue.main.async {
             self.collectionView?.collectionViewLayout.invalidateLayout()
@@ -470,13 +470,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         getServerData()
     }
 
-    @objc func reloadReloadRecommendedFiles(_ notification: NSNotification) {
-        if showRecommendation {
-            if let header = collectionView.supplementaryView(forElementKind: UICollectionView.elementKindSectionHeader, at: IndexPath(item: 0, section: 0)) as? NCSectionFirstHeader {
-                let (_, heightHeaderRecommendations, _, _) = getHeaderHeight(section: 0)
-                let recommendations = self.database.getRecommendedFiles(account: self.session.account)
-                header.setRecommendations(size: heightHeaderRecommendations, recommendations: recommendations, viewController: self)
-            }
+    @objc func reloadReloadCapabilities(_ notification: NSNotification) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let account = userInfo["account"] as? String,
+              account == session.account
+        else { return }
+        let indexPath = IndexPath(item: 0, section: 0)
+
+        if let header = collectionView.supplementaryView(forElementKind: UICollectionView.elementKindSectionHeader, at: indexPath) as? NCSectionFirstHeader {
+            self.setContent(header: header, indexPath: indexPath)
         }
     }
 
