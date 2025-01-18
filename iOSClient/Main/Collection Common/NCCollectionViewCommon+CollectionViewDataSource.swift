@@ -551,6 +551,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
         } else if let header = header as? NCSectionHeader {
             let text = self.dataSource.getSectionValueLocalization(indexPath: indexPath)
+
             header.setContent(text: text)
         }
     }
