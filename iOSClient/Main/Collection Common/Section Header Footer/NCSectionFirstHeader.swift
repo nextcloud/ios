@@ -289,7 +289,7 @@ extension NCSectionFirstHeader: UICollectionViewDelegate {
             return nil
         }
         let identifier = indexPath as NSCopying
-        var image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal().previewExt1024)
+        let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal().previewExt1024)
 
 #if EXTENSION
         return nil
