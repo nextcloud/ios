@@ -72,7 +72,21 @@ class NCSectionFirstHeaderEmptyData: UICollectionReusableView {
         emptyDescription.text = ""
     }
 
-    // MARK: - Transfer
+    // MARK: -
+
+    func setContent(emptyImage: UIImage?,
+                    emptyTitle: String?,
+                    emptyDescription: String?,
+                    heightHeaderTransfer: CGFloat,
+                    headerTransferIsHidden: Bool,
+                    delegate: NCSectionFirstHeaderEmptyDataDelegate?) {
+        self.delegate = delegate
+        self.emptyImage.image = emptyImage
+        self.emptyTitle.text = emptyTitle
+        self.emptyDescription.text = emptyDescription
+
+        setViewTransfer(isHidden: headerTransferIsHidden, height: heightHeaderTransfer)
+    }
 
     func setViewTransfer(isHidden: Bool, progress: Float? = nil, height: CGFloat) {
         viewTransfer.isHidden = isHidden

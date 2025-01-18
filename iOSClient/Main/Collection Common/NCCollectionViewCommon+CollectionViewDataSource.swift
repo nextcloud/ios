@@ -480,15 +480,16 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
     }
 
     func setContent(header: UICollectionReusableView, indexPath: IndexPath) {
+        let (heightHeaderRichWorkspace, heightHeaderRecommendations, heightHeaderTransfer, heightHeaderSection) = getHeaderHeight(section: indexPath.section)
+        var headerTransferIsHidden: Bool = true
+
+        if !isSearchingMode, headerMenuTransferView, isHeaderMenuTransferViewEnabled() != nil {
+            headerTransferIsHidden = false
+        }
+
         if let header = header as? NCSectionFirstHeader {
-            let (heightHeaderRichWorkspace, heightHeaderRecommendations, heightHeaderTransfer, heightHeaderSection) = getHeaderHeight(section: indexPath.section)
             let recommendations = self.database.getRecommendedFiles(account: self.session.account)
             var sectionText = NSLocalizedString("_home_", comment: "")
-            var headerTransferIsHidden: Bool = true
-
-            if !isSearchingMode, headerMenuTransferView, isHeaderMenuTransferViewEnabled() != nil {
-                headerTransferIsHidden = false
-            }
 
             if !self.dataSource.getSectionValueLocalization(indexPath: indexPath).isEmpty {
                 sectionText = self.dataSource.getSectionValueLocalization(indexPath: indexPath)
@@ -506,6 +507,47 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                               delegate: self)
 
         } else if let header = header as? NCSectionFirstHeaderEmptyData {
+            var emptyImage: UIImage?
+            var emptyTitle: String?
+
+            if isSearchingMode {
+                emptyImage = utility.loadImage(named: "magnifyingglass", colors: [NCBrandColor.shared.getElement(account: session.account)])
+                if self.dataSourceTask?.state == .running {
+                    emptyTitle = NSLocalizedString("_search_in_progress_", comment: "")
+                } else {
+                    emptyTitle = NSLocalizedString("_search_no_record_found_", comment: "")
+                }
+                emptyDescription = NSLocalizedString("_search_instruction_", comment: "")
+            } else if self.dataSourceTask?.state == .running {
+                emptyImage = utility.loadImage(named: "wifi", colors: [NCBrandColor.shared.getElement(account: session.account)])
+                emptyTitle = NSLocalizedString("_request_in_progress_", comment: "")
+                emptyDescription = ""
+            } else {
+                if serverUrl.isEmpty {
+                    if let emptyImageName {
+                        emptyImage = utility.loadImage(named: emptyImageName, colors: emptyImageColors != nil ? emptyImageColors : [NCBrandColor.shared.getElement(account: session.account)])
+                    } else {
+                        emptyImage = imageCache.getFolder(account: session.account)
+                    }
+                    emptyTitle = NSLocalizedString(self.emptyTitle, comment: "")
+                    emptyDescription = NSLocalizedString(emptyDescription, comment: "")
+                } else if metadataFolder?.status == global.metadataStatusWaitCreateFolder {
+                    emptyImage = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: [NCBrandColor.shared.getElement(account: session.account)])
+                    emptyTitle = NSLocalizedString("_files_no_files_", comment: "")
+                    emptyDescription = NSLocalizedString("_folder_offline_desc_", comment: "")
+                } else {
+                    emptyImage = imageCache.getFolder(account: session.account)
+                    emptyTitle = NSLocalizedString("_files_no_files_", comment: "")
+                    emptyDescription = NSLocalizedString("_no_file_pull_down_", comment: "")
+                }
+            }
+
+            header.setContent(emptyImage: emptyImage,
+                              emptyTitle: emptyTitle,
+                              emptyDescription: emptyDescription,
+                              heightHeaderTransfer: heightHeaderTransfer,
+                              headerTransferIsHidden: headerTransferIsHidden,
+                              delegate: self)
 
         } else if let header = header as? NCSectionHeader {
             let text = self.dataSource.getSectionValueLocalization(indexPath: indexPath)
@@ -517,47 +559,9 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         if kind == UICollectionView.elementKindSectionHeader || kind == mediaSectionHeader {
             if self.dataSource.isEmpty() {
                 guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeaderEmptyData", for: indexPath) as? NCSectionFirstHeaderEmptyData else { return NCSectionFirstHeaderEmptyData() }
-                
+
                 self.sectionFirstHeaderEmptyData = header
-                header.delegate = self
-
-                if !isSearchingMode, headerMenuTransferView, isHeaderMenuTransferViewEnabled() != nil {
-                    header.setViewTransfer(isHidden: false, height: self.heightHeaderTransfer)
-                } else {
-                    header.setViewTransfer(isHidden: true, height: self.heightHeaderTransfer)
-                }
-
-                if isSearchingMode {
-                    header.emptyImage.image = utility.loadImage(named: "magnifyingglass", colors: [NCBrandColor.shared.getElement(account: session.account)])
-                    if self.dataSourceTask?.state == .running {
-                        header.emptyTitle.text = NSLocalizedString("_search_in_progress_", comment: "")
-                    } else {
-                        header.emptyTitle.text = NSLocalizedString("_search_no_record_found_", comment: "")
-                    }
-                    header.emptyDescription.text = NSLocalizedString("_search_instruction_", comment: "")
-                } else if self.dataSourceTask?.state == .running {
-                    header.emptyImage.image = utility.loadImage(named: "wifi", colors: [NCBrandColor.shared.getElement(account: session.account)])
-                    header.emptyTitle.text = NSLocalizedString("_request_in_progress_", comment: "")
-                    header.emptyDescription.text = ""
-                } else {
-                    if serverUrl.isEmpty {
-                        if let emptyImageName {
-                            header.emptyImage.image = utility.loadImage(named: emptyImageName, colors: emptyImageColors != nil ? emptyImageColors : [NCBrandColor.shared.getElement(account: session.account)])
-                        } else {
-                            header.emptyImage.image = imageCache.getFolder(account: session.account)
-                        }
-                        header.emptyTitle.text = NSLocalizedString(emptyTitle, comment: "")
-                        header.emptyDescription.text = NSLocalizedString(emptyDescription, comment: "")
-                    } else if metadataFolder?.status == global.metadataStatusWaitCreateFolder {
-                        header.emptyImage.image = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: [NCBrandColor.shared.getElement(account: session.account)])
-                        header.emptyTitle.text = NSLocalizedString("_files_no_files_", comment: "")
-                        header.emptyDescription.text = NSLocalizedString("_folder_offline_desc_", comment: "")
-                    } else {
-                        header.emptyImage.image = imageCache.getFolder(account: session.account)
-                        header.emptyTitle.text = NSLocalizedString("_files_no_files_", comment: "")
-                        header.emptyDescription.text = NSLocalizedString("_no_file_pull_down_", comment: "")
-                    }
-                }
+                self.setContent(header: header, indexPath: indexPath)
 
                 return header
 
