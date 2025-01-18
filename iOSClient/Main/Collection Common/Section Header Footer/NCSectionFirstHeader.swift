@@ -172,7 +172,9 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
             viewRecommendations.isHidden = false
         }
 
-        collectionViewRecommendations.reloadData()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            self.collectionViewRecommendations.reloadData()
+        }
     }
 
     // MARK: - Transfer
