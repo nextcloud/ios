@@ -182,6 +182,9 @@ class NCService: NSObject {
                 Task.detached {
                     await NCNetworking.shared.createRecommendations(account: account)
                 }
+            } else {
+                self.database.deleteAllRecommendedFiles(account: account)
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadRecommendedFiles, userInfo: nil)
             }
 
             // Theming

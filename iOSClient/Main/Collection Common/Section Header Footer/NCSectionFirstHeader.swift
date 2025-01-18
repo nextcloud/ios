@@ -222,43 +222,44 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let recommendedFiles = self.recommendations[indexPath.row]
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as? NCRecommendationsCell,
-              let metadata = NCManageDatabase.shared.getResultMetadataFromFileId(recommendedFiles.id) else { fatalError() }
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as? NCRecommendationsCell else { fatalError() }
 
-        if metadata.directory {
-            cell.image.image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
-            cell.image.contentMode = .scaleAspectFit
-        } else if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512) {
-            cell.image.image = image
-            cell.image.contentMode = .scaleToFill
-        } else {
-            cell.image.image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
-            cell.image.contentMode = .scaleAspectFill
-            if recommendedFiles.hasPreview {
-                NextcloudKit.shared.downloadPreview(fileId: metadata.fileId, account: metadata.account) { _, _, _, _, responseData, error in
-                    if error == .success, let data = responseData?.data {
-                        self.utility.createImageFileFrom(data: data, ocId: metadata.ocId, etag: metadata.etag)
-                        if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512) {
-                            cell.image.image = image
-                            cell.image.contentMode = .scaleToFill
+        if let metadata = NCManageDatabase.shared.getResultMetadataFromFileId(recommendedFiles.id) {
+            if metadata.directory {
+                cell.image.image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
+                cell.image.contentMode = .scaleAspectFit
+            } else if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512) {
+                cell.image.image = image
+                cell.image.contentMode = .scaleToFill
+            } else {
+                cell.image.image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
+                cell.image.contentMode = .scaleAspectFill
+                if recommendedFiles.hasPreview {
+                    NextcloudKit.shared.downloadPreview(fileId: metadata.fileId, account: metadata.account) { _, _, _, _, responseData, error in
+                        if error == .success, let data = responseData?.data {
+                            self.utility.createImageFileFrom(data: data, ocId: metadata.ocId, etag: metadata.etag)
+                            if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512) {
+                                cell.image.image = image
+                                cell.image.contentMode = .scaleToFill
+                            }
                         }
                     }
                 }
             }
+
+            if metadata.hasPreview, metadata.classFile == NKCommon.TypeClassFile.document.rawValue {
+                cell.setImageCorner(withBorder: true)
+            } else {
+                cell.setImageCorner(withBorder: false)
+            }
+
+            cell.labelFilename.text = metadata.fileNameView
+            cell.labelInfo.text = recommendedFiles.reason
+
+            cell.delegate = self
+            cell.metadata = metadata
+            cell.recommendedFiles = recommendedFiles
         }
-
-        if metadata.hasPreview, metadata.classFile == NKCommon.TypeClassFile.document.rawValue {
-            cell.setImageCorner(withBorder: true)
-        } else {
-            cell.setImageCorner(withBorder: false)
-        }
-
-        cell.labelFilename.text = recommendedFiles.name
-        cell.labelInfo.text = recommendedFiles.reason
-
-        cell.delegate = self
-        cell.metadata = metadata
-        cell.recommendedFiles = recommendedFiles
 
         return cell
     }

@@ -40,6 +40,10 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
         buttonMenu.layer.shadowOpacity = 0.2
         buttonMenu.layer.shadowOffset = CGSize(width: 2, height: 2)
         buttonMenu.layer.shadowRadius = 4
+
+        image.image = nil
+        labelFilename.text = ""
+        labelInfo.text = ""
     }
 
     func setImageCorner(withBorder: Bool) {
