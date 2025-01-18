@@ -242,6 +242,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming(_:)), name: NSNotification.Name(rawValue: global.notificationCenterChangeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource(_:)), name: NSNotification.Name(rawValue: global.notificationCenterReloadDataSource), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(getServerData(_:)), name: NSNotification.Name(rawValue: global.notificationCenterGetServerData), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadReloadRecommendedFiles(_:)), name: NSNotification.Name(rawValue: global.notificationCenterReloadRecommendedFiles), object: nil)
 
         DispatchQueue.main.async {
             self.collectionView?.collectionViewLayout.invalidateLayout()
@@ -462,6 +463,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
 
         getServerData()
+    }
+
+    @objc func reloadReloadRecommendedFiles(_ notification: NSNotification) {
+        if showRecommendation {
+            print("")
+        }
     }
 
     @objc func changeStatusFolderE2EE(_ notification: NSNotification) {

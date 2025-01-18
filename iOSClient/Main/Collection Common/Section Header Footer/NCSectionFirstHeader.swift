@@ -111,13 +111,6 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
         //
         labelSection.text = ""
         viewSectionHeightConstraint.constant = 0
-
-        //
-        // NotificationCenterReloadRecommendedFiles
-        //
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadRecommendedFiles), object: nil, queue: nil) { _ in
-            self.collectionViewRecommendations.reloadData()
-        }
     }
 
     override func layoutSublayers(of layer: CALayer) {
