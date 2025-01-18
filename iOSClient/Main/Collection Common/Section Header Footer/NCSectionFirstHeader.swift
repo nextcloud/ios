@@ -53,7 +53,8 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
     @IBOutlet weak var labelSection: UILabel!
 
     weak var delegate: NCSectionFirstHeaderDelegate?
-    let utility = NCUtility()
+
+    private let utility = NCUtility()
     private var markdownParser = MarkdownParser()
     private var richWorkspaceText: String?
     private let richWorkspaceGradient: CAGradientLayer = CAGradientLayer()
@@ -300,20 +301,11 @@ extension NCSectionFirstHeader: UICollectionViewDelegate {
         })
 #endif
     }
-
-    func collectionView(_ collectionView: UICollectionView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
-        animator.addCompletion {
-            if let indexPath = configuration.identifier as? IndexPath {
-                self.collectionView(collectionView, didSelectItemAt: indexPath)
-            }
-        }
-    }
 }
 
 extension NCSectionFirstHeader: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let cellHeight = collectionView.bounds.height
-        // let cellWidth = cellHeight * 1.5
 
         return CGSize(width: cellHeight, height: cellHeight)
     }
