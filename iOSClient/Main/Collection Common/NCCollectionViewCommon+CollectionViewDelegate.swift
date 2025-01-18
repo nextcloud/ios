@@ -122,8 +122,12 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
     }
 
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else { return nil }
-        if isEditMode || metadata.classFile == NKCommon.TypeClassFile.url.rawValue { return nil }
+        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath),
+              metadata.classFile != NKCommon.TypeClassFile.url.rawValue,
+              !isEditMode
+        else {
+            return nil
+        }
         let identifier = indexPath as NSCopying
         var image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt1024)
 

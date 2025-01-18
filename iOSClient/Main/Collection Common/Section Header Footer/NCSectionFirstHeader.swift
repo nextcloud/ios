@@ -284,10 +284,10 @@ extension NCSectionFirstHeader: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         let recommendedFiles = self.recommendations[indexPath.row]
         guard let metadata = NCManageDatabase.shared.getResultMetadataFromFileId(recommendedFiles.id),
+              metadata.classFile != NKCommon.TypeClassFile.url.rawValue,
               let viewController else {
             return nil
         }
-        if metadata.classFile == NKCommon.TypeClassFile.url.rawValue { return nil }
         let identifier = indexPath as NSCopying
         var image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal().previewExt1024)
 
