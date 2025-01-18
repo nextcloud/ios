@@ -29,7 +29,6 @@ protocol NCSectionFirstHeaderDelegate: AnyObject {
     func tapRichWorkspace(_ sender: Any)
     func tapRecommendations(with metadata: tableMetadata)
     func tapRecommendationsButtonMenu(with metadata: tableMetadata, image: UIImage?)
-    func longPressGestureRecognizedRecommendations(with metadata: tableMetadata, image: UIImage?)
 }
 
 class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegate {
@@ -59,6 +58,7 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
     private var richWorkspaceText: String?
     private let richWorkspaceGradient: CAGradientLayer = CAGradientLayer()
     private var recommendations: [tableRecommendedFiles] = []
+    private var viewController: UIViewController?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -167,9 +167,10 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
 
     // MARK: - Recommendation
 
-    func setRecommendations(size: CGFloat, recommendations: [tableRecommendedFiles]) {
+    func setRecommendations(size: CGFloat, recommendations: [tableRecommendedFiles], viewController: UIViewController?) {
         viewRecommendationsHeightConstraint.constant = size
         self.recommendations = recommendations
+        self.viewController = viewController
 
         if size == 0 {
             viewRecommendations.isHidden = true
@@ -278,6 +279,35 @@ extension NCSectionFirstHeader: UICollectionViewDelegate {
 
         self.delegate?.tapRecommendations(with: metadata)
     }
+
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        let recommendedFiles = self.recommendations[indexPath.row]
+        guard let metadata = NCManageDatabase.shared.getResultMetadataFromFileId(recommendedFiles.id),
+              let viewController else {
+            return nil
+        }
+        if metadata.classFile == NKCommon.TypeClassFile.url.rawValue { return nil }
+        let identifier = indexPath as NSCopying
+        var image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal().previewExt1024)
+
+#if EXTENSION
+        return nil
+#else
+        return UIContextMenuConfiguration(identifier: identifier, previewProvider: {
+            return NCViewerProviderContextMenu(metadata: metadata, image: image)
+        }, actionProvider: { _ in
+            return NCContextMenu().viewMenu(ocId: metadata.ocId, viewController: viewController, image: image)
+        })
+#endif
+    }
+
+    func collectionView(_ collectionView: UICollectionView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
+        animator.addCompletion {
+            if let indexPath = configuration.identifier as? IndexPath {
+                self.collectionView(collectionView, didSelectItemAt: indexPath)
+            }
+        }
+    }
 }
 
 extension NCSectionFirstHeader: UICollectionViewDelegateFlowLayout {
@@ -292,9 +322,5 @@ extension NCSectionFirstHeader: UICollectionViewDelegateFlowLayout {
 extension NCSectionFirstHeader: NCRecommendationsCellDelegate {
     func touchUpInsideButtonMenu(with metadata: tableMetadata, image: UIImage?) {
         self.delegate?.tapRecommendationsButtonMenu(with: metadata, image: image)
-    }
-
-    func longPressGestureRecognized(with metadata: tableMetadata, image: UIImage?) {
-        self.delegate?.longPressGestureRecognizedRecommendations(with: metadata, image: image)
     }
 }

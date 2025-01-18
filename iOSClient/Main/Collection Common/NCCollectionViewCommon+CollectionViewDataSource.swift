@@ -541,7 +541,7 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 header.setRichWorkspaceText(richWorkspaceText)
 
                 let tableRecommendedFiles = self.database.getRecommendedFiles(account: self.session.account)
-                header.setRecommendations(size: heightHeaderRecommendations, recommendations: tableRecommendedFiles)
+                header.setRecommendations(size: heightHeaderRecommendations, recommendations: tableRecommendedFiles, viewController: self)
 
                 header.setSectionHeight(heightHeaderSection)
                 var textSection = NSLocalizedString("_home_", comment: "")

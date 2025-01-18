@@ -10,7 +10,6 @@ import UIKit
 
 protocol NCRecommendationsCellDelegate: AnyObject {
     func touchUpInsideButtonMenu(with metadata: tableMetadata, image: UIImage?)
-    func longPressGestureRecognized(with metadata: tableMetadata, image: UIImage?)
 }
 
 class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
@@ -41,12 +40,6 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
         buttonMenu.layer.shadowOpacity = 0.2
         buttonMenu.layer.shadowOffset = CGSize(width: 2, height: 2)
         buttonMenu.layer.shadowRadius = 4
-
-        let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPress(gestureRecognizer:)))
-        longPressedGesture.minimumPressDuration = 0.5
-        longPressedGesture.delegate = self
-        longPressedGesture.delaysTouchesBegan = true
-        self.addGestureRecognizer(longPressedGesture)
     }
 
     func setImageCorner(withBorder: Bool) {
@@ -63,9 +56,5 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
 
     @IBAction func touchUpInsideButtonMenu(_ sender: Any) {
         self.delegate?.touchUpInsideButtonMenu(with: self.metadata, image: image.image)
-    }
-
-    @objc func longPress(gestureRecognizer: UILongPressGestureRecognizer) {
-        self.delegate?.longPressGestureRecognized(with: metadata, image: image.image)
     }
 }

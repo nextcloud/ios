@@ -1021,10 +1021,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         didSelectMetadata(metadata, withOcIds: false)
     }
 
-    func longPressGestureRecognizedRecommendations(with metadata: tableMetadata, image: UIImage?) {
-
-    }
-
     func longPressListItem(with ocId: String, ocIdTransfer: String, gestureRecognizer: UILongPressGestureRecognizer) { }
 
     func longPressGridItem(with ocId: String, ocIdTransfer: String, gestureRecognizer: UILongPressGestureRecognizer) { }

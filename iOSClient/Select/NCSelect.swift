@@ -233,8 +233,6 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
     func tapRecommendations(with metadata: tableMetadata) { }
 
-    func longPressGestureRecognizedRecommendations(with metadata: tableMetadata, image: UIImage?) { }
-
     // MARK: - Push metadata
 
     func pushMetadata(_ metadata: tableMetadata) {
