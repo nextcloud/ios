@@ -467,7 +467,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     @objc func reloadReloadRecommendedFiles(_ notification: NSNotification) {
         if showRecommendation {
-            collectionView.reloadSections(IndexSet(integer: 0))
+            if let header = collectionView.supplementaryView(forElementKind: UICollectionView.elementKindSectionHeader, at: IndexPath(item: 0, section: 0)) as? NCSectionFirstHeader {
+                let (_, heightHeaderRecommendations, _, _) = getHeaderHeight(section: 0)
+                let recommendations = self.database.getRecommendedFiles(account: self.session.account)
+                header.setRecommendations(size: heightHeaderRecommendations, recommendations: recommendations, viewController: self)
+            }
         }
     }
 
