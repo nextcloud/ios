@@ -186,6 +186,11 @@ class NCFiles: NCCollectionViewCommon {
             return false
         }
 
+        /// Recommendation
+        Task.detached {
+            await NCNetworking.shared.createRecommendations(account: self.session.account)
+        }
+
         DispatchQueue.global().async {
             self.networkReadFolder { metadatas, isChanged, error in
                 DispatchQueue.main.async {

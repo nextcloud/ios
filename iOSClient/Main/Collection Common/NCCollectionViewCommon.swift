@@ -247,7 +247,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming(_:)), name: NSNotification.Name(rawValue: global.notificationCenterChangeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource(_:)), name: NSNotification.Name(rawValue: global.notificationCenterReloadDataSource), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(getServerData(_:)), name: NSNotification.Name(rawValue: global.notificationCenterGetServerData), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(reloadReloadCapabilities(_:)), name: NSNotification.Name(rawValue: global.notificationCenterReloadCapabilities), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadHeader(_:)), name: NSNotification.Name(rawValue: global.notificationCenterReloadHeader), object: nil)
 
         DispatchQueue.main.async {
             self.collectionView?.collectionViewLayout.invalidateLayout()
@@ -470,7 +470,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         getServerData()
     }
 
-    @objc func reloadReloadCapabilities(_ notification: NSNotification) {
+    @objc func reloadHeader(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let account = userInfo["account"] as? String,
               account == session.account

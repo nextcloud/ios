@@ -46,7 +46,7 @@ extension NCNetworking {
             self.database.createRecommendedFiles(account: account, recommendations: recommendationsToInsert)
             self.database.realmRefresh()
 
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadCapabilities, userInfo: ["account": account])
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadHeader, userInfo: ["account": account])
         }
     }
 }
