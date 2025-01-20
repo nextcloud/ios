@@ -245,6 +245,9 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
                                 for case let cell as NCRecommendationsCell in self.collectionViewRecommendations.visibleCells {
                                     if cell.id == recommendedFiles.id {
                                         cell.image.contentMode = .scaleAspectFill
+                                        if metadata.classFile == NKCommon.TypeClassFile.document.rawValue {
+                                            cell.setImageCorner(withBorder: true)
+                                        }
                                         UIView.transition(with: cell.image, duration: 0.75, options: .transitionCrossDissolve, animations: {
                                             cell.image.image = image
                                         }, completion: nil)
@@ -257,7 +260,7 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
                 }
             }
 
-            if metadata.hasPreview, metadata.classFile == NKCommon.TypeClassFile.document.rawValue, imagePreview == nil {
+            if metadata.hasPreview, metadata.classFile == NKCommon.TypeClassFile.document.rawValue, imagePreview != nil {
                 cell.setImageCorner(withBorder: true)
             } else {
                 cell.setImageCorner(withBorder: false)
