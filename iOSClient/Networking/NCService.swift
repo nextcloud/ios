@@ -180,7 +180,8 @@ class NCService: NSObject {
             // Recommendations
             if NCCapabilities.shared.getCapabilities(account: account).capabilityRecommendations {
                 Task.detached {
-                    await NCNetworking.shared.createRecommendations(account: account)
+                    let session = NCSession.shared.getSession(account: account)
+                    await NCNetworking.shared.createRecommendations(session: session)
                 }
             } else {
                 self.database.deleteAllRecommendedFiles(account: account)

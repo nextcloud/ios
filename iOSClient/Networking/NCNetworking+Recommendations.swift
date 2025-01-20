@@ -8,15 +8,12 @@ import Alamofire
 import NextcloudKit
 
 extension NCNetworking {
-    func createRecommendations(account: String) async {
-        guard let tblAccount = NCManageDatabase.shared.getTableAccount(account: account) else {
-            return
-        }
-        let homeServer = self.utilityFileSystem.getHomeServer(urlBase: tblAccount.urlBase, userId: tblAccount.userId)
+    func createRecommendations(session: NCSession.Session) async {
+        let homeServer = self.utilityFileSystem.getHomeServer(urlBase: session.urlBase, userId: session.userId)
         var recommendationsToInsert: [NKRecommendation] = []
         let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
 
-        let results = await NCNetworking.shared.getRecommendedFiles(account: account, options: options)
+        let results = await NCNetworking.shared.getRecommendedFiles(account: session.account, options: options)
         if results.error == .success,
            let recommendations = results.recommendations {
             for recommendation in recommendations {
@@ -28,7 +25,7 @@ extension NCNetworking {
                     serverUrlFileName = homeServer + recommendation.directory + "/" + recommendation.name
                 }
 
-                let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles, account: account)
+                let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles, account: session.account)
 
                 if results.error == .success, let file = results.files?.first {
                     let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
@@ -42,10 +39,10 @@ extension NCNetworking {
                     }
                 }
             }
-            self.database.createRecommendedFiles(account: account, recommendations: recommendationsToInsert)
+            self.database.createRecommendedFiles(account: session.account, recommendations: recommendationsToInsert)
             self.database.realmRefresh()
 
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadHeader, userInfo: ["account": account])
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadHeader, userInfo: ["account": session.account])
         }
     }
 }

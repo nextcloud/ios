@@ -187,8 +187,10 @@ class NCFiles: NCCollectionViewCommon {
         }
 
         /// Recommendation
-        Task.detached {
-            await NCNetworking.shared.createRecommendations(account: self.session.account)
+        if isRecommendationActived {
+            Task.detached {
+                await NCNetworking.shared.createRecommendations(session: self.session)
+            }
         }
 
         DispatchQueue.global().async {

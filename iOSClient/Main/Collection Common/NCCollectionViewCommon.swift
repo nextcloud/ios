@@ -134,10 +134,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         !headerRichWorkspaceDisable && NCKeychain().showDescription
     }
 
-    var showRecommendation: Bool {
+    var isRecommendationActived: Bool {
         self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session) &&
-        NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityRecommendations &&
-        NCKeychain().showRecommendedFiles
+        NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityRecommendations
     }
 
     var infoLabelsSeparator: String {
@@ -220,9 +219,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         refreshControl.action(for: .valueChanged) { _ in
             self.dataSource.removeAll()
             self.getServerData()
-            if self.showRecommendation {
+            if self.isRecommendationActived {
                 Task.detached {
-                    await NCNetworking.shared.createRecommendations(account: self.session.account)
+                    await NCNetworking.shared.createRecommendations(session: self.session)
                 }
             }
         }
@@ -1250,7 +1249,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             heightHeaderRichWorkspace = UIScreen.main.bounds.size.height / 6
         }
 
-        if showRecommendation,
+        if isRecommendationActived,
            !isSearchingMode,
            NCKeychain().showRecommendedFiles,
            !self.database.getRecommendedFiles(account: self.session.account).isEmpty {
