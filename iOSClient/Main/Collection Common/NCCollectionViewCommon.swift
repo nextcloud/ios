@@ -96,7 +96,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var lastNumberOfColumns: Int = 0
 
     let heightHeaderTransfer: CGFloat = 50
-    let heightHeaderRecommendations: CGFloat = 150
+    let heightHeaderRecommendations: CGFloat = 160
     let heightHeaderSection: CGFloat = 30
 
     var session: NCSession.Session {
