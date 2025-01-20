@@ -202,10 +202,7 @@ class NCMedia: UIViewController {
 
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-
-        if let frame = tabBarController?.tabBar.frame {
-            tabBarSelect.hostingController?.view.frame = frame
-        }
+        tabBarSelect.onViewWillLayoutSubviews()
     }
 
     func searchNewMedia() {

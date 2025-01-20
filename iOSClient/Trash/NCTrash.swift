@@ -108,11 +108,6 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 		updateSelectionToolbar()
 	}
 	
-	private var selectToolBarFrame: CGRect {
-		let toolbarHeight = AppScreenConstants.toolbarHeight
-		return CGRect(x: 0, y: view.bounds.size.height - toolbarHeight, width: view.bounds.size.width, height: toolbarHeight)
-	}
-	
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
@@ -145,7 +140,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-		selectionToolbar.hostingController?.view.frame = selectToolBarFrame
+        selectionToolbar.onViewWillLayoutSubviews()
     }
 
     // MARK: - Layout

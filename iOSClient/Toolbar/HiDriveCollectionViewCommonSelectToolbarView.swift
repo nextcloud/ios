@@ -11,10 +11,12 @@ import SwiftUI
 
 struct HiDriveCollectionViewCommonSelectToolbarView: View {
     @ObservedObject var tabBarSelect: HiDriveCollectionViewCommonSelectToolbar
+    
+    static let wideScreenMinSize: CGFloat = 460
 
     var body: some View {
         GeometryReader { geometry in
-			let isWideScreen = geometry.size.width > AppScreenConstants.compactMaxSize
+			let isWideScreen = geometry.size.width > Self.wideScreenMinSize
             VStack {
                 Spacer().frame(height: 10)
 

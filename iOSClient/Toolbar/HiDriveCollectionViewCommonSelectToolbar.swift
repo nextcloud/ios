@@ -35,7 +35,7 @@ class HiDriveCollectionViewCommonSelectToolbar: ObservableObject {
         case restore
     }
     
-    private(set) var hostingController: UIViewController?
+    private var hostingController: UIViewController?
     weak var controller: NCMainTabBarController?
     
     open weak var delegate: HiDriveCollectionViewCommonSelectToolbarDelegate?
@@ -72,11 +72,8 @@ class HiDriveCollectionViewCommonSelectToolbar: ObservableObject {
     }
     
     @objc private func deviceOrientationDidChange() {
-        if hostingController != nil {
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self, let hostingController = self.hostingController else { return }
-                self.updateToolbarFrame(for: hostingController)
-            }
+        DispatchQueue.main.async { [weak self] in
+            self?.updateToolbarFrame()
         }
     }
     
@@ -86,12 +83,13 @@ class HiDriveCollectionViewCommonSelectToolbar: ObservableObject {
         hostingController?.view.isHidden = true
     }
 
-    private func updateToolbarFrame(for hostingController: UIViewController) {
-        let screenSize = UIScreen.main.bounds.size
-        let height = AppScreenConstants.toolbarHeight
-        let frame = CGRect(x: 0, y: screenSize.height - height, width: screenSize.width, height: height)
+    private func updateToolbarFrame() {
+        guard let controller = self.controller,
+                let hostingController = self.hostingController else {
+            return
+        }
         
-        hostingController.view.frame = frame
+        hostingController.view.frame = controller.tabBar.frame
         hostingController.view.backgroundColor = .clear
     }
     
@@ -102,7 +100,7 @@ class HiDriveCollectionViewCommonSelectToolbar: ObservableObject {
             delegate?.toolbarWillAppear()
             currentViewController.view.addSubview(hostingController.view)
             
-            updateToolbarFrame(for: hostingController)
+            updateToolbarFrame()
             animateToolbarAppearance(for: hostingController)
         }
     }
@@ -175,5 +173,13 @@ class HiDriveCollectionViewCommonSelectToolbar: ObservableObject {
         } else if let localFile = NCManageDatabase.shared.getTableLocalFile(predicate: NSPredicate(format: "ocId == %@", metadata.ocId)) {
             isAnyOffline = localFile.offline
         }
+    }
+    
+    func onViewWillLayoutSubviews() {
+        updateToolbarFrame()
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 }
