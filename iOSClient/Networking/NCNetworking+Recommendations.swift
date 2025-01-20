@@ -20,27 +20,26 @@ extension NCNetworking {
         if results.error == .success,
            let recommendations = results.recommendations {
             for recommendation in recommendations {
-                var metadata = database.getResultMetadataFromFileId(recommendation.id)
                 var serverUrlFileName = ""
 
-                if metadata == nil || metadata?.fileName != recommendation.name {
-                    if recommendation.directory.last == "/" {
-                        serverUrlFileName = homeServer + recommendation.directory + recommendation.name
+                if recommendation.directory.last == "/" {
+                    serverUrlFileName = homeServer + recommendation.directory + recommendation.name
+                } else {
+                    serverUrlFileName = homeServer + recommendation.directory + "/" + recommendation.name
+                }
+
+                let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles, account: account)
+
+                if results.error == .success, let file = results.files?.first {
+                    let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
+                    let metadata = self.database.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
+                    self.database.addMetadata(metadata)
+
+                    if metadata.isLivePhoto, metadata.isVideo {
+                        continue
                     } else {
-                        serverUrlFileName = homeServer + recommendation.directory + "/" + recommendation.name
-                    }
-                    let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles, account: account)
-
-                    if results.error == .success, let file = results.files?.first {
-                        let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
-                        let metadataConverted = self.database.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
-                        metadata = metadataConverted
-
-                        self.database.addMetadata(metadataConverted)
                         recommendationsToInsert.append(recommendation)
                     }
-                } else {
-                    recommendationsToInsert.append(recommendation)
                 }
             }
             self.database.createRecommendedFiles(account: account, recommendations: recommendationsToInsert)
