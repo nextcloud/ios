@@ -186,23 +186,10 @@ class NCFiles: NCCollectionViewCommon {
             return false
         }
 
-        ///
-        /// Recommended files
-        ///
-        if self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session),
-           NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityRecommendations {
-            let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-
-            NextcloudKit.shared.getRecommendedFiles(account: self.session.account, options: options) { _, recommendations, _, error in
-                if error == .success,
-                   let recommendations,
-                   !recommendations.isEmpty {
-                    Task.detached {
-                        await self.createRecommendations(recommendations)
-                    }
-                } else {
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadRecommendedFiles, userInfo: nil)
-                }
+        /// Recommendation
+        if isRecommendationActived {
+            Task.detached {
+                await NCNetworking.shared.createRecommendations(session: self.session)
             }
         }
 
@@ -366,33 +353,6 @@ class NCFiles: NCCollectionViewCommon {
                 }
             }
         }
-    }
-
-    private func createRecommendations(_ recommendations: [NKRecommendation]) async {
-        let home = self.utilityFileSystem.getHomeServer(session: self.session)
-        var recommendationsToInsert: [NKRecommendation] = []
-
-        for recommendation in recommendations {
-            var metadata = database.getResultMetadataFromFileId(recommendation.id)
-            if metadata == nil || metadata?.fileName != recommendation.name {
-                let serverUrlFileName = home + recommendation.directory + recommendation.name
-                let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles, account: session.account)
-
-                if results.error == .success, let file = results.files?.first {
-                    let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
-                    let metadataConverted = self.database.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
-                    metadata = metadataConverted
-
-                    self.database.addMetadata(metadataConverted)
-                    recommendationsToInsert.append(recommendation)
-                }
-            } else {
-                recommendationsToInsert.append(recommendation)
-            }
-        }
-
-        self.database.createRecommendedFiles(account: session.account, recommendations: recommendationsToInsert)
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadRecommendedFiles, userInfo: nil)
     }
 
     // MARK: - NCAccountSettingsModelDelegate

@@ -96,7 +96,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var lastNumberOfColumns: Int = 0
 
     let heightHeaderTransfer: CGFloat = 50
-    let heightHeaderRecommendations: CGFloat = 150
+    let heightHeaderRecommendations: CGFloat = 160
     let heightHeaderSection: CGFloat = 30
 
     var session: NCSession.Session {
@@ -134,10 +134,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         !headerRichWorkspaceDisable && NCKeychain().showDescription
     }
 
-    var showRecommendation: Bool {
+    var isRecommendationActived: Bool {
         self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session) &&
-        NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityRecommendations &&
-        NCKeychain().showRecommendedFiles
+        NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityRecommendations
     }
 
     var infoLabelsSeparator: String {
@@ -220,6 +219,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         refreshControl.action(for: .valueChanged) { _ in
             self.dataSource.removeAll()
             self.getServerData()
+            if self.isRecommendationActived {
+                Task.detached {
+                    await NCNetworking.shared.createRecommendations(session: self.session)
+                }
+            }
         }
 
         let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPressCollecationView(_:)))
@@ -242,6 +246,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NotificationCenter.default.addObserver(self, selector: #selector(changeTheming(_:)), name: NSNotification.Name(rawValue: global.notificationCenterChangeTheming), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadDataSource(_:)), name: NSNotification.Name(rawValue: global.notificationCenterReloadDataSource), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(getServerData(_:)), name: NSNotification.Name(rawValue: global.notificationCenterGetServerData), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadHeader(_:)), name: NSNotification.Name(rawValue: global.notificationCenterReloadHeader), object: nil)
 
         DispatchQueue.main.async {
             self.collectionView?.collectionViewLayout.invalidateLayout()
@@ -464,6 +469,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         getServerData()
     }
 
+    @objc func reloadHeader(_ notification: NSNotification) {
+        guard let userInfo = notification.userInfo as NSDictionary?,
+              let account = userInfo["account"] as? String,
+              account == session.account
+        else { return }
+
+        self.collectionView.reloadData()
+    }
+
     @objc func changeStatusFolderE2EE(_ notification: NSNotification) {
         reloadDataSource()
     }
@@ -476,7 +490,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard let userInfo = notification.userInfo as NSDictionary?,
               let error = userInfo["error"] as? NKError else { return }
 
-        if error != .success {
+        if error == .success {
+            if isRecommendationActived {
+                Task.detached {
+                    await NCNetworking.shared.createRecommendations(session: self.session)
+                }
+            }
+        } else {
             NCContentPresenter().showError(error: error)
         }
 
@@ -487,10 +507,17 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard let userInfo = notification.userInfo as NSDictionary?,
               let serverUrl = userInfo["serverUrl"] as? String,
               let account = userInfo["account"] as? String,
-              account == session.account,
-              serverUrl == self.serverUrl else { return }
+              account == session.account else { return }
 
-        reloadDataSource()
+        if isRecommendationActived {
+            Task.detached {
+                await NCNetworking.shared.createRecommendations(session: self.session)
+            }
+        }
+
+        if serverUrl == self.serverUrl {
+            reloadDataSource()
+        }
     }
 
     @objc func renameFile(_ notification: NSNotification) {
@@ -498,15 +525,23 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let account = userInfo["account"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
               let error = userInfo["error"] as? NKError,
-              account == session.account,
-              serverUrl == self.serverUrl
+              account == session.account
         else { return }
 
-        if error != .success {
-            NCContentPresenter().showError(error: error)
+        if error == .success {
+            if isRecommendationActived {
+                Task.detached {
+                    await NCNetworking.shared.createRecommendations(session: self.session)
+                }
+            }
         }
 
-        reloadDataSource()
+        if serverUrl == self.serverUrl {
+            if error != .success {
+                NCContentPresenter().showError(error: error)
+            }
+            reloadDataSource()
+        }
     }
 
     @objc func createFolder(_ notification: NSNotification) {
@@ -858,7 +893,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
 
             let showDescriptionKeychain = NCKeychain().showDescription
-            let showDescription = UIAction(title: NSLocalizedString("_show_description_", comment: ""), image: utility.loadImage(named: "list.dash.header.rectangle"), attributes: richWorkspaceText == nil ? .disabled : [], state: showDescriptionKeychain && richWorkspaceText != nil ? .on : .off) { _ in
+            let showDescription = UIAction(title: NSLocalizedString("_show_description_", comment: ""), attributes: richWorkspaceText == nil ? .disabled : [], state: showDescriptionKeychain && richWorkspaceText != nil ? .on : .off) { _ in
 
                 NCKeychain().showDescription = !showDescriptionKeychain
 
@@ -869,7 +904,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
             let showRecommendedFilesKeychain = NCKeychain().showRecommendedFiles
             let capabilityRecommendations = NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityRecommendations
-            let showRecommendedFiles = UIAction(title: NSLocalizedString("_show_recommended_files_", comment: ""), image: utility.loadImage(named: "sparkles"), attributes: !capabilityRecommendations ? .disabled : [], state: showRecommendedFilesKeychain ? .on : .off) { _ in
+            let showRecommendedFiles = UIAction(title: NSLocalizedString("_show_recommended_files_", comment: ""), attributes: !capabilityRecommendations ? .disabled : [], state: showRecommendedFilesKeychain ? .on : .off) { _ in
 
                 NCKeychain().showRecommendedFiles = !showRecommendedFilesKeychain
 
@@ -1018,11 +1053,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     func tapRecommendations(with metadata: tableMetadata) {
-        didSelectMetadata(metadata)
-    }
-
-    func longPressGestureRecognizedRecommendations(with metadata: tableMetadata, image: UIImage?) {
-
+        didSelectMetadata(metadata, withOcIds: false)
     }
 
     func longPressListItem(with ocId: String, ocIdTransfer: String, gestureRecognizer: UILongPressGestureRecognizer) { }
@@ -1234,15 +1265,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         if showDescription,
            !isSearchingMode,
-           let richWorkspaceText = richWorkspaceText,
+           let richWorkspaceText = self.richWorkspaceText,
            !richWorkspaceText.trimmingCharacters(in: .whitespaces).isEmpty {
             heightHeaderRichWorkspace = UIScreen.main.bounds.size.height / 6
         }
 
-        if showRecommendation,
+        if isRecommendationActived,
            !isSearchingMode,
-           !self.database.getRecommendedFiles(account: self.session.account).isEmpty,
-           NCKeychain().showRecommendedFiles {
+           NCKeychain().showRecommendedFiles,
+           !self.database.getRecommendedFiles(account: self.session.account).isEmpty {
             heightHeaderRecommendations = self.heightHeaderRecommendations
             heightHeaderSection = self.heightHeaderSection
         }

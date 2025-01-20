@@ -289,4 +289,13 @@ extension NCNetworking {
             }
         })
     }
+
+    func getRecommendedFiles(account: String,
+                             options: NKRequestOptions = NKRequestOptions()) async -> (account: String, recommendations: [NKRecommendation]?, responseData: AFDataResponse<Data>?, error: NKError) {
+        await withUnsafeContinuation({ continuation in
+            NextcloudKit.shared.getRecommendedFiles(account: account, options: options) { account, recommendations, responseData, error in
+            continuation.resume(returning: (account: account, recommendations: recommendations, responseData: responseData, error: error))
+            }
+        })
+    }
 }
