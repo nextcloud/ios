@@ -240,8 +240,15 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
                         if error == .success, let data = responseData?.data {
                             self.utility.createImageFileFrom(data: data, ocId: metadata.ocId, etag: metadata.etag)
                             if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512) {
-                                cell.image.image = image
-                                cell.image.contentMode = .scaleToFill
+                                for case let cell as NCRecommendationsCell in self.collectionViewRecommendations.visibleCells {
+                                    if cell.id == recommendedFiles.id {
+                                        cell.image.contentMode = .scaleToFill
+                                        UIView.transition(with: cell.image, duration: 0.75, options: .transitionCrossDissolve, animations: {
+                                            cell.image.image = image
+                                        }, completion: nil)
+                                        break
+                                    }
+                                }
                             }
                         }
                     }
@@ -260,6 +267,7 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
             cell.delegate = self
             cell.metadata = metadata
             cell.recommendedFiles = recommendedFiles
+            cell.id = recommendedFiles.id
         }
 
         return cell
