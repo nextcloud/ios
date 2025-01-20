@@ -226,10 +226,12 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as? NCRecommendationsCell else { fatalError() }
 
         if let metadata = NCManageDatabase.shared.getResultMetadataFromFileId(recommendedFiles.id) {
+            let imagePreview = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512)
+
             if metadata.directory {
                 cell.image.image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
                 cell.image.contentMode = .scaleAspectFit
-            } else if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512) {
+            } else if let image = imagePreview {
                 cell.image.image = image
                 cell.image.contentMode = .scaleToFill
             } else {
@@ -255,7 +257,7 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
                 }
             }
 
-            if metadata.hasPreview, metadata.classFile == NKCommon.TypeClassFile.document.rawValue {
+            if metadata.hasPreview, metadata.classFile == NKCommon.TypeClassFile.document.rawValue, imagePreview == nil {
                 cell.setImageCorner(withBorder: true)
             } else {
                 cell.setImageCorner(withBorder: false)
