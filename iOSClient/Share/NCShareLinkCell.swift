@@ -70,7 +70,7 @@ class NCShareLinkCell: UITableViewCell {
                 menuButton.accessibilityLabel = NSLocalizedString("_add_", comment: "")
             }
 
-            imageItem.image = NCUtility().loadImage(named: "link.circle.fill", colors: [commonIconTint])
+            imageItem.image = UIImage(resource: .Share.linkCircleFill)
             menuButton.setImage(NCUtility().loadImage(named: menuImageName, colors: [commonIconTint]), for: .normal)
         }
 
