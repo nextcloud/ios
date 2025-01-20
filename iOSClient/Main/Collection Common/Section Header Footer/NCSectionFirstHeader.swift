@@ -233,7 +233,7 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
                 cell.image.contentMode = .scaleAspectFit
             } else if let image = imagePreview {
                 cell.image.image = image
-                cell.image.contentMode = .scaleToFill
+                cell.image.contentMode = .scaleAspectFill
             } else {
                 cell.image.image = self.utility.loadImage(named: metadata.iconName, useTypeIconFile: true, account: metadata.account)
                 cell.image.contentMode = .scaleAspectFit
@@ -244,7 +244,7 @@ extension NCSectionFirstHeader: UICollectionViewDataSource {
                             if let image = self.utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: NCGlobal.shared.previewExt512) {
                                 for case let cell as NCRecommendationsCell in self.collectionViewRecommendations.visibleCells {
                                     if cell.id == recommendedFiles.id {
-                                        cell.image.contentMode = .scaleToFill
+                                        cell.image.contentMode = .scaleAspectFill
                                         UIView.transition(with: cell.image, duration: 0.75, options: .transitionCrossDissolve, animations: {
                                             cell.image.image = image
                                         }, completion: nil)
