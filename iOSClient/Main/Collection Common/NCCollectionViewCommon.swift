@@ -873,7 +873,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             }
 
             let showDescriptionKeychain = NCKeychain().showDescription
-            let showDescription = UIAction(title: NSLocalizedString("_show_description_", comment: ""), image: utility.loadImage(named: "list.dash.header.rectangle"), attributes: richWorkspaceText == nil ? .disabled : [], state: showDescriptionKeychain && richWorkspaceText != nil ? .on : .off) { _ in
+            let showDescription = UIAction(title: NSLocalizedString("_show_description_", comment: ""), attributes: richWorkspaceText == nil ? .disabled : [], state: showDescriptionKeychain && richWorkspaceText != nil ? .on : .off) { _ in
 
                 NCKeychain().showDescription = !showDescriptionKeychain
 
@@ -884,7 +884,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
             let showRecommendedFilesKeychain = NCKeychain().showRecommendedFiles
             let capabilityRecommendations = NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityRecommendations
-            let showRecommendedFiles = UIAction(title: NSLocalizedString("_show_recommended_files_", comment: ""), image: utility.loadImage(named: "sparkles"), attributes: !capabilityRecommendations ? .disabled : [], state: showRecommendedFilesKeychain ? .on : .off) { _ in
+            let showRecommendedFiles = UIAction(title: NSLocalizedString("_show_recommended_files_", comment: ""), attributes: !capabilityRecommendations ? .disabled : [], state: showRecommendedFilesKeychain ? .on : .off) { _ in
 
                 NCKeychain().showRecommendedFiles = !showRecommendedFilesKeychain
 
