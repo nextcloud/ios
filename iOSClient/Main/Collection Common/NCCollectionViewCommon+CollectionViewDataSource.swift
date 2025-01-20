@@ -479,90 +479,92 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         return cell
     }
 
-    func setContent(header: UICollectionReusableView, indexPath: IndexPath) {
-        let (heightHeaderRichWorkspace, heightHeaderRecommendations, heightHeaderTransfer, heightHeaderSection) = getHeaderHeight(section: indexPath.section)
-        var headerTransferIsHidden: Bool = true
 
-        if !isSearchingMode, headerMenuTransferView, isHeaderMenuTransferViewEnabled() != nil {
-            headerTransferIsHidden = false
-        }
-
-        if let header = header as? NCSectionFirstHeader {
-            let recommendations = self.database.getRecommendedFiles(account: self.session.account)
-            var sectionText = NSLocalizedString("_home_", comment: "")
-
-            if !self.dataSource.getSectionValueLocalization(indexPath: indexPath).isEmpty {
-                sectionText = self.dataSource.getSectionValueLocalization(indexPath: indexPath)
-            }
-
-            header.setContent(heightHeaderRichWorkspace: heightHeaderRichWorkspace,
-                              richWorkspaceText: richWorkspaceText,
-                              heightHeaderRecommendations: heightHeaderRecommendations,
-                              recommendations: recommendations,
-                              heightHeaderTransfer: heightHeaderTransfer,
-                              headerTransferIsHidden: headerTransferIsHidden,
-                              heightHeaderSection: heightHeaderSection,
-                              sectionText: sectionText,
-                              viewController: self,
-                              delegate: self)
-
-        } else if let header = header as? NCSectionFirstHeaderEmptyData {
-            var emptyImage: UIImage?
-            var emptyTitle: String?
-
-            if isSearchingMode {
-                emptyImage = utility.loadImage(named: "magnifyingglass", colors: [NCBrandColor.shared.getElement(account: session.account)])
-                if self.dataSourceTask?.state == .running {
-                    emptyTitle = NSLocalizedString("_search_in_progress_", comment: "")
-                } else {
-                    emptyTitle = NSLocalizedString("_search_no_record_found_", comment: "")
-                }
-                emptyDescription = NSLocalizedString("_search_instruction_", comment: "")
-            } else if self.dataSourceTask?.state == .running {
-                emptyImage = utility.loadImage(named: "wifi", colors: [NCBrandColor.shared.getElement(account: session.account)])
-                emptyTitle = NSLocalizedString("_request_in_progress_", comment: "")
-                emptyDescription = ""
-            } else {
-                if serverUrl.isEmpty {
-                    if let emptyImageName {
-                        emptyImage = utility.loadImage(named: emptyImageName, colors: emptyImageColors != nil ? emptyImageColors : [NCBrandColor.shared.getElement(account: session.account)])
-                    } else {
-                        emptyImage = imageCache.getFolder(account: session.account)
-                    }
-                    emptyTitle = NSLocalizedString(self.emptyTitle, comment: "")
-                    emptyDescription = NSLocalizedString(emptyDescription, comment: "")
-                } else if metadataFolder?.status == global.metadataStatusWaitCreateFolder {
-                    emptyImage = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: [NCBrandColor.shared.getElement(account: session.account)])
-                    emptyTitle = NSLocalizedString("_files_no_files_", comment: "")
-                    emptyDescription = NSLocalizedString("_folder_offline_desc_", comment: "")
-                } else {
-                    emptyImage = imageCache.getFolder(account: session.account)
-                    emptyTitle = NSLocalizedString("_files_no_files_", comment: "")
-                    emptyDescription = NSLocalizedString("_no_file_pull_down_", comment: "")
-                }
-            }
-
-            header.setContent(emptyImage: emptyImage,
-                              emptyTitle: emptyTitle,
-                              emptyDescription: emptyDescription,
-                              heightHeaderTransfer: heightHeaderTransfer,
-                              headerTransferIsHidden: headerTransferIsHidden,
-                              delegate: self)
-
-        } else if let header = header as? NCSectionHeader {
-            let text = self.dataSource.getSectionValueLocalization(indexPath: indexPath)
-
-            header.setContent(text: text)
-        }
-    }
 
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        func setContent(header: UICollectionReusableView, indexPath: IndexPath) {
+            let (heightHeaderRichWorkspace, heightHeaderRecommendations, heightHeaderTransfer, heightHeaderSection) = getHeaderHeight(section: indexPath.section)
+            var headerTransferIsHidden: Bool = true
+
+            if !isSearchingMode, headerMenuTransferView, isHeaderMenuTransferViewEnabled() != nil {
+                headerTransferIsHidden = false
+            }
+
+            if let header = header as? NCSectionFirstHeader {
+                let recommendations = self.database.getRecommendedFiles(account: self.session.account)
+                var sectionText = NSLocalizedString("_home_", comment: "")
+
+                if !self.dataSource.getSectionValueLocalization(indexPath: indexPath).isEmpty {
+                    sectionText = self.dataSource.getSectionValueLocalization(indexPath: indexPath)
+                }
+
+                header.setContent(heightHeaderRichWorkspace: heightHeaderRichWorkspace,
+                                  richWorkspaceText: richWorkspaceText,
+                                  heightHeaderRecommendations: heightHeaderRecommendations,
+                                  recommendations: recommendations,
+                                  heightHeaderTransfer: heightHeaderTransfer,
+                                  headerTransferIsHidden: headerTransferIsHidden,
+                                  heightHeaderSection: heightHeaderSection,
+                                  sectionText: sectionText,
+                                  viewController: self,
+                                  delegate: self)
+
+            } else if let header = header as? NCSectionFirstHeaderEmptyData {
+                var emptyImage: UIImage?
+                var emptyTitle: String?
+
+                if isSearchingMode {
+                    emptyImage = utility.loadImage(named: "magnifyingglass", colors: [NCBrandColor.shared.getElement(account: session.account)])
+                    if self.dataSourceTask?.state == .running {
+                        emptyTitle = NSLocalizedString("_search_in_progress_", comment: "")
+                    } else {
+                        emptyTitle = NSLocalizedString("_search_no_record_found_", comment: "")
+                    }
+                    emptyDescription = NSLocalizedString("_search_instruction_", comment: "")
+                } else if self.dataSourceTask?.state == .running {
+                    emptyImage = utility.loadImage(named: "wifi", colors: [NCBrandColor.shared.getElement(account: session.account)])
+                    emptyTitle = NSLocalizedString("_request_in_progress_", comment: "")
+                    emptyDescription = ""
+                } else {
+                    if serverUrl.isEmpty {
+                        if let emptyImageName {
+                            emptyImage = utility.loadImage(named: emptyImageName, colors: emptyImageColors != nil ? emptyImageColors : [NCBrandColor.shared.getElement(account: session.account)])
+                        } else {
+                            emptyImage = imageCache.getFolder(account: session.account)
+                        }
+                        emptyTitle = NSLocalizedString(self.emptyTitle, comment: "")
+                        emptyDescription = NSLocalizedString(emptyDescription, comment: "")
+                    } else if metadataFolder?.status == global.metadataStatusWaitCreateFolder {
+                        emptyImage = utility.loadImage(named: "arrow.triangle.2.circlepath", colors: [NCBrandColor.shared.getElement(account: session.account)])
+                        emptyTitle = NSLocalizedString("_files_no_files_", comment: "")
+                        emptyDescription = NSLocalizedString("_folder_offline_desc_", comment: "")
+                    } else {
+                        emptyImage = imageCache.getFolder(account: session.account)
+                        emptyTitle = NSLocalizedString("_files_no_files_", comment: "")
+                        emptyDescription = NSLocalizedString("_no_file_pull_down_", comment: "")
+                    }
+                }
+
+                header.setContent(emptyImage: emptyImage,
+                                  emptyTitle: emptyTitle,
+                                  emptyDescription: emptyDescription,
+                                  heightHeaderTransfer: heightHeaderTransfer,
+                                  headerTransferIsHidden: headerTransferIsHidden,
+                                  delegate: self)
+
+            } else if let header = header as? NCSectionHeader {
+                let text = self.dataSource.getSectionValueLocalization(indexPath: indexPath)
+
+                header.setContent(text: text)
+            }
+        }
+
         if kind == UICollectionView.elementKindSectionHeader || kind == mediaSectionHeader {
             if self.dataSource.isEmpty() {
                 guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeaderEmptyData", for: indexPath) as? NCSectionFirstHeaderEmptyData else { return NCSectionFirstHeaderEmptyData() }
 
                 self.sectionFirstHeaderEmptyData = header
-                self.setContent(header: header, indexPath: indexPath)
+                setContent(header: header, indexPath: indexPath)
 
                 return header
 
@@ -570,14 +572,14 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionFirstHeader", for: indexPath) as? NCSectionFirstHeader else { return NCSectionFirstHeader() }
 
                 self.sectionFirstHeader = header
-                self.setContent(header: header, indexPath: indexPath)
+                setContent(header: header, indexPath: indexPath)
 
                 return header
 
             } else {
                 guard let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "sectionHeader", for: indexPath) as? NCSectionHeader else { return NCSectionHeader() }
 
-                self.setContent(header: header, indexPath: indexPath)
+                setContent(header: header, indexPath: indexPath)
 
                 return header
             }

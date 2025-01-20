@@ -475,11 +475,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let account = userInfo["account"] as? String,
               account == session.account
         else { return }
-        let indexPath = IndexPath(item: 0, section: 0)
 
-        if let header = collectionView.supplementaryView(forElementKind: UICollectionView.elementKindSectionHeader, at: indexPath) as? NCSectionFirstHeader {
-            self.setContent(header: header, indexPath: indexPath)
-        }
+        self.collectionView.reloadData()
     }
 
     @objc func changeStatusFolderE2EE(_ notification: NSNotification) {
@@ -1248,7 +1245,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         if showDescription,
            !isSearchingMode,
-           let richWorkspaceText = richWorkspaceText,
+           let richWorkspaceText = self.richWorkspaceText,
            !richWorkspaceText.trimmingCharacters(in: .whitespaces).isEmpty {
             heightHeaderRichWorkspace = UIScreen.main.bounds.size.height / 6
         }
