@@ -490,7 +490,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard let userInfo = notification.userInfo as NSDictionary?,
               let error = userInfo["error"] as? NKError else { return }
 
-        if error != .success {
+        if error == .success {
+            if isRecommendationActived {
+                Task.detached {
+                    await NCNetworking.shared.createRecommendations(session: self.session)
+                }
+            }
+        } else {
             NCContentPresenter().showError(error: error)
         }
 
@@ -501,10 +507,17 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         guard let userInfo = notification.userInfo as NSDictionary?,
               let serverUrl = userInfo["serverUrl"] as? String,
               let account = userInfo["account"] as? String,
-              account == session.account,
-              serverUrl == self.serverUrl else { return }
+              account == session.account else { return }
 
-        reloadDataSource()
+        if isRecommendationActived {
+            Task.detached {
+                await NCNetworking.shared.createRecommendations(session: self.session)
+            }
+        }
+
+        if serverUrl == self.serverUrl {
+            reloadDataSource()
+        }
     }
 
     @objc func renameFile(_ notification: NSNotification) {
@@ -512,15 +525,23 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let account = userInfo["account"] as? String,
               let serverUrl = userInfo["serverUrl"] as? String,
               let error = userInfo["error"] as? NKError,
-              account == session.account,
-              serverUrl == self.serverUrl
+              account == session.account
         else { return }
 
-        if error != .success {
-            NCContentPresenter().showError(error: error)
+        if error == .success {
+            if isRecommendationActived {
+                Task.detached {
+                    await NCNetworking.shared.createRecommendations(session: self.session)
+                }
+            }
         }
 
-        reloadDataSource()
+        if serverUrl == self.serverUrl {
+            if error != .success {
+                NCContentPresenter().showError(error: error)
+            }
+            reloadDataSource()
+        }
     }
 
     @objc func createFolder(_ notification: NSNotification) {
