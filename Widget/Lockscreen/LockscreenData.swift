@@ -72,6 +72,9 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, fami
                                       password: password,
                                       userAgent: userAgent,
                                       nextcloudVersion: capabilities.capabilityServerVersionMajor,
+                                      httpMaximumConnectionsPerHost: NCBrandOptions.shared.httpMaximumConnectionsPerHost,
+                                      httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
+                                      httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
                                       groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
     let options = NKRequestOptions(timeout: 90, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
