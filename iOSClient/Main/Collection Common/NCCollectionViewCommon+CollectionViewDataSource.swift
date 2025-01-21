@@ -479,8 +479,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         return cell
     }
 
-
-
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         func setContent(header: UICollectionReusableView, indexPath: IndexPath) {
             let (heightHeaderRichWorkspace, heightHeaderRecommendations, heightHeaderTransfer, heightHeaderSection) = getHeaderHeight(section: indexPath.section)
@@ -492,7 +490,11 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
 
             if let header = header as? NCSectionFirstHeader {
                 let recommendations = self.database.getRecommendedFiles(account: self.session.account)
-                var sectionText = NSLocalizedString("_home_", comment: "")
+                var sectionText = NSLocalizedString("_all_files_", comment: "")
+
+                if NCKeychain().getPersonalFilesOnly(account: session.account) {
+                    sectionText = NSLocalizedString("_personal_files_", comment: "")
+                }
 
                 if !self.dataSource.getSectionValueLocalization(indexPath: indexPath).isEmpty {
                     sectionText = self.dataSource.getSectionValueLocalization(indexPath: indexPath)
