@@ -288,9 +288,12 @@ extension NCNetworking {
             return delegate.uploadComplete(fileName: fileName, serverUrl: serverUrl, ocId: ocId, etag: etag, date: date, size: size, task: task, error: error)
         }
 
-        guard let url = task.currentRequest?.url,
-              let metadata = self.database.getMetadata(from: url, sessionTaskIdentifier: task.taskIdentifier) else { return }
-        uploadComplete(metadata: metadata, ocId: ocId, etag: etag, date: date, size: size, error: error)
+        DispatchQueue.global().async {
+            if let url = task.currentRequest?.url,
+               let metadata = self.database.getMetadata(from: url, sessionTaskIdentifier: task.taskIdentifier) {
+                self.uploadComplete(metadata: metadata, ocId: ocId, etag: etag, date: date, size: size, error: error)
+            }
+        }
     }
 
     func uploadComplete(metadata: tableMetadata,
