@@ -26,7 +26,7 @@ import UIKit
 let userAgent: String = {
     let appVersion: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String
     // Original Nextcloud useragent "Mozilla/5.0 (iOS) Nextcloud-iOS/\(appVersion)"
-    return "Mozilla/5.0 (iOS) HiDrive Next/\(appVersion)"
+    return "Mozilla/5.0 (iOS) IONOS HiDrive Next/\(appVersion)"
 }()
 
 @objc class NCBrandOptions: NSObject {
