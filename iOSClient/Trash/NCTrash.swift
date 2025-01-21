@@ -29,10 +29,10 @@ import NextcloudKit
 import RealmSwift
 
 class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegate {
+    @IBOutlet weak var collectionView: UICollectionView!
 
-	@IBOutlet weak var vHeader: FileActionsHeader!
-	@IBOutlet weak var collectionView: UICollectionView!
-
+    @IBOutlet weak var vHeader: FileActionsHeader!
+    
     var filePath = ""
     var titleCurrentFolder = NSLocalizedString("_trash_view_", comment: "")
     var blinkFileId: String?
@@ -43,6 +43,7 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 	var isEditMode = false {
 		didSet {
 			vHeader.setIsEditingMode(isEditingMode: isEditMode)
+            updateSelectionToolbar()
 		}
 	}
     var selectOcId: [String] = []
@@ -128,6 +129,11 @@ class NCTrash: UIViewController, NCTrashListCellDelegate, NCTrashGridCellDelegat
 		
         reloadDataSource()
         loadListingTrash()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        selectionToolbar.controller = mainTabBarController
     }
 
     override func viewWillDisappear(_ animated: Bool) {
