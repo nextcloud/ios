@@ -83,8 +83,8 @@ let userAgent: String = {
 
     // Max download/upload concurrent
     let httpMaximumConnectionsPerHost: Int = 6
-    let httpMaximumConnectionsPerHostInDownload: Int = 5
-    let httpMaximumConnectionsPerHostInUpload: Int = 5
+    let httpMaximumConnectionsPerHostInDownload: Int = 6
+    let httpMaximumConnectionsPerHostInUpload: Int = 6
 
     // Number of failed attempts after reset app
     let resetAppPasscodeAttempts: Int = 10
