@@ -910,18 +910,27 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         } else if navigationItem.rightBarButtonItems == nil || (!isEditMode && !tabBarSelect.isHidden()) {
             tabBarSelect.hide()
             let menuButton = UIBarButtonItem(image: utility.loadImage(named: "ellipsis.circle"), menu: UIMenu(children: createMenuActions()))
+            menuButton.tag = 1
             menuButton.tintColor = NCBrandColor.shared.iconImageColor
+            let transfersButton = UIBarButtonItem(image: utility.loadImage(named: "arrow.left.arrow.right.circle"), style: .plain) {
+                if let viewController = UIStoryboard(name: "NCTransfers", bundle: nil).instantiateInitialViewController() as? NCTransfers {
+                    viewController.modalPresentationStyle = .pageSheet
+                    self.present(viewController, animated: true, completion: nil)
+                }
+            }
+            transfersButton.tag = 2
             if layoutKey == global.layoutViewFiles {
-                let notification = UIBarButtonItem(image: utility.loadImage(named: "bell"), style: .plain) {
+                let notificationButton = UIBarButtonItem(image: utility.loadImage(named: "bell"), style: .plain) {
                     if let viewController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? NCNotification {
                         viewController.session = self.session
                         self.navigationController?.pushViewController(viewController, animated: true)
                     }
                 }
-                notification.tintColor = NCBrandColor.shared.iconImageColor
-                navigationItem.rightBarButtonItems = [menuButton, notification]
+                notificationButton.tintColor = NCBrandColor.shared.iconImageColor
+                notificationButton.tag = 3
+                navigationItem.rightBarButtonItems = [menuButton, notificationButton, transfersButton]
             } else {
-                navigationItem.rightBarButtonItems = [menuButton]
+                navigationItem.rightBarButtonItems = [menuButton, transfersButton]
             }
         } else {
             navigationItem.rightBarButtonItems?.first?.menu = navigationItem.rightBarButtonItems?.first?.menu?.replacingChildren(createMenuActions())
