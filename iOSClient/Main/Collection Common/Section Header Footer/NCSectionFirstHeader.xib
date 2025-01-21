@@ -92,22 +92,16 @@
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="FOe-YO-km8">
-                            <rect key="frame" x="-1" y="46" width="576" height="4"/>
-                        </progressView>
                     </subviews>
                     <constraints>
-                        <constraint firstAttribute="trailing" secondItem="FOe-YO-km8" secondAttribute="trailing" constant="-1" id="3gk-sW-WeV"/>
                         <constraint firstAttribute="bottom" secondItem="McE-3D-mc5" secondAttribute="bottom" id="697-ky-07J"/>
                         <constraint firstAttribute="height" constant="50" id="86k-97-oGl"/>
                         <constraint firstItem="Pgk-le-540" firstAttribute="leading" secondItem="I6b-6a-TKg" secondAttribute="leading" constant="10" id="Blz-Ss-Pdf"/>
-                        <constraint firstAttribute="bottom" secondItem="FOe-YO-km8" secondAttribute="bottom" id="ESd-Gt-Xcc"/>
                         <constraint firstItem="eER-Zj-8iK" firstAttribute="centerY" secondItem="I6b-6a-TKg" secondAttribute="centerY" id="FmZ-7L-lot"/>
                         <constraint firstItem="eER-Zj-8iK" firstAttribute="leading" secondItem="Pgk-le-540" secondAttribute="trailing" constant="10" id="GKM-Z4-VAi"/>
                         <constraint firstAttribute="trailing" secondItem="eER-Zj-8iK" secondAttribute="trailing" constant="10" id="QyZ-Z4-0tw"/>
                         <constraint firstItem="McE-3D-mc5" firstAttribute="leading" secondItem="I6b-6a-TKg" secondAttribute="leading" id="TRt-jh-ZEo"/>
                         <constraint firstAttribute="trailing" secondItem="McE-3D-mc5" secondAttribute="trailing" id="fjz-bk-gcP"/>
-                        <constraint firstItem="FOe-YO-km8" firstAttribute="leading" secondItem="I6b-6a-TKg" secondAttribute="leading" constant="-1" id="oDR-51-azX"/>
                         <constraint firstItem="Pgk-le-540" firstAttribute="centerY" secondItem="I6b-6a-TKg" secondAttribute="centerY" id="tIP-e7-k91"/>
                     </constraints>
                 </view>
@@ -149,7 +143,6 @@
                 <outlet property="labelRecommendations" destination="lZq-pm-Ra6" id="ONf-QI-foW"/>
                 <outlet property="labelSection" destination="mB5-5n-AL9" id="uxf-bN-nZA"/>
                 <outlet property="labelTransfer" destination="eER-Zj-8iK" id="ARz-bB-Hg9"/>
-                <outlet property="progressTransfer" destination="FOe-YO-km8" id="vyd-rg-H9B"/>
                 <outlet property="textViewRichWorkspace" destination="pYo-pF-MGv" id="2h4-LP-T1z"/>
                 <outlet property="transferSeparatorBottom" destination="McE-3D-mc5" id="kJU-kh-04F"/>
                 <outlet property="transferSeparatorBottomHeightConstraint" destination="bJs-JY-WbC" id="P9i-Em-ycA"/>
