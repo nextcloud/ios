@@ -56,6 +56,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                                                   password: NCKeychain().getPassword(account: tableAccount.account),
                                                   userAgent: userAgent,
                                                   nextcloudVersion: capability?.capabilityServerVersionMajor ?? 0,
+                                                  httpMaximumConnectionsPerHost: NCBrandOptions.shared.httpMaximumConnectionsPerHost,
+                                                  httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
+                                                  httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
                                                   groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
                 NCSession.shared.appendSession(account: tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId)
             }

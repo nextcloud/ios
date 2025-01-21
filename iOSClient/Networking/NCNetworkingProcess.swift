@@ -148,8 +148,8 @@ class NCNetworkingProcess {
     @discardableResult
     private func start() async -> (counterDownloading: Int, counterUploading: Int) {
         let applicationState = await checkApplicationState()
-        let maxConcurrentOperationDownload = NCBrandOptions.shared.maxConcurrentOperationDownload
-        var maxConcurrentOperationUpload = NCBrandOptions.shared.maxConcurrentOperationUpload
+        let maxConcurrentOperationDownload = NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload
+        var maxConcurrentOperationUpload = NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload
         let sessionUploadSelectors = [global.selectorUploadFileNODelete, global.selectorUploadFile, global.selectorUploadAutoUpload, global.selectorUploadAutoUploadAll]
         let metadatasDownloading = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusDownloading))
         let metadatasUploading = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusUploading))

@@ -82,8 +82,9 @@ let userAgent: String = {
     var cleanUpDay: Int = 0                                                        // Set default "Delete all cached files older than" possible days value are: 0, 1, 7, 30, 90, 180, 365
 
     // Max download/upload concurrent
-    let maxConcurrentOperationDownload: Int = 5
-    let maxConcurrentOperationUpload: Int = 5
+    let httpMaximumConnectionsPerHost: Int = 6
+    let httpMaximumConnectionsPerHostInDownload: Int = 5
+    let httpMaximumConnectionsPerHostInUpload: Int = 5
 
     // Number of failed attempts after reset app
     let resetAppPasscodeAttempts: Int = 10

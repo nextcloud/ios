@@ -44,6 +44,9 @@ class NCAccount: NSObject {
                                           password: password,
                                           userAgent: userAgent,
                                           nextcloudVersion: NCCapabilities.shared.getCapabilities(account: account).capabilityServerVersionMajor,
+                                          httpMaximumConnectionsPerHost: NCBrandOptions.shared.httpMaximumConnectionsPerHost,
+                                          httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
+                                          httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
                                           groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
         NextcloudKit.shared.getUserProfile(account: account) { account, userProfile, _, error in
