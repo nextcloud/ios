@@ -306,8 +306,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedFile(_:)), name: NSNotification.Name(rawValue: global.notificationCenterUploadedFile), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(uploadedLivePhoto(_:)), name: NSNotification.Name(rawValue: global.notificationCenterUploadedLivePhoto), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(uploadCancelFile(_:)), name: NSNotification.Name(rawValue: global.notificationCenterUploadCancelFile), object: nil)
-
-        NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: global.notificationCenterProgressTask), object: nil)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -345,8 +343,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterUploadedFile), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterUploadedLivePhoto), object: nil)
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterUploadCancelFile), object: nil)
-
-        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterProgressTask), object: nil)
 
         dataSource.removeImageCache()
     }
@@ -659,28 +655,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             reloadDataSource()
         } else {
             collectionView?.reloadData()
-        }
-    }
-
-    @objc func triggerProgressTask(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as NSDictionary?,
-              let progressNumber = userInfo["progress"] as? NSNumber,
-              let totalBytes = userInfo["totalBytes"] as? Int64,
-              let totalBytesExpected = userInfo["totalBytesExpected"] as? Int64,
-              let ocId = userInfo["ocId"] as? String,
-              let ocIdTransfer = userInfo["ocIdTransfer"] as? String,
-              let session = userInfo["session"] as? String
-        else { return }
-
-        let chunk: Int = userInfo["chunk"] as? Int ?? 0
-        let e2eEncrypted: Bool = userInfo["e2eEncrypted"] as? Bool ?? false
-
-        let transfer = NCTransferProgress.shared.append(NCTransferProgress.Transfer(ocId: ocId, ocIdTransfer: ocIdTransfer, session: session, chunk: chunk, e2eEncrypted: e2eEncrypted, progressNumber: progressNumber, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected))
-
-        // HEADER
-        if self.headerMenuTransferView, transfer.session.contains("upload") {
-            self.sectionFirstHeader?.setViewTransfer(isHidden: false, progress: transfer.progressNumber.floatValue, height: self.heightHeaderTransfer)
-            self.sectionFirstHeaderEmptyData?.setViewTransfer(isHidden: false, progress: transfer.progressNumber.floatValue, height: self.heightHeaderTransfer)
         }
     }
 

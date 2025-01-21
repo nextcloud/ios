@@ -33,7 +33,6 @@ class NCSectionFirstHeaderEmptyData: UICollectionReusableView {
     @IBOutlet weak var viewTransferHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var imageTransfer: UIImageView!
     @IBOutlet weak var labelTransfer: UILabel!
-    @IBOutlet weak var progressTransfer: UIProgressView!
     @IBOutlet weak var transferSeparatorBottom: UIView!
     @IBOutlet weak var transferSeparatorBottomHeightConstraint: NSLayoutConstraint!
 
@@ -60,10 +59,6 @@ class NCSectionFirstHeaderEmptyData: UICollectionReusableView {
         imageTransfer.tintColor = NCBrandColor.shared.iconImageColor
         imageTransfer.image = NCUtility().loadImage(named: "icloud.and.arrow.up")
 
-        progressTransfer.progress = 0
-        progressTransfer.tintColor = NCBrandColor.shared.iconImageColor
-        progressTransfer.trackTintColor = NCBrandColor.shared.customer.withAlphaComponent(0.2)
-
         transferSeparatorBottom.backgroundColor = .separator
         transferSeparatorBottomHeightConstraint.constant = 0.5
 
@@ -88,28 +83,18 @@ class NCSectionFirstHeaderEmptyData: UICollectionReusableView {
         setViewTransfer(isHidden: headerTransferIsHidden, height: heightHeaderTransfer)
     }
 
-    func setViewTransfer(isHidden: Bool, progress: Float? = nil, height: CGFloat) {
+    func setViewTransfer(isHidden: Bool, height: CGFloat) {
         viewTransfer.isHidden = isHidden
 
         if isHidden {
             viewTransferHeightConstraint.constant = 0
-            progressTransfer.progress = 0
         } else {
             viewTransferHeightConstraint.constant = height
             if NCTransferProgress.shared.haveUploadInForeground() {
                 labelTransfer.text = String(format: NSLocalizedString("_upload_foreground_msg_", comment: ""), NCBrandOptions.shared.brand)
-                if let progress {
-                    progressTransfer.progress = progress
-                } else if let progress = NCTransferProgress.shared.getLastTransferProgressInForeground() {
-                    progressTransfer.progress = progress
-                } else {
-                    progressTransfer.progress = 0.0
-                }
             } else {
                 labelTransfer.text = NSLocalizedString("_upload_background_msg_", comment: "")
-                progressTransfer.progress = 0.0
             }
-
         }
     }
 }

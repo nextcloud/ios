@@ -56,6 +56,18 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         reloadDataSource()
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: global.notificationCenterProgressTask), object: nil)
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterProgressTask), object: nil)
+    }
+
     override func setNavigationLeftItems() {
         self.navigationItem.rightBarButtonItem = nil
         self.navigationItem.leftBarButtonItem = nil
@@ -115,7 +127,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         reloadDataSource()
     }
 
-    override func triggerProgressTask(_ notification: NSNotification) {
+    @objc func triggerProgressTask(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let progressNumber = userInfo["progress"] as? NSNumber,
               let totalBytes = userInfo["totalBytes"] as? Int64,
