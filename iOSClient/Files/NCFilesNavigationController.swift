@@ -12,6 +12,9 @@ class NCFilesNavigationController: UINavigationController {
     private var controller: NCMainTabBarController? {
         self.tabBarController as? NCMainTabBarController
     }
+    private var fileViewController: NCFiles? {
+        topViewController as? NCFiles
+    }
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -39,13 +42,28 @@ class NCFilesNavigationController: UINavigationController {
 
             }
         })
+
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadAvatar), object: nil, queue: nil) { notification in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                self.fileViewController?.showTip()
+            }
+            guard let userInfo = notification.userInfo as NSDictionary?,
+                  let error = userInfo["error"] as? NKError,
+                  error.errorCode != self.global.errorNotModified
+            else {
+                return
+            }
+
+            self.setNavigationLeftItems()
+        }
     }
 
     func setNavigationLeftItems() {
-        let session = NCSession.shared.getSession(controller: tabBarController)
-        guard let viewController = topViewController as? NCFiles,
-              let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
-            return }
+        let session = NCSession.shared.getSession(controller: controller)
+        guard let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account))
+        else {
+            return
+        }
         let image = utility.loadUserImage(for: tableAccount.user, displayName: tableAccount.displayName, urlBase: tableAccount.urlBase)
         let accountButton = AccountSwitcherButton(type: .custom)
         let accounts = database.getAllAccountOrderAlias()
@@ -72,7 +90,7 @@ class NCFilesNavigationController: UINavigationController {
                 let action = UIAction(title: name, image: image, state: account.active ? .on : .off) { _ in
                     if !account.active {
                         NCAccount().changeAccount(account.account, userProfile: nil, controller: self.controller) { }
-                        viewController.setEditMode(false)
+                        self.fileViewController?.setEditMode(false)
                     }
                 }
 
@@ -85,7 +103,7 @@ class NCFilesNavigationController: UINavigationController {
             }
 
             let settingsAccountAction = UIAction(title: NSLocalizedString("_account_settings_", comment: ""), image: utility.loadImage(named: "gear", colors: [NCBrandColor.shared.iconImageColor])) { _ in
-                let accountSettingsModel = NCAccountSettingsModel(controller: self.controller, delegate: viewController)
+                let accountSettingsModel = NCAccountSettingsModel(controller: self.controller, delegate: self.fileViewController)
                 let accountSettingsView = NCAccountSettingsView(model: accountSettingsModel)
                 let accountSettingsController = UIHostingController(rootView: accountSettingsView)
 
@@ -104,12 +122,12 @@ class NCFilesNavigationController: UINavigationController {
             accountButton.showsMenuAsPrimaryAction = true
 
             accountButton.onMenuOpened = {
-                viewController.dismissTip()
+                self.fileViewController?.dismissTip()
             }
         }
 
-        viewController.navigationItem.leftItemsSupplementBackButton = true
-        viewController.navigationItem.setLeftBarButtonItems([UIBarButtonItem(customView: accountButton)], animated: true)
+        self.fileViewController?.navigationItem.leftItemsSupplementBackButton = true
+        self.fileViewController?.navigationItem.setLeftBarButtonItems([UIBarButtonItem(customView: accountButton)], animated: true)
     }
 
     private class AccountSwitcherButton: UIButton {
