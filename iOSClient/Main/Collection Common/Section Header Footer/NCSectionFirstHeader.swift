@@ -145,9 +145,7 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
             viewSection.isHidden = false
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-            self.collectionViewRecommendations.reloadData()
-        }
+        self.collectionViewRecommendations.reloadData()
     }
 
     // MARK: - RichWorkspace
