@@ -128,7 +128,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
         if editMode {
             navigationItem.leftBarButtonItems = nil
         } else {
-            setNavigationLeftItems()
+            (self.navigationController as? NCFilesNavigationController)?.setNavigationLeftItems()
         }
         setNavigationRightItems()
 
