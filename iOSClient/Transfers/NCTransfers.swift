@@ -34,7 +34,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         layoutKey = NCGlobal.shared.layoutViewTransfers
         enableSearchBar = false
         headerRichWorkspaceDisable = true
-        headerMenuTransferView = false
         emptyImageName = "arrow.left.arrow.right.circle"
         emptyTitle = "_no_transfer_"
         emptyDescription = "_no_transfer_sub_"
