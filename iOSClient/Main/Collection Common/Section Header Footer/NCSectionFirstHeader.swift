@@ -85,8 +85,8 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
         //
         viewRecommendationsHeightConstraint.constant = 0
         let layout = UICollectionViewFlowLayout()
+        layout.sectionInset = UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
         layout.scrollDirection = .horizontal
-        layout.minimumInteritemSpacing = 20
 
         collectionViewRecommendations.collectionViewLayout = layout
         collectionViewRecommendations.register(UINib(nibName: "NCRecommendationsCell", bundle: nil), forCellWithReuseIdentifier: "cell")
@@ -311,7 +311,7 @@ extension NCSectionFirstHeader: UICollectionViewDelegate {
 
 extension NCSectionFirstHeader: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let cellHeight = collectionView.bounds.height
+        let cellHeight = collectionView.bounds.height - 20
 
         return CGSize(width: cellHeight, height: cellHeight)
     }
