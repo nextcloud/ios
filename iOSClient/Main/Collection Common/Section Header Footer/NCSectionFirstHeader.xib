@@ -37,7 +37,7 @@
                     <rect key="frame" x="0.0" y="473" width="574" height="100"/>
                     <subviews>
                         <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="RSN-Ag-FbR">
-                            <rect key="frame" x="15" y="30" width="544" height="65"/>
+                            <rect key="frame" x="5" y="30" width="564" height="65"/>
                             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="QUu-4T-fYx">
                                 <size key="itemSize" width="128" height="128"/>
@@ -58,14 +58,14 @@
                         </label>
                     </subviews>
                     <constraints>
-                        <constraint firstItem="RSN-Ag-FbR" firstAttribute="leading" secondItem="eYW-bR-S5m" secondAttribute="leading" constant="15" id="0No-Vn-12V"/>
+                        <constraint firstItem="RSN-Ag-FbR" firstAttribute="leading" secondItem="eYW-bR-S5m" secondAttribute="leading" constant="5" id="0No-Vn-12V"/>
                         <constraint firstAttribute="trailing" secondItem="lZq-pm-Ra6" secondAttribute="trailing" constant="5" id="821-w6-8Wq"/>
                         <constraint firstItem="RSN-Ag-FbR" firstAttribute="top" secondItem="eYW-bR-S5m" secondAttribute="top" constant="30" id="8tm-jO-hGr"/>
                         <constraint firstItem="lZq-pm-Ra6" firstAttribute="top" secondItem="eYW-bR-S5m" secondAttribute="top" id="Ahw-Uf-jyj"/>
                         <constraint firstAttribute="bottom" secondItem="RSN-Ag-FbR" secondAttribute="bottom" constant="5" id="Jh6-Ko-zfQ"/>
                         <constraint firstItem="lZq-pm-Ra6" firstAttribute="leading" secondItem="eYW-bR-S5m" secondAttribute="leading" constant="15" id="QaR-D3-plT"/>
                         <constraint firstAttribute="height" constant="100" id="XCr-rB-tJu"/>
-                        <constraint firstAttribute="trailing" secondItem="RSN-Ag-FbR" secondAttribute="trailing" constant="15" id="qZN-KA-Fol"/>
+                        <constraint firstAttribute="trailing" secondItem="RSN-Ag-FbR" secondAttribute="trailing" constant="5" id="qZN-KA-Fol"/>
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="f9U-NY-4OS">
