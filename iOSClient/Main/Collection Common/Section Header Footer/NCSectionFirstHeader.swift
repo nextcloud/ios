@@ -85,7 +85,7 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
         //
         viewRecommendationsHeightConstraint.constant = 0
         let layout = UICollectionViewFlowLayout()
-        layout.sectionInset = UIEdgeInsets(top: 10, left: 0, bottom: 10, right: 0)
+        layout.sectionInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         layout.scrollDirection = .horizontal
 
         collectionViewRecommendations.collectionViewLayout = layout
