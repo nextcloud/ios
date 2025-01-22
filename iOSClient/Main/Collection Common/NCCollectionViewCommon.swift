@@ -72,7 +72,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var titleCurrentFolder = ""
     var titlePreviusFolder: String?
     var enableSearchBar: Bool = false
-    var headerMenuTransferView = false
     var headerRichWorkspaceDisable: Bool = false
 
     var emptyImageName: String?
@@ -95,7 +94,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var numberOfColumns: Int = 0
     var lastNumberOfColumns: Int = 0
 
-    let heightHeaderTransfer: CGFloat = 50
     let heightHeaderRecommendations: CGFloat = 160
     let heightHeaderSection: CGFloat = 30
 
@@ -1216,35 +1214,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     // MARK: - Header size
 
-    func isHeaderMenuTransferViewEnabled() -> [tableMetadata]? {
-        if headerMenuTransferView,
-           NCNetworking.shared.isOnline,
-           let results = database.getResultsMetadatas(predicate: NSPredicate(format: "status IN %@", [global.metadataStatusWaitUpload, global.metadataStatusUploading])),
-           !results.isEmpty {
-            return Array(results)
-        }
-        return nil
-    }
-
     func getHeaderHeight(section: Int) -> (heightHeaderRichWorkspace: CGFloat,
                                            heightHeaderRecommendations: CGFloat,
-                                           heightHeaderTransfer: CGFloat,
                                            heightHeaderSection: CGFloat) {
         var heightHeaderRichWorkspace: CGFloat = 0
         var heightHeaderRecommendations: CGFloat = 0
         var heightHeaderSection: CGFloat = 0
-
-        func getHeightHeaderTransfer() -> CGFloat {
-            var size: CGFloat = 0
-
-            if isHeaderMenuTransferViewEnabled() != nil {
-                if !isSearchingMode {
-                    size += self.heightHeaderTransfer
-                }
-            }
-
-            return size
-        }
 
         if showDescription,
            !isSearchingMode,
@@ -1263,12 +1238,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         if isSearchingMode || layoutForView?.groupBy != "none" || self.dataSource.numberOfSections() > 1 {
             if section == 0 {
-                return (heightHeaderRichWorkspace, heightHeaderRecommendations, getHeightHeaderTransfer(), self.heightHeaderSection)
+                return (heightHeaderRichWorkspace, heightHeaderRecommendations, self.heightHeaderSection)
             } else {
-                return (0, 0, 0, self.heightHeaderSection)
+                return (0, 0, self.heightHeaderSection)
             }
         } else {
-            return (heightHeaderRichWorkspace, heightHeaderRecommendations, getHeightHeaderTransfer(), heightHeaderSection)
+            return (heightHeaderRichWorkspace, heightHeaderRecommendations, heightHeaderSection)
         }
     }
 
@@ -1278,12 +1253,12 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         let isIphone = UIDevice.current.userInterfaceIdiom == .phone
 
         if self.dataSource.isEmpty() {
-            height = utility.getHeightHeaderEmptyData(view: view, portraitOffset: emptyDataPortaitOffset, landscapeOffset: emptyDataLandscapeOffset, isHeaderMenuTransferViewEnabled: isHeaderMenuTransferViewEnabled() != nil)
+            height = utility.getHeightHeaderEmptyData(view: view, portraitOffset: emptyDataPortaitOffset, landscapeOffset: emptyDataLandscapeOffset)
         } else if isEditMode || (isLandscape && isIphone) {
             return CGSize.zero
         } else {
-            let (heightHeaderRichWorkspace, heightHeaderRecommendations, heightHeaderTransfer, heightHeaderSection) = getHeaderHeight(section: section)
-            height = heightHeaderRichWorkspace + heightHeaderRecommendations + heightHeaderTransfer + heightHeaderSection
+            let (heightHeaderRichWorkspace, heightHeaderRecommendations, heightHeaderSection) = getHeaderHeight(section: section)
+            height = heightHeaderRichWorkspace + heightHeaderRecommendations + heightHeaderSection
         }
 
         return CGSize(width: collectionView.frame.width, height: height)

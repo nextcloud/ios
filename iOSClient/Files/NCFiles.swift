@@ -39,7 +39,6 @@ class NCFiles: NCCollectionViewCommon {
         layoutKey = NCGlobal.shared.layoutViewFiles
         enableSearchBar = true
         headerRichWorkspaceDisable = false
-        headerMenuTransferView = true
         emptyTitle = "_files_no_files_"
         emptyDescription = "_no_file_pull_down_"
     }
