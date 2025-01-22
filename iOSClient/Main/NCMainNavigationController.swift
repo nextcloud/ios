@@ -13,7 +13,7 @@ class NCMainNavigationController: UINavigationController {
 
             if let results = NCManageDatabase.shared.getResultsMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal)),
                results.count > 0 {
-                color = .systemBlue
+                color = NCBrandColor.shared.customer
             }
 
             for viewController in self.viewControllers {
