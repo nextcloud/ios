@@ -2,7 +2,7 @@ import UIKit
 import RealmSwift
 import NextcloudKit
 
-class NCMainNavigationController: UINavigationController {
+class NCFilesNavigationController: UINavigationController {
     private var timerProcess: Timer?
 
     required init?(coder aDecoder: NSCoder) {
