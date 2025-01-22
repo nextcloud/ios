@@ -40,7 +40,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
               let appDelegate else { return }
 
         self.window = UIWindow(windowScene: windowScene)
-        self.window?.overrideUserInterfaceStyle = NCKeychain().appearanceInterfaceStyle
+        if !NCKeychain().appearanceAutomatic {
+            self.window?.overrideUserInterfaceStyle = NCKeychain().appearanceInterfaceStyle
+        }
 
         if let activeTableAccount = self.database.getActiveTableAccount() {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Account active \(activeTableAccount.account)")
