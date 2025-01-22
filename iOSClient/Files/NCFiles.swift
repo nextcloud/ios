@@ -57,7 +57,6 @@ class NCFiles: NCCollectionViewCommon {
             self.titleCurrentFolder = getNavigationTitle()
 
             NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { notification in
-
                 if let userInfo = notification.userInfo, let account = userInfo["account"] as? String {
                     if let controller = userInfo["controller"] as? NCMainTabBarController,
                        controller == self.controller {
@@ -83,7 +82,7 @@ class NCFiles: NCCollectionViewCommon {
                 }
 
                 self.titleCurrentFolder = self.getNavigationTitle()
-                self.setNavigationLeftItems()
+                (self.navigationController as? NCFilesNavigationController)?.setNavigationLeftItems()
 
                 self.dataSource.removeAll()
                 self.reloadDataSource()
@@ -368,6 +367,6 @@ class NCFiles: NCCollectionViewCommon {
             navigationItem.title = self.titleCurrentFolder
         }
 
-        setNavigationLeftItems()
+        (self.navigationController as? NCFilesNavigationController)?.setNavigationLeftItems()
     }
 }

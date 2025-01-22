@@ -254,13 +254,14 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        navigationController?.setNavigationBarAppearance()
-        navigationController?.navigationBar.prefersLargeTitles = true
-        navigationController?.setNavigationBarHidden(false, animated: true)
+        if titlePreviusFolder != nil {
+            navigationController?.navigationBar.topItem?.title = titlePreviusFolder
+        }
         navigationItem.title = titleCurrentFolder
 
         isEditMode = false
-        setNavigationLeftItems()
+
+        (self.navigationController as? NCFilesNavigationController)?.setNavigationLeftItems()
         setNavigationRightItems()
 
         layoutForView = database.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl)
@@ -392,7 +393,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
               let error = userInfo["error"] as? NKError,
               error.errorCode != global.errorNotModified else { return }
 
-        setNavigationLeftItems()
+        (self.navigationController as? NCFilesNavigationController)?.setNavigationLeftItems()
     }
 
     @objc func changeTheming(_ notification: NSNotification) {
@@ -657,81 +658,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
 
     // MARK: - Layout
-
-    func setNavigationLeftItems() {
-        guard layoutKey == global.layoutViewFiles,
-              let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
-            return }
-        let image = utility.loadUserImage(for: tableAccount.user, displayName: tableAccount.displayName, urlBase: tableAccount.urlBase)
-        let accountButton = AccountSwitcherButton(type: .custom)
-        let accounts = database.getAllAccountOrderAlias()
-        var childrenAccountSubmenu: [UIMenuElement] = []
-
-        accountButton.setImage(image, for: .normal)
-        accountButton.setImage(image, for: .highlighted)
-        accountButton.semanticContentAttribute = .forceLeftToRight
-        accountButton.sizeToFit()
-
-        if !accounts.isEmpty {
-            let accountActions: [UIAction] = accounts.map { account in
-                let image = utility.loadUserImage(for: account.user, displayName: account.displayName, urlBase: account.urlBase)
-                var name: String = ""
-                var url: String = ""
-
-                if account.alias.isEmpty {
-                    name = account.displayName
-                    url = (URL(string: account.urlBase)?.host ?? "")
-                } else {
-                    name = account.alias
-                }
-
-                let action = UIAction(title: name, image: image, state: account.active ? .on : .off) { _ in
-                    if !account.active {
-                        NCAccount().changeAccount(account.account, userProfile: nil, controller: self.controller) { }
-                        self.setEditMode(false)
-                    }
-                }
-
-                action.subtitle = url
-                return action
-            }
-
-            let addAccountAction = UIAction(title: NSLocalizedString("_add_account_", comment: ""), image: utility.loadImage(named: "person.crop.circle.badge.plus", colors: NCBrandColor.shared.iconImageMultiColors)) { _ in
-                self.appDelegate.openLogin(selector: self.global.introLogin)
-            }
-
-            let settingsAccountAction = UIAction(title: NSLocalizedString("_account_settings_", comment: ""), image: utility.loadImage(named: "gear", colors: [NCBrandColor.shared.iconImageColor])) { _ in
-                let accountSettingsModel = NCAccountSettingsModel(controller: self.controller, delegate: self)
-                let accountSettingsView = NCAccountSettingsView(model: accountSettingsModel)
-                let accountSettingsController = UIHostingController(rootView: accountSettingsView)
-                self.present(accountSettingsController, animated: true, completion: nil)
-            }
-
-            if !NCBrandOptions.shared.disable_multiaccount {
-                childrenAccountSubmenu.append(addAccountAction)
-            }
-            childrenAccountSubmenu.append(settingsAccountAction)
-
-            let addAccountSubmenu = UIMenu(title: "", options: .displayInline, children: childrenAccountSubmenu)
-            let menu = UIMenu(children: accountActions + [addAccountSubmenu])
-
-            accountButton.menu = menu
-            accountButton.showsMenuAsPrimaryAction = true
-
-            accountButton.onMenuOpened = {
-                self.dismissTip()
-            }
-        }
-
-        navigationItem.leftItemsSupplementBackButton = true
-        navigationItem.setLeftBarButtonItems([UIBarButtonItem(customView: accountButton)], animated: true)
-
-        if titlePreviusFolder != nil {
-            navigationController?.navigationBar.topItem?.title = titlePreviusFolder
-        }
-
-        navigationItem.title = titleCurrentFolder
-    }
 
     func setNavigationRightItems() {
         guard layoutKey != global.layoutViewTransfers else { return }

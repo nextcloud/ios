@@ -67,11 +67,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterProgressTask), object: nil)
     }
 
-    override func setNavigationLeftItems() {
-        self.navigationItem.rightBarButtonItem = nil
-        self.navigationItem.leftBarButtonItem = nil
-    }
-
     // MARK: - NotificationCenter
 
     override func reloadDataSource(_ notification: NSNotification) {
