@@ -79,7 +79,6 @@
 "_no_permission_delete_file_" = "You don't have permission to delete files";
 "_no_permission_modify_file_" = "You don't have permission to modify files";
 "_no_permission_favorite_file_" = "You don't have permission to add the file to your favorites";
-"_request_upload_new_ver_"  = "The file has been modified, do you want to upload the new version?";
 "_add_folder_info_"         = "Add folder info";
 "_back_"                    = "Back";
 "_search_"                  = "Search";
@@ -271,16 +270,12 @@
 "_tutorial_groupfolders_view_"  = "No Group folders yet";
 "_more_"                        = "More";
 "_favorite_no_files_"           = "No favorites yet";
-"_tutorial_autoupload_view_"                = "You can enable auto uploads from \"Settings\"";
 "_no_date_information_"                     = "No date information";
 "_no_camera_information_"                   = "No camera information";
 "_no_lens_information_"                     = "No lens information";
 "_today_"                                   = "Today";
 "_yesterday_"                               = "Yesterday";
-"_time_"                                    = "Time: %@\n\n%@";
 "_access_background_app_refresh_denied_"    = "\"Background App Refresh\" is denied. Please enable it in \"Settings\" otherwise, new photos or videos will not be detected when the application is in the background";
-"_access_photo_location_not_enabled_"       = "Access to Photos and Location not enabled";
-"_access_photo_location_not_enabled_msg_"   = "Please go to \"Settings\" and turn on \"Photo Access\" and \"Location Services\"";
 "_tutorial_photo_view_"                     = "No photos or videos uploaded yet";
 "_error_createsubfolders_upload_"           = "Error creating subfolders";
 "_remove_photo_CameraRoll_"                 = "Remove from camera roll";
@@ -302,7 +297,6 @@
 "_date_"                        = "Date";
 "_size_"                        = "Size";
 "_remove_favorites_"            = "Remove from favorites";
-"_remove_offline_"              = "Remove from offline";
 "_add_favorites_"               = "Add to favorites";
 "_share_"                       = "Share";
 "_remove_local_file_"           = "Remove locally";
@@ -311,18 +305,13 @@
 "_files_"                       = "files";
 "_file_"                        = "file";
 "_no_file_pull_down_"           = "Upload a file or pull down to refresh";
-"_remove_synchronized_folder_"  = "Turn off the synchronization";
-"_synchronized_confirm_"        = "After enabling the synchronization, all files in the folder will be synchronized with the server. Continue?";
 "_limited_dimension_"           = "Maximum size reached";
 "_save_selected_files_"         = "Save to photo gallery";
-"_file_not_saved_cameraroll_"   = "Error: File not saved in photo album";
 "_file_saved_cameraroll_"       = "File saved in photo album";
-"_directory_on_top_yes_"        = "✓ Folders on top";
 "_directory_on_top_no_"         = "Folders on top";
 "_show_description_"            = "Show description";
 "_show_recommended_files_"      = "Show recommended files";
 "_no_description_available_"    = "No description available for this folder";
-"_folder_automatic_upload_"     = "Folder for \"Auto upload\"";
 "_search_no_record_found_"      = "No result";
 "_search_in_progress_"          = "Search in progress …";
 "_search_instruction_"          = "Search for file (minimum 2 characters)";
@@ -348,15 +337,12 @@
 "_status_wait_favorite_"        = "Waiting to change favorite";
 "_status_wait_copy_"            = "Waiting to copy";
 "_status_wait_move_"            = "Waiting to move";
-"_status_in_upload_"            = "In upload";
 "_status_uploading_"            = "Uploading";
 "_status_upload_error_"         = "Error, waiting to upload";
 "_select_media_folder_"         = "Set Media folder";
 "_media_viewimage_show_"        = "Show only images";
 "_media_viewvideo_show_"        = "Show only video";
 "_media_show_all_"              = "Show both";
-"_media_view_options_"          = "View options";
-"_password_pdf_error_"          = "Wrong password";
 "_servers_"                     = "Servers";
 "_select_server_"               = "Please select a server...";
 
@@ -367,9 +353,6 @@
 "_password_"                    = "Password";
 "_share_password_"              = "Password protected link";
 "_date_"                        = "Date";
-"_find_sharee_title_"           = "Search";
-"_find_sharee_"                 = "Search for user or group …";
-"_find_sharee_footer_"          = "Enter part of the name of the user or group to search for (at least 2 characters) followed by \"Return\", select the users that should be allowed to access the share followed by \"Done\" to confirm.";
 "_user_sharee_footer_"          = "Tap to change permissions";
 "_enforce_password_protection_" = "Enforce password protection";
 "_shared_with_you_by_"          = "Shared with you by";
@@ -418,7 +401,6 @@
 "_filename_header_"                 = "Enter filename";
 "_preview_filename_"                = "Example preview of filename. You can use the mask %@ for date/time.";
 "_add_filenametype_"                = "Specify type in filename";
-"_filenametype_photo_video_"        = "Photo/Video";
 "_maintain_original_filename_"      = "Maintain original filename";
 "_notifications_"                   = "Notifications";
 "_untitled_"                        = "Untitled";
@@ -527,7 +509,6 @@
 "_select_color_"            = "Select the color";
 "_change_color_"            = "Change color";
 "_keep_running_"            = "Keep the app running for a better user experience.";
-"_recent_activity_"         = "Recent activity";
 "_apps_nextcloud_detect_"   = "Detected %@ apps";
 "_add_existing_account_"    = "Other %@ Apps has been detected, do you want to add an existing account?";
 "_status_in_progress_"      = "Status reading in progress …";
@@ -552,9 +533,6 @@
 "_play_from_files_"         = "Play movie from a file";
 "_play_from_url_"           = "Play movie from URL";
 "_valid_video_url_"         = "Insert a valid URL";
-"_deletion_progess_"        = "Deletion in progress";
-"_copying_progess_"         = "Copying in progress";
-"_moving_progess_"          = "Moving in progress";
 "_chunk_move_"              = "The sent file could not be reassembled, please check the server log.";
 "_download_image_"          = "Download image";
 "_download_video_"          = "Download video";
@@ -583,7 +561,6 @@
 "_error_not_found_"         = "The requested resource could not be found.";
 
 //Video
-"_disable_"                 = "Disable";
 "_user_"                    = "User";
 "_add_subtitle_"            = "Add an external subtitle";
 "_add_audio_"               = "Add an external audio";
@@ -622,19 +599,6 @@
 "_list_"                        = "List";
 "_icons_"                       = "Icons";
 
-// MARK: Plan customer
-"_keep_plan_"                   = "Keep Plan";
-"_leave_plan_"                  = "Leave Plan";
-"_change_plan_"                 = "Change Plan";
-"_manage_plan_"                 = "Manage Plan";
-"_purchase_plan_"               = "Purchase Plan";
-"_restore_plan_"                = "Restore Purchased Plan";
-"_purchase_plan_description_"   = "Purchases have been restored";
-"_choose_plan_"                 = "You should choose a plan in order to purchase it.";
-"_already_plan_"                = "The selected plan has already been bought.";
-"_change_billing_"              = "Change Billing";
-"_payment_method_"              = "Payment Method";
-
 // MARK: Assistant
 "_assistant_task_unknown_"       = "Unknown";
 "_assistant_task_scheduled_"     = "Scheduled";
@@ -660,7 +624,7 @@
 // MARK: Login poll
 "_poll_desc_"                    = "Please complete the log in process in your browser.";
 
-// MARK: File name validator
+// MARK: File name validator (used by NextcloudKit, don't remove)
 "_file_name_validator_error_ends_with_space_period_" = "Name must not contain spaces at the beginning or end.";
 "_file_name_validator_error_reserved_name_" = "\"%@\" is a forbidden name.";
 "_file_name_validator_error_forbidden_file_extension_" = "\".%@\" is a forbidden file extension.";
