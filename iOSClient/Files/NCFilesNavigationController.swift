@@ -138,9 +138,13 @@ class NCFilesNavigationController: NCMainNavigationController {
                 return []
             }
 
-            let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [items.foldersOnTop, items.personalFilesOnlyAction, items.showDescription, items.showRecommendedFiles])
-
-            return [items.select, items.viewStyleSubmenu, items.sortSubmenu, additionalSubmenu]
+            if collectionViewCommon.serverUrl == utilityFileSystem.getHomeServer(session: session) {
+                let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [items.foldersOnTop, items.personalFilesOnlyAction, items.showDescription, items.showRecommendedFiles])
+                return [items.select, items.viewStyleSubmenu, items.sortSubmenu, additionalSubmenu]
+            } else {
+                let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [items.foldersOnTop, items.personalFilesOnlyAction, items.showDescription])
+                return [items.select, items.viewStyleSubmenu, items.sortSubmenu, additionalSubmenu]
+            }
         }
 
         if collectionViewCommon.isEditMode {

@@ -10,6 +10,7 @@ class NCMainNavigationController: UINavigationController {
     let database = NCManageDatabase.shared
     let global = NCGlobal.shared
     let utility = NCUtility()
+    let utilityFileSystem = NCUtilityFileSystem()
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
     var controller: NCMainTabBarController? {
@@ -188,11 +189,5 @@ class NCMainNavigationController: UINavigationController {
         }
 
         return (select, viewStyleSubmenu, sortSubmenu, foldersOnTop, personalFilesOnlyAction, showDescription, showRecommendedFiles)
-        /*
-        let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [foldersOnTop, personalFilesOnlyAction, showDescription, showRecommendedFiles])
-
-        return [select, viewStyleSubmenu, sortSubmenu, additionalSubmenu]
-         */
     }
-
 }
