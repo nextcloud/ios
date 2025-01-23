@@ -32,7 +32,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
         } else {
             fileSelect = self.dataSource.getMetadatas().compactMap({ $0.ocId })
         }
-        tabBarSelect.update(fileSelect: fileSelect, metadatas: getSelectedMetadatas(), userId: session.userId)
+        tabBarSelect?.update(fileSelect: fileSelect, metadatas: getSelectedMetadatas(), userId: session.userId)
         self.collectionView.reloadData()
     }
 

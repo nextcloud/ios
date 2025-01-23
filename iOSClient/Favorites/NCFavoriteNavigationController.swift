@@ -11,7 +11,7 @@ class NCFavoriteNavigationController: NCMainNavigationController {
         }
         let session = NCSession.shared.getSession(controller: controller)
         let isTabBarHidden = self.tabBarController?.tabBar.isHidden ?? true
-        let isTabBarSelectHidden = collectionViewCommon.tabBarSelect.isHidden()
+        let isTabBarSelectHidden = collectionViewCommon.tabBarSelect?.isHidden() ?? true
 
         func createMenuActions() -> [UIMenuElement] {
             guard let layoutForView = database.getLayoutForView(account: session.account, key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl) else { return [] }
@@ -136,8 +136,8 @@ class NCFavoriteNavigationController: NCMainNavigationController {
         }
 
         if collectionViewCommon.isEditMode {
-            collectionViewCommon.tabBarSelect.update(fileSelect: collectionViewCommon.fileSelect, metadatas: collectionViewCommon.getSelectedMetadatas(), userId: session.userId)
-            collectionViewCommon.tabBarSelect.show()
+            collectionViewCommon.tabBarSelect?.update(fileSelect: collectionViewCommon.fileSelect, metadatas: collectionViewCommon.getSelectedMetadatas(), userId: session.userId)
+            collectionViewCommon.tabBarSelect?.show()
 
             let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) {
                 collectionViewCommon.setEditMode(false)
@@ -145,8 +145,8 @@ class NCFavoriteNavigationController: NCMainNavigationController {
             }
 
             self.collectionViewCommon?.navigationItem.rightBarButtonItems = [select]
-        } else if self.collectionViewCommon?.navigationItem.rightBarButtonItems == nil || (!collectionViewCommon.isEditMode && !collectionViewCommon.tabBarSelect.isHidden()) {
-            collectionViewCommon.tabBarSelect.hide()
+        } else if self.collectionViewCommon?.navigationItem.rightBarButtonItems == nil || (!collectionViewCommon.isEditMode && !(collectionViewCommon.tabBarSelect?.isHidden() ?? true)) {
+            collectionViewCommon.tabBarSelect?.hide()
 
             let menuButton = UIBarButtonItem(image: utility.loadImage(named: "ellipsis.circle"), menu: UIMenu(children: createMenuActions()))
             menuButton.tag = menuButtonTag

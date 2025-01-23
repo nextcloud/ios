@@ -63,7 +63,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     var mediaLayout = NCMediaLayout()
     var layoutType = NCGlobal.shared.layoutList
     var literalSearch: String?
-    var tabBarSelect: NCCollectionViewCommonSelectTabBar!
+    var tabBarSelect: NCCollectionViewCommonSelectTabBar?
     var attributesZoomIn: UIMenuElement.Attributes = []
     var attributesZoomOut: UIMenuElement.Attributes = []
 
@@ -373,7 +373,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         super.viewWillLayoutSubviews()
 
         if let frame = tabBarController?.tabBar.frame {
-            tabBarSelect.hostingController?.view.frame = frame
+            tabBarSelect?.hostingController?.view.frame = frame
         }
     }
 
