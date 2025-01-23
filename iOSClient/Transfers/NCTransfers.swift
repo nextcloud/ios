@@ -47,6 +47,13 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         listLayout.itemHeight = 105
         self.database.setLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl, layout: NCGlobal.shared.layoutList)
         self.navigationItem.title = titleCurrentFolder
+        navigationController?.navigationBar.tintColor = NCBrandColor.shared.iconImageColor
+
+        let cancel = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) {
+            self.dismiss(animated: true)
+        }
+
+        self.navigationItem.leftBarButtonItems = [cancel]
     }
 
     override func viewWillAppear(_ animated: Bool) {

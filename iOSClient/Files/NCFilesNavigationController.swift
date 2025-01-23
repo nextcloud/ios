@@ -166,9 +166,10 @@ class NCFilesNavigationController: NCMainNavigationController {
             menuButton.tintColor = NCBrandColor.shared.iconImageColor
 
             let transfersButton = UIBarButtonItem(image: utility.loadImage(named: "arrow.left.arrow.right.circle"), style: .plain) {
-                if let viewController = UIStoryboard(name: "NCTransfers", bundle: nil).instantiateInitialViewController() as? NCTransfers {
+                if let navigationController = UIStoryboard(name: "NCTransfers", bundle: nil).instantiateInitialViewController() as? UINavigationController,
+                   let viewController = navigationController.topViewController as? NCTransfers {
                     viewController.modalPresentationStyle = .pageSheet
-                    self.present(viewController, animated: true, completion: nil)
+                    self.present(navigationController, animated: true, completion: nil)
                 }
             }
 
