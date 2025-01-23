@@ -70,21 +70,21 @@
 "_denied_album_"            = "This app does not have access to \"Photos\". You can enable access in Privacy Settings.";
 "_denied_camera_"           = "This app does not have access to the \"Camera\". You can enable access in Privacy Settings.";
 "_force_start_"             = "Force the start";
-"_account_not_available_"   = "The account %@ of %@ does not exist, please add it to be able to read the file %@";
+"_account_not_available_"   = "The account %@ of %@ does not exist, please add it to be able to read the file %@.";
 "_the_account_"             = "The account";
 "_does_not_exist_"          = "does not exist";
 "_sharing_"                 = "Sharing";
 "_details_"                 = "Details";
-"_no_permission_add_file_"  = "You don't have permission to add files";
-"_no_permission_delete_file_" = "You don't have permission to delete files";
-"_no_permission_modify_file_" = "You don't have permission to modify files";
-"_no_permission_favorite_file_" = "You don't have permission to add the file to your favorites";
+"_no_permission_add_file_"  = "You don't have permission to add files.";
+"_no_permission_delete_file_" = "You don't have permission to delete files.";
+"_no_permission_modify_file_" = "You don't have permission to modify files.";
+"_no_permission_favorite_file_" = "You don't have permission to add the file to your favorites.";
 "_add_folder_info_"         = "Add folder info";
 "_back_"                    = "Back";
 "_search_"                  = "Search";
 "_of_"                      = "of";
 "_livephoto_save_"          = "Save Live Photo to Photo Album";
-"_livephoto_save_error_"    = "Error during save of Live Photo";
+"_livephoto_save_error_"    = "Error during save of Live Photo.";
 "_file_conflict_num_"       = "file conflict";
 "_file_conflicts_num_"      = "file conflicts";
 "_file_conflict_desc_"      = "Which files do you want to keep?\nIf you select both versions, the copied file will have a number added to its name.";
@@ -101,7 +101,7 @@
 "_disabled_"                = "Disabled";
 "_standard_"                = "Standard";
 "_maximum_"                 = "Maximum";
-"_error_occurred_"          = "An error occurred, please try again";
+"_error_occurred_"          = "An error occurred, please try again.";
 "_retry_"                   = "Retry";
 "_images_"                  = "Images";
 
@@ -133,7 +133,7 @@
 "_account_select_to_add_"   = "Select the account to add";
 "_remove_local_account_"    = "Remove local account";
 "_want_delete_account_"     = "Do you want to remove local account?";
-"_prevent_http_redirection_"= "The redirection in HTTP is not permitted";
+"_prevent_http_redirection_"= "The redirection in HTTP is not permitted.";
 "_single_file_conflict_title_" = "File conflict";
 "_multi_file_conflict_title_" = "%@ File conflicts";
 "_replace_action_title_" = "Replace";
@@ -191,9 +191,9 @@
 "_minutes_"                 = "Minutes";
 
 
-"_network_not_available_"   = "Network unavailable";
-"_file_already_exists_"     = "Unable to complete the operation, a file with the same name exists";
-"_files_lock_error_"        = "There was an error changing the lock of this file";
+"_network_not_available_"   = "Network unavailable.";
+"_file_already_exists_"     = "Unable to complete the operation, a file with the same name exists.";
+"_files_lock_error_"        = "There was an error changing the lock of this file.";
 "_more_"                        = "More";
 "_notifications_"               = "Notifications";
 "_quota_space_unlimited_"       = "Unlimited";
@@ -247,7 +247,7 @@
 "_privacy_"                     = "Privacy";
 "_privacy_footer_"              = "This app uses a service for the analysis of a crash. Your personal information is not sent with the report. If you want disable it, please change the setting \"Disable crash reporter\" to ON.";
 "_crashservice_title_"          = "Disable crash reporter";
-"_crashservice_alert_"          = "This option requires a restart of the app to take effect";
+"_crashservice_alert_"          = "This option requires a restart of the app to take effect.";
 "_upload_mov_livephoto_"        = "Live Photo";
 "_upload_mov_livephoto_footer_" = "\"Live Photo\" will save the selected photo in \"Live Photo\" format, if possible.";
 "_capabilities_"                = "Capabilities";
@@ -290,7 +290,7 @@
 "_days_ago_"                    = "%d days ago";
 "_forbidden_characters_"        = "Forbidden characters: %@";
 "_cannot_send_mail_error_"      = "No account is set up, or wrong email address entered.";
-"_open_url_error_"              = "Cannot open the URL for this action";
+"_open_url_error_"              = "Cannot open the URL for this action.";
 "_media_"                       = "Media";
 "_order_by_"                    = "Sort by";
 "_name_"                        = "Name";
@@ -492,7 +492,7 @@
 "_page_"                    = "Page";
 "_this_document_has_%@_pages_"              = "This document has %@ pages";
 "_invalid_page_"                            = "Invalid Page";
-"_the_entered_page_number_does_not_exist_"   = "The entered page number does not exist";
+"_the_entered_page_number_does_not_exist_"   = "The entered page number does not exist.";
 "_error_something_wrong_"   = "Something went wrong";
 "_try_download_full_resolution_"            = "Download full resolution image";
 "_full_resolution_image_info_"            = "This may reveal more information about the photo.";
@@ -513,8 +513,8 @@
 "_add_existing_account_"    = "Other %@ Apps has been detected, do you want to add an existing account?";
 "_status_in_progress_"      = "Status reading in progress …";
 "_status_e2ee_on_server_"   = "The end-to-end encryption is already configured in the server but not yet enabled on this device.";
-"_status_e2ee_not_setup_"   = "The end-to-end encryption is not yet configured on the server";
-"_status_e2ee_configured_"  = "The end-to-end encryption is correctly configured";
+"_status_e2ee_not_setup_"   = "The end-to-end encryption is not yet configured on the server.";
+"_status_e2ee_configured_"  = "The end-to-end encryption is correctly configured.";
 "_e2ee_set_as_offline_"     = "Not allowed for encrypted files or folders.";
 "_change_upload_filename_"  = "Do you want to save the file with a different name?";
 "_save_file_as_"            = "Save file as %@";
@@ -575,12 +575,12 @@
 "_Upload_native_format_yes_"= "Upload in native format: yes";
 "_Upload_native_format_no_" = "Upload in native format: no";
 "_terms_of_service_"        = "Terms of service";
-"_terms_accept_"            = "I acknowledge that I have read and agree to the above terms of service";
+"_terms_accept_"            = "I acknowledge that I have read and agree to the above terms of service.";
 "_terms_accepted_"          = "Terms accepted";
 "_recommended_files_"       = "Recommended Files";
 
 // Tip
-"_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails.";
+"_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails";
 "_tip_accountrequest_"      = "Touch here to change account or to add a new one";
 "_tip_addcopyimage_"        = "Long press to paste a copied image";
 "_tip_open_mediadetail_"    = "Swipe up to show the details";
@@ -613,13 +613,13 @@
 "_no_tasks_"                     = "No tasks in here";
 "_create_task_subtitle_"         = "Use the + button to create one";
 "_no_types_"                     = "No provider found";
-"_no_types_subtitle_"            = "AI Providers need to be installed to use the Assistant";
+"_no_types_subtitle_"            = "AI Providers need to be installed to use the Assistant.";
 
 // MARK: Client certificate
-"_no_client_cert_found_"         = "The server is requesting a client certificate";
+"_no_client_cert_found_"         = "The server is requesting a client certificate.";
 "_no_client_cert_found_desc_"    = "Do you want to install a TLS client certificate? \n Note that only .p12 archives created through OpenSSL with the -legacy flag can work on Apple devices.";
 "_client_cert_enter_password_"   = "Enter the password for the chosen certificate";
-"_client_cert_wrong_password_"   = "Sorry, you entered an invalid password";
+"_client_cert_wrong_password_"   = "Sorry, you entered an invalid password.";
 
 // MARK: Login poll
 "_poll_desc_"                    = "Please complete the log in process in your browser.";
