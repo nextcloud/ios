@@ -653,6 +653,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             (self.navigationController as? NCFavoriteNavigationController)?.setNavigationLeftItems()
         } else if layoutKey == global.layoutViewRecent {
             (self.navigationController as? NCMoreNavigationController)?.setNavigationLeftItems()
+        } else if layoutKey == global.layoutViewShares {
+            (self.navigationController as? NCMoreNavigationController)?.setNavigationLeftItems()
+        } else if layoutKey == global.layoutViewOffline {
+            (self.navigationController as? NCMoreNavigationController)?.setNavigationLeftItems()
         }
     }
 
@@ -662,6 +666,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         } else if layoutKey == global.layoutViewFavorite {
             (self.navigationController as? NCFavoriteNavigationController)?.setNavigationRightItems()
         } else if layoutKey == global.layoutViewRecent {
+            (self.navigationController as? NCMoreNavigationController)?.setNavigationRightItems()
+        } else if layoutKey == global.layoutViewShares {
+            (self.navigationController as? NCMoreNavigationController)?.setNavigationRightItems()
+        } else if layoutKey == global.layoutViewOffline {
             (self.navigationController as? NCMoreNavigationController)?.setNavigationRightItems()
         }
     }
