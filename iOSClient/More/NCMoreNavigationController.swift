@@ -37,6 +37,7 @@ class NCMoreNavigationController: NCMainNavigationController {
             }
 
             self.collectionViewCommon?.navigationItem.rightBarButtonItems = [select]
+
         } else if self.collectionViewCommon?.navigationItem.rightBarButtonItems == nil || (!collectionViewCommon.isEditMode && !(collectionViewCommon.tabBarSelect?.isHidden() ?? true)) {
             collectionViewCommon.tabBarSelect?.hide()
 
@@ -45,7 +46,9 @@ class NCMoreNavigationController: NCMainNavigationController {
             menuButton.tintColor = NCBrandColor.shared.iconImageColor
 
             self.collectionViewCommon?.navigationItem.rightBarButtonItems = [menuButton]
+
         } else {
+
             self.collectionViewCommon?.navigationItem.rightBarButtonItems?.first?.menu = self.collectionViewCommon?.navigationItem.rightBarButtonItems?.first?.menu?.replacingChildren(createMenu())
         }
 
