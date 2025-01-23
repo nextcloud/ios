@@ -6,7 +6,7 @@
 //  Copyright © 2020 Philippe Weidmann. All rights reserved.
 //  Copyright © 2020 Marino Faggiana All rights reserved.
 //  Copyright © 2021 Henrik Storch All rights reserved.
-//  Copyright © 2024 STRATO AG
+//  Copyright © 2024 STRATO GmbH
 //
 //  Author Philippe Weidmann <philippe.weidmann@infomaniak.com>
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>

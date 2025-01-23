@@ -3,7 +3,7 @@
 //  Widget
 //
 //  Created by Oleh Shcherba on 20.11.2024.
-//  Copyright © 2024 STRATO AG
+//  Copyright © 2024 STRATO GmbH
 //
 
 import SwiftUI
