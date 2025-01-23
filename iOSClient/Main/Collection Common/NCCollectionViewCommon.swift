@@ -145,6 +145,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.tabBarController as? NCMainTabBarController
     }
 
+    var fileNavigationController: NCFilesNavigationController? {
+        self.navigationController as? NCFilesNavigationController
+    }
+
     var defaultPredicate: NSPredicate {
         let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND NOT (status IN %@) AND NOT (livePhotoFile != '' AND classFile == %@)", session.account, self.serverUrl, NCGlobal.shared.metadataStatusHideInView, NKCommon.TypeClassFile.video.rawValue)
         return predicate
@@ -261,7 +265,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         isEditMode = false
 
-        (self.navigationController as? NCFilesNavigationController)?.setNavigationLeftItems()
+        fileNavigationController?.setNavigationLeftItems()
         setNavigationRightItems()
 
         layoutForView = database.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl)
