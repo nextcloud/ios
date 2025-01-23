@@ -647,6 +647,9 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - Layout
 
     func setNavigationLeftItems() {
+        (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
+
+        /*
         if layoutKey == global.layoutViewFiles {
             (self.navigationController as? NCFilesNavigationController)?.setNavigationLeftItems()
         } else if layoutKey == global.layoutViewFavorite {
@@ -658,9 +661,13 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         } else if layoutKey == global.layoutViewOffline {
             (self.navigationController as? NCMoreNavigationController)?.setNavigationLeftItems()
         }
+        */
     }
 
     func setNavigationRightItems() {
+        (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
+
+        /*
         if layoutKey == global.layoutViewFiles {
             (self.navigationController as? NCFilesNavigationController)?.setNavigationRightItems()
         } else if layoutKey == global.layoutViewFavorite {
@@ -672,6 +679,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         } else if layoutKey == global.layoutViewOffline {
             (self.navigationController as? NCMoreNavigationController)?.setNavigationRightItems()
         }
+        */
     }
 
     func getNavigationTitle() -> String {

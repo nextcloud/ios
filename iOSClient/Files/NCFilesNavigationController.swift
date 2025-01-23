@@ -6,22 +6,11 @@ import UIKit
 import SwiftUI
 import NextcloudKit
 
-class NCFilesNavigationController: UINavigationController {
+class NCFilesNavigationController: NCMainNavigationController {
     private var timerProcess: Timer?
-    private let database = NCManageDatabase.shared
-    private let global = NCGlobal.shared
-    private let utility = NCUtility()
-    private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-    private var controller: NCMainTabBarController? {
-        self.tabBarController as? NCMainTabBarController
-    }
     private var collectionViewCommon: NCFiles? {
         topViewController as? NCFiles
     }
-
-    private let menuButtonTag = 1
-    private let transfersButtonTag = 2
-    private let notificationButtonTag = 3
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -65,7 +54,7 @@ class NCFilesNavigationController: UINavigationController {
         }
     }
 
-    func setNavigationLeftItems() {
+    override func setNavigationLeftItems() {
         let session = NCSession.shared.getSession(controller: controller)
         guard let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account))
         else {
@@ -146,7 +135,7 @@ class NCFilesNavigationController: UINavigationController {
         }
     }
 
-    func setNavigationRightItems() {
+    override func setNavigationRightItems() {
         guard let collectionViewCommon else {
             return
         }

@@ -757,6 +757,7 @@
 		F79FFB272A97C24A0055EEA4 /* NCNetworkingE2EEMarkFolder.swift in Sources */ = {isa = PBXBuildFile; fileRef = F79FFB252A97C24A0055EEA4 /* NCNetworkingE2EEMarkFolder.swift */; };
 		F7A03E2F2D425A14007AA677 /* NCFavoriteNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A03E2E2D425A14007AA677 /* NCFavoriteNavigationController.swift */; };
 		F7A03E332D426115007AA677 /* NCMoreNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A03E322D426115007AA677 /* NCMoreNavigationController.swift */; };
+		F7A03E352D427312007AA677 /* NCMainNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A03E342D427308007AA677 /* NCMainNavigationController.swift */; };
 		F7A0D1352591FBC5008F8A13 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
 		F7A0D1362591FBC5008F8A13 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
 		F7A0D1372591FBC5008F8A13 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7A0D1342591FBC5008F8A13 /* String+Extension.swift */; };
@@ -1535,6 +1536,7 @@
 		F79FFB252A97C24A0055EEA4 /* NCNetworkingE2EEMarkFolder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCNetworkingE2EEMarkFolder.swift; sourceTree = "<group>"; };
 		F7A03E2E2D425A14007AA677 /* NCFavoriteNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCFavoriteNavigationController.swift; sourceTree = "<group>"; };
 		F7A03E322D426115007AA677 /* NCMoreNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMoreNavigationController.swift; sourceTree = "<group>"; };
+		F7A03E342D427308007AA677 /* NCMainNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMainNavigationController.swift; sourceTree = "<group>"; };
 		F7A0D1342591FBC5008F8A13 /* String+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
 		F7A48414297028FC00BD1B49 /* Nextcloud Hub.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Nextcloud Hub.png"; sourceTree = SOURCE_ROOT; };
 		F7A509242C26BD5D00326106 /* NCCreateDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCreateDocument.swift; sourceTree = "<group>"; };
@@ -2097,6 +2099,7 @@
 				F794E13C2BBBFF2E003693D7 /* NCMainTabBarController.swift */,
 				F737DA9C2B7B893C0063BAFC /* NCPasscode.swift */,
 				F77444F7222816D5000D5EB0 /* NCPickerViewController.swift */,
+				F7A03E342D427308007AA677 /* NCMainNavigationController.swift */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -4535,6 +4538,7 @@
 				F7FA7FFC2C0F4EE40072FC60 /* NCViewerQuickLookView.swift in Sources */,
 				F3A0479B2BD2668800658E7B /* NCAssistant.swift in Sources */,
 				F359D8672A7D03420023F405 /* NCUtility+Exif.swift in Sources */,
+				F7A03E352D427312007AA677 /* NCMainNavigationController.swift in Sources */,
 				F738D4902756740100CD1D38 /* NCLoginNavigationController.swift in Sources */,
 				F769CA192966EA3C00039397 /* ComponentView.swift in Sources */,
 				F7C9B91D2B582F550064EA91 /* NCManageDatabase+SecurityGuard.swift in Sources */,

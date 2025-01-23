@@ -4,19 +4,10 @@
 
 import UIKit
 
-class NCFavoriteNavigationController: UINavigationController {
-    private let database = NCManageDatabase.shared
-    private let global = NCGlobal.shared
-    private let utility = NCUtility()
-    private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-    private var controller: NCMainTabBarController? {
-        self.tabBarController as? NCMainTabBarController
-    }
+class NCFavoriteNavigationController: NCMainNavigationController {
     private var collectionViewCommon: NCFavorite? {
         topViewController as? NCFavorite
     }
-
-    private let menuButtonTag = 1
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -30,9 +21,7 @@ class NCFavoriteNavigationController: UINavigationController {
         setNavigationBarHidden(false, animated: true)
     }
 
-    func setNavigationLeftItems() { }
-
-    func setNavigationRightItems() {
+    override func setNavigationRightItems() {
         guard let collectionViewCommon else {
             return
         }

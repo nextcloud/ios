@@ -4,19 +4,10 @@
 
 import UIKit
 
-class NCMoreNavigationController: UINavigationController {
-    private let database = NCManageDatabase.shared
-    private let global = NCGlobal.shared
-    private let utility = NCUtility()
-    private let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-    private var controller: NCMainTabBarController? {
-        self.tabBarController as? NCMainTabBarController
-    }
+class NCMoreNavigationController: NCMainNavigationController {
     private var collectionViewCommon: NCCollectionViewCommon? {
         topViewController as? NCCollectionViewCommon
     }
-
-    private let menuButtonTag = 1
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -30,9 +21,7 @@ class NCMoreNavigationController: UINavigationController {
         setNavigationBarHidden(false, animated: true)
     }
 
-    func setNavigationLeftItems() { }
-
-    func setNavigationRightItems() {
+    override func setNavigationRightItems() {
         guard let collectionViewCommon else {
             return
         }
