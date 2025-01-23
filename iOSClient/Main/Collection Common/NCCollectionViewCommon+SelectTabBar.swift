@@ -128,9 +128,9 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
         if editMode {
             navigationItem.leftBarButtonItems = nil
         } else {
-            fileNavigationController?.setNavigationLeftItems()
+            self.fileNavigationController?.setNavigationLeftItems()
         }
-        setNavigationRightItems()
+        self.fileNavigationController?.setNavigationRightItems()
 
         navigationController?.interactivePopGestureRecognizer?.isEnabled = !editMode
         navigationItem.hidesBackButton = editMode

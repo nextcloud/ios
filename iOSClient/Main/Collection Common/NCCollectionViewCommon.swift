@@ -266,7 +266,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         isEditMode = false
 
         fileNavigationController?.setNavigationLeftItems()
-        setNavigationRightItems()
+        fileNavigationController?.setNavigationRightItems()
 
         layoutForView = database.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl)
         if isLayoutList {
@@ -425,7 +425,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         self.collectionView.collectionViewLayout.invalidateLayout()
 
-        self.setNavigationRightItems()
+        fileNavigationController?.setNavigationRightItems()
     }
 
     @objc func reloadDataSource(_ notification: NSNotification) {
@@ -650,6 +650,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     // MARK: - Layout
 
+    /*
     func setNavigationRightItems() {
         guard layoutKey != global.layoutViewTransfers else { return }
         let isTabBarHidden = self.tabBarController?.tabBar.isHidden ?? true
@@ -855,6 +856,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             self.tabBarController?.tabBar.isHidden = true
         }
     }
+    */
 
     func getNavigationTitle() -> String {
         let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account))
@@ -1031,7 +1033,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                               animations: { self.collectionView.reloadData() },
                               completion: nil)
 
-            self.setNavigationRightItems()
+            self.fileNavigationController?.setNavigationRightItems()
             self.refreshControl.endRefreshing()
         }
     }
