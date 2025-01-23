@@ -145,10 +145,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         self.tabBarController as? NCMainTabBarController
     }
 
-    var fileNavigationController: NCFilesNavigationController? {
-        self.navigationController as? NCFilesNavigationController
-    }
-
     var defaultPredicate: NSPredicate {
         let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND NOT (status IN %@) AND NOT (livePhotoFile != '' AND classFile == %@)", session.account, self.serverUrl, NCGlobal.shared.metadataStatusHideInView, NKCommon.TypeClassFile.video.rawValue)
         return predicate
@@ -265,8 +261,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         isEditMode = false
 
-        fileNavigationController?.setNavigationLeftItems()
-        fileNavigationController?.setNavigationRightItems()
+        setNavigationLeftItems()
+        setNavigationRightItems()
 
         layoutForView = database.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl)
         if isLayoutList {
@@ -425,7 +421,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         self.collectionView.collectionViewLayout.invalidateLayout()
 
-        fileNavigationController?.setNavigationRightItems()
+        setNavigationRightItems()
     }
 
     @objc func reloadDataSource(_ notification: NSNotification) {
@@ -651,6 +647,81 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     // MARK: - Layout
 
     /*
+     func setNavigationLeftItems() {
+         guard layoutKey == global.layoutViewFiles,
+               let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
+             return }
+         let image = utility.loadUserImage(for: tableAccount.user, displayName: tableAccount.displayName, urlBase: tableAccount.urlBase)
+         let accountButton = AccountSwitcherButton(type: .custom)
+         let accounts = database.getAllAccountOrderAlias()
+         var childrenAccountSubmenu: [UIMenuElement] = []
+
+         accountButton.setImage(image, for: .normal)
+         accountButton.setImage(image, for: .highlighted)
+         accountButton.semanticContentAttribute = .forceLeftToRight
+         accountButton.sizeToFit()
+
+         if !accounts.isEmpty {
+             let accountActions: [UIAction] = accounts.map { account in
+                 let image = utility.loadUserImage(for: account.user, displayName: account.displayName, urlBase: account.urlBase)
+                 var name: String = ""
+                 var url: String = ""
+
+                 if account.alias.isEmpty {
+                     name = account.displayName
+                     url = (URL(string: account.urlBase)?.host ?? "")
+                 } else {
+                     name = account.alias
+                 }
+
+                 let action = UIAction(title: name, image: image, state: account.active ? .on : .off) { _ in
+                     if !account.active {
+                         NCAccount().changeAccount(account.account, userProfile: nil, controller: self.controller) { }
+                         self.setEditMode(false)
+                     }
+                 }
+
+                 action.subtitle = url
+                 return action
+             }
+
+             let addAccountAction = UIAction(title: NSLocalizedString("_add_account_", comment: ""), image: utility.loadImage(named: "person.crop.circle.badge.plus", colors: NCBrandColor.shared.iconImageMultiColors)) { _ in
+                 self.appDelegate.openLogin(selector: self.global.introLogin)
+             }
+
+             let settingsAccountAction = UIAction(title: NSLocalizedString("_account_settings_", comment: ""), image: utility.loadImage(named: "gear", colors: [NCBrandColor.shared.iconImageColor])) { _ in
+                 let accountSettingsModel = NCAccountSettingsModel(controller: self.controller, delegate: self)
+                 let accountSettingsView = NCAccountSettingsView(model: accountSettingsModel)
+                 let accountSettingsController = UIHostingController(rootView: accountSettingsView)
+                 self.present(accountSettingsController, animated: true, completion: nil)
+             }
+
+             if !NCBrandOptions.shared.disable_multiaccount {
+                 childrenAccountSubmenu.append(addAccountAction)
+             }
+             childrenAccountSubmenu.append(settingsAccountAction)
+
+             let addAccountSubmenu = UIMenu(title: "", options: .displayInline, children: childrenAccountSubmenu)
+             let menu = UIMenu(children: accountActions + [addAccountSubmenu])
+
+             accountButton.menu = menu
+             accountButton.showsMenuAsPrimaryAction = true
+
+             accountButton.onMenuOpened = {
+                 self.dismissTip()
+             }
+         }
+
+         navigationItem.leftItemsSupplementBackButton = true
+         navigationItem.setLeftBarButtonItems([UIBarButtonItem(customView: accountButton)], animated: true)
+
+         if titlePreviusFolder != nil {
+             navigationController?.navigationBar.topItem?.title = titlePreviusFolder
+         }
+
+         navigationItem.title = titleCurrentFolder
+     }
+
     func setNavigationRightItems() {
         guard layoutKey != global.layoutViewTransfers else { return }
         let isTabBarHidden = self.tabBarController?.tabBar.isHidden ?? true
@@ -858,6 +929,18 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     }
     */
 
+    func setNavigationLeftItems() {
+        if layoutKey == global.layoutViewFiles {
+            (self.navigationController as? NCFilesNavigationController)?.setNavigationLeftItems()
+        }
+    }
+
+    func setNavigationRightItems() {
+        if layoutKey == global.layoutViewFiles {
+            (self.navigationController as? NCFilesNavigationController)?.setNavigationRightItems()
+        }
+    }
+
     func getNavigationTitle() -> String {
         let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account))
         if let tableAccount,
@@ -1033,7 +1116,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                               animations: { self.collectionView.reloadData() },
                               completion: nil)
 
-            self.fileNavigationController?.setNavigationRightItems()
+            self.setNavigationRightItems()
             self.refreshControl.endRefreshing()
         }
     }
