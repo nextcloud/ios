@@ -3,11 +3,8 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
-import SwiftUI
-import NextcloudKit
 
-class NCFilesNavigationController: UINavigationController {
-    private var timerProcess: Timer?
+class NCFavoriteNavigationController: UINavigationController {
     private let database = NCManageDatabase.shared
     private let global = NCGlobal.shared
     private let utility = NCUtility()
@@ -15,13 +12,11 @@ class NCFilesNavigationController: UINavigationController {
     private var controller: NCMainTabBarController? {
         self.tabBarController as? NCMainTabBarController
     }
-    private var collectionViewCommon: NCFiles? {
-        topViewController as? NCFiles
+    private var collectionViewCommon: NCFavorite? {
+        topViewController as? NCFavorite
     }
 
     private let menuButtonTag = 1
-    private let transfersButtonTag = 2
-    private let notificationButtonTag = 3
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -33,118 +28,9 @@ class NCFilesNavigationController: UINavigationController {
         setNavigationBarAppearance()
         navigationBar.prefersLargeTitles = true
         setNavigationBarHidden(false, animated: true)
-
-        self.timerProcess = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
-            var color = NCBrandColor.shared.iconImageColor
-
-            if let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal)),
-               results.count > 0 {
-                color = NCBrandColor.shared.customer
-            }
-
-            for viewController in self.viewControllers {
-                if let rightBarButtonItems = viewController.navigationItem.rightBarButtonItems,
-                   let buttonTransfer = rightBarButtonItems.first(where: { $0.tag == self.transfersButtonTag }) {
-                    buttonTransfer.tintColor = color
-                }
-            }
-        })
-
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadAvatar), object: nil, queue: nil) { notification in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                self.collectionViewCommon?.showTip()
-            }
-            guard let userInfo = notification.userInfo as NSDictionary?,
-                  let error = userInfo["error"] as? NKError,
-                  error.errorCode != self.global.errorNotModified
-            else {
-                return
-            }
-
-            self.setNavigationLeftItems()
-        }
     }
 
-    func setNavigationLeftItems() {
-        let session = NCSession.shared.getSession(controller: controller)
-        guard let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account))
-        else {
-            return
-        }
-        let image = utility.loadUserImage(for: tableAccount.user, displayName: tableAccount.displayName, urlBase: tableAccount.urlBase)
-        let accountButton = AccountSwitcherButton(type: .custom)
-        let accounts = database.getAllAccountOrderAlias()
-        var childrenAccountSubmenu: [UIMenuElement] = []
-
-        accountButton.setImage(image, for: .normal)
-        accountButton.setImage(image, for: .highlighted)
-        accountButton.semanticContentAttribute = .forceLeftToRight
-        accountButton.sizeToFit()
-
-        if !accounts.isEmpty {
-            let accountActions: [UIAction] = accounts.map { account in
-                let image = utility.loadUserImage(for: account.user, displayName: account.displayName, urlBase: account.urlBase)
-                var name: String = ""
-                var url: String = ""
-
-                if account.alias.isEmpty {
-                    name = account.displayName
-                    url = (URL(string: account.urlBase)?.host ?? "")
-                } else {
-                    name = account.alias
-                }
-
-                let action = UIAction(title: name, image: image, state: account.active ? .on : .off) { _ in
-                    if !account.active {
-                        NCAccount().changeAccount(account.account, userProfile: nil, controller: self.controller) { }
-                        self.collectionViewCommon?.setEditMode(false)
-                    }
-                }
-
-                action.subtitle = url
-                return action
-            }
-
-            let addAccountAction = UIAction(title: NSLocalizedString("_add_account_", comment: ""), image: utility.loadImage(named: "person.crop.circle.badge.plus", colors: NCBrandColor.shared.iconImageMultiColors)) { _ in
-                self.appDelegate.openLogin(selector: self.global.introLogin)
-            }
-
-            let settingsAccountAction = UIAction(title: NSLocalizedString("_account_settings_", comment: ""), image: utility.loadImage(named: "gear", colors: [NCBrandColor.shared.iconImageColor])) { _ in
-                let accountSettingsModel = NCAccountSettingsModel(controller: self.controller, delegate: self.collectionViewCommon)
-                let accountSettingsView = NCAccountSettingsView(model: accountSettingsModel)
-                let accountSettingsController = UIHostingController(rootView: accountSettingsView)
-
-                self.present(accountSettingsController, animated: true, completion: nil)
-            }
-
-            if !NCBrandOptions.shared.disable_multiaccount {
-                childrenAccountSubmenu.append(addAccountAction)
-            }
-            childrenAccountSubmenu.append(settingsAccountAction)
-
-            let addAccountSubmenu = UIMenu(title: "", options: .displayInline, children: childrenAccountSubmenu)
-            let menu = UIMenu(children: accountActions + [addAccountSubmenu])
-
-            accountButton.menu = menu
-            accountButton.showsMenuAsPrimaryAction = true
-
-            accountButton.onMenuOpened = {
-                self.collectionViewCommon?.dismissTip()
-            }
-        }
-
-        self.collectionViewCommon?.navigationItem.leftItemsSupplementBackButton = true
-        self.collectionViewCommon?.navigationItem.setLeftBarButtonItems([UIBarButtonItem(customView: accountButton)], animated: true)
-    }
-
-    private class AccountSwitcherButton: UIButton {
-        var onMenuOpened: (() -> Void)?
-
-        override func contextMenuInteraction(_ interaction: UIContextMenuInteraction, willDisplayMenuFor configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionAnimating?) {
-            super.contextMenuInteraction(interaction, willDisplayMenuFor: configuration, animator: animator)
-            onMenuOpened?()
-        }
-    }
+    func setNavigationLeftItems() { }
 
     func setNavigationRightItems() {
         guard let collectionViewCommon else {
@@ -271,37 +157,7 @@ class NCFilesNavigationController: UINavigationController {
                                                                        "layoutForView": layoutForView])
             }
 
-            let personalFilesOnly = NCKeychain().getPersonalFilesOnly(account: session.account)
-            let personalFilesOnlyAction = UIAction(title: NSLocalizedString("_personal_files_only_", comment: ""), image: utility.loadImage(named: "folder.badge.person.crop", colors: NCBrandColor.shared.iconImageMultiColors), state: personalFilesOnly ? .on : .off) { _ in
-
-                NCKeychain().setPersonalFilesOnly(account: session.account, value: !personalFilesOnly)
-
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": collectionViewCommon.serverUrl, "clearDataSource": true])
-                self.setNavigationRightItems()
-            }
-
-            let showDescriptionKeychain = NCKeychain().showDescription
-            let showDescription = UIAction(title: NSLocalizedString("_show_description_", comment: ""), attributes: collectionViewCommon.richWorkspaceText == nil ? .disabled : [], state: showDescriptionKeychain && collectionViewCommon.richWorkspaceText != nil ? .on : .off) { _ in
-
-                NCKeychain().showDescription = !showDescriptionKeychain
-
-                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": collectionViewCommon.serverUrl, "clearDataSource": true])
-                self.setNavigationRightItems()
-            }
-
-            showDescription.subtitle = collectionViewCommon.richWorkspaceText == nil ? NSLocalizedString("_no_description_available_", comment: "") : ""
-
-            let showRecommendedFilesKeychain = NCKeychain().showRecommendedFiles
-            let capabilityRecommendations = NCCapabilities.shared.getCapabilities(account: session.account).capabilityRecommendations
-            let showRecommendedFiles = UIAction(title: NSLocalizedString("_show_recommended_files_", comment: ""), attributes: !capabilityRecommendations ? .disabled : [], state: showRecommendedFilesKeychain ? .on : .off) { _ in
-
-                NCKeychain().showRecommendedFiles = !showRecommendedFilesKeychain
-
-                collectionViewCommon.collectionView.reloadData()
-                self.setNavigationRightItems()
-            }
-
-            let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [foldersOnTop, personalFilesOnlyAction, showDescription, showRecommendedFiles])
+            let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [foldersOnTop])
 
             return [select, viewStyleSubmenu, sortSubmenu, additionalSubmenu]
         }
@@ -323,26 +179,7 @@ class NCFilesNavigationController: UINavigationController {
             menuButton.tag = menuButtonTag
             menuButton.tintColor = NCBrandColor.shared.iconImageColor
 
-            let transfersButton = UIBarButtonItem(image: utility.loadImage(named: "arrow.left.arrow.right.circle"), style: .plain) {
-                if let viewController = UIStoryboard(name: "NCTransfers", bundle: nil).instantiateInitialViewController() as? NCTransfers {
-                    viewController.modalPresentationStyle = .pageSheet
-                    self.present(viewController, animated: true, completion: nil)
-                }
-            }
-
-            transfersButton.tag = transfersButtonTag
-
-            let notificationButton = UIBarButtonItem(image: utility.loadImage(named: "bell"), style: .plain) {
-                if let viewController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? NCNotification {
-                    viewController.session = session
-                    self.pushViewController(viewController, animated: true)
-                }
-            }
-
-            notificationButton.tintColor = NCBrandColor.shared.iconImageColor
-            notificationButton.tag = notificationButtonTag
-
-            self.collectionViewCommon?.navigationItem.rightBarButtonItems = [menuButton, notificationButton, transfersButton]
+            self.collectionViewCommon?.navigationItem.rightBarButtonItems = [menuButton]
         } else {
             self.collectionViewCommon?.navigationItem.rightBarButtonItems?.first?.menu = self.collectionViewCommon?.navigationItem.rightBarButtonItems?.first?.menu?.replacingChildren(createMenuActions())
         }

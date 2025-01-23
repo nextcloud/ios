@@ -932,12 +932,16 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     func setNavigationLeftItems() {
         if layoutKey == global.layoutViewFiles {
             (self.navigationController as? NCFilesNavigationController)?.setNavigationLeftItems()
+        } else if layoutKey == global.layoutViewFavorite {
+            (self.navigationController as? NCFavoriteNavigationController)?.setNavigationLeftItems()
         }
     }
 
     func setNavigationRightItems() {
         if layoutKey == global.layoutViewFiles {
             (self.navigationController as? NCFilesNavigationController)?.setNavigationRightItems()
+        } else if layoutKey == global.layoutViewFavorite {
+            (self.navigationController as? NCFavoriteNavigationController)?.setNavigationRightItems()
         }
     }
 
