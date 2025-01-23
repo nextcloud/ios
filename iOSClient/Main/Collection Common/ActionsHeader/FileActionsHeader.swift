@@ -3,7 +3,7 @@
 //  Nextcloud
 //
 //  Created by Vitaliy Tolkach on 23.08.2024.
-//  Copyright © 2024 STRATO AG
+//  Copyright © 2024 STRATO GmbH
 //
 
 import UIKit

@@ -3,7 +3,7 @@
 //  Nextcloud
 //
 //  Created by Mariia Perehozhuk on 11.09.2024.
-//  Copyright © 2024 STRATO AG
+//  Copyright © 2024 STRATO GmbH
 //
 
 import Foundation
