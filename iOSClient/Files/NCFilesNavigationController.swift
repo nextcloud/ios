@@ -8,9 +8,6 @@ import NextcloudKit
 
 class NCFilesNavigationController: NCMainNavigationController {
     private var timerProcess: Timer?
-    private var collectionViewCommon: NCFiles? {
-        topViewController as? NCFiles
-    }
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -18,10 +15,6 @@ class NCFilesNavigationController: NCMainNavigationController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        setNavigationBarAppearance()
-        navigationBar.prefersLargeTitles = true
-        setNavigationBarHidden(false, animated: true)
 
         self.timerProcess = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
             var color = NCBrandColor.shared.iconImageColor

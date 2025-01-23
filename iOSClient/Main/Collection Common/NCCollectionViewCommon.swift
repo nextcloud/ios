@@ -261,8 +261,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         isEditMode = false
 
-        setNavigationLeftItems()
-        setNavigationRightItems()
+        (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
+        (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
 
         layoutForView = database.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl)
         if isLayoutList {
@@ -421,7 +421,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         self.collectionView.collectionViewLayout.invalidateLayout()
 
-        setNavigationRightItems()
+        (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
     }
 
     @objc func reloadDataSource(_ notification: NSNotification) {
@@ -646,42 +646,6 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
     // MARK: - Layout
 
-    func setNavigationLeftItems() {
-        (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
-
-        /*
-        if layoutKey == global.layoutViewFiles {
-            (self.navigationController as? NCFilesNavigationController)?.setNavigationLeftItems()
-        } else if layoutKey == global.layoutViewFavorite {
-            (self.navigationController as? NCFavoriteNavigationController)?.setNavigationLeftItems()
-        } else if layoutKey == global.layoutViewRecent {
-            (self.navigationController as? NCMoreNavigationController)?.setNavigationLeftItems()
-        } else if layoutKey == global.layoutViewShares {
-            (self.navigationController as? NCMoreNavigationController)?.setNavigationLeftItems()
-        } else if layoutKey == global.layoutViewOffline {
-            (self.navigationController as? NCMoreNavigationController)?.setNavigationLeftItems()
-        }
-        */
-    }
-
-    func setNavigationRightItems() {
-        (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
-
-        /*
-        if layoutKey == global.layoutViewFiles {
-            (self.navigationController as? NCFilesNavigationController)?.setNavigationRightItems()
-        } else if layoutKey == global.layoutViewFavorite {
-            (self.navigationController as? NCFavoriteNavigationController)?.setNavigationRightItems()
-        } else if layoutKey == global.layoutViewRecent {
-            (self.navigationController as? NCMoreNavigationController)?.setNavigationRightItems()
-        } else if layoutKey == global.layoutViewShares {
-            (self.navigationController as? NCMoreNavigationController)?.setNavigationRightItems()
-        } else if layoutKey == global.layoutViewOffline {
-            (self.navigationController as? NCMoreNavigationController)?.setNavigationRightItems()
-        }
-        */
-    }
-
     func getNavigationTitle() -> String {
         let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account))
         if let tableAccount,
@@ -857,7 +821,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                               animations: { self.collectionView.reloadData() },
                               completion: nil)
 
-            self.setNavigationRightItems()
+            (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
             self.refreshControl.endRefreshing()
         }
     }

@@ -16,9 +16,21 @@ class NCMainNavigationController: UINavigationController {
         self.tabBarController as? NCMainTabBarController
     }
 
+    var collectionViewCommon: NCCollectionViewCommon? {
+        topViewController as? NCCollectionViewCommon
+    }
+
     let menuButtonTag = 1
     let transfersButtonTag = 2
     let notificationButtonTag = 3
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        setNavigationBarAppearance()
+        navigationBar.prefersLargeTitles = true
+        setNavigationBarHidden(false, animated: true)
+    }
 
     func setNavigationLeftItems() { }
     func setNavigationRightItems() { }

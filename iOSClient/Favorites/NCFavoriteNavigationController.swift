@@ -5,22 +5,6 @@
 import UIKit
 
 class NCFavoriteNavigationController: NCMainNavigationController {
-    private var collectionViewCommon: NCFavorite? {
-        topViewController as? NCFavorite
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-
-        setNavigationBarAppearance()
-        navigationBar.prefersLargeTitles = true
-        setNavigationBarHidden(false, animated: true)
-    }
-
     override func setNavigationRightItems() {
         guard let collectionViewCommon else {
             return
