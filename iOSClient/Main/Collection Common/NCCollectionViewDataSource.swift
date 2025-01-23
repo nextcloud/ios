@@ -261,22 +261,13 @@ class NCCollectionViewDataSource: NSObject {
         return nil
     }
 
-    func caching(metadatas: [tableMetadata], dataSourceMetadatas: [tableMetadata], completion: @escaping (_ update: Bool) -> Void) {
+    func caching(metadatas: [tableMetadata], dataSourceMetadatas: [tableMetadata], completion: @escaping () -> Void) {
         var counter: Int = 0
-        var updated: Bool = dataSourceMetadatas.isEmpty
 
         DispatchQueue.global().async {
             for metadata in metadatas {
                 let metadata = tableMetadata(value: metadata)
                 let indexPath = IndexPath(row: counter, section: 0)
-                if indexPath.row < dataSourceMetadatas.count {
-                    if !metadata.isEqual(dataSourceMetadatas[indexPath.row]) {
-                        updated = true
-                    }
-                } else {
-                    updated = true
-                }
-
                 self.metadataIndexPath[indexPath] = tableMetadata(value: metadata)
 
                 /// caching preview
@@ -290,7 +281,7 @@ class NCCollectionViewDataSource: NSObject {
                 counter += 1
             }
 
-            return completion(updated)
+            return completion()
         }
     }
 

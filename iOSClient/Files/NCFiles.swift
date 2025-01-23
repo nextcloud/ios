@@ -153,13 +153,9 @@ class NCFiles: NCCollectionViewCommon {
             return super.reloadDataSource()
         }
 
-        self.dataSource.caching(metadatas: metadatas, dataSourceMetadatas: dataSourceMetadatas) { updated in
+        self.dataSource.caching(metadatas: metadatas, dataSourceMetadatas: dataSourceMetadatas) {
             self.semaphoreReloadDataSource.signal()
-            DispatchQueue.main.async {
-                if updated || self.isNumberOfItemsInAllSectionsNull || self.numberOfItemsInAllSections != metadatas.count {
-                    super.reloadDataSource()
-                }
-            }
+            super.reloadDataSource()
         }
     }
 
