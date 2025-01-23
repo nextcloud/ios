@@ -9,9 +9,6 @@ class NCMoreNavigationController: NCMainNavigationController {
         guard let collectionViewCommon else {
             return
         }
-        let session = NCSession.shared.getSession(controller: controller)
-        let isTabBarHidden = self.tabBarController?.tabBar.isHidden ?? true
-        let isTabBarSelectHidden = collectionViewCommon.tabBarSelect?.isHidden() ?? true
 
         func createMenuActions() -> [UIMenuElement] {
             guard let layoutForView = database.getLayoutForView(account: session.account, key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl) else { return [] }
@@ -29,7 +26,7 @@ class NCMoreNavigationController: NCMainNavigationController {
 
                 NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
                                                             object: nil,
-                                                            userInfo: ["account": session.account,
+                                                            userInfo: ["account": self.session.account,
                                                                        "serverUrl": collectionViewCommon.serverUrl,
                                                                        "layoutForView": layoutForView])
             }
@@ -40,7 +37,7 @@ class NCMoreNavigationController: NCMainNavigationController {
 
                 NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
                                                             object: nil,
-                                                            userInfo: ["account": session.account,
+                                                            userInfo: ["account": self.session.account,
                                                                        "serverUrl": collectionViewCommon.serverUrl,
                                                                        "layoutForView": layoutForView])
             }
@@ -51,7 +48,7 @@ class NCMoreNavigationController: NCMainNavigationController {
 
                 NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
                                                             object: nil,
-                                                            userInfo: ["account": session.account,
+                                                            userInfo: ["account": self.session.account,
                                                                        "serverUrl": collectionViewCommon.serverUrl,
                                                                        "layoutForView": layoutForView])
             }
@@ -62,7 +59,7 @@ class NCMoreNavigationController: NCMainNavigationController {
 
                 NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
                                                             object: nil,
-                                                            userInfo: ["account": session.account,
+                                                            userInfo: ["account": self.session.account,
                                                                        "serverUrl": collectionViewCommon.serverUrl,
                                                                        "layoutForView": layoutForView])
             }
@@ -84,7 +81,7 @@ class NCMoreNavigationController: NCMainNavigationController {
 
                 NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
                                                             object: nil,
-                                                            userInfo: ["account": session.account,
+                                                            userInfo: ["account": self.session.account,
                                                                        "serverUrl": collectionViewCommon.serverUrl,
                                                                        "layoutForView": layoutForView])
             }
@@ -98,7 +95,7 @@ class NCMoreNavigationController: NCMainNavigationController {
 
                 NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
                                                             object: nil,
-                                                            userInfo: ["account": session.account,
+                                                            userInfo: ["account": self.session.account,
                                                                        "serverUrl": collectionViewCommon.serverUrl,
                                                                        "layoutForView": layoutForView])
             }
@@ -112,7 +109,7 @@ class NCMoreNavigationController: NCMainNavigationController {
 
                 NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
                                                             object: nil,
-                                                            userInfo: ["account": session.account,
+                                                            userInfo: ["account": self.session.account,
                                                                        "serverUrl": collectionViewCommon.serverUrl,
                                                                        "layoutForView": layoutForView])
             }
@@ -125,7 +122,7 @@ class NCMoreNavigationController: NCMainNavigationController {
 
                 NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
                                                             object: nil,
-                                                            userInfo: ["account": session.account,
+                                                            userInfo: ["account": self.session.account,
                                                                        "serverUrl": collectionViewCommon.serverUrl,
                                                                        "layoutForView": layoutForView])
             }
@@ -164,7 +161,8 @@ class NCMoreNavigationController: NCMainNavigationController {
         }
 
         // fix, if the tabbar was hidden before the update, set it in hidden
-        if isTabBarHidden, isTabBarSelectHidden {
+        if self.tabBarController?.tabBar.isHidden ?? true,
+           collectionViewCommon.tabBarSelect?.isHidden() ?? true {
             self.tabBarController?.tabBar.isHidden = true
         }
     }

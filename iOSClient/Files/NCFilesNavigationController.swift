@@ -132,9 +132,6 @@ class NCFilesNavigationController: NCMainNavigationController {
         guard let collectionViewCommon else {
             return
         }
-        let session = NCSession.shared.getSession(controller: controller)
-        let isTabBarHidden = self.tabBarController?.tabBar.isHidden ?? true
-        let isTabBarSelectHidden = collectionViewCommon.tabBarSelect?.isHidden() ?? true
 
         func createMenuActions() -> [UIMenuElement] {
             guard let layoutForView = database.getLayoutForView(account: session.account, key: collectionViewCommon.layoutKey, serverUrl: collectionViewCommon.serverUrl) else { return [] }
@@ -152,7 +149,7 @@ class NCFilesNavigationController: NCMainNavigationController {
 
                 NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
                                                             object: nil,
-                                                            userInfo: ["account": session.account,
+                                                            userInfo: ["account": self.session.account,
                                                                        "serverUrl": collectionViewCommon.serverUrl,
                                                                        "layoutForView": layoutForView])
             }
@@ -163,7 +160,7 @@ class NCFilesNavigationController: NCMainNavigationController {
 
                 NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
                                                             object: nil,
-                                                            userInfo: ["account": session.account,
+                                                            userInfo: ["account": self.session.account,
                                                                        "serverUrl": collectionViewCommon.serverUrl,
                                                                        "layoutForView": layoutForView])
             }
@@ -174,7 +171,7 @@ class NCFilesNavigationController: NCMainNavigationController {
 
                 NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
                                                             object: nil,
-                                                            userInfo: ["account": session.account,
+                                                            userInfo: ["account": self.session.account,
                                                                        "serverUrl": collectionViewCommon.serverUrl,
                                                                        "layoutForView": layoutForView])
             }
@@ -185,7 +182,7 @@ class NCFilesNavigationController: NCMainNavigationController {
 
                 NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
                                                             object: nil,
-                                                            userInfo: ["account": session.account,
+                                                            userInfo: ["account": self.session.account,
                                                                        "serverUrl": collectionViewCommon.serverUrl,
                                                                        "layoutForView": layoutForView])
             }
@@ -207,7 +204,7 @@ class NCFilesNavigationController: NCMainNavigationController {
 
                 NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
                                                             object: nil,
-                                                            userInfo: ["account": session.account,
+                                                            userInfo: ["account": self.session.account,
                                                                        "serverUrl": collectionViewCommon.serverUrl,
                                                                        "layoutForView": layoutForView])
             }
@@ -221,7 +218,7 @@ class NCFilesNavigationController: NCMainNavigationController {
 
                 NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
                                                             object: nil,
-                                                            userInfo: ["account": session.account,
+                                                            userInfo: ["account": self.session.account,
                                                                        "serverUrl": collectionViewCommon.serverUrl,
                                                                        "layoutForView": layoutForView])
             }
@@ -235,7 +232,7 @@ class NCFilesNavigationController: NCMainNavigationController {
 
                 NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
                                                             object: nil,
-                                                            userInfo: ["account": session.account,
+                                                            userInfo: ["account": self.session.account,
                                                                        "serverUrl": collectionViewCommon.serverUrl,
                                                                        "layoutForView": layoutForView])
             }
@@ -248,15 +245,15 @@ class NCFilesNavigationController: NCMainNavigationController {
 
                 NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
                                                             object: nil,
-                                                            userInfo: ["account": session.account,
+                                                            userInfo: ["account": self.session.account,
                                                                        "serverUrl": collectionViewCommon.serverUrl,
                                                                        "layoutForView": layoutForView])
             }
 
-            let personalFilesOnly = NCKeychain().getPersonalFilesOnly(account: session.account)
+            let personalFilesOnly = NCKeychain().getPersonalFilesOnly(account: self.session.account)
             let personalFilesOnlyAction = UIAction(title: NSLocalizedString("_personal_files_only_", comment: ""), image: utility.loadImage(named: "folder.badge.person.crop", colors: NCBrandColor.shared.iconImageMultiColors), state: personalFilesOnly ? .on : .off) { _ in
 
-                NCKeychain().setPersonalFilesOnly(account: session.account, value: !personalFilesOnly)
+                NCKeychain().setPersonalFilesOnly(account: self.session.account, value: !personalFilesOnly)
 
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": collectionViewCommon.serverUrl, "clearDataSource": true])
                 self.setNavigationRightItems()
@@ -316,7 +313,7 @@ class NCFilesNavigationController: NCMainNavigationController {
 
             let notificationButton = UIBarButtonItem(image: utility.loadImage(named: "bell"), style: .plain) {
                 if let viewController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? NCNotification {
-                    viewController.session = session
+                    viewController.session = self.session
                     self.pushViewController(viewController, animated: true)
                 }
             }
@@ -330,7 +327,8 @@ class NCFilesNavigationController: NCMainNavigationController {
         }
 
         // fix, if the tabbar was hidden before the update, set it in hidden
-        if isTabBarHidden, isTabBarSelectHidden {
+        if self.tabBarController?.tabBar.isHidden ?? true,
+           collectionViewCommon.tabBarSelect?.isHidden() ?? true {
             self.tabBarController?.tabBar.isHidden = true
         }
     }

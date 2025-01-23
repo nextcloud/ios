@@ -20,6 +20,10 @@ class NCMainNavigationController: UINavigationController {
         topViewController as? NCCollectionViewCommon
     }
 
+    var session: NCSession.Session {
+        NCSession.shared.getSession(controller: controller)
+    }
+
     let menuButtonTag = 1
     let transfersButtonTag = 2
     let notificationButtonTag = 3
@@ -33,5 +37,7 @@ class NCMainNavigationController: UINavigationController {
     }
 
     func setNavigationLeftItems() { }
-    func setNavigationRightItems() { }
+    func setNavigationRightItems() {
+        
+    }
 }
