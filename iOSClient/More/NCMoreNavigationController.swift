@@ -161,6 +161,8 @@ class NCMoreNavigationController: UINavigationController {
 
             if collectionViewCommon.layoutKey == global.layoutViewRecent {
                 return [select, viewStyleSubmenu]
+            } else if collectionViewCommon.layoutKey == global.layoutViewOffline {
+                return [select, viewStyleSubmenu]
             } else {
                 return [select, viewStyleSubmenu, sortSubmenu, additionalSubmenu]
             }
