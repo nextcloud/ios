@@ -133,6 +133,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             searchController?.delegate = self
             searchController?.searchBar.delegate = self
             searchController?.searchBar.autocapitalizationType = .none
+            searchController?.searchBar.searchTextField.backgroundColor = UIColor(resource: .searchBarBackground)
+            searchController?.searchBar.searchTextField.layer.cornerRadius = 10
+            searchController?.searchBar.searchTextField.layer.masksToBounds = true
+            searchController?.searchBar.setSearchFieldBackgroundImage(UIImage(), for: .normal)
             navigationItem.searchController = searchController
             navigationItem.hidesSearchBarWhenScrolling = true
             if #available(iOS 16.0, *) {
