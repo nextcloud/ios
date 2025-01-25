@@ -6,7 +6,7 @@ import UIKit
 import SwiftUI
 import NextcloudKit
 
-class NCMainNavigationController: UINavigationController {
+class NCMainNavigationController: UINavigationController, UINavigationControllerDelegate {
     let database = NCManageDatabase.shared
     let global = NCGlobal.shared
     let utility = NCUtility()
@@ -31,10 +31,18 @@ class NCMainNavigationController: UINavigationController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.delegate = self
 
-        setNavigationBarAppearance()
         navigationBar.prefersLargeTitles = true
         setNavigationBarHidden(false, animated: true)
+    }
+
+    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        if viewController is NCMore || viewController is UIHostingController<Nextcloud.NCSettingsView> {
+            setGroupAppearance()
+        } else {
+            setNavigationBarAppearance()
+        }
     }
 
     func setNavigationLeftItems() { }
