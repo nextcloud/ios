@@ -992,14 +992,3 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         return size
     }
 }
-
-// MARK: -
-
-private class AccountSwitcherButton: UIButton {
-    var onMenuOpened: (() -> Void)?
-
-    override func contextMenuInteraction(_ interaction: UIContextMenuInteraction, willDisplayMenuFor configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionAnimating?) {
-        super.contextMenuInteraction(interaction, willDisplayMenuFor: configuration, animator: animator)
-        onMenuOpened?()
-    }
-}
