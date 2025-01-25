@@ -161,31 +161,40 @@ class NCFilesNavigationController: NCMainNavigationController {
         } else if self.collectionViewCommon?.navigationItem.rightBarButtonItems == nil || (!collectionViewCommon.isEditMode && !(collectionViewCommon.tabBarSelect?.isHidden() ?? true)) {
             collectionViewCommon.tabBarSelect?.hide()
 
-            let menuButton = UIBarButtonItem(image: utility.loadImage(named: "ellipsis.circle"), menu: UIMenu(children: createMenu()))
-            menuButton.tag = menuButtonTag
+            let menuButton = UIButton(type: .system)
+            menuButton.setImage(UIImage(systemName: "ellipsis.circle"), for: .normal)
             menuButton.tintColor = NCBrandColor.shared.iconImageColor
+            menuButton.menu = UIMenu(children: createMenu())
+            menuButton.showsMenuAsPrimaryAction = true
+            let menuBarButtonItem = UIBarButtonItem(customView: menuButton)
+            menuBarButtonItem.tag = menuButtonTag
 
-            let transfersButton = UIBarButtonItem(image: utility.loadImage(named: "arrow.left.arrow.right.circle"), style: .plain) {
+            let notificationButton = UIButton(type: .system)
+            notificationButton.setImage(UIImage(systemName: "bell"), for: .normal)
+            notificationButton.tintColor = NCBrandColor.shared.iconImageColor
+            notificationButton.addAction(UIAction(handler: { _ in
+                if let viewController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? NCNotification {
+                    viewController.session = self.session
+                    self.pushViewController(viewController, animated: true)
+                }
+            }), for: .touchUpInside)
+            let notificationButtonItem = UIBarButtonItem(customView: notificationButton)
+            notificationButtonItem.tag = notificationButtonTag
+
+            let transfersButton = UIButton(type: .system)
+            transfersButton.setImage(UIImage(systemName: "arrow.left.arrow.right.circle"), for: .normal)
+            transfersButton.tintColor = NCBrandColor.shared.iconImageColor
+            transfersButton.addAction(UIAction(handler: { _ in
                 if let navigationController = UIStoryboard(name: "NCTransfers", bundle: nil).instantiateInitialViewController() as? UINavigationController,
                    let viewController = navigationController.topViewController as? NCTransfers {
                     viewController.modalPresentationStyle = .pageSheet
                     self.present(navigationController, animated: true, completion: nil)
                 }
-            }
+            }), for: .touchUpInside)
+            let transfersButtonItem = UIBarButtonItem(customView: transfersButton)
+            transfersButtonItem.tag = transfersButtonTag
 
-            transfersButton.tag = transfersButtonTag
-
-            let notificationButton = UIBarButtonItem(image: utility.loadImage(named: "bell"), style: .plain) {
-                if let viewController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? NCNotification {
-                    viewController.session = self.session
-                    self.pushViewController(viewController, animated: true)
-                }
-            }
-
-            notificationButton.tintColor = NCBrandColor.shared.iconImageColor
-            notificationButton.tag = notificationButtonTag
-
-            self.collectionViewCommon?.navigationItem.rightBarButtonItems = [menuButton, notificationButton, transfersButton]
+            self.collectionViewCommon?.navigationItem.rightBarButtonItems = [menuBarButtonItem, notificationButtonItem, transfersButtonItem]
 
         } else {
 
