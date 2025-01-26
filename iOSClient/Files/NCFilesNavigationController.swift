@@ -25,8 +25,9 @@ class NCFilesNavigationController: NCMainNavigationController {
             }
 
             for viewController in self.viewControllers {
-                if let rightBarButtonItems = viewController.navigationItem.rightBarButtonItems,
-                   let buttonTransfer = rightBarButtonItems.first(where: { $0.tag == self.transfersButtonTag }) {
+                if let rightBarButtonItems = self.collectionViewCommon?.navigationItem.rightBarButtonItems,
+                   let buttonTransferItem = rightBarButtonItems.first(where: { $0.tag == self.transfersButtonTag }),
+                   let buttonTransfer = buttonTransferItem.customView as? UIButton {
                     buttonTransfer.tintColor = color
                 }
             }
