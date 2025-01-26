@@ -17,18 +17,17 @@ class NCFilesNavigationController: NCMainNavigationController {
         super.viewDidLoad()
 
         self.timerProcess = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
-            var color = NCBrandColor.shared.iconImageColor
-
-            if let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal)),
-               results.count > 0 {
-                color = NCBrandColor.shared.customer
-            }
+            let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal))
 
             for viewController in self.viewControllers {
-                if let rightBarButtonItems = self.collectionViewCommon?.navigationItem.rightBarButtonItems,
+                if let rightBarButtonItems = viewController.navigationItem.rightBarButtonItems,
                    let buttonTransferItem = rightBarButtonItems.first(where: { $0.tag == self.transfersButtonTag }),
                    let buttonTransfer = buttonTransferItem.customView as? UIButton {
-                    buttonTransfer.tintColor = color
+                    if results?.count ?? 0 > 0 {
+                        buttonTransfer.tintColor = NCBrandColor.shared.customer
+                    } else {
+                        buttonTransfer.tintColor = NCBrandColor.shared.iconImageColor
+                    }
                 }
             }
         })
@@ -47,6 +46,8 @@ class NCFilesNavigationController: NCMainNavigationController {
             self.setNavigationLeftItems()
         }
     }
+
+    // MARK: -
 
     override func setNavigationLeftItems() {
         guard let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", self.session.account))
