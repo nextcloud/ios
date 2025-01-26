@@ -50,19 +50,28 @@ class NCFilesNavigationController: NCMainNavigationController {
     override func setNavigationLeftItems() {
         guard let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", self.session.account))
         else {
+            self.collectionViewCommon?.navigationItem.leftBarButtonItems = nil
             return
         }
         let image = utility.loadUserImage(for: tableAccount.user, displayName: tableAccount.displayName, urlBase: tableAccount.urlBase)
-        let accountButton = AccountSwitcherButton(type: .custom)
-        let accounts = database.getAllAccountOrderAlias()
-        var childrenAccountSubmenu: [UIMenuElement] = []
 
-        accountButton.setImage(image, for: .normal)
-        accountButton.setImage(image, for: .highlighted)
-        accountButton.semanticContentAttribute = .forceLeftToRight
-        accountButton.sizeToFit()
+        class AccountSwitcherButton: UIButton {
+            var onMenuOpened: (() -> Void)?
 
-        if !accounts.isEmpty {
+            override func contextMenuInteraction(_ interaction: UIContextMenuInteraction, willDisplayMenuFor configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionAnimating?) {
+                super.contextMenuInteraction(interaction, willDisplayMenuFor: configuration, animator: animator)
+                onMenuOpened?()
+            }
+        }
+
+        func createMenu() -> UIMenu? {
+            var childrenAccountSubmenu: [UIMenuElement] = []
+            let accounts = database.getAllAccountOrderAlias()
+            guard !accounts.isEmpty
+            else {
+                return nil
+            }
+
             let accountActions: [UIAction] = accounts.map { account in
                 let image = utility.loadUserImage(for: account.user, displayName: account.displayName, urlBase: account.urlBase)
                 var name: String = ""
@@ -106,44 +115,53 @@ class NCFilesNavigationController: NCMainNavigationController {
             let addAccountSubmenu = UIMenu(title: "", options: .displayInline, children: childrenAccountSubmenu)
             let menu = UIMenu(children: accountActions + [addAccountSubmenu])
 
-            accountButton.menu = menu
+            return menu
+        }
+
+        if self.collectionViewCommon?.navigationItem.leftBarButtonItems == nil {
+            let accountButton = AccountSwitcherButton(type: .custom)
+
+            accountButton.setImage(image, for: .normal)
+            accountButton.semanticContentAttribute = .forceLeftToRight
+            accountButton.sizeToFit()
+
+            accountButton.menu = createMenu()
             accountButton.showsMenuAsPrimaryAction = true
 
             accountButton.onMenuOpened = {
                 self.collectionViewCommon?.dismissTip()
             }
-        }
 
-        self.collectionViewCommon?.navigationItem.leftItemsSupplementBackButton = true
-        self.collectionViewCommon?.navigationItem.setLeftBarButtonItems([UIBarButtonItem(customView: accountButton)], animated: true)
-    }
+            self.collectionViewCommon?.navigationItem.leftItemsSupplementBackButton = true
+            self.collectionViewCommon?.navigationItem.setLeftBarButtonItems([UIBarButtonItem(customView: accountButton)], animated: true)
 
-    private class AccountSwitcherButton: UIButton {
-        var onMenuOpened: (() -> Void)?
+        } else {
 
-        override func contextMenuInteraction(_ interaction: UIContextMenuInteraction, willDisplayMenuFor configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionAnimating?) {
-            super.contextMenuInteraction(interaction, willDisplayMenuFor: configuration, animator: animator)
-            onMenuOpened?()
+            let accountButton = self.collectionViewCommon?.navigationItem.leftBarButtonItems?.first?.customView as? UIButton
+            accountButton?.setImage(image, for: .normal)
+            accountButton?.menu = createMenu()
         }
     }
 
     override func setNavigationRightItems() {
         guard let collectionViewCommon else {
+            self.collectionViewCommon?.navigationItem.rightBarButtonItems = nil
             return
         }
 
-        func createMenu() -> [UIMenuElement] {
+        func createMenu() -> UIMenu? {
             guard let items = self.createMenuActions()
             else {
-                return []
+                return nil
             }
 
             if collectionViewCommon.serverUrl == utilityFileSystem.getHomeServer(session: session) {
                 let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [items.foldersOnTop, items.personalFilesOnlyAction, items.showDescription, items.showRecommendedFiles])
-                return [items.select, items.viewStyleSubmenu, items.sortSubmenu, additionalSubmenu]
+                return UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu, additionalSubmenu])
+
             } else {
                 let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [items.foldersOnTop, items.personalFilesOnlyAction, items.showDescription])
-                return [items.select, items.viewStyleSubmenu, items.sortSubmenu, additionalSubmenu]
+                return UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu, additionalSubmenu])
             }
         }
 
@@ -164,7 +182,7 @@ class NCFilesNavigationController: NCMainNavigationController {
             let menuButton = UIButton(type: .system)
             menuButton.setImage(UIImage(systemName: "ellipsis.circle"), for: .normal)
             menuButton.tintColor = NCBrandColor.shared.iconImageColor
-            menuButton.menu = UIMenu(children: createMenu())
+            menuButton.menu = createMenu()
             menuButton.showsMenuAsPrimaryAction = true
             let menuBarButtonItem = UIBarButtonItem(customView: menuButton)
             menuBarButtonItem.tag = menuButtonTag
@@ -199,7 +217,7 @@ class NCFilesNavigationController: NCMainNavigationController {
         } else {
 
             let menuButton = self.collectionViewCommon?.navigationItem.rightBarButtonItems?.first?.customView as? UIButton
-            menuButton?.menu = UIMenu(children: createMenu())
+            menuButton?.menu = createMenu()
         }
 
         // fix, if the tabbar was hidden before the update, set it in hidden
