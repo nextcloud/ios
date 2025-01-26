@@ -216,8 +216,11 @@ class NCFilesNavigationController: NCMainNavigationController {
 
         } else {
 
-            let menuButton = self.collectionViewCommon?.navigationItem.rightBarButtonItems?.first?.customView as? UIButton
-            menuButton?.menu = createMenu()
+            if let rightBarButtonItems = self.collectionViewCommon?.navigationItem.rightBarButtonItems,
+               let menuBarButtonItem = rightBarButtonItems.first(where: { $0.tag == menuButtonTag }),
+               let menuButton = menuBarButtonItem.customView as? UIButton {
+                menuButton.menu = createMenu()
+            }
         }
 
         // fix, if the tabbar was hidden before the update, set it in hidden
