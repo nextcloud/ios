@@ -113,7 +113,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 fileSelect.append(metadata.ocId)
             }
             collectionView.reloadItems(at: [indexPath])
-            tabBarSelect.update(fileSelect: fileSelect, metadatas: getSelectedMetadatas(), userId: metadata.userId)
+            tabBarSelect?.update(fileSelect: fileSelect, metadatas: getSelectedMetadatas(), userId: metadata.userId)
             return
         }
 

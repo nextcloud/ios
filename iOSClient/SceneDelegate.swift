@@ -68,10 +68,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             /// Main.storyboard
             if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
                 SceneManager.shared.register(scene: scene, withRootViewController: controller)
-                window?.rootViewController = controller
-                window?.makeKeyAndVisible()
                 /// Set the ACCOUNT
                 controller.account = activeTableAccount.account
+                ///
+                window?.rootViewController = controller
+                window?.makeKeyAndVisible()
             }
         } else {
             NCKeychain().removeAll()

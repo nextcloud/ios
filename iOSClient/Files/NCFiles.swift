@@ -39,7 +39,6 @@ class NCFiles: NCCollectionViewCommon {
         layoutKey = NCGlobal.shared.layoutViewFiles
         enableSearchBar = true
         headerRichWorkspaceDisable = false
-        headerMenuTransferView = true
         emptyTitle = "_files_no_files_"
         emptyDescription = "_no_file_pull_down_"
     }
@@ -58,7 +57,6 @@ class NCFiles: NCCollectionViewCommon {
             self.titleCurrentFolder = getNavigationTitle()
 
             NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { notification in
-
                 if let userInfo = notification.userInfo, let account = userInfo["account"] as? String {
                     if let controller = userInfo["controller"] as? NCMainTabBarController,
                        controller == self.controller {
@@ -84,7 +82,7 @@ class NCFiles: NCCollectionViewCommon {
                 }
 
                 self.titleCurrentFolder = self.getNavigationTitle()
-                self.setNavigationLeftItems()
+                (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
 
                 self.dataSource.removeAll()
                 self.reloadDataSource()
@@ -155,13 +153,9 @@ class NCFiles: NCCollectionViewCommon {
             return super.reloadDataSource()
         }
 
-        self.dataSource.caching(metadatas: metadatas, dataSourceMetadatas: dataSourceMetadatas) { updated in
+        self.dataSource.caching(metadatas: metadatas, dataSourceMetadatas: dataSourceMetadatas) {
             self.semaphoreReloadDataSource.signal()
-            DispatchQueue.main.async {
-                if updated || self.isNumberOfItemsInAllSectionsNull || self.numberOfItemsInAllSections != metadatas.count {
-                    super.reloadDataSource()
-                }
-            }
+            super.reloadDataSource()
         }
     }
 
@@ -369,6 +363,6 @@ class NCFiles: NCCollectionViewCommon {
             navigationItem.title = self.titleCurrentFolder
         }
 
-        setNavigationLeftItems()
+        (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
     }
 }
