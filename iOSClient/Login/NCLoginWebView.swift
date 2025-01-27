@@ -1,32 +1,16 @@
 //
-//  NCLoginProvider.swift
+//  NCLoginWebView.swift
 //  Nextcloud
 //
-//  Created by Marino Faggiana on 21/08/2019.
-//  Copyright © 2019 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//  Created by Milen Pivchev on 22.01.25.
+//  Copyright © 2025 Marino Faggiana. All rights reserved.
 //
 
-import UIKit
+import Foundation
 @preconcurrency import WebKit
 import NextcloudKit
-import FloatingPanel
 
-class NCLoginProvider: UIViewController {
+class NCLoginWebView: UIViewController {
     var webView: WKWebView?
     let utility = NCUtility()
     var titleView: String = ""
@@ -37,13 +21,6 @@ class NCLoginProvider: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(self.closeView(sender:)))
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Log out", style: .plain, action: {
-            WKWebsiteDataStore.default().removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(), modifiedSince: Date(timeIntervalSince1970: 0), completionHandler: { [self] in
-                if let url = URL(string: urlBase) {
-                    loadWebPage(webView: webView!, url: url)
-                }
-            })
-        })
 
         webView = WKWebView(frame: CGRect.zero, configuration: WKWebViewConfiguration())
         webView!.navigationDelegate = self
@@ -74,7 +51,7 @@ class NCLoginProvider: UIViewController {
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        NCActivityIndicator.shared.stop()
+//        NCActivityIndicator.shared.stop()
     }
 
     func loadWebPage(webView: WKWebView, url: URL) {
@@ -99,7 +76,7 @@ class NCLoginProvider: UIViewController {
     }
 }
 
-extension NCLoginProvider: WKNavigationDelegate {
+extension NCLoginWebView: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!) {
         guard let url = webView.url else { return }
         let urlString: String = url.absoluteString.lowercased()
@@ -130,7 +107,7 @@ extension NCLoginProvider: WKNavigationDelegate {
                 let server: String = server.replacingOccurrences(of: "/server:", with: "")
                 let username: String = user.replacingOccurrences(of: "user:", with: "").replacingOccurrences(of: "+", with: " ")
                 let password: String = password.replacingOccurrences(of: "password:", with: "")
-                createAccount(server: server, username: username, password: password)
+//                createAccount(server: server, username: username, password: password)
             }
         }
     }
@@ -150,65 +127,57 @@ extension NCLoginProvider: WKNavigationDelegate {
     }
 
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-        NCActivityIndicator.shared.startActivity(style: .medium, blurEffect: false)
+//        NCActivityIndicator.shared.startActivity(style: .medium, blurEffect: false)
     }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        NCActivityIndicator.shared.stop()
+//        NCActivityIndicator.shared.stop()
     }
 
     // MARK: -
 
-    func createAccount(server: String, username: String, password: String) {
-        var urlBase = server
-        if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
-        let account: String = "\(username) \(urlBase)"
-        let user = username
-
-        NextcloudKit.shared.getUserProfile(account: account) { account, userProfile, _, error in
-            if error == .success, let userProfile {
-                NextcloudKit.shared.appendSession(account: account,
-                                                  urlBase: urlBase,
-                                                  user: user,
-                                                  userId: user,
-                                                  password: password,
-                                                  userAgent: userAgent,
-                                                  nextcloudVersion: NCCapabilities.shared.getCapabilities(account: account).capabilityServerVersionMajor,
-                                                  httpMaximumConnectionsPerHost: NCBrandOptions.shared.httpMaximumConnectionsPerHost,
-                                                  httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
-                                                  httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
-                                                  groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
-                NCSession.shared.appendSession(account: account, urlBase: urlBase, user: user, userId: userProfile.userId)
-                NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
-                NCAccount().changeAccount(account, userProfile: userProfile, controller: nil) { }
-
-                let window = UIApplication.shared.firstWindow
-                if let controller = window?.rootViewController as? NCMainTabBarController {
-                    controller.account = account
-                    self.dismiss(animated: true)
-                } else {
-                    if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
-                        controller.account = account
-                        controller.modalPresentationStyle = .fullScreen
-                        controller.view.alpha = 0
-
-                        window?.rootViewController = controller
-                        window?.makeKeyAndVisible()
-
-                        if let scene = window?.windowScene {
-                            SceneManager.shared.register(scene: scene, withRootViewController: controller)
-                        }
-
-                        UIView.animate(withDuration: 0.5) {
-                            controller.view.alpha = 1
-                        }
-                    }
-                }
-            } else {
-                let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
-                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
-                self.present(alertController, animated: true)
-            }
-        }
-    }
+//    func createAccount(server: String, username: String, password: String) {
+//        var urlBase = server
+//        if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
+//        let account: String = "\(username) \(urlBase)"
+//        let user = username
+//
+//        NextcloudKit.shared.getUserProfile(account: account) { account, userProfile, _, error in
+//            if error == .success, let userProfile {
+//                NextcloudKit.shared.appendSession(account: account,
+//                                                  urlBase: urlBase,
+//                                                  user: user,
+//                                                  userId: user,
+//                                                  password: password,
+//                                                  userAgent: userAgent,
+//                                                  nextcloudVersion: NCCapabilities.shared.getCapabilities(account: account).capabilityServerVersionMajor,
+//                                                  groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+//                NCSession.shared.appendSession(account: account, urlBase: urlBase, user: user, userId: userProfile.userId)
+//                NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)
+//
+//                NCAccount().changeAccount(account, userProfile: userProfile, controller: nil) { }
+//
+//                let window = UIApplication.shared.firstWindow
+//                if let controller = window?.rootViewController as? NCMainTabBarController {
+//                    controller.account = account
+//                    self.dismiss(animated: true)
+//                } else {
+//                    if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
+//                        controller.account = account
+//                        controller.modalPresentationStyle = .fullScreen
+//                        controller.view.alpha = 0
+//                        window?.rootViewController = controller
+//                        window?.makeKeyAndVisible()
+//                        UIView.animate(withDuration: 0.5) {
+//                            controller.view.alpha = 1
+//                        }
+//                    }
+//                }
+//            } else {
+//                let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: error.errorDescription, preferredStyle: .alert)
+//                alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
+//                self.present(alertController, animated: true)
+//            }
+//        }
+//    }
 }

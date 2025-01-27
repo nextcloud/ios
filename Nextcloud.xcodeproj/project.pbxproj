@@ -169,6 +169,10 @@
 		F3BB464D2A39ADCC00461F6E /* NCMoreAppSuggestionsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F3BB464C2A39ADCC00461F6E /* NCMoreAppSuggestionsCell.xib */; };
 		F3BB46522A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46512A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift */; };
 		F3BB46542A3A1E9D00461F6E /* CCCellMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */; };
+		F3C587A92D4147D3004532DB /* NCLoginWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3C587A82D4147D3004532DB /* NCLoginWebView.swift */; };
+		F3C587AA2D4147D3004532DB /* NCLoginWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3C587A82D4147D3004532DB /* NCLoginWebView.swift */; };
+		F3C587AB2D4147D3004532DB /* NCLoginWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3C587A82D4147D3004532DB /* NCLoginWebView.swift */; };
+		F3C587AC2D4147D3004532DB /* NCLoginWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3C587A82D4147D3004532DB /* NCLoginWebView.swift */; };
 		F3CA33842D10726E00672333 /* NCLoginPollModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3CA33832D10726E00672333 /* NCLoginPollModel.swift */; };
 		F3E173B02C9AF637006D177A /* ScreenAwakeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E173AF2C9AF637006D177A /* ScreenAwakeManager.swift */; };
 		F3E173C02C9B1067006D177A /* AwakeMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E173BF2C9B1067006D177A /* AwakeMode.swift */; };
@@ -1241,6 +1245,7 @@
 		F3BB464C2A39ADCC00461F6E /* NCMoreAppSuggestionsCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCMoreAppSuggestionsCell.xib; sourceTree = "<group>"; };
 		F3BB46512A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMoreAppSuggestionsCell.swift; sourceTree = "<group>"; };
 		F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCCellMore.swift; sourceTree = "<group>"; };
+		F3C587A82D4147D3004532DB /* NCLoginWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCLoginWebView.swift; sourceTree = "<group>"; };
 		F3CA33832D10726E00672333 /* NCLoginPollModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCLoginPollModel.swift; sourceTree = "<group>"; };
 		F3E173AF2C9AF637006D177A /* ScreenAwakeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenAwakeManager.swift; sourceTree = "<group>"; };
 		F3E173BF2C9B1067006D177A /* AwakeMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AwakeMode.swift; sourceTree = "<group>"; };
@@ -2778,6 +2783,7 @@
 				F7AE00F4230D5F9E007ACF8A /* NCLoginProvider.swift */,
 				F7BC287D26663F6C004D46C5 /* NCViewCertificateDetails.storyboard */,
 				F7BC287F26663F85004D46C5 /* NCViewCertificateDetails.swift */,
+				F3C587A82D4147D3004532DB /* NCLoginWebView.swift */,
 			);
 			path = Login;
 			sourceTree = "<group>";
@@ -4092,6 +4098,7 @@
 				AF22B218277D196700DAB0CC /* NCShareExtension+Files.swift in Sources */,
 				F799DF862C4B7E56003410B5 /* NCSectionHeader.swift in Sources */,
 				F702F2D025EE5B5C008F8E80 /* NCGlobal.swift in Sources */,
+				F3C587AB2D4147D3004532DB /* NCLoginWebView.swift in Sources */,
 				F7A51E742C7230090037BCC0 /* NCTransfersProgress.swift in Sources */,
 				F343A4BE2A1E734600DDA874 /* Optional+Extension.swift in Sources */,
 				F72437802C10B92400C7C68D /* NCPermissions.swift in Sources */,
@@ -4225,6 +4232,7 @@
 				F75DD766290ABB25002EB562 /* Intent.intentdefinition in Sources */,
 				F7D68FCD28CB9051009139F3 /* NCManageDatabase+DashboardWidget.swift in Sources */,
 				F73EF7E02B02266D0087E6E9 /* NCManageDatabase+Trash.swift in Sources */,
+				F3C587AA2D4147D3004532DB /* NCLoginWebView.swift in Sources */,
 				F73EF7E82B0226B90087E6E9 /* NCManageDatabase+UserStatus.swift in Sources */,
 				F73EF7D82B0226080087E6E9 /* NCManageDatabase+Tip.swift in Sources */,
 				F7C9B91E2B582F550064EA91 /* NCManageDatabase+SecurityGuard.swift in Sources */,
@@ -4297,6 +4305,7 @@
 				F7A51E752C72300A0037BCC0 /* NCTransfersProgress.swift in Sources */,
 				F33918C82C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift in Sources */,
 				F7A0D1372591FBC5008F8A13 /* String+Extension.swift in Sources */,
+				F3C587AC2D4147D3004532DB /* NCLoginWebView.swift in Sources */,
 				F771E3D720E2392D00AFB62D /* FileProviderEnumerator.swift in Sources */,
 				F74AF3A6247FB6AE00AC767B /* NCUtilityFileSystem.swift in Sources */,
 				F7B769AC2B7A0B2000C1AAEB /* NCManageDatabase+Metadata+Session.swift in Sources */,
@@ -4574,6 +4583,7 @@
 				F737DA9D2B7B893C0063BAFC /* NCPasscode.swift in Sources */,
 				F77C97392953131000FDDD09 /* NCCameraRoll.swift in Sources */,
 				F343A4B32A1E01FF00DDA874 /* PHAsset+Extension.swift in Sources */,
+				F3C587A92D4147D3004532DB /* NCLoginWebView.swift in Sources */,
 				F70968A424212C4E00ED60E5 /* NCLivePhoto.swift in Sources */,
 				F7C30DFA291BCF790017149B /* NCNetworkingE2EECreateFolder.swift in Sources */,
 				F7BC288026663F85004D46C5 /* NCViewCertificateDetails.swift in Sources */,
