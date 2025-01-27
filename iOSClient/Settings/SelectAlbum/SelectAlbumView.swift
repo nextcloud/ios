@@ -17,11 +17,11 @@ struct SelectAlbumView: View {
             }
 
             if !model.smartAlbums.isEmpty {
-                SmartAlbums(model: model, selectedAlbums: $selectedAlbums)
+                AlbumView(model: model, selectedAlbums: $selectedAlbums, albums: model.smartAlbums, sectionTitle: "_smart_albums_")
             }
 
             if !model.userAlbums.isEmpty {
-                UserAlbums(model: model, selectedAlbums: $selectedAlbums)
+                AlbumView(model: model, selectedAlbums: $selectedAlbums, albums: model.userAlbums, sectionTitle: "_albums_")
             }
         }
         .onChange(of: selectedAlbums) { newValue in
@@ -47,27 +47,16 @@ struct SelectAlbumView: View {
     SelectAlbumView(model: AlbumModel(controller: nil))
 }
 
-struct SmartAlbums: View {
+struct AlbumView: View {
     @ObservedObject var model: AlbumModel
     @Binding var selectedAlbums: Set<String>
+    let albums: [PHAssetCollection]
+    let sectionTitle: String
 
     var body: some View {
-        Section(NSLocalizedString("_smart_albums_", comment: "")) {
-            ForEach(model.smartAlbums, id: \.localIdentifier) { album in
+        Section(NSLocalizedString(sectionTitle, comment: "")) {
+            ForEach(albums, id: \.localIdentifier) { album in
                 SelectionButton(album: album, isSmartAlbum: true, selection: $selectedAlbums)
-            }
-        }
-    }
-}
-
-struct UserAlbums: View {
-    @ObservedObject var model: AlbumModel
-    @Binding var selectedAlbums: Set<String>
-
-    var body: some View {
-        Section(NSLocalizedString("_albums_", comment: "")) {
-            ForEach(model.userAlbums, id: \.localIdentifier) { album in
-                SelectionButton(album: album, isSmartAlbum: false, selection: $selectedAlbums)
             }
         }
     }
@@ -113,30 +102,6 @@ struct SelectionButton: View {
         .foregroundColor(.primary)
         .onAppear {
             loader.loadImage(from: album, targetSize: .zero)
-        }
-    }
-}
-
-@MainActor class ImageLoader: ObservableObject {
-    @Published var image: UIImage?
-
-    func loadImage(from album: PHAssetCollection?, targetSize: CGSize) {
-        let fetchOptions = PHFetchOptions()
-        fetchOptions.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-        fetchOptions.fetchLimit = 1
-
-        let assets: PHFetchResult<PHAsset>
-
-        if let album {
-            assets = PHAsset.fetchAssets(in: album, options: fetchOptions)
-        } else {
-            assets = PHAsset.fetchAssets(with: fetchOptions)
-        }
-
-        guard let asset = assets.firstObject else { return }
-
-        PHImageManager.default().requestImage(for: asset, targetSize: targetSize, contentMode: .aspectFill, options: nil) { [weak self] image, _ in
-            self?.image = image
         }
     }
 }
