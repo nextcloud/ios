@@ -33,44 +33,42 @@ struct NCAutoUploadView: View {
     @State private var showSelectAlbums: Bool = false
 
     var body: some View {
-        VStack {
-            Form {
-                /// Auto Upload
-                Section(content: {
-                    Toggle(NSLocalizedString("_autoupload_", comment: ""), isOn: $model.autoUpload)
-                        .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
-                        .onChange(of: model.autoUpload) { newValue in
-                            model.handleAutoUploadChange(newValue: newValue)
-                            albumModel.initAlbums()
-                        }
-                }, footer: {
-                    Text(NSLocalizedString("_autoupload_notice_", comment: ""))
-                })
-                /// If `autoUpload` state will be true, we will animate out the whole `autoUploadOnView` section
-                if model.autoUpload {
-                    autoUploadOnView
-                        .transition(.slide)
-                        .animation(.easeInOut, value: model.autoUpload)
-                }
-            }
-            .navigationBarTitle(NSLocalizedString("_auto_upload_folder_", comment: ""))
-            .onAppear {
-                model.onViewAppear()
-            }
-            .alert(model.error, isPresented: $model.showErrorAlert) {
-                Button(NSLocalizedString("_ok_", comment: ""), role: .cancel) { }
-            }
-            .sheet(isPresented: $showUploadFolder) {
-                SelectView(serverUrl: $model.serverUrl, session: model.session)
-                    .onDisappear {
-                        model.setAutoUploadDirectory(serverUrl: model.serverUrl)
+        Form {
+            /// Auto Upload
+            Section(content: {
+                Toggle(NSLocalizedString("_autoupload_", comment: ""), isOn: $model.autoUpload)
+                    .tint(Color(NCBrandColor.shared.getElement(account: model.session.account)))
+                    .onChange(of: model.autoUpload) { newValue in
+                        model.handleAutoUploadChange(newValue: newValue)
+                        albumModel.initAlbums()
                     }
+            }, footer: {
+                Text(NSLocalizedString("_autoupload_notice_", comment: ""))
+            })
+            /// If `autoUpload` state will be true, we will animate out the whole `autoUploadOnView` section
+            if model.autoUpload {
+                autoUploadOnView
+                    .transition(.slide)
+                    .animation(.easeInOut, value: model.autoUpload)
             }
-            .sheet(isPresented: $showSelectAlbums) {
-                SelectAlbumView(model: albumModel)
-            }
-            .tint(.primary)
         }
+        .navigationBarTitle(NSLocalizedString("_auto_upload_folder_", comment: ""))
+        .onAppear {
+            model.onViewAppear()
+        }
+        .alert(model.error, isPresented: $model.showErrorAlert) {
+            Button(NSLocalizedString("_ok_", comment: ""), role: .cancel) { }
+        }
+        .sheet(isPresented: $showUploadFolder) {
+            SelectView(serverUrl: $model.serverUrl, session: model.session)
+                .onDisappear {
+                    model.setAutoUploadDirectory(serverUrl: model.serverUrl)
+                }
+        }
+        .sheet(isPresented: $showSelectAlbums) {
+            SelectAlbumView(model: albumModel)
+        }
+        .tint(.primary)
     }
 
     @ViewBuilder

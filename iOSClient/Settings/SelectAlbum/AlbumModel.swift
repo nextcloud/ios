@@ -70,7 +70,7 @@ import Photos
     func getSavedAlbumIds() -> Set<String> {
         guard let account = controller?.account else { return [] }
 
-        let albumIds = NCKeychain().getAutoUploadAlbumIds(account: account) ?? []
+        let albumIds = NCKeychain().getAutoUploadAlbumIds(account: account)
 
         return Set(albumIds)
     }

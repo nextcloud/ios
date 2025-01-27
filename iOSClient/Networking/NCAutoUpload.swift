@@ -52,7 +52,7 @@ class NCAutoUpload: NSObject {
                     return completion(0)
                 }
 
-                let albumIds = NCKeychain().getAutoUploadAlbumIds(account: account) ?? []
+                let albumIds = NCKeychain().getAutoUploadAlbumIds(account: account)
 
                 let selectedAlbums = PHAssetCollection.allAlbums.filter({albumIds.contains($0.localIdentifier)})
 
@@ -214,8 +214,37 @@ class NCAutoUpload: NSObject {
         }
     }
 
+    func processAssets(_ assetCollection: PHAssetCollection, _ fetchOptions: PHFetchOptions, _ tableAccount: tableAccount, _ selector: String, _ account: String) -> [PHAsset] {
+        let assets: PHFetchResult<PHAsset> = PHAsset.fetchAssets(in: assetCollection, options: fetchOptions)
+        var assetResult: [PHAsset] = []
+
+        if selector == NCGlobal.shared.selectorUploadAutoUpload,
+           let idAssets = self.database.getPhotoLibraryIdAsset(image: tableAccount.autoUploadImage, video: tableAccount.autoUploadVideo, account: account) {
+            assets.enumerateObjects { asset, _, _ in
+                var creationDateString = ""
+                if let creationDate = asset.creationDate {
+                    creationDateString = String(describing: creationDate)
+                }
+                let idAsset = account + asset.localIdentifier + creationDateString
+                if !idAssets.contains(idAsset) {
+                    if (asset.isFavorite && tableAccount.autoUploadFavoritesOnly) || !tableAccount.autoUploadFavoritesOnly {
+                        assetResult.append(asset)
+                    }
+                }
+            }
+        } else {
+            assets.enumerateObjects { asset, _, _ in
+                if (asset.isFavorite && tableAccount.autoUploadFavoritesOnly) || !tableAccount.autoUploadFavoritesOnly {
+                    assetResult.append(asset)
+                }
+            }
+        }
+
+        return assetResult
+    }
+    
     private func getCameraRollAssets(controller: NCMainTabBarController?, assetCollections: [PHAssetCollection] = [], selector: String, alignPhotoLibrary: Bool, account: String, completion: @escaping (_ assets: [PHAsset]?) -> Void) {
-        NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { hasPermission in
+        NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { [self] hasPermission in
             guard hasPermission,
                   let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) else {
                 return completion(nil)
@@ -245,58 +274,14 @@ class NCAutoUpload: NSObject {
                 let assetCollection = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: PHAssetCollectionSubtype.smartAlbumUserLibrary, options: nil)
                 guard let assetCollection = assetCollection.firstObject else { return completion(nil) }
 
-                let assets: PHFetchResult<PHAsset> = PHAsset.fetchAssets(in: assetCollection, options: fetchOptions)
-
-                if selector == NCGlobal.shared.selectorUploadAutoUpload,
-                   let idAssets = self.database.getPhotoLibraryIdAsset(image: tableAccount.autoUploadImage, video: tableAccount.autoUploadVideo, account: account) {
-                    assets.enumerateObjects { asset, _, _ in
-                        var creationDateString = ""
-                        if let creationDate = asset.creationDate {
-                            creationDateString = String(describing: creationDate)
-                        }
-                        let idAsset = account + asset.localIdentifier + creationDateString
-                        if !idAssets.contains(idAsset) {
-                            if (asset.isFavorite && tableAccount.autoUploadFavoritesOnly) || !tableAccount.autoUploadFavoritesOnly {
-                                newAssets.append(asset)
-                            }
-                        }
-                    }
-                } else {
-                    assets.enumerateObjects { asset, _, _ in
-                        if (asset.isFavorite && tableAccount.autoUploadFavoritesOnly) || !tableAccount.autoUploadFavoritesOnly {
-                            newAssets.append(asset)
-                        }
-                    }
-                }
+                newAssets += processAssets(assetCollection, fetchOptions, tableAccount, selector, account)
             } else {
                 for assetCollection in assetCollections {
-                    let assets: PHFetchResult<PHAsset> = PHAsset.fetchAssets(in: assetCollection, options: fetchOptions)
-
-                    if selector == NCGlobal.shared.selectorUploadAutoUpload,
-                       let idAssets = self.database.getPhotoLibraryIdAsset(image: tableAccount.autoUploadImage, video: tableAccount.autoUploadVideo, account: account) {
-                        assets.enumerateObjects { asset, _, _ in
-                            var creationDateString = ""
-                            if let creationDate = asset.creationDate {
-                                creationDateString = String(describing: creationDate)
-                            }
-                            let idAsset = account + asset.localIdentifier + creationDateString
-                            if !idAssets.contains(idAsset) {
-                                if (asset.isFavorite && tableAccount.autoUploadFavoritesOnly) || !tableAccount.autoUploadFavoritesOnly {
-                                    newAssets.append(asset)
-                                }
-                            }
-                        }
-                    } else {
-                        assets.enumerateObjects { asset, _, _ in
-                            if (asset.isFavorite && tableAccount.autoUploadFavoritesOnly) || !tableAccount.autoUploadFavoritesOnly {
-                                newAssets.append(asset)
-                            }
-                        }
-                    }
+                    newAssets += processAssets(assetCollection, fetchOptions, tableAccount, selector, account)
                 }
-            }
 
-            completion(newAssets)
+                completion(newAssets)
+            }
         }
     }
 }

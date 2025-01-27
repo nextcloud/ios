@@ -630,9 +630,9 @@ import KeychainAccess
         keychain[key] = albumIds.joined(separator: ",")
     }
 
-    func getAutoUploadAlbumIds(account: String) -> [String]? {
+    func getAutoUploadAlbumIds(account: String) -> [String] {
         let key = "AlbumIds" + account
-        return try? keychain.get(key)?.components(separatedBy: ",")
+        return (try? keychain.get(key)?.components(separatedBy: ",")) ?? []
     }
 
     // MARK: -

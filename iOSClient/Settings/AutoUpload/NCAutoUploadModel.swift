@@ -65,10 +65,6 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
         NCSession.shared.getSession(controller: controller)
     }
 
-//    var autoUploadAlbumIds: [String] {
-//        NCKeychain().getAutoUploadAlbumIds(account: controller?.account ?? "") ?? []
-//    }
-
     /// Initialization code to set up the ViewModel with the active account
     init(controller: NCMainTabBarController?) {
         self.controller = controller
