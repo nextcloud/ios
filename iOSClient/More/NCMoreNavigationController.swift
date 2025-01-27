@@ -20,6 +20,8 @@ class NCMoreNavigationController: NCMainNavigationController {
                 return UIMenu(children: [items.select, items.viewStyleSubmenu])
             } else if collectionViewCommon.layoutKey == global.layoutViewOffline {
                 return UIMenu(children: [items.select, items.viewStyleSubmenu])
+            } else if collectionViewCommon.layoutKey == global.layoutViewShares {
+                return UIMenu(children: [items.select, items.viewStyleSubmenu])
             } else {
                 let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [items.foldersOnTop, items.personalFilesOnlyAction, items.showDescription])
                 return UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu, additionalSubmenu])
