@@ -1,10 +1,6 @@
-//
-//  Albums.swift
-//  Nextcloud
-//
-//  Created by Milen Pivchev on 12.12.24.
-//  Copyright © 2024 Marino Faggiana. All rights reserved.
-//
+// SPDX-FileCopyrightText: Nextcloud GmbH
+// SPDX-FileCopyrightText: 2024 Milen Pivchev
+// SPDX-License-Identifier: GPL-3.0-or-later
 
 import Photos
 
