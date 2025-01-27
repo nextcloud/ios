@@ -39,7 +39,6 @@ class NCFiles: NCCollectionViewCommon {
         layoutKey = NCGlobal.shared.layoutViewFiles
         enableSearchBar = true
         headerRichWorkspaceDisable = false
-        headerMenuTransferView = true
         emptyTitle = "_files_no_files_"
         emptyDescription = "_no_file_pull_down_"
     }
@@ -58,7 +57,6 @@ class NCFiles: NCCollectionViewCommon {
             self.titleCurrentFolder = getNavigationTitle()
 
             NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { notification in
-
                 if let userInfo = notification.userInfo, let account = userInfo["account"] as? String {
                     if let controller = userInfo["controller"] as? NCMainTabBarController,
                        controller == self.controller {
@@ -84,7 +82,8 @@ class NCFiles: NCCollectionViewCommon {
                 }
 
                 self.titleCurrentFolder = self.getNavigationTitle()
-                self.setNavigationLeftItems()
+                self.navigationItem.title = self.titleCurrentFolder
+                (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
 
                 self.dataSource.removeAll()
                 self.reloadDataSource()
@@ -128,6 +127,7 @@ class NCFiles: NCCollectionViewCommon {
         else {
             return super.reloadDataSource()
         }
+        let directoryOnTop = NCKeychain().getDirectoryOnTop(account: session.account)
 
         // Watchdog: this is only a fail safe "dead lock", I don't think the timeout will ever be called but at least nothing gets stuck, if after 5 sec. (which is a long time in this routine), the semaphore is still locked
         //
@@ -146,22 +146,18 @@ class NCFiles: NCCollectionViewCommon {
         self.metadataFolder = database.getMetadataFolder(session: session, serverUrl: self.serverUrl)
         self.richWorkspaceText = database.getTableDirectory(predicate: predicateDirectory)?.richWorkspace
 
-        let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: layoutForView)
+        let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: layoutForView, directoryOnTop: directoryOnTop)
 
-        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView)
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, directoryOnTop: directoryOnTop)
 
         if metadatas.isEmpty {
             self.semaphoreReloadDataSource.signal()
             return super.reloadDataSource()
         }
 
-        self.dataSource.caching(metadatas: metadatas, dataSourceMetadatas: dataSourceMetadatas) { updated in
+        self.dataSource.caching(metadatas: metadatas, dataSourceMetadatas: dataSourceMetadatas) {
             self.semaphoreReloadDataSource.signal()
-            DispatchQueue.main.async {
-                if updated || self.isNumberOfItemsInAllSectionsNull || self.numberOfItemsInAllSections != metadatas.count {
-                    super.reloadDataSource()
-                }
-            }
+            super.reloadDataSource()
         }
     }
 
@@ -186,23 +182,10 @@ class NCFiles: NCCollectionViewCommon {
             return false
         }
 
-        ///
-        /// Recommended files
-        ///
-        if self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session),
-           NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityRecommendations {
-            let options = NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
-
-            NextcloudKit.shared.getRecommendedFiles(account: self.session.account, options: options) { _, recommendations, _, error in
-                if error == .success,
-                   let recommendations,
-                   !recommendations.isEmpty {
-                    Task.detached {
-                        await self.createRecommendations(recommendations)
-                    }
-                } else {
-                    NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadRecommendedFiles, userInfo: nil)
-                }
+        /// Recommendation
+        if isRecommendationActived {
+            Task.detached {
+                await NCNetworking.shared.createRecommendations(session: self.session)
             }
         }
 
@@ -368,33 +351,6 @@ class NCFiles: NCCollectionViewCommon {
         }
     }
 
-    private func createRecommendations(_ recommendations: [NKRecommendation]) async {
-        let home = self.utilityFileSystem.getHomeServer(session: self.session)
-        var recommendationsToInsert: [NKRecommendation] = []
-
-        for recommendation in recommendations {
-            var metadata = database.getResultMetadataFromFileId(recommendation.id)
-            if metadata == nil || metadata?.fileName != recommendation.name {
-                let serverUrlFileName = home + recommendation.directory + recommendation.name
-                let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles, account: session.account)
-
-                if results.error == .success, let file = results.files?.first {
-                    let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
-                    let metadataConverted = self.database.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
-                    metadata = metadataConverted
-
-                    self.database.addMetadata(metadataConverted)
-                    recommendationsToInsert.append(recommendation)
-                }
-            } else {
-                recommendationsToInsert.append(recommendation)
-            }
-        }
-
-        self.database.createRecommendedFiles(account: session.account, recommendations: recommendationsToInsert)
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadRecommendedFiles, userInfo: nil)
-    }
-
     // MARK: - NCAccountSettingsModelDelegate
 
     override func accountSettingsDidDismiss(tableAccount: tableAccount?, controller: NCMainTabBarController?) {
@@ -409,6 +365,6 @@ class NCFiles: NCCollectionViewCommon {
             navigationItem.title = self.titleCurrentFolder
         }
 
-        setNavigationLeftItems()
+        (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
     }
 }

@@ -455,6 +455,20 @@ import KeychainAccess
         }
     }
 
+    func setDirectoryOnTop(account: String, value: Bool) {
+        let key = "directoryOnTop" + account
+        keychain[key] = String(value)
+    }
+
+    func getDirectoryOnTop(account: String) -> Bool {
+        let key = "directoryOnTop" + account
+        if let value = try? keychain.get(key), let result = Bool(value) {
+            return result
+        } else {
+            return true
+        }
+    }
+
     // MARK: - E2EE
 
     func getEndToEndCertificate(account: String) -> String? {

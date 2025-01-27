@@ -50,7 +50,9 @@ extension NCMedia: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         guard let ocId = dataSource.getMetadata(indexPath: indexPath)?.ocId,
               let metadata = database.getMetadataFromOcId(ocId)
-        else { return nil }
+        else {
+            return nil
+        }
         let identifier = indexPath as NSCopying
         let image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt1024)
 

@@ -768,6 +768,9 @@
 "_file_creation_"                   = "File creation";
 "_delete_all_scanned_images_"       = "Delete all scanned images";
 "_text_recognition_"                = "Text recognition";
+"_all_files_"                       = "All files";
+"_personal_files_"                  = "Personal Files";
+
 
 /* The title on the navigation bar of the Scanning screen. */
 "wescan.scanning.title"             = "Scanning";

@@ -207,6 +207,15 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         }
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        if navigationController?.isBeingDismissed == true {
+            pollTimer?.cancel()
+            pollTimer = nil
+        }
+    }
+
     private func handleLoginWithAppConfig() {
         let accountCount = NCManageDatabase.shared.getAccounts()?.count ?? 0
 
@@ -549,6 +558,8 @@ extension NCLogin: ClientCertificateDelegate, UIDocumentPickerDelegate {
                                         }
                                     }
                                 }
+
+                                timer.cancel()
                             }
                         }
                     }

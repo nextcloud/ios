@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -14,49 +14,6 @@
             <rect key="frame" x="0.0" y="0.0" width="656" height="623"/>
             <autoresizingMask key="autoresizingMask"/>
             <subviews>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zUM-hu-F2q" userLabel="View Transfer">
-                    <rect key="frame" x="0.0" y="0.0" width="656" height="50"/>
-                    <subviews>
-                        <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="icloud.and.arrow.up" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="RAx-NP-nJe">
-                            <rect key="frame" x="10" y="15" width="20" height="21.5"/>
-                            <constraints>
-                                <constraint firstAttribute="width" constant="20" id="Bl3-T8-Pdl"/>
-                                <constraint firstAttribute="height" constant="20" id="s0j-tE-jVf"/>
-                            </constraints>
-                        </imageView>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="…" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ct8-na-XmL">
-                            <rect key="frame" x="40" y="16" width="606" height="18"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="15"/>
-                            <nil key="textColor"/>
-                            <nil key="highlightedColor"/>
-                        </label>
-                        <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="y5t-ha-Gtf">
-                            <rect key="frame" x="-1" y="46" width="658" height="4"/>
-                        </progressView>
-                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MaD-hz-Xqk">
-                            <rect key="frame" x="0.0" y="49" width="656" height="1"/>
-                            <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            <color key="tintColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            <constraints>
-                                <constraint firstAttribute="height" constant="1" id="5cZ-q1-A41"/>
-                            </constraints>
-                        </view>
-                    </subviews>
-                    <constraints>
-                        <constraint firstAttribute="bottom" secondItem="y5t-ha-Gtf" secondAttribute="bottom" id="57H-lE-zHz"/>
-                        <constraint firstAttribute="bottom" secondItem="MaD-hz-Xqk" secondAttribute="bottom" id="5sX-km-4Ub"/>
-                        <constraint firstItem="RAx-NP-nJe" firstAttribute="leading" secondItem="zUM-hu-F2q" secondAttribute="leading" constant="10" id="875-hq-ZuG"/>
-                        <constraint firstAttribute="trailing" secondItem="y5t-ha-Gtf" secondAttribute="trailing" constant="-1" id="9ku-TY-Zyl"/>
-                        <constraint firstItem="RAx-NP-nJe" firstAttribute="centerY" secondItem="zUM-hu-F2q" secondAttribute="centerY" id="ABA-4O-6uJ"/>
-                        <constraint firstItem="MaD-hz-Xqk" firstAttribute="leading" secondItem="zUM-hu-F2q" secondAttribute="leading" id="Lrn-J7-BTG"/>
-                        <constraint firstAttribute="trailing" secondItem="ct8-na-XmL" secondAttribute="trailing" constant="10" id="SoT-SI-mWf"/>
-                        <constraint firstItem="ct8-na-XmL" firstAttribute="leading" secondItem="RAx-NP-nJe" secondAttribute="trailing" constant="10" id="XsP-Hj-SY1"/>
-                        <constraint firstItem="y5t-ha-Gtf" firstAttribute="leading" secondItem="zUM-hu-F2q" secondAttribute="leading" constant="-1" id="cCo-9f-f6h"/>
-                        <constraint firstAttribute="height" constant="50" id="nYi-uS-B2B"/>
-                        <constraint firstItem="ct8-na-XmL" firstAttribute="centerY" secondItem="zUM-hu-F2q" secondAttribute="centerY" id="omo-Rr-vE2"/>
-                        <constraint firstAttribute="trailing" secondItem="MaD-hz-Xqk" secondAttribute="trailing" id="wqU-PH-omv"/>
-                    </constraints>
-                </view>
                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" insetsLayoutMarginsFromSafeArea="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Mdn-Ii-iP0">
                     <rect key="frame" x="290.5" y="481" width="75" height="75"/>
                     <constraints>
@@ -80,33 +37,22 @@
             <constraints>
                 <constraint firstItem="mgR-8K-A50" firstAttribute="leading" secondItem="tys-A2-nDX" secondAttribute="leading" constant="20" id="3jn-gZ-ChU"/>
                 <constraint firstItem="Iks-dv-Ur1" firstAttribute="leading" secondItem="tys-A2-nDX" secondAttribute="leading" constant="20" id="CPf-Sq-YDK"/>
-                <constraint firstItem="zUM-hu-F2q" firstAttribute="leading" secondItem="tys-A2-nDX" secondAttribute="leading" id="N4e-Ld-8tC"/>
                 <constraint firstAttribute="trailing" secondItem="Iks-dv-Ur1" secondAttribute="trailing" constant="20" id="OGO-mp-915"/>
                 <constraint firstItem="mgR-8K-A50" firstAttribute="top" secondItem="Iks-dv-Ur1" secondAttribute="bottom" constant="8" id="WL5-5S-Hkd"/>
                 <constraint firstItem="Mdn-Ii-iP0" firstAttribute="centerX" secondItem="tys-A2-nDX" secondAttribute="centerX" id="aIS-cr-P61"/>
                 <constraint firstAttribute="bottom" secondItem="mgR-8K-A50" secondAttribute="bottom" constant="10" id="c2I-Kl-eE5"/>
                 <constraint firstAttribute="trailing" secondItem="mgR-8K-A50" secondAttribute="trailing" constant="20" id="gGN-Pf-lhJ"/>
                 <constraint firstItem="Iks-dv-Ur1" firstAttribute="top" secondItem="Mdn-Ii-iP0" secondAttribute="bottom" constant="8" id="mF2-cA-vXb"/>
-                <constraint firstItem="zUM-hu-F2q" firstAttribute="top" secondItem="tys-A2-nDX" secondAttribute="top" id="mhK-vt-QKJ"/>
-                <constraint firstAttribute="trailing" secondItem="zUM-hu-F2q" secondAttribute="trailing" id="u11-TM-Yum"/>
             </constraints>
             <connections>
                 <outlet property="emptyDescription" destination="mgR-8K-A50" id="QkP-LV-O5N"/>
                 <outlet property="emptyImage" destination="Mdn-Ii-iP0" id="u8Q-jq-yIl"/>
                 <outlet property="emptyTitle" destination="Iks-dv-Ur1" id="M6q-pi-RJw"/>
-                <outlet property="imageTransfer" destination="RAx-NP-nJe" id="eu7-J2-PLq"/>
-                <outlet property="labelTransfer" destination="ct8-na-XmL" id="0nf-xJ-QtA"/>
-                <outlet property="progressTransfer" destination="y5t-ha-Gtf" id="TY3-I9-hoh"/>
-                <outlet property="transferSeparatorBottom" destination="MaD-hz-Xqk" id="eoJ-9k-9pn"/>
-                <outlet property="transferSeparatorBottomHeightConstraint" destination="5cZ-q1-A41" id="MYw-L0-Ucc"/>
-                <outlet property="viewTransfer" destination="zUM-hu-F2q" id="3Dw-3e-z3Y"/>
-                <outlet property="viewTransferHeightConstraint" destination="nYi-uS-B2B" id="9yh-dp-ZdP"/>
             </connections>
             <point key="canvasLocation" x="296" y="111.99400299850076"/>
         </collectionReusableView>
     </objects>
     <resources>
-        <image name="icloud.and.arrow.up" catalog="system" width="128" height="115"/>
         <systemColor name="systemGrayColor">
             <color red="0.55686274509803924" green="0.55686274509803924" blue="0.57647058823529407" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
