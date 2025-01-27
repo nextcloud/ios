@@ -16,9 +16,12 @@ class NCFavoriteNavigationController: NCMainNavigationController {
                 return []
             }
 
-            let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [items.foldersOnTop])
-
-            return [items.select, items.viewStyleSubmenu, items.sortSubmenu, additionalSubmenu]
+            if collectionViewCommon.layoutKey == global.layoutViewFavorite {
+                return [items.select, items.viewStyleSubmenu]
+            } else {
+                let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [items.foldersOnTop, items.personalFilesOnlyAction, items.showDescription])
+                return [items.select, items.viewStyleSubmenu, items.sortSubmenu, additionalSubmenu]
+            }
         }
 
         if collectionViewCommon.isEditMode {
