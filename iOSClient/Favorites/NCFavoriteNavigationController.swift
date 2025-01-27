@@ -10,17 +10,17 @@ class NCFavoriteNavigationController: NCMainNavigationController {
             return
         }
 
-        func createMenu() -> [UIMenuElement] {
+        func createMenu() -> UIMenu? {
             guard let items = self.createMenuActions()
             else {
-                return []
+                return nil
             }
 
             if collectionViewCommon.layoutKey == global.layoutViewFavorite {
-                return [items.select, items.viewStyleSubmenu]
+                return UIMenu(children: [items.select, items.viewStyleSubmenu])
             } else {
                 let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [items.foldersOnTop, items.personalFilesOnlyAction, items.showDescription])
-                return [items.select, items.viewStyleSubmenu, items.sortSubmenu, additionalSubmenu]
+                return UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu, additionalSubmenu])
             }
         }
 
@@ -38,7 +38,7 @@ class NCFavoriteNavigationController: NCMainNavigationController {
         } else if self.collectionViewCommon?.navigationItem.rightBarButtonItems == nil || (!collectionViewCommon.isEditMode && !(collectionViewCommon.tabBarSelect?.isHidden() ?? true)) {
             collectionViewCommon.tabBarSelect?.hide()
 
-            let menuButton = UIBarButtonItem(image: utility.loadImage(named: "ellipsis.circle"), menu: UIMenu(children: createMenu()))
+            let menuButton = UIBarButtonItem(image: utility.loadImage(named: "ellipsis.circle"), menu: createMenu())
             menuButton.tag = menuButtonTag
             menuButton.tintColor = NCBrandColor.shared.iconImageColor
 
@@ -46,7 +46,10 @@ class NCFavoriteNavigationController: NCMainNavigationController {
 
         } else {
 
-            self.collectionViewCommon?.navigationItem.rightBarButtonItems?.first?.menu = self.collectionViewCommon?.navigationItem.rightBarButtonItems?.first?.menu?.replacingChildren(createMenu())
+            if let rightBarButtonItems = self.collectionViewCommon?.navigationItem.rightBarButtonItems,
+               let menuBarButtonItem = rightBarButtonItems.first(where: { $0.tag == menuButtonTag }) {
+                menuBarButtonItem.menu = createMenu()
+            }
         }
 
         // fix, if the tabbar was hidden before the update, set it in hidden
