@@ -21,12 +21,14 @@ class NCFilesNavigationController: NCMainNavigationController {
 
             for viewController in self.viewControllers {
                 if let rightBarButtonItems = viewController.navigationItem.rightBarButtonItems,
-                   let buttonTransferItem = rightBarButtonItems.first(where: { $0.tag == self.transfersButtonTag }),
-                   let buttonTransfer = buttonTransferItem.customView as? UIButton {
+                   let transfersButtonItem = rightBarButtonItems.first(where: { $0.tag == self.transfersButtonTag }),
+                   let transfersButton = transfersButtonItem.customView as? UIButton {
                     if results?.count ?? 0 > 0 {
-                        buttonTransfer.tintColor = NCBrandColor.shared.customer
+                        transfersButton.tintColor = NCBrandColor.shared.getElement(account: self.session.account)
+                        transfersButton.setImage(UIImage(systemName: "arrow.left.arrow.right.circle.fill"), for: .normal)
                     } else {
-                        buttonTransfer.tintColor = NCBrandColor.shared.iconImageColor
+                        transfersButton.tintColor = NCBrandColor.shared.iconImageColor
+                        transfersButton.setImage(UIImage(systemName: "arrow.left.arrow.right.circle"), for: .normal)
                     }
                 }
             }
