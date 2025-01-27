@@ -153,11 +153,12 @@ class NCMainNavigationController: UINavigationController, UINavigationController
                                                                    "layoutForView": layoutForView])
         }
 
+        let directoryOnTop = NCKeychain().getDirectoryOnTop(account: session.account)
         let sortSubmenu = UIMenu(title: NSLocalizedString("_order_by_", comment: ""), options: .displayInline, children: [byName, byNewest, byLargest])
 
-        let foldersOnTop = UIAction(title: NSLocalizedString("_directory_on_top_no_", comment: ""), image: utility.loadImage(named: "folder"), state: layoutForView.directoryOnTop ? .on : .off) { _ in
+        let foldersOnTop = UIAction(title: NSLocalizedString("_directory_on_top_no_", comment: ""), image: utility.loadImage(named: "folder"), state: directoryOnTop ? .on : .off) { _ in
 
-            layoutForView.directoryOnTop = !layoutForView.directoryOnTop
+            NCKeychain().setDirectoryOnTop(account: self.session.account, value: !directoryOnTop)
 
             NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterChangeLayout,
                                                         object: nil,
