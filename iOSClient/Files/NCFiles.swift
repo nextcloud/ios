@@ -82,6 +82,7 @@ class NCFiles: NCCollectionViewCommon {
                 }
 
                 self.titleCurrentFolder = self.getNavigationTitle()
+                self.navigationItem.title = self.titleCurrentFolder
                 (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
 
                 self.dataSource.removeAll()
