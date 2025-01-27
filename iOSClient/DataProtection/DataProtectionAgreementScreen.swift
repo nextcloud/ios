@@ -3,7 +3,7 @@
 //  Nextcloud
 //
 //  Created by Mariia Perehozhuk on 25.11.2024.
-//  Copyright © 2024 Viseven Europe OÜ. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 
 import SwiftUI
@@ -33,7 +33,7 @@ struct DataProtectionAgreementScreen: View {
                             .scaledToFit()
                             .frame(height: isIPad ? 128: 64)
                         Spacer()
-                    }.padding([.top, .bottom], isIPad ? 94.0 :  32.0)
+                    }.padding([.top, .bottom], isIPad ? 80.0 :  32.0)
                     
                     VStack(alignment: .leading) {
                         Text(NSLocalizedString("_privacy_settings_", comment: ""))
@@ -65,7 +65,6 @@ struct DataProtectionAgreementScreen: View {
                     }
                     
                     NavigationLink(destination: DataProtectionSettingsScreen(model: DataProtectionModel(), isShowing: $isShowingSettingsView), isActive: $isShowingSettingsView) { EmptyView() }
-                        .navigationTitle("")
 
                     Button(NSLocalizedString("_data_protection_settings_", comment: "")) {
                         isShowingSettingsView = true
@@ -85,6 +84,8 @@ struct DataProtectionAgreementScreen: View {
                         .resizable()
                         .ignoresSafeArea()
                 }
+                .navigationTitle("")
+                .navigationBarHidden(true)
             }
             .accentColor(Color(.DataProtection.navigationBarTint))
             .navigationViewStyle(StackNavigationViewStyle())

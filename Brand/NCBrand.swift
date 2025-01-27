@@ -26,7 +26,7 @@ import UIKit
 let userAgent: String = {
     let appVersion: String = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String
     // Original Nextcloud useragent "Mozilla/5.0 (iOS) Nextcloud-iOS/\(appVersion)"
-    return "Mozilla/5.0 (iOS) Nextcloud-iOS/\(appVersion)"
+    return "Mozilla/5.0 (iOS) IONOS HiDrive Next/\(appVersion)"
 }()
 
 @objc class NCBrandOptions: NSObject {
@@ -36,7 +36,7 @@ let userAgent: String = {
     }()
 
     var brand: String = "Nextcloud"
-    var textCopyrightNextcloudiOS: String = "Nextcloud Hydrogen for iOS %@ © 2024"
+    var textCopyrightNextcloudiOS: String = "HiDrive Next iOS %@ © 2024"
     var textCopyrightNextcloudServer: String = "Nextcloud Server %@"
     var loginBaseUrl: String = "https://cloud.nextcloud.com"
     @objc var pushNotificationServerProxy: String = "https://push-notifications.nextcloud.com"

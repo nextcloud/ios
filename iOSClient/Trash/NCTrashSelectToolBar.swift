@@ -4,6 +4,7 @@
 //
 //  Created by Milen on 05.02.24.
 //  Copyright © 2024 Marino Faggiana. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -92,7 +93,7 @@ struct NCTrashSelectTabBarView: View {
 				HStack(alignment: .top) {
 					TabButton(
 						action: { tabBarSelect.delegate?.recover() },
-						image: .restoreFromTrash,
+                        image: .SelectTabBar.restoreFromTrash,
 						label: "_restore_" ,
 						isDisabled: tabBarSelect.isSelectedEmpty,
 						isOneRowStyle: isWideScreen

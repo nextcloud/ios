@@ -18,13 +18,13 @@
                 <rect key="frame" x="0.0" y="0.0" width="322" height="60"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" translatesAutoresizingMaskIntoConstraints="NO" id="qDs-UG-Mn7" userLabel="ImageItem">
-                        <rect key="frame" x="6" y="10" width="40" height="40"/>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" translatesAutoresizingMaskIntoConstraints="NO" id="qDs-UG-Mn7" userLabel="ImageItem">
+                        <rect key="frame" x="6" y="13" width="40" height="34"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="34" id="8et-YH-T1D"/>
                             <constraint firstAttribute="width" constant="40" id="GNY-Va-SIJ"/>
                         </constraints>
-                        <imageReference key="image" image="link.circle.fill" catalog="system" symbolScale="large" variableValue="0.0"/>
+                        <imageReference key="image" image="share/linkCircleFill" symbolScale="large" variableValue="0.0"/>
                         <preferredSymbolConfiguration key="preferredSymbolConfiguration" scale="large"/>
                     </imageView>
                     <stackView opaque="NO" contentMode="scaleToFill" spacing="30" translatesAutoresizingMaskIntoConstraints="NO" id="OQv-Vf-bvD">
@@ -113,7 +113,7 @@
     <resources>
         <image name="doc.on.doc" catalog="system" width="116" height="128"/>
         <image name="ellipsis" catalog="system" width="128" height="37"/>
-        <image name="link.circle.fill" catalog="system" width="128" height="123"/>
+        <image name="share/linkCircleFill" width="32" height="32"/>
         <systemColor name="labelColor">
             <color white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

@@ -3,7 +3,7 @@
 //  Nextcloud
 //
 //  Created by Mariia Perehozhuk on 11.09.2024.
-//  Copyright © 2024 Viseven Europe OÜ. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 
 import Foundation
@@ -38,9 +38,6 @@ class NCImagesRepository: NSObject {
         case photoOrVideo = "photoOrVideo"
         case uploadFile = "uploadFile"
         case scan = "scan"
-        case document = "document"
-        case spreadsheet = "spreadsheet"
-        case presentation = "presentation"
         case createFolder = "createFolder"
         case restore = "restore"
 		
@@ -194,18 +191,6 @@ class NCImagesRepository: NSObject {
     
     static var menuIconCreateFolder: UIImage {
         menuIcon(ImageName.createFolder)
-    }
-    
-    static var menuIconCreateDocument: UIImage {
-        menuIcon(ImageName.document)
-    }
-    
-    static var menuIconCreateSpreadsheet: UIImage {
-        menuIcon(ImageName.spreadsheet)
-    }
-    
-    static var menuIconCreatePresentation: UIImage {
-        menuIcon(ImageName.presentation)
     }
     
     static var menuRestore: UIImage {

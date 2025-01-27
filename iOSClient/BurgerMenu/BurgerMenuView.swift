@@ -3,7 +3,7 @@
 //  Nextcloud
 //
 //  Created by Sergey Kaliberda on 28.07.2024.
-//  Copyright © 2024 Viseven Europe OÜ. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 
 import SwiftUI
@@ -43,7 +43,7 @@ struct BurgerMenuView: View {
                             viewModel.hideMenu()
                         }, label: {
                             HStack(spacing: 12) {
-                                Image(.chevronLeft)
+                                Image(.BurgerMenu.chevronLeft)
                                     .renderingMode(.template)
                                     .resizable()
                                     .scaledToFit()

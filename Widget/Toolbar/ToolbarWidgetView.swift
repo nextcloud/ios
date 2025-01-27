@@ -4,6 +4,7 @@
 //
 //  Created by Marino Faggiana on 25/08/22.
 //  Copyright © 2022 Marino Faggiana. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -34,7 +35,6 @@ struct ToolbarWidgetView: View {
         let linkNoAction: URL = URL(string: NCGlobal.shared.widgetActionNoAction + parameterLink) != nil ? URL(string: NCGlobal.shared.widgetActionNoAction + parameterLink)! : URL(string: NCGlobal.shared.widgetActionNoAction)!
         let linkActionUploadAsset: URL = URL(string: NCGlobal.shared.widgetActionUploadAsset + parameterLink) != nil ? URL(string: NCGlobal.shared.widgetActionUploadAsset + parameterLink)! : URL(string: NCGlobal.shared.widgetActionUploadAsset)!
         let linkActionScanDocument: URL = URL(string: NCGlobal.shared.widgetActionScanDocument + parameterLink) != nil ? URL(string: NCGlobal.shared.widgetActionScanDocument + parameterLink)! : URL(string: NCGlobal.shared.widgetActionScanDocument)!
-        let linkActionTextDocument: URL = URL(string: NCGlobal.shared.widgetActionTextDocument + parameterLink) != nil ? URL(string: NCGlobal.shared.widgetActionTextDocument + parameterLink)! : URL(string: NCGlobal.shared.widgetActionTextDocument)!
         let linkActionVoiceMemo: URL = URL(string: NCGlobal.shared.widgetActionVoiceMemo + parameterLink) != nil ? URL(string: NCGlobal.shared.widgetActionVoiceMemo + parameterLink)! : URL(string: NCGlobal.shared.widgetActionVoiceMemo)!
 
         GeometryReader { geo in
@@ -43,7 +43,8 @@ struct ToolbarWidgetView: View {
 				
                 HStack(spacing: 0) {
 					
-					let sizeButton: CGFloat = 60
+					let height: CGFloat = 60
+                    let width = geo.size.width / 3
 
                     Link(destination: entry.isPlaceholder ? linkNoAction : linkActionUploadAsset, label: {
 						Image(uiImage: UIImage(resource: .media))
@@ -53,7 +54,7 @@ struct ToolbarWidgetView: View {
 							.background(entry.isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .brandElement)))
                             .clipShape(Circle())
                             .scaledToFit()
-                            .frame(width: geo.size.width / 4, height: sizeButton)
+                            .frame(width: width, height: height)
                     })
 
                     Link(destination: entry.isPlaceholder ? linkNoAction : linkActionScanDocument, label: {
@@ -65,7 +66,7 @@ struct ToolbarWidgetView: View {
 							.background(entry.isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .brandElement)))
                             .clipShape(Circle())
                             .scaledToFit()
-                            .frame(width: geo.size.width / 4, height: sizeButton)
+                            .frame(width: width, height: height)
                     })
 					
 					Link(destination: entry.isPlaceholder ? linkNoAction : linkActionVoiceMemo, label: {
@@ -75,19 +76,8 @@ struct ToolbarWidgetView: View {
 							.background(entry.isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .brandElement)))
 							.clipShape(Circle())
 							.scaledToFit()
-							.frame(width: geo.size.width / 4, height: sizeButton)
+							.frame(width: width, height: height)
 					})
-
-                    Link(destination: entry.isPlaceholder ? linkNoAction : linkActionTextDocument, label: {
-						Image(uiImage: UIImage(resource: .note))
-                            .resizable()
-                            .renderingMode(.template)
-							.foregroundColor(entry.isPlaceholder ? Color(.systemGray4) : Color(NCBrandColor.shared.brandText))
-							.background(entry.isPlaceholder ? Color(.systemGray4) : Color(UIColor(resource: .brandElement)))
-                            .clipShape(Circle())
-                            .scaledToFit()
-                            .frame(width: geo.size.width / 4, height: sizeButton)
-                    })
                 }
                 .frame(width: geo.size.width, height: geo.size.height, alignment: .center)
 				.padding(.vertical, geo.size.height / 2 * -0.25)

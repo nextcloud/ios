@@ -4,6 +4,7 @@
 //
 //  Created by Marino Faggiana on 12/02/2019.
 //  Copyright © 2019 Marino Faggiana. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //

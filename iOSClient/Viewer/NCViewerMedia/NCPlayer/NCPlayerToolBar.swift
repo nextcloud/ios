@@ -4,6 +4,7 @@
 //
 //  Created by Marino Faggiana on 01/07/21.
 //  Copyright © 2021 Marino Faggiana. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 //  Author Marino Faggiana <marino.faggiana@nextcloud.com>
 //
@@ -98,6 +99,9 @@ class NCPlayerToolBar: UIView {
 
         playbackSlider.addTapGesture()
         playbackSlider.setThumbImage(UIImage(systemName: "circle.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 24)), for: .normal)
+        playbackSlider.thumbTintColor = UIColor(resource: .MediaPlayer.sliderThumb)
+        playbackSlider.minimumTrackTintColor = UIColor(resource: .MediaPlayer.sliderMin)
+        playbackSlider.maximumTrackTintColor = UIColor(resource: .MediaPlayer.sliderMax)
         playbackSlider.value = 0
         playbackSlider.addTarget(self, action: #selector(playbackValChanged(slider:event:)), for: .valueChanged)
         repeatButton?.setImage(utility.loadImage(named: "repeat", colors: [NCBrandColor.shared.iconImageColor2]), for: .normal)

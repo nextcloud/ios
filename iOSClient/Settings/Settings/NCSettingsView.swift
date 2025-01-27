@@ -5,6 +5,7 @@
 //  Created by Aditya Tyagi on 03/03/24.
 //  Created by Marino Faggiana on 30/05/24.
 //  Copyright © 2024 Marino Faggiana. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 //  Author Aditya Tyagi <adityagi02@yahoo.com>
 //
@@ -218,7 +219,7 @@ struct NCSettingsView: View {
             /// `Watermark` Section
             Section(content: {
             }, footer: {
-                Text(model.footerApp + model.footerServer).listRowBackground(Color.clear)
+                Text(model.footerApp).listRowBackground(Color.clear)
             }).applyGlobalFormSectionStyle()
         }
         .navigationBarTitle(NSLocalizedString("_settings_", comment: ""))

@@ -1,0 +1,22 @@
+{
+  "images" : [
+    {
+      "filename" : "squareAndArrowUpCircleFill_light.svg",
+      "idiom" : "universal"
+    },
+    {
+      "appearances" : [
+        {
+          "appearance" : "luminosity",
+          "value" : "dark"
+        }
+      ],
+      "filename" : "squareAndArrowUpCircleFill_dark.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

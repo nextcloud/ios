@@ -4,6 +4,7 @@
 //
 //  Created by Henrik Storch on 15.11.2021.
 //  Copyright © 2021 Henrik Storch. All rights reserved.
+//  Copyright © 2024 STRATO GmbH
 //
 //  Author Henrik Storch <henrik.storch@nextcloud.com>
 //
@@ -69,7 +70,7 @@ class NCShareLinkCell: UITableViewCell {
                 menuButton.accessibilityLabel = NSLocalizedString("_add_", comment: "")
             }
 
-            imageItem.image = NCUtility().loadImage(named: "link.circle.fill", colors: [commonIconTint])
+            imageItem.image = UIImage(resource: .Share.linkCircleFill)
             menuButton.setImage(NCUtility().loadImage(named: menuImageName, colors: [commonIconTint]), for: .normal)
         }
 
@@ -78,11 +79,7 @@ class NCShareLinkCell: UITableViewCell {
     
     private func setImageItemForInternalLink() {
         imageItem.contentMode = .scaleAspectFit
-        if traitCollection.userInterfaceStyle == .dark {
-            imageItem.image = UIImage(resource: .Share.squareAndArrowUpCircleFill)
-        } else {
-            imageItem.image = NCUtility().loadImage(named: "square.and.arrow.up.circle.fill", colors: [NCBrandColor.shared.iconImageColor2])
-        }
+        imageItem.image = UIImage(resource: .Share.squareAndArrowUpCircleFill)
     }
 
     @IBAction func touchUpCopy(_ sender: Any) {
