@@ -43,7 +43,7 @@ class NCFilesNavigationController: NCMainNavigationController {
         menuButton.showsMenuAsPrimaryAction = true
 
         notificationsButton.setImage(UIImage(systemName: "bell.fill"), for: .normal)
-        notificationsButton.tintColor = NCBrandColor.shared.iconImageColor
+        notificationsButton.tintColor = NCBrandColor.shared.getElement(account: self.session.account)
         notificationsButton.addAction(UIAction(handler: { _ in
             if let viewController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? NCNotification {
                 viewController.session = self.session
@@ -52,7 +52,7 @@ class NCFilesNavigationController: NCMainNavigationController {
         }), for: .touchUpInside)
 
         transfersButton.setImage(UIImage(systemName: "arrow.left.arrow.right.circle.fill"), for: .normal)
-        transfersButton.tintColor = NCBrandColor.shared.iconImageColor // NCBrandColor.shared.getElement(account: self.session.account)
+        transfersButton.tintColor = NCBrandColor.shared.getElement(account: self.session.account)
         transfersButton.addAction(UIAction(handler: { _ in
             if let navigationController = UIStoryboard(name: "NCTransfers", bundle: nil).instantiateInitialViewController() as? UINavigationController,
                let viewController = navigationController.topViewController as? NCTransfers {
