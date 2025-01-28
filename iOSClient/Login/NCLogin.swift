@@ -81,11 +81,11 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 		// Navigation Controller
 		navigationController?.isNavigationBarHidden = true
 		
-//        if !NCManageDatabase.shared.getAllAccount().isEmpty {
-//            let navigationItemCancel = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(self.actionCancel))
-//            navigationItemCancel.tintColor = textColor
-//            navigationItem.leftBarButtonItem = navigationItemCancel
-//        }
+        if !NCManageDatabase.shared.getAllTableAccount().isEmpty {
+            let navigationItemCancel = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(self.actionCancel))
+            navigationItemCancel.tintColor = textColor
+            navigationItem.leftBarButtonItem = navigationItemCancel
+        }
 
         if let dirGroupApps = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupApps) {
             // Nextcloud update share accounts
