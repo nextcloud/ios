@@ -33,6 +33,10 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
     var dataSourceTask: URLSessionTask?
     var session: NCSession.Session!
 
+    var controller: NCMainTabBarController? {
+        self.tabBarController as? NCMainTabBarController
+    }
+
     // MARK: - View Life Cycle
 
     override func viewDidLoad() {
@@ -69,12 +73,11 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
         if self.notifications.count > 0 {
-            appDelegate.availableNotifications = true
+            controller?.availableNotifications = true
         } else {
-            appDelegate.availableNotifications = false
+            controller?.availableNotifications = false
         }
 
         // Cancel Queue & Retrieves Properties

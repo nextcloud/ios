@@ -42,7 +42,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         return ProcessInfo.processInfo.arguments.contains("UI_TESTING")
     }
     var notificationSettings: UNNotificationSettings?
-    var availableNotifications: Bool = false
 
     var loginFlowV2Token = ""
     var loginFlowV2Endpoint = ""

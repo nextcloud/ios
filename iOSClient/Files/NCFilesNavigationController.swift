@@ -97,7 +97,7 @@ class NCFilesNavigationController: NCMainNavigationController {
         var tempRightBarButtonItems = [self.menuBarButtonItem]
         let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
-        if appDelegate.availableNotifications {
+        if controller?.availableNotifications ?? false {
             tempRightBarButtonItems.append(self.notificationsButtonItem)
         }
 
