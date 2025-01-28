@@ -95,7 +95,6 @@ class NCFilesNavigationController: NCMainNavigationController {
         }
         let resultsCount = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal))?.count ?? 0
         var tempRightBarButtonItems = [self.menuBarButtonItem]
-        let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
         if controller?.availableNotifications ?? false {
             tempRightBarButtonItems.append(self.notificationsButtonItem)
