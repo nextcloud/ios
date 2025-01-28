@@ -226,6 +226,17 @@ class NCService: NSObject {
                 }
             }
 
+            // Notifications
+            NextcloudKit.shared.getNotifications(account: account) { _ in
+            } completion: { _, notifications, _, error in
+                let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+                if error == .success, let notifications = notifications, notifications.count > 0 {
+                    appDelegate.availableNotifications = true
+                } else {
+                    appDelegate.availableNotifications = false
+                }
+            }
+
             // Added UTI for Collabora
             capability.capabilityRichDocumentsMimetypes.forEach { mimeType in
                 NextcloudKit.shared.nkCommonInstance.addInternalTypeIdentifier(typeIdentifier: mimeType, classFile: NKCommon.TypeClassFile.document.rawValue, editor: NCGlobal.shared.editorCollabora, iconName: NKCommon.TypeIconFile.document.rawValue, name: "document", account: account)

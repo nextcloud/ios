@@ -20,10 +20,10 @@ class NCFilesNavigationController: NCMainNavigationController {
         return item
     }
 
-    let notificationButton = UIButton(type: .system)
-    var notificationButtonItem: UIBarButtonItem {
-        let item = UIBarButtonItem(customView: notificationButton)
-        item.tag = notificationButtonTag
+    let notificationsButton = UIButton(type: .system)
+    var notificationsButtonItem: UIBarButtonItem {
+        let item = UIBarButtonItem(customView: notificationsButton)
+        item.tag = notificationsButtonTag
         return item
     }
 
@@ -42,9 +42,9 @@ class NCFilesNavigationController: NCMainNavigationController {
         menuButton.menu = createRightMenu()
         menuButton.showsMenuAsPrimaryAction = true
 
-        notificationButton.setImage(UIImage(systemName: "bell"), for: .normal)
-        notificationButton.tintColor = NCBrandColor.shared.iconImageColor
-        notificationButton.addAction(UIAction(handler: { _ in
+        notificationsButton.setImage(UIImage(systemName: "bell.fill"), for: .normal)
+        notificationsButton.tintColor = NCBrandColor.shared.iconImageColor
+        notificationsButton.addAction(UIAction(handler: { _ in
             if let viewController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? NCNotification {
                 viewController.session = self.session
                 self.pushViewController(viewController, animated: true)
@@ -52,7 +52,7 @@ class NCFilesNavigationController: NCMainNavigationController {
         }), for: .touchUpInside)
 
         transfersButton.setImage(UIImage(systemName: "arrow.left.arrow.right.circle.fill"), for: .normal)
-        transfersButton.tintColor = NCBrandColor.shared.getElement(account: self.session.account)
+        transfersButton.tintColor = NCBrandColor.shared.iconImageColor // NCBrandColor.shared.getElement(account: self.session.account)
         transfersButton.addAction(UIAction(handler: { _ in
             if let navigationController = UIStoryboard(name: "NCTransfers", bundle: nil).instantiateInitialViewController() as? UINavigationController,
                let viewController = navigationController.topViewController as? NCTransfers {
@@ -62,7 +62,7 @@ class NCFilesNavigationController: NCMainNavigationController {
         }), for: .touchUpInside)
 
         self.timerProcess = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
-            self.updateBarButtonVisibility()
+            self.updateRightBarButtonItems()
         })
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadAvatar), object: nil, queue: nil) { notification in
@@ -82,21 +82,29 @@ class NCFilesNavigationController: NCMainNavigationController {
 
     override func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
         super.navigationController(navigationController, willShow: viewController, animated: animated)
-        self.updateBarButtonVisibility()
+        self.updateRightBarButtonItems()
     }
 
     // MARK: -
 
-    func updateBarButtonVisibility() {
+    func updateRightBarButtonItems() {
         let resultsCount = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal))?.count ?? 0
 
         if let collectionViewCommon,
            let rightBarButtonItems = collectionViewCommon.navigationItem.rightBarButtonItems {
-            let existsTransfersButtonItem = rightBarButtonItems.first(where: { $0.tag == self.transfersButtonTag }) != nil
-            if resultsCount > 0, !existsTransfersButtonItem {
-                collectionViewCommon.navigationItem.rightBarButtonItems = [self.menuBarButtonItem, self.notificationButtonItem, self.transfersButtonItem]
-            } else if resultsCount == 0, existsTransfersButtonItem {
-                collectionViewCommon.navigationItem.rightBarButtonItems = [self.menuBarButtonItem, self.notificationButtonItem]
+            var rightBarButtonItems = [self.menuBarButtonItem]
+            let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+
+            if appDelegate.availableNotifications {
+                rightBarButtonItems.append(self.notificationsButtonItem)
+            }
+
+            if resultsCount > 0 {
+                rightBarButtonItems.append(self.transfersButtonItem)
+            }
+
+            if collectionViewCommon.navigationItem.rightBarButtonItems?.count != rightBarButtonItems.count {
+                collectionViewCommon.navigationItem.rightBarButtonItems = rightBarButtonItems
             }
         }
     }
@@ -135,7 +143,7 @@ class NCFilesNavigationController: NCMainNavigationController {
             }
         }
 
-        func createMenu() -> UIMenu? {
+        func createLeftMenu() -> UIMenu? {
             var childrenAccountSubmenu: [UIMenuElement] = []
             let accounts = database.getAllAccountOrderAlias()
             guard !accounts.isEmpty
@@ -196,7 +204,7 @@ class NCFilesNavigationController: NCMainNavigationController {
             accountButton.semanticContentAttribute = .forceLeftToRight
             accountButton.sizeToFit()
 
-            accountButton.menu = createMenu()
+            accountButton.menu = createLeftMenu()
             accountButton.showsMenuAsPrimaryAction = true
 
             accountButton.onMenuOpened = {
@@ -210,7 +218,7 @@ class NCFilesNavigationController: NCMainNavigationController {
 
             let accountButton = self.collectionViewCommon?.navigationItem.leftBarButtonItems?.first?.customView as? UIButton
             accountButton?.setImage(image, for: .normal)
-            accountButton?.menu = createMenu()
+            accountButton?.menu = createLeftMenu()
         }
     }
 
@@ -234,7 +242,7 @@ class NCFilesNavigationController: NCMainNavigationController {
         } else if self.collectionViewCommon?.navigationItem.rightBarButtonItems == nil || (!collectionViewCommon.isEditMode && !(collectionViewCommon.tabBarSelect?.isHidden() ?? true)) {
             collectionViewCommon.tabBarSelect?.hide()
 
-            self.collectionViewCommon?.navigationItem.rightBarButtonItems = [self.menuBarButtonItem, notificationButtonItem]
+            self.collectionViewCommon?.navigationItem.rightBarButtonItems = [self.menuBarButtonItem, notificationsButtonItem]
 
         } else {
 

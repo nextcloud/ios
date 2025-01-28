@@ -27,7 +27,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
 
     let menuButtonTag = 1
     let transfersButtonTag = 2
-    let notificationButtonTag = 3
+    let notificationsButtonTag = 3
 
     override func viewDidLoad() {
         super.viewDidLoad()
