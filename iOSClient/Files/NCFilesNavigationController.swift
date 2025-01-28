@@ -88,24 +88,25 @@ class NCFilesNavigationController: NCMainNavigationController {
     // MARK: -
 
     func updateRightBarButtonItems() {
+        guard let collectionViewCommon,
+              !collectionViewCommon.isEditMode
+        else {
+            return
+        }
         let resultsCount = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal))?.count ?? 0
+        var tempRightBarButtonItems = [self.menuBarButtonItem]
+        let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
-        if let collectionViewCommon,
-           let rightBarButtonItems = collectionViewCommon.navigationItem.rightBarButtonItems {
-            var rightBarButtonItems = [self.menuBarButtonItem]
-            let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+        if appDelegate.availableNotifications {
+            tempRightBarButtonItems.append(self.notificationsButtonItem)
+        }
 
-            if appDelegate.availableNotifications {
-                rightBarButtonItems.append(self.notificationsButtonItem)
-            }
+        if resultsCount > 0 {
+            tempRightBarButtonItems.append(self.transfersButtonItem)
+        }
 
-            if resultsCount > 0 {
-                rightBarButtonItems.append(self.transfersButtonItem)
-            }
-
-            if collectionViewCommon.navigationItem.rightBarButtonItems?.count != rightBarButtonItems.count {
-                collectionViewCommon.navigationItem.rightBarButtonItems = rightBarButtonItems
-            }
+        if collectionViewCommon.navigationItem.rightBarButtonItems?.count != tempRightBarButtonItems.count {
+            collectionViewCommon.navigationItem.rightBarButtonItems = tempRightBarButtonItems
         }
     }
 
@@ -242,7 +243,7 @@ class NCFilesNavigationController: NCMainNavigationController {
         } else if self.collectionViewCommon?.navigationItem.rightBarButtonItems == nil || (!collectionViewCommon.isEditMode && !(collectionViewCommon.tabBarSelect?.isHidden() ?? true)) {
             collectionViewCommon.tabBarSelect?.hide()
 
-            self.collectionViewCommon?.navigationItem.rightBarButtonItems = [self.menuBarButtonItem, notificationsButtonItem]
+            self.updateRightBarButtonItems()
 
         } else {
 
