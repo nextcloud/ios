@@ -42,7 +42,7 @@ class NCService: NSObject {
 
             let result = await requestServerStatus(account: account, controller: controller)
             if result {
-                requestServerCapabilities(account: account)
+                requestServerCapabilities(account: account, controller: controller)
                 getAvatar(account: account)
                 NCNetworkingE2EE().unlockAll(account: account)
                 sendClientDiagnosticsRemoteOperation(account: account)
@@ -163,7 +163,7 @@ class NCService: NSObject {
         }
     }
 
-    private func requestServerCapabilities(account: String) {
+    private func requestServerCapabilities(account: String, controller: NCMainTabBarController?) {
         NextcloudKit.shared.getCapabilities(account: account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, presponseData, error in
             guard error == .success, let data = presponseData?.data else {
                 return
@@ -222,6 +222,17 @@ class NCService: NSObject {
                 NextcloudKit.shared.getUserStatus(account: account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, _, _, error in
                     if error == .success {
                         self.database.setAccountUserStatus(userStatusClearAt: clearAt, userStatusIcon: icon, userStatusMessage: message, userStatusMessageId: messageId, userStatusMessageIsPredefined: messageIsPredefined, userStatusStatus: status, userStatusStatusIsUserDefined: statusIsUserDefined, account: account)
+                    }
+                }
+            }
+
+            // Notifications
+            controller?.availableNotifications = false
+            if capability.capabilityNotification.count > 0 {
+                NextcloudKit.shared.getNotifications(account: account) { _ in
+                } completion: { _, notifications, _, error in
+                    if error == .success, let notifications = notifications, notifications.count > 0 {
+                        controller?.availableNotifications = true
                     }
                 }
             }
