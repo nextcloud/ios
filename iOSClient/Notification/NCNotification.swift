@@ -69,6 +69,13 @@ class NCNotification: UITableViewController, NCNotificationCellDelegate {
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
+
+        if self.notifications.count > 0 {
+            appDelegate.availableNotifications = true
+        } else {
+            appDelegate.availableNotifications = false
+        }
 
         // Cancel Queue & Retrieves Properties
         dataSourceTask?.cancel()
