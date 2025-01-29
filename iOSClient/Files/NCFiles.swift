@@ -141,7 +141,7 @@ class NCFiles: NCCollectionViewCommon {
         let dataSourceMetadatas = self.dataSource.getMetadatas()
 
         if NCKeychain().getPersonalFilesOnly(account: session.account) {
-            predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND (ownerId == %@ || ownerId == '') AND mountType == '' AND NOT (status IN %@)", session.account, self.serverUrl, session.userId, global.metadataStatusHideInView)
+            predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND (ownerId == %@ || ownerId == '') AND mountType == '' AND NOT (status IN %@) AND NOT (livePhotoFile != '' AND classFile == %@)", session.account, self.serverUrl, session.userId, global.metadataStatusHideInView, NKCommon.TypeClassFile.video.rawValue)
         }
 
         self.metadataFolder = database.getMetadataFolder(session: session, serverUrl: self.serverUrl)
