@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>In order to measure the quality of the programming of the app and to find crashes and errors and their cause, anonymized data from the program flow is evaluated. At no time are individual users identified, your identity remains protected.</string>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
 		<string>com.nextcloud.refreshTask</string>
@@ -43,9 +45,7 @@
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
-	<true/>
-	<key>ITSEncryptionExportComplianceCode</key>
-	<string>8e9f9874-938e-460b-a9be-f82cb3393971</string>
+	<false/>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>nextcloudtalk</string>
