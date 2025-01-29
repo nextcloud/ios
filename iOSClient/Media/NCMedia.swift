@@ -151,8 +151,9 @@ class NCMedia: UIViewController {
 
         NotificationCenter.default.addObserver(self, selector: #selector(networkRemoveAll), name: UIApplication.didEnterBackgroundNotification, object: nil)
         
-        accountButtonFactory = AccountButtonFactory(onAccountDetailsOpen: { [weak self] in self?.setEditMode(false) },
-                                                          presentVC: { [weak self] vc in self?.present(vc, animated: true) })
+        accountButtonFactory = AccountButtonFactory(controller: controller,
+                                                    onAccountDetailsOpen: { [weak self] in self?.setEditMode(false) },
+                                                    presentVC: { [weak self] vc in self?.present(vc, animated: true) })
     }
 
     override func viewWillAppear(_ animated: Bool) {

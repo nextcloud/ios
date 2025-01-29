@@ -16,15 +16,17 @@ class AccountButtonFactory {
     let database = NCManageDatabase.shared
     let utility = NCUtility()
     let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
-    var controller: NCMainTabBarController?
+    private let controller: NCMainTabBarController?
     
     private var onAccountDetailsOpen: (() -> Void)
     private var presentVC: ((UIViewController) -> Void)
     private var onMenuOpened: (() -> Void)?
     
-    init(onAccountDetailsOpen: (@escaping () -> Void),
+    init(controller: NCMainTabBarController?,
+         onAccountDetailsOpen: (@escaping () -> Void),
          presentVC: (@escaping (UIViewController) -> Void),
          onMenuOpened: (() -> Void)? = nil) {
+        self.controller = controller
         self.onAccountDetailsOpen = onAccountDetailsOpen
         self.presentVC = presentVC
         self.onMenuOpened = onMenuOpened

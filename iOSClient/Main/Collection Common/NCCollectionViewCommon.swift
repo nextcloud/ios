@@ -251,9 +251,10 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
             self.collectionView?.collectionViewLayout.invalidateLayout()
         }
         
-        accountButtonFactory = AccountButtonFactory(onAccountDetailsOpen: { [weak self] in self?.setEditMode(false) },
-                                                          presentVC: { [weak self] vc in self?.present(vc, animated: true) },
-                                                          onMenuOpened: { [weak self] in self?.dismissTip() })
+        accountButtonFactory = AccountButtonFactory(controller: controller,
+                                                    onAccountDetailsOpen: { [weak self] in self?.setEditMode(false) },
+                                                    presentVC: { [weak self] vc in self?.present(vc, animated: true) },
+                                                    onMenuOpened: { [weak self] in self?.dismissTip() })
     }
 
     override func viewWillAppear(_ animated: Bool) {
