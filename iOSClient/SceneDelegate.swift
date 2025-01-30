@@ -38,7 +38,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene),
               let appDelegate else { return }
+
         self.window = UIWindow(windowScene: windowScene)
+        if !NCKeychain().appearanceAutomatic {
+            self.window?.overrideUserInterfaceStyle = NCKeychain().appearanceInterfaceStyle
+        }
 
         if let activeTableAccount = self.database.getActiveTableAccount() {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Account active \(activeTableAccount.account)")
@@ -54,6 +58,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                                                   password: NCKeychain().getPassword(account: tableAccount.account),
                                                   userAgent: userAgent,
                                                   nextcloudVersion: capability?.capabilityServerVersionMajor ?? 0,
+                                                  httpMaximumConnectionsPerHost: NCBrandOptions.shared.httpMaximumConnectionsPerHost,
+                                                  httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
+                                                  httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
                                                   groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
                 NCSession.shared.appendSession(account: tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, userId: tableAccount.userId)
             }
@@ -61,10 +68,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             /// Main.storyboard
             if let controller = UIStoryboard(name: "Main", bundle: nil).instantiateInitialViewController() as? NCMainTabBarController {
                 SceneManager.shared.register(scene: scene, withRootViewController: controller)
-                window?.rootViewController = controller
-                window?.makeKeyAndVisible()
                 /// Set the ACCOUNT
                 controller.account = activeTableAccount.account
+                ///
+                window?.rootViewController = controller
+                window?.makeKeyAndVisible()
             }
         } else {
             NCKeychain().removeAll()

@@ -139,6 +139,9 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
                                       password: password,
                                       userAgent: userAgent,
                                       nextcloudVersion: capabilities.capabilityServerVersionMajor,
+                                      httpMaximumConnectionsPerHost: NCBrandOptions.shared.httpMaximumConnectionsPerHost,
+                                      httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
+                                      httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
                                       groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
     // LOG

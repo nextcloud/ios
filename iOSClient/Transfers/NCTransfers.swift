@@ -34,7 +34,6 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         layoutKey = NCGlobal.shared.layoutViewTransfers
         enableSearchBar = false
         headerRichWorkspaceDisable = true
-        headerMenuTransferView = false
         emptyImageName = "arrow.left.arrow.right.circle"
         emptyTitle = "_no_transfer_"
         emptyDescription = "_no_transfer_sub_"
@@ -48,6 +47,13 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         listLayout.itemHeight = 105
         self.database.setLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl, layout: NCGlobal.shared.layoutList)
         self.navigationItem.title = titleCurrentFolder
+        navigationController?.navigationBar.tintColor = NCBrandColor.shared.iconImageColor
+
+        let close = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .done) {
+            self.dismiss(animated: true)
+        }
+
+        self.navigationItem.leftBarButtonItems = [close]
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -56,9 +62,16 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         reloadDataSource()
     }
 
-    override func setNavigationLeftItems() {
-        self.navigationItem.rightBarButtonItem = nil
-        self.navigationItem.leftBarButtonItem = nil
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        NotificationCenter.default.addObserver(self, selector: #selector(triggerProgressTask(_:)), name: NSNotification.Name(rawValue: global.notificationCenterProgressTask), object: nil)
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+
+        NotificationCenter.default.removeObserver(self, name: NSNotification.Name(rawValue: global.notificationCenterProgressTask), object: nil)
     }
 
     // MARK: - NotificationCenter
@@ -115,7 +128,7 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         reloadDataSource()
     }
 
-    override func triggerProgressTask(_ notification: NSNotification) {
+    @objc func triggerProgressTask(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
               let progressNumber = userInfo["progress"] as? NSNumber,
               let totalBytes = userInfo["totalBytes"] as? Int64,
@@ -321,8 +334,10 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
     // MARK: - DataSource
 
     override func reloadDataSource() {
+        let directoryOnTop = NCKeychain().getDirectoryOnTop(account: session.account)
+
         if let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal), sortedByKeyPath: "sessionDate", ascending: true) {
-            self.dataSource = NCCollectionViewDataSource(metadatas: Array(results.freeze()), layoutForView: layoutForView)
+            self.dataSource = NCCollectionViewDataSource(metadatas: Array(results.freeze()), layoutForView: layoutForView, directoryOnTop: directoryOnTop)
         } else {
             self.dataSource.removeAll()
         }
