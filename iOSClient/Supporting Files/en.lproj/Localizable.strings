@@ -1125,7 +1125,7 @@
 
 // MARK: Client certificate
 "_no_client_cert_found_"         = "The server is requesting a client certificate";
-"_no_client_cert_found_desc_"    = "Do you want to install a TLS client certificate? \n Note that only .p12 archives created through OpenSSL with the -legacy flag can work on Apple devices.";
+"_no_client_cert_found_desc_"    = "Do you want to install a TLS client certificate? \n Note that the .p12 certificate must be installed on your device first by clicking on it and installing it as an Identitity Certificate Profile in Settings. The certificate MUST also have a password as that is a requirement by iOS.";
 "_client_cert_enter_password_"   = "Enter the password for the chosen certificate";
 "_client_cert_wrong_password_"   = "Sorry, you entered an invalid password";
 
