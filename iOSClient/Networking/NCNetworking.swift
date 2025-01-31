@@ -31,7 +31,7 @@ import Queuer
 @objc protocol uploadE2EEDelegate: AnyObject { }
 #endif
 
-@objc protocol NCNetworkingDelegate {
+protocol NCNetworkingDelegate {
     func downloadProgress(_ progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String, session: URLSession, task: URLSessionTask)
     func uploadProgress(_ progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String, session: URLSession, task: URLSessionTask)
     func downloadComplete(fileName: String, serverUrl: String, etag: String?, date: Date?, dateLastModified: Date?, length: Int64, task: URLSessionTask, error: NKError)
@@ -71,7 +71,7 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
     var requestsUnifiedSearch: [DataRequest] = []
     var lastReachability: Bool = true
     var networkReachability: NKCommon.TypeReachability?
-    weak var delegate: NCNetworkingDelegate?
+    var delegate: NCNetworkingDelegate?
     weak var certificateDelegate: ClientCertificateDelegate?
     var p12Data: Data?
     var p12Password: String?
