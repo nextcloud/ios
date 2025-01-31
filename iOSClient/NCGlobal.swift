@@ -23,7 +23,7 @@
 
 import UIKit
 
-class NCGlobal: NSObject {
+final class NCGlobal: NSObject, Sendable {
     static let shared = NCGlobal()
 
     // ENUM

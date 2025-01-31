@@ -33,7 +33,7 @@ protocol DateCompareable {
     var dateKey: Date { get }
 }
 
-class NCManageDatabase: NSObject {
+final class NCManageDatabase: NSObject, Sendable {
     @objc static let shared: NCManageDatabase = {
         let instance = NCManageDatabase()
         return instance
