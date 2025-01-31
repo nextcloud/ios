@@ -15,10 +15,10 @@ import UIKit
         super.init()
         
         brand = "IONOS HiDrive Next"
-        textCopyrightNextcloudiOS = "Nextcloud Hydrogen for iOS %@ © 2024"
-        loginBaseUrl = "https://nextcloud-aio.iocaste45.de"
-        privacy = "https://nextcloud.com/privacy"
-        sourceCode = "https://github.com/nextcloud/ios"
+        textCopyrightNextcloudiOS = "HiDrive Next iOS %@ © 2024"
+        loginBaseUrl = "https://easy-qa-1.nextcloud-ionos.com"
+        privacy = "https://wl.hidrive.com/easy/ios/privacy.html"
+        sourceCode = "https://wl.hidrive.com/easy/0181"
 
         disable_intro = true
         disable_request_login_url = true
