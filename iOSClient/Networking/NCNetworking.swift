@@ -44,7 +44,7 @@ protocol NCNetworkingDelegate {
 }
 
 @objcMembers
-class NCNetworking: NSObject, NextcloudKitDelegate {
+final class NCNetworking: NSObject, NextcloudKitDelegate {
     public static let shared: NCNetworking = {
         let instance = NCNetworking()
         NotificationCenter.default.addObserver(instance, selector: #selector(applicationDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
