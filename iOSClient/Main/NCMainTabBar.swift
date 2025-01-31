@@ -189,7 +189,7 @@ class NCMainTabBar: UITabBar {
                 let fileFolderPath = NCUtilityFileSystem().getFileNamePath("", serverUrl: serverUrl, session: NCSession.shared.getSession(controller: controller))
                 let fileFolderName = (serverUrl as NSString).lastPathComponent
 
-                if !FileNameValidator.shared.checkFolderPath(fileFolderPath, account: controller.account) {
+                if !FileNameValidator.checkFolderPath(fileFolderPath, account: controller.account) {
                     controller.present(UIAlertController.warning(message: "\(String(format: NSLocalizedString("_file_name_validator_error_reserved_name_", comment: ""), fileFolderName)) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
 
                     return

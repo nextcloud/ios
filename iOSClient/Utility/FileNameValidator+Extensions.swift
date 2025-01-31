@@ -9,13 +9,13 @@
 import NextcloudKit
 
 extension FileNameValidator {
-    func checkFileName(_ filename: String, account: String?) -> NKError? {
+    static func checkFileName(_ filename: String, account: String?) -> NKError? {
         let capabilities = NCCapabilities.shared.getCapabilities(account: account)
         let fileNameValidator = FileNameValidator(forbiddenFileNames: capabilities.capabilityForbiddenFileNames, forbiddenFileNameBasenames: capabilities.capabilityForbiddenFileNameBasenames, forbiddenFileNameCharacters: capabilities.capabilityForbiddenFileNameCharacters, forbiddenFileNameExtensions: capabilities.capabilityForbiddenFileNameExtensions)
         return fileNameValidator.checkFileName(filename)
     }
 
-    func checkFolderPath(_ folderPath: String, account: String?) -> Bool {
+    static func checkFolderPath(_ folderPath: String, account: String?) -> Bool {
         let capabilities = NCCapabilities.shared.getCapabilities(account: account)
         let fileNameValidator = FileNameValidator(forbiddenFileNames: capabilities.capabilityForbiddenFileNames, forbiddenFileNameBasenames: capabilities.capabilityForbiddenFileNameBasenames, forbiddenFileNameCharacters: capabilities.capabilityForbiddenFileNameCharacters, forbiddenFileNameExtensions: capabilities.capabilityForbiddenFileNameExtensions)
         return fileNameValidator.checkFolderPath(folderPath)

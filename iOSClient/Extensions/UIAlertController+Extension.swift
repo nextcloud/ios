@@ -102,8 +102,8 @@ extension UIAlertController {
             queue: .main) { _ in
                 guard let text = alertController.textFields?.first?.text else { return }
                 let folderName = text.trimmingCharacters(in: .whitespaces)
-                let isFileHidden = FileNameValidator.shared.isFileHidden(text)
-                let textCheck = FileNameValidator.shared.checkFileName(folderName, account: session.account)
+                let isFileHidden = FileNameValidator.isFileHidden(text)
+                let textCheck = FileNameValidator.checkFileName(folderName, account: session.account)
 
                 okAction.isEnabled = !text.isEmpty && textCheck?.error == nil
 
@@ -206,7 +206,7 @@ extension UIAlertController {
         let oldExtension = fileName.fileExtension
 
         let text = alertController.textFields?.first?.text ?? ""
-        let textCheck = FileNameValidator.shared.checkFileName(text, account: account)
+        let textCheck = FileNameValidator.checkFileName(text, account: account)
         var message = textCheck?.error.localizedDescription ?? ""
         var messageColor = UIColor.red
 
@@ -236,8 +236,8 @@ extension UIAlertController {
                 guard let text = alertController.textFields?.first?.text else { return }
                 let newExtension = text.fileExtension
 
-                let textCheck = FileNameValidator.shared.checkFileName(text, account: account)
-                let isFileHidden = FileNameValidator.shared.isFileHidden(text)
+                let textCheck = FileNameValidator.checkFileName(text, account: account)
+                let isFileHidden = FileNameValidator.isFileHidden(text)
 
                 okAction.isEnabled = !text.isEmpty && textCheck?.error == nil
 
