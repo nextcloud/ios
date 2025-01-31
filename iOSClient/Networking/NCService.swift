@@ -22,7 +22,7 @@
 //
 
 import UIKit
-import NextcloudKit
+@preconcurrency import NextcloudKit
 import RealmSwift
 
 class NCService: NSObject {

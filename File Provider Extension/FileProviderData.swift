@@ -115,7 +115,6 @@ class fileProviderData: NSObject {
                                           httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
                                           httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
                                           groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
-        NCNetworking.shared.delegate = providerExtension as? NCNetworkingDelegate
 
         return tableAccount(value: tblAccount)
     }
