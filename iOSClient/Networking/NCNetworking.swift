@@ -36,18 +36,12 @@ import Queuer
     func didAskForClientCertificate()
 }
 
-@objcMembers
-final class NCNetworking: NSObject, NextcloudKitDelegate {
-    public static let shared: NCNetworking = {
-        let instance = NCNetworking()
-        NotificationCenter.default.addObserver(instance, selector: #selector(applicationDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
-        return instance
-    }()
+class NCNetworking: AnyObject, @unchecked Sendable, NextcloudKitDelegate {
+    static let shared = NCNetworking()
 
     struct FileNameServerUrl: Hashable {
         var fileName: String
         var serverUrl: String
-
     }
 
     let sessionDownload = NextcloudKit.shared.nkCommonInstance.identifierSessionDownload
@@ -89,26 +83,22 @@ final class NCNetworking: NSObject, NextcloudKitDelegate {
 
     // MARK: - init
 
-    override init() {
-        super.init()
-
+    init() {
         if let account = database.getActiveTableAccount()?.account {
             getActiveAccountCertificate(account: account)
         }
 
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: global.notificationCenterChangeUser), object: nil, queue: nil) { notification in
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: global.notificationCenterChangeUser), object: nil, queue: .main) { notification in
             if let userInfo = notification.userInfo {
                 if let account = userInfo["account"] as? String {
                     self.getActiveAccountCertificate(account: account)
                 }
             }
         }
-    }
 
-    // MARK: - NotificationCenter
-
-    func applicationDidEnterBackground() {
-        NCTransferProgress.shared.clearAllCountError()
+        NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { _ in
+            NCTransferProgress.shared.clearAllCountError()
+        }
     }
 
     // MARK: - Communication Delegate
