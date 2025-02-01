@@ -231,7 +231,17 @@ extension NCNetworking {
                                                                        "account": metadata.account],
                                                             second: 0.5)
             } else {
+                if error.errorCode == 401,
+                   let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) {
+                    var unauthorizedArray = groupDefaults.array(forKey: "Unauthorized") as? [String] ?? []
+                    if !unauthorizedArray.contains(metadata.account) {
+                        unauthorizedArray.append(metadata.account)
+                        groupDefaults.set(unauthorizedArray, forKey: "Unauthorized")
+                    }
+                }
+
                 NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
+
                 self.database.setMetadataSession(ocId: metadata.ocId,
                                                  session: "",
                                                  sessionTaskIdentifier: 0,
