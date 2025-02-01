@@ -23,7 +23,7 @@
 
 import UIKit
 
-final class NCGlobal: NSObject, Sendable {
+final class NCGlobal: Sendable {
     static let shared = NCGlobal()
 
     // ENUM
@@ -422,5 +422,4 @@ final class NCGlobal: NSObject, Sendable {
     let taskDescriptionRetrievesProperties  = "retrievesProperties"
     let taskDescriptionSynchronization      = "synchronization"
     let taskDescriptionDeleteFileOrFolder   = "deleteFileOrFolder"
-
 }

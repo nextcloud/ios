@@ -36,7 +36,7 @@ import Queuer
     func didAskForClientCertificate()
 }
 
-class NCNetworking: AnyObject, @unchecked Sendable, NextcloudKitDelegate {
+class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
     static let shared = NCNetworking()
 
     struct FileNameServerUrl: Hashable {
