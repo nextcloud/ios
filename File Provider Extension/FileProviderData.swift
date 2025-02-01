@@ -103,7 +103,7 @@ class fileProviderData: NSObject {
 
         self.account = tblAccount.account
         /// NextcloudKit Session
-        NextcloudKit.shared.setup(delegate: NCNetworking.shared)
+        NextcloudKit.shared.setup(groupIdentifier: NCBrandOptions.shared.capabilitiesGroup, delegate: NCNetworking.shared)
         NextcloudKit.shared.appendSession(account: tblAccount.account,
                                           urlBase: tblAccount.urlBase,
                                           user: tblAccount.user,
