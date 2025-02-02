@@ -37,6 +37,8 @@ class NCMainTabBarController: UITabBarController {
     var documentPickerViewController: NCDocumentPickerViewController?
     let navigationCollectionViewCommon = ThreadSafeArray<NavigationCollectionViewCommon>()
     private var previousIndex: Int?
+    private var timerProcess: Timer?
+    private let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup)
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
@@ -51,6 +53,8 @@ class NCMainTabBarController: UITabBarController {
         if #available(iOS 17.0, *) {
             traitOverrides.horizontalSizeClass = .compact
         }
+
+        startTimer()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -93,6 +97,15 @@ class NCMainTabBarController: UITabBarController {
             }
         }
         return serverUrl
+    }
+
+    func startTimer() {
+        self.timerProcess = Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { [weak self] _ in
+            guard let self = self else { return }
+
+
+            self.startTimer()
+        }
     }
 }
 
