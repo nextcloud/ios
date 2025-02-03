@@ -43,7 +43,25 @@ class NCMainTabBarController: UITabBarController {
     required init?(coder: NSCoder) {
         super.init(coder: coder)
 
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil, queue: .main) { [weak self] notification in
+            if let userInfo = notification.userInfo as? NSDictionary,
+               let account = userInfo["account"] as? String,
+               let tabBar = self?.tabBar as? NCMainTabBar,
+               self?.account == account {
+                let color = NCBrandColor.shared.getElement(account: account)
+                tabBar.color = color
+                tabBar.tintColor = color
+                tabBar.setNeedsDisplay()
+            }
+        }
+
+        NotificationCenter.default.addObserver(forName: UserDefaults.didChangeNotification, object: UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup), queue: nil) { [weak self] _ in
+            self?.userDefaultsDidChange()
+        }
+
+        NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil) { [weak self] _ in
+            self?.userDefaultsDidChange()
+        }
     }
 
     override func viewDidLoad() {
@@ -53,8 +71,6 @@ class NCMainTabBarController: UITabBarController {
         if #available(iOS 17.0, *) {
             traitOverrides.horizontalSizeClass = .compact
         }
-
-        startTimer()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -66,20 +82,6 @@ class NCMainTabBarController: UITabBarController {
             vc.isModalInPresentation = true
 
             present(vc, animated: true)
-        }
-    }
-
-    @objc func changeTheming(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as? NSDictionary else { return }
-        let account = userInfo["account"] as? String
-
-        if let tabBar = self.tabBar as? NCMainTabBar,
-           self.account == account {
-            let color = NCBrandColor.shared.getElement(account: account)
-            tabBar.color = color
-            tabBar.tintColor = color
-
-            tabBar.setNeedsDisplay()
         }
     }
 
@@ -99,12 +101,23 @@ class NCMainTabBarController: UITabBarController {
         return serverUrl
     }
 
-    func startTimer() {
-        self.timerProcess = Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { [weak self] _ in
-            guard let self = self else { return }
+    private func userDefaultsDidChange() {
+        let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup)
+        let unauthorizedArray = groupDefaults?.array(forKey: "Unauthorized") as? [String] ?? []
+        var unavailableArray = groupDefaults?.array(forKey: "Unavailable") as? [String] ?? []
+        let session = NCSession.shared.getSession(account: self.account)
 
-
-            self.startTimer()
+        if unavailableArray.contains(account) {
+            Task {
+                let serverUrlFileName = NCUtilityFileSystem().getHomeServer(session: session)
+                let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles, account: self.account)
+                if results.error == .success {
+                    unavailableArray.removeAll { $0 == account }
+                    groupDefaults?.set(unavailableArray, forKey: "Unavailable")
+                } else {
+                    NCContentPresenter().showWarning(error: results.error, priority: .max)
+                }
+            }
         }
     }
 }

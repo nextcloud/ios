@@ -146,21 +146,6 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
 #endif
     }
 
-    func request<Value>(_ request: Alamofire.DataRequest, didParseResponse response: Alamofire.AFDataResponse<Value>) {
-        /// GLOBAL RESPONSE ERROR
-        if let statusCode = response.response?.statusCode {
-            switch statusCode {
-            case NCGlobal.shared.errorMaintenance:
-                if let errorDescription = NKError.getErrorDescription(for: statusCode) {
-                    let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: errorDescription)
-                    NCContentPresenter().showWarning(error: error, priority: .max)
-                }
-            default:
-                break
-            }
-        }
-    }
-
     // MARK: -
 
     func cancelAllQueue() {
