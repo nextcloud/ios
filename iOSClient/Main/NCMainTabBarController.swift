@@ -23,6 +23,7 @@
 
 import UIKit
 import SwiftUI
+import NextcloudKit
 
 struct NavigationCollectionViewCommon {
     var serverUrl: String
@@ -103,20 +104,29 @@ class NCMainTabBarController: UITabBarController {
 
     private func userDefaultsDidChange() {
         let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup)
-        let unauthorizedArray = groupDefaults?.array(forKey: "Unauthorized") as? [String] ?? []
+        var unauthorizedArray = groupDefaults?.array(forKey: "Unauthorized") as? [String] ?? []
         var unavailableArray = groupDefaults?.array(forKey: "Unavailable") as? [String] ?? []
         let session = NCSession.shared.getSession(account: self.account)
 
         if unavailableArray.contains(account) {
             Task {
                 let serverUrlFileName = NCUtilityFileSystem().getHomeServer(session: session)
-                let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles, account: self.account)
+                let options = NKRequestOptions(checkUnauthorized: false)
+                let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles, account: self.account, options: options)
                 if results.error == .success {
                     unavailableArray.removeAll { $0 == account }
                     groupDefaults?.set(unavailableArray, forKey: "Unavailable")
                 } else {
                     NCContentPresenter().showWarning(error: results.error, priority: .max)
                 }
+            }
+        }
+
+        if unauthorizedArray.contains(account) {
+            Task {
+                let options = NKRequestOptions(checkUnauthorized: false)
+                let results = await NCNetworking.shared.getUserProfile(account: account, options: options)
+                print(results)
             }
         }
     }
