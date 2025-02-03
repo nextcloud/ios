@@ -37,13 +37,22 @@ class NCAccount: NSObject {
         if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
         let account: String = "\(user) \(urlBase)"
 
-        /// Remove account if is unauthorized
+        /// Remove account ion groupDefaults
         ///
-        if let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup),
-           var unauthorizedArray = groupDefaults.array(forKey: "Unauthorized") as? [String],
-           let index = unauthorizedArray.firstIndex(of: account) {
-            unauthorizedArray.remove(at: index)
-            groupDefaults.set(unauthorizedArray, forKey: "Unauthorized")
+        if let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) {
+            var unauthorizedArray = groupDefaults.array(forKey: "Unauthorized") as? [String] ?? []
+            var unavailableArray = groupDefaults.array(forKey: "Unavailable") as? [String] ?? []
+
+            if let index = unauthorizedArray.firstIndex(of: account) {
+                unauthorizedArray.remove(at: index)
+                groupDefaults.set(unauthorizedArray, forKey: "Unauthorized")
+            }
+
+            if let index = unavailableArray.firstIndex(of: account) {
+                unavailableArray.remove(at: index)
+                groupDefaults.set(unavailableArray, forKey: "Unavailable")
+            }
+
             groupDefaults.synchronize()
         }
 

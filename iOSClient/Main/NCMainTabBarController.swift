@@ -100,12 +100,16 @@ class NCMainTabBarController: UITabBarController {
 
     private func userDefaultsDidChange() {
         let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup)
-        var unauthorizedArray = groupDefaults?.array(forKey: "Unauthorized") as? [String] ?? []
+        let unauthorizedArray = groupDefaults?.array(forKey: "Unauthorized") as? [String] ?? []
         var unavailableArray = groupDefaults?.array(forKey: "Unavailable") as? [String] ?? []
         let session = NCSession.shared.getSession(account: self.account)
 
-
-        if unavailableArray.contains(self.account) {
+        if unauthorizedArray.contains(account) {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] The server has response with Unauthorized go checkRemoteUser")
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                NCNetworkingCheckRemoteUser().checkRemoteUser(account: self.account, controller: self)
+            }
+        } else if unavailableArray.contains(self.account) {
             Task {
                 let serverUrlFileName = NCUtilityFileSystem().getHomeServer(session: session)
                 let options = NKRequestOptions(checkUnauthorized: false)
@@ -116,11 +120,6 @@ class NCMainTabBarController: UITabBarController {
                 } else {
                     NCContentPresenter().showWarning(error: results.error, priority: .max)
                 }
-            }
-        } else if unauthorizedArray.contains(account) {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] The server has response with Unauthorized go checkRemoteUser")
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                NCNetworkingCheckRemoteUser().checkRemoteUser(account: self.account, controller: self)
             }
         }
     }
