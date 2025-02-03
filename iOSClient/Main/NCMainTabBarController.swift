@@ -41,6 +41,7 @@ class NCMainTabBarController: UITabBarController {
     private var timerProcess: Timer?
     private let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup)
     private var unauthorizedAccountInProgress: Bool = false
+    private var unavailableAccountInProgress: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -114,6 +115,8 @@ class NCMainTabBarController: UITabBarController {
                 }
             }
         } else if unavailableArray.contains(self.account) {
+            guard !unavailableAccountInProgress else { return }
+            unavailableAccountInProgress = true
             Task {
                 let serverUrlFileName = NCUtilityFileSystem().getHomeServer(session: session)
                 let options = NKRequestOptions(checkUnauthorized: false)
@@ -124,6 +127,7 @@ class NCMainTabBarController: UITabBarController {
                 } else {
                     NCContentPresenter().showWarning(error: results.error, priority: .max)
                 }
+                unavailableAccountInProgress = false
             }
         }
     }
