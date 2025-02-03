@@ -40,6 +40,7 @@ class NCMainTabBarController: UITabBarController {
     private var previousIndex: Int?
     private var timerProcess: Timer?
     private let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup)
+    private var unauthorizedAccountInProgress: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -105,9 +106,12 @@ class NCMainTabBarController: UITabBarController {
         let session = NCSession.shared.getSession(account: self.account)
 
         if unauthorizedArray.contains(account) {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] The server has response with Unauthorized go checkRemoteUser")
+            guard !unauthorizedAccountInProgress else { return }
+            unauthorizedAccountInProgress = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                NCNetworkingCheckRemoteUser().checkRemoteUser(account: self.account, controller: self)
+                NCNetworkingCheckRemoteUser().checkRemoteUser(account: self.account, controller: self) {
+                    self.unauthorizedAccountInProgress = false
+                }
             }
         } else if unavailableArray.contains(self.account) {
             Task {

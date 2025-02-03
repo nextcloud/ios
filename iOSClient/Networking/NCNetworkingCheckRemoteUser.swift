@@ -25,11 +25,13 @@ import UIKit
 import NextcloudKit
 
 class NCNetworkingCheckRemoteUser {
-    func checkRemoteUser(account: String, controller: NCMainTabBarController?) {
+    func checkRemoteUser(account: String, controller: NCMainTabBarController?, completion: @escaping () -> Void = {}) {
         let token = NCKeychain().getPassword(account: account)
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate,
               let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
-              !token.isEmpty else { return }
+              !token.isEmpty else {
+            return completion()
+        }
 
         if UIApplication.shared.applicationState == .active && NextcloudKit.shared.isNetworkReachable() {
 
@@ -51,7 +53,12 @@ class NCNetworkingCheckRemoteUser {
                 } else {
                     appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
                 }
+
+                completion()
             }
+        } else {
+
+            completion()
         }
     }
 }

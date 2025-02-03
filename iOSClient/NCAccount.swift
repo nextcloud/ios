@@ -43,15 +43,11 @@ class NCAccount: NSObject {
             var unauthorizedArray = groupDefaults.array(forKey: "Unauthorized") as? [String] ?? []
             var unavailableArray = groupDefaults.array(forKey: "Unavailable") as? [String] ?? []
 
-            if let index = unauthorizedArray.firstIndex(of: account) {
-                unauthorizedArray.remove(at: index)
-                groupDefaults.set(unauthorizedArray, forKey: "Unauthorized")
-            }
+            unauthorizedArray.removeAll { $0 == account }
+            groupDefaults.set(unauthorizedArray, forKey: "Unauthorized")
 
-            if let index = unavailableArray.firstIndex(of: account) {
-                unavailableArray.remove(at: index)
-                groupDefaults.set(unavailableArray, forKey: "Unavailable")
-            }
+            unavailableArray.removeAll { $0 == account }
+            groupDefaults.set(unavailableArray, forKey: "Unavailable")
 
             groupDefaults.synchronize()
         }
