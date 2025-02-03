@@ -25,7 +25,7 @@ import UIKit
 import NextcloudKit
 
 class NCNetworkingCheckRemoteUser {
-    func checkRemoteUser(account: String, controller: NCMainTabBarController?, error: NKError) {
+    func checkRemoteUser(account: String, controller: NCMainTabBarController?) {
         let token = NCKeychain().getPassword(account: account)
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate,
               let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account)),
@@ -33,8 +33,8 @@ class NCNetworkingCheckRemoteUser {
         let titleNotification = String(format: NSLocalizedString("_account_unauthorized_", comment: ""), account)
 
         if UIApplication.shared.applicationState == .active && NextcloudKit.shared.isNetworkReachable() {
-
-            NCContentPresenter().messageNotification(titleNotification, error: error, delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, priority: .max)
+            
+            //NCContentPresenter().messageNotification(titleNotification, error: error, delay: NCGlobal.shared.dismissAfterSecondLong, type: NCContentPresenter.messageType.error, priority: .max)
 
             NextcloudKit.shared.getRemoteWipeStatus(serverUrl: tableAccount.urlBase, token: token, account: tableAccount.account) { account, wipe, _, error in
                 NCAccount().deleteAccount(account, wipe: wipe)

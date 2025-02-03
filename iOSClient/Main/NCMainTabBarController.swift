@@ -41,8 +41,13 @@ class NCMainTabBarController: UITabBarController {
     private var timerProcess: Timer?
     private let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup)
 
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        delegate = self
+
+        if #available(iOS 17.0, *) {
+            traitOverrides.horizontalSizeClass = .compact
+        }
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil, queue: .main) { [weak self] notification in
             if let userInfo = notification.userInfo as? NSDictionary,
@@ -56,21 +61,12 @@ class NCMainTabBarController: UITabBarController {
             }
         }
 
-        NotificationCenter.default.addObserver(forName: UserDefaults.didChangeNotification, object: UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup), queue: nil) { [weak self] _ in
-            self?.userDefaultsDidChange()
-        }
-
         NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil) { [weak self] _ in
             self?.userDefaultsDidChange()
         }
-    }
 
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        delegate = self
-
-        if #available(iOS 17.0, *) {
-            traitOverrides.horizontalSizeClass = .compact
+        NotificationCenter.default.addObserver(forName: UserDefaults.didChangeNotification, object: nil, queue: nil) { [weak self] _ in
+            self?.userDefaultsDidChange()
         }
     }
 
@@ -108,25 +104,23 @@ class NCMainTabBarController: UITabBarController {
         var unavailableArray = groupDefaults?.array(forKey: "Unavailable") as? [String] ?? []
         let session = NCSession.shared.getSession(account: self.account)
 
-        if unavailableArray.contains(account) {
+
+        if unavailableArray.contains(self.account) {
             Task {
                 let serverUrlFileName = NCUtilityFileSystem().getHomeServer(session: session)
                 let options = NKRequestOptions(checkUnauthorized: false)
                 let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles, account: self.account, options: options)
                 if results.error == .success {
-                    unavailableArray.removeAll { $0 == account }
+                    unavailableArray.removeAll { $0 == results.account }
                     groupDefaults?.set(unavailableArray, forKey: "Unavailable")
                 } else {
                     NCContentPresenter().showWarning(error: results.error, priority: .max)
                 }
             }
-        }
-
-        if unauthorizedArray.contains(account) {
-            Task {
-                let options = NKRequestOptions(checkUnauthorized: false)
-                let results = await NCNetworking.shared.getUserProfile(account: account, options: options)
-                print(results)
+        } else if unauthorizedArray.contains(account) {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] The server has response with Unauthorized go checkRemoteUser")
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                NCNetworkingCheckRemoteUser().checkRemoteUser(account: self.account, controller: self)
             }
         }
     }
