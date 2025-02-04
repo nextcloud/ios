@@ -178,11 +178,6 @@ final class DownloadLimitTests: XCTestCase {
         try await backend.prepareTestFile(testFileName)
     }
 
-    override func tearDown() async throws {
-        try await backend.delete(testFileName)
-        try await super.tearDown()
-    }
-
     // MARK: - Tests
 
     func testShareWithoutDownloadLimitCapability() async throws {
