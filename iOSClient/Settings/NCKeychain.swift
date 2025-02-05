@@ -623,6 +623,18 @@ import KeychainAccess
         return (data, password)
     }
 
+    // MARK: - Albums
+
+    func setAutoUploadAlbumIds(account: String, albumIds: [String]) {
+        let key = "AlbumIds" + account
+        keychain[key] = albumIds.joined(separator: ",")
+    }
+
+    func getAutoUploadAlbumIds(account: String) -> [String] {
+        let key = "AlbumIds" + account
+        return (try? keychain.get(key)?.components(separatedBy: ",")) ?? []
+    }
+
     // MARK: -
 
     private func migrate(key: String) {

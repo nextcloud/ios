@@ -31,8 +31,6 @@ import NextcloudKit
 class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     /// A state variable that indicates whether auto upload is enabled or not
     @Published var autoUpload: Bool = false
-    /// A state variable that indicates whether to open NCSelect View or not
-    @Published var autoUploadFolder: Bool = false
     /// A state variable that indicates whether auto upload for photos is enabled or not
     @Published var autoUploadImage: Bool = false
     /// A state variable that indicates whether auto upload for photos is restricted to Wi-Fi only or not
@@ -57,6 +55,7 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     @Published var error: String = ""
     let database = NCManageDatabase.shared
     @Published var autoUploadPath = "\(NCManageDatabase.shared.getAccountAutoUploadFileName())"
+
     /// Root View Controller
     var controller: NCMainTabBarController?
     /// A variable user for change the auto upload directory
@@ -164,10 +163,11 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
     }
 
     /// Updates the auto-upload full content setting.
-    func handleAutoUploadFullChange(newValue: Bool) {
+    func handleAutoUploadChange(newValue: Bool, assetCollections: [PHAssetCollection]) {
         updateAccountProperty(\.autoUploadFull, value: newValue)
+
         if newValue {
-            NCAutoUpload.shared.autoUploadFullPhotos(controller: self.controller, log: "Auto upload full", account: session.account)
+            NCAutoUpload.shared.autoUploadSelectedAlbums(controller: self.controller, assetCollections: assetCollections, log: "Auto upload selected albums", account: session.account)
         } else {
             self.database.clearMetadatasUpload(account: session.account)
         }
@@ -214,7 +214,17 @@ class NCAutoUploadModel: ObservableObject, ViewOnAppearHandling {
                 self.database.setAccountAutoUploadDirectory(path, session: session)
             }
         }
+
         onViewAppear()
+    }
+
+    func createAlbumTitle(autoUploadAlbumIds: Set<String>) -> String {
+        if autoUploadAlbumIds.count == 1 {
+            let album = PHAssetCollection.allAlbums.first(where: { autoUploadAlbumIds.first == $0.localIdentifier })
+            return (album?.assetCollectionSubtype == .smartAlbumUserLibrary) ? NSLocalizedString("_camera_roll_", comment: "") : (album?.localizedTitle ?? "")
+        } else {
+            return NSLocalizedString("_multiple_albums_", comment: "")
+        }
     }
 }
 
