@@ -109,21 +109,7 @@ class NCService: NSObject {
         if resultUserProfile.error == .success, let userProfile = resultUserProfile.userProfile {
             self.database.setAccountUserProfile(account: resultUserProfile.account, userProfile: userProfile)
             return true
-        /*
-        } else if resultUserProfile.error.errorCode == NCGlobal.shared.errorUnauthorized401 || resultUserProfile.error.errorCode == NCGlobal.shared.errorUnauthorized997 {
-            /// Ops the server has Unauthorized, cancel allTask and go to in CheckRemoteUser
-            NCNetworking.shared.cancelAllTask()
-            ///
-            DispatchQueue.main.async {
-                if UIApplication.shared.applicationState == .active && NCNetworking.shared.isOnline {
-                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] The server has response with Unauthorized go checkRemoteUser \(resultUserProfile.error.errorCode)")
-                    NCNetworkingCheckRemoteUser().checkRemoteUser(account: resultUserProfile.account, controller: controller, error: resultUserProfile.error)
-                }
-            }
-            return false
-        */
         } else {
-            NCContentPresenter().showError(error: resultUserProfile.error, priority: .max)
             return false
         }
     }
