@@ -65,8 +65,11 @@ extension NCMedia {
             self.semaphoreSearchMedia.wait()
             self.searchMediaInProgress = true
 
+            var elementDate = "d:getlastmodified/"
             var lessDate = Date.distantFuture
             var greaterDate = Date.distantPast
+            var lessDateAny: Any = Date.distantFuture
+            var greaterDateAny: Any = Date.distantPast
             let countMetadatas = self.dataSource.metadatas.count
             let options = NKRequestOptions(timeout: 120, taskDescription: self.global.taskDescriptionRetrievesProperties, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
             var firstCellDate: Date?
@@ -102,14 +105,23 @@ extension NCMedia {
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate), limit \(limit)")
 
+            if NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityServerVersionMajor >= self.global.nextcloudVersion99 {
+                elementDate = "nc:metadata-photos-original_date_time/"
+                lessDateAny = Int((lessDate as AnyObject).timeIntervalSince1970)
+                greaterDateAny = Int((greaterDate as AnyObject).timeIntervalSince1970)
+            } else {
+                lessDateAny = lessDate
+                greaterDateAny = greaterDate
+            }
+
             DispatchQueue.main.async {
                 self.activityIndicator.startAnimating()
             }
 
             NextcloudKit.shared.searchMedia(path: tableAccount.mediaPath,
-                                            lessDate: lessDate,
-                                            greaterDate: greaterDate,
-                                            elementDate: "d:getlastmodified/",
+                                            lessDate: lessDateAny,
+                                            greaterDate: greaterDateAny,
+                                            elementDate: elementDate,
                                             limit: limit,
                                             showHiddenFiles: NCKeychain().showHiddenFiles,
                                             account: self.session.account,
