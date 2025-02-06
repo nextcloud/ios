@@ -84,11 +84,12 @@ struct NCAutoUploadView: View {
                         .scaledToFit()
                         .frame(width: 25, height: 25)
                         .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
-                    Text(NSLocalizedString("_autoupload_select_folder_", comment: ""))
+                    Text(NSLocalizedString("_destination_", comment: ""))
+                    Text(model.returnPath())
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                        .foregroundStyle(.secondary)
                 }
             })
-        }, footer: {
-            Text("\(NSLocalizedString("_autoupload_current_folder_", comment: "")): \(model.returnPath())")
         })
 
         Group {
@@ -106,6 +107,7 @@ struct NCAutoUploadView: View {
                             Text("\(NSLocalizedString("_upload_from_", comment: "")):")
                             Text(NSLocalizedString(model.createAlbumTitle(autoUploadAlbumIds: albumModel.autoUploadAlbumIds), comment: ""))
                                 .frame(maxWidth: .infinity, alignment: .trailing)
+                                .foregroundStyle(.secondary)
                         }
                     })
                 }
