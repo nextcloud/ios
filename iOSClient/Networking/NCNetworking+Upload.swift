@@ -284,16 +284,62 @@ extension NCNetworking {
                         size: Int64,
                         task: URLSessionTask,
                         error: NKError) {
-        if let delegate {
-            return delegate.uploadComplete(fileName: fileName, serverUrl: serverUrl, ocId: ocId, etag: etag, date: date, size: size, task: task, error: error)
+
+#if EXTENSION_FILE_PROVIDER_EXTENSION
+
+        guard let url = task.currentRequest?.url,
+              let metadata = NCManageDatabase.shared.getMetadata(from: url, sessionTaskIdentifier: task.taskIdentifier) else { return }
+
+        if let ocId, !metadata.ocIdTransfer.isEmpty {
+            let atPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocIdTransfer)
+            let toPath = self.utilityFileSystem.getDirectoryProviderStorageOcId(ocId)
+            self.utilityFileSystem.copyFile(atPath: atPath, toPath: toPath)
         }
 
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            if error == .success, let ocId {
+                /// SIGNAL
+                fileProviderData.shared.signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
+                if !metadata.ocIdTransfer.isEmpty, ocId != metadata.ocIdTransfer {
+                    NCManageDatabase.shared.deleteMetadataOcId(metadata.ocIdTransfer)
+                }
+                metadata.fileName = fileName
+                metadata.serverUrl = serverUrl
+                metadata.uploadDate = (date as? NSDate) ?? NSDate()
+                metadata.etag = etag ?? ""
+                metadata.ocId = ocId
+                metadata.size = size
+                if let fileId = NCUtility().ocIdToFileId(ocId: ocId) {
+                    metadata.fileId = fileId
+                }
+
+                metadata.sceneIdentifier = nil
+                metadata.session = ""
+                metadata.sessionError = ""
+                metadata.sessionSelector = ""
+                metadata.sessionDate = nil
+                metadata.sessionTaskIdentifier = 0
+                metadata.status = NCGlobal.shared.metadataStatusNormal
+
+                NCManageDatabase.shared.addMetadata(metadata)
+                NCManageDatabase.shared.addLocalFile(metadata: metadata)
+
+                /// SIGNAL
+                fileProviderData.shared.signalEnumerator(ocId: metadata.ocId, type: .update)
+            } else {
+                NCManageDatabase.shared.deleteMetadataOcId(metadata.ocIdTransfer)
+                /// SIGNAL
+                fileProviderData.shared.signalEnumerator(ocId: metadata.ocIdTransfer, type: .delete)
+            }
+        }
+#else
         DispatchQueue.global().async {
             if let url = task.currentRequest?.url,
                let metadata = self.database.getMetadata(from: url, sessionTaskIdentifier: task.taskIdentifier) {
                 self.uploadComplete(metadata: metadata, ocId: ocId, etag: etag, date: date, size: size, error: error)
             }
         }
+#endif
     }
 
     func uploadComplete(metadata: tableMetadata,
@@ -438,7 +484,17 @@ extension NCNetworking {
                         }
 #endif
                     } else {
+                        if error.errorCode == 401,
+                           let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) {
+                            var unauthorizedArray = groupDefaults.array(forKey: "Unauthorized") as? [String] ?? []
+                            if !unauthorizedArray.contains(metadata.account) {
+                                unauthorizedArray.append(metadata.account)
+                                groupDefaults.set(unauthorizedArray, forKey: "Unauthorized")
+                            }
+                        }
+
                         NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
+
                         self.database.setMetadataSession(ocId: metadata.ocId,
                                                          sessionTaskIdentifier: 0,
                                                          sessionError: error.errorDescription,
@@ -477,9 +533,10 @@ extension NCNetworking {
                         serverUrl: String,
                         session: URLSession,
                         task: URLSessionTask) {
-        if let delegate {
-            return delegate.uploadProgress(progress, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected, fileName: fileName, serverUrl: serverUrl, session: session, task: task)
-        }
+
+#if EXTENSION_FILE_PROVIDER_EXTENSION
+        return
+#endif
 
         DispatchQueue.global().async {
             if let metadata = self.database.getResultMetadataFromFileName(fileName, serverUrl: serverUrl, sessionTaskIdentifier: task.taskIdentifier) {

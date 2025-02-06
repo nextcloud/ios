@@ -150,6 +150,11 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         return predicate
     }
 
+    var personalFilesOnlyPredicate: NSPredicate {
+        let predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND (ownerId == %@ || ownerId == '') AND mountType == '' AND NOT (status IN %@) AND NOT (livePhotoFile != '' AND classFile == %@)", session.account, self.serverUrl, session.userId, global.metadataStatusHideInView, NKCommon.TypeClassFile.video.rawValue)
+        return predicate
+    }
+
     var isNumberOfItemsInAllSectionsNull: Bool {
         var totalItems = 0
         for section in 0..<self.collectionView.numberOfSections {

@@ -67,7 +67,7 @@ extension NCNetworking {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Synchronization \(serverUrl) in \(diffDate)")
                 completion(0, metadatasSynchronizationOffline.count)
             } else {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Synchronization \(serverUrl), \(error.errorCode), \(error.description)")
+                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Synchronization \(serverUrl), \(error.errorCode)")
                 completion(error.errorCode, metadatasSynchronizationOffline.count)
             }
         }

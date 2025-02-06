@@ -61,6 +61,7 @@ class NCFiles: NCCollectionViewCommon {
                     if let controller = userInfo["controller"] as? NCMainTabBarController,
                        controller == self.controller {
                         controller.account = account
+                        controller.availableNotifications = false
                     } else {
                         return
                     }
@@ -140,7 +141,7 @@ class NCFiles: NCCollectionViewCommon {
         let dataSourceMetadatas = self.dataSource.getMetadatas()
 
         if NCKeychain().getPersonalFilesOnly(account: session.account) {
-            predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND (ownerId == %@ || ownerId == '') AND mountType == '' AND NOT (status IN %@)", session.account, self.serverUrl, session.userId, global.metadataStatusHideInView)
+            predicate = self.personalFilesOnlyPredicate
         }
 
         self.metadataFolder = database.getMetadataFolder(session: session, serverUrl: self.serverUrl)

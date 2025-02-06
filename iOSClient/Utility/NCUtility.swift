@@ -29,7 +29,7 @@ import CoreMedia
 import Photos
 import Alamofire
 
-class NCUtility: NSObject {
+final class NCUtility: NSObject, Sendable {
     let utilityFileSystem = NCUtilityFileSystem()
     let global = NCGlobal.shared
 

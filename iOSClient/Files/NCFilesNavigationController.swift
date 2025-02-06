@@ -13,25 +13,56 @@ class NCFilesNavigationController: NCMainNavigationController {
         super.init(coder: aDecoder)
     }
 
+    let menuButton = UIButton(type: .system)
+    var menuBarButtonItem: UIBarButtonItem {
+        let item = UIBarButtonItem(customView: menuButton)
+        item.tag = menuButtonTag
+        return item
+    }
+
+    let notificationsButton = UIButton(type: .system)
+    var notificationsButtonItem: UIBarButtonItem {
+        let item = UIBarButtonItem(customView: notificationsButton)
+        item.tag = notificationsButtonTag
+        return item
+    }
+
+    let transfersButton = UIButton(type: .system)
+    var transfersButtonItem: UIBarButtonItem {
+        let item = UIBarButtonItem(customView: transfersButton)
+        item.tag = transfersButtonTag
+        return item
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.timerProcess = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
-            let results = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal))
+        menuButton.setImage(UIImage(systemName: "ellipsis.circle"), for: .normal)
+        menuButton.tintColor = NCBrandColor.shared.iconImageColor
+        menuButton.menu = createRightMenu()
+        menuButton.showsMenuAsPrimaryAction = true
 
-            for viewController in self.viewControllers {
-                if let rightBarButtonItems = viewController.navigationItem.rightBarButtonItems,
-                   let transfersButtonItem = rightBarButtonItems.first(where: { $0.tag == self.transfersButtonTag }),
-                   let transfersButton = transfersButtonItem.customView as? UIButton {
-                    if results?.count ?? 0 > 0 {
-                        transfersButton.tintColor = NCBrandColor.shared.getElement(account: self.session.account)
-                        transfersButton.setImage(UIImage(systemName: "arrow.left.arrow.right.circle.fill"), for: .normal)
-                    } else {
-                        transfersButton.tintColor = NCBrandColor.shared.iconImageColor
-                        transfersButton.setImage(UIImage(systemName: "arrow.left.arrow.right.circle"), for: .normal)
-                    }
-                }
+        notificationsButton.setImage(UIImage(systemName: "bell.fill"), for: .normal)
+        notificationsButton.tintColor = NCBrandColor.shared.iconImageColor
+        notificationsButton.addAction(UIAction(handler: { _ in
+            if let viewController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? NCNotification {
+                viewController.session = self.session
+                self.pushViewController(viewController, animated: true)
             }
+        }), for: .touchUpInside)
+
+        transfersButton.setImage(UIImage(systemName: "arrow.left.arrow.right.circle.fill"), for: .normal)
+        transfersButton.tintColor = NCBrandColor.shared.iconImageColor
+        transfersButton.addAction(UIAction(handler: { _ in
+            if let navigationController = UIStoryboard(name: "NCTransfers", bundle: nil).instantiateInitialViewController() as? UINavigationController,
+               let viewController = navigationController.topViewController as? NCTransfers {
+                viewController.modalPresentationStyle = .pageSheet
+                self.present(navigationController, animated: true, completion: nil)
+            }
+        }), for: .touchUpInside)
+
+        self.timerProcess = Timer.scheduledTimer(withTimeInterval: 1, repeats: true, block: { _ in
+            self.updateRightBarButtonItems()
         })
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterReloadAvatar), object: nil, queue: nil) { notification in
@@ -49,7 +80,51 @@ class NCFilesNavigationController: NCMainNavigationController {
         }
     }
 
+    override func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        super.navigationController(navigationController, willShow: viewController, animated: animated)
+        self.updateRightBarButtonItems()
+    }
+
     // MARK: -
+
+    func updateRightBarButtonItems() {
+        guard let collectionViewCommon,
+              !collectionViewCommon.isEditMode
+        else {
+            return
+        }
+        let resultsCount = self.database.getResultsMetadatas(predicate: NSPredicate(format: "status != %i", NCGlobal.shared.metadataStatusNormal))?.count ?? 0
+        var tempRightBarButtonItems = [self.menuBarButtonItem]
+
+        if controller?.availableNotifications ?? false {
+            tempRightBarButtonItems.append(self.notificationsButtonItem)
+        }
+
+        if resultsCount > 0 {
+            tempRightBarButtonItems.append(self.transfersButtonItem)
+        }
+
+        if collectionViewCommon.navigationItem.rightBarButtonItems?.count != tempRightBarButtonItems.count {
+            collectionViewCommon.navigationItem.rightBarButtonItems = tempRightBarButtonItems
+        }
+    }
+
+    func createRightMenu() -> UIMenu? {
+        guard let items = self.createMenuActions(),
+              let collectionViewCommon
+        else {
+            return nil
+        }
+
+        if collectionViewCommon.serverUrl == utilityFileSystem.getHomeServer(session: session) {
+            let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [items.foldersOnTop, items.personalFilesOnlyAction, items.showDescription, items.showRecommendedFiles])
+            return UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu, additionalSubmenu])
+
+        } else {
+            let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [items.foldersOnTop, items.personalFilesOnlyAction, items.showDescription])
+            return UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu, additionalSubmenu])
+        }
+    }
 
     override func setNavigationLeftItems() {
         guard let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", self.session.account))
@@ -68,7 +143,7 @@ class NCFilesNavigationController: NCMainNavigationController {
             }
         }
 
-        func createMenu() -> UIMenu? {
+        func createLeftMenu() -> UIMenu? {
             var childrenAccountSubmenu: [UIMenuElement] = []
             let accounts = database.getAllAccountOrderAlias()
             guard !accounts.isEmpty
@@ -129,7 +204,7 @@ class NCFilesNavigationController: NCMainNavigationController {
             accountButton.semanticContentAttribute = .forceLeftToRight
             accountButton.sizeToFit()
 
-            accountButton.menu = createMenu()
+            accountButton.menu = createLeftMenu()
             accountButton.showsMenuAsPrimaryAction = true
 
             accountButton.onMenuOpened = {
@@ -143,7 +218,7 @@ class NCFilesNavigationController: NCMainNavigationController {
 
             let accountButton = self.collectionViewCommon?.navigationItem.leftBarButtonItems?.first?.customView as? UIButton
             accountButton?.setImage(image, for: .normal)
-            accountButton?.menu = createMenu()
+            accountButton?.menu = createLeftMenu()
         }
     }
 
@@ -151,22 +226,6 @@ class NCFilesNavigationController: NCMainNavigationController {
         guard let collectionViewCommon else {
             self.collectionViewCommon?.navigationItem.rightBarButtonItems = nil
             return
-        }
-
-        func createMenu() -> UIMenu? {
-            guard let items = self.createMenuActions()
-            else {
-                return nil
-            }
-
-            if collectionViewCommon.serverUrl == utilityFileSystem.getHomeServer(session: session) {
-                let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [items.foldersOnTop, items.personalFilesOnlyAction, items.showDescription, items.showRecommendedFiles])
-                return UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu, additionalSubmenu])
-
-            } else {
-                let additionalSubmenu = UIMenu(title: "", options: .displayInline, children: [items.foldersOnTop, items.personalFilesOnlyAction, items.showDescription])
-                return UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu, additionalSubmenu])
-            }
         }
 
         if collectionViewCommon.isEditMode {
@@ -183,47 +242,14 @@ class NCFilesNavigationController: NCMainNavigationController {
         } else if self.collectionViewCommon?.navigationItem.rightBarButtonItems == nil || (!collectionViewCommon.isEditMode && !(collectionViewCommon.tabBarSelect?.isHidden() ?? true)) {
             collectionViewCommon.tabBarSelect?.hide()
 
-            let menuButton = UIButton(type: .system)
-            menuButton.setImage(UIImage(systemName: "ellipsis.circle"), for: .normal)
-            menuButton.tintColor = NCBrandColor.shared.iconImageColor
-            menuButton.menu = createMenu()
-            menuButton.showsMenuAsPrimaryAction = true
-            let menuBarButtonItem = UIBarButtonItem(customView: menuButton)
-            menuBarButtonItem.tag = menuButtonTag
-
-            let notificationButton = UIButton(type: .system)
-            notificationButton.setImage(UIImage(systemName: "bell"), for: .normal)
-            notificationButton.tintColor = NCBrandColor.shared.iconImageColor
-            notificationButton.addAction(UIAction(handler: { _ in
-                if let viewController = UIStoryboard(name: "NCNotification", bundle: nil).instantiateInitialViewController() as? NCNotification {
-                    viewController.session = self.session
-                    self.pushViewController(viewController, animated: true)
-                }
-            }), for: .touchUpInside)
-            let notificationButtonItem = UIBarButtonItem(customView: notificationButton)
-            notificationButtonItem.tag = notificationButtonTag
-
-            let transfersButton = UIButton(type: .system)
-            transfersButton.setImage(UIImage(systemName: "arrow.left.arrow.right.circle"), for: .normal)
-            transfersButton.tintColor = NCBrandColor.shared.iconImageColor
-            transfersButton.addAction(UIAction(handler: { _ in
-                if let navigationController = UIStoryboard(name: "NCTransfers", bundle: nil).instantiateInitialViewController() as? UINavigationController,
-                   let viewController = navigationController.topViewController as? NCTransfers {
-                    viewController.modalPresentationStyle = .pageSheet
-                    self.present(navigationController, animated: true, completion: nil)
-                }
-            }), for: .touchUpInside)
-            let transfersButtonItem = UIBarButtonItem(customView: transfersButton)
-            transfersButtonItem.tag = transfersButtonTag
-
-            self.collectionViewCommon?.navigationItem.rightBarButtonItems = [menuBarButtonItem, notificationButtonItem, transfersButtonItem]
+            self.updateRightBarButtonItems()
 
         } else {
 
             if let rightBarButtonItems = self.collectionViewCommon?.navigationItem.rightBarButtonItems,
                let menuBarButtonItem = rightBarButtonItems.first(where: { $0.tag == menuButtonTag }),
                let menuButton = menuBarButtonItem.customView as? UIButton {
-                menuButton.menu = createMenu()
+                menuButton.menu = createRightMenu()
             }
         }
 

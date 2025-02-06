@@ -49,11 +49,11 @@ class NCTransfers: NCCollectionViewCommon, NCTransferCellDelegate {
         self.navigationItem.title = titleCurrentFolder
         navigationController?.navigationBar.tintColor = NCBrandColor.shared.iconImageColor
 
-        let cancel = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) {
+        let close = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""), style: .done) {
             self.dismiss(animated: true)
         }
 
-        self.navigationItem.leftBarButtonItems = [cancel]
+        self.navigationItem.leftBarButtonItems = [close]
     }
 
     override func viewWillAppear(_ animated: Bool) {
