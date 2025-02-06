@@ -62,4 +62,8 @@ class NCMoreNavigationController: NCMainNavigationController {
             self.tabBarController?.tabBar.isHidden = true
         }
     }
+
+    override func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        setGroupAppearance()
+    }
 }

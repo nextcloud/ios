@@ -2435,6 +2435,7 @@
 				F76882142C0DD1E7001CF441 /* Acknowledgements.rtf */,
 				F76882132C0DD1E7001CF441 /* NCKeychain.swift */,
 				F76882152C0DD1E7001CF441 /* NCSettingsBundleHelper.swift */,
+				F768820D2C0DD1E7001CF441 /* E2EE */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -2462,7 +2463,6 @@
 		F768820B2C0DD1E7001CF441 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
-				F768820D2C0DD1E7001CF441 /* E2EE */,
 				F76882112C0DD1E7001CF441 /* NCSettingsModel.swift */,
 				F768820C2C0DD1E7001CF441 /* NCSettingsView.swift */,
 				F3754A7C2CF87D600009312E /* SetupPasscodeView.swift */,

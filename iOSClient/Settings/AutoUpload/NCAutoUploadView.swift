@@ -53,6 +53,7 @@ struct NCAutoUploadView: View {
             }
         }
         .navigationBarTitle(NSLocalizedString("_auto_upload_folder_", comment: ""))
+        .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             model.onViewAppear()
         }
@@ -102,7 +103,7 @@ struct NCAutoUploadView: View {
                                 .scaledToFit()
                                 .frame(width: 25, height: 25)
                                 .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
-                            Text(NSLocalizedString("_upload_from_", comment: ""))
+                            Text("\(NSLocalizedString("_upload_from_", comment: "")):")
                             Text(NSLocalizedString(model.createAlbumTitle(autoUploadAlbumIds: albumModel.autoUploadAlbumIds), comment: ""))
                                 .frame(maxWidth: .infinity, alignment: .trailing)
                         }

@@ -40,6 +40,9 @@ struct SelectAlbumView: View {
         .onAppear {
             selectedAlbums = model.getSavedAlbumIds()
         }
+        .navigationBarTitle(NSLocalizedString("_upload_from_", comment: ""))
+        .navigationBarTitleDisplayMode(.inline)
+
     }
 }
 
