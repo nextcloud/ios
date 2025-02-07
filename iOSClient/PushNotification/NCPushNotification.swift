@@ -16,6 +16,11 @@ class NCPushNotification {
     let keychain = NCKeychain()
     var pushKitToken: String = ""
 
+    func registerForRemoteNotificationsWithDeviceToken(_ deviceToken: Data) {
+        self.pushKitToken = NCPushNotificationEncryption.shared().string(withDeviceToken: deviceToken)
+        self.pushNotification()
+    }
+
     func pushNotification() {
         if pushKitToken.isEmpty { return }
         for tblAccount in NCManageDatabase.shared.getAllTableAccount() {
@@ -158,11 +163,6 @@ class NCPushNotification {
                 }
             }
         }
-    }
-
-    func registerForRemoteNotificationsWithDeviceToken(_ deviceToken: Data) {
-        self.pushKitToken = NCPushNotificationEncryption.shared().string(withDeviceToken: deviceToken)
-        pushNotification()
     }
 
     func cleanAllNotifications() {
