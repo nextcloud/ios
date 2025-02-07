@@ -37,6 +37,21 @@ class NCAccount: NSObject {
         if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
         let account: String = "\(user) \(urlBase)"
 
+        /// Remove account ion groupDefaults
+        ///
+        if let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) {
+            var unauthorizedArray = groupDefaults.array(forKey: "Unauthorized") as? [String] ?? []
+            var unavailableArray = groupDefaults.array(forKey: "Unavailable") as? [String] ?? []
+
+            unauthorizedArray.removeAll { $0 == account }
+            groupDefaults.set(unauthorizedArray, forKey: "Unauthorized")
+
+            unavailableArray.removeAll { $0 == account }
+            groupDefaults.set(unavailableArray, forKey: "Unavailable")
+
+            groupDefaults.synchronize()
+        }
+
         NextcloudKit.shared.appendSession(account: account,
                                           urlBase: urlBase,
                                           user: user,

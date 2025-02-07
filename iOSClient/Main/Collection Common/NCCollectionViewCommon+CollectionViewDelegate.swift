@@ -85,7 +85,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                         if error == .success || afError?.isExplicitlyCancelledError ?? false {
                             hud.dismiss()
                         } else {
-                            hud.error(text: error.description)
+                            hud.error(text: error.errorDescription)
                         }
                     }
                 } else if !metadata.url.isEmpty {
@@ -113,7 +113,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                 fileSelect.append(metadata.ocId)
             }
             collectionView.reloadItems(at: [indexPath])
-            tabBarSelect.update(fileSelect: fileSelect, metadatas: getSelectedMetadatas(), userId: metadata.userId)
+            tabBarSelect?.update(fileSelect: fileSelect, metadatas: getSelectedMetadatas(), userId: metadata.userId)
             return
         }
 

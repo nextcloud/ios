@@ -34,22 +34,15 @@ protocol NCSectionFirstHeaderDelegate: AnyObject {
 class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegate {
     @IBOutlet weak var viewRichWorkspace: UIView!
     @IBOutlet weak var viewRecommendations: UIView!
-    @IBOutlet weak var viewTransfer: UIView!
     @IBOutlet weak var viewSection: UIView!
 
     @IBOutlet weak var viewRichWorkspaceHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewRecommendationsHeightConstraint: NSLayoutConstraint!
-    @IBOutlet weak var viewTransferHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var viewSectionHeightConstraint: NSLayoutConstraint!
-    @IBOutlet weak var transferSeparatorBottomHeightConstraint: NSLayoutConstraint!
 
     @IBOutlet weak var textViewRichWorkspace: UITextView!
     @IBOutlet weak var collectionViewRecommendations: UICollectionView!
     @IBOutlet weak var labelRecommendations: UILabel!
-    @IBOutlet weak var imageTransfer: UIImageView!
-    @IBOutlet weak var labelTransfer: UILabel!
-    @IBOutlet weak var progressTransfer: UIProgressView!
-    @IBOutlet weak var transferSeparatorBottom: UIView!
     @IBOutlet weak var labelSection: UILabel!
 
     private weak var delegate: NCSectionFirstHeaderDelegate?
@@ -93,19 +86,6 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
         labelRecommendations.text = NSLocalizedString("_recommended_files_", comment: "")
 
         //
-        // Transfer
-        //
-        imageTransfer.tintColor = NCBrandColor.shared.iconImageColor
-        imageTransfer.image = NCUtility().loadImage(named: "icloud.and.arrow.up")
-
-        progressTransfer.progress = 0
-        progressTransfer.tintColor = NCBrandColor.shared.iconImageColor
-        progressTransfer.trackTintColor = NCBrandColor.shared.customer.withAlphaComponent(0.2)
-
-        transferSeparatorBottom.backgroundColor = .separator
-        transferSeparatorBottomHeightConstraint.constant = 0.5
-
-        //
         // Section
         //
         labelSection.text = ""
@@ -129,8 +109,6 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
                     richWorkspaceText: String?,
                     heightHeaderRecommendations: CGFloat,
                     recommendations: [tableRecommendedFiles],
-                    heightHeaderTransfer: CGFloat,
-                    headerTransferIsHidden: Bool,
                     heightHeaderSection: CGFloat,
                     sectionText: String?,
                     viewController: UIViewController?,
@@ -161,8 +139,6 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
             viewRecommendations.isHidden = true
         }
 
-        setViewTransfer(isHidden: headerTransferIsHidden, height: heightHeaderTransfer)
-
         if heightHeaderSection == 0 {
             viewSection.isHidden = true
         } else {
@@ -184,33 +160,6 @@ class NCSectionFirstHeader: UICollectionReusableView, UIGestureRecognizerDelegat
 
     @objc func touchUpInsideViewRichWorkspace(_ sender: Any) {
         delegate?.tapRichWorkspace(sender)
-    }
-
-    // MARK: - Transfer
-
-    func setViewTransfer(isHidden: Bool, progress: Float? = nil, height: CGFloat) {
-        viewTransfer.isHidden = isHidden
-
-        if isHidden {
-            viewTransferHeightConstraint.constant = 0
-            progressTransfer.progress = 0
-        } else {
-            viewTransferHeightConstraint.constant = height
-            if NCTransferProgress.shared.haveUploadInForeground() {
-                labelTransfer.text = String(format: NSLocalizedString("_upload_foreground_msg_", comment: ""), NCBrandOptions.shared.brand)
-                if let progress {
-                    progressTransfer.progress = progress
-                } else if let progress = NCTransferProgress.shared.getLastTransferProgressInForeground() {
-                    progressTransfer.progress = progress
-                } else {
-                    progressTransfer.progress = 0.0
-                }
-            } else {
-                labelTransfer.text = NSLocalizedString("_upload_background_msg_", comment: "")
-                progressTransfer.progress = 0.0
-            }
-
-        }
     }
 }
 

@@ -24,7 +24,7 @@
 import Foundation
 import UIKit
 
-public class NCSession: NSObject {
+final class NCSession: @unchecked Sendable {
     static let shared = NCSession()
 
     public class Session {
@@ -41,8 +41,6 @@ public class NCSession: NSObject {
         }
     }
     private var sessions: ThreadSafeArray<Session> = ThreadSafeArray()
-
-    override private init() {}
 
     /// SESSION
     ///

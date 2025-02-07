@@ -67,19 +67,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         utilityFileSystem.emptyTemporaryDirectory()
         utilityFileSystem.clearCacheDirectory("com.limit-point.LivePhoto")
 
-        // Create users colors
         NCBrandColor.shared.createUserColors()
 
-        NextcloudKit.shared.setup(delegate: NCNetworking.shared)
-        NextcloudKit.shared.nkCommonInstance.pathLog = utilityFileSystem.directoryGroup
+        NextcloudKit.shared.setup(groupIdentifier: NCBrandOptions.shared.capabilitiesGroup,
+                                  delegate: NCNetworking.shared)
 
         if NCBrandOptions.shared.disable_log {
             utilityFileSystem.removeFile(atPath: NextcloudKit.shared.nkCommonInstance.filenamePathLog)
             utilityFileSystem.removeFile(atPath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! + "/" + NextcloudKit.shared.nkCommonInstance.filenameLog)
         } else {
-            levelLog = NCKeychain().logLevel
-            NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
-            NextcloudKit.shared.nkCommonInstance.copyLogToDocumentDirectory = true
+            NextcloudKit.shared.setupLog(pathLog: utilityFileSystem.directoryGroup,
+                                         levelLog: NCKeychain().logLevel,
+                                         copyLogToDocumentDirectory: true)
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start session with level \(levelLog) " + versionNextcloudiOS)
         }
 

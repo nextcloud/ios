@@ -33,14 +33,12 @@ protocol DateCompareable {
     var dateKey: Date { get }
 }
 
-class NCManageDatabase: NSObject {
-    @objc static let shared: NCManageDatabase = {
-        let instance = NCManageDatabase()
-        return instance
-    }()
+final class NCManageDatabase: Sendable {
+    static let shared = NCManageDatabase()
+
     let utilityFileSystem = NCUtilityFileSystem()
 
-    override init() {
+    init() {
         func migrationSchema(_ migration: Migration, _ oldSchemaVersion: UInt64) {
             if oldSchemaVersion < 365 {
                 migration.deleteData(forType: tableMetadata.className())
