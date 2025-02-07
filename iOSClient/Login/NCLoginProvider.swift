@@ -37,26 +37,23 @@ class NCLoginProvider: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(self.closeView(sender:)))
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Log out", style: .plain, action: {
-            WKWebsiteDataStore.default().removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(), modifiedSince: Date(timeIntervalSince1970: 0), completionHandler: { [self] in
-                if let url = URL(string: urlBase) {
-                    loadWebPage(webView: webView!, url: url)
-                }
-            })
-        })
 
         webView = WKWebView(frame: CGRect.zero, configuration: WKWebViewConfiguration())
-        webView!.navigationDelegate = self
-        view.addSubview(webView!)
+        guard let webView else { return }
 
-        webView!.translatesAutoresizingMaskIntoConstraints = false
-        webView!.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
-        webView!.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
-        webView!.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
-        webView!.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
+        webView.navigationDelegate = self
+        view.addSubview(webView)
+
+        webView.translatesAutoresizingMaskIntoConstraints = false
+        webView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 0).isActive = true
+        webView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: 0).isActive = true
+        webView.topAnchor.constraint(equalTo: view.topAnchor, constant: 0).isActive = true
+        webView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0).isActive = true
 
         if let url = URL(string: urlBase) {
-            loadWebPage(webView: webView!, url: url)
+            WKWebsiteDataStore.default().removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(), modifiedSince: Date(timeIntervalSince1970: 0), completionHandler: { [self] in
+                loadWebPage(webView: webView, url: url)
+            })
         } else {
             let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_login_url_error_")
             NCContentPresenter().showError(error: error, priority: .max)

@@ -169,11 +169,6 @@
 		F3BB464D2A39ADCC00461F6E /* NCMoreAppSuggestionsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F3BB464C2A39ADCC00461F6E /* NCMoreAppSuggestionsCell.xib */; };
 		F3BB46522A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46512A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift */; };
 		F3BB46542A3A1E9D00461F6E /* CCCellMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */; };
-		F3C587A92D4147D3004532DB /* NCLoginWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3C587A82D4147D3004532DB /* NCLoginWebView.swift */; };
-		F3C587AA2D4147D3004532DB /* NCLoginWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3C587A82D4147D3004532DB /* NCLoginWebView.swift */; };
-		F3C587AB2D4147D3004532DB /* NCLoginWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3C587A82D4147D3004532DB /* NCLoginWebView.swift */; };
-		F3C587AC2D4147D3004532DB /* NCLoginWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3C587A82D4147D3004532DB /* NCLoginWebView.swift */; };
-		F3CA33842D10726E00672333 /* NCLoginPollModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3CA33832D10726E00672333 /* NCLoginPollModel.swift */; };
 		F3E173B02C9AF637006D177A /* ScreenAwakeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E173AF2C9AF637006D177A /* ScreenAwakeManager.swift */; };
 		F3E173C02C9B1067006D177A /* AwakeMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E173BF2C9B1067006D177A /* AwakeMode.swift */; };
 		F3E173C12C9B1067006D177A /* AwakeMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E173BF2C9B1067006D177A /* AwakeMode.swift */; };
@@ -182,7 +177,6 @@
 		F3E173C42C9B1067006D177A /* AwakeMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E173BF2C9B1067006D177A /* AwakeMode.swift */; };
 		F3E173C52C9B1067006D177A /* AwakeMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E173BF2C9B1067006D177A /* AwakeMode.swift */; };
 		F3E173C62C9B1067006D177A /* AwakeMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E173BF2C9B1067006D177A /* AwakeMode.swift */; };
-		F3EF2E0C2BFCF3810025EF46 /* NCLoginPoll.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EF2E0B2BFCF3810025EF46 /* NCLoginPoll.swift */; };
 		F3F0419B2B9F7E6700D5155F /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F3F0419A2B9F7E6700D5155F /* RealmSwift */; };
 		F3F0419D2B9F7E6E00D5155F /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F3F0419C2B9F7E6E00D5155F /* RealmSwift */; };
 		F3F0419F2B9F7E7900D5155F /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F3F0419E2B9F7E7900D5155F /* RealmSwift */; };
@@ -1250,11 +1244,8 @@
 		F3BB464C2A39ADCC00461F6E /* NCMoreAppSuggestionsCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCMoreAppSuggestionsCell.xib; sourceTree = "<group>"; };
 		F3BB46512A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMoreAppSuggestionsCell.swift; sourceTree = "<group>"; };
 		F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCCellMore.swift; sourceTree = "<group>"; };
-		F3C587A82D4147D3004532DB /* NCLoginWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCLoginWebView.swift; sourceTree = "<group>"; };
-		F3CA33832D10726E00672333 /* NCLoginPollModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCLoginPollModel.swift; sourceTree = "<group>"; };
 		F3E173AF2C9AF637006D177A /* ScreenAwakeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenAwakeManager.swift; sourceTree = "<group>"; };
 		F3E173BF2C9B1067006D177A /* AwakeMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AwakeMode.swift; sourceTree = "<group>"; };
-		F3EF2E0B2BFCF3810025EF46 /* NCLoginPoll.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCLoginPoll.swift; sourceTree = "<group>"; };
 		F700222B1EC479840080073F /* Custom.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Custom.xcassets; sourceTree = "<group>"; };
 		F700510022DF63AC003A3356 /* NCShare.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCShare.storyboard; sourceTree = "<group>"; };
 		F700510422DF6A89003A3356 /* NCShare.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShare.swift; sourceTree = "<group>"; };
@@ -2073,15 +2064,6 @@
 			path = Cells;
 			sourceTree = "<group>";
 		};
-		F3CA33802D106FF900672333 /* Poll */ = {
-			isa = PBXGroup;
-			children = (
-				F3EF2E0B2BFCF3810025EF46 /* NCLoginPoll.swift */,
-				F3CA33832D10726E00672333 /* NCLoginPollModel.swift */,
-			);
-			path = Poll;
-			sourceTree = "<group>";
-		};
 		F3E173BE2C9B1057006D177A /* ScreenAwakeManager */ = {
 			isa = PBXGroup;
 			children = (
@@ -2783,7 +2765,6 @@
 		F7BFFA621A24D7300044ED85 /* Login */ = {
 			isa = PBXGroup;
 			children = (
-				F3CA33802D106FF900672333 /* Poll */,
 				F702F2F025EE5CDA008F8E80 /* NCLogin.storyboard */,
 				F702F2F625EE5CEC008F8E80 /* NCLogin.swift */,
 				F738D48F2756740100CD1D38 /* NCLoginNavigationController.swift */,
@@ -2791,7 +2772,6 @@
 				F7AE00F4230D5F9E007ACF8A /* NCLoginProvider.swift */,
 				F7BC287D26663F6C004D46C5 /* NCViewCertificateDetails.storyboard */,
 				F7BC287F26663F85004D46C5 /* NCViewCertificateDetails.swift */,
-				F3C587A82D4147D3004532DB /* NCLoginWebView.swift */,
 			);
 			path = Login;
 			sourceTree = "<group>";
@@ -4108,7 +4088,6 @@
 				AF22B218277D196700DAB0CC /* NCShareExtension+Files.swift in Sources */,
 				F799DF862C4B7E56003410B5 /* NCSectionHeader.swift in Sources */,
 				F702F2D025EE5B5C008F8E80 /* NCGlobal.swift in Sources */,
-				F3C587AB2D4147D3004532DB /* NCLoginWebView.swift in Sources */,
 				F7A51E742C7230090037BCC0 /* NCTransfersProgress.swift in Sources */,
 				F343A4BE2A1E734600DDA874 /* Optional+Extension.swift in Sources */,
 				F72437802C10B92400C7C68D /* NCPermissions.swift in Sources */,
@@ -4242,7 +4221,6 @@
 				F75DD766290ABB25002EB562 /* Intent.intentdefinition in Sources */,
 				F7D68FCD28CB9051009139F3 /* NCManageDatabase+DashboardWidget.swift in Sources */,
 				F73EF7E02B02266D0087E6E9 /* NCManageDatabase+Trash.swift in Sources */,
-				F3C587AA2D4147D3004532DB /* NCLoginWebView.swift in Sources */,
 				F73EF7E82B0226B90087E6E9 /* NCManageDatabase+UserStatus.swift in Sources */,
 				F73EF7D82B0226080087E6E9 /* NCManageDatabase+Tip.swift in Sources */,
 				F7C9B91E2B582F550064EA91 /* NCManageDatabase+SecurityGuard.swift in Sources */,
@@ -4314,7 +4292,6 @@
 				F7A51E752C72300A0037BCC0 /* NCTransfersProgress.swift in Sources */,
 				F33918C82C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift in Sources */,
 				F7A0D1372591FBC5008F8A13 /* String+Extension.swift in Sources */,
-				F3C587AC2D4147D3004532DB /* NCLoginWebView.swift in Sources */,
 				F771E3D720E2392D00AFB62D /* FileProviderEnumerator.swift in Sources */,
 				F74AF3A6247FB6AE00AC767B /* NCUtilityFileSystem.swift in Sources */,
 				F7B769AC2B7A0B2000C1AAEB /* NCManageDatabase+Metadata+Session.swift in Sources */,
@@ -4353,7 +4330,6 @@
 				F7AE00F8230E81CB007ACF8A /* NCBrowserWeb.swift in Sources */,
 				F77DD6A82C5CC093009448FB /* NCSession.swift in Sources */,
 				F702F30825EE5D47008F8E80 /* NCPopupViewController.swift in Sources */,
-				F3CA33842D10726E00672333 /* NCLoginPollModel.swift in Sources */,
 				F733598125C1C188002ABA72 /* NCAskAuthorization.swift in Sources */,
 				370D26AF248A3D7A00121797 /* NCCellProtocol.swift in Sources */,
 				F32FADA92D1176E3007035E2 /* UIButton+Extension.swift in Sources */,
@@ -4394,7 +4370,6 @@
 				F73B422C2476764F00A30FD3 /* NCNotification.swift in Sources */,
 				F7FA80012C0F4F3B0072FC60 /* NCUploadAssetsView.swift in Sources */,
 				371B5A2E23D0B04500FAFAE9 /* NCMenu.swift in Sources */,
-				F3EF2E0C2BFCF3810025EF46 /* NCLoginPoll.swift in Sources */,
 				F74230F32C79B57200CA1ACA /* NCNetworking+Task.swift in Sources */,
 				F757CC8229E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift in Sources */,
 				F7B769A82B7A0B2000C1AAEB /* NCManageDatabase+Metadata+Session.swift in Sources */,
@@ -4594,7 +4569,6 @@
 				F737DA9D2B7B893C0063BAFC /* NCPasscode.swift in Sources */,
 				F77C97392953131000FDDD09 /* NCCameraRoll.swift in Sources */,
 				F343A4B32A1E01FF00DDA874 /* PHAsset+Extension.swift in Sources */,
-				F3C587A92D4147D3004532DB /* NCLoginWebView.swift in Sources */,
 				F70968A424212C4E00ED60E5 /* NCLivePhoto.swift in Sources */,
 				F7C30DFA291BCF790017149B /* NCNetworkingE2EECreateFolder.swift in Sources */,
 				F722133B2D40EF9D002F7438 /* NCFilesNavigationController.swift in Sources */,
