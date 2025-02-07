@@ -76,10 +76,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             utilityFileSystem.removeFile(atPath: NextcloudKit.shared.nkCommonInstance.filenamePathLog)
             utilityFileSystem.removeFile(atPath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! + "/" + NextcloudKit.shared.nkCommonInstance.filenameLog)
         } else {
-            levelLog = NCKeychain().logLevel
-            NextcloudKit.shared.nkCommonInstance.pathLog = utilityFileSystem.directoryGroup
-            NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
-            NextcloudKit.shared.nkCommonInstance.copyLogToDocumentDirectory = true
+            NextcloudKit.shared.setupLog(pathLog: utilityFileSystem.directoryGroup,
+                                         levelLog: NCKeychain().logLevel,
+                                         copyLogToDocumentDirectory: true)
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start session with level \(levelLog) " + versionNextcloudiOS)
         }
 
