@@ -165,11 +165,10 @@ extension NCNetworking {
                      greaterDate: Any,
                      elementDate: String,
                      limit: Int,
-                     showHiddenFiles: Bool,
                      account: String,
                      options: NKRequestOptions = NKRequestOptions()) async -> (account: String, files: [NKFile]?, responseData: AFDataResponse<Data>?, error: NKError) {
         await withUnsafeContinuation({ continuation in
-            NextcloudKit.shared.searchMedia(path: path, lessDate: lessDate, greaterDate: greaterDate, elementDate: elementDate, limit: limit, showHiddenFiles: showHiddenFiles, account: account, options: options) { account, files, responseData, error in
+            NextcloudKit.shared.searchMedia(path: path, lessDate: lessDate, greaterDate: greaterDate, elementDate: elementDate, limit: limit, account: account, options: options) { account, files, responseData, error in
                 continuation.resume(returning: (account, files, responseData, error))
             }
         })

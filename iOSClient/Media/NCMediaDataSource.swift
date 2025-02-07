@@ -65,7 +65,7 @@ extension NCMedia {
             self.semaphoreSearchMedia.wait()
             self.searchMediaInProgress = true
 
-            var elementDate = "d:getlastmodified/"
+            var elementDate = "d:getlastmodified"
             var lessDate = Date.distantFuture
             var greaterDate = Date.distantPast
             var lessDateAny: Any = Date.distantFuture
@@ -106,7 +106,7 @@ extension NCMedia {
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate), limit \(limit)")
 
             if NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityServerVersionMajor >= self.global.nextcloudVersion99 {
-                elementDate = "nc:metadata-photos-original_date_time/"
+                elementDate = "nc:metadata-photos-original_date_time"
                 lessDateAny = Int((lessDate as AnyObject).timeIntervalSince1970)
                 greaterDateAny = Int((greaterDate as AnyObject).timeIntervalSince1970)
             } else {
@@ -123,7 +123,6 @@ extension NCMedia {
                                             greaterDate: greaterDateAny,
                                             elementDate: elementDate,
                                             limit: limit,
-                                            showHiddenFiles: NCKeychain().showHiddenFiles,
                                             account: self.session.account,
                                             options: options) { account, files, _, error in
 
