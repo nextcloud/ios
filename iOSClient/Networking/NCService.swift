@@ -33,15 +33,16 @@ class NCService: NSObject {
     // MARK: -
 
     public func startRequestServicesServer(account: String, controller: NCMainTabBarController?) {
-        guard !account.isEmpty, UIApplication.shared.applicationState == .active else { return }
+        guard !account.isEmpty
+        else {
+            return
+        }
 
         Task(priority: .background) {
             self.database.clearAllAvatarLoaded()
-            NCPushNotification.shared.pushNotification()
-            addInternalTypeIdentifier(account: account)
-
             let result = await requestServerStatus(account: account, controller: controller)
             if result {
+                addInternalTypeIdentifier(account: account)
                 requestServerCapabilities(account: account, controller: controller)
                 getAvatar(account: account)
                 NCNetworkingE2EE().unlockAll(account: account)
@@ -106,7 +107,8 @@ class NCService: NSObject {
         }
 
         let resultUserProfile = await NCNetworking.shared.getUserProfile(account: account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue))
-        if resultUserProfile.error == .success, let userProfile = resultUserProfile.userProfile {
+        if resultUserProfile.error == .success,
+           let userProfile = resultUserProfile.userProfile {
             self.database.setAccountUserProfile(account: resultUserProfile.account, userProfile: userProfile)
             return true
         } else {
