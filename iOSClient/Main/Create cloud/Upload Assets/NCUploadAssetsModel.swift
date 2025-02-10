@@ -173,18 +173,16 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
         }
 
         if useAutoUploadFolder {
-            DispatchQueue.global().async {
+            Task { @MainActor in
                 let assets = self.assets.compactMap { $0.phAsset }
-                let result = NCNetworking.shared.createFolder(assets: assets, useSubFolder: self.useAutoUploadSubFolder, withPush: false, session: self.session)
-                DispatchQueue.main.async {
-                    self.showHUD = false
-                    self.uploadInProgress.toggle()
-                    if result {
-                        createProcessUploads()
-                    } else {
-                        let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_error_createsubfolders_upload_")
-                        NCContentPresenter().showError(error: error)
-                    }
+                let foldersCreated = await NCNetworking.shared.createFolder(assets: assets, useSubFolder: self.useAutoUploadSubFolder, session: self.session)
+                self.showHUD = false
+                self.uploadInProgress.toggle()
+                if foldersCreated {
+                    createProcessUploads()
+                } else {
+                    let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_error_createsubfolders_upload_")
+                    NCContentPresenter().showError(error: error)
                 }
             }
         } else {
@@ -214,7 +212,7 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
 
             // Auto upload with subfolder
             if useAutoUploadSubFolder {
-                serverUrl = utilityFileSystem.createGranularityPath(asset: asset, serverUrl: serverUrl)
+                serverUrl = utilityFileSystem.createGranularityPath(asset: asset, serverUrl: autoUploadPath)
             }
 
             // Check if is in upload
