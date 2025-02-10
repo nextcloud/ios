@@ -322,7 +322,6 @@ extension NCNetworking {
         if (result.error == .success || result.error.errorCode == 405), useSubFolder {
             let autoUploadPath = self.database.getAccountAutoUploadPath(session: session)
             let autoUploadSubfolderGranularity = self.database.getAccountAutoUploadSubfolderGranularity()
-            var num: Float = 0
             let folders = Set(assets.map { utilityFileSystem.createGranularityPath(asset: $0) }).sorted()
 
             for folder in folders {
@@ -347,7 +346,6 @@ extension NCNetworking {
                 }
 
                 if result.error != .success && result.error.errorCode != 405 { break }
-                num += 1
             }
         }
 
