@@ -55,7 +55,7 @@ class NCMedia: UIViewController {
     var fileSelect: [String] = []
     var filesExists: ThreadSafeArray<String> = ThreadSafeArray()
     var ocIdDoNotExists: ThreadSafeArray<String> = ThreadSafeArray()
-    var hasRunSearchMedia: Bool = false
+    var searchMediaInProgress: Bool = false
     var attributesZoomIn: UIMenuElement.Attributes = []
     var attributesZoomOut: UIMenuElement.Attributes = []
     let gradient: CAGradientLayer = CAGradientLayer()
@@ -117,6 +117,7 @@ class NCMedia: UIViewController {
         collectionView.dragInteractionEnabled = true
         collectionView.dragDelegate = self
         collectionView.dropDelegate = self
+        collectionView.accessibilityIdentifier = "NCMedia"
 
         layout.sectionInset = UIEdgeInsets(top: 0, left: 2, bottom: 0, right: 2)
         collectionView.collectionViewLayout = layout
@@ -255,18 +256,25 @@ class NCMedia: UIViewController {
 
     @objc func deleteFile(_ notification: NSNotification) {
         guard let userInfo = notification.userInfo as NSDictionary?,
-              let error = userInfo["error"] as? NKError else { return }
+              let error = userInfo["error"] as? NKError
+        else {
+            return
+        }
 
-        semaphoreNotificationCenter.wait()
+        // This is only a fail safe "dead lock", I don't think the timeout will ever be called but at least nothing gets stuck, if after 5 sec. (which is a long time in this routine), the semaphore is still locked
+        //
+        if self.semaphoreNotificationCenter.wait(timeout: .now() + 5) == .timedOut {
+            self.semaphoreNotificationCenter.signal()
+        }
 
         if error.errorCode == self.global.errorResourceNotFound,
-           let ocId = userInfo["ocId"] as? String {
+           let ocIds = userInfo["ocId"] as? [String],
+           let ocId = ocIds.first {
             self.database.deleteMetadataOcId(ocId)
             self.loadDataSource {
                 self.semaphoreNotificationCenter.signal()
             }
         } else if error != .success {
-            NCContentPresenter().showError(error: error)
             self.loadDataSource {
                 self.semaphoreNotificationCenter.signal()
             }

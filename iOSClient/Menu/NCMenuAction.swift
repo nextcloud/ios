@@ -204,7 +204,7 @@ extension NCMenuAction {
                 for metadata in selectedMetadatas {
                     if let sceneIdentifier = metadata.sceneIdentifier,
                        let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier),
-                       let checkError = FileNameValidator.shared.checkFileName(metadata.fileNameView, account: controller.account) {
+                       let checkError = FileNameValidator.checkFileName(metadata.fileNameView, account: controller.account) {
 
                         fileNameError = checkError
                         break

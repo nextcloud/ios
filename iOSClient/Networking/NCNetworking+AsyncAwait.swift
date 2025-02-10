@@ -165,11 +165,10 @@ extension NCNetworking {
                      greaterDate: Any,
                      elementDate: String,
                      limit: Int,
-                     showHiddenFiles: Bool,
                      account: String,
                      options: NKRequestOptions = NKRequestOptions()) async -> (account: String, files: [NKFile]?, responseData: AFDataResponse<Data>?, error: NKError) {
         await withUnsafeContinuation({ continuation in
-            NextcloudKit.shared.searchMedia(path: path, lessDate: lessDate, greaterDate: greaterDate, elementDate: elementDate, limit: limit, showHiddenFiles: showHiddenFiles, account: account, options: options) { account, files, responseData, error in
+            NextcloudKit.shared.searchMedia(path: path, lessDate: lessDate, greaterDate: greaterDate, elementDate: elementDate, limit: limit, account: account, options: options) { account, files, responseData, error in
                 continuation.resume(returning: (account, files, responseData, error))
             }
         })
@@ -286,6 +285,15 @@ extension NCNetworking {
         await withUnsafeContinuation({ continuation in
             NextcloudKit.shared.deleteE2EEPrivateKey(account: account, options: options) { account, responseData, error in
                 continuation.resume(returning: (account: account, responseData: responseData, error: error))
+            }
+        })
+    }
+
+    func getRecommendedFiles(account: String,
+                             options: NKRequestOptions = NKRequestOptions()) async -> (account: String, recommendations: [NKRecommendation]?, responseData: AFDataResponse<Data>?, error: NKError) {
+        await withUnsafeContinuation({ continuation in
+            NextcloudKit.shared.getRecommendedFiles(account: account, options: options) { account, recommendations, responseData, error in
+            continuation.resume(returning: (account: account, recommendations: recommendations, responseData: responseData, error: error))
             }
         })
     }

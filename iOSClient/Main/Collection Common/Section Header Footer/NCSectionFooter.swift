@@ -97,13 +97,13 @@ class NCSectionFooter: UICollectionReusableView {
         if isHidden {
             buttonSectionHeightConstraint.constant = 0
         } else {
-            buttonSectionHeightConstraint.constant = NCGlobal.shared.heightFooterButton
+            buttonSectionHeightConstraint.constant = 30
         }
     }
 
     func showActivityIndicatorSection() {
         buttonSection.isHidden = true
-        buttonSectionHeightConstraint.constant = NCGlobal.shared.heightFooterButton
+        buttonSectionHeightConstraint.constant = 30
 
         activityIndicatorSection.isHidden = false
         activityIndicatorSection.startAnimating()

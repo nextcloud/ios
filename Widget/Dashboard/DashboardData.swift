@@ -131,7 +131,7 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
     // NETWORKING
     let password = NCKeychain().getPassword(account: activeTableAccount.account)
 
-    NextcloudKit.shared.setup(delegate: NCNetworking.shared)
+    NextcloudKit.shared.setup(groupIdentifier: NCBrandOptions.shared.capabilitiesGroup, delegate: NCNetworking.shared)
     NextcloudKit.shared.appendSession(account: activeTableAccount.account,
                                       urlBase: activeTableAccount.urlBase,
                                       user: activeTableAccount.user,
@@ -139,6 +139,9 @@ func getDashboardDataEntry(configuration: DashboardIntent?, isPreview: Bool, dis
                                       password: password,
                                       userAgent: userAgent,
                                       nextcloudVersion: capabilities.capabilityServerVersionMajor,
+                                      httpMaximumConnectionsPerHost: NCBrandOptions.shared.httpMaximumConnectionsPerHost,
+                                      httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
+                                      httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
                                       groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
     // LOG

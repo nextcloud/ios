@@ -73,7 +73,7 @@ extension NCShareExtension: NCAccountRequestDelegate {
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming, userInfo: ["account": account])
 
         // NETWORKING
-        NextcloudKit.shared.setup(delegate: NCNetworking.shared)
+        NextcloudKit.shared.setup(groupIdentifier: NCBrandOptions.shared.capabilitiesGroup, delegate: NCNetworking.shared)
         NextcloudKit.shared.appendSession(account: tableAccount.account,
                                           urlBase: tableAccount.urlBase,
                                           user: tableAccount.user,
@@ -81,6 +81,9 @@ extension NCShareExtension: NCAccountRequestDelegate {
                                           password: NCKeychain().getPassword(account: tableAccount.account),
                                           userAgent: userAgent,
                                           nextcloudVersion: capabilities.capabilityServerVersionMajor,
+                                          httpMaximumConnectionsPerHost: NCBrandOptions.shared.httpMaximumConnectionsPerHost,
+                                          httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
+                                          httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
                                           groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
         // SESSION

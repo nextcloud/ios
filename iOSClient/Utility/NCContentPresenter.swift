@@ -93,7 +93,7 @@ class NCContentPresenter: NSObject {
             priority: priority)
     }
 
-    @objc func messageNotification(_ title: String, error: NKError, delay: TimeInterval, type: messageType, afterDelay: TimeInterval = 0) {
+    func messageNotification(_ title: String, error: NKError, delay: TimeInterval, type: messageType, afterDelay: TimeInterval = 0) {
         messageNotification(title, error: error, delay: delay, type: type, priority: .normal, dropEnqueuedEntries: false, afterDelay: afterDelay)
     }
 

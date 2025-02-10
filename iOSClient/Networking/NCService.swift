@@ -22,26 +22,28 @@
 //
 
 import UIKit
-import NextcloudKit
+@preconcurrency import NextcloudKit
 import RealmSwift
 
 class NCService: NSObject {
     let utilityFileSystem = NCUtilityFileSystem()
+    let utility = NCUtility()
     let database = NCManageDatabase.shared
 
     // MARK: -
 
     public func startRequestServicesServer(account: String, controller: NCMainTabBarController?) {
-        guard !account.isEmpty, UIApplication.shared.applicationState == .active else { return }
+        guard !account.isEmpty
+        else {
+            return
+        }
 
         Task(priority: .background) {
             self.database.clearAllAvatarLoaded()
-            NCPushNotification.shared.pushNotification()
-            addInternalTypeIdentifier(account: account)
-
             let result = await requestServerStatus(account: account, controller: controller)
             if result {
-                requestServerCapabilities(account: account)
+                addInternalTypeIdentifier(account: account)
+                requestServerCapabilities(account: account, controller: controller)
                 getAvatar(account: account)
                 NCNetworkingE2EE().unlockAll(account: account)
                 sendClientDiagnosticsRemoteOperation(account: account)
@@ -105,22 +107,11 @@ class NCService: NSObject {
         }
 
         let resultUserProfile = await NCNetworking.shared.getUserProfile(account: account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue))
-        if resultUserProfile.error == .success, let userProfile = resultUserProfile.userProfile {
+        if resultUserProfile.error == .success,
+           let userProfile = resultUserProfile.userProfile {
             self.database.setAccountUserProfile(account: resultUserProfile.account, userProfile: userProfile)
             return true
-        } else if resultUserProfile.error.errorCode == NCGlobal.shared.errorUnauthorized401 || resultUserProfile.error.errorCode == NCGlobal.shared.errorUnauthorized997 {
-            /// Ops the server has Unauthorized, cancel allTask and go to in CheckRemoteUser
-            NCNetworking.shared.cancelAllTask()
-            ///
-            DispatchQueue.main.async {
-                if UIApplication.shared.applicationState == .active && NCNetworking.shared.isOnline {
-                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] The server has response with Unauthorized go checkRemoteUser \(resultUserProfile.error.errorCode)")
-                    NCNetworkingCheckRemoteUser().checkRemoteUser(account: resultUserProfile.account, controller: controller, error: resultUserProfile.error)
-                }
-            }
-            return false
         } else {
-            NCContentPresenter().showError(error: resultUserProfile.error, priority: .max)
             return false
         }
     }
@@ -162,17 +153,30 @@ class NCService: NSObject {
         }
     }
 
-    private func requestServerCapabilities(account: String) {
+    private func requestServerCapabilities(account: String, controller: NCMainTabBarController?) {
         NextcloudKit.shared.getCapabilities(account: account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, presponseData, error in
-            guard error == .success, let data = presponseData?.data else { return }
+            guard error == .success, let data = presponseData?.data else {
+                return
+            }
 
             data.printJson()
 
-            if NCNetworking.shared.isResponseDataChanged(account: account, responseData: presponseData) {
-                self.database.addCapabilitiesJSon(data, account: account)
+            self.database.addCapabilitiesJSon(data, account: account)
+
+            guard let capability = self.database.setCapabilities(account: account, data: data) else {
+                return
             }
 
-            guard let capability = self.database.setCapabilities(account: account, data: data) else { return }
+            // Recommendations
+            if NCCapabilities.shared.getCapabilities(account: account).capabilityRecommendations {
+                Task.detached {
+                    let session = NCSession.shared.getSession(account: account)
+                    await NCNetworking.shared.createRecommendations(session: session)
+                }
+            } else {
+                self.database.deleteAllRecommendedFiles(account: account)
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadHeader, userInfo: ["account": account])
+            }
 
             // Theming
             if NCBrandColor.shared.settingThemingColor(account: account) {
@@ -208,6 +212,17 @@ class NCService: NSObject {
                 NextcloudKit.shared.getUserStatus(account: account, options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { account, clearAt, icon, message, messageId, messageIsPredefined, status, statusIsUserDefined, _, _, error in
                     if error == .success {
                         self.database.setAccountUserStatus(userStatusClearAt: clearAt, userStatusIcon: icon, userStatusMessage: message, userStatusMessageId: messageId, userStatusMessageIsPredefined: messageIsPredefined, userStatusStatus: status, userStatusStatusIsUserDefined: statusIsUserDefined, account: account)
+                    }
+                }
+            }
+
+            // Notifications
+            controller?.availableNotifications = false
+            if capability.capabilityNotification.count > 0 {
+                NextcloudKit.shared.getNotifications(account: account) { _ in
+                } completion: { _, notifications, _, error in
+                    if error == .success, let notifications = notifications, notifications.count > 0 {
+                        controller?.availableNotifications = true
                     }
                 }
             }

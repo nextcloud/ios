@@ -31,30 +31,17 @@ import Queuer
 @objc protocol uploadE2EEDelegate: AnyObject { }
 #endif
 
-@objc protocol NCNetworkingDelegate {
-    func downloadProgress(_ progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String, session: URLSession, task: URLSessionTask)
-    func uploadProgress(_ progress: Float, totalBytes: Int64, totalBytesExpected: Int64, fileName: String, serverUrl: String, session: URLSession, task: URLSessionTask)
-    func downloadComplete(fileName: String, serverUrl: String, etag: String?, date: Date?, dateLastModified: Date?, length: Int64, task: URLSessionTask, error: NKError)
-    func uploadComplete(fileName: String, serverUrl: String, ocId: String?, etag: String?, date: Date?, size: Int64, task: URLSessionTask, error: NKError)
-}
-
 @objc protocol ClientCertificateDelegate {
     func onIncorrectPassword()
     func didAskForClientCertificate()
 }
 
-@objcMembers
-class NCNetworking: NSObject, NextcloudKitDelegate {
-    public static let shared: NCNetworking = {
-        let instance = NCNetworking()
-        NotificationCenter.default.addObserver(instance, selector: #selector(applicationDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
-        return instance
-    }()
+class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
+    static let shared = NCNetworking()
 
     struct FileNameServerUrl: Hashable {
         var fileName: String
         var serverUrl: String
-
     }
 
     let sessionDownload = NextcloudKit.shared.nkCommonInstance.identifierSessionDownload
@@ -71,7 +58,6 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
     var requestsUnifiedSearch: [DataRequest] = []
     var lastReachability: Bool = true
     var networkReachability: NKCommon.TypeReachability?
-    weak var delegate: NCNetworkingDelegate?
     weak var certificateDelegate: ClientCertificateDelegate?
     var p12Data: Data?
     var p12Password: String?
@@ -90,33 +76,29 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
     let downloadThumbnailTrashQueue = Queuer(name: "downloadThumbnailTrashQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     let unifiedSearchQueue = Queuer(name: "unifiedSearchQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
     let saveLivePhotoQueue = Queuer(name: "saveLivePhotoQueue", maxConcurrentOperationCount: 1, qualityOfService: .default)
-    let downloadQueue = Queuer(name: "downloadQueue", maxConcurrentOperationCount: NCBrandOptions.shared.maxConcurrentOperationDownload, qualityOfService: .default)
+    let downloadQueue = Queuer(name: "downloadQueue", maxConcurrentOperationCount: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload, qualityOfService: .default)
     let downloadAvatarQueue = Queuer(name: "downloadAvatarQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     let fileExistsQueue = Queuer(name: "fileExistsQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
     let deleteFileOrFolderQueue = Queuer(name: "deleteFileOrFolderQueue", maxConcurrentOperationCount: 10, qualityOfService: .default)
 
     // MARK: - init
 
-    override init() {
-        super.init()
-
+    init() {
         if let account = database.getActiveTableAccount()?.account {
             getActiveAccountCertificate(account: account)
         }
 
-        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: global.notificationCenterChangeUser), object: nil, queue: nil) { notification in
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: global.notificationCenterChangeUser), object: nil, queue: .main) { notification in
             if let userInfo = notification.userInfo {
                 if let account = userInfo["account"] as? String {
                     self.getActiveAccountCertificate(account: account)
                 }
             }
         }
-    }
 
-    // MARK: - NotificationCenter
-
-    func applicationDidEnterBackground() {
-        NCTransferProgress.shared.clearAllCountError()
+        NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { _ in
+            NCTransferProgress.shared.clearAllCountError()
+        }
     }
 
     // MARK: - Communication Delegate
@@ -147,7 +129,7 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
                 completionHandler(URLSession.AuthChallengeDisposition.useCredential, creds)
             } else {
                 self.certificateDelegate?.didAskForClientCertificate()
-                completionHandler(URLSession.AuthChallengeDisposition.performDefaultHandling, nil)
+                completionHandler(URLSession.AuthChallengeDisposition.cancelAuthenticationChallenge, nil)
             }
         } else {
             self.checkTrustedChallenge(session, didReceive: challenge, completionHandler: completionHandler)
@@ -162,21 +144,6 @@ class NCNetworking: NSObject, NextcloudKitDelegate {
             completionHandler()
         }
 #endif
-    }
-
-    func request<Value>(_ request: Alamofire.DataRequest, didParseResponse response: Alamofire.AFDataResponse<Value>) {
-        /// GLOBAL RESPONSE ERROR
-        if let statusCode = response.response?.statusCode {
-            switch statusCode {
-            case NCGlobal.shared.errorMaintenance:
-                if let errorDescription = NKError.getErrorDescription(for: statusCode) {
-                    let error = NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: errorDescription)
-                    NCContentPresenter().showWarning(error: error, priority: .max)
-                }
-            default:
-                break
-            }
-        }
     }
 
     // MARK: -

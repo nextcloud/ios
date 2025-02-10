@@ -36,18 +36,21 @@ class NCCollectionViewDataSource: NSObject {
     private var metadatasForSection: [NCMetadataForSection] = []
     private var layoutForView: NCDBLayoutForView?
     private var metadataIndexPath = ThreadSafeDictionary<IndexPath, tableMetadata>()
+    private var directoryOnTop: Bool = true
 
     override init() { super.init() }
 
     init(metadatas: [tableMetadata],
          layoutForView: NCDBLayoutForView? = nil,
          providers: [NKSearchProvider]? = nil,
-         searchResults: [NKSearchResult]? = nil) {
+         searchResults: [NKSearchResult]? = nil,
+         directoryOnTop: Bool) {
         super.init()
         removeAll()
 
         self.metadatas = metadatas
         self.layoutForView = layoutForView
+        self.directoryOnTop = directoryOnTop
         /// unified search
         self.providers = providers
         self.searchResults = searchResults
@@ -111,12 +114,10 @@ class NCCollectionViewDataSource: NSObject {
             /// normal
             let directory = NSLocalizedString("directory", comment: "").lowercased().firstUppercased
             self.sectionsValue = self.sectionsValue.sorted {
-                if let directoryOnTop = layoutForView?.directoryOnTop,
-                   directoryOnTop,
+                if self.directoryOnTop,
                    $0 == directory {
                     return true
-                } else if let directoryOnTop = layoutForView?.directoryOnTop,
-                          directoryOnTop,
+                } else if self.directoryOnTop,
                           $1 == directory {
                     return false
                 }
@@ -146,7 +147,8 @@ class NCCollectionViewDataSource: NSObject {
         let metadataForSection = NCMetadataForSection(sectionValue: sectionValue,
                                                       metadatas: metadatas,
                                                       lastSearchResult: searchResult,
-                                                      layoutForView: self.layoutForView)
+                                                      layoutForView: self.layoutForView,
+                                                      directoryOnTop: self.directoryOnTop)
         metadatasForSection.append(metadataForSection)
     }
 
@@ -261,22 +263,13 @@ class NCCollectionViewDataSource: NSObject {
         return nil
     }
 
-    func caching(metadatas: [tableMetadata], dataSourceMetadatas: [tableMetadata], completion: @escaping (_ update: Bool) -> Void) {
+    func caching(metadatas: [tableMetadata], dataSourceMetadatas: [tableMetadata], completion: @escaping () -> Void) {
         var counter: Int = 0
-        var updated: Bool = dataSourceMetadatas.isEmpty
 
         DispatchQueue.global().async {
             for metadata in metadatas {
                 let metadata = tableMetadata(value: metadata)
                 let indexPath = IndexPath(row: counter, section: 0)
-                if indexPath.row < dataSourceMetadatas.count {
-                    if !metadata.isEqual(dataSourceMetadatas[indexPath.row]) {
-                        updated = true
-                    }
-                } else {
-                    updated = true
-                }
-
                 self.metadataIndexPath[indexPath] = tableMetadata(value: metadata)
 
                 /// caching preview
@@ -290,9 +283,7 @@ class NCCollectionViewDataSource: NSObject {
                 counter += 1
             }
 
-            DispatchQueue.main.async {
-                return completion(updated)
-            }
+            return completion()
         }
     }
 
@@ -353,6 +344,7 @@ class NCMetadataForSection: NSObject {
     var lastSearchResult: NKSearchResult?
     var unifiedSearchInProgress: Bool = false
     var layoutForView: NCDBLayoutForView?
+    var directoryOnTop: Bool
 
     private var metadatasSorted: [tableMetadata] = []
     private var metadatasFavoriteDirectory: [tableMetadata] = []
@@ -364,11 +356,12 @@ class NCMetadataForSection: NSObject {
     public var numFile: Int = 0
     public var totalSize: Int64 = 0
 
-    init(sectionValue: String, metadatas: [tableMetadata], lastSearchResult: NKSearchResult?, layoutForView: NCDBLayoutForView?) {
+    init(sectionValue: String, metadatas: [tableMetadata], lastSearchResult: NKSearchResult?, layoutForView: NCDBLayoutForView?, directoryOnTop: Bool) {
         self.sectionValue = sectionValue
         self.metadatas = metadatas
         self.lastSearchResult = lastSearchResult
         self.layoutForView = layoutForView
+        self.directoryOnTop = directoryOnTop
 
         super.init()
 
@@ -452,7 +445,7 @@ class NCMetadataForSection: NSObject {
                 } else {
                     metadatasFavoriteFile.append(metadata)
                 }
-            } else if metadata.directory && layoutForView?.directoryOnTop ?? true {
+            } else if metadata.directory && self.directoryOnTop {
                 metadatasDirectory.append(metadata)
             } else {
                 metadatasFile.append(metadata)

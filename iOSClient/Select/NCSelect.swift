@@ -147,7 +147,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         super.viewDidAppear(animated)
         let folderPath = utilityFileSystem.getFileNamePath("", serverUrl: serverUrl, session: session)
 
-        if serverUrl.isEmpty || !FileNameValidator.shared.checkFolderPath(folderPath, account: session.account) {
+        if serverUrl.isEmpty || !FileNameValidator.checkFolderPath(folderPath, account: session.account) {
             serverUrl = utilityFileSystem.getHomeServer(session: session)
             titleCurrentFolder = NCBrandOptions.shared.brand
         }
@@ -229,6 +229,10 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
 
     func tapRichWorkspace(_ sender: Any) { }
 
+    func tapRecommendationsButtonMenu(with metadata: tableMetadata, image: UIImage?) { }
+
+    func tapRecommendations(with metadata: tableMetadata) { }
+
     // MARK: - Push metadata
 
     func pushMetadata(_ metadata: tableMetadata) {
@@ -250,7 +254,7 @@ class NCSelect: UIViewController, UIGestureRecognizerDelegate, UIAdaptivePresent
         viewController.serverUrl = serverUrlPush
         viewController.session = session
 
-        if let fileNameError = FileNameValidator.shared.checkFileName(metadata.fileNameView, account: session.account) {
+        if let fileNameError = FileNameValidator.checkFileName(metadata.fileNameView, account: session.account) {
             present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
         } else {
             navigationController?.pushViewController(viewController, animated: true)
@@ -454,9 +458,9 @@ extension NCSelect: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
         let sections = self.dataSource.numberOfSections()
         if section == sections - 1 {
-            return CGSize(width: collectionView.frame.width, height: NCGlobal.shared.endHeightFooter)
+            return CGSize(width: collectionView.frame.width, height: 85)
         } else {
-            return CGSize(width: collectionView.frame.width, height: NCGlobal.shared.heightFooter)
+            return CGSize(width: collectionView.frame.width, height: 1)
         }
     }
 }
@@ -492,9 +496,10 @@ extension NCSelect {
                 self.collectionView.reloadData()
             }
         } completion: { _, _, _, _, _ in
-            let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: NCDBLayoutForView())
+            let directoryOnTop = NCKeychain().getDirectoryOnTop(account: self.session.account)
+            let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: NCDBLayoutForView(), directoryOnTop: directoryOnTop)
 
-            self.dataSource = NCCollectionViewDataSource(metadatas: metadatas)
+            self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, directoryOnTop: directoryOnTop)
             self.collectionView.reloadData()
 
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": self.serverUrl])

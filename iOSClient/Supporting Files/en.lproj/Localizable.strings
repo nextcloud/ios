@@ -434,6 +434,7 @@
 "_no_capabilities_found_"       = "Capabilities not found";
 "_capabilities_footer_"         = "Display the packages used by the app if they are installed and available on the server.";
 "_diagnostics_"                 = "Diagnostics";
+"_diagnostics_footer_"          = "Changing log level requires a restart of the app to take effect";
 "_view_log_"                    = "View log file";
 "_clear_log_"                   = "Clear log file";
 "_set_log_level_"               = "Set Log level";
@@ -578,6 +579,7 @@
 "_directory_on_top_yes_"        = "✓ Folders on top";
 "_directory_on_top_no_"         = "Folders on top";
 "_show_description_"            = "Show description";
+"_show_recommended_files_"      = "Show recommended files";
 "_no_description_available_"    = "No description available for this folder";
 "_folder_automatic_upload_"     = "Folder for \"Auto upload\"";
 "_search_no_record_found_"      = "No result";
@@ -677,7 +679,7 @@
 "_share_file_drop_"             = "File drop (upload only)";
 "_share_secure_file_drop_"      = "Secure file drop (upload only)";
 "_share_hide_download_"         = "Hide download";
-"_share_password_protect_"      = "Password protect";
+"_share_password_protect_"      = "Password protection";
 "_share_expiration_date_"       = "Set expiration date";
 "_share_note_recipient_"        = "Note to recipient";
 "_share_delete_sharelink_"      = "Delete link";
@@ -766,6 +768,9 @@
 "_file_creation_"                   = "File creation";
 "_delete_all_scanned_images_"       = "Delete all scanned images";
 "_text_recognition_"                = "Text recognition";
+"_all_files_"                       = "All files";
+"_personal_files_"                  = "Personal Files";
+
 
 /* The title on the navigation bar of the Scanning screen. */
 "wescan.scanning.title"             = "Scanning";
@@ -1054,6 +1059,7 @@
 "_terms_of_service_"        = "Terms of service";
 "_terms_accept_"            = "I acknowledge that I have read and agree to the above terms of service";
 "_terms_accepted_"          = "Terms accepted";
+"_recommended_files_"       = "Recommended Files";
 
 // Tip
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails.";
@@ -1120,7 +1126,7 @@
 
 // MARK: Client certificate
 "_no_client_cert_found_"         = "The server is requesting a client certificate";
-"_no_client_cert_found_desc_"    = "Do you want to install a TLS client certificate? \n Note that only .p12 archives created through OpenSSL with the -legacy flag can work on Apple devices.";
+"_no_client_cert_found_desc_"    = "Do you want to install a TLS client certificate? \n Note that the .p12 certificate must be installed on your device first by clicking on it and installing it as an Identitity Certificate Profile in Settings. The certificate MUST also have a password as that is a requirement by iOS.";
 "_client_cert_enter_password_"   = "Enter the password for the chosen certificate";
 "_client_cert_wrong_password_"   = "Sorry, you entered an invalid password";
 

@@ -29,14 +29,6 @@ protocol NCSectionFirstHeaderEmptyDataDelegate: AnyObject {
 }
 
 class NCSectionFirstHeaderEmptyData: UICollectionReusableView {
-    @IBOutlet weak var viewTransfer: UIView!
-    @IBOutlet weak var viewTransferHeightConstraint: NSLayoutConstraint!
-    @IBOutlet weak var imageTransfer: UIImageView!
-    @IBOutlet weak var labelTransfer: UILabel!
-    @IBOutlet weak var progressTransfer: UIProgressView!
-    @IBOutlet weak var transferSeparatorBottom: UIView!
-    @IBOutlet weak var transferSeparatorBottomHeightConstraint: NSLayoutConstraint!
-
     @IBOutlet weak var emptyImage: UIImageView!
     @IBOutlet weak var emptyTitle: UILabel!
     @IBOutlet weak var emptyDescription: UILabel!
@@ -54,48 +46,20 @@ class NCSectionFirstHeaderEmptyData: UICollectionReusableView {
     }
 
     func initHeader() {
-        viewTransferHeightConstraint.constant = 0
-        viewTransfer.isHidden = true
-
-        imageTransfer.tintColor = NCBrandColor.shared.iconImageColor
-        imageTransfer.image = NCUtility().loadImage(named: "icloud.and.arrow.up")
-
-        progressTransfer.progress = 0
-        progressTransfer.tintColor = NCBrandColor.shared.iconImageColor
-        progressTransfer.trackTintColor = NCBrandColor.shared.customer.withAlphaComponent(0.2)
-
-        transferSeparatorBottom.backgroundColor = .separator
-        transferSeparatorBottomHeightConstraint.constant = 0.5
-
         emptyImage.image = nil
         emptyTitle.text = ""
         emptyDescription.text = ""
     }
 
-    // MARK: - Transfer
+    // MARK: -
 
-    func setViewTransfer(isHidden: Bool, progress: Float? = nil) {
-        viewTransfer.isHidden = isHidden
-
-        if isHidden {
-            viewTransferHeightConstraint.constant = 0
-            progressTransfer.progress = 0
-        } else {
-            viewTransferHeightConstraint.constant = NCGlobal.shared.heightHeaderTransfer
-            if NCTransferProgress.shared.haveUploadInForeground() {
-                labelTransfer.text = String(format: NSLocalizedString("_upload_foreground_msg_", comment: ""), NCBrandOptions.shared.brand)
-                if let progress {
-                    progressTransfer.progress = progress
-                } else if let progress = NCTransferProgress.shared.getLastTransferProgressInForeground() {
-                    progressTransfer.progress = progress
-                } else {
-                    progressTransfer.progress = 0.0
-                }
-            } else {
-                labelTransfer.text = NSLocalizedString("_upload_background_msg_", comment: "")
-                progressTransfer.progress = 0.0
-            }
-
-        }
+    func setContent(emptyImage: UIImage?,
+                    emptyTitle: String?,
+                    emptyDescription: String?,
+                    delegate: NCSectionFirstHeaderEmptyDataDelegate?) {
+        self.delegate = delegate
+        self.emptyImage.image = emptyImage
+        self.emptyTitle.text = emptyTitle
+        self.emptyDescription.text = emptyDescription
     }
 }

@@ -27,24 +27,7 @@ import NextcloudKit
 import Alamofire
 
 extension NCCollectionViewCommon: UICollectionViewDelegate {
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath),
-              !metadata.isInvalidated
-        else {
-            return
-        }
-
-        if isEditMode {
-            if let index = fileSelect.firstIndex(of: metadata.ocId) {
-                fileSelect.remove(at: index)
-            } else {
-                fileSelect.append(metadata.ocId)
-            }
-            collectionView.reloadItems(at: [indexPath])
-            tabBarSelect.update(fileSelect: fileSelect, metadatas: getSelectedMetadatas(), userId: metadata.userId)
-            return
-        }
-
+    func didSelectMetadata(_ metadata: tableMetadata, withOcIds: Bool) {
         if metadata.e2eEncrypted {
             if NCCapabilities.shared.getCapabilities(account: metadata.account).capabilityE2EEEnabled {
                 if !NCKeychain().isEndToEndEnabled(account: metadata.account) {
@@ -70,7 +53,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                                                $0.classFile == NKCommon.TypeClassFile.video.rawValue ||
                                                $0.classFile == NKCommon.TypeClassFile.audio.rawValue }.map(\.ocId)
 
-                return NCViewer().view(viewController: self, metadata: metadata, ocIds: ocIds, image: image)
+                return NCViewer().view(viewController: self, metadata: metadata, ocIds: withOcIds ? ocIds : nil, image: image)
 
             } else if metadata.isAvailableEditorView ||
                       utilityFileSystem.fileProviderStorageExists(metadata) ||
@@ -102,7 +85,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
                         if error == .success || afError?.isExplicitlyCancelledError ?? false {
                             hud.dismiss()
                         } else {
-                            hud.error(text: error.description)
+                            hud.error(text: error.errorDescription)
                         }
                     }
                 } else if !metadata.url.isEmpty {
@@ -116,9 +99,34 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
         }
     }
 
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath),
+              !metadata.isInvalidated
+        else {
+            return
+        }
+
+        if isEditMode {
+            if let index = fileSelect.firstIndex(of: metadata.ocId) {
+                fileSelect.remove(at: index)
+            } else {
+                fileSelect.append(metadata.ocId)
+            }
+            collectionView.reloadItems(at: [indexPath])
+            tabBarSelect?.update(fileSelect: fileSelect, metadatas: getSelectedMetadatas(), userId: metadata.userId)
+            return
+        }
+
+        self.didSelectMetadata(metadata, withOcIds: true)
+    }
+
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath) else { return nil }
-        if isEditMode || metadata.classFile == NKCommon.TypeClassFile.url.rawValue { return nil }
+        guard let metadata = self.dataSource.getMetadata(indexPath: indexPath),
+              metadata.classFile != NKCommon.TypeClassFile.url.rawValue,
+              !isEditMode
+        else {
+            return nil
+        }
         let identifier = indexPath as NSCopying
         var image = utility.getImage(ocId: metadata.ocId, etag: metadata.etag, ext: global.previewExt1024)
 

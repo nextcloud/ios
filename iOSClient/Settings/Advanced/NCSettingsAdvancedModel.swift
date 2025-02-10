@@ -122,6 +122,7 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
     func updateSelectedLogLevel() {
         keychain.logLevel = selectedLogLevel.rawValue
         NextcloudKit.shared.nkCommonInstance.levelLog = selectedLogLevel.rawValue
+        exit(0)
     }
 
     /// Updates the value of `selectedInterval` in the keychain.
@@ -152,6 +153,8 @@ class NCSettingsAdvancedModel: ObservableObject, ViewOnAppearHandling {
 
             NCActivityIndicator.shared.stop()
             self.calculateSize()
+
+            NCService().startRequestServicesServer(account: self.session.account, controller: self.controller)
 
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterClearCache)
         }

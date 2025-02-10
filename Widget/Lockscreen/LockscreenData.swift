@@ -64,7 +64,7 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, fami
     // NETWORKING
     let password = NCKeychain().getPassword(account: activeTableAccount.account)
 
-    NextcloudKit.shared.setup(delegate: NCNetworking.shared)
+    NextcloudKit.shared.setup(groupIdentifier: NCBrandOptions.shared.capabilitiesGroup, delegate: NCNetworking.shared)
     NextcloudKit.shared.appendSession(account: activeTableAccount.account,
                                       urlBase: activeTableAccount.urlBase,
                                       user: activeTableAccount.user,
@@ -72,6 +72,9 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, fami
                                       password: password,
                                       userAgent: userAgent,
                                       nextcloudVersion: capabilities.capabilityServerVersionMajor,
+                                      httpMaximumConnectionsPerHost: NCBrandOptions.shared.httpMaximumConnectionsPerHost,
+                                      httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
+                                      httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
                                       groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
     let options = NKRequestOptions(timeout: 90, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)

@@ -27,7 +27,6 @@ import RealmSwift
 import SwiftUI
 
 class NCFiles: NCCollectionViewCommon {
-    internal var isRoot: Bool = true
     internal var fileNameBlink: String?
     internal var fileNameOpen: String?
     internal var matadatasHash: String = ""
@@ -40,7 +39,6 @@ class NCFiles: NCCollectionViewCommon {
         layoutKey = NCGlobal.shared.layoutViewFiles
         enableSearchBar = true
         headerRichWorkspaceDisable = false
-        headerMenuTransferView = true
         emptyTitle = "_files_no_files_"
         emptyDescription = "_no_file_pull_down_"
     }
@@ -50,13 +48,20 @@ class NCFiles: NCCollectionViewCommon {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        if isRoot {
-            NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { notification in
+        if self.serverUrl.isEmpty {
 
+            ///
+            /// Set ServerURL when start (isEmpty)
+            ///
+            self.serverUrl = utilityFileSystem.getHomeServer(session: session)
+            self.titleCurrentFolder = getNavigationTitle()
+
+            NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeUser), object: nil, queue: nil) { notification in
                 if let userInfo = notification.userInfo, let account = userInfo["account"] as? String {
                     if let controller = userInfo["controller"] as? NCMainTabBarController,
                        controller == self.controller {
                         controller.account = account
+                        controller.availableNotifications = false
                     } else {
                         return
                     }
@@ -78,7 +83,8 @@ class NCFiles: NCCollectionViewCommon {
                 }
 
                 self.titleCurrentFolder = self.getNavigationTitle()
-                self.setNavigationLeftItems()
+                self.navigationItem.title = self.titleCurrentFolder
+                (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
 
                 self.dataSource.removeAll()
                 self.reloadDataSource()
@@ -88,10 +94,6 @@ class NCFiles: NCCollectionViewCommon {
     }
 
     override func viewWillAppear(_ animated: Bool) {
-        if isRoot {
-            serverUrl = utilityFileSystem.getHomeServer(session: session)
-            titleCurrentFolder = getNavigationTitle()
-        }
         super.viewWillAppear(animated)
 
         reloadDataSource()
@@ -122,36 +124,41 @@ class NCFiles: NCCollectionViewCommon {
     // MARK: - DataSource
 
     override func reloadDataSource() {
-        guard !isSearchingMode else {
+        guard !isSearchingMode
+        else {
             return super.reloadDataSource()
         }
-        self.semaphoreReloadDataSource.wait()
+        let directoryOnTop = NCKeychain().getDirectoryOnTop(account: session.account)
+
+        // Watchdog: this is only a fail safe "dead lock", I don't think the timeout will ever be called but at least nothing gets stuck, if after 5 sec. (which is a long time in this routine), the semaphore is still locked
+        //
+        if self.semaphoreReloadDataSource.wait(timeout: .now() + 5) == .timedOut {
+            self.semaphoreReloadDataSource.signal()
+        }
 
         var predicate = self.defaultPredicate
         let predicateDirectory = NSPredicate(format: "account == %@ AND serverUrl == %@", session.account, self.serverUrl)
         let dataSourceMetadatas = self.dataSource.getMetadatas()
 
         if NCKeychain().getPersonalFilesOnly(account: session.account) {
-            predicate = NSPredicate(format: "account == %@ AND serverUrl == %@ AND (ownerId == %@ || ownerId == '') AND mountType == '' AND NOT (status IN %@)", session.account, self.serverUrl, session.userId, global.metadataStatusHideInView)
+            predicate = self.personalFilesOnlyPredicate
         }
 
         self.metadataFolder = database.getMetadataFolder(session: session, serverUrl: self.serverUrl)
         self.richWorkspaceText = database.getTableDirectory(predicate: predicateDirectory)?.richWorkspace
 
-        let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: layoutForView)
+        let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: layoutForView, directoryOnTop: directoryOnTop)
 
-        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView)
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, directoryOnTop: directoryOnTop)
 
         if metadatas.isEmpty {
             self.semaphoreReloadDataSource.signal()
             return super.reloadDataSource()
         }
 
-        self.dataSource.caching(metadatas: metadatas, dataSourceMetadatas: dataSourceMetadatas) { updated in
+        self.dataSource.caching(metadatas: metadatas, dataSourceMetadatas: dataSourceMetadatas) {
             self.semaphoreReloadDataSource.signal()
-            if updated || self.isNumberOfItemsInAllSectionsNull || self.numberOfItemsInAllSections != metadatas.count {
-                super.reloadDataSource()
-            }
+            super.reloadDataSource()
         }
     }
 
@@ -191,6 +198,12 @@ class NCFiles: NCCollectionViewCommon {
                     for metadata in metadatas where !metadata.directory && downloadMetadata(metadata) {
                         if NCNetworking.shared.downloadQueue.operations.filter({ ($0 as? NCOperationDownload)?.metadata.ocId == metadata.ocId }).isEmpty {
                             NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile))
+                        }
+                    }
+                    /// Recommendation
+                    if self.isRecommendationActived {
+                        Task.detached {
+                            await NCNetworking.shared.createRecommendations(session: self.session)
                         }
                     }
                 } else if error.errorCode == self.global.errorForbidden {
@@ -347,11 +360,11 @@ class NCFiles: NCCollectionViewCommon {
             appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
         } else if let account = tableAccount?.account, account != currentAccount {
             NCAccount().changeAccount(account, userProfile: nil, controller: controller) { }
-        } else if isRoot {
-            titleCurrentFolder = getNavigationTitle()
-            navigationItem.title = titleCurrentFolder
+        } else if self.serverUrl == self.utilityFileSystem.getHomeServer(session: self.session) {
+            self.titleCurrentFolder = getNavigationTitle()
+            navigationItem.title = self.titleCurrentFolder
         }
 
-        setNavigationLeftItems()
+        (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
     }
 }

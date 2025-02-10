@@ -31,7 +31,7 @@
 import Foundation
 import UIKit
 
-public class NCCapabilities: NSObject {
+final public class NCCapabilities: Sendable {
     static let shared = NCCapabilities()
 
     public class Capabilities {
@@ -71,11 +71,10 @@ public class NCCapabilities: NSObject {
         var capabilityForbiddenFileNameBasenames: [String]          = []
         var capabilityForbiddenFileNameCharacters: [String]         = []
         var capabilityForbiddenFileNameExtensions: [String]         = []
+        var capabilityRecommendations: Bool                         = false
     }
 
     private var capabilities = ThreadSafeDictionary<String, Capabilities>()
-
-    override private init() {}
 
     func disableSharesView(account: String) -> Bool {
         guard let capability = capabilities[account] else {

@@ -37,6 +37,21 @@ class NCAccount: NSObject {
         if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
         let account: String = "\(user) \(urlBase)"
 
+        /// Remove account ion groupDefaults
+        ///
+        if let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) {
+            var unauthorizedArray = groupDefaults.array(forKey: "Unauthorized") as? [String] ?? []
+            var unavailableArray = groupDefaults.array(forKey: "Unavailable") as? [String] ?? []
+
+            unauthorizedArray.removeAll { $0 == account }
+            groupDefaults.set(unauthorizedArray, forKey: "Unauthorized")
+
+            unavailableArray.removeAll { $0 == account }
+            groupDefaults.set(unavailableArray, forKey: "Unavailable")
+
+            groupDefaults.synchronize()
+        }
+
         NextcloudKit.shared.appendSession(account: account,
                                           urlBase: urlBase,
                                           user: user,
@@ -44,6 +59,9 @@ class NCAccount: NSObject {
                                           password: password,
                                           userAgent: userAgent,
                                           nextcloudVersion: NCCapabilities.shared.getCapabilities(account: account).capabilityServerVersionMajor,
+                                          httpMaximumConnectionsPerHost: NCBrandOptions.shared.httpMaximumConnectionsPerHost,
+                                          httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
+                                          httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
                                           groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
 
         NextcloudKit.shared.getUserProfile(account: account) { account, userProfile, _, error in

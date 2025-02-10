@@ -50,7 +50,7 @@ extension NCMedia {
     @objc func searchMediaUI(_ distant: Bool = false) {
         let session = self.session
         guard self.isViewActived,
-              !self.hasRunSearchMedia,
+              !self.searchMediaInProgress,
               !self.isPinchGestureActive,
               !self.showOnlyImages,
               !self.showOnlyVideos,
@@ -63,10 +63,13 @@ extension NCMedia {
 
         DispatchQueue.global(qos: .background).async {
             self.semaphoreSearchMedia.wait()
-            self.hasRunSearchMedia = true
+            self.searchMediaInProgress = true
 
+            var elementDate = "d:getlastmodified"
             var lessDate = Date.distantFuture
             var greaterDate = Date.distantPast
+            var lessDateAny: Any = Date.distantFuture
+            var greaterDateAny: Any = Date.distantPast
             let countMetadatas = self.dataSource.metadatas.count
             let options = NKRequestOptions(timeout: 120, taskDescription: self.global.taskDescriptionRetrievesProperties, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
             var firstCellDate: Date?
@@ -102,16 +105,24 @@ extension NCMedia {
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate), limit \(limit)")
 
+            if NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityServerVersionMajor >= self.global.nextcloudVersion99 {
+                elementDate = "nc:metadata-photos-original_date_time"
+                lessDateAny = Int((lessDate as AnyObject).timeIntervalSince1970)
+                greaterDateAny = Int((greaterDate as AnyObject).timeIntervalSince1970)
+            } else {
+                lessDateAny = lessDate
+                greaterDateAny = greaterDate
+            }
+
             DispatchQueue.main.async {
                 self.activityIndicator.startAnimating()
             }
 
             NextcloudKit.shared.searchMedia(path: tableAccount.mediaPath,
-                                            lessDate: lessDate,
-                                            greaterDate: greaterDate,
-                                            elementDate: "d:getlastmodified/",
+                                            lessDate: lessDateAny,
+                                            greaterDate: greaterDateAny,
+                                            elementDate: elementDate,
                                             limit: limit,
-                                            showHiddenFiles: NCKeychain().showHiddenFiles,
                                             account: self.session.account,
                                             options: options) { account, files, _, error in
 
@@ -161,7 +172,7 @@ extension NCMedia {
 
                 DispatchQueue.main.async {
                     self.activityIndicator.stopAnimating()
-                    self.hasRunSearchMedia = false
+                    self.searchMediaInProgress = false
 
                     if self.dataSource.metadatas.isEmpty {
                         self.collectionViewReloadData()
