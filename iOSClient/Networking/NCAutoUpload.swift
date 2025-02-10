@@ -221,7 +221,8 @@ class NCAutoUpload: NSObject {
         if selector == NCGlobal.shared.selectorUploadAutoUpload,
            let idAssets = self.database.getPhotoLibraryIdAsset(image: tableAccount.autoUploadImage, video: tableAccount.autoUploadVideo, account: account) {
             assets.enumerateObjects { asset, _, _ in
-                var creationDateString = ""
+                var creationDateString: String?
+
                 if let creationDate = asset.creationDate {
                     creationDateString = String(describing: creationDate)
                 }
