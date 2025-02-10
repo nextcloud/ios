@@ -389,7 +389,6 @@
 "_disableLocalCacheAfterUpload_footer_" = "After uploading the file, do not keep it in the local cache";
 "_disableLocalCacheAfterUpload_"        = "Disable local cache";
 "_autoupload_"                      = "Auto upload photos/videos";
-"_autoupload_select_folder_"        = "Select the \"Auto upload\" folder";
 "_autoupload_error_select_folder_"  = "Select a valid folder for the \"Auto upload\"";
 "_autoupload_background_"           = "Auto upload in the background";
 "_autoupload_photos_"               = "Auto upload photos";
@@ -405,14 +404,14 @@
 "_autoupload_change_location_footer_" = "Change folder used for \"Automatic upload of camera photos\" (if the option is enabled)";
 "_autoupload_not_select_home_"      = "Select a folder";
 "_autoupload_save_album_"           = "Copy photo or video into the photo album";
-"_autoupload_fullphotos_"           = "Upload the whole camera roll";
+"_start_autoupload_"                = "Start auto uploading";
+"_stop_autoupload_"                 = "Stop auto uploading";
 "_autoupload_fullphotos_footer_"    = "Adjust the options above before uploading.";
 "_autoupload_create_subfolder_"     = "Use subfolders";
 "_autoupload_create_subfolder_footer_"  = "Store in subfolders based on year, month or daily.";
 "_autoupload_subfolder_granularity_"    = "Subfolder Granularity";
 "_filenamemask_"                        = "Change filename mask";
 "_filenamemask_footer_"                 = "By default, when a file is uploaded, it automatically gets the following format: yy-mm-dd hh-mm-ss plus a 4-digit counter. If you do not like this format, you can change it here except for the final 4-digit counter, which cannot be omitted.";
-"_autoupload_current_folder_"           = "Currently selected folder";
 "_help_tutorial_"               = "Tutorial";
 "_help_intro_"                  = "Introduction to Nextcloud";
 "_help_activity_verbose_"       = "Detailed Activity feed";
@@ -1006,7 +1005,7 @@
 "_delete_selected_photos_"  = "Delete selected photos";
 "_media_square_"            = "Square grid";
 "_media_ratio_"             = "Aspect ratio grid";
-"_autoupload_notice_"       = "To ensure the proper functioning of the application, it is necessary to enable Background App Refresh. Otherwise, new photos or videos will not be detected when the application is in the background.\n\nAdditionally, please note that the application will not be able to detect new photos and videos if it is manually terminated. When the app is in the background, data transfer may be slower, and new photos and/or videos will generally be detected every 10 minutes, depending on the device’s battery level.\n\nTo verify that the app is functioning correctly, you can use the log file available in Advanced settings.";
+"_autoupload_notice_"       = "To ensure the proper functioning of this feature, it is necessary to enable Background App Refresh. Otherwise, new photos or videos will not be detected when the application is in the background.\n\nAdditionally, please note that the app will not be able to detect new photos and videos if it is manually terminated. When the app is in the background, data transfer may be slower, and new photos and/or videos will generally be detected every 10 minutes, depending on the device’s battery level.\n\nTo verify that the app is functioning correctly, you can use the log file available in Advanced settings.";
 "_display_"                 = "Display";
 "_appearance_"              = "Appearance";
 "_light_"                   = "Light";
@@ -1142,3 +1141,9 @@
 "_file_name_new_extension_" = "Changing the extension might cause this file to open in a different application.";
 "_please_rename_file_" = "Please rename the file or folder.";
 "hidden_file_name_warning" = "Name will result in a hidden file.";
+
+"_select_autoupload_albums_" = "Select albums";
+"_upload_from_" = "Upload from";
+"_multiple_albums_" = "Multiple albums";
+"_smart_albums_" = "Smart albums";
+"_albums_" = "Albums";
