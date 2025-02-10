@@ -433,6 +433,7 @@
 "_no_capabilities_found_"       = "Capabilities not found";
 "_capabilities_footer_"         = "Display the packages used by the app if they are installed and available on the server.";
 "_diagnostics_"                 = "Diagnostics";
+"_diagnostics_footer_"          = "Changing log level requires a restart of the app to take effect";
 "_view_log_"                    = "View log file";
 "_clear_log_"                   = "Clear log file";
 "_set_log_level_"               = "Set Log level";
@@ -1019,7 +1020,7 @@
 "_keep_screen_awake_"       = "Keep screen awake\nwhile transferring files";
 "_error_not_found_"         = "The requested resource could not be found";
 "_error_conflict_"          = "The request could not be completed due to a conflict with the current state of the resource";
-"_error_precondition_"      = "The server does not meet one of the preconditions that the requester";
+"_error_precondition_"      = "The server does not meet one of the preconditions of the requester";
 
 // Video
 "_select_trace_"            = "Select the trace";

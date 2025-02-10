@@ -76,10 +76,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             utilityFileSystem.removeFile(atPath: NextcloudKit.shared.nkCommonInstance.filenamePathLog)
             utilityFileSystem.removeFile(atPath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! + "/" + NextcloudKit.shared.nkCommonInstance.filenameLog)
         } else {
-            levelLog = NCKeychain().logLevel
-            NextcloudKit.shared.nkCommonInstance.pathLog = utilityFileSystem.directoryGroup
-            NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
-            NextcloudKit.shared.nkCommonInstance.copyLogToDocumentDirectory = true
+            NextcloudKit.shared.setupLog(pathLog: utilityFileSystem.directoryGroup,
+                                         levelLog: NCKeychain().logLevel,
+                                         copyLogToDocumentDirectory: true)
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start session with level \(levelLog) " + versionNextcloudiOS)
         }
 
@@ -343,24 +342,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
 
-        // Nextcloud standard login
-        if selector == NCGlobal.shared.introSignup {
-            if activeLogin?.view.window == nil {
-                if selector == NCGlobal.shared.introSignup {
-                    let web = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginProvider") as? NCLoginProvider
-                    web?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
-                    showLoginViewController(web)
-                } else {
-                    activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
-                    if let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController, !controller.account.isEmpty {
-                        let session = NCSession.shared.getSession(account: controller.account)
-                        activeLogin?.urlBase = session.urlBase
-                    }
-                    showLoginViewController(activeLogin)
-                }
-            }
-        } else {
-            if activeLogin?.view.window == nil {
+        if activeLogin?.view.window == nil {
+            if selector == NCGlobal.shared.introSignUpWithProvider {
+                // Login via provider
+                let web = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginProvider") as? NCLoginProvider
+                web?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
+                showLoginViewController(web)
+            } else {
+                // Regular login
                 activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
                 activeLogin?.urlBase = NCBrandOptions.shared.disable_request_login_url ? NCBrandOptions.shared.loginBaseUrl : ""
                 showLoginViewController(activeLogin)

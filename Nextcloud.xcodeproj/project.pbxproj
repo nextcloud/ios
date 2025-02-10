@@ -174,7 +174,6 @@
 		F3BB46542A3A1E9D00461F6E /* CCCellMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */; };
 		F3C587AE2D47E4FE004532DB /* ImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3C587AD2D47E4FE004532DB /* ImageLoader.swift */; };
 		F3CA337D2D0B2B6C00672333 /* AlbumModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3CA337C2D0B2B6A00672333 /* AlbumModel.swift */; };
-		F3CA33842D10726E00672333 /* NCLoginPollModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3CA33832D10726E00672333 /* NCLoginPollModel.swift */; };
 		F3E173B02C9AF637006D177A /* ScreenAwakeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E173AF2C9AF637006D177A /* ScreenAwakeManager.swift */; };
 		F3E173C02C9B1067006D177A /* AwakeMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E173BF2C9B1067006D177A /* AwakeMode.swift */; };
 		F3E173C12C9B1067006D177A /* AwakeMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E173BF2C9B1067006D177A /* AwakeMode.swift */; };
@@ -183,7 +182,6 @@
 		F3E173C42C9B1067006D177A /* AwakeMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E173BF2C9B1067006D177A /* AwakeMode.swift */; };
 		F3E173C52C9B1067006D177A /* AwakeMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E173BF2C9B1067006D177A /* AwakeMode.swift */; };
 		F3E173C62C9B1067006D177A /* AwakeMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E173BF2C9B1067006D177A /* AwakeMode.swift */; };
-		F3EF2E0C2BFCF3810025EF46 /* NCLoginPoll.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3EF2E0B2BFCF3810025EF46 /* NCLoginPoll.swift */; };
 		F3F0419B2B9F7E6700D5155F /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F3F0419A2B9F7E6700D5155F /* RealmSwift */; };
 		F3F0419D2B9F7E6E00D5155F /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F3F0419C2B9F7E6E00D5155F /* RealmSwift */; };
 		F3F0419F2B9F7E7900D5155F /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F3F0419E2B9F7E7900D5155F /* RealmSwift */; };
@@ -1256,10 +1254,8 @@
 		F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCCellMore.swift; sourceTree = "<group>"; };
 		F3C587AD2D47E4FE004532DB /* ImageLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageLoader.swift; sourceTree = "<group>"; };
 		F3CA337C2D0B2B6A00672333 /* AlbumModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumModel.swift; sourceTree = "<group>"; };
-		F3CA33832D10726E00672333 /* NCLoginPollModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCLoginPollModel.swift; sourceTree = "<group>"; };
 		F3E173AF2C9AF637006D177A /* ScreenAwakeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenAwakeManager.swift; sourceTree = "<group>"; };
 		F3E173BF2C9B1067006D177A /* AwakeMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AwakeMode.swift; sourceTree = "<group>"; };
-		F3EF2E0B2BFCF3810025EF46 /* NCLoginPoll.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCLoginPoll.swift; sourceTree = "<group>"; };
 		F700222B1EC479840080073F /* Custom.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Custom.xcassets; sourceTree = "<group>"; };
 		F700510022DF63AC003A3356 /* NCShare.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = NCShare.storyboard; sourceTree = "<group>"; };
 		F700510422DF6A89003A3356 /* NCShare.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShare.swift; sourceTree = "<group>"; };
@@ -2088,15 +2084,6 @@
 			path = Cells;
 			sourceTree = "<group>";
 		};
-		F3CA33802D106FF900672333 /* Poll */ = {
-			isa = PBXGroup;
-			children = (
-				F3EF2E0B2BFCF3810025EF46 /* NCLoginPoll.swift */,
-				F3CA33832D10726E00672333 /* NCLoginPollModel.swift */,
-			);
-			path = Poll;
-			sourceTree = "<group>";
-		};
 		F3E173BE2C9B1057006D177A /* ScreenAwakeManager */ = {
 			isa = PBXGroup;
 			children = (
@@ -2801,7 +2788,6 @@
 		F7BFFA621A24D7300044ED85 /* Login */ = {
 			isa = PBXGroup;
 			children = (
-				F3CA33802D106FF900672333 /* Poll */,
 				F702F2F025EE5CDA008F8E80 /* NCLogin.storyboard */,
 				F702F2F625EE5CEC008F8E80 /* NCLogin.swift */,
 				F738D48F2756740100CD1D38 /* NCLoginNavigationController.swift */,
@@ -4367,7 +4353,6 @@
 				F7AE00F8230E81CB007ACF8A /* NCBrowserWeb.swift in Sources */,
 				F77DD6A82C5CC093009448FB /* NCSession.swift in Sources */,
 				F702F30825EE5D47008F8E80 /* NCPopupViewController.swift in Sources */,
-				F3CA33842D10726E00672333 /* NCLoginPollModel.swift in Sources */,
 				F733598125C1C188002ABA72 /* NCAskAuthorization.swift in Sources */,
 				370D26AF248A3D7A00121797 /* NCCellProtocol.swift in Sources */,
 				F32FADA92D1176E3007035E2 /* UIButton+Extension.swift in Sources */,
@@ -4408,7 +4393,6 @@
 				F73B422C2476764F00A30FD3 /* NCNotification.swift in Sources */,
 				F7FA80012C0F4F3B0072FC60 /* NCUploadAssetsView.swift in Sources */,
 				371B5A2E23D0B04500FAFAE9 /* NCMenu.swift in Sources */,
-				F3EF2E0C2BFCF3810025EF46 /* NCLoginPoll.swift in Sources */,
 				F74230F32C79B57200CA1ACA /* NCNetworking+Task.swift in Sources */,
 				F757CC8229E7F88B00F31428 /* NCManageDatabase+Groupfolders.swift in Sources */,
 				F7B769A82B7A0B2000C1AAEB /* NCManageDatabase+Metadata+Session.swift in Sources */,
@@ -5600,7 +5584,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 5;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -5620,7 +5604,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Nextcloud. All rights reserved.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2025 Nextcloud. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -5666,7 +5650,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 0;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = NKUJUXUJ3B;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -5683,7 +5667,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Nextcloud. All rights reserved.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2025 Nextcloud. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
