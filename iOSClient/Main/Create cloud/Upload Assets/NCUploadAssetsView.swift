@@ -135,18 +135,23 @@ struct NCUploadAssetsView: View {
                     }
 
                     Section {
-                        Toggle(isOn: $model.useAutoUploadFolder, label: {
-                            Text(NSLocalizedString("_use_folder_auto_upload_", comment: ""))
-                                .font(.system(size: 15))
-                        })
-                        .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.getElement(account: metadata?.account))))
-
-                        if model.useAutoUploadFolder {
-                            Toggle(isOn: $model.useAutoUploadSubFolder, label: {
-                                Text(NSLocalizedString("_autoupload_create_subfolder_", comment: ""))
+                        ///
+                        /// Auto upload requires creating folders and subfolders which are difficult to manage offline
+                        /// 
+                        if NCNetworking.shared.isOnline {
+                            Toggle(isOn: $model.useAutoUploadFolder, label: {
+                                Text(NSLocalizedString("_use_folder_auto_upload_", comment: ""))
                                     .font(.system(size: 15))
                             })
                             .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.getElement(account: metadata?.account))))
+
+                            if model.useAutoUploadFolder {
+                                Toggle(isOn: $model.useAutoUploadSubFolder, label: {
+                                    Text(NSLocalizedString("_autoupload_create_subfolder_", comment: ""))
+                                        .font(.system(size: 15))
+                                })
+                                .toggleStyle(SwitchToggleStyle(tint: Color(NCBrandColor.shared.getElement(account: metadata?.account))))
+                            }
                         }
 
                         if !model.useAutoUploadFolder {
