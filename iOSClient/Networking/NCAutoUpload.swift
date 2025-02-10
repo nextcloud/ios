@@ -221,11 +221,10 @@ class NCAutoUpload: NSObject {
         if selector == NCGlobal.shared.selectorUploadAutoUpload,
            let idAssets = self.database.getPhotoLibraryIdAsset(image: tableAccount.autoUploadImage, video: tableAccount.autoUploadVideo, account: account) {
             assets.enumerateObjects { asset, _, _ in
-                var creationDateString: String?
+                guard let creationDate = asset.creationDate else { return }
 
-                if let creationDate = asset.creationDate {
-                    creationDateString = String(describing: creationDate)
-                }
+                let creationDateString = String(describing: creationDate)
+
                 let idAsset = account + asset.localIdentifier + creationDateString
                 if !idAssets.contains(idAsset) {
                     if (asset.isFavorite && tableAccount.autoUploadFavoritesOnly) || !tableAccount.autoUploadFavoritesOnly {
