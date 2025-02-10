@@ -74,25 +74,25 @@ struct NCAutoUploadView: View {
 
     @ViewBuilder
     var autoUploadOnView: some View {
-        Section(content: {
-            Button(action: {
-                showUploadFolder.toggle()
-            }, label: {
-                HStack {
-                    Image(systemName: "folder")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 25, height: 25)
-                        .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
-                    Text(NSLocalizedString("_destination_", comment: ""))
-                    Text(model.returnPath())
-                        .frame(maxWidth: .infinity, alignment: .trailing)
-                        .foregroundStyle(.secondary)
-                }
-            })
-        })
-
         Group {
+            Section(content: {
+                Button(action: {
+                    showUploadFolder.toggle()
+                }, label: {
+                    HStack {
+                        Image(systemName: "folder")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 25, height: 25)
+                            .foregroundColor(Color(NCBrandColor.shared.iconImageColor))
+                        Text(NSLocalizedString("_destination_", comment: ""))
+                        Text(model.returnPath())
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                            .foregroundStyle(.secondary)
+                    }
+                })
+            })
+
             Section(content: {
                 NavigationLink(destination: SelectAlbumView(model: albumModel)) {
                     Button(action: {
