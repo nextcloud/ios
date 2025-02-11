@@ -17,7 +17,11 @@ import Photos
     var autoUploadAlbumIds: Set<String> {
         getSavedAlbumIds()
     }
-    
+
+    var session: NCSession.Session {
+        NCSession.shared.getSession(controller: controller)
+    }
+
     init(controller: NCMainTabBarController?) {
         self.controller = controller
         super.init()
