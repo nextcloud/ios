@@ -24,6 +24,7 @@
 
 import NextcloudKit
 import SwiftUI
+import SafariServices
 
 struct NCLoginPoll: View {
     let loginFlowV2Token: String
@@ -114,6 +115,13 @@ struct NCLoginPoll: View {
             }
         }
         .interactiveDismissDisabled()
+        .fullScreenCover(item: $loginManager.browserURL, content: { url in
+            SafariView(url: url) {
+                loginManager.browserURL = nil
+                loginManager.poll()
+            }
+            .ignoresSafeArea()
+        })
     }
 }
 
@@ -131,6 +139,7 @@ private class LoginManager: ObservableObject {
 
     @Published var pollFinished = false
     @Published var isLoading = false
+    @Published var browserURL: URL?
 
     init() {
         NotificationCenter.default.addObserver(self, selector: #selector(applicationDidBecomeActive(_:)), name: UIApplication.didBecomeActiveNotification, object: nil)
@@ -160,6 +169,43 @@ private class LoginManager: ObservableObject {
     }
 
     func openLoginInBrowser() {
-        UIApplication.shared.open(URL(string: loginFlowV2Login)!)
+        browserURL = URL(string: loginFlowV2Login)
+    }
+}
+
+private struct SafariView: UIViewControllerRepresentable {
+    let url: URL
+    let onFinished: () -> Void
+
+    func makeUIViewController(context: Context) -> SFSafariViewController {
+        let safariVC = SFSafariViewController(url: url)
+        safariVC.delegate = context.coordinator
+        return safariVC
+    }
+
+    func updateUIViewController(_ uiViewController: SFSafariViewController, context: Context) {}
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+
+    class Coordinator: NSObject, SFSafariViewControllerDelegate {
+        let parent: SafariView
+
+        init(_ parent: SafariView) {
+            self.parent = parent
+        }
+
+        func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
+            controller.dismiss(animated: true) { [weak self] in
+                self?.parent.onFinished()
+            }
+        }
+    }
+}
+
+extension URL: Identifiable {
+    public var id: String {
+        return self.absoluteString
     }
 }
