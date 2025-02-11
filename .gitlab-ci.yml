@@ -91,6 +91,7 @@ build_develop_feature:
   only:
     - develop
     - /^feature/
+    - /^release/
     
 build_beta:
   <<: *build_general_params
@@ -141,6 +142,7 @@ deploy_develop_feature:
   only:
     - develop
     - /^feature/
+    - /^release/
     
 deploy_beta:
   <<: *deploy_general_params
