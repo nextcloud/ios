@@ -57,11 +57,18 @@ extension NCManageDatabase {
     }
 
     func getRecommendedFiles(account: String) -> [tableRecommendedFiles] {
+        var recommendedFiles: [tableRecommendedFiles] = []
+
         do {
             let realm = try Realm()
             let results = realm.objects(tableRecommendedFiles.self).filter("account == %@", account).sorted(byKeyPath: "timestamp", ascending: false)
-
-            return Array(results.map { tableRecommendedFiles.init(value: $0) })
+            for result in results {
+                if let metadata = realm.objects(tableMetadata.self).filter("fileId == %@", result.id).first {
+                    if metadata.status == NCGlobal.shared.metadataStatusWaitDelete { continue }
+                    recommendedFiles.append(tableRecommendedFiles.init(value: result))
+                }
+            }
+            return recommendedFiles
         } catch let error {
             NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Could not access database: \(error)")
         }
