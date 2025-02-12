@@ -76,13 +76,6 @@ class NCPushNotification {
               let signature = keychain.getPushNotificationDeviceIdentifierSignature(account: account),
               let publicKey = keychain.getPushNotificationSubscribingPublicKey(account: account) else { return }
 
-        keychain.setPushNotificationPublicKey(account: account, data: nil)
-        keychain.setPushNotificationSubscribingPublicKey(account: account, publicKey: nil)
-        keychain.setPushNotificationPrivateKey(account: account, data: nil)
-        keychain.setPushNotificationToken(account: account, token: nil)
-        keychain.setPushNotificationDeviceIdentifier(account: account, deviceIdentifier: nil)
-        keychain.setPushNotificationDeviceIdentifierSignature(account: account, deviceIdentifierSignature: nil)
-
         NextcloudKit.shared.unsubscribingPushNotification(serverUrl: urlBase, account: account) { _, _, error in
             if error == .success {
                 let proxyServerPath = NCBrandOptions.shared.pushNotificationServerProxy
