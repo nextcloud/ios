@@ -263,9 +263,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        NCNetworking.shared.checkPushNotificationServerProxyCertificateUntrusted(viewController: UIApplication.shared.firstWindow?.rootViewController) { error in
-            if error == .success {
-                NCPushNotification.shared.registerForRemoteNotificationsWithDeviceToken(deviceToken)
+        if let pushKitToken = NCPushNotificationEncryption.shared().string(withDeviceToken: deviceToken),
+           let tblAccount = NCManageDatabase.shared.getActiveTableAccount() {
+            let token = NCKeychain().getPushNotificationToken(account: tblAccount.account)
+            if token != pushKitToken {
+                NCNetworking.shared.checkPushNotificationServerProxyCertificateUntrusted(viewController: UIApplication.shared.firstWindow?.rootViewController) { error in
+                    if error == .success {
+                        NCPushNotification.shared.subscribingNextcloudServerPushNotification(account: tblAccount.account, urlBase: tblAccount.urlBase, user: tblAccount.user, pushKitToken: pushKitToken)
+                    }
+                }
             }
         }
     }

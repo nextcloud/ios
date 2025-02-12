@@ -96,8 +96,6 @@ class NCAccount: NSObject {
         if let userProfile {
             database.setAccountUserProfile(account: account, userProfile: userProfile)
         }
-        /// Start Push Notification
-        NCPushNotification.shared.pushNotification()
         /// Start the service
         NCService().startRequestServicesServer(account: account, controller: controller)
         /// Start the auto upload
@@ -122,7 +120,7 @@ class NCAccount: NSObject {
 
         /// Unsubscribing Push Notification
         if let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) {
-            NCPushNotification.shared.unsubscribingNextcloudServerPushNotification(account: tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, withSubscribing: false)
+            NCPushNotification.shared.unsubscribingNextcloudServerPushNotification(account: tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user)
         }
         /// Remove al local files
         if wipe {
