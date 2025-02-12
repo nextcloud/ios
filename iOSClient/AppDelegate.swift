@@ -42,6 +42,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         return ProcessInfo.processInfo.arguments.contains("UI_TESTING")
     }
     var notificationSettings: UNNotificationSettings?
+    var pushKitToken: String?
 
     var loginFlowV2Token = ""
     var loginFlowV2Endpoint = ""
@@ -263,14 +264,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        if let pushKitToken = NCPushNotificationEncryption.shared().string(withDeviceToken: deviceToken),
-           let tblAccount = NCManageDatabase.shared.getActiveTableAccount() {
-            let token = NCKeychain().getPushNotificationToken(account: tblAccount.account)
-            if token != pushKitToken {
-                NCNetworking.shared.checkPushNotificationServerProxyCertificateUntrusted(viewController: UIApplication.shared.firstWindow?.rootViewController) { error in
-                    if error == .success {
-                        NCPushNotification.shared.subscribingNextcloudServerPushNotification(account: tblAccount.account, urlBase: tblAccount.urlBase, user: tblAccount.user, pushKitToken: pushKitToken)
-                    }
+        if let pushKitToken = NCPushNotificationEncryption.shared().string(withDeviceToken: deviceToken) {
+            self.pushKitToken = pushKitToken
+
+            if let tblAccount = NCManageDatabase.shared.getActiveTableAccount() {
+                let token = NCKeychain().getPushNotificationToken(account: tblAccount.account)
+                if token == nil {
+                    subscribingPushNotification(account: tblAccount.account, urlBase: tblAccount.urlBase, user: tblAccount.user, pushKitToken: pushKitToken)
                 }
             }
         }
@@ -279,6 +279,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         NCPushNotification.shared.applicationdidReceiveRemoteNotification(userInfo: userInfo) { result in
             completionHandler(result)
+        }
+    }
+
+    func subscribingPushNotification(account: String, urlBase: String, user: String, pushKitToken: String) {
+        NCNetworking.shared.checkPushNotificationServerProxyCertificateUntrusted(viewController: UIApplication.shared.firstWindow?.rootViewController) { error in
+            if error == .success {
+                NCPushNotification.shared.subscribingNextcloudServerPushNotification(account: account, urlBase: urlBase, user: user, pushKitToken: pushKitToken)
+            }
         }
     }
 

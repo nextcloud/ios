@@ -51,7 +51,10 @@ class NCPushNotification {
         let proxyServerPath = NCBrandOptions.shared.pushNotificationServerProxy
 
         NextcloudKit.shared.subscribingPushNotification(serverUrl: urlBase, pushTokenHash: pushTokenHash, devicePublicKey: pushDevicePublicKey, proxyServerUrl: proxyServerPath, account: account) { account, deviceIdentifier, signature, publicKey, _, error in
-            if error == .success, let deviceIdentifier, let signature, let publicKey {
+            if error == .success,
+               let deviceIdentifier,
+               let signature,
+               let publicKey {
                 let userAgent = String(format: "%@  (Strict VoIP)", NCBrandOptions.shared.getUserAgent())
                 let options = NKRequestOptions(customUserAgent: userAgent)
 
