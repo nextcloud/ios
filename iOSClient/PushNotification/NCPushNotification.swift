@@ -76,21 +76,22 @@ class NCPushNotification {
               let signature = keychain.getPushNotificationDeviceIdentifierSignature(account: account),
               let publicKey = keychain.getPushNotificationSubscribingPublicKey(account: account) else { return }
 
+        keychain.setPushNotificationPublicKey(account: account, data: nil)
+        keychain.setPushNotificationSubscribingPublicKey(account: account, publicKey: nil)
+        keychain.setPushNotificationPrivateKey(account: account, data: nil)
+        keychain.setPushNotificationToken(account: account, token: nil)
+        keychain.setPushNotificationDeviceIdentifier(account: account, deviceIdentifier: nil)
+        keychain.setPushNotificationDeviceIdentifierSignature(account: account, deviceIdentifierSignature: nil)
+
         NextcloudKit.shared.unsubscribingPushNotification(serverUrl: urlBase, account: account) { _, _, error in
             if error == .success {
                 let proxyServerPath = NCBrandOptions.shared.pushNotificationServerProxy
                 let userAgent = String(format: "%@  (Strict VoIP)", NCBrandOptions.shared.getUserAgent())
                 let options = NKRequestOptions(customUserAgent: userAgent)
 
-                NextcloudKit.shared.unsubscribingPushProxy(proxyServerUrl: proxyServerPath, deviceIdentifier: deviceIdentifier, signature: signature, publicKey: publicKey, account: account, options: options) { account, _, error in
+                NextcloudKit.shared.unsubscribingPushProxy(proxyServerUrl: proxyServerPath, deviceIdentifier: deviceIdentifier, signature: signature, publicKey: publicKey, account: account, options: options) { _, _, error in
                     if error == .success {
                         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Unsubscribed to Push Notification server & proxy successfully")
-                        self.keychain.setPushNotificationPublicKey(account: account, data: nil)
-                        self.keychain.setPushNotificationSubscribingPublicKey(account: account, publicKey: nil)
-                        self.keychain.setPushNotificationPrivateKey(account: account, data: nil)
-                        self.keychain.setPushNotificationToken(account: account, token: nil)
-                        self.keychain.setPushNotificationDeviceIdentifier(account: account, deviceIdentifier: nil)
-                        self.keychain.setPushNotificationDeviceIdentifierSignature(account: account, deviceIdentifierSignature: nil)
                     }
                 }
             }
