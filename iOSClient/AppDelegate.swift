@@ -53,7 +53,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         let utilityFileSystem = NCUtilityFileSystem()
         let utility = NCUtility()
-        var levelLog = 0
         let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionApp())
 
         NCSettingsBundleHelper.checkAndExecuteSettings(delay: 0)
@@ -79,7 +78,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             NextcloudKit.shared.setupLog(pathLog: utilityFileSystem.directoryGroup,
                                          levelLog: NCKeychain().logLevel,
                                          copyLogToDocumentDirectory: true)
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start session with level \(levelLog) " + versionNextcloudiOS)
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start session with level \(NCKeychain().logLevel) " + versionNextcloudiOS)
         }
 
         /// Push Notification & display notification

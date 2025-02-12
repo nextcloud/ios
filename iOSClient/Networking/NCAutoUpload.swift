@@ -242,7 +242,7 @@ class NCAutoUpload: NSObject {
 
         return assetResult
     }
-    
+
     private func getCameraRollAssets(controller: NCMainTabBarController?, assetCollections: [PHAssetCollection] = [], selector: String, alignPhotoLibrary: Bool, account: String, completion: @escaping (_ assets: [PHAsset]?) -> Void) {
         NCAskAuthorization().askAuthorizationPhotoLibrary(controller: controller) { [self] hasPermission in
             guard hasPermission,

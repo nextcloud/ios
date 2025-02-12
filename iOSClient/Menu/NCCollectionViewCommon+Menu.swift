@@ -200,8 +200,6 @@ extension NCCollectionViewCommon {
 
         //
         // FAVORITE
-        // FIXME: PROPPATCH doesn't work
-        // https://github.com/nextcloud/files_lock/issues/68
         if !metadata.lock {
             actions.append(
                 NCMenuAction(

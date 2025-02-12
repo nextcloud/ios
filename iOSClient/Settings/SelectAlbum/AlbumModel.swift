@@ -32,7 +32,7 @@ import Photos
     func initAlbums() {
         smartAlbums.removeAll()
         userAlbums.removeAll()
-        
+
         Task { @MainActor in
             smartAlbumAssetCollections = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .any, options: nil)
             smartAlbumAssetCollections?.enumerateObjects { [self] collection, _, _ in
