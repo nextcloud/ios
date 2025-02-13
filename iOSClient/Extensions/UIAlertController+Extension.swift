@@ -57,19 +57,17 @@ extension UIAlertController {
                 if NCNetworking.shared.isOffline {
                     return NCContentPresenter().showInfo(error: NKError(errorCode: NCGlobal.shared.errorInternalError, errorDescription: "_offline_not_allowed_"))
                 }
-                #if !EXTENSION
                 Task {
                     await NCNetworkingE2EECreateFolder().createFolder(fileName: fileNameFolder, serverUrl: serverUrl, withPush: true, sceneIdentifier: sceneIdentifier, session: session)
                 }
-                #endif
             } else {
-                #if EXTENSION
+#if EXTENSION
                 NCNetworking.shared.createFolder(fileName: fileNameFolder, serverUrl: serverUrl, overwrite: false, withPush: true, sceneIdentifier: sceneIdentifier, session: session) { error in
                     if let completion {
                         DispatchQueue.main.async { completion(error) }
                     }
                 }
-                #else
+#else
                 let metadataForCreateFolder = NCManageDatabase.shared.createMetadata(fileName: fileNameFolder,
                                                                                      fileNameView: fileNameFolder,
                                                                                      ocId: NSUUID().uuidString,
@@ -83,7 +81,7 @@ extension UIAlertController {
                 metadataForCreateFolder.sessionDate = Date()
                 NCManageDatabase.shared.addMetadata(metadataForCreateFolder)
                 NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": metadataForCreateFolder.ocId, "serverUrl": metadataForCreateFolder.serverUrl, "account": metadataForCreateFolder.account, "withPush": true, "sceneIdentifier": sceneIdentifier as Any])
-                #endif
+#endif
             }
         })
 
