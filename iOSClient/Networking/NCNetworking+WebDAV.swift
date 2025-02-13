@@ -375,21 +375,21 @@ extension NCNetworking {
             self.database.deleteVideo(metadata: metadata)
             self.database.deleteLocalFileOcId(metadata.ocId)
             utilityFileSystem.removeFile(atPath: utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId))
-            #if !EXTENSION
+#if !EXTENSION
             NCImageCache.shared.removeImageCache(ocIdPlusEtag: metadata.ocId + metadata.etag)
-            #endif
+#endif
         }
 
         self.tapHudStopDelete = false
 
         if metadata.directory {
-            #if !EXTENSION
+#if !EXTENSION
             if let controller = SceneManager.shared.getController(sceneIdentifier: sceneIdentifier) {
                 await MainActor.run {
                     ncHud.initHudRing(view: controller.view, tapToCancelDetailText: true, tapOperation: tapHudDelete)
                 }
             }
-            #endif
+#endif
             let serverUrl = metadata.serverUrl + "/" + metadata.fileName
             let metadatas = self.database.getMetadatas(predicate: NSPredicate(format: "account == %@ AND serverUrl BEGINSWITH %@ AND directory == false", metadata.account, serverUrl))
             let total = Float(metadatas.count)
@@ -399,9 +399,9 @@ extension NCNetworking {
                 ncHud.progress(num: num, total: total)
                 if tapHudStopDelete { break }
             }
-            #if !EXTENSION
+#if !EXTENSION
             ncHud.dismiss()
-            #endif
+#endif
         } else {
             deleteLocalFile(metadata: metadata)
             NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": metadata.serverUrl, "clearDataSource": true])
