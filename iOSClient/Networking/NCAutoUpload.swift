@@ -279,9 +279,9 @@ class NCAutoUpload: NSObject {
                 for assetCollection in assetCollections {
                     newAssets += processAssets(assetCollection, fetchOptions, tableAccount, selector, account)
                 }
-
-                completion(newAssets)
             }
+
+            completion(newAssets)
         }
     }
 }
