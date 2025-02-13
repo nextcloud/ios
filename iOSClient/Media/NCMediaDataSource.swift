@@ -105,7 +105,7 @@ extension NCMedia {
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate), limit \(limit)")
 
-            if NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityServerVersionMajor >= self.global.nextcloudVersion99 {
+            if NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityServerVersionMajor >= self.global.nextcloudVersion31 {
                 elementDate = "nc:metadata-photos-original_date_time"
                 lessDateAny = Int((lessDate as AnyObject).timeIntervalSince1970)
                 greaterDateAny = Int((greaterDate as AnyObject).timeIntervalSince1970)
