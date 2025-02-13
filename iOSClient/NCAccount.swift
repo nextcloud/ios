@@ -27,6 +27,7 @@ import NextcloudKit
 
 class NCAccount: NSObject {
     let database = NCManageDatabase.shared
+    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
 
     func createAccount(urlBase: String,
                        user: String,
@@ -37,7 +38,7 @@ class NCAccount: NSObject {
         if urlBase.last == "/" { urlBase = String(urlBase.dropLast()) }
         let account: String = "\(user) \(urlBase)"
 
-        /// Remove account ion groupDefaults
+        /// Remove account in groupDefaults
         ///
         if let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) {
             var unauthorizedArray = groupDefaults.array(forKey: "Unauthorized") as? [String] ?? []
@@ -87,31 +88,32 @@ class NCAccount: NSObject {
                        userProfile: NKUserProfile?,
                        controller: NCMainTabBarController?,
                        completion: () -> Void) {
-        /// Set account
-        controller?.account = account
-        database.setAccountActive(account)
-        /// Set capabilities
-        database.setCapabilities(account: account)
-        /// Set User Profile
-        if let userProfile {
-            database.setAccountUserProfile(account: account, userProfile: userProfile)
-        }
-        /// Start Push Notification
-        NCPushNotification.shared.pushNotification()
-        /// Start the service
-        NCService().startRequestServicesServer(account: account, controller: controller)
-        /// Start the auto upload
-        NCAutoUpload.shared.initAutoUpload(controller: nil, account: account) { num in
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(num) uploads")
-        }
-        /// Color
-        NCBrandColor.shared.settingThemingColor(account: account)
-        NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming, userInfo: ["account": account])
-        /// Notification
-        if let controller {
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeUser, userInfo: ["account": account, "controller": controller])
-        } else {
-            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeUser, userInfo: ["account": account])
+        if let tblAccount = database.setAccountActive(account) {
+            /// Set account
+            controller?.account = account
+            /// Set capabilities
+            database.setCapabilities(account: account)
+            /// Set User Profile
+            if let userProfile {
+                database.setAccountUserProfile(account: account, userProfile: userProfile)
+            }
+            /// Subscribing Push Notification
+            appDelegate.subscribingPushNotification(account: tblAccount.account, urlBase: tblAccount.urlBase, user: tblAccount.user)
+            /// Start the service
+            NCService().startRequestServicesServer(account: account, controller: controller)
+            /// Start the auto upload
+            NCAutoUpload.shared.initAutoUpload(controller: nil, account: account) { num in
+                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Initialize Auto upload with \(num) uploads")
+            }
+            /// Color
+            NCBrandColor.shared.settingThemingColor(account: account)
+            NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming, userInfo: ["account": account])
+            /// Notification
+            if let controller {
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeUser, userInfo: ["account": account, "controller": controller])
+            } else {
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeUser, userInfo: ["account": account])
+            }
         }
 
         completion()
@@ -122,7 +124,7 @@ class NCAccount: NSObject {
 
         /// Unsubscribing Push Notification
         if let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) {
-            NCPushNotification.shared.unsubscribingNextcloudServerPushNotification(account: tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user, withSubscribing: false)
+            NCPushNotification.shared.unsubscribingNextcloudServerPushNotification(account: tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user)
         }
         /// Remove al local files
         if wipe {
