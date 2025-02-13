@@ -235,7 +235,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 if let host = URL(string: url)?.host {
                     NCNetworking.shared.writeCertificate(host: host)
                 }
-                NextcloudKit.shared.getLoginFlowV2(serverUrl: url) { token, endpoint, login, _, error in
+                let loginOptions = NKRequestOptions(customUserAgent: userAgent)
+                NextcloudKit.shared.getLoginFlowV2(serverUrl: url, options: loginOptions) { token, endpoint, login, _, error in
 					self?.spinner.stopAnimating()
                     self?.loginButton.isEnabled = true
                     self?.qrCode.isEnabled = true
