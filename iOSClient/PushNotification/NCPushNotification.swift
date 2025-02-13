@@ -43,9 +43,10 @@ class NCPushNotification {
         completion(UIBackgroundFetchResult.noData)
     }
 
-    func subscribingNextcloudServerPushNotification(account: String, urlBase: String, user: String, pushKitToken: String) {
+    func subscribingNextcloudServerPushNotification(account: String, urlBase: String, user: String, pushKitToken: String?) {
         NCPushNotificationEncryption.shared().generatePushNotificationsKeyPair(account)
-        guard let pushTokenHash = NCEndToEndEncryption.shared().createSHA512(pushKitToken),
+        guard let pushKitToken,
+              let pushTokenHash = NCEndToEndEncryption.shared().createSHA512(pushKitToken),
               let pushPublicKey = keychain.getPushNotificationPublicKey(account: account),
               let pushDevicePublicKey = String(data: pushPublicKey, encoding: .utf8)  else { return }
         let proxyServerPath = NCBrandOptions.shared.pushNotificationServerProxy

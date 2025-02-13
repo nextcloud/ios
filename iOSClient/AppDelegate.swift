@@ -266,12 +266,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         if let pushKitToken = NCPushNotificationEncryption.shared().string(withDeviceToken: deviceToken) {
             self.pushKitToken = pushKitToken
-
-            if let tblAccount = NCManageDatabase.shared.getActiveTableAccount() {
-                let token = NCKeychain().getPushNotificationToken(account: tblAccount.account)
-                if token == nil {
-                    subscribingPushNotification(account: tblAccount.account, urlBase: tblAccount.urlBase, user: tblAccount.user, pushKitToken: pushKitToken)
-                }
+            // https://github.com/nextcloud/talk-ios/issues/691
+            for tblAccount in NCManageDatabase.shared.getAllTableAccount() {
+                subscribingPushNotification(account: tblAccount.account, urlBase: tblAccount.urlBase, user: tblAccount.user)
             }
         }
     }
@@ -282,10 +279,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
     }
 
-    func subscribingPushNotification(account: String, urlBase: String, user: String, pushKitToken: String) {
+    func subscribingPushNotification(account: String, urlBase: String, user: String) {
         NCNetworking.shared.checkPushNotificationServerProxyCertificateUntrusted(viewController: UIApplication.shared.firstWindow?.rootViewController) { error in
             if error == .success {
-                NCPushNotification.shared.subscribingNextcloudServerPushNotification(account: account, urlBase: urlBase, user: user, pushKitToken: pushKitToken)
+                NCPushNotification.shared.subscribingNextcloudServerPushNotification(account: account, urlBase: urlBase, user: user, pushKitToken: self.pushKitToken)
             }
         }
     }

@@ -98,10 +98,7 @@ class NCAccount: NSObject {
                 database.setAccountUserProfile(account: account, userProfile: userProfile)
             }
             /// Subscribing Push Notification
-            if NCKeychain().getPushNotificationToken(account: account) == nil,
-               let pushKitToken = appDelegate.pushKitToken {
-                appDelegate.subscribingPushNotification(account: tblAccount.account, urlBase: tblAccount.urlBase, user: tblAccount.user, pushKitToken: pushKitToken)
-            }
+            appDelegate.subscribingPushNotification(account: tblAccount.account, urlBase: tblAccount.urlBase, user: tblAccount.user)
             /// Start the service
             NCService().startRequestServicesServer(account: account, controller: controller)
             /// Start the auto upload
