@@ -32,9 +32,7 @@ struct NCAssistant: View {
                     Button(action: {
                         presentationMode.wrappedValue.dismiss()
                     }) {
-                        Image(systemName: "xmark")
-                            .font(Font.system(.body).weight(.light))
-                            .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
+                        Text("_close_")
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
@@ -60,6 +58,7 @@ struct NCAssistant: View {
                         .padding(20)
                         .frame(height: 50)
                     }
+                    .background(.ultraThinMaterial)
                 }
             }
         }
@@ -96,6 +95,28 @@ struct TaskList: View {
     var body: some View {
         List(model.filteredTasks, id: \.id) { task in
             TaskItem(task: task)
+                .contextMenu {
+                    Button {
+                    } label: {
+                        Label {
+                            Text("_copy_")
+                        } icon: {
+                            Image(systemName: "document.on.document")
+                        }
+
+                    }
+
+                    //                    Button {
+                    //                        Label {
+                    //                        } icon: {
+                    //                            Image(systemImage: "copy")
+                    //                        }
+                    //
+                    //                    }
+                    Button("Test") {
+
+                    }
+                }
         }
         .if(!model.types.isEmpty) { view in
             view.refreshable {
@@ -148,12 +169,16 @@ struct TaskItem: View {
         NavigationLink(destination: NCAssistantTaskDetail(task: task)) {
             VStack(alignment: .leading) {
                 Text(task.input ?? "")
-                    .lineLimit(4)
+                    .lineLimit(1)
+
+                Text(task.output ?? "")
+                    .lineLimit(1)
+                    .foregroundStyle(.secondary)
 
                 HStack {
                     Label(
                         title: {
-                            Text(NSLocalizedString(task.statusInfo.stringKey, comment: ""))
+                            Text(NSLocalizedString(task.status == 3 /*Completed*/ ? NCUtility().dateDiff(.init(timeIntervalSince1970: TimeInterval(task.completionExpectedAt ?? 0))) : task.statusInfo.stringKey, comment: ""))
                         },
                         icon: {
                             Image(systemName: task.statusInfo.imageSystemName)
@@ -164,11 +189,11 @@ struct TaskItem: View {
                     .padding(.top, 1)
                     .labelStyle(CustomLabelStyle())
 
-                    if let completionExpectedAt = task.completionExpectedAt {
-                        Text(NCUtility().dateDiff(.init(timeIntervalSince1970: TimeInterval(completionExpectedAt))))
-                            .frame(maxWidth: .infinity, alignment: .trailing)
-                            .foregroundStyle(.tertiary)
-                    }
+//                    if let completionExpectedAt = task.completionExpectedAt {
+//                        Text(NCUtility().dateDiff(.init(timeIntervalSince1970: TimeInterval(completionExpectedAt))))
+//                            .frame(maxWidth: .infinity, alignment: .trailing)
+//                            .foregroundStyle(.tertiary)
+//                    }
                 }
             }
             .swipeActions {
