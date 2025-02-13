@@ -17,7 +17,11 @@ import Photos
     var autoUploadAlbumIds: Set<String> {
         getSavedAlbumIds()
     }
-    
+
+    var session: NCSession.Session {
+        NCSession.shared.getSession(controller: controller)
+    }
+
     init(controller: NCMainTabBarController?) {
         self.controller = controller
         super.init()
@@ -28,7 +32,7 @@ import Photos
     func initAlbums() {
         smartAlbums.removeAll()
         userAlbums.removeAll()
-        
+
         Task { @MainActor in
             smartAlbumAssetCollections = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: .any, options: nil)
             smartAlbumAssetCollections?.enumerateObjects { [self] collection, _, _ in

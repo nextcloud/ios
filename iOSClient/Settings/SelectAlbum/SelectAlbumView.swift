@@ -13,7 +13,7 @@ struct SelectAlbumView: View {
     var body: some View {
         List {
             Section {
-                SelectionButton(album: model.allPhotosCollection, isSmartAlbum: true, customAssetCount: 0, selection: $selectedAlbums)
+                SelectionButton(model: model, album: model.allPhotosCollection, isSmartAlbum: true, customAssetCount: 0, selection: $selectedAlbums)
             }
 
             if !model.smartAlbums.isEmpty {
@@ -59,13 +59,14 @@ struct AlbumView: View {
     var body: some View {
         Section(NSLocalizedString(sectionTitle, comment: "")) {
             ForEach(albums, id: \.localIdentifier) { album in
-                SelectionButton(album: album, isSmartAlbum: true, selection: $selectedAlbums)
+                SelectionButton(model: model, album: album, isSmartAlbum: true, selection: $selectedAlbums)
             }
         }
     }
 }
 
 struct SelectionButton: View {
+    let model: AlbumModel
     let album: PHAssetCollection?
     let isSmartAlbum: Bool
     var customAssetCount = 0
@@ -86,6 +87,7 @@ struct SelectionButton: View {
         }) {
             HStack {
                 Image(systemName: selection.contains(album?.localIdentifier ?? "") ? "checkmark.circle.fill" : "circle")
+                    .foregroundColor(Color(NCBrandColor.shared.getElement(account: model.session.account)))
                     .imageScale(.large)
 
                 Image(uiImage: loader.image ?? UIImage())

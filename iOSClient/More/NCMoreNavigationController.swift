@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
+import SwiftUI
 
 class NCMoreNavigationController: NCMainNavigationController {
     override func setNavigationRightItems() {
@@ -64,6 +65,10 @@ class NCMoreNavigationController: NCMainNavigationController {
     }
 
     override func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-        setGroupAppearance()
+        if viewController is NCCollectionViewCommon || viewController is NCActivity || viewController is NCTrash {
+            setNavigationBarAppearance()
+        } else {
+            setGroupAppearance()
+        }
     }
 }
