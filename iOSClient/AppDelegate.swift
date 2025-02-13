@@ -90,11 +90,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         UNUserNotificationCenter.current().delegate = self
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { _, _ in }
 
-        if !utility.isSimulatorOrTestFlight() {
-            let review = NCStoreReview()
-            review.incrementAppRuns()
-            review.showStoreReview()
-        }
+#if !targetEnvironment(simulator)
+        let review = NCStoreReview()
+        review.incrementAppRuns()
+        review.showStoreReview()
+#endif
 
         /// Background task register
         BGTaskScheduler.shared.register(forTaskWithIdentifier: NCGlobal.shared.refreshTask, using: nil) { task in
@@ -280,11 +280,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func subscribingPushNotification(account: String, urlBase: String, user: String) {
+#if !targetEnvironment(simulator)
         NCNetworking.shared.checkPushNotificationServerProxyCertificateUntrusted(viewController: UIApplication.shared.firstWindow?.rootViewController) { error in
             if error == .success {
                 NCPushNotification.shared.subscribingNextcloudServerPushNotification(account: account, urlBase: urlBase, user: user, pushKitToken: self.pushKitToken)
             }
         }
+#endif
     }
 
     func nextcloudPushNotificationAction(data: [String: AnyObject]) {

@@ -123,9 +123,11 @@ class NCAccount: NSObject {
         UIApplication.shared.allSceneSessionDestructionExceptFirst()
 
         /// Unsubscribing Push Notification
+#if !targetEnvironment(simulator)
         if let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", account)) {
             NCPushNotification.shared.unsubscribingNextcloudServerPushNotification(account: tableAccount.account, urlBase: tableAccount.urlBase, user: tableAccount.user)
         }
+#endif
         /// Remove al local files
         if wipe {
             let results = database.getTableLocalFiles(predicate: NSPredicate(format: "account == %@", account), sorted: "ocId", ascending: false)

@@ -33,20 +33,6 @@ final class NCUtility: NSObject, Sendable {
     let utilityFileSystem = NCUtilityFileSystem()
     let global = NCGlobal.shared
 
-    func isSimulatorOrTestFlight() -> Bool {
-        guard let path = Bundle.main.appStoreReceiptURL?.path else {
-            return false
-        }
-        return path.contains("CoreSimulator") || path.contains("sandboxReceipt")
-    }
-
-    func isSimulator() -> Bool {
-        guard let path = Bundle.main.appStoreReceiptURL?.path else {
-            return false
-        }
-        return path.contains("CoreSimulator")
-    }
-
     func isTypeFileRichDocument(_ metadata: tableMetadata) -> Bool {
         guard metadata.fileNameView != "." else { return false }
         let fileExtension = (metadata.fileNameView as NSString).pathExtension
