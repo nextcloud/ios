@@ -12,7 +12,7 @@ import NextcloudKit
 import SwiftUI
 
 class NCAssistantTask: ObservableObject {
-    @Published var types: [NKTextProcessingTaskType] = []
+    @Published var types: [NKTextProcessingTaskTypeV2.TaskTypes] = []
     @Published var filteredTasks: [NKTextProcessingTask] = []
     @Published var selectedType: NKTextProcessingTaskType?
     @Published var selectedTask: NKTextProcessingTask?
