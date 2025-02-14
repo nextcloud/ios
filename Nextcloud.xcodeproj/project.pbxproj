@@ -150,7 +150,6 @@
 		F37208C62BAB63F0006B5430 /* LRUCache in Frameworks */ = {isa = PBXBuildFile; productRef = F37208C52BAB63F0006B5430 /* LRUCache */; };
 		F37208C82BAB63F1006B5430 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = F37208C72BAB63F1006B5430 /* KeychainAccess */; };
 		F3754A7D2CF87D600009312E /* SetupPasscodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3754A7C2CF87D600009312E /* SetupPasscodeView.swift */; };
-		F389C9F52CEE383300049762 /* SelectAlbumView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F389C9F42CEE383300049762 /* SelectAlbumView.swift */; };
 		F38F71252B6BBDC300473CDC /* NCCollectionViewCommonSelectTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = F38F71242B6BBDC300473CDC /* NCCollectionViewCommonSelectTabBar.swift */; };
 		F39170A92CB82024006127BC /* FileAutoRenamer+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F39170A82CB8201B006127BC /* FileAutoRenamer+Extensions.swift */; };
 		F39170AA2CB82024006127BC /* FileAutoRenamer+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F39170A82CB8201B006127BC /* FileAutoRenamer+Extensions.swift */; };
@@ -161,7 +160,6 @@
 		F39170AF2CB82024006127BC /* FileAutoRenamer+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F39170A82CB8201B006127BC /* FileAutoRenamer+Extensions.swift */; };
 		F39298972A3B12CB00509762 /* BaseNCMoreCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F39298962A3B12CB00509762 /* BaseNCMoreCell.swift */; };
 		F3953BD72A6E87E000EE03F9 /* BaseIntegrationXCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3953BD62A6E87E000EE03F9 /* BaseIntegrationXCTestCase.swift */; };
-		F39A1EE22D0AF8A400DAD522 /* Albums.swift in Sources */ = {isa = PBXBuildFile; fileRef = F39A1EE12D0AF8A200DAD522 /* Albums.swift */; };
 		F3A047972BD2668800658E7B /* NCAssistantEmptyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A0478F2BD2668800658E7B /* NCAssistantEmptyView.swift */; };
 		F3A047982BD2668800658E7B /* NCAssistantCreateNewTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A047912BD2668800658E7B /* NCAssistantCreateNewTask.swift */; };
 		F3A047992BD2668800658E7B /* NCAssistantTask.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A047932BD2668800658E7B /* NCAssistantTask.swift */; };
@@ -172,8 +170,6 @@
 		F3BB464D2A39ADCC00461F6E /* NCMoreAppSuggestionsCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = F3BB464C2A39ADCC00461F6E /* NCMoreAppSuggestionsCell.xib */; };
 		F3BB46522A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46512A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift */; };
 		F3BB46542A3A1E9D00461F6E /* CCCellMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */; };
-		F3C587AE2D47E4FE004532DB /* ImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3C587AD2D47E4FE004532DB /* ImageLoader.swift */; };
-		F3CA337D2D0B2B6C00672333 /* AlbumModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3CA337C2D0B2B6A00672333 /* AlbumModel.swift */; };
 		F3E173B02C9AF637006D177A /* ScreenAwakeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E173AF2C9AF637006D177A /* ScreenAwakeManager.swift */; };
 		F3E173C02C9B1067006D177A /* AwakeMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E173BF2C9B1067006D177A /* AwakeMode.swift */; };
 		F3E173C12C9B1067006D177A /* AwakeMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E173BF2C9B1067006D177A /* AwakeMode.swift */; };
@@ -1237,12 +1233,10 @@
 		F37208742BAB4AB0006B5430 /* TestConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestConstants.swift; sourceTree = "<group>"; };
 		F37208772BAB4B5D006B5430 /* BaseXCTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseXCTestCase.swift; sourceTree = "<group>"; };
 		F3754A7C2CF87D600009312E /* SetupPasscodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupPasscodeView.swift; sourceTree = "<group>"; };
-		F389C9F42CEE383300049762 /* SelectAlbumView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectAlbumView.swift; sourceTree = "<group>"; };
 		F38F71242B6BBDC300473CDC /* NCCollectionViewCommonSelectTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCCollectionViewCommonSelectTabBar.swift; sourceTree = "<group>"; };
 		F39170A82CB8201B006127BC /* FileAutoRenamer+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileAutoRenamer+Extensions.swift"; sourceTree = "<group>"; };
 		F39298962A3B12CB00509762 /* BaseNCMoreCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseNCMoreCell.swift; sourceTree = "<group>"; };
 		F3953BD62A6E87E000EE03F9 /* BaseIntegrationXCTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseIntegrationXCTestCase.swift; sourceTree = "<group>"; };
-		F39A1EE12D0AF8A200DAD522 /* Albums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Albums.swift; sourceTree = "<group>"; };
 		F3A0478F2BD2668800658E7B /* NCAssistantEmptyView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCAssistantEmptyView.swift; sourceTree = "<group>"; };
 		F3A047912BD2668800658E7B /* NCAssistantCreateNewTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCAssistantCreateNewTask.swift; sourceTree = "<group>"; };
 		F3A047932BD2668800658E7B /* NCAssistantTask.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCAssistantTask.swift; sourceTree = "<group>"; };
@@ -1252,8 +1246,6 @@
 		F3BB464C2A39ADCC00461F6E /* NCMoreAppSuggestionsCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NCMoreAppSuggestionsCell.xib; sourceTree = "<group>"; };
 		F3BB46512A39EC4900461F6E /* NCMoreAppSuggestionsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCMoreAppSuggestionsCell.swift; sourceTree = "<group>"; };
 		F3BB46532A3A1E9D00461F6E /* CCCellMore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CCCellMore.swift; sourceTree = "<group>"; };
-		F3C587AD2D47E4FE004532DB /* ImageLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageLoader.swift; sourceTree = "<group>"; };
-		F3CA337C2D0B2B6A00672333 /* AlbumModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumModel.swift; sourceTree = "<group>"; };
 		F3E173AF2C9AF637006D177A /* ScreenAwakeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenAwakeManager.swift; sourceTree = "<group>"; };
 		F3E173BF2C9B1067006D177A /* AwakeMode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AwakeMode.swift; sourceTree = "<group>"; };
 		F700222B1EC479840080073F /* Custom.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Custom.xcassets; sourceTree = "<group>"; };
@@ -2027,16 +2019,6 @@
 			path = Common;
 			sourceTree = "<group>";
 		};
-		F389C9F32CEE381E00049762 /* SelectAlbum */ = {
-			isa = PBXGroup;
-			children = (
-				F3CA337C2D0B2B6A00672333 /* AlbumModel.swift */,
-				F389C9F42CEE383300049762 /* SelectAlbumView.swift */,
-				F3C587AD2D47E4FE004532DB /* ImageLoader.swift */,
-			);
-			path = SelectAlbum;
-			sourceTree = "<group>";
-		};
 		F3A0478E2BD2668800658E7B /* Assistant */ = {
 			isa = PBXGroup;
 			children = (
@@ -2415,7 +2397,6 @@
 			children = (
 				F768820B2C0DD1E7001CF441 /* Settings */,
 				F76882162C0DD1E7001CF441 /* AutoUpload */,
-				F389C9F32CEE381E00049762 /* SelectAlbum */,
 				F768821C2C0DD1E7001CF441 /* Display */,
 				F76882052C0DD1E7001CF441 /* Advanced */,
 				F768821F2C0DD1E7001CF441 /* Helpers */,
@@ -2470,7 +2451,6 @@
 		F76882162C0DD1E7001CF441 /* AutoUpload */ = {
 			isa = PBXGroup;
 			children = (
-				F39A1EE12D0AF8A200DAD522 /* Albums.swift */,
 				F76882172C0DD1E7001CF441 /* NCAutoUploadModel.swift */,
 				F768821B2C0DD1E7001CF441 /* NCAutoUploadView.swift */,
 			);
@@ -4483,7 +4463,6 @@
 				F7E7AEA52BA32C6500512E52 /* NCCollectionViewDownloadThumbnail.swift in Sources */,
 				AF730AF827834B1400B7520E /* NCShare+NCCellDelegate.swift in Sources */,
 				F70460522499061800BB98A7 /* NotificationCenter+MainThread.swift in Sources */,
-				F3C587AE2D47E4FE004532DB /* ImageLoader.swift in Sources */,
 				F78F74362163781100C2ADAD /* NCTrash.swift in Sources */,
 				F39298972A3B12CB00509762 /* BaseNCMoreCell.swift in Sources */,
 				AF2D7C7C2742556F00ADF566 /* NCShareLinkCell.swift in Sources */,
@@ -4494,7 +4473,6 @@
 				AFCE353327E4ED1900FEA6C2 /* UIToolbar+Extension.swift in Sources */,
 				8491B1CD273BBA82001C8C5B /* UIViewController+Menu.swift in Sources */,
 				F73EF7BF2B02250B0087E6E9 /* NCManageDatabase+GPS.swift in Sources */,
-				F39A1EE22D0AF8A400DAD522 /* Albums.swift in Sources */,
 				F71F6D072B6A6A5E00F1EB15 /* ThreadSafeArray.swift in Sources */,
 				F761856C29E98543006EB3B0 /* NCIntroCollectionViewCell.swift in Sources */,
 				F75DD765290ABB25002EB562 /* Intent.intentdefinition in Sources */,
@@ -4508,14 +4486,12 @@
 				F7E98C1627E0D0FC001F9F19 /* NCManageDatabase+Video.swift in Sources */,
 				F7F4F11227ECDC52008676F9 /* UIFont+Extension.swift in Sources */,
 				F76882222C0DD1E7001CF441 /* NCCapabilitiesView.swift in Sources */,
-				F3CA337D2D0B2B6C00672333 /* AlbumModel.swift in Sources */,
 				AF93471A27E2361E002537EE /* NCShareHeader.swift in Sources */,
 				F7F878AE1FB9E3B900599E4F /* NCEndToEndMetadata.swift in Sources */,
 				F7A7FDDD2C2DBD6200E9A93A /* NCDeepLinkHandler.swift in Sources */,
 				F778231E2C42C07C001BB94F /* NCCollectionViewCommon+MediaLayout.swift in Sources */,
 				3781B9B023DB2B7E006B4B1D /* AppDelegate+Menu.swift in Sources */,
 				F710D1F52405770F00A6033D /* NCViewerPDF.swift in Sources */,
-				F389C9F52CEE383300049762 /* SelectAlbumView.swift in Sources */,
 				F7B6B70427C4E7FA00A7F6EB /* NCScan+CollectionView.swift in Sources */,
 				F7816EF22C2C3E1F00A52517 /* NCPushNotification.swift in Sources */,
 				F76882342C0DD1E7001CF441 /* NCDisplayView.swift in Sources */,
