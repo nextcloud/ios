@@ -19,17 +19,16 @@ class NCAssistantTask: ObservableObject {
 
     let useV2 = true
 
-    @Published var typesV2: [NKTextProcessingTaskTypeV2.TaskTypeData] = []
-    @Published var filteredTasksV2: [NKTextProcessingTaskV2.Task] = []
-    @Published var selectedTypeV2: NKTextProcessingTaskTypeV2.TaskTypeData?
-    @Published var selectedTaskV2: NKTextProcessingTaskV2.Task?
+    @Published var types: [NKTextProcessingTaskTypeV2.TaskTypeData] = []
+    @Published var filteredTasks: [NKTextProcessingTaskV2.Task] = []
+    @Published var selectedType: NKTextProcessingTaskTypeV2.TaskTypeData?
+    @Published var selectedTask: NKTextProcessingTaskV2.Task?
 
     @Published var hasError: Bool = false
     @Published var isLoading: Bool = false
     @Published var controller: NCMainTabBarController?
 
-    private var tasks: [NKTextProcessingTask] = []
-    private var tasksV2: [NKTextProcessingTaskV2.Task] = []
+    private var tasks: [NKTextProcessingTaskV2.Task] = []
 
     private let excludedTypeIds = ["OCA\\ContextChat\\TextProcessing\\ContextChatTaskType"]
     private var session: NCSession.Session {
@@ -45,7 +44,7 @@ class NCAssistantTask: ObservableObject {
         loadAllTypes()
     }
 
-    func filterTasks(ofType type: NKTextProcessingTaskType?) {
+    func filterTasks(ofType type: NKTextProcessingTaskTypeV2.TaskTypeData?) {
         if let type {
             self.filteredTasks = tasks.filter({ $0.type == type.id })
         } else {
@@ -55,27 +54,17 @@ class NCAssistantTask: ObservableObject {
         self.filteredTasks = filteredTasks.sorted(by: { $0.completionExpectedAt ?? 0 > $1.completionExpectedAt ?? 0 })
     }
 
-    func filterTasksV2(ofType type: NKTextProcessingTaskTypeV2.TaskTypeData?) {
-        if let type {
-            self.filteredTasksV2 = tasksV2.filter({ $0.type == type.id })
-        } else {
-            self.filteredTasksV2 = tasksV2
-        }
-
-        self.filteredTasksV2 = filteredTasksV2.sorted(by: { $0.completionExpectedAt ?? 0 > $1.completionExpectedAt ?? 0 })
-    }
-
-    func selectTaskType(_ type: NKTextProcessingTaskType?) {
+    func selectTaskType(_ type: NKTextProcessingTaskTypeV2.TaskTypeData?) {
         selectedType = type
         filterTasks(ofType: self.selectedType)
     }
 
-    func selectTask(_ task: NKTextProcessingTask) {
+    func selectTask(_ task: NKTextProcessingTaskV2.Task) {
         selectedTask = task
-        guard let id = task.id else { return }
+//        guard let id = task.id else { return }
         isLoading = true
 
-        NextcloudKit.shared.textProcessingGetTask(taskId: id, account: session.account) { _, task, _, error in
+        NextcloudKit.shared.textProcessingGetTasksV2(taskType: task.type ?? "", account: session.account, completion: { account, tasks, responseData, error in
             self.isLoading = false
 
             if error != .success {
@@ -84,13 +73,13 @@ class NCAssistantTask: ObservableObject {
             }
 
             self.selectedTask = task
-        }
+        })
     }
 
     func scheduleTask(input: String) {
         isLoading = true
 
-        NextcloudKit.shared.textProcessingSchedule(input: input, typeId: selectedType?.id ?? "", identifier: "assistant", account: session.account) { _, task, _, error in
+        NextcloudKit.shared.textProcessingScheduleV2(input: input, taskType: selectedType!, account: session.account, completion: { account, task, responseData, error in
             self.isLoading = false
 
             if error != .success {
@@ -104,7 +93,8 @@ class NCAssistantTask: ObservableObject {
                 self.tasks.insert(task, at: 0)
                 self.filteredTasks.insert(task, at: 0)
             }
-        }
+        })
+       
     }
 
     func deleteTask(_ task: NKTextProcessingTask) {
