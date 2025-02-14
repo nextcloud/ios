@@ -154,6 +154,7 @@ final class DownloadLimitTests: XCTestCase {
 
         // Launch the app.
         app = XCUIApplication()
+        app.launchArguments = ["UI_TESTING"]
         app.launch()
 
         try logIn()

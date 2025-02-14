@@ -16,13 +16,6 @@ enum TestConstants {
     static let controlExistenceTimeout: Double = 60
 
     ///
-    /// Unknown purpose.
-    ///
-    /// > To Do: Figure out whether this is obsolete or not.
-    ///
-    static let timeoutLong: Double = 400
-    
-    ///
     /// The full base URL for the server to run against.
     ///
     static let server = "http://localhost:8080"
