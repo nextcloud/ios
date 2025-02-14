@@ -12,24 +12,24 @@ import NextcloudKit
 import SwiftUI
 
 class NCAssistantTask: ObservableObject {
-//    @Published var types: [NKTextProcessingTaskType] = []
-//    @Published var filteredTasks: [NKTextProcessingTask] = []
-//    @Published var selectedType: NKTextProcessingTaskType?
-//    @Published var selectedTask: NKTextProcessingTask?
+    @Published var types: [NKTextProcessingTaskType] = []
+    @Published var filteredTasks: [NKTextProcessingTask] = []
+    @Published var selectedType: NKTextProcessingTaskType?
+    @Published var selectedTask: NKTextProcessingTask?
 
-    let useV2 = true
+//    let useV2 = true
 
-    @Published var typesV2: [NKTextProcessingTaskTypeV2.TaskTypeData] = []
-    @Published var filteredTasksV2: [NKTextProcessingTaskV2.Task] = []
-    @Published var selectedTypeV2: NKTextProcessingTaskTypeV2.TaskTypeData?
-    @Published var selectedTaskV2: NKTextProcessingTaskV2.Task?
+//    @Published var typesV2: [NKTextProcessingTaskTypeV2.TaskTypeData] = []
+//    @Published var filteredTasksV2: [NKTextProcessingTaskV2.Task] = []
+//    @Published var selectedTypeV2: NKTextProcessingTaskTypeV2.TaskTypeData?
+//    @Published var selectedTaskV2: NKTextProcessingTaskV2.Task?
 
     @Published var hasError: Bool = false
     @Published var isLoading: Bool = false
     @Published var controller: NCMainTabBarController?
 
     private var tasks: [NKTextProcessingTask] = []
-    private var tasksV2: [NKTextProcessingTaskV2.Task] = []
+//    private var tasksV2: [NKTextProcessingTaskV2.Task] = []
 
     private let excludedTypeIds = ["OCA\\ContextChat\\TextProcessing\\ContextChatTaskType"]
     private var session: NCSession.Session {
@@ -53,16 +53,6 @@ class NCAssistantTask: ObservableObject {
         }
 
         self.filteredTasks = filteredTasks.sorted(by: { $0.completionExpectedAt ?? 0 > $1.completionExpectedAt ?? 0 })
-    }
-
-    func filterTasksV2(ofType type: NKTextProcessingTaskTypeV2.TaskTypeData?) {
-        if let type {
-            self.filteredTasksV2 = tasksV2.filter({ $0.type == type.id })
-        } else {
-            self.filteredTasksV2 = tasksV2
-        }
-
-        self.filteredTasksV2 = filteredTasksV2.sorted(by: { $0.completionExpectedAt ?? 0 > $1.completionExpectedAt ?? 0 })
     }
 
     func selectTaskType(_ type: NKTextProcessingTaskType?) {

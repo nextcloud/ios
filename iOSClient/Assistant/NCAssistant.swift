@@ -11,22 +11,19 @@ import NextcloudKit
 import PopupView
 
 struct NCAssistant: View {
+    let useV2 = true
     @EnvironmentObject var model: NCAssistantTask
+    @EnvironmentObject var modelV2: NCAssistantTaskV2
     @State var presentNewTaskDialog = false
     @State var input = ""
     @Environment(\.presentationMode) var presentationMode
 
     var body: some View {
         NavigationView {
-            ZStack {
-                TaskList()
+            TaskList()
 
-                if model.types.isEmpty, !model.isLoading {
-                    NCAssistantEmptyView(titleKey: "_no_types_", subtitleKey: "_no_types_subtitle_")
-                } else if model.filteredTasks.isEmpty, !model.isLoading {
-                    NCAssistantEmptyView(titleKey: "_no_tasks_", subtitleKey: "_create_task_subtitle_")
-                }
-            }
+            EmptyView()
+
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button(action: {
@@ -41,25 +38,14 @@ struct NCAssistant: View {
                             .font(Font.system(.body).weight(.light))
                             .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
                     }
-                    .disabled(model.selectedType == nil)
+                    .disabled(useV2 ? modelV2.selectedType == nil : model.selectedType == nil)
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
             .navigationTitle(NSLocalizedString("_assistant_", comment: ""))
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .safeAreaInset(edge: .top, spacing: -10) {
-                ScrollViewReader { scrollProxy in
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        LazyHStack {
-                            ForEach(model.types, id: \.id) { type in
-                                TypeButton(taskType: type, scrollProxy: scrollProxy)
-                            }
-                        }
-                        .padding(20)
-                        .frame(height: 50)
-                    }
-                    .background(.ultraThinMaterial)
-                }
+                ExtractedView()
             }
         }
         .navigationViewStyle(.stack)
@@ -220,6 +206,54 @@ private struct CustomLabelStyle: LabelStyle {
         HStack(spacing: spacing) {
             configuration.icon
             configuration.title
+        }
+    }
+}
+
+struct EmptyView: View {
+    var body: some View {
+        {
+
+            if useV2 {
+                if ((modelV2.types?.isEmpty) != nil), !modelV2.isLoading {
+                    NCAssistantEmptyView(titleKey: "_no_types_", subtitleKey: "_no_types_subtitle_")
+                } else if modelV2.filteredTasks.isEmpty, !model.isLoading {
+                    NCAssistantEmptyView(titleKey: "_no_tasks_", subtitleKey: "_create_task_subtitle_")
+                }
+            } else {
+                if model.types.isEmpty, !model.isLoading {
+                    NCAssistantEmptyView(titleKey: "_no_types_", subtitleKey: "_no_types_subtitle_")
+                } else if model.filteredTasks.isEmpty, !model.isLoading {
+                    NCAssistantEmptyView(titleKey: "_no_tasks_", subtitleKey: "_create_task_subtitle_")
+                }
+            }
+        }
+    }
+}
+
+struct ExtractedView: View {
+    @EnvironmentObject var model: NCAssistantTask
+    @EnvironmentObject var modelV2: NCAssistantTaskV2
+    let useV2: Bool
+
+    var body: some View {
+        ScrollViewReader { scrollProxy in
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack {
+                    if useV2 {
+                        ForEach(modelV2.types, id: \.id) { type in
+                            TypeButton(taskType: type, scrollProxy: scrollProxy)
+                        }
+                    } else {
+                        ForEach(model.types, id: \.id) { type in
+                            TypeButton(taskType: type, scrollProxy: scrollProxy)
+                        }
+                    }
+                }
+                .padding(20)
+                .frame(height: 50)
+            }
+            .background(.ultraThinMaterial)
         }
     }
 }
