@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "F77B0DEB1D118A16002130FE"
-               BuildableName = "Nextcloud.app"
-               BlueprintName = "Nextcloud"
-               ReferencedContainer = "container:Nextcloud.xcodeproj">
+               BuildableName = "Go2Work.app"
+               BlueprintName = "Go2Work"
+               ReferencedContainer = "container:Go2Work.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -29,9 +29,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "C0046CD92A17B98400D87C9D"
-               BuildableName = "NextcloudUITests.xctest"
-               BlueprintName = "NextcloudUITests"
-               ReferencedContainer = "container:Nextcloud.xcodeproj">
+               BuildableName = "Go2WorkUITests.xctest"
+               BlueprintName = "Go2WorkUITests"
+               ReferencedContainer = "container:Go2Work.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -43,9 +43,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "C04E2F1F2A17BB4D001BAD85"
-               BuildableName = "NextcloudIntegrationTests.xctest"
-               BlueprintName = "NextcloudIntegrationTests"
-               ReferencedContainer = "container:Nextcloud.xcodeproj">
+               BuildableName = "Go2WorkIntegrationTests.xctest"
+               BlueprintName = "Go2WorkIntegrationTests"
+               ReferencedContainer = "container:Go2Work.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
          <BuildActionEntry
@@ -57,9 +57,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "F31F69412A2F6D4500162F76"
-               BuildableName = "NextcloudSnapshotTests.xctest"
-               BlueprintName = "NextcloudSnapshotTests"
-               ReferencedContainer = "container:Nextcloud.xcodeproj">
+               BuildableName = "Go2WorkSnapshotTests.xctest"
+               BlueprintName = "Go2WorkSnapshotTests"
+               ReferencedContainer = "container:Go2Work.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -75,9 +75,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F77B0DEB1D118A16002130FE"
-            BuildableName = "Nextcloud.app"
-            BlueprintName = "Nextcloud"
-            ReferencedContainer = "container:Nextcloud.xcodeproj">
+            BuildableName = "Go2Work.app"
+            BlueprintName = "Go2Work"
+            ReferencedContainer = "container:Go2Work.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <Testables>
@@ -87,9 +87,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "AF8ED1F82757821000B8DBC4"
-               BuildableName = "NextcloudUnitTests.xctest"
-               BlueprintName = "NextcloudUnitTests"
-               ReferencedContainer = "container:Nextcloud.xcodeproj">
+               BuildableName = "Go2WorkUnitTests.xctest"
+               BlueprintName = "Go2WorkUnitTests"
+               ReferencedContainer = "container:Go2Work.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
@@ -97,9 +97,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "C04E2F1F2A17BB4D001BAD85"
-               BuildableName = "NextcloudIntegrationTests.xctest"
-               BlueprintName = "NextcloudIntegrationTests"
-               ReferencedContainer = "container:Nextcloud.xcodeproj">
+               BuildableName = "Go2WorkIntegrationTests.xctest"
+               BlueprintName = "Go2WorkIntegrationTests"
+               ReferencedContainer = "container:Go2Work.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
@@ -107,9 +107,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "C0046CD92A17B98400D87C9D"
-               BuildableName = "NextcloudUITests.xctest"
-               BlueprintName = "NextcloudUITests"
-               ReferencedContainer = "container:Nextcloud.xcodeproj">
+               BuildableName = "Go2WorkUITests.xctest"
+               BlueprintName = "Go2WorkUITests"
+               ReferencedContainer = "container:Go2Work.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -129,9 +129,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F77B0DEB1D118A16002130FE"
-            BuildableName = "Nextcloud.app"
-            BlueprintName = "Nextcloud"
-            ReferencedContainer = "container:Nextcloud.xcodeproj">
+            BuildableName = "Go2Work.app"
+            BlueprintName = "Go2Work"
+            ReferencedContainer = "container:Go2Work.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <LocationScenarioReference
@@ -150,9 +150,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "F77B0DEB1D118A16002130FE"
-            BuildableName = "Nextcloud.app"
-            BlueprintName = "Nextcloud"
-            ReferencedContainer = "container:Nextcloud.xcodeproj">
+            BuildableName = "Go2Work.app"
+            BlueprintName = "Go2Work"
+            ReferencedContainer = "container:Go2Work.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

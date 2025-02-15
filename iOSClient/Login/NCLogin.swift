@@ -1,29 +1,6 @@
-//
-//  NCLogin.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 24/02/21.
-//  Copyright © 2021 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-
 import UniformTypeIdentifiers
 import UIKit
-import NextcloudKit
+import Go2WorkKit
 import SwiftEntryKit
 import SwiftUI
 import SafariServices
@@ -134,11 +111,11 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         }
 
         if let dirGroupApps = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroupApps) {
-            // Nextcloud update share accounts
+            // Go2Work update share accounts
             if let error = NCAccount().updateAppsShareAccounts() {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Create share accounts \(error.localizedDescription)")
+                Go2WorkKit.shared.nkCommonInstance.writeLog("[ERROR] Create share accounts \(error.localizedDescription)")
             }
-            // Nextcloud get share accounts
+            // Go2Work get share accounts
             if let shareAccounts = NKShareAccounts().getShareAccount(at: dirGroupApps, application: UIApplication.shared) {
                 var accountTemp = [NKShareAccounts.DataAccounts]()
                 for shareAccount in shareAccounts {
@@ -197,7 +174,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         super.viewDidAppear(animated)
 
         if self.shareAccounts != nil, let image = UIImage(systemName: "person.badge.plus")?.withTintColor(.white, renderingMode: .alwaysOriginal), let backgroundColor = NCBrandColor.shared.customer.lighter(by: 10) {
-            let title = String(format: NSLocalizedString("_apps_nextcloud_detect_", comment: ""), NCBrandOptions.shared.brand)
+            let title = String(format: NSLocalizedString("_apps_Go2Work_detect_", comment: ""), NCBrandOptions.shared.brand)
             let description = String(format: NSLocalizedString("_add_existing_account_", comment: ""), NCBrandOptions.shared.brand)
             NCContentPresenter().alertAction(image: image, contentModeImage: .scaleAspectFit, sizeImage: CGSize(width: 45, height: 45), backgroundColor: backgroundColor, textColor: textColor, title: title, description: description, textCancelButton: "_cancel_", textOkButton: "_ok_", attributes: EKAttributes.topFloat) { identifier in
                 if identifier == "ok" {
@@ -340,13 +317,13 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
         loginButton.isEnabled = false
         loginButton.hideButtonAndShowSpinner()
 
-        NextcloudKit.shared.getServerStatus(serverUrl: url) { [self] _, serverInfoResult in
+        Go2WorkKit.shared.getServerStatus(serverUrl: url) { [self] _, serverInfoResult in
             switch serverInfoResult {
             case .success(let serverInfo):
                 if let host = URL(string: url)?.host {
                     NCNetworking.shared.writeCertificate(host: host)
                 }
-                NextcloudKit.shared.getLoginFlowV2(serverUrl: url) { [self] token, endpoint, login, _, error in
+                Go2WorkKit.shared.getLoginFlowV2(serverUrl: url) { [self] token, endpoint, login, _, error in
                     // Login Flow V2
                     if error == .success, let token, let endpoint, let login {
                         guard let url = URL(string: login) else { return }
@@ -363,7 +340,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                         }
 
                         present(vc, animated: true)
-                    } else if serverInfo.versionMajor < NCGlobal.shared.nextcloudVersion12 { // No login flow available
+                    } else if serverInfo.versionMajor < NCGlobal.shared.Go2WorkVersion12 { // No login flow available
                         let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_webflow_not_available_", comment: ""), preferredStyle: .alert)
                         alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
                         present(alertController, animated: true, completion: { })
@@ -414,7 +391,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 let urlBase = valueArray[2].replacingOccurrences(of: "server:", with: "")
                 let serverUrl = urlBase + "/remote.php/dav"
                 loginButton.isEnabled = false
-                NextcloudKit.shared.checkServer(serverUrl: serverUrl) { _, error in
+                Go2WorkKit.shared.checkServer(serverUrl: serverUrl) { _, error in
                     self.loginButton.isEnabled = true
                     if error == .success {
                         self.createAccount(urlBase: urlBase, user: user, password: password)
@@ -429,7 +406,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
     }
 
     private func getAppPassword(urlBase: String, user: String, password: String) {
-        NextcloudKit.shared.getAppPassword(url: urlBase, user: user, password: password) { token, _, error in
+        Go2WorkKit.shared.getAppPassword(url: urlBase, user: user, password: password) { token, _, error in
             if error == .success, let password = token {
                 self.createAccount(urlBase: urlBase, user: user, password: password)
             } else {
@@ -528,7 +505,7 @@ extension NCLogin: ClientCertificateDelegate, UIDocumentPickerDelegate {
         timer.setEventHandler(handler: {
             DispatchQueue.main.async {
                 let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
-                NextcloudKit.shared.getLoginFlowV2Poll(token: loginFlowV2Token, endpoint: loginFlowV2Endpoint) { [self] server, loginName, appPassword, _, error in
+                Go2WorkKit.shared.getLoginFlowV2Poll(token: loginFlowV2Token, endpoint: loginFlowV2Endpoint) { [self] server, loginName, appPassword, _, error in
                     if error == .success, let urlBase = server, let user = loginName, let appPassword {
                         loginFlowInProgress = true
                         ncLoginPollModel.isLoading = true

@@ -1,28 +1,5 @@
-//
-//  NCViewer.swift
-//  Nextcloud
-//
-//  Created by Marino Faggiana on 16/10/2020.
-//  Copyright © 2020 Marino Faggiana. All rights reserved.
-//
-//  Author Marino Faggiana <marino.faggiana@nextcloud.com>
-//
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-//
-
 import UIKit
-import NextcloudKit
+import Go2WorkKit
 import QuickLook
 
 class NCViewer: NSObject {
@@ -36,13 +13,13 @@ class NCViewer: NSObject {
 
         // URL
         if metadata.classFile == NKCommon.TypeClassFile.url.rawValue {
-            // nextcloudtalk://open-conversation?server={serverURL}&user={userId}&withRoomToken={roomToken}
+            // go2worktalk://open-conversation?server={serverURL}&user={userId}&withRoomToken={roomToken}
             if metadata.name == NCGlobal.shared.talkName {
                 let pathComponents = metadata.url.components(separatedBy: "/")
                 if pathComponents.contains("call") {
                     let talkComponents = pathComponents.last?.components(separatedBy: "#")
                     if let roomToken = talkComponents?.first {
-                        let urlString = "nextcloudtalk://open-conversation?server=\(session.urlBase)&user=\(session.userId)&withRoomToken=\(roomToken)"
+                        let urlString = "go2worktalk://open-conversation?server=\(session.urlBase)&user=\(session.userId)&withRoomToken=\(roomToken)"
                         if let url = URL(string: urlString), UIApplication.shared.canOpenURL(url) {
                             UIApplication.shared.open(url)
                             return
@@ -95,7 +72,7 @@ class NCViewer: NSObject {
             if metadata.isAvailableRichDocumentEditorView {
                 if metadata.url.isEmpty {
                     NCActivityIndicator.shared.start(backgroundView: viewController.view)
-                    NextcloudKit.shared.createUrlRichdocuments(fileID: metadata.fileId, account: metadata.account) { _, url, _, error in
+                    Go2WorkKit.shared.createUrlRichdocuments(fileID: metadata.fileId, account: metadata.account) { _, url, _, error in
                         NCActivityIndicator.shared.stop()
                         if error == .success, url != nil {
                             if let navigationController = viewController.navigationController,
@@ -120,7 +97,7 @@ class NCViewer: NSObject {
                 }
                 return
             }
-            // DirectEditing: Nextcloud Text - OnlyOffice
+            // DirectEditing: Go2Work Text - OnlyOffice
             if metadata.isAvailableDirectEditingEditorView {
                 var options = NKRequestOptions()
                 var editor = ""
@@ -135,7 +112,7 @@ class NCViewer: NSObject {
                 if metadata.url.isEmpty {
                     let fileNamePath = utilityFileSystem.getFileNamePath(metadata.fileName, serverUrl: metadata.serverUrl, session: session)
                     NCActivityIndicator.shared.start(backgroundView: viewController.view)
-                    NextcloudKit.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: editor, account: metadata.account, options: options) { _, url, _, error in
+                    Go2WorkKit.shared.NCTextOpenFile(fileNamePath: fileNamePath, editor: editor, account: metadata.account, options: options) { _, url, _, error in
                         NCActivityIndicator.shared.stop()
                         if error == .success, url != nil {
                             if let navigationController = viewController.navigationController,
