@@ -46,6 +46,9 @@ final class NCManageDatabase: Sendable {
                     newObject?["etag"] = ""
                 }
             }
+            if oldSchemaVersion < 375 {
+                // nothing
+            }
         }
 
         func compactDB(_ totalBytes: Int, _ usedBytes: Int) -> Bool {
