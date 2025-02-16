@@ -41,14 +41,15 @@ class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
 
     override func start() {
         guard !isCancelled,
-              let tableMetadata = NCManageDatabase.shared.getResultMetadataFromOcId(self.metadata.ocId)?.freeze() else { return self.finish() }
+              let tblMetadata = NCManageDatabase.shared.getResultMetadataFromOcId(self.metadata.ocId)?.freeze() else { return self.finish() }
         var etagResource: String?
+        var image: UIImage?
 
         if utilityFileSystem.fileProviderStorageImageExists(metadata.ocId, etag: metadata.etag) {
-            etagResource = tableMetadata.etagResource
+            etagResource = tblMetadata.etagResource
         }
 
-        NextcloudKit.shared.downloadPreview(fileId: tableMetadata.fileId,
+        NextcloudKit.shared.downloadPreview(fileId: tblMetadata.fileId,
                                             etag: etagResource,
                                             account: self.session.account,
                                             options: NKRequestOptions(queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)) { _, _, _, etag, responseData, error in
@@ -56,21 +57,28 @@ class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
 
                 self.media.filesExists.append(self.metadata.ocId)
                 NCManageDatabase.shared.setMetadataEtagResource(ocId: self.metadata.ocId, etagResource: etag)
-                NCUtility().createImageFileFrom(data: data, metadata: tableMetadata)
-                let image = NCUtility().getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: NCGlobal.shared.getSizeExtension(column: self.media.numberOfColumns))
+                NCUtility().createImageFileFrom(data: data, metadata: tblMetadata)
+                image = NCUtility().getImage(ocId: self.metadata.ocId, etag: self.metadata.etag, ext: NCGlobal.shared.getSizeExtension(column: self.media.numberOfColumns))
+            }
 
-                DispatchQueue.main.async {
-                    for case let cell as NCMediaCell in self.media.collectionView.visibleCells {
-                        if cell.ocId == self.metadata.ocId {
-                            UIView.transition(with: cell.imageItem, duration: 0.75, options: .transitionCrossDissolve, animations: { cell.imageItem.image = image
-                            }, completion: nil)
-                            break
+            Task { @MainActor in
+                for case let cell as NCMediaCell in self.media.collectionView.visibleCells {
+                    if cell.ocId == self.metadata.ocId {
+                        if image == nil {
+                            cell.imageItem.contentMode = .scaleAspectFit
+                            image = NCUtility().loadImage(named: tblMetadata.iconName, useTypeIconFile: true, account: self.session.account)
+                        } else {
+                            cell.imageItem.contentMode = .scaleAspectFill
                         }
+
+                        UIView.transition(with: cell.imageItem, duration: 0.75, options: .transitionCrossDissolve, animations: { cell.imageItem.image = image
+                        }, completion: nil)
+
+                        break
                     }
                 }
-            } else if error.errorCode == self.global.errorResourceNotFound {
-                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterDeleteFile, userInfo: ["ocId": [tableMetadata.ocId], "error": error])
             }
+
             self.finish()
         }
     }

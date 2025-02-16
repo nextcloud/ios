@@ -75,10 +75,6 @@ extension NCMedia: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         guard let metadata = dataSource.getMetadata(indexPath: indexPath) else { return }
 
-        if !hiddenCellMetadats.contains(metadata.ocId + metadata.etag) {
-            hiddenCellMetadats.append(metadata.ocId + metadata.etag)
-        }
-
         if !collectionView.indexPathsForVisibleItems.contains(indexPath) {
             for case let operation as NCMediaDownloadThumbnail in NCNetworking.shared.downloadThumbnailQueue.operations where operation.metadata.ocId == metadata.ocId {
                 operation.cancel()
