@@ -105,7 +105,7 @@ extension NCMedia: UICollectionViewDataSource {
         let imageCache = imageCache.getImageCache(ocId: metadata.ocId, etag: metadata.etag, ext: ext)
 
         cell.imageItem.image = imageCache
-        cell.date = metadata.date as Date
+        cell.datePhotosOriginal = metadata.datePhotosOriginal as Date
         cell.ocId = metadata.ocId
         cell.imageStatus.image = nil
 
