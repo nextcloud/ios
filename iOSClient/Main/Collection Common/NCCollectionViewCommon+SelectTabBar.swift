@@ -137,4 +137,10 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
         searchController(enabled: !editMode)
         self.collectionView.reloadData()
     }
+
+    func convertLivePhoto(metadataFirst: tableMetadata?, metadataLast: tableMetadata?) {
+        if let metadataFirst, let metadataLast {
+            
+        }
+    }
 }
