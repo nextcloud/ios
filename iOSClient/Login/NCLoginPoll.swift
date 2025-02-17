@@ -24,6 +24,7 @@
 
 import NextcloudKit
 import SwiftUI
+import SafariServices
 
 struct NCLoginPoll: View {
     let loginFlowV2Token: String
@@ -124,6 +125,13 @@ struct NCLoginPoll: View {
             loginManager.onDisappear()
         }
         .interactiveDismissDisabled()
+        .fullScreenCover(item: $loginManager.browserURL, content: { url in
+            SafariView(url: url) {
+                loginManager.browserURL = nil
+                loginManager.poll()
+            }
+            .ignoresSafeArea()
+        })
     }
 }
 
@@ -140,6 +148,7 @@ private class LoginManager: ObservableObject {
     @Published var pollFinished = false
     @Published var isLoading = false
     @Published var account = ""
+    @Published var browserURL: URL?
 
     var timer: DispatchSourceTimer?
 
@@ -152,6 +161,7 @@ private class LoginManager: ObservableObject {
     }
 
     func poll() {
+        let loginOptions = NKRequestOptions(customUserAgent: userAgent)
         let queue = DispatchQueue.global(qos: .background)
         timer = DispatchSource.makeTimerSource(queue: queue)
 
@@ -161,7 +171,9 @@ private class LoginManager: ObservableObject {
         timer.setEventHandler(handler: {
             DispatchQueue.main.async {
                 let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
-                NextcloudKit.shared.getLoginFlowV2Poll(token: self.loginFlowV2Token, endpoint: self.loginFlowV2Endpoint) { server, loginName, appPassword, _, error in
+                NextcloudKit.shared.getLoginFlowV2Poll(token: self.loginFlowV2Token,
+                                                       endpoint: self.loginFlowV2Endpoint,
+                                                       options: loginOptions) { server, loginName, appPassword, _, error in
                     if error == .success, let urlBase = server, let user = loginName, let appPassword {
                         self.isLoading = true
                         NCAccount().createAccount(urlBase: urlBase, user: user, password: appPassword, controller: controller) { account, error in
@@ -183,6 +195,43 @@ private class LoginManager: ObservableObject {
     }
 
     func openLoginInBrowser() {
-        UIApplication.shared.open(URL(string: loginFlowV2Login)!)
+        browserURL = URL(string: loginFlowV2Login)
+    }
+}
+
+private struct SafariView: UIViewControllerRepresentable {
+    let url: URL
+    let onFinished: () -> Void
+
+    func makeUIViewController(context: Context) -> SFSafariViewController {
+        let safariVC = SFSafariViewController(url: url)
+        safariVC.delegate = context.coordinator
+        return safariVC
+    }
+
+    func updateUIViewController(_ uiViewController: SFSafariViewController, context: Context) {}
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+
+    class Coordinator: NSObject, SFSafariViewControllerDelegate {
+        let parent: SafariView
+
+        init(_ parent: SafariView) {
+            self.parent = parent
+        }
+
+        func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
+            controller.dismiss(animated: true) { [weak self] in
+                self?.parent.onFinished()
+            }
+        }
+    }
+}
+
+extension URL: Identifiable {
+    public var id: String {
+        return self.absoluteString
     }
 }
