@@ -35,7 +35,7 @@ extension NCNetworking {
                 completion: @escaping (_ afError: AFError?, _ error: NKError) -> Void = { _, _ in }) {
         let metadata = tableMetadata.init(value: metadata)
         var numChunks: Int = 0
-        let hud = NCHud(controller?.view)
+        var hud: NCHud?
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload file \(metadata.fileNameView) with Identifier \(metadata.assetLocalIdentifier) with size \(metadata.size) [CHUNK \(metadata.chunk), E2EE \(metadata.isDirectoryE2EE)]")
         let transfer = NCTransferProgress.Transfer(ocId: metadata.ocId, ocIdTransfer: metadata.ocIdTransfer, session: metadata.session, chunk: metadata.chunk, e2eEncrypted: metadata.e2eEncrypted, progressNumber: 0, totalBytes: 0, totalBytesExpected: 0)
         NCTransferProgress.shared.append(transfer)
@@ -52,19 +52,20 @@ extension NCNetworking {
             }
 #endif
         } else if metadata.chunk > 0 {
-
-            hud.initHudRing(text: NSLocalizedString("_wait_file_preparation_", comment: ""),
-                            tapToCancelDetailText: true,
-                            tapOperation: tapOperation)
-
+            DispatchQueue.main.async {
+                hud = NCHud(controller?.view)
+                hud?.initHudRing(text: NSLocalizedString("_wait_file_preparation_", comment: ""),
+                                 tapToCancelDetailText: true,
+                                 tapOperation: tapOperation)
+            }
             uploadChunkFile(metadata: metadata) { num in
                 numChunks = num
             } counterChunk: { counter in
-                hud.progress(num: Float(counter), total: Float(numChunks))
+                hud?.progress(num: Float(counter), total: Float(numChunks))
             } start: {
-                hud.dismiss()
+                hud?.dismiss()
             } completion: { account, _, afError, error in
-                hud.dismiss()
+                hud?.dismiss()
                 var sessionTaskFailedCode = 0
                 let directory = self.utilityFileSystem.getDirectoryProviderStorageOcId(metadata.ocId)
                 if let error = NextcloudKit.shared.nkCommonInstance.getSessionErrorFromAFError(afError) {
@@ -287,9 +288,12 @@ extension NCNetworking {
             return delegate.uploadComplete(fileName: fileName, serverUrl: serverUrl, ocId: ocId, etag: etag, date: date, size: size, task: task, error: error)
         }
 
-        guard let url = task.currentRequest?.url,
-              let metadata = self.database.getMetadata(from: url, sessionTaskIdentifier: task.taskIdentifier) else { return }
-        uploadComplete(metadata: metadata, ocId: ocId, etag: etag, date: date, size: size, error: error)
+        DispatchQueue.global().async {
+            if let url = task.currentRequest?.url,
+               let metadata = self.database.getMetadata(from: url, sessionTaskIdentifier: task.taskIdentifier) {
+                self.uploadComplete(metadata: metadata, ocId: ocId, etag: etag, date: date, size: size, error: error)
+            }
+        }
     }
 
     func uploadComplete(metadata: tableMetadata,

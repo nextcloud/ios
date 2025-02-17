@@ -272,13 +272,13 @@ class NCMedia: UIViewController {
         }
 
         if error.errorCode == self.global.errorResourceNotFound,
-           let ocId = userInfo["ocId"] as? String {
+           let ocIds = userInfo["ocId"] as? [String],
+           let ocId = ocIds.first {
             self.database.deleteMetadataOcId(ocId)
             self.loadDataSource {
                 self.semaphoreNotificationCenter.signal()
             }
         } else if error != .success {
-            NCContentPresenter().showError(error: error)
             self.loadDataSource {
                 self.semaphoreNotificationCenter.signal()
             }

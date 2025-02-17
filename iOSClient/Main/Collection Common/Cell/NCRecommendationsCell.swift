@@ -10,7 +10,6 @@ import UIKit
 
 protocol NCRecommendationsCellDelegate: AnyObject {
     func touchUpInsideButtonMenu(with metadata: tableMetadata, image: UIImage?)
-    func longPressGestureRecognized(with metadata: tableMetadata, image: UIImage?)
 }
 
 class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
@@ -22,6 +21,7 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
     var delegate: NCRecommendationsCellDelegate?
     var metadata: tableMetadata = tableMetadata()
     var recommendedFiles: tableRecommendedFiles = tableRecommendedFiles()
+    var id: String = ""
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -42,25 +42,24 @@ class NCRecommendationsCell: UICollectionViewCell, UIGestureRecognizerDelegate {
         buttonMenu.layer.shadowOffset = CGSize(width: 2, height: 2)
         buttonMenu.layer.shadowRadius = 4
 
-        let longPressedGesture = UILongPressGestureRecognizer(target: self, action: #selector(longPress(gestureRecognizer:)))
-        longPressedGesture.minimumPressDuration = 0.5
-        longPressedGesture.delegate = self
-        longPressedGesture.delaysTouchesBegan = true
-        self.addGestureRecognizer(longPressedGesture)
+        image.image = nil
+        labelFilename.text = ""
+        labelInfo.text = ""
     }
 
-    func setImageBorder() {
+    func setImageCorner(withBorder: Bool) {
         image.layer.cornerRadius = 10
         image.layer.masksToBounds = true
-        image.layer.borderWidth = 0.5
-        image.layer.borderColor = UIColor.separator.cgColor
+        if withBorder {
+            image.layer.borderWidth = 0.5
+            image.layer.borderColor = UIColor.separator.cgColor
+        } else {
+            image.layer.borderWidth = 0
+            image.layer.borderColor = UIColor.clear.cgColor
+        }
     }
 
     @IBAction func touchUpInsideButtonMenu(_ sender: Any) {
         self.delegate?.touchUpInsideButtonMenu(with: self.metadata, image: image.image)
-    }
-
-    @objc func longPress(gestureRecognizer: UILongPressGestureRecognizer) {
-        self.delegate?.longPressGestureRecognized(with: metadata, image: image.image)
     }
 }

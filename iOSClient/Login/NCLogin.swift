@@ -212,6 +212,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
         if navigationController?.isBeingDismissed == true {
             pollTimer?.cancel()
+            pollTimer = nil
         }
     }
 

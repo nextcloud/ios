@@ -194,7 +194,7 @@ extension NCNetworking {
                                                                                          self.global.metadataStatusWaitDownload,
                                                                                          self.global.metadataStatusDownloading,
                                                                                          self.global.metadataStatusDownloadError,
-                                                                                                   sessionDownload)) {
+                                                                                         sessionDownload)) {
             self.database.clearMetadataSession(metadatas: Array(results))
         }
     }
@@ -242,7 +242,7 @@ extension NCNetworking {
                                                                                          self.global.metadataStatusWaitUpload,
                                                                                          self.global.metadataStatusUploading,
                                                                                          self.global.metadataStatusUploadError,
-                                                                                                   sessionUpload)) {
+                                                                                         sessionUpload)) {
             self.database.deleteMetadatas(Array(results))
         }
     }
@@ -283,10 +283,9 @@ extension NCNetworking {
                                                                                                  self.global.metadataStatusWaitUpload,
                                                                                                  self.global.metadataStatusUploading,
                                                                                                  self.global.metadataStatusUploadError,
-                                                                                                           sessionUploadBackground,
-                                                                                                           sessionUploadBackgroundWWan,
-                                                                                                           sessionUploadBackgroundExt
-                                                                                                          )) {
+                                                                                                 sessionUploadBackground,
+                                                                                                 sessionUploadBackgroundWWan,
+                                                                                                 sessionUploadBackgroundExt)) {
                     self.database.deleteMetadatas(Array(results))
                 }
             }
