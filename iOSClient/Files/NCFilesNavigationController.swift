@@ -235,6 +235,7 @@ class NCFilesNavigationController: NCMainNavigationController {
             let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) {
                 collectionViewCommon.setEditMode(false)
                 collectionViewCommon.collectionView.reloadData()
+                collectionViewCommon.navigationItem.rightBarButtonItems = [self.menuBarButtonItem]
             }
 
             self.collectionViewCommon?.navigationItem.rightBarButtonItems = [select]
