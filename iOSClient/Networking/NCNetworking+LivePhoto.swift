@@ -46,27 +46,32 @@ extension NCNetworking {
         }
 
         Task {
-            await createLivePhoto(metadataFirst: metadata, metadataLast: metadataLast, userInfo: aUserInfo)
+            await setLivePhoto(metadataFirst: metadata, metadataLast: metadataLast, userInfo: aUserInfo)
         }
     }
 
-    func createLivePhoto(metadataFirst: tableMetadata?, metadataLast: tableMetadata?, userInfo aUserInfo: [AnyHashable: Any]) async {
+    func setLivePhoto(metadataFirst: tableMetadata?, metadataLast: tableMetadata?, userInfo aUserInfo: [AnyHashable: Any], livePhoto: Bool = true) async {
         guard let metadataFirst, let metadataLast = metadataLast else { return }
+        var livePhotoFileId = ""
 
         /// METADATA FIRST
         let serverUrlfileNamePathFirst = metadataFirst.urlBase + metadataFirst.path + metadataFirst.fileName
-        var livePhotoFile = metadataLast.fileId
-        let resultsMetadataFirst = await setLivephoto(serverUrlfileNamePath: serverUrlfileNamePathFirst, livePhotoFile: livePhotoFile, account: metadataFirst.account)
+        if livePhoto {
+            livePhotoFileId = metadataLast.fileId
+        }
+        let resultsMetadataFirst = await setLivephoto(serverUrlfileNamePath: serverUrlfileNamePathFirst, livePhotoFile: livePhotoFileId, account: metadataFirst.account)
         if resultsMetadataFirst.error == .success {
-            database.setMetadataLivePhotoByServer(account: metadataFirst.account, ocId: metadataFirst.ocId, livePhotoFile: livePhotoFile)
+            database.setMetadataLivePhotoByServer(account: metadataFirst.account, ocId: metadataFirst.ocId, livePhotoFile: livePhotoFileId)
         }
 
         ///  METADATA LAST
         let serverUrlfileNamePathLast = metadataLast.urlBase + metadataLast.path + metadataLast.fileName
-        livePhotoFile = metadataFirst.fileId
-        let resultsMetadataLast = await setLivephoto(serverUrlfileNamePath: serverUrlfileNamePathLast, livePhotoFile: livePhotoFile, account: metadataLast.account)
+        if livePhoto {
+            livePhotoFileId = metadataFirst.fileId
+        }
+        let resultsMetadataLast = await setLivephoto(serverUrlfileNamePath: serverUrlfileNamePathLast, livePhotoFile: livePhotoFileId, account: metadataLast.account)
         if resultsMetadataLast.error == .success {
-            database.setMetadataLivePhotoByServer(account: metadataLast.account, ocId: metadataLast.ocId, livePhotoFile: livePhotoFile)
+            database.setMetadataLivePhotoByServer(account: metadataLast.account, ocId: metadataLast.ocId, livePhotoFile: livePhotoFileId)
         }
 
         if resultsMetadataFirst.error == .success, resultsMetadataLast.error == .success {

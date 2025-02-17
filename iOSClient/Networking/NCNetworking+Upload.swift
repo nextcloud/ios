@@ -386,13 +386,13 @@ extension NCNetworking {
 
                     NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload complete " + metadata.serverUrl + "/" + metadata.fileName + ", result: success(\(size) bytes)")
 
-                    let userInfo: [AnyHashable: Any] = ["ocId": metadata.ocId,
-                                                        "ocIdTransfer": metadata.ocIdTransfer,
-                                                        "session": metadata.session,
-                                                        "serverUrl": metadata.serverUrl,
-                                                        "account": metadata.account,
-                                                        "fileName": metadata.fileName,
-                                                        "error": error]
+                    let userInfo: [String: Any] = ["ocId": metadata.ocId,
+                                                   "ocIdTransfer": metadata.ocIdTransfer,
+                                                   "session": metadata.session,
+                                                   "serverUrl": metadata.serverUrl,
+                                                   "account": metadata.account,
+                                                   "fileName": metadata.fileName,
+                                                   "error": error]
                     if metadata.isLivePhoto,
                        NCCapabilities.shared.getCapabilities(account: metadata.account).isLivePhotoServerAvailable {
                         DispatchQueue.global().asyncAfter(deadline: .now() + 1) {

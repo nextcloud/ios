@@ -149,7 +149,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
                                                "fileName": metadataFirst.fileName,
                                                "error": NKError()]
 
-                await NCNetworking.shared.createLivePhoto(metadataFirst: metadataFirst, metadataLast: metadataLast, userInfo: userInfo)
+                await NCNetworking.shared.setLivePhoto(metadataFirst: metadataFirst, metadataLast: metadataLast, userInfo: userInfo)
             }
         }
     }
