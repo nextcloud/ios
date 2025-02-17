@@ -55,7 +55,9 @@ jobs:
     runs-on: macos-15
     needs: [build]
 
-    if: github.event.pull_request.draft == false
+    # Temporarily, project has no effective tests except UI tests which are unfeasible on virtualized GitHub runners (see #3291)
+    # Previously: github.event.pull_request.draft == false
+    if: false
 
     steps:
     - uses: actions/checkout@v4
