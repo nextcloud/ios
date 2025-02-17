@@ -73,7 +73,7 @@ stages:
   retry: 1
   stage: build
   tags:
-    - xcode15
+    - xcode16
   before_script:
     - *mac_general_scripts
   artifacts:
