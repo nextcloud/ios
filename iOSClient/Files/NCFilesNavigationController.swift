@@ -235,15 +235,14 @@ class NCFilesNavigationController: NCMainNavigationController {
             let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) {
                 collectionViewCommon.setEditMode(false)
                 collectionViewCommon.collectionView.reloadData()
-                collectionViewCommon.navigationItem.rightBarButtonItems = [self.menuBarButtonItem]
             }
 
             self.collectionViewCommon?.navigationItem.rightBarButtonItems = [select]
 
         } else if self.collectionViewCommon?.navigationItem.rightBarButtonItems == nil || (!collectionViewCommon.isEditMode && !(collectionViewCommon.tabBarSelect?.isHidden() ?? true)) {
-            collectionViewCommon.tabBarSelect?.hide()
 
-            self.updateRightBarButtonItems()
+            collectionViewCommon.tabBarSelect?.hide()
+            collectionViewCommon.navigationItem.rightBarButtonItems = [self.menuBarButtonItem]
 
         } else {
 

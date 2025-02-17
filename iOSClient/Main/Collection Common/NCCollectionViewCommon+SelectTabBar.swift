@@ -125,6 +125,10 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
         isEditMode = editMode
         fileSelect.removeAll()
 
+        navigationItem.hidesBackButton = editMode
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = !editMode
+        searchController(enabled: !editMode)
+
         if editMode {
             navigationItem.leftBarButtonItems = nil
         } else {
@@ -132,9 +136,6 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
         }
         (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
 
-        navigationController?.interactivePopGestureRecognizer?.isEnabled = !editMode
-        navigationItem.hidesBackButton = editMode
-        searchController(enabled: !editMode)
         self.collectionView.reloadData()
     }
 
@@ -146,7 +147,7 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
 
                 await NCNetworking.shared.setLivePhoto(metadataFirst: metadataFirst, metadataLast: metadataLast, userInfo: userInfo)
             }
-            setEditMode(false)
         }
+        setEditMode(false)
     }
 }

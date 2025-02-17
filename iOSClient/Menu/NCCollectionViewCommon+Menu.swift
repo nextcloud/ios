@@ -255,7 +255,6 @@ extension NCCollectionViewCommon {
         //
         // SET LIVE PHOTO NO
         //
-        /*
         if NCNetworking.shared.isOnline,
            let metadataMOV = database.getMetadataLivePhoto(metadata: metadata) {
             actions.append(
@@ -273,7 +272,6 @@ extension NCCollectionViewCommon {
                 )
             )
         }
-        */
 
         //
         // SAVE AS SCAN
