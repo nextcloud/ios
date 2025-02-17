@@ -32,6 +32,7 @@ protocol NCCollectionViewCommonSelectTabBarDelegate: AnyObject {
     func share()
     func saveAsAvailableOffline(isAnyOffline: Bool)
     func lock(isAnyLocked: Bool)
+    func convertLivePhoto(metadataFirst: tableMetadata?, metadataLast: tableMetadata?)
 }
 
 class NCCollectionViewCommonSelectTabBar: ObservableObject {
@@ -47,6 +48,8 @@ class NCCollectionViewCommonSelectTabBar: ObservableObject {
     @Published var canUnlock = true
     @Published var enableLock = false
     @Published var isSelectedEmpty = true
+    @Published var canConvertLivePhoto = false
+    @Published var metadatas: [tableMetadata] = []
 
     init(controller: NCMainTabBarController? = nil, delegate: NCCollectionViewCommonSelectTabBarDelegate? = nil) {
         let rootView = NCCollectionViewCommonSelectTabBarView(tabBarSelect: self)
@@ -98,6 +101,8 @@ class NCCollectionViewCommonSelectTabBar: ObservableObject {
             isAllDirectory = true
             isAnyLocked = false
             canUnlock = true
+            canConvertLivePhoto = false
+            self.metadatas = metadatas
 
             for metadata in metadatas {
                 if metadata.directory {
@@ -129,8 +134,17 @@ class NCCollectionViewCommonSelectTabBar: ObservableObject {
                 } // else: file is not offline, continue
             }
             enableLock = !isAnyDirectory && canUnlock && !NCCapabilities.shared.getCapabilities(account: controller?.account).capabilityFilesLockVersion.isEmpty
+            // Convert Live Photo
+            if metadatas.count == 2,
+               let metadataFirst = metadatas.first,
+               !metadataFirst.isLivePhoto,
+               let metadataLast = metadatas.last,
+               !metadataLast.isLivePhoto,
+               ((metadataFirst.isVideo && metadataLast.isImage) || (metadataFirst.isImage && metadataLast.isVideo)) {
+                canConvertLivePhoto = true
+            }
         }
-        isSelectedEmpty = fileSelect.isEmpty
+        self.isSelectedEmpty = fileSelect.isEmpty
     }
 }
 
@@ -177,6 +191,13 @@ struct NCCollectionViewCommonSelectTabBarView: View {
                 .disabled(tabBarSelect.isSelectedEmpty)
 
                 Menu {
+                    Button(action: {
+                        tabBarSelect.delegate?.convertLivePhoto(metadataFirst: tabBarSelect.metadatas.first, metadataLast: tabBarSelect.metadatas.last)
+                    }, label: {
+                        Label(NSLocalizedString("_convert_live_photo_", comment: ""), systemImage: "livephoto")
+                    })
+                    .disabled(!tabBarSelect.canConvertLivePhoto)
+
                     Button(action: {
                         tabBarSelect.delegate?.saveAsAvailableOffline(isAnyOffline: tabBarSelect.isAnyOffline)
                     }, label: {

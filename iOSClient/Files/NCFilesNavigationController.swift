@@ -241,9 +241,9 @@ class NCFilesNavigationController: NCMainNavigationController {
             self.collectionViewCommon?.navigationItem.rightBarButtonItems = [select]
 
         } else if self.collectionViewCommon?.navigationItem.rightBarButtonItems == nil || (!collectionViewCommon.isEditMode && !(collectionViewCommon.tabBarSelect?.isHidden() ?? true)) {
-            collectionViewCommon.tabBarSelect?.hide()
 
-            self.updateRightBarButtonItems()
+            collectionViewCommon.tabBarSelect?.hide()
+            collectionViewCommon.navigationItem.rightBarButtonItems = [self.menuBarButtonItem]
 
         } else {
 
