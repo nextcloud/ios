@@ -143,7 +143,6 @@ class NCCollectionViewCommonSelectTabBar: ObservableObject {
             }
         }
         self.isSelectedEmpty = fileSelect.isEmpty
-        self.metadatas = []
     }
 }
 
