@@ -185,6 +185,10 @@ class NCMedia: UIViewController {
         if dataSource.metadatas.isEmpty {
             loadDataSource()
         }
+        
+        let alert = UIAlertController(title: "title", message: "test message", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .destructive))
+        self.present(alert, animated: true)
     }
 
     override func viewDidAppear(_ animated: Bool) {
