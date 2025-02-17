@@ -74,29 +74,29 @@ Do you want to try the latest version in development of Nextcloud iOS ? Simple, 
 
 ## Testing
 
-#### Note: If a Unit or Integration test exclusively uses and tests NextcloudKit functions and components, then write that test in the NextcloudKit repo. NextcloudKit is used in many other repos as an API, and it's better if such tests are located there.
+**Note: If a unit or integration test exclusively uses and tests NextcloudKit functions and components, then add that test to the NextcloudKit project instead. NextcloudKit is used in many other projects as an API, and it's better if such tests are located there.**
 
-### Unit tests:
+### Unit Tests
 
-There are currently no preresquites for unit testing that need to be done. Mock everything that's not needed. 
+There are currently no prerequisites for unit testing.
+Mock everything which is not needed. 
 
-### Integration tests:
-To run integration tests, you need a docker instance of a Nextcloud test server. [This](https://github.com/szaimen/nextcloud-easy-test) is a good start.
+### Integration Tests
 
-1. In `TestConstants.swift` you must specify your instance credentials. App Token is automatically generated.
+In `TestConstants.swift` you must specify your credentials for the server you want to test against.
+For locally running tests and in the GitHub actions we use [this shallow CI server image](https://github.com/nextcloud/docker-ci/pkgs/container/continuous-integration-shallow-server).
+Due to technical constraints the GitHub actions rely on a bare metal installation of Nextcloud on the runner in difference to local tests which can leverage much cleaner and reliable Docker containers.
 
-```
-public class TestConstants {
-    static let timeoutLong: Double = 400
-    static let server = "http://localhost:8080"
-    static let username = "admin"
-    static let password = "admin"
-    static let account = "\(username) \(server)"
-}
-```
+Currently, you still need to launch the server manually once before running any tests locally.
+This project comes with a convenience script to do so, see or run [Tests/Server.sh](Tests/Server.sh).
+**Please familiarize yourself with its content before running it** to avoid unintended removal of a container named like in the script. 
 
-2. Run the integration tests. 
+The same instance is reused for all tests.
+A long term goal is to automatically create and discard container _per test_ to ensure maximum test isolation and a clean test environment.
+Note that plain HTTP is used in this case to circumvent certificate issues and simplify the sign-in flow in automation.
 
-### UI tests
+### UI Tests
 
-UI tests also use the docker server, but besides that there is nothing else you need to do.
+UI tests also require a Nextcloud server to test against just like integration tests.
+**Important**: Additionally, UI tests assume your test device (regardless whether physical or Simulator) is set to **US English**.
+This is required because in some parts of the user interface the automation has no other choice than to rely on localized texts for control.

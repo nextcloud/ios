@@ -200,6 +200,7 @@ class NCFilesNavigationController: NCMainNavigationController {
         if self.collectionViewCommon?.navigationItem.leftBarButtonItems == nil {
             let accountButton = AccountSwitcherButton(type: .custom)
 
+            accountButton.accessibilityIdentifier = "accountSwitcher"
             accountButton.setImage(image, for: .normal)
             accountButton.semanticContentAttribute = .forceLeftToRight
             accountButton.sizeToFit()

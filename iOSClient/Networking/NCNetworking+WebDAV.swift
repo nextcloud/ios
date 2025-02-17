@@ -95,6 +95,20 @@ extension NCNetworking {
             let isDirectoryE2EE = self.utilityFileSystem.isDirectoryE2EE(file: file)
             let metadata = self.database.convertFileToMetadata(file, isDirectoryE2EE: isDirectoryE2EE)
 
+            // Remove all known download limits from shares related to the given file.
+            // This avoids obsolete download limit objects to stay around.
+            // Afterwards create new download limits, should any such be returned for the known shares.
+
+            let shares = self.database.getTableShares(account: metadata.account, serverUrl: metadata.serverUrl, fileName: metadata.fileName)
+
+            for share in shares {
+                self.database.deleteDownloadLimit(byAccount: metadata.account, shareToken: share.token)
+
+                if let receivedDownloadLimit = file.downloadLimits.first(where: { $0.token == share.token }) {
+                    self.database.createDownloadLimit(account: metadata.account, count: receivedDownloadLimit.count, limit: receivedDownloadLimit.limit, token: receivedDownloadLimit.token)
+                }
+            }
+
             completion(account, metadata, error)
         }
     }
