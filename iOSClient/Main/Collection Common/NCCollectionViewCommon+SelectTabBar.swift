@@ -140,7 +140,17 @@ extension NCCollectionViewCommon: NCCollectionViewCommonSelectTabBarDelegate {
 
     func convertLivePhoto(metadataFirst: tableMetadata?, metadataLast: tableMetadata?) {
         if let metadataFirst, let metadataLast {
-            
+            Task {
+                let userInfo: [AnyHashable: Any] = ["ocId": metadataFirst.ocId,
+                                                    "ocIdTransfer": metadataFirst.ocIdTransfer,
+                                                    "session": metadataFirst.session,
+                                                    "serverUrl": metadataFirst.serverUrl,
+                                                    "account": metadataFirst.account,
+                                                    "fileName": metadataFirst.fileName,
+                                                    "error": NKError()]
+
+                await NCNetworking.shared.createLivePhoto(metadataFirst: metadataFirst, metadataLast: metadataLast, userInfo: userInfo)
+            }
         }
     }
 }
