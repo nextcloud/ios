@@ -61,8 +61,6 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
 
     var pollTimer: DispatchSourceTimer?
 
-    var ncLoginPollModel = NCLoginPollModel()
-
     var loginFlowInProgress = false
 
     // MARK: - View Life Cycle
@@ -191,7 +189,7 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 return outgoing
             }
         }
-        
+
         NCNetworking.shared.certificateDelegate = self
     }
 
@@ -351,20 +349,11 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 NextcloudKit.shared.getLoginFlowV2(serverUrl: url) { [self] token, endpoint, login, _, error in
                     // Login Flow V2
                     if error == .success, let token, let endpoint, let login {
-                        guard let url = URL(string: login) else { return }
-                        let vc: UIViewController
-
                         poll(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login)
 
-                        if NCBrandOptions.shared.use_in_app_browser_for_login {
-                            let safariVC = SFSafariViewController(url: url)
-                            safariVC.delegate = self
-                            vc = safariVC
-                        } else {
-                            vc = UIHostingController(rootView: NCLoginPoll(loginFlowV2Login: login, model: ncLoginPollModel))
-                        }
-
-                        present(vc, animated: true)
+                        let safariVC = NCLoginProvider()
+                        safariVC.urlBase = login
+                        self.navigationController?.pushViewController(safariVC, animated: true)
                     } else if serverInfo.versionMajor < NCGlobal.shared.nextcloudVersion12 { // No login flow available
                         let alertController = UIAlertController(title: NSLocalizedString("_error_", comment: ""), message: NSLocalizedString("_webflow_not_available_", comment: ""), preferredStyle: .alert)
                         alertController.addAction(UIAlertAction(title: NSLocalizedString("_ok_", comment: ""), style: .default, handler: { _ in }))
@@ -539,7 +528,6 @@ extension NCLogin: ClientCertificateDelegate, UIDocumentPickerDelegate {
                 NextcloudKit.shared.getLoginFlowV2Poll(token: loginFlowV2Token, endpoint: loginFlowV2Endpoint) { [self] server, loginName, appPassword, _, error in
                     if error == .success, let urlBase = server, let user = loginName, let appPassword {
                         loginFlowInProgress = true
-                        ncLoginPollModel.isLoading = true
 
                         NCAccount().createAccount(urlBase: urlBase, user: user, password: appPassword, controller: controller) { account, error in
 

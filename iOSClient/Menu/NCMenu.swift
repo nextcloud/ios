@@ -81,9 +81,12 @@ class NCMenu: UITableViewController {
             cell.backgroundColor = .separator
             return cell
         }
+
         let cell = tableView.dequeueReusableCell(withIdentifier: "menuActionCell", for: indexPath)
+        cell.accessibilityIdentifier = action.accessibilityIdentifier
         cell.tintColor = NCBrandColor.shared.customer
         cell.backgroundColor = menuColor
+
         let actionIconView = cell.viewWithTag(1) as? UIImageView
         let actionNameLabel = cell.viewWithTag(2) as? UILabel
         let actionDetailLabel = cell.viewWithTag(3) as? UILabel

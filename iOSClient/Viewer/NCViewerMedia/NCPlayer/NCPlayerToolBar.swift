@@ -32,7 +32,6 @@ import FloatingPanel
 import Alamofire
 
 class NCPlayerToolBar: UIView {
-
     @IBOutlet weak var utilityView: UIView!
     @IBOutlet weak var fullscreenButton: UIButton!
     @IBOutlet weak var subtitleButton: UIButton!
@@ -65,6 +64,7 @@ class NCPlayerToolBar: UIView {
     private var pointSize: CGFloat = 0
     private let utilityFileSystem = NCUtilityFileSystem()
     private let utility = NCUtility()
+    private let global = NCGlobal.shared
     private let database = NCManageDatabase.shared
     private weak var viewerMediaPage: NCViewerMediaPage?
     private var buttonImage = UIImage()
@@ -462,11 +462,22 @@ extension NCPlayerToolBar: NCSelectDelegate {
 
                 NextcloudKit.shared.download(serverUrlFileName: serverUrlFileName, fileNameLocalPath: fileNameLocalPath, account: metadata.account, requestHandler: { request in
                     downloadRequest = request
-                }, taskHandler: { _ in
+                    self.database.setMetadataSession(ocId: metadata.ocId,
+                                                     status: self.global.metadataStatusDownloading)
+                }, taskHandler: { task in
+                    self.database.setMetadataSession(ocId: metadata.ocId,
+                                                     sessionTaskIdentifier: task.taskIdentifier,
+                                                     status: self.global.metadataStatusDownloading)
                 }, progressHandler: { progress in
                     self.hud.progress(progress.fractionCompleted)
-                }) { _, _, _, _, _, _, error in
+                }) { _, etag, _, _, _, _, error in
                     self.hud.dismiss()
+                    self.database.setMetadataSession(ocId: metadata.ocId,
+                                                     session: "",
+                                                     sessionTaskIdentifier: 0,
+                                                     sessionError: "",
+                                                     status: self.global.metadataStatusNormal,
+                                                     etag: etag)
                     if error == .success {
                         self.hud.success()
                         self.addPlaybackSlave(type: type, metadata: metadata)

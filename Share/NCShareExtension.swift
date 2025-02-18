@@ -122,16 +122,11 @@ class NCShareExtension: UIViewController {
 
         // LOG
         let levelLog = NCKeychain().logLevel
-        let isSimulatorOrTestFlight = utility.isSimulatorOrTestFlight()
         let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionApp())
 
         NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
         NextcloudKit.shared.nkCommonInstance.pathLog = utilityFileSystem.directoryGroup
-        if isSimulatorOrTestFlight {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start Share session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
-        } else {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start Share session with level \(levelLog) " + versionNextcloudiOS)
-        }
+        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start Share session with level \(levelLog) " + versionNextcloudiOS)
 
         NCBrandColor.shared.createUserColors()
 

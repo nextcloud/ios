@@ -33,7 +33,7 @@ final class NCBrandOptions: @unchecked Sendable {
     static let shared = NCBrandOptions()
 
     var brand: String = "Nextcloud"
-    var textCopyrightNextcloudiOS: String = "Nextcloud Hydrogen for iOS %@ © 2024"
+    var textCopyrightNextcloudiOS: String = "Nextcloud Hydrogen for iOS %@ © 2025"
     var textCopyrightNextcloudServer: String = "Nextcloud Server %@"
     var loginBaseUrl: String = "https://cloud.nextcloud.com"
     var pushNotificationServerProxy: String = "https://push-notifications.nextcloud.com"
@@ -70,7 +70,6 @@ final class NCBrandOptions: @unchecked Sendable {
     var doNotAskPasscodeAtStartup: Bool = false
     var disable_source_code_in_settings: Bool = false
     var enforce_passcode_lock = false
-    var use_in_app_browser_for_login = false
 
     // (name: "Name 1", url: "https://cloud.nextcloud.com"),(name: "Name 2", url: "https://cloud.nextcloud.com")
     var enforce_servers: [(name: String, url: String)] = []
@@ -120,6 +119,10 @@ final class NCBrandOptions: @unchecked Sendable {
                 enforce_passcode_lock = (str as NSString).boolValue
             }
         }
+
+#if DEBUG
+        pushNotificationServerProxy = "https://c0004.customerpush.nextcloud.com"
+#endif
     }
 
     @objc func getUserAgent() -> String {

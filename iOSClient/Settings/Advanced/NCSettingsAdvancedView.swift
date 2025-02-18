@@ -255,6 +255,7 @@ struct NCSettingsAdvancedView: View {
             })
         }
         .navigationBarTitle(NSLocalizedString("_advanced_", comment: ""))
+        .navigationBarTitleDisplayMode(.inline)
         .defaultViewModifier(model)
     }
 
