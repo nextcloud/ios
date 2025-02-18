@@ -140,7 +140,33 @@ final class NCManageDatabase: Sendable {
                     print("Realm is located at: \(url)")
                 }
             } catch let error {
+#if !EXTENSION
+
+                NCContentPresenter().showCustomMessage(title: "DATABASE ERROR", message: error.localizedDescription, priority: .high, delay: NCGlobal.shared.dismissAfterSecondLong, type: .error)
+#endif
                 NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] DATABASE ERROR: \(error.localizedDescription)")
+                deleteRealmFiles()
+            }
+        }
+    }
+
+    func deleteRealmFiles() {
+        guard let realmURL = Realm.Configuration.defaultConfiguration.fileURL else { return }
+        let fileManager = FileManager.default
+
+        let filesToDelete = [
+            realmURL,
+            realmURL.appendingPathExtension("lock"),
+            realmURL.appendingPathExtension("note"),
+            realmURL.appendingPathExtension("management")
+        ]
+
+        for file in filesToDelete {
+            do {
+                try fileManager.removeItem(at: file)
+                print("File \(file.lastPathComponent) eliminato.")
+            } catch {
+                print("Errore nella rimozione di \(file.lastPathComponent): \(error)")
             }
         }
     }
