@@ -9,7 +9,7 @@
 import SwiftUI
 
 struct NCAssistantCreateNewTask: View {
-    @EnvironmentObject var model: NCAssistantTask
+    @EnvironmentObject var model: NCAssistantModel
     @State var text = ""
     @FocusState private var inFocus: Bool
     @Environment(\.presentationMode) var presentationMode
@@ -55,13 +55,14 @@ struct NCAssistantCreateNewTask: View {
 }
 
 #Preview {
-    let model = NCAssistantTask(controller: nil)
-
+    let model = NCAssistantModel(controller: nil)
+    
     return NCAssistantCreateNewTask()
         .environmentObject(model)
         .onAppear {
             model.loadDummyData()
-        }}
+        }
+}
 
 private extension View {
     func transparentScrolling() -> some View {

@@ -10,8 +10,8 @@ import SwiftUI
 import NextcloudKit
 
 struct NCAssistantTaskDetail: View {
-    @EnvironmentObject var model: NCAssistantTask
-    let task: NKTextProcessingTask
+    @EnvironmentObject var model: NCAssistantModel
+    let task: AssistantTask
 
     var body: some View {
         ZStack(alignment: .bottom) {
@@ -28,9 +28,9 @@ struct NCAssistantTaskDetail: View {
 }
 
 #Preview {
-    let model = NCAssistantTask(controller: nil)
+    let model = NCAssistantModel(controller: nil)
 
-    return NCAssistantTaskDetail(task: NKTextProcessingTask(id: 1, type: "OCP\\TextProcessing\\FreePromptTaskType", status: 1, userId: "christine", appId: "assistant", input: "", output: "", identifier: "", completionExpectedAt: 1712666412))
+    return NCAssistantTaskDetail(task: model.selectedTask!)
         .environmentObject(model)
         .onAppear {
             model.loadDummyData()
@@ -38,8 +38,8 @@ struct NCAssistantTaskDetail: View {
 }
 
 struct InputOutputScrollView: View {
-    @EnvironmentObject var model: NCAssistantTask
-    let task: NKTextProcessingTask
+    @EnvironmentObject var model: NCAssistantModel
+    let task: AssistantTask
 
     var body: some View {
         ScrollView {
@@ -47,7 +47,7 @@ struct InputOutputScrollView: View {
                 Text(NSLocalizedString("_input_", comment: "")).font(.headline)
                     .padding(.top, 10)
 
-                Text(model.selectedTask?.input ?? "")
+                Text(model.selectedTask?.input?.input ?? "")
                     .frame(maxWidth: .infinity, alignment: .topLeading)
                     .padding()
                     .background(Color(NCBrandColor.shared.textColor2).opacity(0.1))
@@ -56,7 +56,7 @@ struct InputOutputScrollView: View {
                 Text(NSLocalizedString("_output_", comment: "")).font(.headline)
                     .padding(.top, 10)
 
-                Text(model.selectedTask?.output ?? "")
+                Text(model.selectedTask?.output?.output ?? "")
                     .frame(maxWidth: .infinity, alignment: .topLeading)
                     .padding()
                     .background(Color(NCBrandColor.shared.textColor2).opacity(0.1))
@@ -71,32 +71,20 @@ struct InputOutputScrollView: View {
 }
 
 struct BottomDetailsBar: View {
-    @EnvironmentObject var model: NCAssistantTask
-    let task: NKTextProcessingTask
+    @EnvironmentObject var model: NCAssistantModel
+    let task: AssistantTask
 
     var body: some View {
         VStack(spacing: 0) {
             Divider()
-            HStack(alignment: .bottom) {
-                Label(
-                    title: {
-                        Text(NSLocalizedString(model.selectedTask?.statusInfo.stringKey ?? "", comment: ""))
-                    }, icon: {
-                        Image(systemName: model.selectedTask?.statusInfo.imageSystemName ?? "")
-                            .renderingMode(.original)
-                            .font(Font.system(.body).weight(.light))
-                    }
-                )
-                .frame(maxWidth: .infinity, alignment: .leading)
 
-                if let completionExpectedAt = task.completionExpectedAt {
-                    Text(NCUtility().dateDiff(.init(timeIntervalSince1970: TimeInterval(completionExpectedAt))))
-                        .frame(maxWidth: .infinity, alignment: .trailing)
-                }
+            HStack {
+                StatusInfo(task: task, showStatusText: true)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding()
+                    .background(.bar)
+                    .frame(alignment: .bottom)
             }
-            .padding()
-            .background(.bar)
-            .frame(alignment: .bottom)
         }
     }
 }

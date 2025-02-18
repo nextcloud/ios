@@ -11,19 +11,29 @@ import NextcloudKit
 import PopupView
 
 struct NCAssistant: View {
-    let useV2 = true
-    @EnvironmentObject var model: NCAssistantTask
-    @EnvironmentObject var modelV2: NCAssistantTaskV2
+    @EnvironmentObject var model: NCAssistantModel
     @State var presentNewTaskDialog = false
+    @State var presentEditTask = false
     @State var input = ""
     @Environment(\.presentationMode) var presentationMode
 
     var body: some View {
         NavigationView {
-            TaskList()
+            ZStack {
+                TaskList(presentEditTask: $presentEditTask)
 
-            EmptyView()
+                if model.isLoading, !model.isRefreshing {
+                    ProgressView()
+                        .controlSize(.regular)
+                }
 
+                if model.types.isEmpty, !model.isLoading {
+                    NCAssistantEmptyView(titleKey: "_no_types_", subtitleKey: "_no_types_subtitle_")
+                } else if model.filteredTasks.isEmpty, !model.isLoading {
+                    NCAssistantEmptyView(titleKey: "_no_tasks_", subtitleKey: "_create_task_subtitle_")
+                }
+
+            }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button(action: {
@@ -38,16 +48,19 @@ struct NCAssistant: View {
                             .font(Font.system(.body).weight(.light))
                             .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
                     }
-                    .disabled(useV2 ? modelV2.selectedType == nil : model.selectedType == nil)
+                    .disabled(model.selectedType == nil)
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
             .navigationTitle(NSLocalizedString("_assistant_", comment: ""))
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .safeAreaInset(edge: .top, spacing: -10) {
-                ExtractedView()
+                TypeList()
             }
         }
+        .background( // navigationDestination
+            NavigationLink(destination: NCAssistantCreateNewTask(), isActive: $presentEditTask) { EmptyView() }
+          )
         .navigationViewStyle(.stack)
         .popup(isPresented: $model.hasError) {
             Text(NSLocalizedString("_error_occurred_", comment: ""))
@@ -66,7 +79,7 @@ struct NCAssistant: View {
 }
 
 #Preview {
-    let model = NCAssistantTask(controller: nil)
+    let model = NCAssistantModel(controller: nil)
 
     return NCAssistant()
         .environmentObject(model)
@@ -76,46 +89,46 @@ struct NCAssistant: View {
 }
 
 struct TaskList: View {
-    @EnvironmentObject var model: NCAssistantTask
+    @EnvironmentObject var model: NCAssistantModel
+    @Binding var presentEditTask: Bool
 
     var body: some View {
         List(model.filteredTasks, id: \.id) { task in
             TaskItem(task: task)
                 .contextMenu {
                     Button {
+                        model.shareTask(task)
                     } label: {
                         Label {
-                            Text("_copy_")
+                            Text("_share_")
                         } icon: {
-                            Image(systemName: "document.on.document")
+                            Image(systemName: "square.and.arrow.up")
                         }
-
                     }
 
-                    //                    Button {
-                    //                        Label {
-                    //                        } icon: {
-                    //                            Image(systemImage: "copy")
-                    //                        }
-                    //
-                    //                    }
-                    Button("Test") {
-
+                    Button {
+                        presentEditTask.toggle()
+                    } label: {
+                        Label {
+                            Text("_edit_")
+                        } icon: {
+                            Image(systemName: "pencil")
+                        }
                     }
                 }
         }
         .if(!model.types.isEmpty) { view in
             view.refreshable {
-                model.load()
+                model.refresh()
             }
         }
     }
 }
 
 struct TypeButton: View {
-    @EnvironmentObject var model: NCAssistantTask
+    @EnvironmentObject var model: NCAssistantModel
 
-    let taskType: NKTextProcessingTaskType?
+    let taskType: TaskTypeData?
     var scrollProxy: ScrollViewProxy
 
     var body: some View {
@@ -130,12 +143,13 @@ struct TypeButton: View {
         }
         .padding(.horizontal)
         .padding(.vertical, 7)
-        .foregroundStyle(model.selectedType?.id == taskType?.id ? .white : .primary)
+        .foregroundStyle(.primary)
+        .background(.ultraThinMaterial)
         .if(model.selectedType?.id == taskType?.id) { view in
-            view.background(Color(NCBrandColor.shared.getElement(account: model.controller?.account)))
-        }
-        .if(model.selectedType?.id != taskType?.id) { view in
-            view.background(.ultraThinMaterial)
+            view
+                .foregroundStyle(.white)
+                .background(Color(NCBrandColor.shared.getElement(account: model.controller?.account)))
+
         }
         .clipShape(.capsule)
         .overlay(
@@ -147,24 +161,26 @@ struct TypeButton: View {
 }
 
 struct TaskItem: View {
-    @EnvironmentObject var model: NCAssistantTask
+    @EnvironmentObject var model: NCAssistantModel
     @State var showDeleteConfirmation = false
-    let task: NKTextProcessingTask
+    let task: AssistantTask
 
     var body: some View {
         NavigationLink(destination: NCAssistantTaskDetail(task: task)) {
             VStack(alignment: .leading) {
-                Text(task.input ?? "")
+                Text(task.input?.input ?? "")
                     .lineLimit(1)
 
-                Text(task.output ?? "")
+                Text(task.output?.output ?? "")
                     .lineLimit(1)
                     .foregroundStyle(.secondary)
 
                 HStack {
                     Label(
                         title: {
-                            Text(NSLocalizedString(task.status == 3 /*Completed*/ ? NCUtility().dateDiff(.init(timeIntervalSince1970: TimeInterval(task.completionExpectedAt ?? 0))) : task.statusInfo.stringKey, comment: ""))
+                            Text(task.statusDate)
+                                .font(.callout)
+                                .foregroundStyle(.secondary)
                         },
                         icon: {
                             Image(systemName: task.statusInfo.imageSystemName)
@@ -174,12 +190,6 @@ struct TaskItem: View {
                     )
                     .padding(.top, 1)
                     .labelStyle(CustomLabelStyle())
-
-//                    if let completionExpectedAt = task.completionExpectedAt {
-//                        Text(NCUtility().dateDiff(.init(timeIntervalSince1970: TimeInterval(completionExpectedAt))))
-//                            .frame(maxWidth: .infinity, alignment: .trailing)
-//                            .foregroundStyle(.tertiary)
-//                    }
                 }
             }
             .swipeActions {
@@ -199,55 +209,15 @@ struct TaskItem: View {
     }
 }
 
-private struct CustomLabelStyle: LabelStyle {
-    var spacing: Double = 5
-
-    func makeBody(configuration: Configuration) -> some View {
-        HStack(spacing: spacing) {
-            configuration.icon
-            configuration.title
-        }
-    }
-}
-
-struct EmptyView: View {
-    var body: some View {
-        {
-
-            if useV2 {
-                if ((modelV2.types?.isEmpty) != nil), !modelV2.isLoading {
-                    NCAssistantEmptyView(titleKey: "_no_types_", subtitleKey: "_no_types_subtitle_")
-                } else if modelV2.filteredTasks.isEmpty, !model.isLoading {
-                    NCAssistantEmptyView(titleKey: "_no_tasks_", subtitleKey: "_create_task_subtitle_")
-                }
-            } else {
-                if model.types.isEmpty, !model.isLoading {
-                    NCAssistantEmptyView(titleKey: "_no_types_", subtitleKey: "_no_types_subtitle_")
-                } else if model.filteredTasks.isEmpty, !model.isLoading {
-                    NCAssistantEmptyView(titleKey: "_no_tasks_", subtitleKey: "_create_task_subtitle_")
-                }
-            }
-        }
-    }
-}
-
-struct ExtractedView: View {
-    @EnvironmentObject var model: NCAssistantTask
-    @EnvironmentObject var modelV2: NCAssistantTaskV2
-    let useV2: Bool
+struct TypeList: View {
+    @EnvironmentObject var model: NCAssistantModel
 
     var body: some View {
         ScrollViewReader { scrollProxy in
             ScrollView(.horizontal, showsIndicators: false) {
-                LazyHStack {
-                    if useV2 {
-                        ForEach(modelV2.types, id: \.id) { type in
-                            TypeButton(taskType: type, scrollProxy: scrollProxy)
-                        }
-                    } else {
-                        ForEach(model.types, id: \.id) { type in
-                            TypeButton(taskType: type, scrollProxy: scrollProxy)
-                        }
+                HStack {
+                    ForEach(model.types, id: \.id) { type in
+                        TypeButton(taskType: type, scrollProxy: scrollProxy)
                     }
                 }
                 .padding(20)

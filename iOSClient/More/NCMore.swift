@@ -302,12 +302,12 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
         if section.type == .moreApps {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: NCMoreAppSuggestionsCell.reuseIdentifier, for: indexPath) as? NCMoreAppSuggestionsCell else { return UITableViewCell() }
-            cell.setupCell(account: session.account)
+            cell.setupCell(account: session.account, controller: controller)
             return cell
         } else {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: CCCellMore.reuseIdentifier, for: indexPath) as? CCCellMore else { return UITableViewCell() }
 
-            cell.setupCell(account: session.account)
+            cell.setupCell(account: session.account, controller: controller)
 
             let item = sections[indexPath.section].items[indexPath.row]
 
@@ -381,7 +381,8 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
             alertController.addAction(actionNo)
             self.present(alertController, animated: true, completion: nil)
         } else if item.url == "openAssistant" {
-            let assistant = NCAssistant().environmentObject(NCAssistantTask(controller: self.controller))
+            let assistant = NCAssistant()
+                .environmentObject(NCAssistantModel(controller: self.controller))
             let hostingController = UIHostingController(rootView: assistant)
             present(hostingController, animated: true, completion: nil)
         } else if item.url == "openSettings" {
