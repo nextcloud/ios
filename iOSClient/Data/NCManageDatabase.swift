@@ -164,9 +164,9 @@ final class NCManageDatabase: Sendable {
         for file in filesToDelete {
             do {
                 try fileManager.removeItem(at: file)
-                print("File \(file.lastPathComponent) eliminato.")
+                print("File \(file.lastPathComponent) deleted.")
             } catch {
-                print("Errore nella rimozione di \(file.lastPathComponent): \(error)")
+                print("Delete file error: \(file.lastPathComponent): \(error)")
             }
         }
     }
