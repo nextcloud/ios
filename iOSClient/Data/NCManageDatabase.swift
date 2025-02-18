@@ -46,8 +46,8 @@ final class NCManageDatabase: Sendable {
                     newObject?["etag"] = ""
                 }
             }
-            if oldSchemaVersion < 376 {
-                // automatic conversion
+            if oldSchemaVersion < databaseSchemaVersion {
+                // automatic conversion for delete object / properties
             }
         }
 
