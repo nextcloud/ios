@@ -9,7 +9,7 @@ import RealmSwift
 ///
 /// Data model for storing information about download limits of shares.
 ///
-class tableDownloadLimit: Object {
+class TableDownloadLimit: Object {
     ///
     /// Required primary key for identifiying a specific object.
     ///
@@ -53,8 +53,8 @@ extension NCManageDatabase {
     /// Create a new download limit object in the database.
     ///
     @discardableResult
-    func createDownloadLimit(account: String, count: Int, limit: Int, token: String) -> tableDownloadLimit? {
-        let downloadLimit = tableDownloadLimit()
+    func createDownloadLimit(account: String, count: Int, limit: Int, token: String) -> TableDownloadLimit? {
+        let downloadLimit = TableDownloadLimit()
         downloadLimit.id = formatId(by: account, token: token)
         downloadLimit.account = account
         downloadLimit.count = count
@@ -86,7 +86,7 @@ extension NCManageDatabase {
             let realm = try Realm()
 
             try realm.write {
-                let result = realm.objects(tableDownloadLimit.self).filter("id == %@", formatId(by: account, token: token))
+                let result = realm.objects(TableDownloadLimit.self).filter("id == %@", formatId(by: account, token: token))
                 realm.delete(result)
             }
         } catch let error as NSError {
@@ -101,12 +101,12 @@ extension NCManageDatabase {
     ///     - account: The unique account identifier to namespace the limit.
     ///     - token: The `token` of the associated ``tableShare``.
     ///
-    func getDownloadLimit(byAccount account: String, shareToken token: String) throws -> tableDownloadLimit? {
+    func getDownloadLimit(byAccount account: String, shareToken token: String) throws -> TableDownloadLimit? {
         do {
             let realm = try Realm()
             let predicate = NSPredicate(format: "id == %@", formatId(by: account, token: token))
 
-            guard let result = realm.objects(tableDownloadLimit.self).filter(predicate).first else {
+            guard let result = realm.objects(TableDownloadLimit.self).filter(predicate).first else {
                 return nil
             }
 
