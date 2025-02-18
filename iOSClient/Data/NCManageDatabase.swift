@@ -152,7 +152,6 @@ final class NCManageDatabase: Sendable {
 
     func deleteRealmFiles() {
         guard let realmURL = Realm.Configuration.defaultConfiguration.fileURL else { return }
-        let fileManager = FileManager.default
 
         let filesToDelete = [
             realmURL,
@@ -163,8 +162,7 @@ final class NCManageDatabase: Sendable {
 
         for file in filesToDelete {
             do {
-                try fileManager.removeItem(at: file)
-                print("File \(file.lastPathComponent) deleted.")
+                try FileManager.default.removeItem(at: file)
             } catch {
                 print("Delete file error: \(file.lastPathComponent): \(error)")
             }
