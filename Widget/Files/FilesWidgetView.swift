@@ -44,7 +44,7 @@ struct FilesWidgetView: View {
 				
 				if !entry.isEmpty {
 					WidgetContentView(entry: entry)
-						.padding(.top, 40)
+						.padding(.top, 35)
 						.redacted(reason: entry.isPlaceholder ? .placeholder : [])
 				}
 				
@@ -60,7 +60,8 @@ struct FilesWidgetView: View {
 						   text: entry.footerText,
 						   isPlaceholder: entry.isPlaceholder)
 					.padding(.horizontal, 15.0)
-					.padding(.bottom, 10.0)
+                    .padding(.top, 5.0)
+                    .padding(.bottom, 5.0)
 					.frame(maxWidth: geo.size.width,
 						   maxHeight: 30,
 						   alignment: .bottomTrailing)
@@ -178,6 +179,15 @@ struct FilesWidget_Previews: PreviewProvider {
     static var previews: some View {
         let datas = Array(filesDatasTest[0...4])
         let entry = FilesDataEntry(date: Date(), datas: datas, isPlaceholder: false, isEmpty: true, userId: "", url: "", account: "", tile: "Good afternoon, Marino Faggiana", footerImage: "Cloud_Checkmark", footerText: "Nextcloud files")
-        FilesWidgetView(entry: entry).previewContext(WidgetPreviewContext(family: .systemLarge))
+        if #available(iOSApplicationExtension 17.0, *) {
+            FilesWidgetView(entry: entry)
+                .previewContext(WidgetPreviewContext(family: .systemLarge))
+                .containerBackground(for: .widget) {
+                    Color.red
+                }
+        } else {
+            FilesWidgetView(entry: entry)
+                .previewContext(WidgetPreviewContext(family: .systemLarge))
+        }
     }
 }

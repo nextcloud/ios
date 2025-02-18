@@ -46,7 +46,7 @@ struct HeaderView: View {
 			.foregroundStyle(Color(.title))
 			.minimumScaleFactor(0.7)
 			.lineLimit(1)
-			.padding(.leading, 13)
+            .padding(.horizontal, 13)
 	}
 }
 
