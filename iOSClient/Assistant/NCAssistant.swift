@@ -107,6 +107,16 @@ struct TaskList: View {
                     }
 
                     Button {
+                        model.scheduleTask(input: task.input?.input ?? "")
+                    } label: {
+                        Label {
+                            Text("_retry_")
+                        } icon: {
+                            Image(systemName: "arrow.trianglehead.clockwise")
+                        }
+                    }
+
+                    Button {
                         taskToEdit = task
                         presentEditTask = true
                     } label: {

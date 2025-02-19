@@ -32,7 +32,7 @@ class NCAssistantModel: ObservableObject {
         self.controller = controller
         session = NCSession.shared.getSession(controller: controller)
         useV2 = NCCapabilities.shared.getCapabilities(account: session.account).capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion30
-//        useV2 = false
+        //        useV2 = false
         loadAllTypes()
     }
 
@@ -63,7 +63,7 @@ class NCAssistantModel: ObservableObject {
         isLoading = true
 
         if useV2 {
-            NextcloudKit.shared.textProcessingGetTasksV2(taskType: task.type ?? "", account: session.account, completion: { account, tasks, responseData, error in
+            NextcloudKit.shared.textProcessingGetTasksV2(taskType: task.type ?? "", account: session.account, completion: { _, tasks, _, error in
                 self.isLoading = false
 
                 if error != .success {
@@ -93,7 +93,7 @@ class NCAssistantModel: ObservableObject {
 
         if useV2 {
             guard let selectedType else { return }
-            NextcloudKit.shared.textProcessingScheduleV2(input: input, taskType: selectedType, account: session.account) { account, task, responseData, error in
+            NextcloudKit.shared.textProcessingScheduleV2(input: input, taskType: selectedType, account: session.account) { _, task, _, error in
                 handle(task: task, error: error)
             }
         } else {
@@ -113,16 +113,13 @@ class NCAssistantModel: ObservableObject {
 
             guard let task else { return }
 
-            withAnimation {
-                self.tasks.insert(task, at: 0)
-                self.filteredTasks.insert(task, at: 0)
-            }
+            self.tasks.insert(task, at: 0)
+            self.filteredTasks.insert(task, at: 0)
         }
     }
 
     func deleteTask(_ task: AssistantTask) {
         isLoading = true
-        print("WTF")
 
         if useV2 {
             NextcloudKit.shared.textProcessingDeleteTaskV2(taskId: task.id, account: session.account) { _, _, error in
@@ -142,10 +139,8 @@ class NCAssistantModel: ObservableObject {
                 return
             }
 
-            withAnimation {
-                self.tasks.removeAll(where: { $0.id == task.id })
-                self.filteredTasks.removeAll(where: { $0.id == task.id })
-            }
+            self.tasks.removeAll(where: { $0.id == task.id })
+            self.filteredTasks.removeAll(where: { $0.id == task.id })
         }
     }
 
@@ -158,7 +153,7 @@ class NCAssistantModel: ObservableObject {
         isLoading = true
 
         if useV2 {
-            NextcloudKit.shared.textProcessingGetTypesV2(account: session.account) { account, types, responseData, error in
+            NextcloudKit.shared.textProcessingGetTypesV2(account: session.account) { _, types, _, error in
                 handle(types: types, error: error)
             }
         } else {
@@ -180,9 +175,7 @@ class NCAssistantModel: ObservableObject {
 
             guard let types else { return }
 
-            withAnimation {
-                self.types = types
-            }
+            self.types = types
 
             if self.selectedType == nil {
                 self.selectTaskType(types.first)
@@ -228,7 +221,7 @@ extension NCAssistantModel {
 
         var tasks: [AssistantTask] = []
 
-        for index in 1...10 {
+        for _ in 1...10 {
             tasks.append(AssistantTask(id: 1, type: "", status: "", userId: "", appId: "", input: .init(input: loremIpsum), output: .init(output: loremIpsum), completionExpectedAt: 1712666412, progress: nil, lastUpdated: nil, scheduledAt: nil, endedAt: nil))
         }
 
