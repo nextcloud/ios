@@ -94,7 +94,7 @@ class NCShareDownloadLimitTableViewController: UITableViewController {
 extension NCShareDownloadLimitTableViewController {
     override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
         if case let .limited(limit, count) = downloadLimit {
-            String(format: NSLocalizedString("_remaining_", comment: "Table footer for download limit configuration form."), limit - count)
+            String(format: NSLocalizedString("_remaining_share_downloads_", comment: "Table footer for download limit configuration form."), limit - count)
         } else {
             nil
         }
