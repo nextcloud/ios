@@ -33,9 +33,9 @@ struct NavigationCollectionViewCommon {
 
 class NCMainTabBarController: UITabBarController {
     var account = ""
+    var availableNotifications: Bool = false
     var documentPickerViewController: NCDocumentPickerViewController?
     let navigationCollectionViewCommon = ThreadSafeArray<NavigationCollectionViewCommon>()
-    let appDelegate = (UIApplication.shared.delegate as? AppDelegate)!
     private var previousIndex: Int?
     private(set) var burgerMenuController: BurgerMenuAttachController?
 

@@ -154,15 +154,6 @@ class NCGlobal: NSObject {
     let buttonMoreMore                              = "more"
     let buttonMoreLock                              = "moreLock"
 
-    // Standard height sections header/footer
-    //
-    let heightButtonsView: CGFloat                  = 50
-    let heightHeaderTransfer: CGFloat               = 50
-    let heightSection: CGFloat                      = 30
-    let heightFooter: CGFloat                       = 1
-    let heightFooterButton: CGFloat                 = 30
-    let endHeightFooter: CGFloat                    = 85
-
     // Text -  OnlyOffice - Collabora - QuickLook
     //
     let editorText                                  = "text"
@@ -283,7 +274,9 @@ class NCGlobal: NSObject {
     let metadataStatusFileDown                  = [-1, -2, -3]
     let metadataStatusHideInView                = [1, 2, 3, 11]
     let metadataStatusHideInFileExtension       = [1, 2, 3, 10, 11]
-    let metadataStatusObserve                   = [-1, 1, 10, 11, 12, 13, 14, 15]
+    let metadataStatusObserveNetworkingProcess  = [-1, 1, 10, 11, 12, 13, 14, 15]
+    let metadataStatusObserveTrasfers           = [-2, 2, 10, 11, 12, 13, 14, 15]
+
     let metadataStatusWaitWebDav                = [10, 11, 12, 13, 14, 15]
 
     // Auto upload subfolder granularity
@@ -300,6 +293,7 @@ class NCGlobal: NSObject {
     let notificationCenterReloadDataNCShare                     = "reloadDataNCShare"
     let notificationCenterCloseRichWorkspaceWebView             = "closeRichWorkspaceWebView"
     let notificationCenterReloadAvatar                          = "reloadAvatar"
+    let notificationCenterReloadHeader                          = "reloadHeader"
     let notificationCenterClearCache                            = "clearCache"
     let notificationCenterChangeLayout                          = "changeLayout"                    // userInfo: account, serverUrl, layoutForView
 

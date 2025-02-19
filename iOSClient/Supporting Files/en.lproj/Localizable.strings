@@ -579,6 +579,7 @@
 "_directory_on_top_yes_"        = "✓ Folders on top";
 "_directory_on_top_no_"         = "Folders on top";
 "_show_description_"            = "Show description";
+"_show_recommended_files_"      = "Show recommended files";
 "_no_description_available_"    = "No description available for this folder";
 "_folder_automatic_upload_"     = "Folder for \"Auto upload\"";
 "_search_no_record_found_"      = "No result";
@@ -686,7 +687,7 @@
 "_share_file_drop_"             = "File drop (upload only)";
 "_share_secure_file_drop_"      = "Secure file drop (upload only)";
 "_share_hide_download_"         = "Hide download";
-"_share_password_protect_"      = "Password protect";
+"_share_password_protect_"      = "Password protection";
 "_share_expiration_date_"       = "Set expiration date";
 "_share_note_recipient_"        = "Note to recipient";
 "_share_delete_sharelink_"      = "Delete link";
@@ -775,6 +776,9 @@
 "_file_creation_"                   = "File creation";
 "_delete_all_scanned_images_"       = "Delete all scanned images";
 "_text_recognition_"                = "Text recognition";
+"_all_files_"                       = "All files";
+"_personal_files_"                  = "Personal Files";
+
 
 /* The title on the navigation bar of the Scanning screen. */
 "wescan.scanning.title"             = "Scanning";
@@ -1063,6 +1067,7 @@
 "_terms_of_service_"        = "Terms of service";
 "_terms_accept_"            = "I acknowledge that I have read and agree to the above terms of service";
 "_terms_accepted_"          = "Terms accepted";
+"_recommended_files_"       = "Recommended Files";
 
 // Tip
 "_tip_pdf_thumbnails_"      = "Swipe left from the right edge of the screen to show the thumbnails.";

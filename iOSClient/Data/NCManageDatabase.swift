@@ -48,6 +48,9 @@ class NCManageDatabase: NSObject {
                     newObject?["etag"] = ""
                 }
             }
+            if oldSchemaVersion < 375 {
+                // nothing
+            }
         }
 
         func compactDB(_ totalBytes: Int, _ usedBytes: Int) -> Bool {
@@ -197,6 +200,7 @@ class NCManageDatabase: NSObject {
         self.clearTable(tableTrash.self, account: account)
         self.clearTable(tableUserStatus.self, account: account)
         self.clearTable(tableVideo.self, account: account)
+        self.clearTable(tableRecommendedFiles.self, account: account)
     }
 
     func clearTablesE2EE(account: String?) {

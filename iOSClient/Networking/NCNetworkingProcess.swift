@@ -57,7 +57,7 @@ class NCNetworkingProcess {
     private func startObserveTableMetadata() {
         do {
             let realm = try Realm()
-            let results = realm.objects(tableMetadata.self).filter(NSPredicate(format: "status IN %@", global.metadataStatusObserve))
+            let results = realm.objects(tableMetadata.self).filter(NSPredicate(format: "status IN %@", global.metadataStatusObserveNetworkingProcess))
             notificationToken = results.observe { [weak self] (changes: RealmCollectionChange) in
                 switch changes {
                 case .initial:
@@ -148,8 +148,8 @@ class NCNetworkingProcess {
     @discardableResult
     private func start() async -> (counterDownloading: Int, counterUploading: Int) {
         let applicationState = await checkApplicationState()
-        let maxConcurrentOperationDownload = NCBrandOptions.shared.maxConcurrentOperationDownload
-        var maxConcurrentOperationUpload = NCBrandOptions.shared.maxConcurrentOperationUpload
+        let httpMaximumConnectionsPerHostInDownload = NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload
+        var httpMaximumConnectionsPerHostInUpload = NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload
         let sessionUploadSelectors = [global.selectorUploadFileNODelete, global.selectorUploadFile, global.selectorUploadAutoUpload, global.selectorUploadAutoUploadAll]
         let metadatasDownloading = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusDownloading))
         let metadatasUploading = self.database.getMetadatas(predicate: NSPredicate(format: "status == %d", global.metadataStatusUploading))
@@ -170,9 +170,9 @@ class NCNetworkingProcess {
 
         /// ------------------------ DOWNLOAD
         ///
-        let limitDownload = maxConcurrentOperationDownload - counterDownloading
+        let limitDownload = httpMaximumConnectionsPerHostInDownload - counterDownloading
         let metadatasWaitDownload = self.database.getMetadatas(predicate: NSPredicate(format: "session == %@ AND status == %d", networking.sessionDownloadBackground, global.metadataStatusWaitDownload), numItems: limitDownload, sorted: "sessionDate", ascending: true)
-        for metadata in metadatasWaitDownload where counterDownloading < maxConcurrentOperationDownload {
+        for metadata in metadatasWaitDownload where counterDownloading < httpMaximumConnectionsPerHostInDownload {
             counterDownloading += 1
             networking.download(metadata: metadata, withNotificationProgressTask: true)
         }
@@ -195,7 +195,7 @@ class NCNetworkingProcess {
 
         /// In background max 2 upload otherwise iOS Termination Reason: RUNNINGBOARD 0xdead10cc
         if applicationState == .background {
-            maxConcurrentOperationUpload = 2
+            httpMaximumConnectionsPerHostInUpload = 2
         }
 
         /// E2EE - only one for time
@@ -210,15 +210,15 @@ class NCNetworkingProcess {
             return (counterDownloading, counterUploading)
         }
 
-        for sessionSelector in sessionUploadSelectors where counterUploading < maxConcurrentOperationUpload {
-            let limitUpload = maxConcurrentOperationUpload - counterUploading
+        for sessionSelector in sessionUploadSelectors where counterUploading < httpMaximumConnectionsPerHostInUpload {
+            let limitUpload = httpMaximumConnectionsPerHostInUpload - counterUploading
             let metadatasWaitUpload = self.database.getMetadatas(predicate: NSPredicate(format: "sessionSelector == %@ AND status == %d", sessionSelector, global.metadataStatusWaitUpload), numItems: limitUpload, sorted: "sessionDate", ascending: true)
 
             if !metadatasWaitUpload.isEmpty {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] PROCESS (UPLOAD) find \(metadatasWaitUpload.count) items")
             }
 
-            for metadata in metadatasWaitUpload where counterUploading < maxConcurrentOperationUpload {
+            for metadata in metadatasWaitUpload where counterUploading < httpMaximumConnectionsPerHostInUpload {
 
                 if NCTransferProgress.shared.get(ocIdTransfer: metadata.ocIdTransfer) != nil {
                     NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Process auto upload skipped file: \(metadata.serverUrl)/\(metadata.fileNameView), because is already in session.")
@@ -231,7 +231,7 @@ class NCNetworkingProcess {
                     self.database.deleteMetadataOcId(metadata.ocId)
                 }
 
-                for metadata in metadatas where counterUploading < maxConcurrentOperationUpload {
+                for metadata in metadatas where counterUploading < httpMaximumConnectionsPerHostInUpload {
                     /// isE2EE
                     let isInDirectoryE2EE = metadata.isDirectoryE2EE
                     /// NO WiFi
@@ -257,7 +257,7 @@ class NCNetworkingProcess {
 
                         networking.upload(metadata: metadata, controller: controller)
                         if isInDirectoryE2EE || metadata.chunk > 0 {
-                            maxConcurrentOperationUpload = 1
+                            httpMaximumConnectionsPerHostInUpload = 1
                         }
                         counterUploading += 1
                     }

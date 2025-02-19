@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_0" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <capability name="Image references" minToolsVersion="12.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="cell" id="vf1-Kf-9uL" customClass="NCRecommendationsCell" customModule="Nextcloud" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="400" height="400"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
+                <rect key="frame" x="0.0" y="0.0" width="400" height="400"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="5Ci-V1-hf5" userLabel="image">
+                        <rect key="frame" x="0.0" y="0.0" width="400" height="365"/>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ixP-qo-bb5">
+                        <rect key="frame" x="0.0" y="371.33333333333331" width="393" height="13.333333333333314"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                        <nil key="textColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0pg-4i-UyV">
+                        <rect key="frame" x="0.0" y="386.66666666666669" width="393" height="13.333333333333314"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="11"/>
+                        <color key="textColor" systemColor="systemGray2Color"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="O9D-jq-8Iz">
+                        <rect key="frame" x="377" y="3" width="20" height="20"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="20" id="0SN-I9-Ijm"/>
+                            <constraint firstAttribute="height" constant="20" id="kOs-wF-5Nm"/>
+                        </constraints>
+                        <state key="normal" title="Button"/>
+                        <buttonConfiguration key="configuration" style="plain">
+                            <imageReference key="image" image="ellipsis.circle.fill" catalog="system" symbolScale="medium"/>
+                        </buttonConfiguration>
+                        <connections>
+                            <action selector="touchUpInsideButtonMenu:" destination="vf1-Kf-9uL" eventType="touchUpInside" id="3fA-II-5LZ"/>
+                        </connections>
+                    </button>
+                </subviews>
+            </view>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="0pg-4i-UyV" secondAttribute="trailing" constant="7" id="1bq-87-crR"/>
+                <constraint firstAttribute="bottom" secondItem="5Ci-V1-hf5" secondAttribute="bottom" constant="35" id="8aV-2N-Kxz"/>
+                <constraint firstItem="O9D-jq-8Iz" firstAttribute="top" secondItem="vf1-Kf-9uL" secondAttribute="top" constant="3" id="9CX-Ek-lXy"/>
+                <constraint firstItem="ixP-qo-bb5" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" id="B8v-xz-Iyo"/>
+                <constraint firstAttribute="trailing" secondItem="5Ci-V1-hf5" secondAttribute="trailing" id="D9v-jw-FzB"/>
+                <constraint firstItem="0pg-4i-UyV" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" id="Mx3-Fj-oyX"/>
+                <constraint firstItem="5Ci-V1-hf5" firstAttribute="top" secondItem="vf1-Kf-9uL" secondAttribute="top" id="Ouj-ZD-UFm"/>
+                <constraint firstItem="0pg-4i-UyV" firstAttribute="top" secondItem="ixP-qo-bb5" secondAttribute="bottom" constant="2" id="T5a-p1-tUh"/>
+                <constraint firstAttribute="trailing" secondItem="O9D-jq-8Iz" secondAttribute="trailing" constant="3" id="Vq9-GY-Ckg"/>
+                <constraint firstAttribute="bottom" secondItem="0pg-4i-UyV" secondAttribute="bottom" id="WAu-kD-blD"/>
+                <constraint firstItem="5Ci-V1-hf5" firstAttribute="leading" secondItem="vf1-Kf-9uL" secondAttribute="leading" id="i21-dW-38a"/>
+                <constraint firstAttribute="trailing" secondItem="ixP-qo-bb5" secondAttribute="trailing" constant="7" id="lO4-ab-Pcr"/>
+            </constraints>
+            <size key="customSize" width="436" height="305"/>
+            <connections>
+                <outlet property="buttonMenu" destination="O9D-jq-8Iz" id="FSF-c5-a5a"/>
+                <outlet property="image" destination="5Ci-V1-hf5" id="9fB-pr-AEY"/>
+                <outlet property="labelFilename" destination="ixP-qo-bb5" id="pE6-wq-gyk"/>
+                <outlet property="labelInfo" destination="0pg-4i-UyV" id="m3d-P8-Yhf"/>
+            </connections>
+            <point key="canvasLocation" x="243.84615384615384" y="158.53080568720378"/>
+        </collectionViewCell>
+    </objects>
+    <resources>
+        <image name="ellipsis.circle.fill" catalog="system" width="128" height="123"/>
+        <systemColor name="systemGray2Color">
+            <color red="0.68235294117647061" green="0.68235294117647061" blue="0.69803921568627447" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+    </resources>
+</document>

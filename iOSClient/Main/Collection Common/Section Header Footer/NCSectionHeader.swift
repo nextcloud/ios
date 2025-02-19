@@ -32,4 +32,8 @@ class NCSectionHeader: UICollectionReusableView {
         self.backgroundColor = UIColor.clear
         self.labelSection.text = ""
     }
+
+    func setContent(text: String) {
+        self.labelSection.text = text
+    }
 }

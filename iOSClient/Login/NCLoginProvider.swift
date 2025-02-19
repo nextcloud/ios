@@ -167,6 +167,9 @@ extension NCLoginProvider: WKNavigationDelegate {
                                                   password: password,
                                                   userAgent: userAgent,
                                                   nextcloudVersion: NCCapabilities.shared.getCapabilities(account: account).capabilityServerVersionMajor,
+                                                  httpMaximumConnectionsPerHost: NCBrandOptions.shared.httpMaximumConnectionsPerHost,
+                                                  httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
+                                                  httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
                                                   groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
                 NCSession.shared.appendSession(account: account, urlBase: urlBase, user: user, userId: userProfile.userId)
                 NCManageDatabase.shared.addAccount(account, urlBase: urlBase, user: user, userId: userProfile.userId, password: password)

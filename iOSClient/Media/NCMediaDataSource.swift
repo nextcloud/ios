@@ -57,12 +57,13 @@ extension NCMedia {
               NCNetworking.shared.downloadThumbnailQueue.operationCount == 0,
               let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account))
         else { return }
-        self.searchMediaInProgress = true
-
         let limit = max(self.collectionView.visibleCells.count * 3, 300)
         let visibleCells = self.collectionView?.indexPathsForVisibleItems.sorted(by: { $0.row < $1.row }).compactMap({ self.collectionView?.cellForItem(at: $0) })
 
         DispatchQueue.global(qos: .background).async {
+            self.semaphoreSearchMedia.wait()
+            self.searchMediaInProgress = true
+
             var lessDate = Date.distantFuture
             var greaterDate = Date.distantPast
             let countMetadatas = self.dataSource.metadatas.count
@@ -150,6 +151,8 @@ extension NCMedia {
                     NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Media search new media error code \(error.errorCode) " + error.errorDescription)
                     self.collectionViewReloadData()
                 }
+
+                self.semaphoreSearchMedia.signal()
 
                 DispatchQueue.main.async {
                     self.searchMediaInProgress = false

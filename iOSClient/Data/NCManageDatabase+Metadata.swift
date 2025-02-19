@@ -1056,7 +1056,7 @@ extension NCManageDatabase {
 
     // MARK: - GetResult(s)Metadata
 
-    func getResultsMetadatasPredicate(_ predicate: NSPredicate, layoutForView: NCDBLayoutForView?) -> [tableMetadata] {
+    func getResultsMetadatasPredicate(_ predicate: NSPredicate, layoutForView: NCDBLayoutForView?, directoryOnTop: Bool) -> [tableMetadata] {
         do {
             let realm = try Realm()
             var results = realm.objects(tableMetadata.self).filter(predicate).freeze()
@@ -1068,7 +1068,7 @@ extension NCManageDatabase {
                     // 1. favorite order
                     if $0.favorite == $1.favorite {
                         // 2. directory order TOP
-                        if layout.directoryOnTop {
+                        if directoryOnTop {
                             if $0.directory == $1.directory {
                                 // 3. natural fileName
                                 return $0.fileNameView.localizedStandardCompare($1.fileNameView) == ordered
@@ -1084,7 +1084,7 @@ extension NCManageDatabase {
                 }
                 return sortedResults
             } else {
-                if layout.directoryOnTop {
+                if directoryOnTop {
                     results = results.sorted(byKeyPath: layout.sort, ascending: layout.ascending).sorted(byKeyPath: "favorite", ascending: false).sorted(byKeyPath: "directory", ascending: false)
                 } else {
                     results = results.sorted(byKeyPath: layout.sort, ascending: layout.ascending).sorted(byKeyPath: "favorite", ascending: false)

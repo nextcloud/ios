@@ -50,6 +50,11 @@ class NCShareLinkCell: UITableViewCell {
         descriptionLabel.isHidden = !isInternalLink
         descriptionLabel.textColor = UIColor(resource: .Share.Advanced.Cell.subtitle)
         copyButton.isHidden = !isInternalLink && tableShare == nil
+        if #available(iOS 18.0, *) {
+            // use NCShareLinkCell image
+        } else {
+            copyButton.setImage(UIImage(systemName: "doc.on.doc")?.withTintColor(.label, renderingMode: .alwaysOriginal), for: .normal)
+        }
         copyButton.accessibilityLabel = NSLocalizedString("_copy_", comment: "")
         copyButton.setImage(UIImage(resource: .Share.internalLink).withTintColor(commonIconTint), for: .normal)
         copyButton.imageView?.contentMode = .scaleAspectFit

@@ -33,7 +33,7 @@ extension NCCollectionViewCommon: HiDriveCollectionViewCommonSelectToolbarDelega
         } else {
             fileSelect = self.dataSource.getMetadatas().compactMap({ $0.ocId })
         }
-        tabBarSelect.update(fileSelect: fileSelect, metadatas: getSelectedMetadatas(), userId: session.userId)
+        tabBarSelect?.update(fileSelect: fileSelect, metadatas: getSelectedMetadatas(), userId: session.userId)
         self.collectionView.reloadData()
     }
 
@@ -130,9 +130,9 @@ extension NCCollectionViewCommon: HiDriveCollectionViewCommonSelectToolbarDelega
         if editMode {
             navigationItem.leftBarButtonItems = nil
         } else {
-            setNavigationLeftItems()
+            (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
         }
-        setNavigationRightItems()
+        (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
 
         navigationController?.interactivePopGestureRecognizer?.isEnabled = !editMode
         navigationItem.hidesBackButton = editMode

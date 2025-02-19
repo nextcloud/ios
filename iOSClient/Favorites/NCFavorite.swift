@@ -55,14 +55,15 @@ class NCFavorite: NCCollectionViewCommon {
 
     override func reloadDataSource() {
         var predicate = self.defaultPredicate
+        let directoryOnTop = NCKeychain().getDirectoryOnTop(account: session.account)
 
         if self.serverUrl.isEmpty {
            predicate = NSPredicate(format: "account == %@ AND favorite == true AND NOT (status IN %@)", session.account, global.metadataStatusHideInView)
         }
 
-        let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: layoutForView)
+        let metadatas = self.database.getResultsMetadatasPredicate(predicate, layoutForView: layoutForView, directoryOnTop: directoryOnTop)
 
-        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView)
+        self.dataSource = NCCollectionViewDataSource(metadatas: metadatas, layoutForView: layoutForView, directoryOnTop: directoryOnTop)
 
         super.reloadDataSource()
     }

@@ -384,7 +384,11 @@ class NCUtilityFileSystem: NSObject {
     // MARK: - 
 
     func getHomeServer(session: NCSession.Session) -> String {
-        return session.urlBase + "/remote.php/dav/files/" + session.userId
+        return getHomeServer(urlBase: session.urlBase, userId: session.userId)
+    }
+
+    func getHomeServer(urlBase: String, userId: String) -> String {
+        return urlBase + "/remote.php/dav/files/" + userId
     }
 
     func getPath(path: String, user: String, fileName: String? = nil) -> String {
