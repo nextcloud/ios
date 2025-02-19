@@ -166,7 +166,7 @@ extension NCManageDatabase {
         }
 
         if !FileManager.default.fileExists(atPath: fileURL.path) {
-            print("restore do not exists: \(fileURL.path)")
+            print("Backup not found at: \(fileURL.path)")
             return
         }
 
