@@ -61,7 +61,6 @@ final class NCManageDatabase: Sendable {
         var realm: Realm?
         let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
         let databaseFileUrlPath = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + databaseName)
-        let tabelAccountBackupFileUrlPath: URL? = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + tableAccountBackup)
         let bundleUrl: URL = Bundle.main.bundleURL
         let bundlePathExtension: String = bundleUrl.pathExtension
         let bundleFileName: String = (bundleUrl.path as NSString).lastPathComponent
