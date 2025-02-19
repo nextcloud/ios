@@ -79,7 +79,10 @@ class tableAccount: Object {
         return "account"
     }
 
-    // Inizializzatore personalizzato che crea un tableAccount a partire da tableAccountCodable
+    func tableAccountToCodable() -> tableAccountCodable {
+        return tableAccountCodable(account: self.account, active: self.active, alias: self.alias, autoUpload: self.autoUpload, autoUploadCreateSubfolder: self.autoUploadCreateSubfolder, autoUploadSubfolderGranularity: self.autoUploadSubfolderGranularity, autoUploadDirectory: self.autoUploadDirectory, autoUploadFileName: self.autoUploadFileName, autoUploadFull: self.autoUploadFull, autoUploadImage: self.autoUploadImage, autoUploadVideo: self.autoUploadVideo, autoUploadFavoritesOnly: self.autoUploadFavoritesOnly, autoUploadWWAnPhoto: self.autoUploadWWAnPhoto, autoUploadWWAnVideo: self.autoUploadWWAnVideo, user: self.user, userId: self.userId, urlBase: self.urlBase)
+    }
+
     convenience init(codableObject: tableAccountCodable) {
         self.init()
         self.account = codableObject.account
@@ -124,12 +127,6 @@ struct tableAccountCodable: Codable {
     var user: String
     var userId: String
     var urlBase: String
-}
-
-extension tableAccount {
-    func tableAccountToCodable() -> tableAccountCodable {
-        return tableAccountCodable(account: self.account, active: self.active, alias: self.alias, autoUpload: self.autoUpload, autoUploadCreateSubfolder: self.autoUploadCreateSubfolder, autoUploadSubfolderGranularity: self.autoUploadSubfolderGranularity, autoUploadDirectory: self.autoUploadDirectory, autoUploadFileName: self.autoUploadFileName, autoUploadFull: self.autoUploadFull, autoUploadImage: self.autoUploadImage, autoUploadVideo: self.autoUploadVideo, autoUploadFavoritesOnly: self.autoUploadFavoritesOnly, autoUploadWWAnPhoto: self.autoUploadWWAnPhoto, autoUploadWWAnVideo: self.autoUploadWWAnVideo, user: self.user, userId: self.userId, urlBase: self.urlBase)
-    }
 }
 
 extension NCManageDatabase {
