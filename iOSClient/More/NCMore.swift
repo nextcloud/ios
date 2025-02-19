@@ -85,7 +85,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        navigationController?.setGroupAppearance()
         loadItems()
         tableView.reloadData()
     }
@@ -108,14 +107,6 @@ class NCMore: UIViewController, UITableViewDelegate, UITableViewDataSource {
         sections.removeAll()
         labelQuotaExternalSite.text = ""
         progressQuota.progressTintColor = NCBrandColor.shared.getElement(account: session.account)
-
-        // ITEM : Transfer
-        item = NKExternalSite()
-        item.name = "_transfers_"
-        item.icon = "arrow.left.arrow.right.circle"
-        item.url = "segueTransfers"
-        item.order = 10
-        functionMenu.append(item)
 
         // ITEM : Recent
         item = NKExternalSite()

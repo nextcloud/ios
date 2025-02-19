@@ -150,6 +150,7 @@ class NCNetworkingE2EECreateFolder: NSObject {
         let metadata = self.database.convertFileToMetadata(file, isDirectoryE2EE: true)
         self.database.addMetadata(metadata)
         self.database.addDirectory(e2eEncrypted: true, favorite: metadata.favorite, ocId: metadata.ocId, fileId: metadata.fileId, permissions: metadata.permissions, serverUrl: serverUrlFileName, account: metadata.account)
+        self.database.realmRefresh()
 
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterCreateFolder, userInfo: ["ocId": ocId, "serverUrl": serverUrl, "account": session.account, "withPush": withPush, "sceneIdentifier": sceneIdentifier as Any])
 

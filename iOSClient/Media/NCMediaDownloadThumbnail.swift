@@ -69,7 +69,7 @@ class NCMediaDownloadThumbnail: ConcurrentOperation, @unchecked Sendable {
                     }
                 }
             } else if error.errorCode == self.global.errorResourceNotFound {
-                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterDeleteFile, userInfo: ["ocId": tableMetadata.ocId, "error": error])
+                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterDeleteFile, userInfo: ["ocId": [tableMetadata.ocId], "error": error])
             }
             self.finish()
         }

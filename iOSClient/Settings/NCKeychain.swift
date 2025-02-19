@@ -41,6 +41,18 @@ import KeychainAccess
         }
     }
 
+    var showRecommendedFiles: Bool {
+        get {
+            if let value = try? keychain.get("showRecommendedFiles"), let result = Bool(value) {
+                return result
+            }
+            return true
+        }
+        set {
+            keychain["showRecommendedFiles"] = String(newValue)
+        }
+    }
+
     var typeFilterScanDocument: NCGlobal.TypeFilterScanDocument {
         get {
             if let rawValue = try? keychain.get("ScanDocumentTypeFilter"), let value = NCGlobal.TypeFilterScanDocument(rawValue: rawValue) {
@@ -440,6 +452,20 @@ import KeychainAccess
             return result
         } else {
             return false
+        }
+    }
+
+    func setDirectoryOnTop(account: String, value: Bool) {
+        let key = "directoryOnTop" + account
+        keychain[key] = String(value)
+    }
+
+    func getDirectoryOnTop(account: String) -> Bool {
+        let key = "directoryOnTop" + account
+        if let value = try? keychain.get(key), let result = Bool(value) {
+            return result
+        } else {
+            return true
         }
     }
 
