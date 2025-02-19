@@ -125,7 +125,7 @@ final class NCManageDatabase: Sendable {
                     print("Realm is located at: \(url)")
                 }
             } catch let error {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] DATABASE ERROR: \(error.localizedDescription)")
+                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] DATABASE: \(error.localizedDescription)")
             }
         } else {
             Realm.Configuration.defaultConfiguration =
@@ -172,9 +172,7 @@ final class NCManageDatabase: Sendable {
         for file in filesToDelete {
             do {
                 try FileManager.default.removeItem(at: file)
-            } catch {
-                print("Delete file error: \(file.lastPathComponent): \(error)")
-            }
+            } catch { }
         }
     }
 
