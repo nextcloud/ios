@@ -153,7 +153,7 @@ final class NCManageDatabase: Sendable {
                     _ = try Realm()
                     restoreTableAccountFromFile()
                 } catch let error {
-                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] DATABASE ERROR RESTORE: \(error.localizedDescription)")
+                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Account restoration: \(error.localizedDescription)")
                 }
             }
         }
