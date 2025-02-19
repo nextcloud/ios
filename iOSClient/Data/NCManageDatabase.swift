@@ -145,7 +145,7 @@ final class NCManageDatabase: Sendable {
                 backupTableAccountToFile()
 
             } catch let error {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] DATABASE ERROR: \(error.localizedDescription)")
+                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] DATABASE: \(error.localizedDescription)")
 
                 deleteRealmFiles()
 
