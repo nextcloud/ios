@@ -110,15 +110,17 @@ final class NCManageDatabase: Sendable {
                                     tableCapabilities.self,
                                     tableE2eEncryption.self]
             }
+
+            Realm.Configuration.defaultConfiguration =
+            Realm.Configuration(fileURL: databaseFileUrlPath,
+                                schemaVersion: databaseSchemaVersion,
+                                migrationBlock: { migration, oldSchemaVersion in
+                                    migrationSchema(migration, oldSchemaVersion)
+                                }, shouldCompactOnLaunch: { totalBytes, usedBytes in
+                                    compactDB(totalBytes, usedBytes)
+                                }, objectTypes: objectTypesAppex)
+
             do {
-                Realm.Configuration.defaultConfiguration =
-                Realm.Configuration(fileURL: databaseFileUrlPath,
-                                    schemaVersion: databaseSchemaVersion,
-                                    migrationBlock: { migration, oldSchemaVersion in
-                                        migrationSchema(migration, oldSchemaVersion)
-                                    }, shouldCompactOnLaunch: { totalBytes, usedBytes in
-                                        compactDB(totalBytes, usedBytes)
-                                    }, objectTypes: objectTypesAppex)
                 realm = try Realm()
                 if let realm, let url = realm.configuration.fileURL {
                     print("Realm is located at: \(url)")
@@ -127,29 +129,29 @@ final class NCManageDatabase: Sendable {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] DATABASE ERROR: \(error.localizedDescription)")
             }
         } else {
+            Realm.Configuration.defaultConfiguration =
+            Realm.Configuration(fileURL: databaseFileUrlPath,
+                                schemaVersion: databaseSchemaVersion,
+                                migrationBlock: { migration, oldSchemaVersion in
+                                    migrationSchema(migration, oldSchemaVersion)
+                                }, shouldCompactOnLaunch: { totalBytes, usedBytes in
+                                    compactDB(totalBytes, usedBytes)
+                                })
             do {
-                Realm.Configuration.defaultConfiguration =
-                Realm.Configuration(fileURL: databaseFileUrlPath,
-                                    schemaVersion: databaseSchemaVersion,
-                                    migrationBlock: { migration, oldSchemaVersion in
-                                        migrationSchema(migration, oldSchemaVersion)
-                                    }, shouldCompactOnLaunch: { totalBytes, usedBytes in
-                                        compactDB(totalBytes, usedBytes)
-                                    })
                 realm = try Realm()
                 if let realm, let url = realm.configuration.fileURL {
                     print("Realm is located at: \(url)")
                 }
 
                 /// export tableAccount in json
-                savesTableAccountToFile(fileURL: tabelAccountBackupFileUrlPath)
-            } catch let error {
-#if !EXTENSION
+                backupTableAccountToFile(fileURL: tabelAccountBackupFileUrlPath)
 
-                NCContentPresenter().showCustomMessage(title: "DATABASE ERROR", message: error.localizedDescription, priority: .high, delay: NCGlobal.shared.dismissAfterSecondLong, type: .error)
-#endif
+            } catch let error {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] DATABASE ERROR: \(error.localizedDescription)")
+
                 deleteRealmFiles()
+
+                createRealmFromBackup(tabelAccountBackupFileUrlPath: tabelAccountBackupFileUrlPath)
             }
         }
     }
@@ -170,6 +172,15 @@ final class NCManageDatabase: Sendable {
             } catch {
                 print("Delete file error: \(file.lastPathComponent): \(error)")
             }
+        }
+    }
+
+    func createRealmFromBackup(tabelAccountBackupFileUrlPath: URL?) {
+        do {
+            let realm = try Realm()
+            restoreTableAccountFromFile(fileURL: tabelAccountBackupFileUrlPath)
+        } catch let error {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] DATABASE ERROR RESTORE: \(error.localizedDescription)")
         }
     }
 

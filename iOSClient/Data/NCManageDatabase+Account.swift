@@ -78,6 +78,30 @@ class tableAccount: Object {
     override static func primaryKey() -> String {
         return "account"
     }
+
+    // Inizializzatore personalizzato che crea un tableAccount a partire da tableAccountCodable
+    convenience init(codableObject: tableAccountCodable) {
+        self.init()
+        self.account = codableObject.account
+        self.active = codableObject.active
+        self.alias = codableObject.alias
+
+        self.autoUpload = codableObject.autoUpload
+        self.autoUploadCreateSubfolder = codableObject.autoUploadCreateSubfolder
+        self.autoUploadSubfolderGranularity = codableObject.autoUploadSubfolderGranularity
+        self.autoUploadDirectory = codableObject.autoUploadDirectory
+        self.autoUploadFileName = codableObject.autoUploadFileName
+        self.autoUploadFull = codableObject.autoUploadFull
+        self.autoUploadImage = codableObject.autoUploadImage
+        self.autoUploadVideo = codableObject.autoUploadVideo
+        self.autoUploadFavoritesOnly = codableObject.autoUploadFavoritesOnly
+        self.autoUploadWWAnPhoto = codableObject.autoUploadWWAnPhoto
+        self.autoUploadWWAnVideo = codableObject.autoUploadWWAnVideo
+
+        self.user = codableObject.user
+        self.userId = codableObject.userId
+        self.urlBase = codableObject.urlBase
+    }
 }
 
 struct tableAccountCodable: Codable {
@@ -109,14 +133,16 @@ extension tableAccount {
 }
 
 extension NCManageDatabase {
-    func savesTableAccountToFile(fileURL: URL?) {
-        guard let fileURL else { return }
+    func backupTableAccountToFile(fileURL: URL?) {
+        guard let fileURL else {
+            return
+        }
+
         do {
             let realm = try Realm()
             var codableObjects: [tableAccountCodable] = []
-
-            // Coding object tableAccount in JSON
             let encoder = JSONEncoder()
+
             encoder.outputFormatting = .prettyPrinted
 
             for tblAccount in realm.objects(tableAccount.self) {
@@ -128,12 +154,40 @@ extension NCManageDatabase {
 
             if !codableObjects.isEmpty {
                 let jsonData = try encoder.encode(codableObjects)
-                print(String(data: jsonData, encoding: .utf8)!)
-
                 try jsonData.write(to: fileURL)
             }
         } catch {
             print("Error: \(error)")
+        }
+    }
+
+    func restoreTableAccountFromFile(fileURL: URL?) {
+        guard let fileURL = fileURL else {
+            return
+        }
+
+        if !FileManager.default.fileExists(atPath: fileURL.path) {
+            print("restore do not exists: \(fileURL.path)")
+            return
+        }
+
+        do {
+            let realm = try Realm()
+            let jsonData = try Data(contentsOf: fileURL)
+            let decoder = JSONDecoder()
+            let codableObjects = try decoder.decode([tableAccountCodable].self, from: jsonData)
+
+            try realm.write {
+                // realm.delete(realm.objects(tableAccount.self))
+                for codableObject in codableObjects {
+                    if !NCKeychain().getPassword(account: codableObject.account).isEmpty {
+                        let tableAccount = tableAccount(codableObject: codableObject)
+                        realm.add(tableAccount)
+                    }
+                }
+            }
+        } catch {
+            print("restore error: \(error)")
         }
     }
 
