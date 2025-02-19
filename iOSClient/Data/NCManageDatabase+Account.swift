@@ -133,8 +133,9 @@ extension tableAccount {
 }
 
 extension NCManageDatabase {
-    func backupTableAccountToFile(fileURL: URL?) {
-        guard let fileURL else {
+    func backupTableAccountToFile() {
+        let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+        guard let fileURL = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + tableAccountBackup) else {
             return
         }
 
@@ -161,8 +162,9 @@ extension NCManageDatabase {
         }
     }
 
-    func restoreTableAccountFromFile(fileURL: URL?) {
-        guard let fileURL = fileURL else {
+    func restoreTableAccountFromFile() {
+        let dirGroup = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
+        guard let fileURL = dirGroup?.appendingPathComponent(NCGlobal.shared.appDatabaseNextcloud + "/" + tableAccountBackup) else {
             return
         }
 
@@ -178,7 +180,6 @@ extension NCManageDatabase {
             let codableObjects = try decoder.decode([tableAccountCodable].self, from: jsonData)
 
             try realm.write {
-                // realm.delete(realm.objects(tableAccount.self))
                 for codableObject in codableObjects {
                     if !NCKeychain().getPassword(account: codableObject.account).isEmpty {
                         let tableAccount = tableAccount(codableObject: codableObject)

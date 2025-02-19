@@ -143,15 +143,19 @@ final class NCManageDatabase: Sendable {
                     print("Realm is located at: \(url)")
                 }
 
-                /// export tableAccount in json
-                backupTableAccountToFile(fileURL: tabelAccountBackupFileUrlPath)
+                backupTableAccountToFile()
 
             } catch let error {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] DATABASE ERROR: \(error.localizedDescription)")
 
                 deleteRealmFiles()
 
-                createRealmFromBackup(tabelAccountBackupFileUrlPath: tabelAccountBackupFileUrlPath)
+                do {
+                    _ = try Realm()
+                    restoreTableAccountFromFile()
+                } catch let error {
+                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] DATABASE ERROR RESTORE: \(error.localizedDescription)")
+                }
             }
         }
     }
@@ -172,15 +176,6 @@ final class NCManageDatabase: Sendable {
             } catch {
                 print("Delete file error: \(file.lastPathComponent): \(error)")
             }
-        }
-    }
-
-    func createRealmFromBackup(tabelAccountBackupFileUrlPath: URL?) {
-        do {
-            let realm = try Realm()
-            restoreTableAccountFromFile(fileURL: tabelAccountBackupFileUrlPath)
-        } catch let error {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] DATABASE ERROR RESTORE: \(error.localizedDescription)")
         }
     }
 
