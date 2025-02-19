@@ -13,6 +13,7 @@ struct NCAssistantCreateNewTask: View {
     @State var text = ""
     @FocusState private var inFocus: Bool
     @Environment(\.presentationMode) var presentationMode
+    var editMode = false
 
     var body: some View {
         VStack {
@@ -41,11 +42,11 @@ struct NCAssistantCreateNewTask: View {
                 model.scheduleTask(input: text)
                 presentationMode.wrappedValue.dismiss()
             }, label: {
-                Text(NSLocalizedString("_create_", comment: ""))
+                Text(NSLocalizedString(editMode ? "_edit_" : "_create_", comment: ""))
             })
             .disabled(text.isEmpty)
         }
-        .navigationTitle(String(format: NSLocalizedString("_new_task_", comment: ""), model.selectedType?.name ?? ""))
+        .navigationTitle(String(format: NSLocalizedString(editMode ? "_edit_task_" : "_new_task_", comment: ""), model.selectedType?.name ?? ""))
         .navigationBarTitleDisplayMode(.inline)
         .padding()
         .onAppear {

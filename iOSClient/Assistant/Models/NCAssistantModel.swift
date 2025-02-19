@@ -24,14 +24,15 @@ class NCAssistantModel: ObservableObject {
 
     private var tasks: [AssistantTask] = []
 
-    private var session: NCSession.Session
+    private let session: NCSession.Session
 
-    private var useV2: Bool
+    private let useV2: Bool
 
     init(controller: NCMainTabBarController?) {
         self.controller = controller
         session = NCSession.shared.getSession(controller: controller)
         useV2 = NCCapabilities.shared.getCapabilities(account: session.account).capabilityServerVersionMajor >= NCGlobal.shared.nextcloudVersion30
+//        useV2 = false
         loadAllTypes()
     }
 
@@ -121,12 +122,16 @@ class NCAssistantModel: ObservableObject {
 
     func deleteTask(_ task: AssistantTask) {
         isLoading = true
+        print("WTF")
 
-        NextcloudKit.shared.textProcessingDeleteTaskV2(taskId: task.id, account: session.account) { _, _, error in
-            handle(task: task, error: error)
-        }
-        NextcloudKit.shared.textProcessingDeleteTask(taskId: Int(task.id), account: session.account) { _, _, _, error in
-            handle(task: task, error: error)
+        if useV2 {
+            NextcloudKit.shared.textProcessingDeleteTaskV2(taskId: task.id, account: session.account) { _, _, error in
+                handle(task: task, error: error)
+            }
+        } else {
+            NextcloudKit.shared.textProcessingDeleteTask(taskId: Int(task.id), account: session.account) { _, _, _, error in
+                handle(task: task, error: error)
+            }
         }
 
         func handle(task: AssistantTask, error: NKError?) {

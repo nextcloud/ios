@@ -19,6 +19,13 @@ struct NCAssistantTaskDetail: View {
 
             BottomDetailsBar(task: task)
         }
+        .toolbar {
+            Button(action: {
+                model.shareTask(task)
+            }, label: {
+                Image(systemName: "square.and.arrow.up")
+            })
+        }
         .navigationBarTitleDisplayMode(.inline)
         .navigationTitle(NSLocalizedString("_task_details_", comment: ""))
         .onAppear {
@@ -52,6 +59,7 @@ struct InputOutputScrollView: View {
                     .padding()
                     .background(Color(NCBrandColor.shared.textColor2).opacity(0.1))
                     .clipShape(.rect(cornerRadius: 8))
+                    .textSelection(.enabled)
 
                 Text(NSLocalizedString("_output_", comment: "")).font(.headline)
                     .padding(.top, 10)
@@ -61,6 +69,7 @@ struct InputOutputScrollView: View {
                     .padding()
                     .background(Color(NCBrandColor.shared.textColor2).opacity(0.1))
                     .clipShape(.rect(cornerRadius: 8))
+                    .textSelection(.enabled)
 
             }
             .padding(.horizontal)

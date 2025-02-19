@@ -12,15 +12,13 @@ import PopupView
 
 struct NCAssistant: View {
     @EnvironmentObject var model: NCAssistantModel
-    @State var presentNewTaskDialog = false
-    @State var presentEditTask = false
     @State var input = ""
     @Environment(\.presentationMode) var presentationMode
 
     var body: some View {
         NavigationView {
             ZStack {
-                TaskList(presentEditTask: $presentEditTask)
+                TaskList()
 
                 if model.isLoading, !model.isRefreshing {
                     ProgressView()
@@ -57,10 +55,8 @@ struct NCAssistant: View {
             .safeAreaInset(edge: .top, spacing: -10) {
                 TypeList()
             }
+
         }
-        .background( // navigationDestination
-            NavigationLink(destination: NCAssistantCreateNewTask(), isActive: $presentEditTask) { EmptyView() }
-          )
         .navigationViewStyle(.stack)
         .popup(isPresented: $model.hasError) {
             Text(NSLocalizedString("_error_occurred_", comment: ""))
@@ -90,11 +86,15 @@ struct NCAssistant: View {
 
 struct TaskList: View {
     @EnvironmentObject var model: NCAssistantModel
-    @Binding var presentEditTask: Bool
+    @State var presentEditTask = false
+    @State var showDeleteConfirmation = false
+
+    @State var taskToEdit: AssistantTask?
+    @State var taskToDelete: AssistantTask?
 
     var body: some View {
         List(model.filteredTasks, id: \.id) { task in
-            TaskItem(task: task)
+            TaskItem(showDeleteConfirmation: $showDeleteConfirmation, taskToDelete: $taskToDelete, task: task)
                 .contextMenu {
                     Button {
                         model.shareTask(task)
@@ -107,7 +107,8 @@ struct TaskList: View {
                     }
 
                     Button {
-                        presentEditTask.toggle()
+                        taskToEdit = task
+                        presentEditTask = true
                     } label: {
                         Label {
                             Text("_edit_")
@@ -115,11 +116,35 @@ struct TaskList: View {
                             Image(systemName: "pencil")
                         }
                     }
+
+                    Button(role: .destructive) {
+                        taskToDelete = task
+                        showDeleteConfirmation = true
+                    } label: {
+                        Label {
+                            Text("_delete_")
+                        } icon: {
+                            Image(systemName: "trash")
+                        }
+                    }
                 }
         }
         .if(!model.types.isEmpty) { view in
             view.refreshable {
                 model.refresh()
+            }
+        }
+        .confirmationDialog("", isPresented: $showDeleteConfirmation) {
+            Button(NSLocalizedString("_delete_", comment: ""), role: .destructive) {
+                withAnimation {
+                    guard let taskToDelete else { return }
+                    model.deleteTask(taskToDelete)
+                }
+            }
+        }
+        .sheet(isPresented: $presentEditTask) { [taskToEdit] in
+            NavigationView {
+                NCAssistantCreateNewTask(text: taskToEdit?.input?.input ?? "", editMode: true)
             }
         }
     }
@@ -162,8 +187,9 @@ struct TypeButton: View {
 
 struct TaskItem: View {
     @EnvironmentObject var model: NCAssistantModel
-    @State var showDeleteConfirmation = false
-    let task: AssistantTask
+    @Binding var showDeleteConfirmation: Bool
+    @Binding var taskToDelete: AssistantTask?
+    var task: AssistantTask
 
     var body: some View {
         NavigationLink(destination: NCAssistantTaskDetail(task: task)) {
@@ -194,16 +220,10 @@ struct TaskItem: View {
             }
             .swipeActions {
                 Button(NSLocalizedString("_delete_", comment: "")) {
+                    taskToDelete = task
                     showDeleteConfirmation = true
                 }
                 .tint(.red)
-            }
-            .confirmationDialog("", isPresented: $showDeleteConfirmation) {
-                Button(NSLocalizedString("_delete_", comment: ""), role: .destructive) {
-                    withAnimation {
-                        model.deleteTask(task)
-                    }
-                }
             }
         }
     }
