@@ -52,6 +52,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         if isUiTestingEnabled {
             NCAccount().deleteAllAccounts()
         }
+
         let utilityFileSystem = NCUtilityFileSystem()
         let utility = NCUtility()
         let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionApp())

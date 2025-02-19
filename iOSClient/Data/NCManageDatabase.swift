@@ -46,6 +46,9 @@ final class NCManageDatabase: Sendable {
                     newObject?["etag"] = ""
                 }
             }
+            if oldSchemaVersion < databaseSchemaVersion {
+                // automatic conversion for delete object / properties
+            }
         }
 
         func compactDB(_ totalBytes: Int, _ usedBytes: Int) -> Bool {
@@ -195,6 +198,7 @@ final class NCManageDatabase: Sendable {
         self.clearTable(tableTrash.self, account: account)
         self.clearTable(tableUserStatus.self, account: account)
         self.clearTable(tableVideo.self, account: account)
+        self.clearTable(TableDownloadLimit.self, account: account)
         self.clearTable(tableRecommendedFiles.self, account: account)
     }
 

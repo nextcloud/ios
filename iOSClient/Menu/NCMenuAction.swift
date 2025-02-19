@@ -27,6 +27,7 @@ import UIKit
 import NextcloudKit
 
 class NCMenuAction {
+    let accessibilityIdentifier: String?
     let title: String
     let boldTitle: Bool
     let details: String?
@@ -41,7 +42,8 @@ class NCMenuAction {
     var rowHeight: CGFloat { self.title == NCMenuAction.seperatorIdentifier ? NCMenuAction.seperatorHeight : self.details != nil ? 76 : 56 }
     var order: Int = 0
 
-    init(title: String, boldTitle: Bool = false, destructive: Bool = false, details: String? = nil, icon: UIImage, order: Int = 0, action: ((_ menuAction: NCMenuAction) -> Void)?) {
+    init(title: String, boldTitle: Bool = false, destructive: Bool = false, details: String? = nil, icon: UIImage, order: Int = 0, accessibilityIdentifier: String? = nil, action: ((_ menuAction: NCMenuAction) -> Void)?) {
+        self.accessibilityIdentifier = accessibilityIdentifier
         self.title = title
         self.boldTitle = boldTitle
         self.destructive = destructive
@@ -52,7 +54,8 @@ class NCMenuAction {
         self.order = order
     }
 
-    init(title: String, boldTitle: Bool = false, destructive: Bool = false, details: String? = nil, icon: UIImage, onTitle: String? = nil, onIcon: UIImage? = nil, selected: Bool, on: Bool, order: Int = 0, action: ((_ menuAction: NCMenuAction) -> Void)?) {
+    init(title: String, boldTitle: Bool = false, destructive: Bool = false, details: String? = nil, icon: UIImage, onTitle: String? = nil, onIcon: UIImage? = nil, selected: Bool, on: Bool, order: Int = 0, accessibilityIdentifier: String? = nil, action: ((_ menuAction: NCMenuAction) -> Void)?) {
+        self.accessibilityIdentifier = accessibilityIdentifier
         self.title = title
         self.boldTitle = boldTitle
         self.destructive = destructive

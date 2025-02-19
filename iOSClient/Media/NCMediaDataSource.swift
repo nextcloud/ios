@@ -80,8 +80,8 @@ extension NCMedia {
             }
 
             if let visibleCells, !distant {
-                firstCellDate = (visibleCells.first as? NCMediaCell)?.date
-                if firstCellDate == self.dataSource.metadatas.first?.date {
+                firstCellDate = (visibleCells.first as? NCMediaCell)?.datePhotosOriginal
+                if firstCellDate == self.dataSource.metadatas.first?.datePhotosOriginal {
                     lessDate = Date.distantFuture
                 } else {
                     if let date = firstCellDate {
@@ -91,8 +91,8 @@ extension NCMedia {
                     }
                 }
 
-                lastCellDate = (visibleCells.last as? NCMediaCell)?.date
-                if lastCellDate == self.dataSource.metadatas.last?.date {
+                lastCellDate = (visibleCells.last as? NCMediaCell)?.datePhotosOriginal
+                if lastCellDate == self.dataSource.metadatas.last?.datePhotosOriginal {
                     greaterDate = Date.distantPast
                 } else {
                     if let date = lastCellDate {
@@ -150,7 +150,7 @@ extension NCMedia {
                         DispatchQueue.main.async {
                             if let firstCellDate, let lastCellDate, self.isViewActived {
                                 DispatchQueue.global().async {
-                                    let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [ NSPredicate(format: "date >= %@ AND date =< %@", lastCellDate as NSDate, firstCellDate as NSDate), self.imageCache.getMediaPredicate(filterLivePhotoFile: false, session: session, showOnlyImages: self.showOnlyImages, showOnlyVideos: self.showOnlyVideos)])
+                                    let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [ NSPredicate(format: "datePhotosOriginal >= %@ AND datePhotosOriginal =< %@", lastCellDate as NSDate, firstCellDate as NSDate), self.imageCache.getMediaPredicate(filterLivePhotoFile: false, session: session, showOnlyImages: self.showOnlyImages, showOnlyVideos: self.showOnlyVideos)])
 
                                     if let resultsMetadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: predicate) {
                                         for metadata in resultsMetadatas where !self.filesExists.contains(metadata.ocId) {
@@ -187,7 +187,7 @@ extension NCMedia {
 
 public class NCMediaDataSource: NSObject {
     public class Metadata: NSObject {
-        let date: Date
+        let datePhotosOriginal: Date
         let etag: String
         let imageSize: CGSize
         let isImage: Bool
@@ -195,14 +195,14 @@ public class NCMediaDataSource: NSObject {
         let isVideo: Bool
         let ocId: String
 
-        init(date: Date,
+        init(datePhotosOriginal: Date,
              etag: String,
              imageSize: CGSize,
              isImage: Bool,
              isLivePhoto: Bool,
              isVideo: Bool,
              ocId: String) {
-            self.date = date
+            self.datePhotosOriginal = datePhotosOriginal
             self.etag = etag
             self.imageSize = imageSize
             self.isImage = isImage
@@ -230,7 +230,7 @@ public class NCMediaDataSource: NSObject {
 
     private func insertInMetadatas(metadata: Metadata) {
         for i in 0..<self.metadatas.count {
-            if (metadata.date as Date) > self.metadatas[i].date {
+            if (metadata.datePhotosOriginal as Date) > self.metadatas[i].datePhotosOriginal {
                 self.metadatas.insert(metadata, at: i)
                 return
             }
@@ -240,7 +240,7 @@ public class NCMediaDataSource: NSObject {
     }
 
     private func getMetadataFromTableMetadata(_ metadata: tableMetadata) -> Metadata {
-        return Metadata(date: metadata.date as Date,
+        return Metadata(datePhotosOriginal: metadata.datePhotosOriginal as Date,
                         etag: metadata.etag,
                         imageSize: CGSize(width: metadata.width, height: metadata.height),
                         isImage: metadata.classFile == NKCommon.TypeClassFile.image.rawValue,
@@ -303,7 +303,7 @@ public class NCMediaDataSource: NSObject {
                 for metadata in metadatasToInsert {
                     self.metadatas.append(metadata)
                 }
-                self.metadatas = self.metadatas.sorted { $0.date > $1.date }
+                self.metadatas = self.metadatas.sorted { $0.datePhotosOriginal > $1.datePhotosOriginal }
             }
             return true
         }

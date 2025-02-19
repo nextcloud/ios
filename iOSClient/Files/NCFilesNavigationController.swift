@@ -200,6 +200,7 @@ class NCFilesNavigationController: NCMainNavigationController {
         if self.collectionViewCommon?.navigationItem.leftBarButtonItems == nil {
             let accountButton = AccountSwitcherButton(type: .custom)
 
+            accountButton.accessibilityIdentifier = "accountSwitcher"
             accountButton.setImage(image, for: .normal)
             accountButton.semanticContentAttribute = .forceLeftToRight
             accountButton.sizeToFit()
@@ -240,9 +241,9 @@ class NCFilesNavigationController: NCMainNavigationController {
             self.collectionViewCommon?.navigationItem.rightBarButtonItems = [select]
 
         } else if self.collectionViewCommon?.navigationItem.rightBarButtonItems == nil || (!collectionViewCommon.isEditMode && !(collectionViewCommon.tabBarSelect?.isHidden() ?? true)) {
-            collectionViewCommon.tabBarSelect?.hide()
 
-            self.updateRightBarButtonItems()
+            collectionViewCommon.tabBarSelect?.hide()
+            collectionViewCommon.navigationItem.rightBarButtonItems = [self.menuBarButtonItem]
 
         } else {
 

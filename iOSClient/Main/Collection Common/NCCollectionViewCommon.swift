@@ -98,22 +98,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     let heightHeaderSection: CGFloat = 30
 
     var session: NCSession.Session {
-#if DEBUG
-        if Thread.isMainThread {
-            return NCSession.shared.getSession(controller: tabBarController)
-        } else {
-            let semaphore = DispatchSemaphore(value: 0)
-            var session: NCSession.Session!
-            DispatchQueue.main.async {
-                session = NCSession.shared.getSession(controller: self.tabBarController)
-                semaphore.signal()
-            }
-            semaphore.wait()
-            return session
-        }
-#else
         NCSession.shared.getSession(controller: tabBarController)
-#endif
     }
 
     var isLayoutPhoto: Bool {

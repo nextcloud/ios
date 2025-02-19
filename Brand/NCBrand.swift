@@ -33,7 +33,7 @@ final class NCBrandOptions: @unchecked Sendable {
     static let shared = NCBrandOptions()
 
     var brand: String = "Nextcloud"
-    var textCopyrightNextcloudiOS: String = "Nextcloud Hydrogen for iOS %@ © 2024"
+    var textCopyrightNextcloudiOS: String = "Nextcloud Hydrogen for iOS %@ © 2025"
     var textCopyrightNextcloudServer: String = "Nextcloud Server %@"
     var loginBaseUrl: String = "https://cloud.nextcloud.com"
     var pushNotificationServerProxy: String = "https://push-notifications.nextcloud.com"

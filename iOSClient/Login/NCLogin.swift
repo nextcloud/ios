@@ -346,7 +346,8 @@ class NCLogin: UIViewController, UITextFieldDelegate, NCLoginQRCodeDelegate {
                 if let host = URL(string: url)?.host {
                     NCNetworking.shared.writeCertificate(host: host)
                 }
-                NextcloudKit.shared.getLoginFlowV2(serverUrl: url) { [self] token, endpoint, login, _, error in
+                let loginOptions = NKRequestOptions(customUserAgent: userAgent)
+                NextcloudKit.shared.getLoginFlowV2(serverUrl: url, options: loginOptions) { [self] token, endpoint, login, _, error in
                     // Login Flow V2
                     if error == .success, let token, let endpoint, let login {
                         poll(loginFlowV2Token: token, loginFlowV2Endpoint: endpoint, loginFlowV2Login: login)
@@ -525,7 +526,8 @@ extension NCLogin: ClientCertificateDelegate, UIDocumentPickerDelegate {
         timer.setEventHandler(handler: {
             DispatchQueue.main.async {
                 let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController
-                NextcloudKit.shared.getLoginFlowV2Poll(token: loginFlowV2Token, endpoint: loginFlowV2Endpoint) { [self] server, loginName, appPassword, _, error in
+                let loginOptions = NKRequestOptions(customUserAgent: userAgent)
+                NextcloudKit.shared.getLoginFlowV2Poll(token: loginFlowV2Token, endpoint: loginFlowV2Endpoint, options: loginOptions) { [self] server, loginName, appPassword, _, error in
                     if error == .success, let urlBase = server, let user = loginName, let appPassword {
                         loginFlowInProgress = true
 
