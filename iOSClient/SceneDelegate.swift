@@ -178,9 +178,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func sceneDidEnterBackground(_ scene: UIScene) {
         NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Scene did enter in background")
-        ///
         database.backupTableAccountToFile()
-        ///
         let session = SceneManager.shared.getSession(scene: scene)
         guard let tableAccount = self.database.getTableAccount(predicate: NSPredicate(format: "account == %@", session.account)) else {
             return
