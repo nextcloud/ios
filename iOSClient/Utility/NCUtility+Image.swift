@@ -84,7 +84,7 @@ extension NCUtility {
     }
     
     private var userImage: UIImage {
-        UIImage(resource: .userButtonIcon)
+        UIImage(resource: .userAvatar)
     }
 
     func loadUserImage(for user: String, displayName: String?, urlBase: String) -> UIImage {
