@@ -54,7 +54,6 @@ class tableAccount: Object {
     @objc dynamic var locale = ""
     @objc dynamic var mediaPath = ""
     @objc dynamic var organisation = ""
-    @objc dynamic var password = ""
     @objc dynamic var phone = ""
     @objc dynamic var quota: Int64 = 0
     @objc dynamic var quotaFree: Int64 = 0
@@ -81,7 +80,63 @@ class tableAccount: Object {
     }
 }
 
+struct tableAccountCodable: Codable {
+    var account: String
+    var active: Bool
+    var alias: String
+
+    var autoUpload: Bool
+    var autoUploadCreateSubfolder: Bool
+    var autoUploadSubfolderGranularity: Int
+    var autoUploadDirectory = ""
+    var autoUploadFileName: String
+    var autoUploadFull: Bool
+    var autoUploadImage: Bool
+    var autoUploadVideo: Bool
+    var autoUploadFavoritesOnly: Bool
+    var autoUploadWWAnPhoto: Bool
+    var autoUploadWWAnVideo: Bool
+
+    var user: String
+    var userId: String
+    var urlBase: String
+}
+
+extension tableAccount {
+    func tableAccountToCodable() -> tableAccountCodable {
+        return tableAccountCodable(account: self.account, active: self.active, alias: self.alias, autoUpload: self.autoUpload, autoUploadCreateSubfolder: self.autoUploadCreateSubfolder, autoUploadSubfolderGranularity: self.autoUploadSubfolderGranularity, autoUploadDirectory: self.autoUploadDirectory, autoUploadFileName: self.autoUploadFileName, autoUploadFull: self.autoUploadFull, autoUploadImage: self.autoUploadImage, autoUploadVideo: self.autoUploadVideo, autoUploadFavoritesOnly: self.autoUploadFavoritesOnly, autoUploadWWAnPhoto: self.autoUploadWWAnPhoto, autoUploadWWAnVideo: self.autoUploadWWAnVideo, user: self.user, userId: self.userId, urlBase: self.urlBase)
+    }
+}
+
 extension NCManageDatabase {
+    func savesTableAccountToFile(fileURL: URL?) {
+        guard let fileURL else { return }
+        do {
+            let realm = try Realm()
+            var codableObjects: [tableAccountCodable] = []
+
+            // Coding object tableAccount in JSON
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = .prettyPrinted
+
+            for tblAccount in realm.objects(tableAccount.self) {
+                if !NCKeychain().getPassword(account: tblAccount.account).isEmpty {
+                    let codableObject = tblAccount.tableAccountToCodable()
+                    codableObjects.append(codableObject)
+                }
+            }
+
+            if !codableObjects.isEmpty {
+                let jsonData = try encoder.encode(codableObjects)
+                print(String(data: jsonData, encoding: .utf8)!)
+
+                try jsonData.write(to: fileURL)
+            }
+        } catch {
+            print("Error: \(error)")
+        }
+    }
+
     func addAccount(_ account: String, urlBase: String, user: String, userId: String, password: String) {
         do {
             let realm = try Realm()
