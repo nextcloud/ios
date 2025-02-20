@@ -78,6 +78,11 @@ class NCFilesNavigationController: NCMainNavigationController {
 
             self.setNavigationLeftItems()
         }
+        
+        accountButtonFactory = AccountButtonFactory(controller: controller,
+                                                    onAccountDetailsOpen: { [weak self] in self?.collectionViewCommon?.setEditMode(false) },
+                                                    presentVC: { [weak self] vc in self?.present(vc, animated: true) },
+                                                    onMenuOpened: { [weak self] in self?.collectionViewCommon?.dismissTip() })
     }
 
     override func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
@@ -125,139 +130,82 @@ class NCFilesNavigationController: NCMainNavigationController {
             return UIMenu(children: [items.select, items.viewStyleSubmenu, items.sortSubmenu, additionalSubmenu])
         }
     }
+    
+    var accountButtonFactory: AccountButtonFactory!
 
     override func setNavigationLeftItems() {
-        guard let tableAccount = database.getTableAccount(predicate: NSPredicate(format: "account == %@", self.session.account))
-        else {
-            self.collectionViewCommon?.navigationItem.leftBarButtonItems = nil
+        guard let collectionViewCommon else {
             return
         }
-        let image = utility.loadUserImage(for: tableAccount.user, displayName: tableAccount.displayName, urlBase: tableAccount.urlBase)
-
-        class AccountSwitcherButton: UIButton {
-            var onMenuOpened: (() -> Void)?
-
-            override func contextMenuInteraction(_ interaction: UIContextMenuInteraction, willDisplayMenuFor configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionAnimating?) {
-                super.contextMenuInteraction(interaction, willDisplayMenuFor: configuration, animator: animator)
-                onMenuOpened?()
+        
+        if collectionViewCommon.isSearchingMode && (UIDevice.current.userInterfaceIdiom == .phone) {
+            navigationItem.leftBarButtonItems = nil
+            return
+        }
+        
+        if isCurrentScreenInMainTabBar() {
+            navigationItem.leftItemsSupplementBackButton = true
+            if navigationController?.viewControllers.count == 1 {
+                let burgerMenuItem = UIBarButtonItem(image: UIImage(resource: .BurgerMenu.bars),
+                                                     style: .plain,
+                                                     action: { [weak self] in
+                    self?.mainTabBarController?.showBurgerMenu()
+                })
+                burgerMenuItem.tintColor = UIColor(resource: .BurgerMenu.navigationBarButton)
+                navigationItem.setLeftBarButtonItems([burgerMenuItem], animated: true)
+            }
+        } else if (collectionViewCommon.layoutKey == NCGlobal.shared.layoutViewRecent) ||
+                    (collectionViewCommon.layoutKey == NCGlobal.shared.layoutViewOffline) {
+            navigationItem.leftItemsSupplementBackButton = true
+            if navigationController?.viewControllers.count == 1 {
+                let closeButton = UIBarButtonItem(title: NSLocalizedString("_close_", comment: ""),
+                                                  style: .plain,
+                                                  action: { [weak self] in
+                    self?.dismiss(animated: true)
+                })
+                closeButton.tintColor = NCBrandColor.shared.iconImageColor
+                navigationItem.setLeftBarButtonItems([closeButton], animated: true)
             }
         }
 
-        func createLeftMenu() -> UIMenu? {
-            var childrenAccountSubmenu: [UIMenuElement] = []
-            let accounts = database.getAllAccountOrderAlias()
-            guard !accounts.isEmpty
-            else {
-                return nil
-            }
-
-            let accountActions: [UIAction] = accounts.map { account in
-                let image = utility.loadUserImage(for: account.user, displayName: account.displayName, urlBase: account.urlBase)
-                var name: String = ""
-                var url: String = ""
-
-                if account.alias.isEmpty {
-                    name = account.displayName
-                    url = (URL(string: account.urlBase)?.host ?? "")
-                } else {
-                    name = account.alias
-                }
-
-                let action = UIAction(title: name, image: image, state: account.active ? .on : .off) { _ in
-                    if !account.active {
-                        NCAccount().changeAccount(account.account, userProfile: nil, controller: self.controller) { }
-                        self.collectionViewCommon?.setEditMode(false)
-                    }
-                }
-
-                action.subtitle = url
-                return action
-            }
-
-            let addAccountAction = UIAction(title: NSLocalizedString("_add_account_", comment: ""), image: utility.loadImage(named: "person.crop.circle.badge.plus", colors: NCBrandColor.shared.iconImageMultiColors)) { _ in
-                self.appDelegate.openLogin(selector: self.global.introLogin)
-            }
-
-            let settingsAccountAction = UIAction(title: NSLocalizedString("_account_settings_", comment: ""), image: utility.loadImage(named: "gear", colors: [NCBrandColor.shared.iconImageColor])) { _ in
-                let accountSettingsModel = NCAccountSettingsModel(controller: self.controller, delegate: self.collectionViewCommon)
-                let accountSettingsView = NCAccountSettingsView(model: accountSettingsModel)
-                let accountSettingsController = UIHostingController(rootView: accountSettingsView)
-
-                self.present(accountSettingsController, animated: true, completion: nil)
-            }
-
-            if !NCBrandOptions.shared.disable_multiaccount {
-                childrenAccountSubmenu.append(addAccountAction)
-            }
-            childrenAccountSubmenu.append(settingsAccountAction)
-
-            let addAccountSubmenu = UIMenu(title: "", options: .displayInline, children: childrenAccountSubmenu)
-            let menu = UIMenu(children: accountActions + [addAccountSubmenu])
-
-            return menu
+        if collectionViewCommon.titlePreviusFolder != nil {
+            navigationController?.navigationBar.topItem?.title = collectionViewCommon.titlePreviusFolder
         }
 
-        if self.collectionViewCommon?.navigationItem.leftBarButtonItems == nil {
-            let accountButton = AccountSwitcherButton(type: .custom)
-
-            accountButton.setImage(image, for: .normal)
-            accountButton.semanticContentAttribute = .forceLeftToRight
-            accountButton.sizeToFit()
-
-            accountButton.menu = createLeftMenu()
-            accountButton.showsMenuAsPrimaryAction = true
-
-            accountButton.onMenuOpened = {
-                self.collectionViewCommon?.dismissTip()
-            }
-
-            self.collectionViewCommon?.navigationItem.leftItemsSupplementBackButton = true
-            self.collectionViewCommon?.navigationItem.setLeftBarButtonItems([UIBarButtonItem(customView: accountButton)], animated: true)
-
-        } else {
-
-            let accountButton = self.collectionViewCommon?.navigationItem.leftBarButtonItems?.first?.customView as? UIButton
-            accountButton?.setImage(image, for: .normal)
-            accountButton?.menu = createLeftMenu()
-        }
+        navigationItem.title = collectionViewCommon.titleCurrentFolder
     }
 
     override func setNavigationRightItems() {
         guard let collectionViewCommon else {
-            self.collectionViewCommon?.navigationItem.rightBarButtonItems = nil
+            return
+        }
+        
+        if collectionViewCommon.isSearchingMode && (UIDevice.current.userInterfaceIdiom == .phone) {
+            navigationItem.rightBarButtonItems = nil
             return
         }
 
+        guard collectionViewCommon.layoutKey != NCGlobal.shared.layoutViewTransfers else { return }
+        let tabBar = self.tabBarController?.tabBar
+        let isTabBarHidden = tabBar?.isHidden ?? true
+        let isTabBarSelectHidden = collectionViewCommon.tabBarSelect.isHidden()
+
         if collectionViewCommon.isEditMode {
-            collectionViewCommon.tabBarSelect?.update(fileSelect: collectionViewCommon.fileSelect, metadatas: collectionViewCommon.getSelectedMetadatas(), userId: session.userId)
-            collectionViewCommon.tabBarSelect?.show()
-
-            let select = UIBarButtonItem(title: NSLocalizedString("_cancel_", comment: ""), style: .done) {
-                collectionViewCommon.setEditMode(false)
-                collectionViewCommon.collectionView.reloadData()
-                collectionViewCommon.navigationItem.rightBarButtonItems = [self.menuBarButtonItem]
-            }
-
-            self.collectionViewCommon?.navigationItem.rightBarButtonItems = [select]
-
-        } else if self.collectionViewCommon?.navigationItem.rightBarButtonItems == nil || (!collectionViewCommon.isEditMode && !(collectionViewCommon.tabBarSelect?.isHidden() ?? true)) {
-            collectionViewCommon.tabBarSelect?.hide()
-
-            self.updateRightBarButtonItems()
-
+            collectionViewCommon.tabBarSelect.update(fileSelect: collectionViewCommon.fileSelect,
+                                                     metadatas: collectionViewCommon.getSelectedMetadatas(),
+                                                     userId: session.userId)
+            collectionViewCommon.tabBarSelect.show()
         } else {
-
-            if let rightBarButtonItems = self.collectionViewCommon?.navigationItem.rightBarButtonItems,
-               let menuBarButtonItem = rightBarButtonItems.first(where: { $0.tag == menuButtonTag }),
-               let menuButton = menuBarButtonItem.customView as? UIButton {
-                menuButton.menu = createRightMenu()
-            }
+            collectionViewCommon.tabBarSelect.hide()
+            navigationItem.rightBarButtonItems = isCurrentScreenInMainTabBar() ? [createAccountButton()] : []
         }
-
         // fix, if the tabbar was hidden before the update, set it in hidden
-        if self.tabBarController?.tabBar.isHidden ?? true,
-           collectionViewCommon.tabBarSelect?.isHidden() ?? true {
-            self.tabBarController?.tabBar.isHidden = true
+        if isTabBarHidden, isTabBarSelectHidden {
+            tabBar?.isHidden = true
         }
+    }
+    
+    private func createAccountButton() -> UIBarButtonItem {
+        accountButtonFactory.createAccountButton()
     }
 }

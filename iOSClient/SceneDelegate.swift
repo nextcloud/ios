@@ -220,7 +220,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-        guard let controller = SceneManager.shared.getController(scene: scene) as? NCMainTabBarController,
+        guard let controller = SceneManager.shared.getController(scene: scene),
               let url = URLContexts.first?.url,
               let sceneIdentifier = controller.sceneIdentifier else { return }
 
@@ -347,7 +347,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                         serverUrl = tableAccount.urlBase + "/" + davFiles
                     }
 
-                    NCActionCenter.shared.openFileViewInFolder(serverUrl: serverUrl, fileNameBlink: nil, fileNameOpen: fileName, sceneIdentifier: controller.sceneIdentifier)
+                    NCActionCenter.shared.openFileViewInFolder(serverUrl: serverUrl, fileNameBlink: nil, fileNameOpen: fileName, sceneIdentifier: sceneIdentifier)
                 }
             }
 

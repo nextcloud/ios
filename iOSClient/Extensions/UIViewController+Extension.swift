@@ -87,4 +87,8 @@ extension UIViewController {
 			imageView.heightAnchor.constraint(equalToConstant: originalSize.height * multiplier)
 		])
 	}
+    
+    func isCurrentScreenInMainTabBar() -> Bool {
+        return self.tabBarController is NCMainTabBarController
+    }
 }
