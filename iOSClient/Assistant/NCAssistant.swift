@@ -47,6 +47,7 @@ struct NCAssistant: View {
                             .foregroundStyle(Color(NCBrandColor.shared.iconImageColor))
                     }
                     .disabled(model.selectedType == nil)
+                    .accessibilityIdentifier("CreateButton")
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
@@ -138,6 +139,7 @@ struct TaskList: View {
                         }
                     }
                 }
+                .accessibilityIdentifier("TaskContextMenu")
         }
         .if(!model.types.isEmpty) { view in
             view.refreshable {

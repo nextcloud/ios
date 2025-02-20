@@ -40,7 +40,7 @@
 		AA8E03DC2D2FBAC200E7E89C /* DownloadLimitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA8E03DB2D2FBAAD00E7E89C /* DownloadLimitTests.swift */; };
 		AA8E041D2D300FDE00E7E89C /* NCShareNetworkingDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA8E041C2D300FDE00E7E89C /* NCShareNetworkingDelegate.swift */; };
 		AAA7BC2E2D3E39F1008F1A22 /* CapabilitiesResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA7BC2D2D3E39EC008F1A22 /* CapabilitiesResponse.swift */; };
-		AAA7BC302D3E3B88008F1A22 /* DownloadLimitCapabilityResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA7BC2F2D3E3B83008F1A22 /* DownloadLimitCapabilityResponse.swift */; };
+		AAA7BC302D3E3B88008F1A22 /* CapabilityResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAA7BC2F2D3E3B83008F1A22 /* CapabilityResponse.swift */; };
 		AABD0C8A2D5F67A400F009E6 /* XCUIElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABD0C892D5F67A200F009E6 /* XCUIElement.swift */; };
 		AABD0C9B2D5F73FC00F009E6 /* Placeholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = AABD0C9A2D5F73FA00F009E6 /* Placeholder.swift */; };
 		AAE330042D2ED20200B04903 /* NCShareNavigationTitleSetting.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAE330032D2ED1FF00B04903 /* NCShareNavigationTitleSetting.swift */; };
@@ -96,6 +96,8 @@
 		F32FADA92D1176E3007035E2 /* UIButton+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F32FADA82D1176DE007035E2 /* UIButton+Extension.swift */; };
 		F3374A812D64AB9F002A38F9 /* StatusInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3374A802D64AB9E002A38F9 /* StatusInfo.swift */; };
 		F3374A842D64AC31002A38F9 /* AssistantLabelStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3374A832D64AC2C002A38F9 /* AssistantLabelStyle.swift */; };
+		F3374A942D674454002A38F9 /* AssistantTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3374A932D674454002A38F9 /* AssistantTests.swift */; };
+		F3374A962D6744A4002A38F9 /* BaseUIXCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3374A952D6744A4002A38F9 /* BaseUIXCTestCase.swift */; };
 		F33918C42C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F33918C32C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift */; };
 		F33918C52C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F33918C32C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift */; };
 		F33918C62C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F33918C32C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift */; };
@@ -1215,7 +1217,7 @@
 		AA8E041C2D300FDE00E7E89C /* NCShareNetworkingDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NCShareNetworkingDelegate.swift; sourceTree = "<group>"; };
 		AA8E041E2D3114E200E7E89C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		AAA7BC2D2D3E39EC008F1A22 /* CapabilitiesResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapabilitiesResponse.swift; sourceTree = "<group>"; };
-		AAA7BC2F2D3E3B83008F1A22 /* DownloadLimitCapabilityResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadLimitCapabilityResponse.swift; sourceTree = "<group>"; };
+		AAA7BC2F2D3E3B83008F1A22 /* CapabilityResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapabilityResponse.swift; sourceTree = "<group>"; };
 		AABD0C862D5F58C400F009E6 /* Server.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = Server.sh; sourceTree = "<group>"; };
 		AABD0C892D5F67A200F009E6 /* XCUIElement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCUIElement.swift; sourceTree = "<group>"; };
 		AABD0C9A2D5F73FA00F009E6 /* Placeholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Placeholder.swift; sourceTree = "<group>"; };
@@ -1268,6 +1270,8 @@
 		F32FADA82D1176DE007035E2 /* UIButton+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+Extension.swift"; sourceTree = "<group>"; };
 		F3374A802D64AB9E002A38F9 /* StatusInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusInfo.swift; sourceTree = "<group>"; };
 		F3374A832D64AC2C002A38F9 /* AssistantLabelStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantLabelStyle.swift; sourceTree = "<group>"; };
+		F3374A932D674454002A38F9 /* AssistantTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssistantTests.swift; sourceTree = "<group>"; };
+		F3374A952D6744A4002A38F9 /* BaseUIXCTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseUIXCTestCase.swift; sourceTree = "<group>"; };
 		F33918C32C7CD8F2002D9AA1 /* FileNameValidator+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FileNameValidator+Extensions.swift"; sourceTree = "<group>"; };
 		F33EE6F12BF4C9B200CA1A51 /* PKCS12.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PKCS12.swift; sourceTree = "<group>"; };
 		F343A4B22A1E01FF00DDA874 /* PHAsset+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PHAsset+Extension.swift"; sourceTree = "<group>"; };
@@ -2022,7 +2026,7 @@
 			children = (
 				AAA7BC2D2D3E39EC008F1A22 /* CapabilitiesResponse.swift */,
 				AA3C85F12D394B3600F74F12 /* DownloadLimitResponse.swift */,
-				AAA7BC2F2D3E3B83008F1A22 /* DownloadLimitCapabilityResponse.swift */,
+				AAA7BC2F2D3E3B83008F1A22 /* CapabilityResponse.swift */,
 				AA3C85ED2D36BCCB00F74F12 /* SharesResponse.swift */,
 				AA3C85EA2D36BBF400F74F12 /* OCSResponse.swift */,
 			);
@@ -2074,9 +2078,11 @@
 		C0046CDB2A17B98400D87C9D /* NextcloudUITests */ = {
 			isa = PBXGroup;
 			children = (
+				F3374A952D6744A4002A38F9 /* BaseUIXCTestCase.swift */,
 				AABD0C882D5F631600F009E6 /* Extensions */,
 				AA3C85E92D36BBDE00F74F12 /* UITestBackend */,
 				AA8E03DB2D2FBAAD00E7E89C /* DownloadLimitTests.swift */,
+				F3374A932D674454002A38F9 /* AssistantTests.swift */,
 				AA74AA962D3172CE00BE3458 /* UITestError.swift */,
 			);
 			path = NextcloudUITests;
@@ -4038,7 +4044,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				AAA7BC302D3E3B88008F1A22 /* DownloadLimitCapabilityResponse.swift in Sources */,
+				AAA7BC302D3E3B88008F1A22 /* CapabilityResponse.swift in Sources */,
+				F3374A942D674454002A38F9 /* AssistantTests.swift in Sources */,
 				AA3C85EB2D36BBFB00F74F12 /* OCSResponse.swift in Sources */,
 				AA74AA972D3172D100BE3458 /* UITestError.swift in Sources */,
 				AA3C85E82D36B08C00F74F12 /* UITestBackend.swift in Sources */,
@@ -4047,6 +4054,7 @@
 				AA3C85EE2D36BCCE00F74F12 /* SharesResponse.swift in Sources */,
 				AAA7BC2E2D3E39F1008F1A22 /* CapabilitiesResponse.swift in Sources */,
 				AA3C85F22D394B3A00F74F12 /* DownloadLimitResponse.swift in Sources */,
+				F3374A962D6744A4002A38F9 /* BaseUIXCTestCase.swift in Sources */,
 				F37208812BAB5979006B5430 /* TestConstants.swift in Sources */,
 				AABD0C9B2D5F73FC00F009E6 /* Placeholder.swift in Sources */,
 			);

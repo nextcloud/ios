@@ -33,6 +33,7 @@ struct NCAssistantCreateNewTask: View {
                     .transparentScrolling()
                     .background(Color(NCBrandColor.shared.textColor2).opacity(0.1))
                     .focused($inFocus)
+                    .accessibilityIdentifier("InputTextEditor")
             }
             .background(Color(NCBrandColor.shared.textColor2).opacity(0.1))
             .clipShape(.rect(cornerRadius: 8))

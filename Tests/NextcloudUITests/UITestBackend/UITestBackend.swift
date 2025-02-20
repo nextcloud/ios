@@ -106,7 +106,7 @@ class UITestBackend {
     ///
     /// Assert the (in)availability of the download limit capability on the server.
     ///
-    func assertDownloadLimitCapability(_ expectation: Bool, file: StaticString = #file, line: UInt = #line) async throws {
+    func assertCapability(_ expectation: Bool, capability: KeyPath<CapabilitiesResponse.CapabilitiesResponseCapabilitiesComponent, CapabilityResponse?>, file: StaticString = #file, line: UInt = #line) async throws {
         let request = makeOCSRequest(path: "cloud/capabilities")
         let (data, info) = try await urlSession.data(for: request)
         let statusCode = (info as! HTTPURLResponse).statusCode
@@ -117,7 +117,7 @@ class UITestBackend {
         }
 
         let response = try jsonDecoder.decode(OCSResponse<CapabilitiesResponse>.self, from: data)
-        let reality = response.data.capabilities.downloadLimit?.enabled ?? false
+        let reality = response.data.capabilities[keyPath: capability]?.enabled ?? false
 
         XCTAssertEqual(expectation, reality, file: file, line: line)
     }

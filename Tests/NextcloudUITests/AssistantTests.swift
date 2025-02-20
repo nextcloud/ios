@@ -10,7 +10,7 @@ import XCTest
 /// > To Do: Check whether this can be converted to Swift Testing.
 ///
 @MainActor
-final class DownloadLimitTests: BaseUIXCTestCase {
+final class AssistantTests: BaseUIXCTestCase {
     ///
     /// The Nextcloud server API abstraction object.
     ///
@@ -23,6 +23,8 @@ final class DownloadLimitTests: BaseUIXCTestCase {
     /// Obviously, this is fragile by making some assumptions of the user interface state.
     ///
     let testFileName = "_Xcode UI Test Subject.md"
+
+    // MARK: - Helpers
 
     ///
     /// Pull to refresh on the first found collection view to reveal the new file on the server.
@@ -61,12 +63,61 @@ final class DownloadLimitTests: BaseUIXCTestCase {
         // Set up test backend communication.
         backend = UITestBackend()
 
-        try await backend.assertCapability(true, capability: \.downloadLimit)
-        try await backend.delete(testFileName)
-        try await backend.prepareTestFile(testFileName)
+        try await backend.assertCapability(true, capability: \.assistant)
+//        try await backend.delete(testFileName)
+//        try await backend.prepareTestFile(testFileName)
     }
 
     // MARK: - Tests
+
+    func testCreateAssistantTask() async throws {
+        let taskInput = "TestTask"
+        let button = app.tabBars["Tab Bar"].buttons["More"]
+        guard button.await() else { return }
+        button.tap()
+
+        let talkStaticText = app.tables.staticTexts["Assistant"]
+        talkStaticText.tap()
+
+        app.navigationBars["Assistant"].buttons["CreateButton"].tap()
+                
+        app.textViews["InputTextEditor"].typeText(taskInput)
+        app.navigationBars["New Free text to text prompt task"]/*@START_MENU_TOKEN@*/.buttons["Create"]/*[[".otherElements[\"Create\"].buttons[\"Create\"]",".buttons[\"Create\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
+        
+        let cell = app.collectionViews.children(matching: .cell).element(boundBy: 0)
+
+        pullToRefresh()
+
+        try await aMoment()
+
+        XCTAssert(cell.staticTexts[taskInput].exists)
+
+    }
+
+    func testEditAssistantTask() async throws {
+        try await testCreateAssistantTask()
+
+        let taskInputEdited = "TestTask"
+
+//        XCUIApplication().collectionViews.children(matching: .cell).element(boundBy: 0).buttons["TestTask, This is a fake result: \n\n- Prompt: TestTask\n- Model: model_2\n- Maximum number of words: 1234, Today"]/*@START_MENU_TOKEN@*/.press(forDuration: 1.5);/*[[".tap()",".press(forDuration: 1.5);"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/
+//        XCUIApplication().collectionViews.children(matching: .cell).element(boundBy: 0)/*@START_MENU_TOKEN@*/.staticTexts["This is a fake result: \n\n- Prompt: TestTask\n- Model: model_2\n- Maximum number of words: 1234"].press(forDuration: 1.3);/*[[".buttons[\"TestTask, This is a fake result: \\n\\n- Prompt: TestTask\\n- Model: model_2\\n- Maximum number of words: 1234, Today\"].staticTexts[\"This is a fake result: \\n\\n- Prompt: TestTask\\n- Model: model_2\\n- Maximum number of words: 1234\"]",".tap()",".press(forDuration: 1.3);",".staticTexts[\"This is a fake result: \\n\\n- Prompt: TestTask\\n- Model: model_2\\n- Maximum number of words: 1234\"]"],[[[-1,3,1],[-1,0,1]],[[-1,2],[-1,1]]],[0,0]]@END_MENU_TOKEN@*/
+//        XCUIApplication().collectionViews.children(matching: .cell).element(boundBy: 0).buttons["TestTask, This is a fake result: \n\n- Prompt: TestTask\n- Model: model_2\n- Maximum number of words: 1234, Today"].tap()
+//
+
+        let cell = app.collectionViews.children(matching: .cell).element(boundBy: 0)
+
+        XCUIApplication().tabBars["Tab Bar"].buttons["More"].tap()
+//        XCUIApplication().collectionViews.children(matching: .cell).element(boundBy: 0)/*@START_MENU_TOKEN@*/.staticTexts["This is a fake result: \n\n- Prompt: TestTask\n- Model: model_2\n- Maximum number of words: 1234"].press(forDuration: 2.1);/*[[".buttons[\"TestTask, This is a fake result: \\n\\n- Prompt: TestTask\\n- Model: model_2\\n- Maximum number of words: 1234, Today\"].staticTexts[\"This is a fake result: \\n\\n- Prompt: TestTask\\n- Model: model_2\\n- Maximum number of words: 1234\"]",".tap()",".press(forDuration: 2.1);",".buttons[\"TaskContextMenu\"].staticTexts[\"This is a fake result: \\n\\n- Prompt: TestTask\\n- Model: model_2\\n- Maximum number of words: 1234\"]",".staticTexts[\"This is a fake result: \\n\\n- Prompt: TestTask\\n- Model: model_2\\n- Maximum number of words: 1234\"]"],[[[-1,4,1],[-1,3,1],[-1,0,1]],[[-1,2],[-1,1]]],[0,0]]@END_MENU_TOKEN@*/
+//                XCUIApplication().collectionViews.children(matching: .cell).element(boundBy: 0)/*@START_MENU_TOKEN@*/.staticTexts["TestTask"].press(forDuration: 2.2);/*[[".buttons[\"TestTask, This is a fake result: \\n\\n- Prompt: TestTask\\n- Model: model_2\\n- Maximum number of words: 1234, Today\"].staticTexts[\"TestTask\"]",".tap()",".press(forDuration: 2.2);",".buttons[\"TaskContextMenu\"].staticTexts[\"TestTask\"]",".staticTexts[\"TestTask\"]"],[[[-1,4,1],[-1,3,1],[-1,0,1]],[[-1,2],[-1,1]]],[0,0]]@END_MENU_TOKEN@*/
+        XCUIApplication().collectionViews.children(matching: .cell).element(boundBy: 0)/*@START_MENU_TOKEN@*/.staticTexts["TestTask"].press(forDuration: 1.7);/*[[".buttons[\"TestTask, This is a fake result: \\n\\n- Prompt: TestTask\\n- Model: model_2\\n- Maximum number of words: 1234, Today\"].staticTexts[\"TestTask\"]",".tap()",".press(forDuration: 1.7);",".buttons[\"TaskContextMenu\"].staticTexts[\"TestTask\"]",".staticTexts[\"TestTask\"]"],[[[-1,4,1],[-1,3,1],[-1,0,1]],[[-1,2],[-1,1]]],[0,0]]@END_MENU_TOKEN@*/
+//        XCUIApplication().sheets.scrollViews.otherElements.buttons["Delete"].tap()
+        print(app.debugDescription)
+
+        let editButton = app.otherElements.containing(.staticText, identifier: "Edit").firstMatch
+            XCTAssertTrue(editButton.waitForExistence(timeout: 2), "Edit button not found in context menu")
+            editButton.tap()
+
+    }
 
     func testShareWithoutDownloadLimitCapability() async throws {
         // This cannot be implemented at the time of writing.
