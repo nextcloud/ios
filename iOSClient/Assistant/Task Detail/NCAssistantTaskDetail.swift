@@ -70,7 +70,6 @@ struct InputOutputScrollView: View {
                     .background(Color(NCBrandColor.shared.textColor2).opacity(0.1))
                     .clipShape(.rect(cornerRadius: 8))
                     .textSelection(.enabled)
-
             }
             .padding(.horizontal)
             .padding(.bottom, 80)
