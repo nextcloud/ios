@@ -12,34 +12,12 @@ import XCTest
 @MainActor
 final class DownloadLimitTests: BaseUIXCTestCase {
     ///
-    /// The Nextcloud server API abstraction object.
-    ///
-    var backend: UITestBackend!
-
-    ///
     /// Name of the file to work with.
     ///
     /// The leading underscore is required for the file to appear at the top of the list.
     /// Obviously, this is fragile by making some assumptions of the user interface state.
     ///
     let testFileName = "_Xcode UI Test Subject.md"
-
-    ///
-    /// Pull to refresh on the first found collection view to reveal the new file on the server.
-    ///
-    func pullToRefresh(file: StaticString = #file, line: UInt = #line) {
-        let cell = app.collectionViews.firstMatch.staticTexts.firstMatch
-
-        guard cell.exists else {
-            XCTFail("Apparently no collection view cell is visible!", file: file, line: line)
-            return
-        }
-
-        let start = cell.coordinate(withNormalizedOffset: CGVectorMake(0, 0))
-        let finish = cell.coordinate(withNormalizedOffset: CGVectorMake(0, 20))
-
-        start.press(forDuration: 0.2, thenDragTo: finish)
-    }
 
     // MARK: - Lifecycle
 
@@ -56,7 +34,7 @@ final class DownloadLimitTests: BaseUIXCTestCase {
         app.launchArguments = ["UI_TESTING"]
         app.launch()
 
-        try logIn()
+        try await logIn()
 
         // Set up test backend communication.
         backend = UITestBackend()

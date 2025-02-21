@@ -14,6 +14,11 @@ class BaseUIXCTestCase: XCTestCase {
     var app: XCUIApplication!
 
     ///
+    /// The Nextcloud server API abstraction object.
+    ///
+    var backend: UITestBackend!
+    
+    ///
     /// Generic convenience method to define user interface interruption monitors.
     ///
     /// This is called every time an alert from outside the app's user interface is presented (in example system prompt about saving a password).
@@ -38,6 +43,16 @@ class BaseUIXCTestCase: XCTestCase {
     }
 
     ///
+    /// Let the current `Task` rest for 2 seconds.
+    ///
+    /// Some asynchronous background activities like the follow up request to define a download limit have no effect on the visible user interface.
+    /// Hence their outcome can only be assumed after a brief period of time.
+    ///
+    func aSmallMoment() async throws {
+        try await Task.sleep(for: .seconds(2))
+    }
+
+    ///
     /// Let the current `Task` rest for ``TestConstants/controlExistenceTimeout``.
     ///
     /// Some asynchronous background activities like the follow up request to define a download limit have no effect on the visible user interface.
@@ -51,7 +66,7 @@ class BaseUIXCTestCase: XCTestCase {
     /// Automation of the sign-in, if required.
     ///
     ///
-    func logIn() throws {
+    func logIn() async throws {
         guard app.buttons["login"].exists else {
             return
         }
@@ -92,6 +107,8 @@ class BaseUIXCTestCase: XCTestCase {
             webView.buttons.firstMatch.tap()
         }
 
+        try await aSmallMoment()
+
         let grantButton = webView.buttons["Grant access"]
 
         guard grantButton.await() else {
@@ -104,5 +121,24 @@ class BaseUIXCTestCase: XCTestCase {
         // Switch back from Safari to our app.
         app.activate()
         app.buttons["accountSwitcher"].await()
+
+        try await aSmallMoment()
+    }
+
+    ///
+    /// Pull to refresh on the first found collection view to reveal the new file on the server.
+    ///
+    func pullToRefresh(file: StaticString = #file, line: UInt = #line) {
+        let cell = app.collectionViews.firstMatch.staticTexts.firstMatch
+
+        guard cell.exists else {
+            XCTFail("Apparently no collection view cell is visible!", file: file, line: line)
+            return
+        }
+
+        let start = cell.coordinate(withNormalizedOffset: CGVectorMake(0, 0))
+        let finish = cell.coordinate(withNormalizedOffset: CGVectorMake(0, 20))
+
+        start.press(forDuration: 0.2, thenDragTo: finish)
     }
 }

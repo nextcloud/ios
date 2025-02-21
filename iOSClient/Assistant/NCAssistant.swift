@@ -116,6 +116,7 @@ struct TaskList: View {
                             Image(systemName: "arrow.trianglehead.clockwise")
                         }
                     }
+                    .accessibilityIdentifier("TaskRetryContextMenu")
 
                     Button {
                         taskToEdit = task
@@ -127,6 +128,7 @@ struct TaskList: View {
                             Image(systemName: "pencil")
                         }
                     }
+                    .accessibilityIdentifier("TaskEditContextMenu")
 
                     Button(role: .destructive) {
                         taskToDelete = task
@@ -138,6 +140,7 @@ struct TaskList: View {
                             Image(systemName: "trash")
                         }
                     }
+                    .accessibilityIdentifier("TaskDeleteContextMenu")
                 }
                 .accessibilityIdentifier("TaskContextMenu")
         }
