@@ -63,28 +63,26 @@ class NCAssistantModel: ObservableObject {
         isLoading = true
 
         if useV2 {
-            NextcloudKit.shared.textProcessingGetTasksV2(taskType: task.type ?? "", account: session.account, completion: { _, tasks, _, error in
-                self.isLoading = false
-
-                if error != .success {
-                    self.hasError = true
-                    return
-                }
-
-                self.selectedTask = task
+            NextcloudKit.shared.textProcessingGetTasksV2(taskType: task.type ?? "", account: session.account, completion: { _, _, _, error in
+                handle(task: task, error: error)
             })
         } else {
             NextcloudKit.shared.textProcessingGetTask(taskId: Int(task.id), account: session.account) { _, task, _, error in
-                self.isLoading = false
-
-                if error != .success {
-                    self.hasError = true
-                    return
-                }
-
                 guard let task else { return }
-                self.selectedTask = NKTextProcessingTask.toV2(tasks: [task]).tasks.first
+                let taskV2 = NKTextProcessingTask.toV2(tasks: [task]).tasks.first
+                handle(task: taskV2, error: error)
             }
+        }
+
+        func handle(task: AssistantTask?, error: NKError?) {
+            self.isLoading = false
+
+            if error != .success {
+                self.hasError = true
+                return
+            }
+
+            self.selectedTask = task
         }
     }
 
@@ -229,7 +227,7 @@ extension NCAssistantModel {
             TaskTypeData(id: "1", name: "Free Prompt", description: "", inputShape: nil, outputShape: nil),
             TaskTypeData(id: "2", name: "Summarize", description: "", inputShape: nil, outputShape: nil),
             TaskTypeData(id: "3", name: "Generate headline", description: "", inputShape: nil, outputShape: nil),
-            TaskTypeData(id: "4", name: "Reformulate", description: "", inputShape: nil, outputShape: nil),
+            TaskTypeData(id: "4", name: "Reformulate", description: "", inputShape: nil, outputShape: nil)
         ]
 
         self.tasks = tasks

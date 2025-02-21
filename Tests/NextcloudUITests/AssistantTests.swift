@@ -7,8 +7,6 @@ import XCTest
 ///
 /// User interface tests for the download limits management on shares.
 ///
-/// > To Do: Check whether this can be converted to Swift Testing.
-///
 @MainActor
 final class AssistantTests: BaseUIXCTestCase {
     let taskInputCreated = "TestTaskCreated" + NSUUID().uuidString
@@ -51,9 +49,6 @@ final class AssistantTests: BaseUIXCTestCase {
         talkStaticText.tap()
     }
 
-    ///
-    /// Leads to the Assistant screen.
-    ///
     private func createTask(input: String) {
         app.navigationBars["Assistant"].buttons["CreateButton"].tap()
 

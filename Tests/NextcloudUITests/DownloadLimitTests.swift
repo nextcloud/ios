@@ -7,8 +7,6 @@ import XCTest
 ///
 /// User interface tests for the download limits management on shares.
 ///
-/// > To Do: Check whether this can be converted to Swift Testing.
-///
 @MainActor
 final class DownloadLimitTests: BaseUIXCTestCase {
     ///
