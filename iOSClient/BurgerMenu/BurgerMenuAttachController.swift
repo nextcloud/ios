@@ -61,7 +61,7 @@ extension BurgerMenuAttachController: BurgerMenuViewModelDelegate {
         guard let vc = vc else {
             return
         }
-        let navVC = UINavigationController(rootViewController: vc)
+        let navVC = HiDriveMainNavigationController(rootViewController: vc)
         navVC.modalPresentationStyle = .overCurrentContext
         navVC.setNavigationBarAppearance()
         presentingScreen?.present(navVC, animated: true)

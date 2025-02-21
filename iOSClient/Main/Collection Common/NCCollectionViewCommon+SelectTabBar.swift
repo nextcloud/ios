@@ -130,9 +130,9 @@ extension NCCollectionViewCommon: HiDriveCollectionViewCommonSelectToolbarDelega
         if editMode {
             navigationItem.leftBarButtonItems = nil
         } else {
-            (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
+            (self.navigationController as? HiDriveMainNavigationController)?.setNavigationLeftItems()
         }
-        (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
+        (self.navigationController as? HiDriveMainNavigationController)?.setNavigationRightItems()
 
         navigationController?.interactivePopGestureRecognizer?.isEnabled = !editMode
         navigationItem.hidesBackButton = editMode

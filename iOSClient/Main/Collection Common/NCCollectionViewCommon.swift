@@ -28,7 +28,7 @@ import RealmSwift
 import NextcloudKit
 import EasyTipView
 
-class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCPhotoCellDelegate, NCSectionFirstHeaderDelegate, NCSectionFooterDelegate, NCSectionFirstHeaderEmptyDataDelegate, UIAdaptivePresentationControllerDelegate, UIContextMenuInteractionDelegate {
+class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate, NCListCellDelegate, NCGridCellDelegate, NCPhotoCellDelegate, NCSectionFirstHeaderDelegate, NCSectionFooterDelegate, NCSectionFirstHeaderEmptyDataDelegate, NCAccountSettingsModelDelegate, UIAdaptivePresentationControllerDelegate, UIContextMenuInteractionDelegate {
     
     @IBOutlet weak var collectionView: UICollectionView!
 	@IBOutlet weak var headerTop: NSLayoutConstraint?
@@ -287,15 +287,15 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
-        navigationController?.setNavigationBarAppearance()
-        navigationController?.navigationBar.prefersLargeTitles = false
-        navigationController?.setNavigationBarHidden(false, animated: true)
+        if titlePreviusFolder != nil {
+            navigationController?.navigationBar.topItem?.title = titlePreviusFolder
+        }
         navigationItem.title = titleCurrentFolder
         
 		isEditMode = false
 		setNavigationBarLogoIfNeeded()
-        (self.navigationController as? NCMainNavigationController)?.setNavigationLeftItems()
-        (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
+        (self.navigationController as? HiDriveMainNavigationController)?.setNavigationLeftItems()
+        (self.navigationController as? HiDriveMainNavigationController)?.setNavigationRightItems()
 
         layoutForView = database.getLayoutForView(account: session.account, key: layoutKey, serverUrl: serverUrl)
         if isLayoutList {
@@ -430,7 +430,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         else { return }
 
         defer {
-            (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
+            (self.navigationController as? HiDriveMainNavigationController)?.setNavigationRightItems()
             self.updateHeadersView()
         }
         
@@ -459,7 +459,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
 
         self.collectionView.collectionViewLayout.invalidateLayout()
 
-        (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
+        (self.navigationController as? HiDriveMainNavigationController)?.setNavigationRightItems()
     }
 
     @objc func reloadDataSource(_ notification: NSNotification) {
@@ -692,6 +692,8 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
         }
         return NCBrandOptions.shared.brand
     }
+    
+    func accountSettingsDidDismiss(tableAccount: tableAccount?, controller: NCMainTabBarController?) { }
 
     // MARK: - SEARCH
 
@@ -855,7 +857,7 @@ class NCCollectionViewCommon: UIViewController, UIGestureRecognizerDelegate, UIS
                               animations: { self.collectionView.reloadData() },
                               completion: nil)
 
-            (self.navigationController as? NCMainNavigationController)?.setNavigationRightItems()
+            (self.navigationController as? HiDriveMainNavigationController)?.setNavigationRightItems()
             self.refreshControl.endRefreshing()
         }
     }
