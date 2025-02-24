@@ -26,6 +26,7 @@ import OpenSSL
 import NextcloudKit
 import Alamofire
 import Queuer
+import SwiftUI
 
 #if EXTENSION_FILE_PROVIDER_EXTENSION || EXTENSION_WIDGET
 @objc protocol uploadE2EEDelegate: AnyObject { }
@@ -142,6 +143,24 @@ class NCNetworking: @unchecked Sendable, NextcloudKitDelegate {
             NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Called urlSessionDidFinishEvents for Background URLSession")
             appDelegate.backgroundSessionCompletionHandler = nil
             completionHandler()
+        }
+#endif
+    }
+
+    func request<Value>(_ request: DataRequest, didParseResponse response: AFDataResponse<Value>) {
+#if !EXTENSION
+        if let statusCode = response.response?.statusCode,
+           statusCode == NCGlobal.shared.errorForbidden,
+           let account = request.request?.allHTTPHeaderFields?["X-NC-Account"] as? String,
+           let controller = SceneManager.shared.getControllers().first(where: { $0.account == account }) {
+            NextcloudKit.shared.getTermsOfService(account: account) { _, tos, _, error in
+                if error == .success, let tos {
+                    let termOfServiceModel = NCTermOfServiceModel(controller: controller, tos: tos)
+                    let termOfServiceView = NCTermOfServiceModelView(model: termOfServiceModel)
+                    let termOfServiceController = UIHostingController(rootView: termOfServiceView)
+                    controller.present(termOfServiceController, animated: true, completion: nil)
+                }
+            }
         }
 #endif
     }
