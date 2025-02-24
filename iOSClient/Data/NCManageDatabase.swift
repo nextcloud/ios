@@ -151,7 +151,6 @@ final class NCManageDatabase: Sendable {
 
                 do {
                     _ = try Realm()
-                    NextcloudKit.shared.nkCommonInstance.writeLog("DATABASE: Trying to restore account from backup...")
                     restoreTableAccountFromFile()
                 } catch let error {
                     NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Account restoration: \(error.localizedDescription)")
