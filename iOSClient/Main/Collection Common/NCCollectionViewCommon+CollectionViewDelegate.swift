@@ -118,6 +118,7 @@ extension NCCollectionViewCommon: UICollectionViewDelegate {
             }
             collectionView.reloadItems(at: [indexPath])
             tabBarSelect?.update(fileSelect: fileSelect, metadatas: getSelectedMetadatas(), userId: metadata.userId)
+            fileActionsHeader?.setSelectionState(selectionState: selectionState)
             return
         }
 

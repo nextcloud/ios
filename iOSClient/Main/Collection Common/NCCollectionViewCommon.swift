@@ -1187,4 +1187,13 @@ extension NCCollectionViewCommon {
             setNavigationBarLogo()
         }
     }
+    
+    var selectionState: FileActionsHeaderSelectionState {
+        let selectedItemsCount = fileSelect.count
+        if selectedItemsCount == dataSource.getMetadatas().count {
+            return .all
+        }
+        
+        return selectedItemsCount == 0 ? .none : .some(selectedItemsCount)
+    }
 }
