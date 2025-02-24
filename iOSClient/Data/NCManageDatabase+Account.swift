@@ -27,6 +27,7 @@ import RealmSwift
 import NextcloudKit
 
 class tableAccount: Object {
+    @objc dynamic var testVare = ""
     @objc dynamic var account = ""
     @objc dynamic var active: Bool = false
     @objc dynamic var address = ""
@@ -166,7 +167,7 @@ extension NCManageDatabase {
         }
 
         if !FileManager.default.fileExists(atPath: fileURL.path) {
-            print("Backup not found at: \(fileURL.path)")
+            print("Account restore backup not found at: \(fileURL.path)")
             return
         }
 
@@ -185,7 +186,7 @@ extension NCManageDatabase {
                 }
             }
         } catch {
-            print("restore error: \(error)")
+            print("Account restore error: \(error)")
         }
     }
 
