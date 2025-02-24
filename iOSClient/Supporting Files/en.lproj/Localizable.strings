@@ -391,7 +391,6 @@
 "_disableLocalCacheAfterUpload_footer_" = "After uploading the file, do not keep it in the local cache";
 "_disableLocalCacheAfterUpload_"        = "Disable local cache";
 "_autoupload_"                      = "Auto upload photos/videos";
-"_autoupload_select_folder_"        = "Select the \"Auto upload\" folder";
 "_autoupload_error_select_folder_"  = "Select a valid folder for the \"Auto upload\"";
 "_autoupload_background_"           = "Auto upload in the background";
 "_autoupload_photos_"               = "Auto upload photos";
@@ -407,7 +406,6 @@
 "_autoupload_change_location_footer_" = "Change folder used for \"Automatic upload of camera photos\" (if the option is enabled)";
 "_autoupload_not_select_home_"      = "Select a folder";
 "_autoupload_save_album_"           = "Copy photo or video into the photo album";
-"_autoupload_fullphotos_"           = "Upload the whole camera roll";
 "_start_autoupload_"                = "Start auto uploading";
 "_stop_autoupload_"                 = "Stop auto uploading";
 "_autoupload_fullphotos_footer_"    = "Adjust the options above before uploading.";
@@ -416,7 +414,6 @@
 "_autoupload_subfolder_granularity_"    = "Subfolder Granularity";
 "_filenamemask_"                        = "Change filename mask";
 "_filenamemask_footer_"                 = "By default, when a file is uploaded, it automatically gets the following format: yy-mm-dd hh-mm-ss plus a 4-digit counter. If you do not like this format, you can change it here except for the final 4-digit counter, which cannot be omitted.";
-"_autoupload_current_folder_"           = "Currently selected folder";
 "_help_tutorial_"               = "Tutorial";
 "_help_intro_"                  = "Introduction to Nextcloud";
 "_help_activity_verbose_"       = "Detailed Activity feed";
