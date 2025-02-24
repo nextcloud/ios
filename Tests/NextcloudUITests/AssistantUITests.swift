@@ -10,7 +10,7 @@ import XCTest
 @MainActor
 final class AssistantUITests: BaseUIXCTestCase {
     let taskInputCreated = "TestTaskCreated" + UUID().uuidString
-    let taskInputRetried = "TestTaskRetried" + UUID()().uuidString
+    let taskInputRetried = "TestTaskRetried" + UUID().uuidString
     let taskInputToEdit = "TestTaskToEdit" + UUID().uuidString
     let taskInputDeleted = "TestTaskDeleted" + UUID().uuidString
 
