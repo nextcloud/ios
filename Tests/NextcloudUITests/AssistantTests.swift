@@ -9,10 +9,10 @@ import XCTest
 ///
 @MainActor
 final class AssistantTests: BaseUIXCTestCase {
-    let taskInputCreated = "TestTaskCreated" + NSUUID().uuidString
-    let taskInputRetried = "TestTaskRetried" + NSUUID().uuidString
-    let taskInputToEdit = "TestTaskToEdit" + NSUUID().uuidString
-    let taskInputDeleted = "TestTaskDeleted" + NSUUID().uuidString
+    let taskInputCreated = "TestTaskCreated" + UUID().uuidString
+    let taskInputRetried = "TestTaskRetried" + UUID()().uuidString
+    let taskInputToEdit = "TestTaskToEdit" + UUID().uuidString
+    let taskInputDeleted = "TestTaskDeleted" + UUID().uuidString
 
     // MARK: - Lifecycle
 
