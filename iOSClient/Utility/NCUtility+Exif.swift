@@ -130,7 +130,13 @@ extension NCUtility {
             data.hPositioningError = gpsData[kCGImagePropertyGPSHPositioningError] as? String
             data.imgDirection = gpsData[kCGImagePropertyGPSImgDirection] as? String
             data.latitude = gpsData[kCGImagePropertyGPSLatitude] as? Double
+            if gpsData[kCGImagePropertyGPSLatitudeRef] as? String == "S" {
+                data.latitude! *= -1
+            }
             data.longitude = gpsData[kCGImagePropertyGPSLongitude] as? Double
+            if gpsData[kCGImagePropertyGPSLongitudeRef] as? String == "W" {
+                data.longitude! *= -1
+            }
             data.speed = gpsData[kCGImagePropertyGPSSpeed] as? Double
         }
 
