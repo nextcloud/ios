@@ -237,7 +237,6 @@ extension NCAssistantModel {
     }
 }
 
-
 extension AssistantTask {
     struct StatusInfo {
         let stringKey, imageSystemName: String
@@ -255,6 +254,6 @@ extension AssistantTask {
     }
 
     var statusDate: String {
-        return NCUtility().getTitleFromDate(.init(timeIntervalSince1970: TimeInterval((lastUpdated ?? completionExpectedAt) ?? 0)))
+        return NCUtility().getRelativeDateTitle(.init(timeIntervalSince1970: TimeInterval((lastUpdated ?? completionExpectedAt) ?? 0)))
     }
 }

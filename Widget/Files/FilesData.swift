@@ -204,7 +204,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
                 }
 
                 // SUBTITLE
-                let subTitle = utility.dateDiff(file.date as Date) + " · " + utilityFileSystem.transformedSize(file.size)
+                let subTitle = utility.getRelativeDateTitle(file.date as Date) + " · " + utilityFileSystem.transformedSize(file.size)
 
                 // URL: nextcloud://open-file?path=Talk/IMG_0000123.jpg&user=marinofaggiana&link=https://cloud.nextcloud.com/f/123
                 guard var path = utilityFileSystem.getPath(path: file.path, user: file.user, fileName: file.fileName).urlEncoded else { continue }
