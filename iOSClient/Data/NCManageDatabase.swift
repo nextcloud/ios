@@ -147,32 +147,30 @@ final class NCManageDatabase: Sendable {
             } catch let error {
                 NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] DATABASE: \(error.localizedDescription)")
 
-                deleteRealmFiles()
+                if let realmURL = databaseFileUrlPath {
+                    let filesToDelete = [
+                        realmURL,
+                        realmURL.appendingPathExtension("lock"),
+                        realmURL.appendingPathExtension("note"),
+                        realmURL.appendingPathExtension("management")
+                    ]
+
+                    for file in filesToDelete {
+                        do {
+                            try FileManager.default.removeItem(at: file)
+                        } catch { }
+                    }
+                }
 
                 do {
                     _ = try Realm()
+
                     restoreTableAccountFromFile()
+
                 } catch let error {
                     NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Account restoration: \(error.localizedDescription)")
                 }
             }
-        }
-    }
-
-    func deleteRealmFiles() {
-        guard let realmURL = Realm.Configuration.defaultConfiguration.fileURL else { return }
-
-        let filesToDelete = [
-            realmURL,
-            realmURL.appendingPathExtension("lock"),
-            realmURL.appendingPathExtension("note"),
-            realmURL.appendingPathExtension("management")
-        ]
-
-        for file in filesToDelete {
-            do {
-                try FileManager.default.removeItem(at: file)
-            } catch { }
         }
     }
 
