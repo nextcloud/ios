@@ -8,7 +8,7 @@ import XCTest
 /// User interface tests for the download limits management on shares.
 ///
 @MainActor
-final class DownloadLimitTests: BaseUIXCTestCase {
+final class DownloadLimitUITests: BaseUIXCTestCase {
     ///
     /// Name of the file to work with.
     ///

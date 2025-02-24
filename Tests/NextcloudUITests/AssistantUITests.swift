@@ -8,7 +8,7 @@ import XCTest
 /// User interface tests for the download limits management on shares.
 ///
 @MainActor
-final class AssistantTests: BaseUIXCTestCase {
+final class AssistantUITests: BaseUIXCTestCase {
     let taskInputCreated = "TestTaskCreated" + UUID().uuidString
     let taskInputRetried = "TestTaskRetried" + UUID()().uuidString
     let taskInputToEdit = "TestTaskToEdit" + UUID().uuidString
