@@ -92,7 +92,7 @@ class NCContextMenu: NSObject {
                     if error == .success || afError?.isExplicitlyCancelledError ?? false {
                         hud.dismiss()
                     } else {
-                        hud.error(text: error.description)
+                        hud.error(text: error.errorDescription)
                     }
                 }
             }
@@ -142,7 +142,7 @@ class NCContextMenu: NSObject {
                     if error == .success || afError?.isExplicitlyCancelledError ?? false {
                         hud.dismiss()
                     } else {
-                        hud.error(text: error.description)
+                        hud.error(text: error.errorDescription)
                     }
                 }
             }

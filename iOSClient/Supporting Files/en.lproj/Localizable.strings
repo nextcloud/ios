@@ -139,6 +139,8 @@
 "_database_corrupt_"        = "Oops something went wrong, please enter your credentials but don't worry, your files have remained secure";
 "_livephoto_save_"          = "Save Live Photo to Photo Album";
 "_livephoto_save_error_"    = "Error during save of Live Photo";
+"_livephoto_no_"            = "Disable Live Photo";
+"_convert_live_photo_"      = "Convert to Live Photo";
 "_file_conflict_num_"       = "file conflict";
 "_file_conflicts_num_"      = "file conflicts";
 "_file_conflict_desc_"      = "Which files do you want to keep?\nIf you select both versions, the copied file will have a number added to its name.";
@@ -406,6 +408,8 @@
 "_autoupload_not_select_home_"      = "Select a folder";
 "_autoupload_save_album_"           = "Copy photo or video into the photo album";
 "_autoupload_fullphotos_"           = "Upload the whole camera roll";
+"_start_autoupload_"                = "Start auto uploading";
+"_stop_autoupload_"                 = "Stop auto uploading";
 "_autoupload_fullphotos_footer_"    = "Adjust the options above before uploading.";
 "_autoupload_create_subfolder_"     = "Use subfolders";
 "_autoupload_create_subfolder_footer_"  = "Store in subfolders based on year, month or daily.";
@@ -434,6 +438,7 @@
 "_no_capabilities_found_"       = "Capabilities not found";
 "_capabilities_footer_"         = "Display the packages used by the app if they are installed and available on the server.";
 "_diagnostics_"                 = "Diagnostics";
+"_diagnostics_footer_"          = "Changing log level requires a restart of the app to take effect";
 "_view_log_"                    = "View log file";
 "_clear_log_"                   = "Clear log file";
 "_set_log_level_"               = "Set Log level";
@@ -678,6 +683,8 @@
 "_share_file_drop_"             = "File drop (upload only)";
 "_share_secure_file_drop_"      = "Secure file drop (upload only)";
 "_share_hide_download_"         = "Hide download";
+"_share_limit_download_"        = "Limit downloads";
+"_remaining_"                   = "%d remaining";
 "_share_password_protect_"      = "Password protection";
 "_share_expiration_date_"       = "Set expiration date";
 "_share_note_recipient_"        = "Note to recipient";
@@ -1005,7 +1012,7 @@
 "_delete_selected_photos_"  = "Delete selected photos";
 "_media_square_"            = "Square grid";
 "_media_ratio_"             = "Aspect ratio grid";
-"_autoupload_notice_"       = "To ensure the proper functioning of the application, it is necessary to enable Background App Refresh. Otherwise, new photos or videos will not be detected when the application is in the background.\n\nAdditionally, please note that the application will not be able to detect new photos and videos if it is manually terminated. When the app is in the background, data transfer may be slower, and new photos and/or videos will generally be detected every 10 minutes, depending on the device’s battery level.\n\nTo verify that the app is functioning correctly, you can use the log file available in Advanced settings.";
+"_autoupload_notice_"       = "To ensure the proper functioning of this feature, it is necessary to enable Background App Refresh. Otherwise, new photos or videos will not be detected when the application is in the background.\n\nAdditionally, please note that the app will not be able to detect new photos and videos if it is manually terminated. When the app is in the background, data transfer may be slower, and new photos and/or videos will generally be detected every 10 minutes, depending on the device’s battery level.\n\nTo verify that the app is functioning correctly, you can use the log file available in Advanced settings.";
 "_display_"                 = "Display";
 "_appearance_"              = "Appearance";
 "_light_"                   = "Light";
@@ -1020,7 +1027,7 @@
 "_keep_screen_awake_"       = "Keep screen awake\nwhile transferring files";
 "_error_not_found_"         = "The requested resource could not be found";
 "_error_conflict_"          = "The request could not be completed due to a conflict with the current state of the resource";
-"_error_precondition_"      = "The server does not meet one of the preconditions that the requester";
+"_error_precondition_"      = "The server does not meet one of the preconditions of the requester";
 
 // Video
 "_select_trace_"            = "Select the trace";
@@ -1125,7 +1132,7 @@
 
 // MARK: Client certificate
 "_no_client_cert_found_"         = "The server is requesting a client certificate";
-"_no_client_cert_found_desc_"    = "Do you want to install a TLS client certificate? \n Note that only .p12 archives created through OpenSSL with the -legacy flag can work on Apple devices.";
+"_no_client_cert_found_desc_"    = "Do you want to install a TLS client certificate? \n Note that the .p12 certificate must be installed on your device first by clicking on it and installing it as an Identitity Certificate Profile in Settings. The certificate MUST also have a password as that is a requirement by iOS.";
 "_client_cert_enter_password_"   = "Enter the password for the chosen certificate";
 "_client_cert_wrong_password_"   = "Sorry, you entered an invalid password";
 
@@ -1141,3 +1148,9 @@
 "_file_name_new_extension_" = "Changing the extension might cause this file to open in a different application.";
 "_please_rename_file_" = "Please rename the file or folder.";
 "hidden_file_name_warning" = "Name will result in a hidden file.";
+
+"_select_autoupload_albums_" = "Select albums";
+"_upload_from_" = "Upload from";
+"_multiple_albums_" = "Multiple albums";
+"_smart_albums_" = "Smart albums";
+"_albums_" = "Albums";

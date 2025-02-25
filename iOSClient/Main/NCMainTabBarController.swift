@@ -23,6 +23,7 @@
 
 import UIKit
 import SwiftUI
+import NextcloudKit
 
 struct NavigationCollectionViewCommon {
     var serverUrl: String
@@ -37,12 +38,10 @@ class NCMainTabBarController: UITabBarController {
     var documentPickerViewController: NCDocumentPickerViewController?
     let navigationCollectionViewCommon = ThreadSafeArray<NavigationCollectionViewCommon>()
     private var previousIndex: Int?
-
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-
-        NotificationCenter.default.addObserver(self, selector: #selector(changeTheming(_:)), name: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil)
-    }
+    private var timerProcess: Timer?
+    private let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup)
+    private var unauthorizedAccountInProgress: Bool = false
+    private var unavailableAccountInProgress: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,6 +49,26 @@ class NCMainTabBarController: UITabBarController {
 
         if #available(iOS 17.0, *) {
             traitOverrides.horizontalSizeClass = .compact
+        }
+
+        NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterChangeTheming), object: nil, queue: .main) { [weak self] notification in
+            if let userInfo = notification.userInfo as? NSDictionary,
+               let account = userInfo["account"] as? String,
+               let tabBar = self?.tabBar as? NCMainTabBar,
+               self?.account == account {
+                let color = NCBrandColor.shared.getElement(account: account)
+                tabBar.color = color
+                tabBar.tintColor = color
+                tabBar.setNeedsDisplay()
+            }
+        }
+
+        NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: nil) { [weak self] _ in
+            self?.userDefaultsDidChange()
+        }
+
+        NotificationCenter.default.addObserver(forName: UserDefaults.didChangeNotification, object: nil, queue: nil) { [weak self] _ in
+            self?.userDefaultsDidChange()
         }
     }
 
@@ -62,20 +81,6 @@ class NCMainTabBarController: UITabBarController {
             vc.isModalInPresentation = true
 
             present(vc, animated: true)
-        }
-    }
-
-    @objc func changeTheming(_ notification: NSNotification) {
-        guard let userInfo = notification.userInfo as? NSDictionary else { return }
-        let account = userInfo["account"] as? String
-
-        if let tabBar = self.tabBar as? NCMainTabBar,
-           self.account == account {
-            let color = NCBrandColor.shared.getElement(account: account)
-            tabBar.color = color
-            tabBar.tintColor = color
-
-            tabBar.setNeedsDisplay()
         }
     }
 
@@ -93,6 +98,75 @@ class NCMainTabBarController: UITabBarController {
             }
         }
         return serverUrl
+    }
+
+    private func userDefaultsDidChange() {
+        let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup)
+        let unauthorizedArray = groupDefaults?.array(forKey: "Unauthorized") as? [String] ?? []
+        var unavailableArray = groupDefaults?.array(forKey: "Unavailable") as? [String] ?? []
+        let session = NCSession.shared.getSession(account: self.account)
+
+        if unauthorizedArray.contains(account) {
+            guard !unauthorizedAccountInProgress else { return }
+            unauthorizedAccountInProgress = true
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.checkRemoteUser {
+                    self.unauthorizedAccountInProgress = false
+                }
+            }
+        } else if unavailableArray.contains(self.account) {
+            guard !unavailableAccountInProgress else { return }
+            unavailableAccountInProgress = true
+            Task {
+                let serverUrlFileName = NCUtilityFileSystem().getHomeServer(session: session)
+                let options = NKRequestOptions(checkUnauthorized: false)
+                let results = await NCNetworking.shared.readFileOrFolder(serverUrlFileName: serverUrlFileName, depth: "0", showHiddenFiles: NCKeychain().showHiddenFiles, account: self.account, options: options)
+                if results.error == .success {
+                    unavailableArray.removeAll { $0 == results.account }
+                    groupDefaults?.set(unavailableArray, forKey: "Unavailable")
+                } else {
+                    NCContentPresenter().showWarning(error: results.error, priority: .max)
+                }
+                unavailableAccountInProgress = false
+            }
+        }
+    }
+
+    private func checkRemoteUser(completion: @escaping () -> Void = {}) {
+        let token = NCKeychain().getPassword(account: account)
+        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate,
+              let tableAccount = NCManageDatabase.shared.getTableAccount(predicate: NSPredicate(format: "account == %@", account))
+        else {
+            return completion()
+        }
+
+        func changeAccount() {
+            if let accounts = NCManageDatabase.shared.getAccounts(),
+               account.count > 0,
+               let account = accounts.first {
+                NCAccount().changeAccount(account, userProfile: nil, controller: self) { }
+            } else {
+                appDelegate.openLogin(selector: NCGlobal.shared.introLogin)
+            }
+
+            completion()
+        }
+
+        NCContentPresenter().showCustomMessage(title: "", message: String(format: NSLocalizedString("_account_unauthorized_", comment: ""), account), priority: .high, delay: NCGlobal.shared.dismissAfterSecondLong, type: .error)
+
+        NextcloudKit.shared.getRemoteWipeStatus(serverUrl: tableAccount.urlBase, token: token, account: tableAccount.account) { account, wipe, _, error in
+            /// REMOVE ACCOUNT
+            NCAccount().deleteAccount(account, wipe: wipe)
+
+            if wipe {
+                NextcloudKit.shared.setRemoteWipeCompletition(serverUrl: tableAccount.urlBase, token: token, account: tableAccount.account) { _, _, error in
+                    NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Set Remote Wipe Completition error code: \(error.errorCode)")
+                    changeAccount()
+                }
+            } else {
+                changeAccount()
+            }
+        }
     }
 }
 

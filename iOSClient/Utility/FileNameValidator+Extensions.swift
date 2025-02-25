@@ -9,18 +9,15 @@
 import NextcloudKit
 
 extension FileNameValidator {
-    private func setup(account: String?) {
+    static func checkFileName(_ filename: String, account: String?) -> NKError? {
         let capabilities = NCCapabilities.shared.getCapabilities(account: account)
-        FileNameValidator.shared.setup(forbiddenFileNames: capabilities.capabilityForbiddenFileNames, forbiddenFileNameBasenames: capabilities.capabilityForbiddenFileNameBasenames, forbiddenFileNameCharacters: capabilities.capabilityForbiddenFileNameCharacters, forbiddenFileNameExtensions: capabilities.capabilityForbiddenFileNameExtensions)
+        let fileNameValidator = FileNameValidator(forbiddenFileNames: capabilities.capabilityForbiddenFileNames, forbiddenFileNameBasenames: capabilities.capabilityForbiddenFileNameBasenames, forbiddenFileNameCharacters: capabilities.capabilityForbiddenFileNameCharacters, forbiddenFileNameExtensions: capabilities.capabilityForbiddenFileNameExtensions)
+        return fileNameValidator.checkFileName(filename)
     }
 
-    func checkFileName(_ filename: String, account: String?) -> NKError? {
-        setup(account: account)
-        return FileNameValidator.shared.checkFileName(filename)
-    }
-
-    func checkFolderPath(_ folderPath: String, account: String?) -> Bool {
-        setup(account: account)
-        return FileNameValidator.shared.checkFolderPath(folderPath)
+    static func checkFolderPath(_ folderPath: String, account: String?) -> Bool {
+        let capabilities = NCCapabilities.shared.getCapabilities(account: account)
+        let fileNameValidator = FileNameValidator(forbiddenFileNames: capabilities.capabilityForbiddenFileNames, forbiddenFileNameBasenames: capabilities.capabilityForbiddenFileNameBasenames, forbiddenFileNameCharacters: capabilities.capabilityForbiddenFileNameCharacters, forbiddenFileNameExtensions: capabilities.capabilityForbiddenFileNameExtensions)
+        return fileNameValidator.checkFolderPath(folderPath)
     }
 }

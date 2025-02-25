@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 
 import UIKit
+import SwiftUI
 
 class NCMoreNavigationController: NCMainNavigationController {
     override func setNavigationRightItems() {
@@ -60,6 +61,14 @@ class NCMoreNavigationController: NCMainNavigationController {
         if self.tabBarController?.tabBar.isHidden ?? true,
            collectionViewCommon.tabBarSelect?.isHidden() ?? true {
             self.tabBarController?.tabBar.isHidden = true
+        }
+    }
+
+    override func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        if viewController is NCCollectionViewCommon || viewController is NCActivity || viewController is NCTrash {
+            setNavigationBarAppearance()
+        } else {
+            setGroupAppearance()
         }
     }
 }

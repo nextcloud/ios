@@ -73,7 +73,7 @@ extension NCShareExtension: NCAccountRequestDelegate {
         NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterChangeTheming, userInfo: ["account": account])
 
         // NETWORKING
-        NextcloudKit.shared.setup(delegate: NCNetworking.shared)
+        NextcloudKit.shared.setup(groupIdentifier: NCBrandOptions.shared.capabilitiesGroup, delegate: NCNetworking.shared)
         NextcloudKit.shared.appendSession(account: tableAccount.account,
                                           urlBase: tableAccount.urlBase,
                                           user: tableAccount.user,

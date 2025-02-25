@@ -38,11 +38,7 @@ class NCMainNavigationController: UINavigationController, UINavigationController
     }
 
     func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
-        if viewController is NCMore || viewController is UIHostingController<Nextcloud.NCSettingsView> {
-            setGroupAppearance()
-        } else {
-            setNavigationBarAppearance()
-        }
+        setNavigationBarAppearance()
     }
 
     func setNavigationLeftItems() { }

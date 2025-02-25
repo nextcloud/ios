@@ -153,7 +153,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
                 metadata.classFile = NKCommon.TypeClassFile.video.rawValue
             }
 
-            if let fileNameError = FileNameValidator.shared.checkFileName(metadata.fileNameView, account: self.controller.account) {
+            if let fileNameError = FileNameValidator.checkFileName(metadata.fileNameView, account: self.controller.account) {
                 self.controller.present(UIAlertController.warning(message: "\(fileNameError.errorDescription) \(NSLocalizedString("_please_rename_file_", comment: ""))"), animated: true)
             } else {
                 database.addMetadata(metadata)
@@ -168,7 +168,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
             for urlIn in urls {
                 let ocId = NSUUID().uuidString
                 let fileName = urlIn.lastPathComponent
-                let newFileName = FileAutoRenamer.shared.rename(fileName, account: session.account)
+                let newFileName = FileAutoRenamer.rename(fileName, account: session.account)
 
                 let toPath = utilityFileSystem.getDirectoryProviderStorageOcId(ocId, fileNameView: newFileName)
                 let urlOut = URL(fileURLWithPath: toPath)
@@ -200,7 +200,7 @@ class NCDocumentPickerViewController: NSObject, UIDocumentPickerDelegate {
             var invalidNameIndexes: [Int] = []
 
             for (index, metadata) in metadatas.enumerated() {
-                if let fileNameError = FileNameValidator.shared.checkFileName(metadata.fileName, account: session.account) {
+                if let fileNameError = FileNameValidator.checkFileName(metadata.fileName, account: session.account) {
                     if metadatas.count == 1 {
                         let alert = UIAlertController.renameFile(fileName: metadata.fileName, account: session.account) { newFileName in
                             metadatas[index].fileName = newFileName
