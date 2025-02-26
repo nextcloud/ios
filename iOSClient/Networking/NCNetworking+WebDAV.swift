@@ -113,6 +113,18 @@ extension NCNetworking {
         }
     }
 
+    func readFile(serverUrlFileName: String,
+                  showHiddenFiles: Bool = NCKeychain().showHiddenFiles,
+                  account: String,
+                  queue: DispatchQueue = NextcloudKit.shared.nkCommonInstance.backgroundQueue) async -> (account: String, metadata: tableMetadata?, error: NKError) {
+        return await withCheckedContinuation { continuation in
+            readFile(serverUrlFileName: serverUrlFileName, showHiddenFiles: showHiddenFiles, account: account, queue: queue) { _ in
+            } completion: { account, metadata, error in
+                continuation.resume(returning: (account, metadata, error))
+            }
+        }
+    }
+
     func fileExists(serverUrlFileName: String,
                     account: String,
                     completion: @escaping (_ account: String, _ exists: Bool?, _ file: NKFile?, _ error: NKError) -> Void) {
@@ -192,6 +204,73 @@ extension NCNetworking {
     }
 
     // MARK: - Create Folder
+
+    func createFolder(fileName: String,
+                      serverUrl: String,
+                      overwrite: Bool,
+                      withPush: Bool,
+                      metadata: tableMetadata? = nil,
+                      sceneIdentifier: String?,
+                      session: NCSession.Session) async -> NKError {
+        let isDirectoryEncrypted = utilityFileSystem.isDirectoryE2EE(session: session, serverUrl: serverUrl)
+        let fileName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        if isDirectoryEncrypted {
+#if !EXTENSION
+            let error = await NCNetworkingE2EECreateFolder().createFolder(fileName: fileName, serverUrl: serverUrl, withPush: withPush, sceneIdentifier: sceneIdentifier, session: session)
+            return error
+            #else
+            return .success
+#endif
+        } else {
+            var fileNameFolder = utility.removeForbiddenCharacters(fileName)
+
+            if fileName != fileNameFolder {
+                let errorDescription = String(format: NSLocalizedString("_forbidden_characters_", comment: ""), self.global.forbiddenCharacters.joined(separator: " "))
+                let error = NKError(errorCode: self.global.errorConflict, errorDescription: errorDescription)
+                return error
+            }
+
+            if !overwrite {
+                fileNameFolder = utilityFileSystem.createFileName(fileNameFolder, serverUrl: serverUrl, account: session.account)
+            }
+
+            if fileNameFolder.isEmpty {
+                return .success
+            }
+
+            let fileNameFolderUrl = serverUrl + "/" + fileNameFolder
+
+            let resultsCreateFolder = await createFolder(serverUrlFileName: fileNameFolderUrl, account: session.account)
+            let results = await readFile(serverUrlFileName: fileNameFolderUrl, account: session.account)
+
+            /// metadataStatusWaitCreateFolder
+            ///
+            if let metadata, metadata.status == self.global.metadataStatusWaitCreateFolder {
+                if results.error == .success {
+                    self.database.deleteMetadata(predicate: NSPredicate(format: "account == %@ AND fileName == %@ AND serverUrl == %@", metadata.account, metadata.fileName, metadata.serverUrl))
+                } else {
+                    self.database.setMetadataSession(ocId: metadata.ocId, sessionError: results.error.errorDescription)
+                }
+            }
+
+            if results.error == .success, let metadataFolder = results.metadata {
+                self.database.addMetadata(metadataFolder)
+                self.database.addDirectory(e2eEncrypted: metadataFolder.e2eEncrypted,
+                                           favorite: metadataFolder.favorite,
+                                           ocId: metadataFolder.ocId,
+                                           fileId: metadataFolder.fileId,
+                                           permissions: metadataFolder.permissions,
+                                           serverUrl: fileNameFolderUrl,
+                                           account: session.account)
+
+                NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterCreateFolder, userInfo: ["ocId": metadataFolder.ocId, "serverUrl": metadataFolder.serverUrl, "account": metadataFolder.account, "withPush": withPush, "sceneIdentifier": sceneIdentifier as Any])
+                NotificationCenter.default.postOnMainThread(name: NCGlobal.shared.notificationCenterReloadDataSource, userInfo: ["serverUrl": serverUrl])
+            }
+
+            return results.error
+        }
+    }
 
     func createFolder(fileName: String,
                       serverUrl: String,
