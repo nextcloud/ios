@@ -212,7 +212,6 @@ extension NCNetworking {
                       metadata: tableMetadata? = nil,
                       sceneIdentifier: String?,
                       session: NCSession.Session) async -> NKError {
-        let isDirectoryEncrypted = utilityFileSystem.isDirectoryE2EE(session: session, serverUrl: serverUrl)
         let fileName = fileName.trimmingCharacters(in: .whitespacesAndNewlines)
         var fileNameFolder = utility.removeForbiddenCharacters(fileName)
 
