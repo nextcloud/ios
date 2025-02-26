@@ -41,7 +41,7 @@ class NCNetworkingProcess {
 
     private init() {
         self.startTimer()
-        self.startObserveTableMetadata()
+        // self.startObserveTableMetadata()
 
         NotificationCenter.default.addObserver(forName: NSNotification.Name(rawValue: NCGlobal.shared.notificationCenterPlayerIsPlaying), object: nil, queue: nil) { _ in
 
@@ -54,6 +54,7 @@ class NCNetworkingProcess {
         }
     }
 
+    /*
     private func startObserveTableMetadata() {
         do {
             let realm = try Realm()
@@ -85,6 +86,7 @@ class NCNetworkingProcess {
             print("Error: \(error.localizedDescription)")
         }
     }
+    */
 
     private func startTimer() {
         self.timerProcess?.invalidate()
@@ -158,12 +160,14 @@ class NCNetworkingProcess {
         var counterDownloading = metadatasDownloading.count
         var counterUploading = metadatasUploading.count
 
+        database.realmRefresh()
+
         /// ------------------------ WEBDAV
         ///
         let metadatas = database.getMetadatas(predicate: NSPredicate(format: "status IN %@", global.metadataStatusWaitWebDav))
         if !metadatas.isEmpty {
-            let stop = await metadataStatusWaitWebDav()
-            if stop {
+            let error = await metadataStatusWaitWebDav()
+            if error {
                 return (counterDownloading, counterUploading)
             }
         }
@@ -306,7 +310,7 @@ class NCNetworkingProcess {
     }
 
     private func metadataStatusWaitWebDav() async -> Bool {
-        var returnValue: Bool = false
+        var returnError: Bool = false
 
         /// ------------------------ CREATE FOLDER
         ///
@@ -329,7 +333,7 @@ class NCNetworkingProcess {
                         let message = String(format: NSLocalizedString("_create_folder_error_", comment: ""), serverUrlFileName)
                         NCContentPresenter().messageNotification(message, error: error, delay: NCGlobal.shared.dismissAfterSecond, type: NCContentPresenter.messageType.error, priority: .max)
                     }
-                    returnValue = true
+                    returnError = true
                 }
             }
         }
@@ -458,14 +462,14 @@ class NCNetworkingProcess {
             }
         }
 
-        return returnValue
+        return returnError
     }
 
     // MARK: - Public
 
     func startProcess() {
         startTimer()
-        startObserveTableMetadata()
+        // startObserveTableMetadata()
     }
 
     func stopProcess() {
