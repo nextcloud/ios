@@ -219,7 +219,7 @@ extension NCNetworking {
 #if !EXTENSION
             let error = await NCNetworkingE2EECreateFolder().createFolder(fileName: fileName, serverUrl: serverUrl, withPush: withPush, sceneIdentifier: sceneIdentifier, session: session)
             return error
-            #else
+#else
             return .success
 #endif
         } else {
@@ -241,7 +241,7 @@ extension NCNetworking {
 
             let fileNameFolderUrl = serverUrl + "/" + fileNameFolder
 
-            let resultsCreateFolder = await createFolder(serverUrlFileName: fileNameFolderUrl, account: session.account)
+            await createFolder(serverUrlFileName: fileNameFolderUrl, account: session.account)
             let results = await readFile(serverUrlFileName: fileNameFolderUrl, account: session.account)
 
             /// metadataStatusWaitCreateFolder
