@@ -174,7 +174,7 @@ class NCUploadAssetsModel: ObservableObject, NCCreateFormUploadConflictDelegate 
 
         if useAutoUploadFolder {
             let assets = self.assets.compactMap { $0.phAsset }
-            NCNetworking.shared.createFolder(assets: assets, useSubFolder: self.useAutoUploadSubFolder, session: self.session)
+            NCNetworking.shared.createFolder(assets: assets, useSubFolder: self.useAutoUploadSubFolder, selector: NCGlobal.shared.selectorUploadFile, session: self.session)
             self.showHUD = false
             createProcessUploads()
         } else {
