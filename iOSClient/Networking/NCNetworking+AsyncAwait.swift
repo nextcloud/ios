@@ -121,6 +121,7 @@ extension NCNetworking {
         })
     }
 
+    @discardableResult
     func createFolder(serverUrlFileName: String,
                       account: String,
                       options: NKRequestOptions = NKRequestOptions()) async -> (account: String, ocId: String?, date: Date?, responseData: AFDataResponse<Data?>?, error: NKError) {
