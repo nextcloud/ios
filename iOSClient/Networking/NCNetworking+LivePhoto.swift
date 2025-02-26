@@ -27,13 +27,13 @@ import Alamofire
 import Queuer
 
 extension NCNetworking {
-    func uploadLivePhoto(metadata: tableMetadata, userInfo aUserInfo: [AnyHashable: Any]) {
+    func createLivePhoto(metadata: tableMetadata, userInfo aUserInfo: [AnyHashable: Any]) {
         database.realmRefresh()
-        guard let metadata1 = database.getMetadata(predicate: NSPredicate(format: "account == %@ AND urlBase == %@ AND path == %@ AND fileName == %@",
-                                                                          metadata.account,
-                                                                          metadata.urlBase,
-                                                                          metadata.path,
-                                                                          metadata.livePhotoFile)) else {
+        guard let metadataLast = database.getMetadata(predicate: NSPredicate(format: "account == %@ AND urlBase == %@ AND path == %@ AND fileName == %@",
+                                                                             metadata.account,
+                                                                             metadata.urlBase,
+                                                                             metadata.path,
+                                                                             metadata.livePhotoFile)) else {
             metadata.livePhotoFile = ""
             self.database.addMetadata(metadata)
             return NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadedLivePhoto,
@@ -41,38 +41,48 @@ extension NCNetworking {
                                                                userInfo: aUserInfo,
                                                                second: 0.5)
         }
-        if metadata1.status != self.global.metadataStatusNormal {
-            return NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Upload set LivePhoto for files (NO Status Normal) " + (metadata1.fileName as NSString).deletingPathExtension)
+        if metadataLast.status != self.global.metadataStatusNormal {
+            return NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Upload set LivePhoto for files (NO Status Normal) " + (metadataLast.fileName as NSString).deletingPathExtension)
         }
 
         Task {
-
-            /// METADATA
-            let serverUrlfileNamePath = metadata.urlBase + metadata.path + metadata.fileName
-            var livePhotoFile = metadata1.fileId
-            let resultsMetadata = await setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath, livePhotoFile: livePhotoFile, account: metadata.account)
-            if resultsMetadata.error == .success {
-                database.setMetadataLivePhotoByServer(account: metadata.account, ocId: metadata.ocId, livePhotoFile: livePhotoFile)
-            }
-
-            /// METADATA 1
-            let serverUrlfileNamePath1 = metadata1.urlBase + metadata1.path + metadata1.fileName
-            livePhotoFile = metadata.fileId
-            let resultsMetadata1 = await setLivephoto(serverUrlfileNamePath: serverUrlfileNamePath1, livePhotoFile: livePhotoFile, account: metadata1.account)
-            if resultsMetadata1.error == .success {
-                database.setMetadataLivePhotoByServer(account: metadata1.account, ocId: metadata1.ocId, livePhotoFile: livePhotoFile)
-            }
-
-            if resultsMetadata.error == .success, resultsMetadata1.error == .success {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload set LivePhoto for files " + (metadata.fileName as NSString).deletingPathExtension)
-            } else {
-                NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Upload set LivePhoto with error \(resultsMetadata.error.errorCode) - \(resultsMetadata1.error.errorCode)")
-            }
-
-            NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadedLivePhoto,
-                                                        object: nil,
-                                                        userInfo: aUserInfo,
-                                                        second: 0.5)
+            await setLivePhoto(metadataFirst: metadata, metadataLast: metadataLast, userInfo: aUserInfo)
         }
+    }
+
+    func setLivePhoto(metadataFirst: tableMetadata?, metadataLast: tableMetadata?, userInfo aUserInfo: [AnyHashable: Any], livePhoto: Bool = true) async {
+        guard let metadataFirst, let metadataLast = metadataLast else { return }
+        var livePhotoFileId = ""
+
+        /// METADATA FIRST
+        let serverUrlfileNamePathFirst = metadataFirst.urlBase + metadataFirst.path + metadataFirst.fileName
+        if livePhoto {
+            livePhotoFileId = metadataLast.fileId
+        }
+        let resultsMetadataFirst = await setLivephoto(serverUrlfileNamePath: serverUrlfileNamePathFirst, livePhotoFile: livePhotoFileId, account: metadataFirst.account)
+        if resultsMetadataFirst.error == .success {
+            database.setMetadataLivePhotoByServer(account: metadataFirst.account, ocId: metadataFirst.ocId, livePhotoFile: livePhotoFileId)
+        }
+
+        ///  METADATA LAST
+        let serverUrlfileNamePathLast = metadataLast.urlBase + metadataLast.path + metadataLast.fileName
+        if livePhoto {
+            livePhotoFileId = metadataFirst.fileId
+        }
+        let resultsMetadataLast = await setLivephoto(serverUrlfileNamePath: serverUrlfileNamePathLast, livePhotoFile: livePhotoFileId, account: metadataLast.account)
+        if resultsMetadataLast.error == .success {
+            database.setMetadataLivePhotoByServer(account: metadataLast.account, ocId: metadataLast.ocId, livePhotoFile: livePhotoFileId)
+        }
+
+        if resultsMetadataFirst.error == .success, resultsMetadataLast.error == .success {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Upload set LivePhoto for files " + (metadataFirst.fileName as NSString).deletingPathExtension)
+        } else {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Upload set LivePhoto with error \(resultsMetadataFirst.error.errorCode) - \(resultsMetadataLast.error.errorCode)")
+        }
+
+        NotificationCenter.default.postOnMainThread(name: self.global.notificationCenterUploadedLivePhoto,
+                                                    object: nil,
+                                                    userInfo: aUserInfo,
+                                                    second: 0.5)
     }
 }

@@ -23,7 +23,7 @@
 
 import UIKit
 
-class NCGlobal: NSObject {
+final class NCGlobal: Sendable {
     static let shared = NCGlobal()
 
     // ENUM
@@ -70,6 +70,9 @@ class NCGlobal: NSObject {
     let nextcloudVersion26: Int                     = 26
     let nextcloudVersion27: Int                     = 27
     let nextcloudVersion28: Int                     = 28
+    let nextcloudVersion31: Int                     = 31
+    let nextcloudVersion99: Int                     = 99
+
 
     // Nextcloud unsupported
     //
@@ -78,7 +81,7 @@ class NCGlobal: NSObject {
     // Intro selector
     //
     let introLogin: Int                             = 0
-    let introSignup: Int                            = 1
+    let introSignUpWithProvider: Int                = 1
 
     // Avatar
     //
@@ -274,7 +277,9 @@ class NCGlobal: NSObject {
     let metadataStatusFileDown                  = [-1, -2, -3]
     let metadataStatusHideInView                = [1, 2, 3, 11]
     let metadataStatusHideInFileExtension       = [1, 2, 3, 10, 11]
-    let metadataStatusObserve                   = [-1, 1, 10, 11, 12, 13, 14, 15]
+    let metadataStatusObserveNetworkingProcess  = [-1, 1, 10, 11, 12, 13, 14, 15]
+    let metadataStatusObserveTrasfers           = [-2, 2, 10, 11, 12, 13, 14, 15]
+
     let metadataStatusWaitWebDav                = [10, 11, 12, 13, 14, 15]
 
     // Auto upload subfolder granularity
@@ -420,5 +425,4 @@ class NCGlobal: NSObject {
     let taskDescriptionRetrievesProperties  = "retrievesProperties"
     let taskDescriptionSynchronization      = "synchronization"
     let taskDescriptionDeleteFileOrFolder   = "deleteFileOrFolder"
-
 }

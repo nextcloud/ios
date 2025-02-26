@@ -29,7 +29,7 @@ extension NCMedia {
     func loadDataSource(completion: @escaping () -> Void = {}) {
         let session = self.session
         DispatchQueue.global().async {
-            if let metadatas = self.database.getResultsMetadatas(predicate: self.imageCache.getMediaPredicate(filterLivePhotoFile: true, session: session, showOnlyImages: self.showOnlyImages, showOnlyVideos: self.showOnlyVideos), sortedByKeyPath: "date") {
+            if let metadatas = self.database.getResultsMetadatas(predicate: self.imageCache.getMediaPredicate(filterLivePhotoFile: true, session: session, showOnlyImages: self.showOnlyImages, showOnlyVideos: self.showOnlyVideos), sortedByKeyPath: "datePhotosOriginal") {
                 self.dataSource = NCMediaDataSource(metadatas: metadatas)
             }
             self.collectionViewReloadData()
@@ -65,8 +65,11 @@ extension NCMedia {
             self.semaphoreSearchMedia.wait()
             self.searchMediaInProgress = true
 
+            var elementDate = "d:getlastmodified"
             var lessDate = Date.distantFuture
             var greaterDate = Date.distantPast
+            var lessDateAny: Any = Date.distantFuture
+            var greaterDateAny: Any = Date.distantPast
             let countMetadatas = self.dataSource.metadatas.count
             let options = NKRequestOptions(timeout: 120, taskDescription: self.global.taskDescriptionRetrievesProperties, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
             var firstCellDate: Date?
@@ -77,8 +80,8 @@ extension NCMedia {
             }
 
             if let visibleCells, !distant {
-                firstCellDate = (visibleCells.first as? NCMediaCell)?.date
-                if firstCellDate == self.dataSource.metadatas.first?.date {
+                firstCellDate = (visibleCells.first as? NCMediaCell)?.datePhotosOriginal
+                if firstCellDate == self.dataSource.metadatas.first?.datePhotosOriginal {
                     lessDate = Date.distantFuture
                 } else {
                     if let date = firstCellDate {
@@ -88,8 +91,8 @@ extension NCMedia {
                     }
                 }
 
-                lastCellDate = (visibleCells.last as? NCMediaCell)?.date
-                if lastCellDate == self.dataSource.metadatas.last?.date {
+                lastCellDate = (visibleCells.last as? NCMediaCell)?.datePhotosOriginal
+                if lastCellDate == self.dataSource.metadatas.last?.datePhotosOriginal {
                     greaterDate = Date.distantPast
                 } else {
                     if let date = lastCellDate {
@@ -102,16 +105,24 @@ extension NCMedia {
 
             NextcloudKit.shared.nkCommonInstance.writeLog("[DEBUG] Start searchMedia with lessDate \(lessDate), greaterDate \(greaterDate), limit \(limit)")
 
+            if NCCapabilities.shared.getCapabilities(account: self.session.account).capabilityServerVersionMajor >= self.global.nextcloudVersion31 {
+                elementDate = "nc:metadata-photos-original_date_time"
+                lessDateAny = Int((lessDate as AnyObject).timeIntervalSince1970)
+                greaterDateAny = Int((greaterDate as AnyObject).timeIntervalSince1970)
+            } else {
+                lessDateAny = lessDate
+                greaterDateAny = greaterDate
+            }
+
             DispatchQueue.main.async {
                 self.activityIndicator.startAnimating()
             }
 
             NextcloudKit.shared.searchMedia(path: tableAccount.mediaPath,
-                                            lessDate: lessDate,
-                                            greaterDate: greaterDate,
-                                            elementDate: "d:getlastmodified/",
+                                            lessDate: lessDateAny,
+                                            greaterDate: greaterDateAny,
+                                            elementDate: elementDate,
                                             limit: limit,
-                                            showHiddenFiles: NCKeychain().showHiddenFiles,
                                             account: self.session.account,
                                             options: options) { account, files, _, error in
 
@@ -139,7 +150,7 @@ extension NCMedia {
                         DispatchQueue.main.async {
                             if let firstCellDate, let lastCellDate, self.isViewActived {
                                 DispatchQueue.global().async {
-                                    let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [ NSPredicate(format: "date >= %@ AND date =< %@", lastCellDate as NSDate, firstCellDate as NSDate), self.imageCache.getMediaPredicate(filterLivePhotoFile: false, session: session, showOnlyImages: self.showOnlyImages, showOnlyVideos: self.showOnlyVideos)])
+                                    let predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [ NSPredicate(format: "datePhotosOriginal >= %@ AND datePhotosOriginal =< %@", lastCellDate as NSDate, firstCellDate as NSDate), self.imageCache.getMediaPredicate(filterLivePhotoFile: false, session: session, showOnlyImages: self.showOnlyImages, showOnlyVideos: self.showOnlyVideos)])
 
                                     if let resultsMetadatas = NCManageDatabase.shared.getResultsMetadatas(predicate: predicate) {
                                         for metadata in resultsMetadatas where !self.filesExists.contains(metadata.ocId) {
@@ -176,7 +187,7 @@ extension NCMedia {
 
 public class NCMediaDataSource: NSObject {
     public class Metadata: NSObject {
-        let date: Date
+        let datePhotosOriginal: Date
         let etag: String
         let imageSize: CGSize
         let isImage: Bool
@@ -184,14 +195,14 @@ public class NCMediaDataSource: NSObject {
         let isVideo: Bool
         let ocId: String
 
-        init(date: Date,
+        init(datePhotosOriginal: Date,
              etag: String,
              imageSize: CGSize,
              isImage: Bool,
              isLivePhoto: Bool,
              isVideo: Bool,
              ocId: String) {
-            self.date = date
+            self.datePhotosOriginal = datePhotosOriginal
             self.etag = etag
             self.imageSize = imageSize
             self.isImage = isImage
@@ -219,7 +230,7 @@ public class NCMediaDataSource: NSObject {
 
     private func insertInMetadatas(metadata: Metadata) {
         for i in 0..<self.metadatas.count {
-            if (metadata.date as Date) > self.metadatas[i].date {
+            if (metadata.datePhotosOriginal as Date) > self.metadatas[i].datePhotosOriginal {
                 self.metadatas.insert(metadata, at: i)
                 return
             }
@@ -229,7 +240,7 @@ public class NCMediaDataSource: NSObject {
     }
 
     private func getMetadataFromTableMetadata(_ metadata: tableMetadata) -> Metadata {
-        return Metadata(date: metadata.date as Date,
+        return Metadata(datePhotosOriginal: metadata.datePhotosOriginal as Date,
                         etag: metadata.etag,
                         imageSize: CGSize(width: metadata.width, height: metadata.height),
                         isImage: metadata.classFile == NKCommon.TypeClassFile.image.rawValue,
@@ -292,7 +303,7 @@ public class NCMediaDataSource: NSObject {
                 for metadata in metadatasToInsert {
                     self.metadatas.append(metadata)
                 }
-                self.metadatas = self.metadatas.sorted { $0.date > $1.date }
+                self.metadatas = self.metadatas.sorted { $0.datePhotosOriginal > $1.datePhotosOriginal }
             }
             return true
         }

@@ -103,7 +103,7 @@ class fileProviderData: NSObject {
 
         self.account = tblAccount.account
         /// NextcloudKit Session
-        NextcloudKit.shared.setup(delegate: NCNetworking.shared)
+        NextcloudKit.shared.setup(groupIdentifier: NCBrandOptions.shared.capabilitiesGroup, delegate: NCNetworking.shared)
         NextcloudKit.shared.appendSession(account: tblAccount.account,
                                           urlBase: tblAccount.urlBase,
                                           user: tblAccount.user,
@@ -115,7 +115,6 @@ class fileProviderData: NSObject {
                                           httpMaximumConnectionsPerHostInDownload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInDownload,
                                           httpMaximumConnectionsPerHostInUpload: NCBrandOptions.shared.httpMaximumConnectionsPerHostInUpload,
                                           groupIdentifier: NCBrandOptions.shared.capabilitiesGroup)
-        NCNetworking.shared.delegate = providerExtension as? NCNetworkingDelegate
 
         return tableAccount(value: tblAccount)
     }

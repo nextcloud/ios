@@ -42,18 +42,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         return ProcessInfo.processInfo.arguments.contains("UI_TESTING")
     }
     var notificationSettings: UNNotificationSettings?
+    var pushKitToken: String?
 
     var loginFlowV2Token = ""
     var loginFlowV2Endpoint = ""
     var loginFlowV2Login = ""
 
+    let database = NCManageDatabase.shared
+
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         if isUiTestingEnabled {
             NCAccount().deleteAllAccounts()
         }
+
         let utilityFileSystem = NCUtilityFileSystem()
         let utility = NCUtility()
-        var levelLog = 0
         let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionApp())
 
         NCSettingsBundleHelper.checkAndExecuteSettings(delay: 0)
@@ -67,20 +70,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         utilityFileSystem.emptyTemporaryDirectory()
         utilityFileSystem.clearCacheDirectory("com.limit-point.LivePhoto")
 
-        // Create users colors
         NCBrandColor.shared.createUserColors()
 
-        NextcloudKit.shared.setup(delegate: NCNetworking.shared)
-        NextcloudKit.shared.nkCommonInstance.pathLog = utilityFileSystem.directoryGroup
+        NextcloudKit.shared.setup(groupIdentifier: NCBrandOptions.shared.capabilitiesGroup,
+                                  delegate: NCNetworking.shared)
 
         if NCBrandOptions.shared.disable_log {
             utilityFileSystem.removeFile(atPath: NextcloudKit.shared.nkCommonInstance.filenamePathLog)
             utilityFileSystem.removeFile(atPath: NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first! + "/" + NextcloudKit.shared.nkCommonInstance.filenameLog)
         } else {
-            levelLog = NCKeychain().logLevel
-            NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
-            NextcloudKit.shared.nkCommonInstance.copyLogToDocumentDirectory = true
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start session with level \(levelLog) " + versionNextcloudiOS)
+            NextcloudKit.shared.setupLog(pathLog: utilityFileSystem.directoryGroup,
+                                         levelLog: NCKeychain().logLevel,
+                                         copyLogToDocumentDirectory: true)
+            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start session with level \(NCKeychain().logLevel) " + versionNextcloudiOS)
         }
 
         /// Push Notification & display notification
@@ -91,11 +93,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         UNUserNotificationCenter.current().delegate = self
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { _, _ in }
 
-        if !utility.isSimulatorOrTestFlight() {
-            let review = NCStoreReview()
-            review.incrementAppRuns()
-            review.showStoreReview()
-        }
+#if !targetEnvironment(simulator)
+        let review = NCStoreReview()
+        review.incrementAppRuns()
+        review.showStoreReview()
+#endif
 
         /// Background task register
         BGTaskScheduler.shared.register(forTaskWithIdentifier: NCGlobal.shared.refreshTask, using: nil) { task in
@@ -265,9 +267,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        NCNetworking.shared.checkPushNotificationServerProxyCertificateUntrusted(viewController: UIApplication.shared.firstWindow?.rootViewController) { error in
-            if error == .success {
-                NCPushNotification.shared.registerForRemoteNotificationsWithDeviceToken(deviceToken)
+        if let pushKitToken = NCPushNotificationEncryption.shared().string(withDeviceToken: deviceToken) {
+            self.pushKitToken = pushKitToken
+            // https://github.com/nextcloud/talk-ios/issues/691
+            for tblAccount in NCManageDatabase.shared.getAllTableAccount() {
+                subscribingPushNotification(account: tblAccount.account, urlBase: tblAccount.urlBase, user: tblAccount.user)
             }
         }
     }
@@ -276,6 +280,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NCPushNotification.shared.applicationdidReceiveRemoteNotification(userInfo: userInfo) { result in
             completionHandler(result)
         }
+    }
+
+    func subscribingPushNotification(account: String, urlBase: String, user: String) {
+#if !targetEnvironment(simulator)
+        NCNetworking.shared.checkPushNotificationServerProxyCertificateUntrusted(viewController: UIApplication.shared.firstWindow?.rootViewController) { error in
+            if error == .success {
+                NCPushNotification.shared.subscribingNextcloudServerPushNotification(account: account, urlBase: urlBase, user: user, pushKitToken: self.pushKitToken)
+            }
+        }
+#endif
     }
 
     func nextcloudPushNotificationAction(data: [String: AnyObject]) {
@@ -343,24 +357,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
 
-        // Nextcloud standard login
-        if selector == NCGlobal.shared.introSignup {
-            if activeLogin?.view.window == nil {
-                if selector == NCGlobal.shared.introSignup {
-                    let web = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginProvider") as? NCLoginProvider
-                    web?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
-                    showLoginViewController(web)
-                } else {
-                    activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
-                    if let controller = UIApplication.shared.firstWindow?.rootViewController as? NCMainTabBarController, !controller.account.isEmpty {
-                        let session = NCSession.shared.getSession(account: controller.account)
-                        activeLogin?.urlBase = session.urlBase
-                    }
-                    showLoginViewController(activeLogin)
-                }
-            }
-        } else {
-            if activeLogin?.view.window == nil {
+        if activeLogin?.view.window == nil {
+            if selector == NCGlobal.shared.introSignUpWithProvider {
+                // Login via provider
+                let web = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLoginProvider") as? NCLoginProvider
+                web?.urlBase = NCBrandOptions.shared.linkloginPreferredProviders
+                showLoginViewController(web)
+            } else {
+                // Regular login
                 activeLogin = UIStoryboard(name: "NCLogin", bundle: nil).instantiateViewController(withIdentifier: "NCLogin") as? NCLogin
                 activeLogin?.urlBase = NCBrandOptions.shared.disable_request_login_url ? NCBrandOptions.shared.loginBaseUrl : ""
                 showLoginViewController(activeLogin)

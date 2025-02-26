@@ -122,16 +122,11 @@ class NCShareExtension: UIViewController {
 
         // LOG
         let levelLog = NCKeychain().logLevel
-        let isSimulatorOrTestFlight = utility.isSimulatorOrTestFlight()
         let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionApp())
 
         NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
         NextcloudKit.shared.nkCommonInstance.pathLog = utilityFileSystem.directoryGroup
-        if isSimulatorOrTestFlight {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start Share session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
-        } else {
-            NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start Share session with level \(levelLog) " + versionNextcloudiOS)
-        }
+        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start Share session with level \(levelLog) " + versionNextcloudiOS)
 
         NCBrandColor.shared.createUserColors()
 
@@ -293,13 +288,13 @@ extension NCShareExtension {
         var invalidNameIndexes: [Int] = []
 
         for (index, fileName) in filesName.enumerated() {
-            let newFileName = FileAutoRenamer.shared.rename(fileName, account: session.account)
+            let newFileName = FileAutoRenamer.rename(fileName, account: session.account)
 
             if fileName != newFileName {
                 renameFile(oldName: fileName, newName: newFileName, account: session.account)
             }
 
-            if let fileNameError = FileNameValidator.shared.checkFileName(newFileName, account: session.account) {
+            if let fileNameError = FileNameValidator.checkFileName(newFileName, account: session.account) {
                 if filesName.count == 1 {
                     showRenameFileDialog(named: fileName, account: account)
                     return

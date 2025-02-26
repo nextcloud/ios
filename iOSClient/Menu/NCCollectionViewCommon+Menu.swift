@@ -200,8 +200,6 @@ extension NCCollectionViewCommon {
 
         //
         // FAVORITE
-        // FIXME: PROPPATCH doesn't work
-        // https://github.com/nextcloud/files_lock/issues/68
         if !metadata.lock {
             actions.append(
                 NCMenuAction(
@@ -253,6 +251,29 @@ extension NCCollectionViewCommon {
                 )
             )
         }
+
+        //
+        // SET LIVE PHOTO NO
+        //
+        /*
+        if NCNetworking.shared.isOnline,
+           let metadataMOV = database.getMetadataLivePhoto(metadata: metadata) {
+            actions.append(
+                NCMenuAction(
+                    title: NSLocalizedString("_livephoto_no_", comment: ""),
+                    icon: NCUtility().loadImage(named: "livephoto.slash", colors: [NCBrandColor.shared.iconImageColor]),
+                    order: 105,
+                    action: { _ in
+                        Task {
+                            let userInfo: [String: Any] = ["serverUrl": metadata.serverUrl,
+                                                           "account": metadata.account]
+                            await NCNetworking.shared.setLivePhoto(metadataFirst: metadata, metadataLast: metadataMOV, userInfo: userInfo, livePhoto: false)
+                        }
+                    }
+                )
+            )
+        }
+        */
 
         //
         // SAVE AS SCAN

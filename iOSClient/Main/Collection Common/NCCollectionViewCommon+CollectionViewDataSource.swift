@@ -476,17 +476,16 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
         }
 
         cell.setIconOutlines()
+
+        cell.accessibilityLabel = metadata.fileName
+        cell.accessibilityIdentifier = "Cell/\(metadata.fileName)"
+
         return cell
     }
 
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         func setContent(header: UICollectionReusableView, indexPath: IndexPath) {
-            let (heightHeaderRichWorkspace, heightHeaderRecommendations, heightHeaderTransfer, heightHeaderSection) = getHeaderHeight(section: indexPath.section)
-            var headerTransferIsHidden: Bool = true
-
-            if !isSearchingMode, headerMenuTransferView, isHeaderMenuTransferViewEnabled() != nil {
-                headerTransferIsHidden = false
-            }
+            let (heightHeaderRichWorkspace, heightHeaderRecommendations, heightHeaderSection) = getHeaderHeight(section: indexPath.section)
 
             if let header = header as? NCSectionFirstHeader {
                 let recommendations = self.database.getRecommendedFiles(account: self.session.account)
@@ -504,8 +503,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                                   richWorkspaceText: richWorkspaceText,
                                   heightHeaderRecommendations: heightHeaderRecommendations,
                                   recommendations: recommendations,
-                                  heightHeaderTransfer: heightHeaderTransfer,
-                                  headerTransferIsHidden: headerTransferIsHidden,
                                   heightHeaderSection: heightHeaderSection,
                                   sectionText: sectionText,
                                   viewController: self,
@@ -550,8 +547,6 @@ extension NCCollectionViewCommon: UICollectionViewDataSource {
                 header.setContent(emptyImage: emptyImage,
                                   emptyTitle: emptyTitle,
                                   emptyDescription: emptyDescription,
-                                  heightHeaderTransfer: heightHeaderTransfer,
-                                  headerTransferIsHidden: headerTransferIsHidden,
                                   delegate: self)
 
             } else if let header = header as? NCSectionHeader {

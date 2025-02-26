@@ -82,8 +82,6 @@ class NCMedia: UIViewController {
     var numberOfColumns: Int = 0
     var lastNumberOfColumns: Int = 0
 
-    var hiddenCellMetadats: ThreadSafeArray<String> = ThreadSafeArray()
-
     var session: NCSession.Session {
         NCSession.shared.getSession(controller: tabBarController)
     }

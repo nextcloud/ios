@@ -55,6 +55,7 @@ class NCViewerMediaPage: UIViewController {
     var previousTrackCommand: Any?
     let utilityFileSystem = NCUtilityFileSystem()
     let database = NCManageDatabase.shared
+    var prefersLargeTitles: Bool?
 
     // This prevents the scroll views to scroll when you drag and drop files/images/subjects (from this or other apps)
     // https://forums.developer.apple.com/forums/thread/89396 and https://forums.developer.apple.com/forums/thread/115736
@@ -98,6 +99,8 @@ class NCViewerMediaPage: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        prefersLargeTitles = navigationController?.navigationBar.prefersLargeTitles
 
         navigationController?.navigationBar.tintColor = NCBrandColor.shared.iconImageColor
         let metadata = database.getMetadataFromOcId(ocIds[currentIndex])!
@@ -175,6 +178,15 @@ class NCViewerMediaPage: UIViewController {
         super.viewDidAppear(animated)
 
         startTimerAutoHide()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        if let prefersLargeTitles {
+            navigationController?.navigationBar.prefersLargeTitles = prefersLargeTitles
+        }
+        changeScreenMode(mode: .normal)
     }
 
     override func viewDidDisappear(_ animated: Bool) {

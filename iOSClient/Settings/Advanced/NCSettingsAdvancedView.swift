@@ -163,7 +163,9 @@ struct NCSettingsAdvancedView: View {
                     }
                 }, header: {
                     Text(NSLocalizedString("_diagnostics_", comment: ""))
-                }, footer: { })
+                }, footer: {
+                    Text(NSLocalizedString("_diagnostics_footer_", comment: ""))
+                })
                 /// Set Log Level() & Capabilities
                 if model.isAdminGroup {
                     Section(content: {
@@ -253,6 +255,7 @@ struct NCSettingsAdvancedView: View {
             })
         }
         .navigationBarTitle(NSLocalizedString("_advanced_", comment: ""))
+        .navigationBarTitleDisplayMode(.inline)
         .defaultViewModifier(model)
     }
 

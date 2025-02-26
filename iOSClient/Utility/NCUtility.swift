@@ -29,23 +29,9 @@ import CoreMedia
 import Photos
 import Alamofire
 
-class NCUtility: NSObject {
+final class NCUtility: NSObject, Sendable {
     let utilityFileSystem = NCUtilityFileSystem()
     let global = NCGlobal.shared
-
-    func isSimulatorOrTestFlight() -> Bool {
-        guard let path = Bundle.main.appStoreReceiptURL?.path else {
-            return false
-        }
-        return path.contains("CoreSimulator") || path.contains("sandboxReceipt")
-    }
-
-    func isSimulator() -> Bool {
-        guard let path = Bundle.main.appStoreReceiptURL?.path else {
-            return false
-        }
-        return path.contains("CoreSimulator")
-    }
 
     func isTypeFileRichDocument(_ metadata: tableMetadata) -> Bool {
         guard metadata.fileNameView != "." else { return false }
@@ -291,12 +277,12 @@ class NCUtility: NSObject {
         return fileName
     }
 
-    func getHeightHeaderEmptyData(view: UIView, portraitOffset: CGFloat, landscapeOffset: CGFloat, isHeaderMenuTransferViewEnabled: Bool = false) -> CGFloat {
+    func getHeightHeaderEmptyData(view: UIView, portraitOffset: CGFloat, landscapeOffset: CGFloat) -> CGFloat {
         var height: CGFloat = 0
         if UIDevice.current.orientation.isPortrait {
             height = (view.frame.height / 2) - (view.safeAreaInsets.top / 2) + portraitOffset
         } else {
-            height = (view.frame.height / 2) + landscapeOffset + CGFloat(isHeaderMenuTransferViewEnabled ? 35 : 0)
+            height = (view.frame.height / 2) + landscapeOffset
         }
         return height
     }

@@ -6,17 +6,21 @@ on:
       - master
       - develop
   pull_request:
-    types: [synchronize, opened, reopened, ready_for_review]
+    types:
+      - synchronize
+      - opened
+      - reopened
+      - ready_for_review
     branches:
       - master
       - develop
 
 env:
   PROJECT: Nextcloud.xcodeproj
-  DESTINATION: platform=iOS Simulator,name=iPhone 16,OS=18.1
+  DESTINATION: platform=iOS Simulator,name=iPhone 16,OS=18.2
   SCHEME: Nextcloud
-  SERVER_BRANCH: stable28
-  PHP_VERSION: 8.2
+  SERVER_BRANCH: stable30
+  PHP_VERSION: 8.3
 
 jobs:
   build:
@@ -30,7 +34,7 @@ jobs:
     - name: Download GoogleService-Info.plist
       run: wget "https://raw.githubusercontent.com/firebase/quickstart-ios/master/mock-GoogleService-Info.plist" -O GoogleService-Info.plist
 
-    - name: Build Nextcloud iOS
+    - name: Run Xcode Build
       run: |
         set -o pipefail && \
         xcodebuild build-for-testing \
@@ -39,43 +43,51 @@ jobs:
         -derivedDataPath "DerivedData" \
         | xcbeautify --quieter
 
-    - name: Upload test build
+    - name: Upload Build Products
       uses: actions/upload-artifact@v4
       with:
-        name: Nextcloud iOS
+        name: Nextcloud for iOS
         path: DerivedData/Build/Products
         retention-days: 4
 
   test:
-    name: Test
+    name: Run Tests
     runs-on: macos-15
     needs: [build]
 
-    if: github.event.pull_request.draft == false
+    # Temporarily, project has no effective tests except UI tests which are unfeasible on virtualized GitHub runners (see #3291)
+    # Previously: github.event.pull_request.draft == false
+    if: false
 
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set up php ${{ env.PHP_VERSION }}
-      uses: shivammathur/setup-php@8872c784b04a1420e81191df5d64fbd59d3d3033 # v2.30.0
+    - name: Prepare PHP ${{ env.PHP_VERSION }}
+      uses: shivammathur/setup-php@v2
       with:
         php-version: ${{ env.PHP_VERSION }}
         # https://docs.nextcloud.com/server/stable/admin_manual/installation/source_installation.html#prerequisites-for-manual-installation
         extensions: apcu, bz2, ctype, curl, dom, fileinfo, gd, iconv, intl, json, libxml, mbstring, openssl, pcntl, posix, session, simplexml, xmlreader, xmlwriter, zip, zlib, pgsql, pdo_pgsql
         coverage: none
         ini-file: development
-        # Temporary workaround for missing pcntl_* in PHP 8.3: ini-values: apc.enable_cli=on
         ini-values: apc.enable_cli=on, disable_functions=
 
-    - name: Checkout server
-      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+    - name: Checkout Nextcloud Server
+      uses: actions/checkout@v4
       with:
         submodules: true
         repository: nextcloud/server
         path: server
         ref: ${{ env.SERVER_BRANCH }}
 
-    - name: Set up Nextcloud
+    - name: Checkout Download Limits App
+      uses: actions/checkout@v4
+      with:
+        repository: nextcloud/files_downloadlimit
+        path: server/apps/files_downloadlimit
+        ref: ${{ env.SERVER_BRANCH }}
+
+    - name: Install Nextcloud Server
       run: |
         mkdir server/data
         ./server/occ maintenance:install --verbose --database=sqlite --database-name=nextcloud --database-host=127.0.0.1 --database-user=root --database-pass=rootpassword --admin-user admin --admin-pass admin
@@ -84,18 +96,33 @@ jobs:
         ./server/occ config:system:set ratelimit.protection.enabled --value false --type bool
         ./server/occ config:system:set memcache.local --value="\\OC\\Memcache\\APCu"
         ./server/occ config:system:set memcache.distributed --value="\\OC\\Memcache\\APCu"
+        ./server/occ app:enable files_downloadlimit
         ./server/occ background:cron
         PHP_CLI_SERVER_WORKERS=5 php -S localhost:8080 -t server/ &
 
-    - name: Download test build
+    - name: Download Build
       uses: actions/download-artifact@v4
       with:
-        name: Nextcloud iOS
+        name: Nextcloud for iOS
 
-    - name: Check server status
+    - name: Assert Nextcloud Server Status
       run: curl -s --retry 5 --retry-delay 60 --retry-all-errors http://localhost:8080/status.php || true
 
-    - name: Test Nextcloud iOS
+    - name: Boot iOS Simulator
+      run: |
+        xcrun simctl boot "iPhone 16"
+        xcrun simctl bootstatus "iPhone 16" || echo "Simulator booted"
+
+    - name: Check if Safari is installed
+      run: |
+        if xcrun simctl listapps booted | grep -q com.apple.mobilesafari; then
+          echo "Safari is installed in the simulator."
+        else
+          echo "Safari is NOT installed in the simulator."
+          exit 1
+        fi
+
+    - name: Run Xcode Test
       run: |
         set -o pipefail && \
         xcodebuild test-without-building \
@@ -104,13 +131,11 @@ jobs:
         -derivedDataPath "DerivedData" \
         -test-iterations 3 \
         -retry-tests-on-failure \
-        -resultBundlePath "TestResult.xcresult" \
-        | xcbeautify --quieter
+        -resultBundlePath "TestResult.xcresult"
 
-    - name: Upload test results
+    - name: Upload Xcode Test Results
       uses: actions/upload-artifact@v4
       if: ${{ !cancelled() }}
       with:
         name: TestResult.xcresult
         path: "TestResult.xcresult"
-

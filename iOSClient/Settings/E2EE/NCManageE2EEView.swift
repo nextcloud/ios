@@ -122,6 +122,7 @@ struct NCManageE2EEView: View {
             }
         }
         .navigationBarTitle(NSLocalizedString("_e2e_settings_", comment: ""))
+        .navigationBarTitleDisplayMode(.inline)
         .background(Color(UIColor.systemGroupedBackground))
         .defaultViewModifier(model)
         .onChange(of: model.navigateBack) { newValue in
