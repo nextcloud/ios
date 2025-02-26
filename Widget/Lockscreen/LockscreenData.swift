@@ -64,7 +64,7 @@ func getLockscreenDataEntry(configuration: AccountIntent?, isPreview: Bool, fami
     // NETWORKING
     let password = NCKeychain().getPassword(account: activeTableAccount.account)
 
-    NextcloudKit.shared.setup(delegate: NCNetworking.shared)
+    NextcloudKit.shared.setup(groupIdentifier: NCBrandOptions.shared.capabilitiesGroup, delegate: NCNetworking.shared)
     NextcloudKit.shared.appendSession(account: activeTableAccount.account,
                                       urlBase: activeTableAccount.urlBase,
                                       user: activeTableAccount.user,

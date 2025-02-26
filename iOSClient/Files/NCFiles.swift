@@ -183,13 +183,6 @@ class NCFiles: NCCollectionViewCommon {
             return false
         }
 
-        /// Recommendation
-        if isRecommendationActived {
-            Task.detached {
-                await NCNetworking.shared.createRecommendations(session: self.session)
-            }
-        }
-
         DispatchQueue.global().async {
             self.networkReadFolder { metadatas, isChanged, error in
                 DispatchQueue.main.async {
@@ -207,17 +200,10 @@ class NCFiles: NCCollectionViewCommon {
                             NCNetworking.shared.downloadQueue.addOperation(NCOperationDownload(metadata: metadata, selector: NCGlobal.shared.selectorDownloadFile))
                         }
                     }
-                } else if error.errorCode == self.global.errorForbidden {
-                    DispatchQueue.main.async {
-                        if self.presentedViewController == nil {
-                            NextcloudKit.shared.getTermsOfService(account: self.session.account) { _, tos, _, error in
-                                if error == .success, let tos {
-                                    let termOfServiceModel = NCTermOfServiceModel(controller: self.controller, tos: tos)
-                                    let termOfServiceView = NCTermOfServiceModelView(model: termOfServiceModel)
-                                    let termOfServiceController = UIHostingController(rootView: termOfServiceView)
-                                    self.present(termOfServiceController, animated: true, completion: nil)
-                                }
-                            }
+                    /// Recommendation
+                    if self.isRecommendationActived {
+                        Task.detached {
+                            await NCNetworking.shared.createRecommendations(session: self.session)
                         }
                     }
                 }

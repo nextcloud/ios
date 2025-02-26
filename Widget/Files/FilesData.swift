@@ -110,7 +110,7 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
     // NETWORKING
     let password = NCKeychain().getPassword(account: activeTableAccount.account)
 
-    NextcloudKit.shared.setup(delegate: NCNetworking.shared)
+    NextcloudKit.shared.setup(groupIdentifier: NCBrandOptions.shared.capabilitiesGroup, delegate: NCNetworking.shared)
     NextcloudKit.shared.appendSession(account: activeTableAccount.account,
                                       urlBase: activeTableAccount.urlBase,
                                       user: activeTableAccount.user,
@@ -182,17 +182,11 @@ func getFilesDataEntry(configuration: AccountIntent?, isPreview: Bool, displaySi
 
     // LOG
     let levelLog = NCKeychain().logLevel
-    let isSimulatorOrTestFlight = utility.isSimulatorOrTestFlight()
     let versionNextcloudiOS = String(format: NCBrandOptions.shared.textCopyrightNextcloudiOS, utility.getVersionApp())
 
     NextcloudKit.shared.nkCommonInstance.levelLog = levelLog
     NextcloudKit.shared.nkCommonInstance.pathLog = utilityFileSystem.directoryGroup
-
-    if isSimulatorOrTestFlight {
-        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start \(NCBrandOptions.shared.brand) widget session with level \(levelLog) " + versionNextcloudiOS + " (Simulator / TestFlight)")
-    } else {
-        NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start \(NCBrandOptions.shared.brand) widget session with level \(levelLog) " + versionNextcloudiOS)
-    }
+    NextcloudKit.shared.nkCommonInstance.writeLog("[INFO] Start \(NCBrandOptions.shared.brand) widget session with level \(levelLog) " + versionNextcloudiOS)
 
     let options = NKRequestOptions(timeout: 30, queue: NextcloudKit.shared.nkCommonInstance.backgroundQueue)
     NextcloudKit.shared.searchBodyRequest(serverUrl: activeTableAccount.urlBase, requestBody: requestBody, showHiddenFiles: NCKeychain().showHiddenFiles, account: activeTableAccount.account, options: options) { _, files, data, error in

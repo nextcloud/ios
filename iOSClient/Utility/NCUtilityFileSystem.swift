@@ -25,8 +25,8 @@ import UIKit
 import NextcloudKit
 import PhotosUI
 
-class NCUtilityFileSystem: NSObject {
-    let fileManager = FileManager.default
+final class NCUtilityFileSystem: NSObject, @unchecked Sendable {
+    let fileManager = FileManager()
     var directoryGroup: String {
         return fileManager.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.shared.capabilitiesGroup)?.path ?? ""
     }

@@ -27,6 +27,8 @@ import NextcloudKit
 
 class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMessageHandler, NCSelectDelegate {
     let utilityFileSystem = NCUtilityFileSystem()
+    let database = NCManageDatabase.shared
+    let global = NCGlobal.shared
     var webView = WKWebView()
     var bottomConstraint: NSLayoutConstraint?
     var documentController: UIDocumentInteractionController?
@@ -207,10 +209,21 @@ class NCViewerRichDocument: UIViewController, WKNavigationDelegate, WKScriptMess
                             // TYPE PRINT - DOWNLOAD
                             NCActivityIndicator.shared.start(backgroundView: view)
                             NextcloudKit.shared.download(serverUrlFileName: url, fileNameLocalPath: fileNameLocalPath, account: self.metadata.account, requestHandler: { _ in
-                            }, taskHandler: { _ in
+                                self.database.setMetadataSession(ocId: self.metadata.ocId,
+                                                                 status: self.global.metadataStatusDownloading)
+                            }, taskHandler: { task in
+                                self.database.setMetadataSession(ocId: self.metadata.ocId,
+                                                                 sessionTaskIdentifier: task.taskIdentifier,
+                                                                 status: self.global.metadataStatusDownloading)
                             }, progressHandler: { _ in
-                            }, completionHandler: { account, _, _, _, responseData, _, error in
+                            }, completionHandler: { account, etag, _, _, responseData, _, error in
                                 NCActivityIndicator.shared.stop()
+                                self.database.setMetadataSession(ocId: self.metadata.ocId,
+                                                                 session: "",
+                                                                 sessionTaskIdentifier: 0,
+                                                                 sessionError: "",
+                                                                 status: self.global.metadataStatusNormal,
+                                                                 etag: etag)
                                 if error == .success && account == self.metadata.account {
                                     var item = fileNameLocalPath
 

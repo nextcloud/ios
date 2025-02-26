@@ -54,6 +54,10 @@ class tableShareV2: Object {
     @objc dynamic var primaryKey = ""
     @objc dynamic var sendPasswordByTalk: Bool = false
     @objc dynamic var serverUrl = ""
+
+    ///
+    /// See [OCS Share API documentation](https://docs.nextcloud.com/server/latest/developer_manual/client_apis/OCS/ocs-share-api.html) for semantic definitions of the different possible values.
+    ///
     @objc dynamic var shareType: Int = 0
     @objc dynamic var shareWith = ""
     @objc dynamic var shareWithDisplayname = ""
@@ -133,6 +137,13 @@ extension NCManageDatabase {
         }
     }
 
+    ///
+    /// Fetch all available shares of an item identified by the given metadata.
+    ///
+    /// - Returns: A tuple consisting of the first public share link and any _additional_ shares that might be there.
+    ///            It is possible that there is no public share link but still shares of other types.
+    ///            In the latter case, all shares are returned as the second tuple value.
+    ///
     func getTableShares(account: String) -> [tableShare] {
         do {
             let realm = try Realm()
@@ -190,6 +201,9 @@ extension NCManageDatabase {
         return []
     }
 
+    ///
+    /// Fetch all shares of a file regardless of type.
+    ///
     func getTableShares(account: String, serverUrl: String, fileName: String) -> [tableShare] {
         do {
             let realm = try Realm()

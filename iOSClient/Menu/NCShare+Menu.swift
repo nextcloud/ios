@@ -46,6 +46,7 @@ extension NCShare {
             NCMenuAction(
                 title: NSLocalizedString("_details_", comment: ""),
                 icon: utility.loadImage(named: "pencil", colors: [NCBrandColor.shared.iconImageColor]),
+                accessibilityIdentifier: "shareMenu/details",
                 action: { _ in
                     guard
                         let advancePermission = UIStoryboard(name: "NCShare", bundle: nil).instantiateViewController(withIdentifier: "NCShareAdvancePermission") as? NCShareAdvancePermission,
@@ -54,6 +55,11 @@ extension NCShare {
                     advancePermission.share = tableShare(value: share)
                     advancePermission.oldTableShare = tableShare(value: share)
                     advancePermission.metadata = self.metadata
+
+                    if let downloadLimit = try? self.database.getDownloadLimit(byAccount: self.metadata.account, shareToken: share.token) {
+                        advancePermission.downloadLimit = .limited(limit: downloadLimit.limit, count: downloadLimit.count)
+                    }
+
                     navigationController.pushViewController(advancePermission, animated: true)
                 }
             )
@@ -134,6 +140,18 @@ extension NCShare {
     func updateSharePermissions(share: tableShare, permissions: Int) {
         let updatedShare = tableShare(value: share)
         updatedShare.permissions = permissions
-        networking?.updateShare(option: updatedShare)
+
+        var downloadLimit: DownloadLimitViewModel = .unlimited
+
+        do {
+            if let model = try database.getDownloadLimit(byAccount: metadata.account, shareToken: updatedShare.token) {
+                downloadLimit = .limited(limit: model.limit, count: model.count)
+            }
+        } catch {
+            NextcloudKit.shared.nkCommonInstance.writeLog("[ERROR] Failed to get download limit from database!")
+            return
+        }
+
+        networking?.updateShare(updatedShare, downloadLimit: downloadLimit)
     }
 }

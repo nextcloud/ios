@@ -31,7 +31,7 @@
 import Foundation
 import UIKit
 
-public class NCCapabilities: NSObject {
+final public class NCCapabilities: Sendable {
     static let shared = NCCapabilities()
 
     public class Capabilities {
@@ -46,6 +46,8 @@ public class NCCapabilities: NSObject {
         var capabilityFileSharingRemoteExpireDateEnforced: Bool     = false
         var capabilityFileSharingRemoteExpireDateDays: Int          = 0
         var capabilityFileSharingDefaultPermission: Int             = 0
+        var capabilityFileSharingDownloadLimit: Bool                = false
+        var capabilityFileSharingDownloadLimitDefaultLimit: Int     = 1
         var capabilityThemingColor: String                          = ""
         var capabilityThemingColorElement: String                   = ""
         var capabilityThemingColorText: String                      = ""
@@ -75,8 +77,6 @@ public class NCCapabilities: NSObject {
     }
 
     private var capabilities = ThreadSafeDictionary<String, Capabilities>()
-
-    override private init() {}
 
     func disableSharesView(account: String) -> Bool {
         guard let capability = capabilities[account] else {

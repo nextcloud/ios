@@ -185,9 +185,6 @@ extension NCNetworking {
                           length: Int64,
                           task: URLSessionTask,
                           error: NKError) {
-        if let delegate {
-            return delegate.downloadComplete(fileName: fileName, serverUrl: serverUrl, etag: etag, date: date, dateLastModified: dateLastModified, length: length, task: task, error: error)
-        }
 
         DispatchQueue.global().async {
             guard let url = task.currentRequest?.url,
@@ -234,7 +231,17 @@ extension NCNetworking {
                                                                        "account": metadata.account],
                                                             second: 0.5)
             } else {
+                if error.errorCode == 401,
+                   let groupDefaults = UserDefaults(suiteName: NCBrandOptions.shared.capabilitiesGroup) {
+                    var unauthorizedArray = groupDefaults.array(forKey: "Unauthorized") as? [String] ?? []
+                    if !unauthorizedArray.contains(metadata.account) {
+                        unauthorizedArray.append(metadata.account)
+                        groupDefaults.set(unauthorizedArray, forKey: "Unauthorized")
+                    }
+                }
+
                 NCTransferProgress.shared.clearCountError(ocIdTransfer: metadata.ocIdTransfer)
+
                 self.database.setMetadataSession(ocId: metadata.ocId,
                                                  session: "",
                                                  sessionTaskIdentifier: 0,
@@ -262,9 +269,6 @@ extension NCNetworking {
                           serverUrl: String,
                           session: URLSession,
                           task: URLSessionTask) {
-        if let delegate {
-            return delegate.downloadProgress(progress, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected, fileName: fileName, serverUrl: serverUrl, session: session, task: task)
-        }
 
         DispatchQueue.global().async {
             if let metadata = self.database.getResultMetadataFromFileName(fileName, serverUrl: serverUrl, sessionTaskIdentifier: task.taskIdentifier) {
