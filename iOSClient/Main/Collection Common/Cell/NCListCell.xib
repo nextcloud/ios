@@ -73,41 +73,41 @@
                         <color key="textColor" red="0.59999999999999998" green="0.59999999999999998" blue="0.59999999999999998" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="jc6-Vg-TaS" userLabel="imageShared">
+                        <rect key="frame" x="589" y="24" width="16" height="16"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="16" id="Cvy-nZ-zyD"/>
+                            <constraint firstAttribute="width" constant="16" id="jfe-Fg-vA8"/>
+                        </constraints>
+                    </imageView>
                     <button opaque="NO" alpha="0.29999999999999999" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="o4u-0K-Qpt" userLabel="buttonShare">
-                        <rect key="frame" x="571" y="3" width="48" height="58"/>
+                        <rect key="frame" x="573" y="8" width="48" height="48"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstAttribute="height" constant="58" id="WOg-y5-5UA"/>
+                            <constraint firstAttribute="width" secondItem="o4u-0K-Qpt" secondAttribute="height" id="Djr-qx-Z4A"/>
                             <constraint firstAttribute="width" constant="48" id="YSF-9Z-XlJ"/>
                         </constraints>
                         <connections>
                             <action selector="touchUpInsideShare:" destination="jxV-Pk-fPt" eventType="touchUpInside" id="UVA-XS-fRf"/>
                         </connections>
                     </button>
-                    <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="jc6-Vg-TaS" userLabel="imageShared">
-                        <rect key="frame" x="583" y="20" width="24" height="24"/>
-                        <constraints>
-                            <constraint firstAttribute="height" constant="24" id="Cvy-nZ-zyD"/>
-                            <constraint firstAttribute="width" constant="24" id="jfe-Fg-vA8"/>
-                        </constraints>
-                    </imageView>
-                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yhy-xd-w5C" userLabel="buttonMore">
-                        <rect key="frame" x="616" y="2" width="48" height="60"/>
-                        <constraints>
-                            <constraint firstAttribute="width" constant="48" id="ZgH-mI-l2k"/>
-                            <constraint firstAttribute="height" constant="60" id="woC-64-Tyc"/>
-                        </constraints>
-                        <connections>
-                            <action selector="touchUpInsideMore:" destination="jxV-Pk-fPt" eventType="touchUpInside" id="Mtu-LP-kuR"/>
-                        </connections>
-                    </button>
-                    <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="dgL-g5-Nkc" userLabel="imageMore">
-                        <rect key="frame" x="628" y="20" width="24" height="24"/>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="dgL-g5-Nkc" userLabel="imageMore">
+                        <rect key="frame" x="633" y="20" width="24" height="24"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="24" id="05P-NL-pd8"/>
                             <constraint firstAttribute="height" constant="24" id="Jet-eo-x1M"/>
                         </constraints>
                     </imageView>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yhy-xd-w5C" userLabel="buttonMore">
+                        <rect key="frame" x="621" y="8" width="48" height="48"/>
+                        <constraints>
+                            <constraint firstAttribute="width" secondItem="yhy-xd-w5C" secondAttribute="height" id="ELZ-iw-JN3"/>
+                            <constraint firstAttribute="width" constant="48" id="ZgH-mI-l2k"/>
+                        </constraints>
+                        <connections>
+                            <action selector="touchUpInsideMore:" destination="jxV-Pk-fPt" eventType="touchUpInside" id="Mtu-LP-kuR"/>
+                        </connections>
+                    </button>
                     <progressView hidden="YES" opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="m2p-oJ-j15">
                         <rect key="frame" x="109" y="57" width="470" height="4"/>
                     </progressView>
@@ -120,7 +120,7 @@
                         </constraints>
                     </view>
                     <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="tag0" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qnc-hI-Z9r" customClass="PaddedAndBorderedLabel" customModule="Nextcloud" customModuleProvider="target">
-                        <rect key="frame" x="109" y="35.666666666666664" width="36" height="16.333333333333336"/>
+                        <rect key="frame" x="109" y="37.666666666666664" width="26" height="14.333333333333336"/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <color key="textColor" systemColor="systemGrayColor"/>
                         <nil key="highlightedColor"/>
@@ -149,7 +149,7 @@
                         </userDefinedRuntimeAttributes>
                     </label>
                     <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="tag1" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jUe-8q-VJd" customClass="PaddedAndBorderedLabel" customModule="Nextcloud" customModuleProvider="target">
-                        <rect key="frame" x="150" y="35.666666666666664" width="34" height="16.333333333333336"/>
+                        <rect key="frame" x="140" y="37.666666666666664" width="24" height="14.333333333333336"/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <color key="textColor" systemColor="systemGrayColor"/>
                         <nil key="highlightedColor"/>
@@ -210,12 +210,12 @@
                 <constraint firstItem="qnc-hI-Z9r" firstAttribute="leading" secondItem="w2m-Vw-hpd" secondAttribute="trailing" constant="12" id="l6K-6H-QIr"/>
                 <constraint firstItem="w2m-Vw-hpd" firstAttribute="leading" secondItem="jxV-Pk-fPt" secondAttribute="leading" constant="57" id="mBb-ff-7HD"/>
                 <constraint firstItem="w2m-Vw-hpd" firstAttribute="leading" secondItem="7Q9-Tv-9yo" secondAttribute="trailing" constant="-10" id="mon-aq-gcP"/>
+                <constraint firstItem="yhy-xd-w5C" firstAttribute="leading" secondItem="o4u-0K-Qpt" secondAttribute="trailing" id="n5f-xh-P19"/>
                 <constraint firstItem="Fu0-vg-6GU" firstAttribute="leading" secondItem="AXX-71-9Q6" secondAttribute="trailing" id="oEf-wb-lZr"/>
                 <constraint firstItem="C4K-Nv-phA" firstAttribute="top" secondItem="w2m-Vw-hpd" secondAttribute="top" id="owS-Oz-1Zj"/>
                 <constraint firstItem="w2m-Vw-hpd" firstAttribute="centerY" secondItem="jxV-Pk-fPt" secondAttribute="centerY" id="qKl-4Y-m5t"/>
-                <constraint firstAttribute="trailing" secondItem="yhy-xd-w5C" secondAttribute="trailing" constant="5" id="s2S-RP-cw5"/>
+                <constraint firstAttribute="trailing" secondItem="yhy-xd-w5C" secondAttribute="trailing" id="s2S-RP-cw5"/>
                 <constraint firstItem="AyA-hP-r6w" firstAttribute="centerY" secondItem="jxV-Pk-fPt" secondAttribute="centerY" id="sJp-0x-bdC"/>
-                <constraint firstAttribute="trailing" secondItem="o4u-0K-Qpt" secondAttribute="trailing" constant="50" id="tOD-Sd-Uhy"/>
                 <constraint firstItem="jc6-Vg-TaS" firstAttribute="centerY" secondItem="o4u-0K-Qpt" secondAttribute="centerY" id="xnq-6u-TXH"/>
             </constraints>
             <size key="customSize" width="719" height="146"/>
@@ -246,19 +246,19 @@
     </objects>
     <designables>
         <designable name="jUe-8q-VJd">
-            <size key="intrinsicContentSize" width="34" height="16.333333333333336"/>
+            <size key="intrinsicContentSize" width="24" height="14.333333333333334"/>
         </designable>
         <designable name="qnc-hI-Z9r">
-            <size key="intrinsicContentSize" width="36" height="16.333333333333336"/>
+            <size key="intrinsicContentSize" width="26" height="14.333333333333334"/>
         </designable>
     </designables>
     <resources>
         <image name="star.fill" catalog="system" width="128" height="116"/>
         <systemColor name="systemGray5Color">
-            <color red="0.89803921568627454" green="0.89803921568627454" blue="0.91764705882352937" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.8980392157" green="0.8980392157" blue="0.91764705879999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGrayColor">
-            <color red="0.55686274509803924" green="0.55686274509803924" blue="0.57647058823529407" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
